@@ -1,0 +1,31 @@
+uuid: 4cda4334-4954-40dc-bb08-c4cf7261c705
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.commitment.body
+    - node.type.commitment
+  module:
+    - text
+    - user
+id: node.commitment.teaser
+targetEntityType: node
+bundle: commitment
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  langcode: true

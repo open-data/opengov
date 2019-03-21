@@ -1,0 +1,22 @@
+uuid: f77a7f9c-ac52-40c8-9884-fa22d781c8d6
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - gcweb
+_core:
+  default_config_hash: 9EoWV2Lot6FVSr50t4hoKgiz1LIXYWNG-IIPYsWxBqo
+id: gcweb_content
+theme: gcweb
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  provider: system
+  label_display: '0'
+visibility: {  }

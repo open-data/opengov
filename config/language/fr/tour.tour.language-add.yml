@@ -1,0 +1,11 @@
+label: 'Ajout de langues'
+tips:
+  language-add-overview:
+    label: 'Ajout de langues'
+    body: '<p>Cette page donne la possibilité d''ajouter des langues communes sur votre site.</p><p>Si la langue souhaitée n''est pas disponible, vous pouvez ajouter une langue personnalisée.</p>'
+  language-add-choose:
+    label: 'Choisissez une langue'
+    body: '<p>Choisir une langue dans la liste ou choisir "Langue personnalisée..." à la fin de la liste.</p><p>Cliquer sur le bouton "Ajouter une langue" lorsque votre langue est choisie.</p><p>Lors de l''ajout d''une langue personnalisée, un formulaire supplémentaire vous demandera d''indiquer le nom, le code et le sens de lecture de la langue.</p>'
+  language-add-continue:
+    label: 'Continuant sur'
+    body: "<p>Maintenant que vous avez une vue d'ensemble de la fonctionnalité \"Ajouter des langues\", vous pouvez continuer par :\r\n <ul><li>Ajouter une langue</li><li>Ajouter une langue personnalisée</li><li><a href=\"[site:url]admin/config/regional/language\">Afficher les langues configurées</a></li></ul></p>"

@@ -1,0 +1,20 @@
+uuid: ab3134c8-c6d9-4577-a84e-dd89efb2cf78
+langcode: en
+status: true
+dependencies:
+  theme:
+    - gcweb
+_core:
+  default_config_hash: 7rR9chwXvdM2H8OYMAYx9Zj3GGlPMrZp_M3ZA4thYTk
+id: gcweb_page_title
+theme: gcweb
+region: header
+weight: -6
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  provider: core
+  label_display: '0'
+visibility: {  }

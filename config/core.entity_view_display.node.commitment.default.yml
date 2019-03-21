@@ -1,0 +1,49 @@
+uuid: d9b3c094-b5dd-4429-9000-7c8e02c6728a
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.commitment.body
+    - field.field.node.commitment.comment
+    - field.field.node.commitment.field_commitment_ambition
+    - node.type.commitment
+  module:
+    - comment
+    - text
+    - user
+id: node.commitment.default
+targetEntityType: node
+bundle: commitment
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment:
+    weight: 103
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_commitment_ambition:
+    weight: 102
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  langcode: true

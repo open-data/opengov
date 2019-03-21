@@ -1,0 +1,11 @@
+--- src/Form/ContentExportMultiple.php
++++ src/Form/ContentExportMultiple.php
+@@ -183,7 +183,7 @@
+   /**
+    * {@inheritdoc}
+    */
+-  protected function getLogger() {
++  protected function getLogger($channel) {
+     return $this->logger('content_sync');
+   }
+ 

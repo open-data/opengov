@@ -1,0 +1,118 @@
+fontawesome.svg:
+  remote: &fontawesome_remote https://use.fontawesome.com/releases/v5.7.2/fontawesome-free-5.7.2-web.zip
+  license: &fontawesome_svg_license
+    name: CC BY 4.0
+    url: https://fontawesome.com/license
+    gpl-compatible: true
+  version: &fontawesome_version "5.7.2"
+  js:
+    /libraries/fontawesome/js/all.js: { minified: true }
+
+fontawesome.svg.shim:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  js:
+    /libraries/fontawesome/js/v4-shims.js: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.svg
+
+fontawesome.svg.base:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  js:
+    /libraries/fontawesome/js/fontawesome.js: { minified: true }
+
+fontawesome.svg.solid:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  js:
+    /libraries/fontawesome/js/solid.js: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.svg.base
+
+fontawesome.svg.regular:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  js:
+    /libraries/fontawesome/js/regular.js: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.svg.base
+
+fontawesome.svg.light:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  js:
+    /libraries/fontawesome/js/light.js: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.svg.base
+
+fontawesome.svg.brands:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  js:
+    /libraries/fontawesome/js/brands.js: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.svg.base
+
+fontawesome.webfonts:
+  remote: *fontawesome_remote
+  license: &fontawesome_webfonts_license
+    name: SIL OFL 1.1
+    url: https://fontawesome.com/license
+    gpl-compatible: true
+  version: *fontawesome_version
+  css:
+    theme:
+      /libraries/fontawesome/css/all.css: { minified: true }
+
+fontawesome.webfonts.base:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/fontawesome.css: { minified: true }
+
+fontawesome.webfonts.solid:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/solid.css: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.webfonts.base
+
+fontawesome.webfonts.regular:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/regular.css: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.webfonts.base
+
+fontawesome.webfonts.light:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/light.css: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.webfonts.base
+
+fontawesome.webfonts.brands:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/brands.css: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.webfonts.base
+
+fontawesome.webfonts.shim:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/v4-shims.css: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.webfonts

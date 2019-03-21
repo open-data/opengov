@@ -1,0 +1,36 @@
+schemas:
+  bootstrap: 8000
+  gcweb: 8000
+favicon:
+  mimetype: image/vnd.microsoft.icon
+  path: 'public://favicon.ico'
+  url: 'http://localhost:8000/sites/default/files/favicon.ico'
+  use_default: 0
+features:
+  comment_user_picture: 0
+  comment_user_verification: 0
+  favicon: 1
+  node_user_picture: 0
+logo:
+  path: libraries/theme-gcweb/assets/sig-blk-en.svg
+  url: ''
+  use_default: 0
+region_wells:
+  branding: ''
+  breadcrumb: ''
+  language_toggle: ''
+  banner: ''
+  search: ''
+  navigation: ''
+  navigation_collapsible: ''
+  header: ''
+  highlighted: ''
+  help: ''
+  content: ''
+  content_footer: ''
+  sidebar_first: ''
+  sidebar_second: ''
+  footer: ''
+breadcrumb_home: 1
+breadcrumb_title: 0
+table: ''

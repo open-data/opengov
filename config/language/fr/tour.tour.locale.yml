@@ -1,0 +1,26 @@
+label: Traduction
+tips:
+  locale-overview:
+    label: 'Traduction de l''interface utilisateur'
+    body: 'Cette page vous permet de traduire l''interface utilisateur ou de modifier des traductions existantes. Si vous avez installé votre site initialement en anglais, vous devez d''abord ajouter une autre langue dans la <a href="[site:url]admin/config/regional/language"> page des Langues </a>, afin d''utiliser cette page.'
+  locale-language:
+    label: 'Langue de traduction'
+    body: 'Choisir la langue que vous souhaitez traduire.'
+  locale-search:
+    label: Rechercher
+    body: 'Saisir le mot ou la phrase précise que vous souhaitez traduire, vous pouvez aussi écrire seulement une partie d''un mot.'
+  locale-filter:
+    label: 'Filtrer la recherche'
+    body: 'Vous pouvez chercher les chaînes non traduites si vous voulez traduire quelque chose qui n''a pas encore été traduit. Si vous voulez modifier une traduction existante, vous pouvez ne rechercher que les chaînes traduites.'
+  locale-submit:
+    label: 'Appliquer vos critères de recherche'
+    body: 'Pour appliquer vos critères de recherche, cliquer sur le bouton <em>Filtrer</em>.'
+  locale-translate:
+    label: Traduire
+    body: 'Vous pouvez écrire votre propre traduction dans les champs texte de la colonne de droite. Essayez de savoir dans quel contexte le texte sera utilisé pour le traduire de façon appropriée.'
+  locale-validate:
+    label: 'Valider la traduction'
+    body: 'Lorsque vous avez terminé vos traductions, cliquer sur le bouton <em>Enregistrer vos traductions</em>. Vous devez enregistrer vos traductions à chaque fois que vous souhaitez changer de page ou faire une nouvelle recherche.'
+  locale-continue:
+    label: 'Continuant sur'
+    body: 'Les traductions que vous avez faites ici seront utilisées sur l''interface utilisateur de votre site. Si vous souhaitez les utiliser sur un autre site ou les modifier sur un éditeur de traduction externe, vous pouvez les <a href="[site:url]admin/config/regional/translate/export"> exporter </a> vers un fichier .po et les <a href="[site:url]admin/config/regional/translate/import"> importer </a> plus tard.'

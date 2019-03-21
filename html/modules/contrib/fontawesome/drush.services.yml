@@ -1,0 +1,5 @@
+services:
+  fontawesome.commands:
+    class: \Drupal\fontawesome\Commands\FontawesomeCommands
+    tags:
+      - { name: drush.command }

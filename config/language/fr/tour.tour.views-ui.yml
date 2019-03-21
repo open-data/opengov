@@ -1,0 +1,32 @@
+label: 'Voir la page de modification'
+tips:
+  views-main:
+    label: 'Gérer les paramètres d''affichage'
+    body: 'Voir ou modifier la configuration.'
+  views-ui-displays:
+    label: 'S''affiche dans cette vue'
+    body: 'Un affichage est une façon de rendre les résultats, par exemple comme une page ou un bloc. Une vue peut contenir plusieurs affichages, qui sont listés ici. L''affichage actif est mis en évidence.'
+  views-ui-view-admin:
+    label: 'Voir l''administration'
+    body: 'Réaliser des tâches d''administration, comme ajouter une description et créer un clone. Cliquer sur le bouton déroulant pour voir les options disponibles.'
+  views-ui-format:
+    label: 'Format de sortie'
+    body: 'Choisir comment afficher les résultats. Par ex., choisir <em>Contenu</em> pour afficher chaque élément dans son intégralité, utilisant vos paramètres d''affichage. Ou choississez <em>Champs</em>, qui permet de n''afficher que les champs sélectionnés pour chaque résultat. Des formats supplémentaires peuvent être ajoutés en installant des modules qui <em>étendent</em> les fonctionnalités de base de Drupal.'
+  views-ui-fields:
+    label: Champs
+    body: 'Si cette vue utilise des champs, alors ils sont listés ici. Vous pouvez cliquer sur un champ pour le configurer.'
+  views-ui-filter:
+    label: 'Filtrer votre vue'
+    body: 'Ajouter des filtres pour limiter le nombre de résultats affichés. Par ex., pour ne montrer que le contenu <em>publié</em>, il faudrait ajouter le filtrer <em>Publié</em> et selectionner <em>Oui</em>.'
+  views-ui-filter-operations:
+    label: 'Filtrer les actions'
+    body: 'Ajouter, réarranger ou supprimer les filtres.'
+  views-ui-sorts:
+    label: 'Critère de tri'
+    body: 'Contrôler l''ordre dans lequel les résultats sont affichés. Cliquer sur une une règle de tri active pour la configurer.'
+  views-ui-sorts-operations:
+    label: 'Trier les actions'
+    body: 'Ajouter, réarranger ou supprimer les règles de tri.'
+  views-ui-preview:
+    label: Aperçu
+    body: 'Afficher un aperçu du résultat de la vue.'

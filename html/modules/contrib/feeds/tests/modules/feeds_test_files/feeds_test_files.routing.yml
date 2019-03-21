@@ -1,0 +1,6 @@
+feeds_test_files.files_csv:
+  path: '/testing/feeds/files.csv'
+  defaults:
+    _controller: 'Drupal\feeds_test_files\Controller\CsvController::files'
+  requirements:
+    _permission: 'access content'

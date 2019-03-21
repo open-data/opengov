@@ -1,0 +1,16 @@
+uuid: d18d1952-0548-403b-9f19-a3c23004f5d7
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.commitment
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.commitment
+target_entity_type_id: node
+target_bundle: commitment
+default_langcode: site_default
+language_alterable: false

@@ -1,0 +1,24 @@
+uuid: 05eba3fd-dfda-4b74-b773-c95ae30b8c16
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.brand
+  module:
+    - system
+  theme:
+    - gcweb
+id: brand
+theme: gcweb
+region: branding
+weight: 0
+provider: null
+plugin: 'system_menu_block:brand'
+settings:
+  id: 'system_menu_block:brand'
+  label: Brand
+  provider: system
+  label_display: '0'
+  level: 1
+  depth: 0
+visibility: {  }

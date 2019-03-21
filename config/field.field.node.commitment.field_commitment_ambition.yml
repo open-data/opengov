@@ -1,0 +1,21 @@
+uuid: 3fc17f63-7518-41d0-b14b-575985f58980
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_commitment_ambition
+    - node.type.commitment
+  module:
+    - text
+id: node.commitment.field_commitment_ambition
+field_name: field_commitment_ambition
+entity_type: node
+bundle: commitment
+label: Ambition
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

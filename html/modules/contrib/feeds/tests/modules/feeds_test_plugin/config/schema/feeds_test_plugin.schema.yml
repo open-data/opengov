@@ -1,0 +1,7 @@
+# Parser configurations.
+feeds.parser.parser_with_mapping_form:
+  type: mapping
+  label: 'Parser with mapping form parser settings'
+  mapping:
+    dummy:
+      type: string

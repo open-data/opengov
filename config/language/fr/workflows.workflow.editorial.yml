@@ -1,0 +1,20 @@
+label: Éditorial
+type_settings:
+  states:
+    archived:
+      label: Archivé(e)
+    draft:
+      label: Brouillon
+    published:
+      label: Publié
+  transitions:
+    archive:
+      label: Archiver
+    archived_draft:
+      label: 'Restaurer le brouillon'
+    archived_published:
+      label: Restaurer
+    create_new_draft:
+      label: 'Créer un nouveau brouillon'
+    publish:
+      label: Publier

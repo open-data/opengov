@@ -1,0 +1,121 @@
+uuid: 0328ee4f-7595-4709-a348-51b0b88211fd
+langcode: en
+status: true
+dependencies:
+  module:
+    - user
+label: 'Users csv'
+id: users_csv
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'public://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:user'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  skip_hash_check: false
+  owner_id: 0
+  values: {  }
+  authorize: false
+  owner_feed_author: false
+custom_sources:
+  created:
+    label: created
+    value: created
+    machine_name: created
+  '':
+    label: ''
+    value: ''
+    machine_name: ''
+  default_langcode:
+    label: default_langcode
+    value: default_langcode
+    machine_name: default_langcode
+  access:
+    label: access
+    value: access
+    machine_name: access
+  login:
+    label: login
+    value: login
+    machine_name: login
+  name:
+    label: name
+    value: name
+    machine_name: name
+  timezone:
+    label: timezone
+    value: timezone
+    machine_name: timezone
+  mail:
+    label: mail
+    value: mail
+    machine_name: mail
+  init:
+    label: init
+    value: init
+    machine_name: init
+  status:
+    label: status
+    value: status
+    machine_name: status
+mappings:
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      timezone: UTC
+  -
+    target: default_langcode
+    map:
+      value: default_langcode
+  -
+    target: access
+    map:
+      value: access
+    settings:
+      timezone: UTC
+  -
+    target: login
+    map:
+      value: login
+    settings:
+      timezone: UTC
+  -
+    target: name
+    map:
+      value: name
+    unique: {  }
+  -
+    target: timezone
+    map:
+      value: timezone
+    unique: {  }
+  -
+    target: mail
+    map:
+      value: mail
+    unique: {  }
+    settings:
+      defuse: false
+  -
+    target: init
+    map:
+      value: init
+    unique: {  }
+    settings:
+      defuse: false
+  -
+    target: status
+    map:
+      value: status

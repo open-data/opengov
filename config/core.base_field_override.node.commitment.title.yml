@@ -1,0 +1,18 @@
+uuid: 3735b197-86eb-432d-bbe7-25f59915b89a
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.commitment
+id: node.commitment.title
+field_name: title
+entity_type: node
+bundle: commitment
+label: Commitment
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
