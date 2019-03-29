@@ -28,7 +28,7 @@ class Breadcrumb extends PreprocessBase implements PreprocessInterface {
       return;
     }
 
-   // Remove first occurrence of the "Home" <front> link, provided by core.
+    // Remove first occurrence of the "Home" <front> link, provided by core.
     if (!$this->theme->getSetting('breadcrumb_home')) {
       $front = Url::fromRoute('<front>')->toString();
       foreach ($breadcrumb as $key => $link) {

@@ -186,6 +186,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     // in the content rather than the (default) interface language:
     $this->contentLanguage = $this->languageManager
       ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+
     // Check each selected menu, in turn, until a menu or taxonomy match found:
     // then cache its state for building & caching in build() and exit.
     $menus = $this->config->get('menu_breadcrumb_menus');

@@ -1,0 +1,3 @@
+'merge_permissions admin':
+  title: 'Allow merge node translations'
+  restrict access: true

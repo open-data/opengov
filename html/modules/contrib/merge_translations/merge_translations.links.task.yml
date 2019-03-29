@@ -1,0 +1,5 @@
+merge_translations.node:
+  title: 'Merge translations'
+  route_name: merge_translations.node
+  base_route: entity.node.canonical
+  weight: 100

@@ -346,7 +346,7 @@ class Reader implements ReaderImportInterface
         }
 
         $type = static::detectType($dom);
-        
+
         static::registerCoreExtensions();
 
         if (0 === strpos($type, 'rss')) {
@@ -356,7 +356,7 @@ class Reader implements ReaderImportInterface
         } elseif (0 === strpos($type, 'atom')) {
             $reader = new Feed\Atom($dom, $type);
         } else {
-            throw new Exception\RuntimeException('Type = ' . $type . ' The URI used does not point to a '
+            throw new Exception\RuntimeException('The URI used does not point to a '
             . 'valid Atom, RSS or RDF feed that Zend\Feed\Reader can parse.');
         }
         return $reader;

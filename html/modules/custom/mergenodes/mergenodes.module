@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains mergenodes.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function mergenodes_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the mergenodes module.
+    case 'help.page.mergenodes':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('This module will merge translations of nodes') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mergenodes_theme() {
+  return [
+    'mergenodes' => [
+      'render element' => 'children',
+    ],
+  ];
+}
