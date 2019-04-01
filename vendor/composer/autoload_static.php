@@ -30,8 +30,6 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         '952683d815ff0a7bf322b93c0be7e4e4' => __DIR__ . '/..' . '/chi-teck/drupal-code-generator/src/bootstrap.php',
         '5a12a5271c58108e0aa33355e6ac54ea' => __DIR__ . '/..' . '/drupal/console-core/src/functions.php',
-        'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
-        'e9b046393eb3376a21bcc1a30bd2fe64' => __DIR__ . '/..' . '/querypath/querypath/src/qp_functions.php',
         'd511210698f02d87ca48e3972f64323e' => __DIR__ . '/../..' . '/load.environment.php',
     );
 
@@ -129,7 +127,6 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         ),
         'J' => 
         array (
-            'JmesPath\\' => 9,
             'JakubOnderka\\PhpConsoleHighlighter\\' => 35,
             'JakubOnderka\\PhpConsoleColor\\' => 29,
         ),
@@ -402,10 +399,6 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         array (
             0 => __DIR__ . '/..' . '/league/container/src',
         ),
-        'JmesPath\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
-        ),
         'JakubOnderka\\PhpConsoleHighlighter\\' => 
         array (
             0 => __DIR__ . '/..' . '/jakub-onderka/php-console-highlighter/src',
@@ -599,22 +592,11 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
                 0 => __DIR__ . '/..' . '/stack/builder/src',
             ),
         ),
-        'Q' => 
-        array (
-            'QueryPath' => 
-            array (
-                0 => __DIR__ . '/..' . '/querypath/querypath/src',
-            ),
-        ),
         'P' => 
         array (
             'Prophecy\\' => 
             array (
                 0 => __DIR__ . '/..' . '/phpspec/prophecy/src',
-            ),
-            'Peekmo\\JsonPath' => 
-            array (
-                0 => __DIR__ . '/..' . '/peekmo/jsonpath/src',
             ),
         ),
         'E' => 

@@ -6,8 +6,10 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.article.body
     - field.field.node.article.comment
+    - field.field.node.article.feeds_item
     - field.field.node.article.field_image
     - field.field.node.article.field_metatags
+    - field.field.node.article.field_previousnodeid
     - field.field.node.article.field_tags
     - image.style.large
     - node.type.article
@@ -75,4 +77,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  feeds_item: true
+  field_previousnodeid: true
   langcode: true

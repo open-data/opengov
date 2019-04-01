@@ -5,6 +5,10 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.page.body
+    - field.field.node.page.comment
+    - field.field.node.page.feeds_item
+    - field.field.node.page.field_metatags
+    - field.field.node.page.field_previousnodeid
     - node.type.page
   module:
     - text
@@ -33,4 +37,8 @@ content:
     weight: 101
     region: content
 hidden:
+  comment: true
+  feeds_item: true
+  field_metatags: true
+  field_previousnodeid: true
   langcode: true

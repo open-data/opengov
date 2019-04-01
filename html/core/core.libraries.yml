@@ -95,7 +95,6 @@ drupal.ajax:
     - core/drupalSettings
     - core/drupal.progress
     - core/jquery.once
-    - core/loadjs
 
 drupal.announce:
   version: VERSION
@@ -850,16 +849,6 @@ jquery.ui.widget:
     assets/vendor/jquery.ui/ui/widget-min.js: { weight: -10, minified: true }
   dependencies:
     - core/jquery.ui
-
-loadjs:
-  remote: https://github.com/muicss/loadjs
-  version: 3.5.1
-  license:
-    name: MIT
-    url: https://github.com/muicss/loadjs/blob/master/LICENSE.txt
-    gpl-compatible: true
-  js:
-    assets/vendor/loadjs/loadjs.min.js: {}
 
 matchmedia:
   remote: https://github.com/paulirish/matchMedia.js

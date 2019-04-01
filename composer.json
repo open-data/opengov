@@ -58,13 +58,10 @@
         "drupal/bootstrap": "^3.17",
         "drupal/bootstrap_layouts": "5.1.0",
         "drupal/console": "^1.0.2",
-        "drupal/content_sync": "^2.0",
         "drupal/core": "^8.6.0",
         "drupal/feeds": "^3.0@alpha",
-        "drupal/feeds_ex": "^1.0@alpha",
         "drupal/fontawesome": "^2.9",
         "drupal/menu_breadcrumb": "^1.8",
-        "drupal/merge_translations": "^1.0@alpha",
         "drupal/metatag": "^1.7",
         "drupal/pathauto": "^1.3",
         "drush/drush": "^9.0.0",
@@ -117,11 +114,9 @@
             "drupal/bootstrap": {
                 "Error: Unsupported operand types during providers JSON discovery": "https://www.drupal.org/files/issues/2019-02-04/3027569-23.patch"
             },
-            "drupal/content_sync": {
-                "Error when enabling this module": "https://www.drupal.org/files/issues/2018-11-14/content_sync-compatible-2942575-11-D8.patch"
-            },
-            "drupal/core": {
-                "Drupal.ajax does not guarantee that add new JS file to page commands have finished before calling said JS": "https://www.drupal.org/files/issues/2018-12-20/1988968-133.patch"
+            "drupal/feeds": {
+                "Language support in Feed import - allows make a mapping of language" : "https://www.drupal.org/files/issues/2018-11-01/feeds-language-target-2829283-31.patch",
+                "Language support in Feed import - content translation": "https://www.drupal.org/files/issues/2019-01-26/feeds-content-translation-2829283-42.patch"
             }
         },
        "installer-types": [

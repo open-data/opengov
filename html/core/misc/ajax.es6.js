@@ -11,7 +11,7 @@
  * included to provide Ajax capabilities.
  */
 
-(function($, window, Drupal, drupalSettings, loadjs) {
+(function($, window, Drupal, drupalSettings) {
   /**
    * Attaches the Ajax behavior to each Ajax form element.
    *
@@ -393,11 +393,6 @@
     $.extend(this, defaults, elementSettings);
 
     /**
-     * @type {null|Promise}
-     */
-    this.ajaxDeferred = null;
-
-    /**
      * @type {Drupal.AjaxCommands}
      */
     this.commands = new Drupal.AjaxCommands();
@@ -554,16 +549,7 @@
         return ajax.success(response, status);
       },
       complete(xmlhttprequest, status) {
-        if ((ajax.ajaxDeferred !== null && ajax.ajaxDeferred.then !== null) &&
-          (typeof ajax.ajaxDeferred === 'object' && typeof ajax.ajaxDeferred.then === 'function')) {
-          ajax.ajaxDeferred.then(() => {
-            ajax.ajaxing = false;
-          });
-        }
-        else {
-          ajax.ajaxing = false;
-        }
-
+        ajax.ajaxing = false;
         if (status === 'error' || status === 'parsererror') {
           return ajax.error(xmlhttprequest, ajax.url);
         }
@@ -974,8 +960,6 @@
    *   XMLHttpRequest status.
    */
   Drupal.Ajax.prototype.success = function(response, status) {
-    this.ajaxDeferred = $.Deferred();
-
     // Remove the progress element.
     if (this.progress.element) {
       $(this.progress.element).remove();
@@ -997,30 +981,17 @@
     // Track if any command is altering the focus so we can avoid changing the
     // focus set by the Ajax command.
     let focusChanged = false;
-    const responseKeys = Object.keys(response);
-    responseKeys.reduce((deferredCommand, key, currentIndex) => deferredCommand.then(() => {
-      const command = response[key].command;
-      if (command && this.commands[command]) {
-        if (command === 'invoke' && response[key].method === 'focus') {
+    Object.keys(response || {}).forEach(i => {
+      if (response[i].command && this.commands[response[i].command]) {
+        this.commands[response[i].command](this, response[i], status);
+        if (
+          response[i].command === 'invoke' &&
+          response[i].method === 'focus'
+        ) {
           focusChanged = true;
         }
-
-        const result = this.commands[command](this, response[key], status);
-        if (typeof result === 'object' && typeof result.then === 'function') {
-          // Handle a promise.
-          result.done(() => {
-            if (currentIndex + 1 === responseKeys.length) {
-              this.ajaxDeferred.resolve();
-            }
-          });
-          return result;
-        }
       }
-
-      if (currentIndex + 1 === responseKeys.length) {
-        this.ajaxDeferred.resolve();
-      }
-    }), $.Deferred().resolve());
+    });
 
     // If the focus hasn't be changed by the ajax commands, try to refocus the
     // triggering element or one of its parents if that element does not exist
@@ -1564,44 +1535,5 @@
         } while (match);
       }
     },
-    add_js(ajax, response) {
-      const deferred = $.Deferred();
-      const scriptsSrc = response.data.map((script) => {
-        // loadjs requires a unique ID, AJAX instances' `instanceIndex` are
-        // guaranteed to be unique.
-        // @see Drupal.behaviors.AJAX.detach
-        const uniqueBundleID = script.src + ajax.instanceIndex;
-        loadjs(script.src, uniqueBundleID, {
-          async: !!script.async,
-          before(path, scriptEl) {
-            let selector = 'body';
-            if (response.selector) {
-              selector = response.selector;
-            }
-            if (script.defer) {
-              scriptEl.defer = true;
-            }
-            // To avoid synchronous XMLHttpRequest on the main thread and break
-            // load dependency, it should not use jQuery.
-            const parentEl = document.querySelector(selector);
-            if (response.method === 'insertBefore') {
-              parentEl.insertBefore(scriptEl, parentEl.firstChild);
-            }
-            else {
-              parentEl[response.method](scriptEl);
-            }
-            // Return `false` to bypass loadjs' default DOM insertion mechanism.
-            return false;
-          },
-        });
-        return uniqueBundleID;
-      });
-      loadjs.ready(scriptsSrc, {
-        success() {
-          deferred.resolve();
-        },
-      });
-      return deferred.promise();
-    },
   };
-})(jQuery, window, Drupal, drupalSettings, loadjs);
+})(jQuery, window, Drupal, drupalSettings);

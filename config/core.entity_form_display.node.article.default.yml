@@ -5,8 +5,10 @@ dependencies:
   config:
     - field.field.node.article.body
     - field.field.node.article.comment
+    - field.field.node.article.feeds_item
     - field.field.node.article.field_image
     - field.field.node.article.field_metatags
+    - field.field.node.article.field_previousnodeid
     - field.field.node.article.field_tags
     - image.style.thumbnail
     - node.type.article
@@ -28,9 +30,9 @@ content:
     weight: 9
     region: content
     settings:
-      rows: 9
-      summary_rows: 3
+      rows: 15
       placeholder: ''
+      summary_rows: 3
     third_party_settings: {  }
   created:
     type: datetime_timestamp
@@ -109,5 +111,7 @@ content:
     third_party_settings: {  }
 hidden:
   comment: true
+  feeds_item: true
+  field_previousnodeid: true
   field_tags: true
   status: true

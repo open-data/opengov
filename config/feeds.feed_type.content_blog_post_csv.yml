@@ -1,0 +1,165 @@
+uuid: 0be10e83-c1c9-4b89-9da3-6b4c65950416
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.base_field_override.node.article.created
+    - core.base_field_override.node.article.promote
+    - field.field.node.article.body
+    - field.field.node.article.field_image
+    - field.field.node.article.field_previousnodeid
+    - node.type.article
+  module:
+    - node
+label: 'Content blog post CSV'
+id: content_blog_post_csv
+description: 'Feed for blog posts'
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'public://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: false
+  owner_id: 0
+  authorize: true
+  skip_hash_check: false
+  values:
+    type: article
+custom_sources:
+  title:
+    label: title
+    value: title
+    machine_name: title
+  moderation_state:
+    label: moderation_state
+    value: moderation_state
+    machine_name: moderation_state
+  created:
+    label: created
+    value: created
+    machine_name: created
+  body:
+    label: body
+    value: body
+    machine_name: body
+  promote:
+    label: promote
+    value: promote
+    machine_name: promote
+  sticky:
+    label: sticky
+    value: sticky
+    machine_name: sticky
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+  nid:
+    label: nid
+    value: nid
+    machine_name: nid
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  field_image:
+    label: field_image
+    value: field_image
+    machine_name: field_image
+  filename:
+    label: filename
+    value: filename
+    machine_name: filename
+  alt:
+    label: alt
+    value: alt
+    machine_name: alt
+  fid:
+    label: fid
+    value: fid
+    machine_name: fid
+mappings:
+  -
+    target: title
+    map:
+      value: title
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: moderation_state
+    map:
+      value: moderation_state
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      language: null
+      timezone: UTC
+  -
+    target: body
+    map:
+      value: body
+      summary: ''
+    settings:
+      language: ''
+      format: rich_text
+  -
+    target: promote
+    map:
+      value: promote
+    settings:
+      language: null
+  -
+    target: sticky
+    map:
+      value: sticky
+    settings:
+      language: null
+  -
+    target: uid
+    map:
+      target_id: uid
+    settings:
+      language: ''
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0
+  -
+    target: field_previousnodeid
+    map:
+      value: nid
+    settings:
+      language: null
+  -
+    target: langcode
+    map:
+      value: langcode
+    settings:
+      language: null
+  -
+    target: field_image
+    map:
+      target_id: fid
+      alt: alt
+      title: ''
+    settings:
+      language: ''
+      reference_by: fid
+      feeds_item: guid
+      existing: '2'
+      autocreate: 0

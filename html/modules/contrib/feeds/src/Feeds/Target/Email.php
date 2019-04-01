@@ -44,13 +44,14 @@ class Email extends FieldTargetBase implements ConfigurableTargetInterface {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return ['defuse' => FALSE];
+    return parent::defaultConfiguration() + ['defuse' => FALSE];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
     $form['defuse'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Defuse e-mail addresses'),
@@ -65,9 +66,15 @@ class Email extends FieldTargetBase implements ConfigurableTargetInterface {
    * {@inheritdoc}
    */
   public function getSummary() {
-    return $this->configuration['defuse'] ?
+    $summary = [
+      parent::getSummary(),
+    ];
+
+    $summary[] = $this->configuration['defuse'] ?
       $this->t('Addresses <strong>will</strong> be defused.') :
       $this->t('Addresses will not be defused.');
+
+    return $this->showSummary($summary);
   }
 
 }

@@ -22,10 +22,79 @@ processor_configuration:
   update_existing: 1
   update_non_existent: _keep
   expire: -1
-  owner_feed_author: false
+  owner_feed_author: true
   owner_id: 0
-  authorize: true
+  authorize: false
   skip_hash_check: false
   values: {  }
-custom_sources: {  }
-mappings: {  }
+custom_sources:
+  created:
+    label: created
+    value: created
+    machine_name: created
+  filemime:
+    label: filemime
+    value: filemime
+    machine_name: filemime
+  filename:
+    label: filename
+    value: filename
+    machine_name: filename
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  filesize:
+    label: filesize
+    value: filesize
+    machine_name: filesize
+  status:
+    label: status
+    value: status
+    machine_name: status
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+mappings:
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      timezone: UTC
+  -
+    target: filemime
+    map:
+      value: filemime
+    unique: {  }
+    settings: {  }
+  -
+    target: filename
+    map:
+      value: filename
+    unique: {  }
+    settings: {  }
+  -
+    target: langcode
+    map:
+      value: langcode
+    settings: {  }
+  -
+    target: filesize
+    map:
+      value: filesize
+    settings: {  }
+  -
+    target: status
+    map:
+      value: status
+    settings: {  }
+  -
+    target: uid
+    map:
+      target_id: uid
+    settings:
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0

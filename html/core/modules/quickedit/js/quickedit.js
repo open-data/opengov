@@ -86,10 +86,10 @@
       submit: { 'editors[]': missingEditors }
     });
 
-    var realAddJsCommand = Drupal.AjaxCommands.prototype.add_js;
-    loadEditorsAjax.commands.add_js = function (ajax, response, status) {
+    var realInsert = Drupal.AjaxCommands.prototype.insert;
+    loadEditorsAjax.commands.insert = function (ajax, response, status) {
       _.defer(callback);
-      realAddJsCommand(ajax, response, status);
+      realInsert(ajax, response, status);
     };
 
     loadEditorsAjax.execute();

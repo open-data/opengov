@@ -36,6 +36,9 @@ display:
         type:
           expose:
             label: 'Type de contenu'
+        langcode:
+          expose:
+            label: Langue
       title: Contenu
       empty:
         area_text_custom:

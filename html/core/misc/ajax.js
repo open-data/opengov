@@ -4,11 +4,9 @@
 * https://www.drupal.org/node/2815083
 * @preserve
 **/
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-(function ($, window, Drupal, drupalSettings, loadjs) {
+(function ($, window, Drupal, drupalSettings) {
   Drupal.behaviors.AJAX = {
     attach: function attach(context, settings) {
       function loadAjaxBehavior(base) {
@@ -170,8 +168,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
     $.extend(this, defaults, elementSettings);
 
-    this.ajaxDeferred = null;
-
     this.commands = new Drupal.AjaxCommands();
 
     this.instanceIndex = false;
@@ -238,14 +234,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         return ajax.success(response, status);
       },
       complete: function complete(xmlhttprequest, status) {
-        if (ajax.ajaxDeferred !== null && ajax.ajaxDeferred.then !== null && _typeof(ajax.ajaxDeferred) === 'object' && typeof ajax.ajaxDeferred.then === 'function') {
-          ajax.ajaxDeferred.then(function () {
-            ajax.ajaxing = false;
-          });
-        } else {
-          ajax.ajaxing = false;
-        }
-
+        ajax.ajaxing = false;
         if (status === 'error' || status === 'parsererror') {
           return ajax.error(xmlhttprequest, ajax.url);
         }
@@ -430,8 +419,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   Drupal.Ajax.prototype.success = function (response, status) {
     var _this = this;
 
-    this.ajaxDeferred = $.Deferred();
-
     if (this.progress.element) {
       $(this.progress.element).remove();
     }
@@ -443,31 +430,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     var elementParents = $(this.element).parents('[data-drupal-selector]').addBack().toArray();
 
     var focusChanged = false;
-    var responseKeys = Object.keys(response);
-    responseKeys.reduce(function (deferredCommand, key, currentIndex) {
-      return deferredCommand.then(function () {
-        var command = response[key].command;
-        if (command && _this.commands[command]) {
-          if (command === 'invoke' && response[key].method === 'focus') {
-            focusChanged = true;
-          }
-
-          var result = _this.commands[command](_this, response[key], status);
-          if ((typeof result === 'undefined' ? 'undefined' : _typeof(result)) === 'object' && typeof result.then === 'function') {
-            result.done(function () {
-              if (currentIndex + 1 === responseKeys.length) {
-                _this.ajaxDeferred.resolve();
-              }
-            });
-            return result;
-          }
+    Object.keys(response || {}).forEach(function (i) {
+      if (response[i].command && _this.commands[response[i].command]) {
+        _this.commands[response[i].command](_this, response[i], status);
+        if (response[i].command === 'invoke' && response[i].method === 'focus') {
+          focusChanged = true;
         }
-
-        if (currentIndex + 1 === responseKeys.length) {
-          _this.ajaxDeferred.resolve();
-        }
-      });
-    }, $.Deferred().resolve());
+      }
+    });
 
     if (!focusChanged && this.element && !$(this.element).data('disable-refocus')) {
       var target = false;
@@ -658,40 +628,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           document.styleSheets[0].addImport(match[1]);
         } while (match);
       }
-    },
-    add_js: function add_js(ajax, response) {
-      var deferred = $.Deferred();
-      var scriptsSrc = response.data.map(function (script) {
-        var uniqueBundleID = script.src + ajax.instanceIndex;
-        loadjs(script.src, uniqueBundleID, {
-          async: !!script.async,
-          before: function before(path, scriptEl) {
-            var selector = 'body';
-            if (response.selector) {
-              selector = response.selector;
-            }
-            if (script.defer) {
-              scriptEl.defer = true;
-            }
-
-            var parentEl = document.querySelector(selector);
-            if (response.method === 'insertBefore') {
-              parentEl.insertBefore(scriptEl, parentEl.firstChild);
-            } else {
-              parentEl[response.method](scriptEl);
-            }
-
-            return false;
-          }
-        });
-        return uniqueBundleID;
-      });
-      loadjs.ready(scriptsSrc, {
-        success: function success() {
-          deferred.resolve();
-        }
-      });
-      return deferred.promise();
     }
   };
-})(jQuery, window, Drupal, drupalSettings, loadjs);
+})(jQuery, window, Drupal, drupalSettings);

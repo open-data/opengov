@@ -29,7 +29,5 @@ return array(
     '801c31d8ed748cfa537fa45402288c95' => $vendorDir . '/psy/psysh/src/functions.php',
     '952683d815ff0a7bf322b93c0be7e4e4' => $vendorDir . '/chi-teck/drupal-code-generator/src/bootstrap.php',
     '5a12a5271c58108e0aa33355e6ac54ea' => $vendorDir . '/drupal/console-core/src/functions.php',
-    'b067bc7112e384b61c701452d53a14a8' => $vendorDir . '/mtdowling/jmespath.php/src/JmesPath.php',
-    'e9b046393eb3376a21bcc1a30bd2fe64' => $vendorDir . '/querypath/querypath/src/qp_functions.php',
     'd511210698f02d87ca48e3972f64323e' => $baseDir . '/load.environment.php',
 );

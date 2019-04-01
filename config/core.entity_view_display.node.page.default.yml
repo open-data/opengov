@@ -6,7 +6,9 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.page.body
     - field.field.node.page.comment
+    - field.field.node.page.feeds_item
     - field.field.node.page.field_metatags
+    - field.field.node.page.field_previousnodeid
     - node.type.page
   module:
     - comment
@@ -23,12 +25,12 @@ content:
   body:
     label: hidden
     type: text_default
-    weight: 100
+    weight: 1
     region: content
     settings: {  }
     third_party_settings: {  }
   comment:
-    weight: 102
+    weight: 3
     label: above
     settings:
       view_mode: default
@@ -37,22 +39,24 @@ content:
     type: comment_default
     region: content
   content_moderation_control:
-    weight: -20
+    weight: 0
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
   field_metatags:
-    weight: 103
+    weight: 4
     label: above
     settings: {  }
     third_party_settings: {  }
     type: metatag_empty_formatter
     region: content
   links:
-    weight: 101
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
+  feeds_item: true
+  field_previousnodeid: true
   langcode: true
   layout_builder__layout: true

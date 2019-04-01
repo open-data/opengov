@@ -1,9 +1,0 @@
-merge_translations.node:
-  path: '/node/{node}/merge_translations'
-  defaults:
-    _form: '\Drupal\merge_translations\Form\mergeTranslationsForm'
-    _title: 'Merge translations'
-  options:
-    _admin_route: TRUE
-  requirements:
-      _permission: 'merge_permissions admin'

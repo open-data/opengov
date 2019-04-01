@@ -71,7 +71,7 @@ settings:
     stylescombo:
       styles: 'h2 .h4|Look like Heading 4'
 image_upload:
-  status: false
+  status: true
   scheme: public
   directory: inline-images
   max_size: ''

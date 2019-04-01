@@ -1,4 +1,5 @@
 module:
+  action: 0
   admin_toolbar: 0
   admin_toolbar_links_access_filter: 0
   admin_toolbar_tools: 0
@@ -15,7 +16,6 @@ module:
   config_translation: 0
   contact: 0
   content_moderation: 0
-  content_sync: 0
   contextual: 0
   ctools: 0
   datetime: 0
@@ -23,7 +23,6 @@ module:
   dynamic_page_cache: 0
   editor: 0
   feeds: 0
-  feeds_ex: 0
   field: 0
   field_ui: 0
   file: 0
@@ -40,6 +39,7 @@ module:
   media_library: 0
   menu_breadcrumb: 0
   menu_ui: 0
+  mergenodes: 0
   metatag: 0
   metatag_dc: 0
   metatag_twitter_cards: 0

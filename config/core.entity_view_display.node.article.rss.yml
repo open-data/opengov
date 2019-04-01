@@ -6,8 +6,10 @@ dependencies:
     - core.entity_view_mode.node.rss
     - field.field.node.article.body
     - field.field.node.article.comment
+    - field.field.node.article.feeds_item
     - field.field.node.article.field_image
     - field.field.node.article.field_metatags
+    - field.field.node.article.field_previousnodeid
     - field.field.node.article.field_tags
     - node.type.article
   module:
@@ -23,8 +25,10 @@ hidden:
   body: true
   comment: true
   content_moderation_control: true
+  feeds_item: true
   field_image: true
   field_metatags: true
+  field_previousnodeid: true
   field_tags: true
   langcode: true
   links: true

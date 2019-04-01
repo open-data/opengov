@@ -134,12 +134,15 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
     }
 
     if (!empty($values)) {
-      $item_list = $entity->get($field_name);
+      $entity_target = $this->getEntityTarget($feed, $entity);
+      if ($entity_target) {
+        $item_list = $entity_target->get($field_name);
 
-      // Append these values to the existing values.
-      $values = array_merge($item_list->getValue(), $values);
+        // Append these values to the existing values.
+        $values = array_merge($item_list->getValue(), $values);
 
-      $item_list->setValue($values);
+        $item_list->setValue($values);
+      }
     }
   }
 
@@ -364,7 +367,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    $config = [
+    $config = parent::defaultConfiguration() + [
       'reference_by' => $this->getLabelKey(),
       'autocreate' => FALSE,
     ];
@@ -387,6 +390,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
     $options = $this->getPotentialFields();
 
     // Hack to find out the target delta.
@@ -442,7 +446,9 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
   public function getSummary() {
     $options = $this->getPotentialFields();
 
-    $summary = [];
+    $summary = [
+      parent::getSummary(),
+    ];
 
     if ($this->configuration['reference_by'] && isset($options[$this->configuration['reference_by']])) {
       $summary[] = $this->t('Reference by: %message', ['%message' => $options[$this->configuration['reference_by']]]);
@@ -460,7 +466,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
       $summary[] = $this->t('Autocreate terms: %create', ['%create' => $create]);
     }
 
-    return implode('<br>', $summary);
+    return $this->showSummary($summary);
   }
 
 }

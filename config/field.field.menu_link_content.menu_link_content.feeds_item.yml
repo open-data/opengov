@@ -1,0 +1,23 @@
+uuid: bc6ec521-ab64-4d1d-aadf-5c4456f5c301
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.menu_link_content.feeds_item
+  module:
+    - feeds
+    - menu_link_content
+id: menu_link_content.menu_link_content.feeds_item
+field_name: feeds_item
+entity_type: menu_link_content
+bundle: menu_link_content
+label: 'Feeds item'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:feeds_feed'
+  handler_settings: {  }
+field_type: feeds_item

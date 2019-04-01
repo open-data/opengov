@@ -65,4 +65,4 @@ filters:
     status: true
     weight: -42
     settings:
-      filter_url_length: 72
+      filter_url_length: 128

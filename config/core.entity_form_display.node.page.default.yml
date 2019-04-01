@@ -7,9 +7,9 @@ dependencies:
     - field.field.node.page.comment
     - field.field.node.page.feeds_item
     - field.field.node.page.field_metatags
+    - field.field.node.page.field_previousnodeid
     - node.type.page
   module:
-    - comment
     - content_moderation
     - metatag
     - path
@@ -23,47 +23,34 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 31
+    weight: 7
     region: content
     settings:
-      rows: 9
-      summary_rows: 3
+      rows: 15
       placeholder: ''
+      summary_rows: 3
     third_party_settings: {  }
-  comment:
-    weight: 121
-    settings: {  }
-    third_party_settings: {  }
-    type: comment_default
-    region: content
   created:
     type: datetime_timestamp
-    weight: 10
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
   field_metatags:
-    weight: 122
+    weight: 10
     settings: {  }
     third_party_settings: {  }
     type: metatag_firehose
     region: content
-  langcode:
-    type: language_select
-    weight: 2
-    region: content
-    settings:
-      include_locked: true
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 8
     settings: {  }
     region: content
     third_party_settings: {  }
   path:
     type: path
-    weight: 30
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -71,39 +58,39 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 15
+    weight: 4
     region: content
     third_party_settings: {  }
   status:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 120
+    weight: 9
     region: content
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 16
+    weight: 5
     region: content
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: -5
+    weight: 0
     region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
   translation:
-    weight: 10
+    weight: 3
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
   uid:
     type: entity_reference_autocomplete
-    weight: 5
+    weight: 1
     region: content
     settings:
       match_operator: CONTAINS
@@ -111,4 +98,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
 hidden:
+  comment: true
   feeds_item: true
+  field_previousnodeid: true
+  langcode: true

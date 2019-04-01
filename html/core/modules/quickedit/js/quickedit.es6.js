@@ -178,12 +178,12 @@
       url: Drupal.url('quickedit/attachments'),
       submit: { 'editors[]': missingEditors },
     });
-    // Implement a scoped add_js AJAX command: calls the callback after all AJAX
+    // Implement a scoped insert AJAX command: calls the callback after all AJAX
     // command functions have been executed (hence the deferred calling).
-    const realAddJsCommand = Drupal.AjaxCommands.prototype.add_js;
-    loadEditorsAjax.commands.add_js = function (ajax, response, status) {
+    const realInsert = Drupal.AjaxCommands.prototype.insert;
+    loadEditorsAjax.commands.insert = function(ajax, response, status) {
       _.defer(callback);
-      realAddJsCommand(ajax, response, status);
+      realInsert(ajax, response, status);
     };
     // Trigger the AJAX request, which will should return AJAX commands to
     // insert any missing attachments.

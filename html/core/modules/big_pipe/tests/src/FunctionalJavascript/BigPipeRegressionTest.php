@@ -105,11 +105,10 @@ class BigPipeRegressionTest extends WebDriverTestBase {
       $comment->save();
     }
     $this->drupalGet($node->toUrl()->toString());
-    $this->assertSession()->assertWaitOnAjaxRequest();
     // Confirm that CKEditor loaded.
     $javascript = <<<JS
     (function(){
-      return typeof CKEDITOR !== 'undefined' && typeof CKEDITOR.instances !== 'undefined' && Object.keys(CKEDITOR.instances).length > 0;
+      return Object.keys(CKEDITOR.instances).length > 0;
     }());
 JS;
     $this->assertJsCondition($javascript);

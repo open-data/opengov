@@ -34,7 +34,8 @@ class FeedsItem extends FieldTargetBase {
    */
   public function setTarget(FeedInterface $feed, EntityInterface $entity, $field_name, array $values) {
     if ($values = $this->prepareValues($values)) {
-      $item_list = $entity->get($field_name);
+      $entity_target = $this->getEntityTarget($feed, $entity);
+      $item_list = $entity_target->get($field_name);
 
       // Append these values to the existing values.
       $values = array_merge($item_list->getValue()[0], $values[0]);

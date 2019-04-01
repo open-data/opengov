@@ -1,0 +1,23 @@
+uuid: 11c4421a-280d-481b-88a1-e28976c54d39
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_previousnodeid
+    - node.type.page
+id: node.page.field_previousnodeid
+field_name: field_previousnodeid
+entity_type: node
+bundle: page
+label: previousNodeId
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

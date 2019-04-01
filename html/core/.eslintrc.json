@@ -16,7 +16,6 @@
     "domready": true,
     "jQuery": true,
     "_": true,
-    "loadjs": true,
     "matchMedia": true,
     "Backbone": true,
     "Modernizr": true,

@@ -28,7 +28,7 @@ display:
         name:
           label: 'Nom d''utilisateur'
         status:
-          label: Etat
+          label: État
           settings:
             format_custom_true: Actif
             format_custom_false: Bloqué
@@ -48,7 +48,7 @@ display:
             label: 'Nom ou courriel contenant'
         status:
           group_info:
-            label: Etat
+            label: État
             group_items:
               1:
                 title: Actif

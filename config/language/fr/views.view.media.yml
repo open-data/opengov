@@ -37,7 +37,7 @@ display:
           label: Auteur
           separator: ', '
         status:
-          label: Etat
+          label: État
           settings:
             format_custom_true: Publié
             format_custom_false: 'Non publié'
