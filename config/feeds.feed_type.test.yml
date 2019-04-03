@@ -1,0 +1,33 @@
+uuid: 7ce62ba0-f82f-4680-ac8a-6d0781e87bb2
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.basic
+  module:
+    - block_content
+label: test
+id: test
+description: ''
+import_period: 3600
+fetcher: http
+fetcher_configuration:
+  auto_detect_feeds: false
+  use_pubsubhubbub: false
+  fallback_hub: ''
+  request_timeout: 30
+parser: syndication
+parser_configuration: {  }
+processor: 'entity:block_content'
+processor_configuration:
+  update_existing: 0
+  update_non_existent: _keep
+  expire: -1
+  skip_hash_check: false
+  values:
+    type: basic
+  owner_id: 0
+  authorize: false
+  owner_feed_author: false
+custom_sources: {  }
+mappings: {  }

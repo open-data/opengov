@@ -1,0 +1,20 @@
+uuid: 3c31e767-46d7-4743-9018-f735f4a0110a
+langcode: en
+status: true
+dependencies:
+  module:
+    - block_content
+    - feeds
+id: block_content.feeds_item
+field_name: feeds_item
+entity_type: block_content
+type: feeds_item
+settings:
+  target_type: feeds_feed
+module: feeds
+locked: false
+cardinality: 1
+translatable: false
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

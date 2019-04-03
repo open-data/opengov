@@ -1,0 +1,135 @@
+uuid: 77d57777-1229-4ba3-bc77-720ff3efc970
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.base_field_override.node.landing_page.promote
+    - field.field.node.landing_page.body
+    - field.field.node.landing_page.field_previousnodeid
+    - node.type.landing_page
+  module:
+    - node
+label: 'Content landing page CSV'
+id: content_landing_page_csv
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'public://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: true
+  owner_id: 0
+  authorize: true
+  skip_hash_check: false
+  values:
+    type: landing_page
+custom_sources:
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+  created:
+    label: created
+    value: created
+    machine_name: created
+  body:
+    label: body
+    value: body
+    machine_name: body
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  moderation_state:
+    label: moderation_state
+    value: moderation_state
+    machine_name: moderation_state
+  promote:
+    label: promote
+    value: promote
+    machine_name: promote
+  sticky:
+    label: sticky
+    value: sticky
+    machine_name: sticky
+  title:
+    label: title
+    value: title
+    machine_name: title
+  nid:
+    label: nid
+    value: nid
+    machine_name: nid
+mappings:
+  -
+    target: uid
+    map:
+      target_id: uid
+    settings:
+      language: ''
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      language: null
+      timezone: UTC
+  -
+    target: body
+    map:
+      value: body
+      summary: ''
+    settings:
+      language: ''
+      format: rich_text
+  -
+    target: langcode
+    map:
+      value: langcode
+    settings:
+      language: null
+  -
+    target: moderation_state
+    map:
+      value: moderation_state
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: promote
+    map:
+      value: promote
+    settings:
+      language: null
+  -
+    target: sticky
+    map:
+      value: sticky
+    settings:
+      language: null
+  -
+    target: title
+    map:
+      value: title
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: field_previousnodeid
+    map:
+      value: nid
+    settings:
+      language: null

@@ -1,0 +1,132 @@
+uuid: 4a5c7f08-7089-4bfe-9434-f496769bc5a7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.suggested_dataset.body
+    - field.field.node.suggested_dataset.comment
+    - field.field.node.suggested_dataset.feeds_item
+    - field.field.node.suggested_dataset.field_meta_tags
+    - field.field.node.suggested_dataset.field_previousnodeid
+    - field.field.node.suggested_dataset.field_status
+    - field.field.node.suggested_dataset.field_status_link
+    - field.field.node.suggested_dataset.field_suggested_dataset_dept
+    - field.field.node.suggested_dataset.field_vud
+    - node.type.suggested_dataset
+  module:
+    - content_moderation
+    - link
+    - metatag
+    - path
+    - text
+id: node.suggested_dataset.default
+targetEntityType: node
+bundle: suggested_dataset
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 8
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  created:
+    type: datetime_timestamp
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_meta_tags:
+    weight: 12
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_status:
+    weight: 10
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_status_link:
+    weight: 11
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_suggested_dataset_dept:
+    weight: 9
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  moderation_state:
+    type: moderation_state_default
+    weight: 13
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 5
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 6
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+hidden:
+  comment: true
+  feeds_item: true
+  field_previousnodeid: true
+  field_vud: true
+  status: true

@@ -1,0 +1,8 @@
+vud.settings:
+  type: mapping
+  label: Settings
+  mapping:
+    tag:
+      type: string
+    message_on_deny:
+      type: boolean

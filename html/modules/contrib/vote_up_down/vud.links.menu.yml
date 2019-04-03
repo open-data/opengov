@@ -1,0 +1,5 @@
+vud.admin_advanced_settings:
+  route_name: vud.admin_advanced_settings
+  title: 'Vote Up/Down'
+  description: 'Control the functioning of Vote Up/Down.'
+  parent: system.admin_config_search

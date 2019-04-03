@@ -1,0 +1,16 @@
+uuid: daf60942-842d-40b1-bd3f-c3ef2456b619
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.suggested_dataset
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.suggested_dataset
+target_entity_type_id: node
+target_bundle: suggested_dataset
+default_langcode: site_default
+language_alterable: false

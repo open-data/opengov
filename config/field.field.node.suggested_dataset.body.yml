@@ -1,0 +1,22 @@
+uuid: 8f80600b-5aa0-4683-ab2d-459f6bf2cb77
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.suggested_dataset
+  module:
+    - text
+id: node.suggested_dataset.body
+field_name: body
+entity_type: node
+bundle: suggested_dataset
+label: Description
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

@@ -1,0 +1,31 @@
+<div class="vud-widget vud-widget-updown" id="{{ id }}">
+  <div class="updown-score">
+    <span class="updown-current-score">{{ points }}</span>
+    {{ vote_label }}
+  </div>
+  {% if show_links == true %}
+    {% if show_up_as_link == true %}
+      <a href="{{ link_up }}" rel="nofollow" class="{{ link_class_up }}">
+    {% endif %}
+      <div class="{{ class_up }} updown-up" title="{% trans %}Vote up!{% endtrans %}">+</div>
+      <div class="element-invisible">{% trans %}Vote up!{% endtrans %}</div>
+    {% if show_up_as_link == true %}
+      </a>
+    {% endif %}
+    {% if show_down_as_link == true %}
+      <a href="{{ link_down }}" rel="nofollow" class="{{ link_class_down }}">
+    {% endif %}
+      <div class="{{ class_down }} updown-down" title="{% trans %}Vote down!{% endtrans %}">-</div>
+      <div class="element-invisible">{% trans %}Vote down!{% endtrans %}</div>
+    {% if show_down_as_link == true %}
+      </a>
+    {% endif %}
+  {% endif %}
+  {% if show_reset == true %}
+    <a href="{{ link_reset }}" rel="nofollow" class="{{ link_class_reset }}" title="{{ reset_long_text }}">
+      <div class="{{ class_reset }}">
+        {{ reset_short_text }}
+      </div>
+    </a>
+  {% endif %}
+</div>

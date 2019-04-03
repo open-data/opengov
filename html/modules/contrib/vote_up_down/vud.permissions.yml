@@ -1,0 +1,12 @@
+'use vote up/down':
+  title: 'Use Vote Up/Down'
+  description: 'Grant users the ability to cast votes'
+'administer vote up/down':
+  title: 'Administer Vote Up/Down'
+  description: 'Adjust the settings of the Vote Up/Down module'
+'access vote up/down statistics':
+  title: 'Access Vote Up/Down Statistics'
+  description: 'Permission to see who is voting on what'
+'reset vote up/down votes':
+  title: 'Reset Votes'
+  description: 'Grant the ability to undo own votes.'

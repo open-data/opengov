@@ -1,0 +1,175 @@
+uuid: 70507233-7558-42b5-a2da-a8d99c39bc9f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.base_field_override.node.suggested_dataset.title
+    - field.field.node.suggested_dataset.body
+    - field.field.node.suggested_dataset.field_previousnodeid
+    - field.field.node.suggested_dataset.field_status
+    - field.field.node.suggested_dataset.field_status_link
+    - field.field.node.suggested_dataset.field_suggested_dataset_dept
+    - node.type.suggested_dataset
+  module:
+    - node
+label: 'Content suggested dataset CSV'
+id: content_suggested_dataset_csv
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'public://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: true
+  owner_id: 0
+  authorize: true
+  skip_hash_check: false
+  values:
+    type: suggested_dataset
+custom_sources:
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+  created:
+    label: created
+    value: created
+    machine_name: created
+  body:
+    label: body
+    value: body
+    machine_name: body
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  moderation_state:
+    label: moderation_state
+    value: moderation_state
+    machine_name: moderation_state
+  title:
+    label: title
+    value: title
+    machine_name: title
+  organization:
+    label: organization
+    value: organization
+    machine_name: organization
+  field_status:
+    label: field_status
+    value: field_status
+    machine_name: field_status
+  uri:
+    label: uri
+    value: uri
+    machine_name: uri
+  link_text:
+    label: link_text
+    value: link_text
+    machine_name: link_text
+  promote:
+    label: promote
+    value: promote
+    machine_name: promote
+  sticky:
+    label: sticky
+    value: sticky
+    machine_name: sticky
+  nid:
+    label: nid
+    value: nid
+    machine_name: nid
+mappings:
+  -
+    target: uid
+    map:
+      target_id: uid
+    settings:
+      language: ''
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      language: null
+      timezone: UTC
+  -
+    target: body
+    map:
+      value: body
+      summary: ''
+    settings:
+      language: ''
+      format: rich_text
+  -
+    target: langcode
+    map:
+      value: langcode
+    settings:
+      language: null
+  -
+    target: moderation_state
+    map:
+      value: moderation_state
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: title
+    map:
+      value: title
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: field_suggested_dataset_dept
+    map:
+      value: organization
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: field_status
+    map:
+      value: field_status
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: field_status_link
+    map:
+      uri: uri
+      title: link_text
+    settings:
+      language: null
+  -
+    target: promote
+    map:
+      value: promote
+    settings:
+      language: null
+  -
+    target: sticky
+    map:
+      value: sticky
+    settings:
+      language: null
+  -
+    target: field_previousnodeid
+    map:
+      value: nid
+    settings:
+      language: null

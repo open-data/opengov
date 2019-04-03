@@ -1,0 +1,14 @@
+.throbber {
+  position: absolute;
+  top: 40px;
+  left: 100px;
+}
+
+.vud-widget {
+  position: relative;
+}
+
+.vud-widget a {
+  text-decoration: none;
+  border: 0;
+}

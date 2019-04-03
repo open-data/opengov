@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Implements the core voting module on top of Voting API.
+ */
+
+// Include the theme.inc file.
+module_load_include('inc', 'vud', 'vud.theme');
+
+/**
+ * Check if the passed user can vote.
+ *
+ * @param $account
+ *  Entity object of an User
+ *
+ * @return bool
+ */
+function vud_can_vote($account){
+  return $account->hasPermission('use vote up/down');
+}
+
+/**
+ * Check if the passed user can reset vote.
+ *
+ * @param $account
+ *  Entity object of an User
+ *
+ * @return bool
+ */
+function vud_can_reset_vote($account){
+  return $account->hasPermission("reset vote up/down votes");
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function vud_preprocess(&$variables, $hook) {
+  $module_handler = \Drupal::service('module_handler');
+  $module_path = $module_handler->getModule('vud')->getPath();
+  $variables['#attached']['drupalSettings']['basePath'] = $module_path;
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function vud_help($path, $arg) {
+  switch ($path) {
+    case 'admin.page.vud':
+      $output = '<p>'. t('Provides a configurable up/down voting widget for other modules to use.') .'</p>';
+      return $output;
+    default:
+      return FALSE;
+      break;
+  }
+}

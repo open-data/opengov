@@ -1,0 +1,17 @@
+uuid: 41c86e32-3312-4530-a856-c52fa54b6d80
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+name: 'Suggested Dataset'
+type: suggested_dataset
+description: ''
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

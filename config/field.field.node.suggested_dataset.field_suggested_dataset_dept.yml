@@ -1,0 +1,19 @@
+uuid: a71e43af-4584-4025-b99c-8738286682b6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_suggested_dataset_dept
+    - node.type.suggested_dataset
+id: node.suggested_dataset.field_suggested_dataset_dept
+field_name: field_suggested_dataset_dept
+entity_type: node
+bundle: suggested_dataset
+label: Organization
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

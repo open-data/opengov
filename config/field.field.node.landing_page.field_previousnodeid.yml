@@ -1,0 +1,23 @@
+uuid: deab4d97-9788-42c7-98c9-79cc360a05e0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_previousnodeid
+    - node.type.landing_page
+id: node.landing_page.field_previousnodeid
+field_name: field_previousnodeid
+entity_type: node
+bundle: landing_page
+label: previousNodeId
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

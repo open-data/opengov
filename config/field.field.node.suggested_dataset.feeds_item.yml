@@ -1,0 +1,23 @@
+uuid: f475780f-0f5c-403a-8243-6ad138a460f2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.feeds_item
+    - node.type.suggested_dataset
+  module:
+    - feeds
+id: node.suggested_dataset.feeds_item
+field_name: feeds_item
+entity_type: node
+bundle: suggested_dataset
+label: 'Feeds item'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:feeds_feed'
+  handler_settings: {  }
+field_type: feeds_item

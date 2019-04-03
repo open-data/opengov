@@ -1,0 +1,23 @@
+uuid: 99aa93de-1e64-4341-9b34-a1ffd9176d20
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_status_link
+    - node.type.suggested_dataset
+  module:
+    - link
+id: node.suggested_dataset.field_status_link
+field_name: field_status_link
+entity_type: node
+bundle: suggested_dataset
+label: 'Status link'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+field_type: link

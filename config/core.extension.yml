@@ -62,6 +62,8 @@ module:
   update: 0
   user: 0
   views_ui: 0
+  votingapi: 0
+  vud: 0
   workflows: 0
   menu_link_content: 1
   pathauto: 1

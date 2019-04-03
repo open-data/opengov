@@ -1,0 +1,21 @@
+uuid: a7d1f77b-9361-461a-8937-481f8f9597e8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_meta_tags
+    - node.type.suggested_dataset
+  module:
+    - metatag
+id: node.suggested_dataset.field_meta_tags
+field_name: field_meta_tags
+entity_type: node
+bundle: suggested_dataset
+label: 'Meta tags'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: metatag

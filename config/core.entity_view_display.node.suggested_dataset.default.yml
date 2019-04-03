@@ -1,0 +1,88 @@
+uuid: a43bcc70-4d37-47a4-898e-5ee288f3306f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.suggested_dataset.body
+    - field.field.node.suggested_dataset.comment
+    - field.field.node.suggested_dataset.feeds_item
+    - field.field.node.suggested_dataset.field_meta_tags
+    - field.field.node.suggested_dataset.field_previousnodeid
+    - field.field.node.suggested_dataset.field_status
+    - field.field.node.suggested_dataset.field_status_link
+    - field.field.node.suggested_dataset.field_suggested_dataset_dept
+    - field.field.node.suggested_dataset.field_vud
+    - node.type.suggested_dataset
+  module:
+    - comment
+    - link
+    - text
+    - user
+    - vud
+id: node.suggested_dataset.default
+targetEntityType: node
+bundle: suggested_dataset
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment:
+    weight: 6
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_status:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_status_link:
+    weight: 5
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_suggested_dataset_dept:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_vud:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: vote_up_down_formatter_type
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  feeds_item: true
+  field_meta_tags: true
+  field_previousnodeid: true
+  langcode: true
