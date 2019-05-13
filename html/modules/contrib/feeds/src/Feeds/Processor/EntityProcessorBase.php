@@ -4,7 +4,6 @@ namespace Drupal\feeds\Feeds\Processor;
 
 use Doctrine\Common\Inflector\Inflector;
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
@@ -473,7 +472,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
 
     $messages = [];
     $args = [
-      '@entity' => Unicode::strtolower($this->entityTypeLabel()),
+      '@entity' => mb_strtolower($this->entityTypeLabel()),
       '%label' => $label,
       '%guid' => $guid,
       '@errors' => \Drupal::service('renderer')->renderRoot($element),

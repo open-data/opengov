@@ -5,6 +5,7 @@ dependencies:
   config:
     - block_content.type.basic
     - field.field.block_content.basic.body
+    - field.field.block_content.basic.feeds_item
   module:
     - text
 _core:
@@ -38,4 +39,10 @@ content:
     settings:
       include_locked: true
     third_party_settings: {  }
-hidden: {  }
+  translation:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  feeds_item: true

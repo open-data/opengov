@@ -1,0 +1,6 @@
+mergenodes.admin:
+  title: 'Merge node translations'
+  description: 'Merge translations of content types using this module'
+  parent: system.admin_config_development
+  route_name: mergenodes.mergeNodesForm
+  weight: 100

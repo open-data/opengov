@@ -4,7 +4,7 @@ feeds.admin:
     _title: 'Feeds'
     _entity_list: 'feeds_feed'
   requirements:
-    _permission: 'access administration pages'
+    _permission: 'access feed overview'
 
 feeds.item_list:
   path: '/feed/{feeds_feed}/list'
@@ -30,6 +30,16 @@ entity.feeds_feed.import_form:
     _admin_route: TRUE
   requirements:
     _entity_access: 'feeds_feed.import'
+    feeds_feed: \d+
+
+entity.feeds_feed.schedule_import_form:
+  path: '/feed/{feeds_feed}/schedule-import'
+  defaults:
+    _entity_form: 'feeds_feed.schedule_import'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _entity_access: 'feeds_feed.schedule_import'
     feeds_feed: \d+
 
 entity.feeds_feed.clear_form:

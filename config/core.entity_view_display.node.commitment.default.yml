@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.commitment.body
     - field.field.node.commitment.comment
     - field.field.node.commitment.field_commitment_ambition
+    - field.field.node.commitment.field_reference_landing
     - node.type.commitment
   module:
     - comment
@@ -39,6 +40,14 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: text_default
+    region: content
+  field_reference_landing:
+    weight: 104
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
     region: content
   links:
     weight: 100

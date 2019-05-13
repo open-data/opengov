@@ -1,0 +1,50 @@
+title: 'Prueba: Traducción'
+description: 'Prueba de la traducción de un formulario.'
+elements: |
+  textfield:
+    '#title': 'Campo de texto'
+  select_options:
+    '#title': 'Seleccione (opciones)'
+  select_custom:
+    '#title': 'Seleccione (personalizado)'
+    '#options':
+      4: 'Las cuatro'
+      5: Cinco
+      6: Seis
+    '#other__option_label': 'Número personalizado…'
+  details:
+    '#title': Detalles
+  markup:
+    '#markup': 'Esto es un poco de marcado HTML.'
+  composite:
+    '#title': Compuesto
+    '#element':
+      first_name:
+        '#title': Nombre
+      last_name:
+        '#title': Apellido
+      age:
+        '#title': Edad
+        '#field_suffix': 'años. antiguo'
+  address:
+    '#title': 'Dirección'
+    '#address__title': 'Dirección'
+    '#address_2__title': 'Dirección 2'
+    '#city__title': 'Ciudad / Pueblo'
+    '#state_province__title': 'Estado / Provincia'
+    '#postal_code__title': 'ZIP / Código Postal'
+    '#country__title': 'Acciones de país'
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#submit__label': 'Enviar mensaje'
+settings:
+  confirmation_message: 'Tu mensaje ha sido enviado.'
+handlers:
+  email_confirmation:
+    label: ' Confirmación de correo electrónico'
+weight: 0
+dependencies:
+  enforced:
+    module:
+      - webform_test_translation

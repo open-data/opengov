@@ -27,6 +27,7 @@ class FeedAccessControlHandler extends EntityAccessControlHandler {
         return AccessResult::allowedIf($has_perm);
 
       case 'import':
+      case 'schedule_import':
       case 'clear':
         return AccessResult::allowedIf($has_perm && !$feed->isLocked());
 

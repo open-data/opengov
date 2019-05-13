@@ -35,7 +35,7 @@ class DockerComposeTransport implements TransportInterface
      */
     public function wrap($args)
     {
-        $transport = ['docker-compose', 'exec'];
+        $transport = $this->getTransport();
         $transportOptions = $this->getTransportOptions();
         $commandToExecute = $this->getCommandToExecute($args);
 
@@ -53,6 +53,24 @@ class DockerComposeTransport implements TransportInterface
     {
         $this->cd_remote = $cd;
         return $args;
+    }
+
+    /**
+     * getTransport returns the transport along with the docker-compose
+     * project in case it is defined.
+     */
+    protected function getTransport()
+    {
+        $transport = ['docker-compose'];
+        $project = $this->siteAlias->get('docker.project', '');
+        $options = $this->siteAlias->get('docker.compose.options', '');
+        if ($project && (strpos($options, '-p') === false || strpos($options, '--project') === false)) {
+            $transport = array_merge($transport, ['-p', $project]);
+        }
+        if ($options) {
+            $transport[] = Shell::preEscaped($options);
+        }
+        return array_merge($transport, ['exec']);
     }
 
     /**

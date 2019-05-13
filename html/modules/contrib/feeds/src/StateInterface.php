@@ -89,8 +89,8 @@ interface StateInterface {
   /**
    * Sets a message to display to the user.
    *
-   * This should be used by plugins instead of drupal_set_message(). It will
-   * store messages and display them at the appropriate time.
+   * This should be used by plugins instead of the Drupal messenger service. It
+   * will store messages and display them at the appropriate time.
    *
    * @param string $message
    *   (optional) The translated message to be displayed to the user. For
@@ -106,7 +106,7 @@ interface StateInterface {
    *   (optional) If this is FALSE and the message is already set, then the
    *   message won't be repeated. Defaults to FALSE.
    *
-   * @see drupal_set_message()
+   * @see \Drupal\Core\Messenger\MessengerInterface::addMessage()
    */
   public function setMessage($message = NULL, $type = 'status', $repeat = FALSE);
 

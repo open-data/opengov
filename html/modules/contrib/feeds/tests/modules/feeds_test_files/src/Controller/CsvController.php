@@ -12,6 +12,15 @@ use Symfony\Component\HttpFoundation\Response;
 class CsvController extends ControllerBase {
 
   /**
+   * Date format not defined in PHP 5.
+   *
+   * Example: Sun, 06 Nov 1994 08:49:37 GMT.
+   *
+   * @var string
+   */
+  const DATE_RFC7231 = 'D, d M Y H:i:s \G\M\T';
+
+  /**
    * Generates an absolute url to the resources folder.
    *
    * @return string
@@ -27,6 +36,9 @@ class CsvController extends ControllerBase {
 
   /**
    * Outputs a CSV file pointing to files.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   A HTTP response.
    */
   public function files() {
     $assets_url = $this->getResourcesUrl() . '/assets';
@@ -47,6 +59,55 @@ class CsvController extends ControllerBase {
     }
 
     $response = new Response();
+    $response->setContent($csv);
+    return $response;
+  }
+
+  /**
+   * Generates a test feed and simulates last-modified.
+   *
+   * This is used to test the following:
+   * - Ensure that the source is not refetched on a second import when the
+   *   source did not change.
+   * - Ensure that the source *is* refetched on a second import when the
+   *   source *did* change.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   A HTTP response.
+   */
+  public function nodes() {
+    $last_modified = \Drupal::state()->get('feeds_test_nodes_last_modified');
+    if (!$last_modified) {
+      $file = 'nodes.csv';
+      $last_modified = strtotime('Sun, 19 Nov 1978 05:00:00 GMT');
+    }
+    else {
+      $file = 'nodes_changes2.csv';
+    }
+
+    $if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) : FALSE;
+    $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? stripslashes($_SERVER['HTTP_IF_NONE_MATCH']) : FALSE;
+
+    $response = new Response();
+
+    // Set header with last modified date.
+    $response->headers->set('Last-Modified', gmdate(static::DATE_RFC7231, $last_modified));
+
+    // Return 304 not modified if last modified.
+    if ($last_modified == $if_modified_since) {
+      $response->headers->set('Status', '304 Not Modified');
+      return $response;
+    }
+
+    // The following headers force validation of cache:
+    $response->headers->set('Expires', $last_modified);
+    $response->headers->set('Cache-Control', 'must-revalidate');
+    $response->headers->set('Content-Type', 'text/plain; charset=utf-8');
+
+    // Read actual feed from file.
+    $csv = file_get_contents(drupal_get_path('module', 'feeds') . '/tests/resources/csv/' . $file);
+
+    // And return the file contents.
     $response->setContent($csv);
     return $response;
   }

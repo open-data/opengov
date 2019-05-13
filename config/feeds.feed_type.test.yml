@@ -3,9 +3,9 @@ langcode: en
 status: true
 dependencies:
   config:
-    - block_content.type.basic
+    - taxonomy.vocabulary.commitment_freetags
   module:
-    - block_content
+    - taxonomy
 label: test
 id: test
 description: ''
@@ -18,14 +18,14 @@ fetcher_configuration:
   request_timeout: 30
 parser: syndication
 parser_configuration: {  }
-processor: 'entity:block_content'
+processor: 'entity:taxonomy_term'
 processor_configuration:
   update_existing: 0
   update_non_existent: _keep
   expire: -1
   skip_hash_check: false
   values:
-    type: basic
+    vid: commitment_freetags
   owner_id: 0
   authorize: false
   owner_feed_author: false

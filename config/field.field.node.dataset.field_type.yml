@@ -1,0 +1,19 @@
+uuid: 4088aa0e-d55a-452a-ad28-e58a6509754f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_type
+    - node.type.dataset
+id: node.dataset.field_type
+field_name: field_type
+entity_type: node
+bundle: dataset
+label: Type
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

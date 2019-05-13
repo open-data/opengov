@@ -24,6 +24,7 @@ display:
       fields:
         feeds_feed_bulk_form:
           label: 'Mise à jour en masse'
+          action_title: 'Pour la sélection'
         title:
           label: Titre
           separator: ', '
@@ -37,6 +38,7 @@ display:
           label: 'Mis à jour'
           separator: ', '
         imported:
+          label: Importé
           separator: ', '
         operations:
           label: Actions

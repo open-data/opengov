@@ -5,6 +5,13 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.suggested_dataset.body
+    - field.field.node.suggested_dataset.comment
+    - field.field.node.suggested_dataset.feeds_item
+    - field.field.node.suggested_dataset.field_meta_tags
+    - field.field.node.suggested_dataset.field_previousnodeid
+    - field.field.node.suggested_dataset.field_status
+    - field.field.node.suggested_dataset.field_status_link
+    - field.field.node.suggested_dataset.field_suggested_dataset_dept
     - node.type.suggested_dataset
   module:
     - text
@@ -28,4 +35,11 @@ content:
     third_party_settings: {  }
     region: content
 hidden:
+  comment: true
+  feeds_item: true
+  field_meta_tags: true
+  field_previousnodeid: true
+  field_status: true
+  field_status_link: true
+  field_suggested_dataset_dept: true
   langcode: true

@@ -1,0 +1,216 @@
+/**
+ * @file
+ * Seven theme styles.
+ */
+
+/* Align all tables cells top */
+table td {
+  vertical-align: top;
+}
+
+td > .form-item:first-of-type,
+tr.odd .form-item:first-of-type,
+tr.even .form-item:first-of-type {
+  margin-top: 0;
+}
+
+td > .form-item:last-of-type,
+tr.odd .form-item:last-of-type,
+tr.even .form-item:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Add margin around HR tags */
+table hr {
+  margin: .5em 0;
+}
+
+/* Add background to nested details */
+details details /* < 8.5.x  */,
+details.seven-details details.seven-details /* >= 8.6.x */ {
+  background-color: #f8f8f8;
+}
+
+details details details {
+  background-color: #fff;
+}
+
+/* Reduce the width of number inputs */
+input.form-number {
+  width: 6em;
+}
+
+code {
+  font-weight: bold;
+  border: 1px solid #333;
+  background-color: #f8f8f8;
+  padding: 2px 4px;
+  color: #333;
+}
+
+/* Add yellow background to tooltips and tabs */
+/* @see core/assets/vendor/jquery.ui/themes/base/tabs.css */
+.ui-tooltip.ui-widget {
+  background: #fe6;;
+  border: 1px solid #ed5;
+}
+
+.webform-tabs .ui-tabs-nav .ui-tabs-anchor {
+  text-decoration: inherit;
+}
+
+.webform-tabs .ui-tabs-active.ui-state-active {
+  background: #fe6;
+  border: 1px solid #ed5;
+  text-decoration: none;
+}
+
+.webform-tabs .ui-state-hover {
+  text-decoration: underline !important;
+}
+
+.webform-tabs .ui-state-active.ui-state-hover {
+  text-decoration: none !important;
+}
+
+/** Compress tabs for mobile */
+@media screen and (max-width: 600px) {
+  .webform-tabs.ui-tabs .ui-tabs-nav {
+    padding: 5px 0 4px 0;
+  }
+  .webform-tabs.ui-tabs .ui-tabs-nav li {
+    padding: 0;
+  }
+  .webform-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+    padding: .5em .7em;
+  }
+}
+
+/* Accordion icon */
+.ui-accordion-icons .ui-icon {
+  display: inline-block;
+}
+
+/* CodeMirror viewer */
+pre.webform-codemirror-runmode {
+  padding: .5em 1.5em;
+}
+
+/* Hide tabs and elements from printing. */
+@media print {
+  body {
+    padding-top: 0 !important; /* Using !import to ensure that <body style="padding-top: *"> set via the toolbar.module is overridden. */
+  }
+
+  .region.region-highlighted,
+  .shortcut-action,
+  .dropbutton-wrapper,
+  .block-system-breadcrumb-block,
+  .block-local-tasks-block,
+  .pager,
+  .button-action,
+  .webform-submission-navigation,
+  .webform-filter-form {
+    display: none !important; /* Using !important to ensure with these elements are hidden with getting into a specificity war */
+  }
+}
+
+/**
+ * Form action are moved to a dialogs footer and don't need to be visually
+ * hidden.
+
+ * @see Drupal.behaviors.dialog.prepareDialogButtons
+ */
+.webform-ui-dialog .form-actions input[type=submit],
+.webform-ui-dialog .form-actions a.button {
+  display: none !important;
+}
+
+/* System tray divider */
+.ui-dialog.ui-dialog-off-canvas .ui-resizable-w {
+  background-color: #bfbfba;
+  border: 1px solid #6b6b6b;
+  border-width: 1px 2px;
+}
+
+/* System tray title bar */
+.ui-dialog.ui-dialog-off-canvas {
+  background: #fff;
+}
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar {
+  border-radius: 0;
+}
+
+/* System tray actions */
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-content .form-actions {
+  margin: 1em 0;
+}
+
+/* jQuery UI autocomplete states */
+.ui-autocomplete a /* For filter autocomplete. */,
+.ui-autocomplete .ui-menu-item-wrapper /* For #states value autocomplete. */ {
+  display: block;
+  border: 1px solid transparent;
+  color: #0074bd;
+}
+
+.ui-autocomplete a.ui-state-hover,
+.ui-autocomplete a.ui-state-active,
+.ui-autocomplete a.ui-state-focus,
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-hover,
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-active,
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-focus {
+  text-decoration: underline;
+  color: #0074bd;
+  background: #fe6;
+  border: solid 1px #ed5;
+  margin: 0;
+}
+
+/* jQuery UI button states */
+.webform-buttons .ui-button.ui-state-default {
+  background: #f5f5f2;
+  border: solid 1px #bfbfba;
+}
+
+.webform-buttons .ui-button.ui-state-active {
+  color: #840;
+  background: #fe6;
+  border: solid 1px #ed5;
+}
+
+/* jQuery UI tooltip */
+.ui-tooltip hr {
+  background: #666;
+  margin: .3em 0;
+  height: 1px;
+}
+
+.ui-tooltip code {
+  font-weight: bold;
+  white-space: nowrap;
+  background-color: #f5f5f2;
+  font-size: .9em;
+  padding: .2em;
+}
+
+/* jQuery UI tabs */
+.ui-tabs .ui-tabs-panel {
+  padding: 0;
+}
+
+/* Tweak details toggle state. */
+.webform-details-toggle-state {
+  color: #0074bd;
+}
+
+.webform-details-toggle-state:hover,
+.webform-details-toggle-statelink:focus {
+  text-decoration: underline;
+}
+
+/* Token tree */
+.token-tree ul {
+  margin: 0;
+}

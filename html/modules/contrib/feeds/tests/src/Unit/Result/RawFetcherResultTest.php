@@ -15,7 +15,7 @@ class RawFetcherResultTest extends FeedsUnitTestCase {
    * @covers ::getRaw
    */
   public function testGetRaw() {
-    $result = new RawFetcherResult('raw text');
+    $result = new RawFetcherResult('raw text', $this->getMockFileSystem());
     $this->assertSame($result->getRaw(), 'raw text');
   }
 
@@ -23,7 +23,7 @@ class RawFetcherResultTest extends FeedsUnitTestCase {
    * @covers ::getFilePath
    */
   public function testGetFilePath() {
-    $result = new RawFetcherResult('raw text');
+    $result = new RawFetcherResult('raw text', $this->getMockFileSystem());
     $this->assertSame(file_get_contents($result->getFilePath()), 'raw text');
 
     // Call again to see if exception is thrown.

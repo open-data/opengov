@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.user.user.feeds_item
     - field.field.user.user.user_picture
     - image.style.thumbnail
   module:
@@ -28,4 +29,5 @@ content:
     third_party_settings: {  }
     label: hidden
 hidden:
+  feeds_item: true
   langcode: true

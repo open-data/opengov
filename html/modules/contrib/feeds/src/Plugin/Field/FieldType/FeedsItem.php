@@ -5,6 +5,8 @@ namespace Drupal\feeds\Plugin\Field\FieldType;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Url;
+use Drupal\feeds\FeedsItemInterface;
 
 /**
  * Plugin implementation of the 'feeds_item' field type.
@@ -12,16 +14,23 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "feeds_item",
  *   label = @Translation("Feed"),
- *   description = @Translation("Blah blah blah."),
+ *   description = @Translation("Feeds import metadata."),
  *   instance_settings = {
  *     "title" = "1"
  *   },
- *   default_widget = "hidden",
- *   default_formatter = "hidden",
- *   no_ui = true
+ *   default_formatter = "feeds_item_url",
+ *   no_ui = TRUE,
+ *   list_class = "\Drupal\Core\Field\EntityReferenceFieldItemList",
  * )
  */
-class FeedsItem extends EntityReferenceItem {
+class FeedsItem extends EntityReferenceItem implements FeedsItemInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getUrl() {
+    return Url::fromUri($this->url);
+  }
 
   /**
    * {@inheritdoc}

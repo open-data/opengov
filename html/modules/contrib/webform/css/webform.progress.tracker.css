@@ -1,0 +1,109 @@
+/**
+ * @file
+ * Wizard progress tracker styles.
+ *
+ * @see http://nigelotoole.github.io/progress-tracker/
+ */
+
+/**
+ * Reduce top/bottom margins around progress tracker.
+ */
+.webform-progress-tracker.progress-tracker {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/**
+ * Update progress text to show completed and active.
+ */
+.webform-progress-tracker .progress-step .progress-text {
+  color: #656565;
+  padding-top: 5px;
+  padding-bottom: 0;
+}
+
+.webform-progress-tracker .progress-step::after {
+  background-color: #656565;
+}
+
+.webform-progress-tracker .progress-step.is-active .progress-text {
+  color: #333;
+}
+
+.webform-progress-tracker .progress-step.is-active .progress-title {
+  font-weight: bold;
+}
+
+.webform-progress-tracker .progress-step.is-complete .progress-text {
+  color: #333;
+}
+
+/**
+ * Disable hover state because webform wizard progress markers are not clickable.
+ */
+.webform-progress-tracker .progress-step:not(.is-active) .progress-marker,
+.webform-progress-tracker .progress-step:hover .progress-marker {
+  background-color: #656565;
+}
+
+.webform-progress-tracker .progress-step.is-complete:hover .progress-marker {
+  background-color: #1976f2;
+}
+
+.webform-progress-tracker .progress-step.is-active:hover .progress-marker {
+  background-color: #2196f3;
+}
+
+/**
+ * Make progress text smaller for tablets.
+ */
+@media screen and (max-width: 800px) {
+  .webform-progress-tracker .progress-text {
+    font-size: smaller;
+  }
+}
+
+/**
+ * Hide progress text smaller for mobile.
+ */
+@media screen and (max-width: 600px) {
+  .webform-progress-tracker .progress-text {
+    display: none;
+  }
+}
+
+/**
+ * RTL support.
+ *
+ * @see https://github.com/NigelOToole/progress-tracker/issues/5
+ */
+
+[dir="rtl"] .progress-step:not(:last-child)::after {
+  display: none;
+}
+
+[dir="rtl"] .progress-step:not(:first-child)::after {
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: -10;
+  top: 12px;
+  bottom: 12px;
+  right: -14px;
+  width: 100%;
+  height: 4px;
+  -webkit-transition: background-color 0.3s;
+  transition: background-color 0.3s;
+}
+
+[dir="rtl"] .progress-tracker--center .progress-step::after {
+  right: -50%;
+}
+
+[dir="rtl"] .webform-progress-tracker .progress-step {
+  z-index: inherit;
+}
+
+[dir="rtl"] .progress-step:not(:first-child)::after {
+  z-index: 0;
+}

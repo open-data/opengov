@@ -44,7 +44,7 @@ class DateTime extends DateTargetBase {
    *   A formatted date, in UTC time.
    */
   protected function prepareDateValue($value) {
-    /** @var \Drupal\Core\Datetime\DrupalDateTime|null */
+    /** @var \Drupal\Core\Datetime\DrupalDateTime|null $date */
     $date = $this->convertToDate($value);
 
     if (isset($date) && !$date->hasErrors()) {

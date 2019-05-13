@@ -1,0 +1,121 @@
+uuid: f18e00aa-8289-4f9e-a6ba-253edc4fd746
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.departments.field_previoustermid
+    - taxonomy.vocabulary.departments
+  module:
+    - taxonomy
+label: 'Taxonomy departments CSV'
+id: taxonomy_departments_csv
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'public://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:taxonomy_term'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  skip_hash_check: false
+  values:
+    vid: departments
+  owner_id: 0
+  authorize: false
+  owner_feed_author: false
+custom_sources:
+  name:
+    label: name
+    value: name
+    machine_name: name
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  created:
+    label: created
+    value: created
+    machine_name: created
+  status:
+    label: status
+    value: status
+    machine_name: status
+  weight:
+    label: weight
+    value: weight
+    machine_name: weight
+  parent:
+    label: parent
+    value: parent
+    machine_name: parent
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+  tid:
+    label: tid
+    value: tid
+    machine_name: tid
+mappings:
+  -
+    target: name
+    map:
+      value: name
+    unique: {  }
+    settings:
+      language: null
+  -
+    target: langcode
+    map:
+      value: langcode
+    settings:
+      language: null
+  -
+    target: content_translation_created
+    map:
+      value: created
+    settings:
+      language: null
+      timezone: UTC
+  -
+    target: status
+    map:
+      value: status
+    settings:
+      language: null
+  -
+    target: weight
+    map:
+      value: weight
+    settings: {  }
+  -
+    target: parent
+    map:
+      target_id: parent
+    settings:
+      reference_by: name
+      autocreate: false
+      feeds_item: false
+  -
+    target: content_translation_uid
+    map:
+      target_id: uid
+    settings:
+      language: ''
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0
+  -
+    target: field_previoustermid
+    map:
+      value: tid
+    settings:
+      language: null

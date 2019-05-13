@@ -67,4 +67,9 @@ final class FeedsEvents {
    */
   const EXPIRE = 'feeds.expire';
 
+  /**
+   * Fired after an import has finished.
+   */
+  const IMPORT_FINISHED = 'feeds.import_finished';
+
 }

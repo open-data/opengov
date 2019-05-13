@@ -11,13 +11,14 @@ register_no_approval_required:
   body: "[user:display-name],\r\n\r\nNous vous remercions pour votre inscription sur [site:name]. Vous pouvez maintenant vous connecter en utilisant le lien ci-dessous ou en le copiant dans votre navigateur : \r\n\r\n[user:one-time-login-url]\r\n\r\nCe lien ne peut être utilisé qu'une seule fois et vous redirigera vers une page où vous pourrez choisir votre mot de passe.\r\n\r\nAprès avoir choisi votre mot de passe, vous pourrez vous connecter sur [site:login-url] en utilisant : \r\n\r\nNom d'utilisateur : [user:name]\r\nmot de passe : Votre mot de passe\r\n\r\n--  L'équipe de [site:name]"
   subject: 'Détails du compte [user:display-name] sur [site:name]'
 register_pending_approval:
+  body: "[user:display-name],\r\n\r\nNous vous remercions pour votre demande d'inscription sur [site:name]. Votre demande est actuellement en cours de validation. Une fois la validation faite, vous recevrez un autre courriel de confirmation contenant les informations vous permettant de vous connecter, choisir votre mot de passe ainsi que d'autres détails.\r\n\r\n\r\n--  L'équipe de [site:name]"
   subject: 'Détails du compte [user:display-name] sur [site:name] (en attente de validation d''un administrateur)'
 register_pending_approval_admin:
   body: "[user:display-name] a fait une demande de compte.\r\n\r\n[user:edit-url]"
   subject: 'Détails du compte [user:display-name] sur [site:name] (en attente de validation d''un administrateur)'
 status_activated:
   body: "[user:display-name],\r\n\r\nVotre compte sur [site:name] a été activé.\r\n\r\nVous pouvez maintenant vous connecter en cliquant sur le lien ci-dessous ou en le copiant dans votre navigateur : \r\n\r\n[user:one-time-login-url]\r\n\r\nCe lien ne peut être utilisé qu'une seule fois et vous redirigera vers une page où vous pourrez choisir votre mot de passe.\r\n\r\nAprès avoir choisi votre mot de passe, vous pourrez vous connecter sur [site:login-url] en utilisant :\r\n\r\nnom d'utilisateur : [user:account-name]\r\nmot de passe : Votre mot de passe\r\n\r\n--  L'équipe de [site:name]"
-  subject: 'Détails du compte [user:display-name] sur [site:name] (validé)'
+  subject: 'Détails du compte pour [user:display-name] sur [site:name]'
 status_blocked:
   body: "[user:display-name],\r\n\r\nVotre compte sur [site:name] a été bloqué.\r\n\r\n-- L'équipe [site:name]"
   subject: 'Détails du compte [user:display-name] sur [site:name] (bloqué)'

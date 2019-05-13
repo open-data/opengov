@@ -80,7 +80,7 @@ class FeedImportHandler extends FeedHandlerBase {
       $feed->lock();
     }
     catch (LockException $e) {
-      drupal_set_message(t('The feed became locked before the import could begin.'), 'warning');
+      \Drupal::messenger()->addWarning(t('The feed became locked before the import could begin.'));
       return;
     }
 
@@ -429,7 +429,7 @@ class FeedImportHandler extends FeedHandlerBase {
       return;
     }
     if ($exception instanceof \RuntimeException) {
-      drupal_set_message($exception->getMessage(), 'error');
+      \Drupal::messenger()->addError($exception->getMessage());
       return;
     }
 

@@ -4,7 +4,6 @@ module:
   admin_toolbar_links_access_filter: 0
   admin_toolbar_tools: 0
   automated_cron: 0
-  big_pipe: 0
   block: 0
   block_content: 0
   bootstrap_layouts: 0
@@ -22,6 +21,7 @@ module:
   dblog: 0
   dynamic_page_cache: 0
   editor: 0
+  external_comment: 0
   feeds: 0
   field: 0
   field_ui: 0
@@ -50,6 +50,7 @@ module:
   path: 0
   quickedit: 0
   rdf: 0
+  redirect: 0
   search: 0
   serialization: 0
   shortcut: 0
@@ -62,9 +63,11 @@ module:
   update: 0
   user: 0
   views_ui: 0
-  votingapi: 0
-  vud: 0
+  voting_webform: 0
+  webform: 0
+  webform_ui: 0
   workflows: 0
+  forum: 1
   menu_link_content: 1
   pathauto: 1
   content_translation: 10

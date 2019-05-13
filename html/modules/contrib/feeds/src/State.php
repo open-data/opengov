@@ -123,7 +123,7 @@ class State implements StateInterface {
    */
   public function displayMessages() {
     foreach ($this->messages as $message) {
-      drupal_set_message($message['message'], $message['type'], $message['repeat']);
+      \Drupal::messenger()->addMessage($message['message'], $message['type'], $message['repeat']);
     }
   }
 

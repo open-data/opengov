@@ -39,7 +39,7 @@ class FeedUnlockForm extends ContentEntityConfirmFormBase {
     $args = ['@type' => $this->entity->getType()->label(), '%title' => $this->entity->label()];
 
     $this->logger('feeds')->notice('@type: unlocked %title.', $args);
-    drupal_set_message($this->t('%title has been unlocked.', $args));
+    $this->messenger()->addMessage($this->t('%title has been unlocked.', $args));
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }

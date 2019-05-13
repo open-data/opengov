@@ -1,0 +1,23 @@
+uuid: 16226579-bf8e-490c-9bd5-1dd0419e7d39
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_previoustermid
+    - taxonomy.vocabulary.departments
+id: taxonomy_term.departments.field_previoustermid
+field_name: field_previoustermid
+entity_type: taxonomy_term
+bundle: departments
+label: previoustermid
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

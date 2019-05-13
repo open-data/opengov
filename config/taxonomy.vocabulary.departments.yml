@@ -1,0 +1,8 @@
+uuid: 49c9f984-997c-4403-b21f-ed24481233c1
+langcode: en
+status: true
+dependencies: {  }
+name: Departments
+vid: departments
+description: 'Government of Canada departments listings.'
+weight: 0

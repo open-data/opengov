@@ -3,7 +3,7 @@
 namespace Drupal\feeds;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -21,7 +21,7 @@ class FeedListBuilder extends EntityListBuilder {
   /**
    * The date formatter service.
    *
-   * @var \Drupal\Core\Datetime\DateFormatter
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $dateFormatter;
 
@@ -39,12 +39,12 @@ class FeedListBuilder extends EntityListBuilder {
    *   The entity type definition.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The entity storage class.
-   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   The redirect destination service.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, DateFormatter $date_formatter, RedirectDestinationInterface $redirect_destination) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, DateFormatterInterface $date_formatter, RedirectDestinationInterface $redirect_destination) {
     parent::__construct($entity_type, $storage);
 
     $this->dateFormatter = $date_formatter;
@@ -91,15 +91,24 @@ class FeedListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+    if (!$entity->access('view') && !$entity->access('update') && !$entity->access('import') && !$entity->access('schedule_import') && !$entity->access('clear')) {
+      return [];
+    }
+
     $uri = $entity->toUrl();
     $options = $uri->getOptions();
     $uri->setOptions($options);
 
-    $row['title']['data'] = [
-      '#type' => 'link',
-      '#title' => $entity->label(),
-      '#url' => $uri,
-    ];
+    if ($entity->access('view')) {
+      $row['title']['data'] = [
+        '#type' => 'link',
+        '#title' => $entity->label(),
+        '#url' => $uri,
+      ];
+    }
+    else {
+      $row['title'] = $entity->label();
+    }
 
     $row['type'] = Html::escape($entity->getType()->label());
     $row['author']['data'] = [
@@ -121,7 +130,9 @@ class FeedListBuilder extends EntityListBuilder {
   protected function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
 
-    $operations['edit']['weight'] = 0;
+    if ($entity->access('update')) {
+      $operations['edit']['weight'] = 0;
+    }
 
     if ($entity->access('import') && $entity->hasLinkTemplate('import-form')) {
       $operations['import'] = [
@@ -131,10 +142,18 @@ class FeedListBuilder extends EntityListBuilder {
       ];
     }
 
+    if ($entity->access('schedule_import') && $entity->hasLinkTemplate('schedule-import-form')) {
+      $operations['schedule_import'] = [
+        'title' => $this->t('Import in background'),
+        'weight' => 3,
+        'url' => $entity->toUrl('schedule-import-form'),
+      ];
+    }
+
     if ($entity->access('clear') && $entity->hasLinkTemplate('clear-form')) {
       $operations['clear'] = [
         'title' => $this->t('Delete items'),
-        'weight' => 3,
+        'weight' => 4,
         'url' => $entity->toUrl('clear-form'),
       ];
     }

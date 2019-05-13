@@ -1,0 +1,43 @@
+uuid: dd14c37c-20a3-417b-b33e-2b45566a83f2
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.forum
+  module:
+    - node
+_core:
+  default_config_hash: T4JXnEotC0g7Eg0jMC3JqBa2jXFuBfWIonijU_Cq5AA
+id: node.forum
+targetEntityType: node
+bundle: forum
+types:
+  - 'schema:Discussion'
+fieldMappings:
+  title:
+    properties:
+      - 'schema:name'
+  created:
+    properties:
+      - 'schema:dateCreated'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  changed:
+    properties:
+      - 'schema:dateModified'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  body:
+    properties:
+      - 'schema:text'
+  uid:
+    properties:
+      - 'schema:author'
+    mapping_type: rel
+  comment_count:
+    properties:
+      - 'schema:interactionCount'
+    datatype_callback:
+      callable: 'Drupal\rdf\SchemaOrgDataConverter::interactionCount'
+      arguments:
+        interaction_type: UserComments

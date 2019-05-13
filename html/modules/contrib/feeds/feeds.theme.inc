@@ -22,7 +22,7 @@ function theme_feeds_feed_status($v) {
   if (!count($items)) {
     if ($v['count']) {
       if ($v['imported']) {
-        $items[] = t('Last import: @ago ago.', ['@ago' => \Drupal::service('date.formatter')->formatInterval(REQUEST_TIME - $v['imported'], 1)]);
+        $items[] = t('Last import: @ago ago.', ['@ago' => \Drupal::service('date.formatter')->formatInterval(\Drupal::time()->getRequestTime() - $v['imported'], 1)]);
       }
       $items[] = t('@count imported items total.', ['@count' => $v['count']]);
     }

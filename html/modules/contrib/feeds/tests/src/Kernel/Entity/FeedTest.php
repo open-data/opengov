@@ -3,6 +3,9 @@
 namespace Drupal\Tests\feeds\Kernel\Entity;
 
 use Drupal\feeds\StateInterface;
+use Drupal\feeds\Entity\Feed;
+use Drupal\feeds\Event\FeedsEvents;
+use Drupal\feeds\Event\ImportFinishedEvent;
 use Drupal\feeds\Exception\LockException;
 use Drupal\feeds\Feeds\State\CleanStateInterface;
 use Drupal\feeds\FeedTypeInterface;
@@ -12,6 +15,8 @@ use Drupal\feeds\Plugin\Type\Parser\ParserInterface;
 use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Tests\feeds\Kernel\FeedsKernelTestBase;
+use Exception;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * @coversDefaultClass \Drupal\feeds\Entity\Feed
@@ -251,6 +256,38 @@ class FeedTest extends FeedsKernelTestBase {
 
     // Assert imported time was updated.
     $this->assertGreaterThanOrEqual(\Drupal::time()->getRequestTime(), $feed->getImportedTime());
+  }
+
+  /**
+   * Tests that the event 'feeds.import_finished' gets dispatched.
+   *
+   * @covers ::finishImport
+   */
+  public function testDispatchImportFinishedEvent() {
+    $dispatcher = new EventDispatcher();
+    $feed = $this->getMockBuilder(Feed::class)
+      ->setMethods(['eventDispatcher', 'getType'])
+      ->setConstructorArgs([
+        ['type' => $this->feedType->id()],
+        'feeds_feed',
+        $this->feedType->id(),
+      ])
+      ->getMock();
+
+    $feed->expects($this->once())
+      ->method('getType')
+      ->willReturn($this->feedType);
+
+    $feed->expects($this->once())
+      ->method('eventDispatcher')
+      ->willReturn($dispatcher);
+
+    $dispatcher->addListener(FeedsEvents::IMPORT_FINISHED, function (ImportFinishedEvent $event) {
+      throw new Exception();
+    });
+
+    $this->setExpectedException(Exception::class);
+    $feed->finishImport();
   }
 
   /**

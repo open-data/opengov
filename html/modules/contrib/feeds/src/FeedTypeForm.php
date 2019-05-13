@@ -337,7 +337,7 @@ class FeedTypeForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->save();
     $form_state->setRedirect('entity.feeds_feed_type.edit_form', ['feeds_feed_type' => $this->entity->id()]);
-    drupal_set_message($this->t('Your changes have been saved.'));
+    $this->messenger()->addStatus($this->t('Your changes have been saved.'));
   }
 
   /**

@@ -1,0 +1,9 @@
+
+mergenodes.mergeNodesForm:
+  path: '/mergenodes/form/default'
+  defaults:
+    _form: '\Drupal\mergenodes\Form\DefaultForm'
+    _title: 'Merge translations of Nodes'
+  requirements:
+    _access: 'TRUE'
+  

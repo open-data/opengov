@@ -74,6 +74,9 @@ class FeedsPermissions {
       "import $id feeds" => [
         'title' => $this->t('%name: Import feeds', $args),
       ],
+      "schedule_import $id feeds" => [
+        'title' => $this->t('%name: Import feeds in background', $args),
+      ],
       "clear $id feeds" => [
         'title' => $this->t('%name: Delete feed items', $args),
       ],

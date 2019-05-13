@@ -12,28 +12,26 @@ dependencies:
     - field.field.node.suggested_dataset.field_status
     - field.field.node.suggested_dataset.field_status_link
     - field.field.node.suggested_dataset.field_suggested_dataset_dept
-    - field.field.node.suggested_dataset.field_vud
     - node.type.suggested_dataset
   module:
     - comment
     - link
     - text
     - user
-    - vud
 id: node.suggested_dataset.default
 targetEntityType: node
 bundle: suggested_dataset
 mode: default
 content:
   body:
-    label: hidden
+    label: above
     type: text_default
     weight: 3
     settings: {  }
     third_party_settings: {  }
     region: content
   comment:
-    weight: 6
+    weight: 7
     label: above
     settings:
       view_mode: default
@@ -41,6 +39,15 @@ content:
     third_party_settings: {  }
     type: comment_default
     region: content
+  field_previousnodeid:
+    type: number_integer
+    weight: 6
+    region: content
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
   field_status:
     weight: 4
     label: above
@@ -69,13 +76,6 @@ content:
     third_party_settings: {  }
     type: string
     region: content
-  field_vud:
-    weight: 1
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    type: vote_up_down_formatter_type
-    region: content
   links:
     weight: 0
     region: content
@@ -84,5 +84,4 @@ content:
 hidden:
   feeds_item: true
   field_meta_tags: true
-  field_previousnodeid: true
   langcode: true

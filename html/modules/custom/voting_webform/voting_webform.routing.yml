@@ -1,0 +1,17 @@
+voting_webform.getVoteAverage:
+  path: '/vote-result/{webform_id}/{uuid}'
+  defaults:
+    _controller: '\Drupal\voting_webform\Controller\VotingWebformController::getAverageVote'
+    _title: 'Get average votes'
+  requirements:
+    _permission: 'access content'
+    # webform_id: '^[0-9 -]*'
+    #uuid: '^[0-9][A-Za-z0-9 -]*$'
+  options:
+    parameters:
+      webform_id:
+        type: string
+      uuid:
+        type: string
+  dependencies:
+    - drupal:webform

@@ -1,0 +1,59 @@
+uuid: c0ea16a3-6e29-4638-8d6b-1c1b8fece2ed
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.departments.feeds_item
+    - field.field.taxonomy_term.departments.field_previoustermid
+    - taxonomy.vocabulary.departments
+  module:
+    - path
+    - text
+id: taxonomy_term.departments.default
+targetEntityType: taxonomy_term
+bundle: departments
+mode: default
+content:
+  description:
+    type: text_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_previoustermid:
+    weight: 31
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  translation:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  feeds_item: true

@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\feeds\Traits;
 
-use Drupal\Component\Utility\Unicode;
 use Drupal\feeds\Entity\Feed;
 use Drupal\feeds\Entity\FeedType;
 use Drupal\feeds\FeedInterface;
@@ -33,7 +32,7 @@ trait FeedCreationTrait {
   protected function createFeedType(array $settings = []) {
     // Populate default array.
     $settings += [
-      'id' => Unicode::strtolower($this->randomMachineName()),
+      'id' => mb_strtolower($this->randomMachineName()),
       'label' => $this->randomMachineName(),
       'import_period' => FeedTypeInterface::SCHEDULE_NEVER,
       'processor_configuration' => [
@@ -130,15 +129,15 @@ trait FeedCreationTrait {
    * @param array $settings
    *   (optional) An associative array of settings for the feed entity.
    *   The following defaults are provided:
-   *   - label: Random string.
+   *   - title: Random string.
    *
-   * @return \Drupal\feeds\FeedTypeInterface
-   *   The created feed type entity.
+   * @return \Drupal\feeds\FeedInterface
+   *   The created feed entity.
    */
   protected function createFeed($feed_type_id, array $settings = []) {
     // Populate default array.
     $settings += [
-      'label' => $this->randomMachineName(),
+      'title' => $this->randomMachineName(),
     ];
     $settings['type'] = $feed_type_id;
 

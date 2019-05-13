@@ -10,7 +10,7 @@ third_party_settings:
     parent: ''
 name: 'Suggested Dataset'
 type: suggested_dataset
-description: ''
+description: 'Datasets that have been suggested by users through the web form.'
 help: ''
 new_revision: true
 preview_mode: 1

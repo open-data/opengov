@@ -54,5 +54,8 @@ display:
           expose:
             label: Langue
       title: 'Contenu modéré'
+      empty:
+        area_text_custom:
+          content: 'Aucun contenu modéré disponible. Seules les versions de contenu en attente, telles que ''Brouillon'', sont listées ici.'
   moderated_content:
     display_title: 'Contenu modéré'

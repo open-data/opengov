@@ -99,10 +99,10 @@ class TimestampTest extends FeedsKernelTestBase {
     }
 
     // Assert that the fourth entry failed to validate.
-    $messages = drupal_get_messages('warning', FALSE);
-    $this->assertCount(1, $messages['warning']);
-    $this->assertContains('The content <em class="placeholder">Eodem modo typi</em> failed to validate', (string) $messages['warning'][0]);
-    $this->assertContains('created.0.value: This value should be of the correct primitive type.', (string) $messages['warning'][0]);
+    $messages = \Drupal::messenger()->messagesByType('warning');
+    $this->assertCount(1, $messages);
+    $this->assertContains('The content <em class="placeholder">Eodem modo typi</em> failed to validate', (string) $messages[0]);
+    $this->assertContains('created.0.value: This value should be of the correct primitive type.', (string) $messages[0]);
   }
 
   /**

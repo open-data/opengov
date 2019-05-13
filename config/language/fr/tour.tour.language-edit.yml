@@ -10,7 +10,7 @@ tips:
     label: 'Nom de la langue'
     body: '<p>Le nom de la langue est utilisé à travers le site pour tous les utilisateurs et est écrite en anglais. Les noms des langues prédéfinies peuvent être traduites en utilisant le module Interface Translation et les noms des langues prédéfinies et des langues personnalisées peuvent être traduits en utilisant le module Configuration Translation.</p>'
   language-edit-direction:
-    label: 'Sens de l''écriture'
+    label: 'Direction de la langue'
     body: '<p>Choisir si la langue se lit "de gauche à droite" ou "de droite à gauche".</p><p>Notez que tous les thèmes ne supportent pas la mise en page "de droite à gauche" alors testez votre thème si vous utilisez "de droite à gauche".</p>'
   language-edit-continue:
     label: 'Continuant sur'

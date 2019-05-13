@@ -57,7 +57,7 @@ class RealtimeOutputHandler
      */
     public function setStdoutMarker($marker)
     {
-        $this->$stdoutMarker = $marker;
+        $this->stdoutMarker = $marker;
         return $this;
     }
 
@@ -102,9 +102,9 @@ class RealtimeOutputHandler
     public function handleOutput($type, $buffer)
     {
         if (Process::ERR === $type) {
-            $this->stderr->write($this->addMarker($buffer, $this->stderrMarker));
+            $this->stderr->write($this->addMarker($buffer, $this->stderrMarker), false, OutputInterface::OUTPUT_RAW);
         } else {
-            $this->stdout->write($this->addMarker($buffer, $this->stdoutMarker));
+            $this->stdout->write($this->addMarker($buffer, $this->stdoutMarker), false, OutputInterface::OUTPUT_RAW);
         }
     }
 

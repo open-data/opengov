@@ -1,0 +1,181 @@
+<?php
+
+namespace Drupal\webform\Tests\Element;
+
+use Drupal\webform\Entity\Webform;
+use Drupal\webform\Entity\WebformSubmission;
+
+/**
+ * Tests for computed elements.
+ *
+ * @group Webform
+ */
+class WebformElementComputedTest extends WebformElementTestBase {
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['filter', 'webform'];
+
+  /**
+   * Webforms to load.
+   *
+   * @var array
+   */
+  protected static $testWebforms = [
+    'test_element_computed_token',
+    'test_element_computed_twig',
+    'test_element_computed_ajax',
+  ];
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+
+    // Create filters.
+    $this->createFilters();
+  }
+
+  /**
+   * Test computed elements.
+   */
+  public function testComputedElement() {
+    $this->drupalLogin($this->rootUser);
+
+    /* Token */
+
+    $token_webform = Webform::load('test_element_computed_token');
+
+    // Get computed token preview.
+    $this->drupalPostForm('webform/test_element_computed_token', [], t('Preview'));
+
+    // Check token auto detection.
+    $this->assertRaw('<b class="webform_computed_token_auto">simple string:</b> This is a string<br />');
+    $this->assertRaw('<b class="webform_computed_token_auto">complex string :</b> This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
+    $this->assertRaw('<b class="webform_computed_token_auto">text_format:</b> <p>This is a <strong>text format</strong> string.</p>');
+    $this->assertRaw('<p>It contains "double" and \'single\' quotes with special characters like &lt;, &gt;, &lt;&gt;, and &gt;&lt;.</p><br />');
+    $this->assertRaw('<b class="webform_computed_token_auto">xss:</b> &lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;<br />');
+
+    // Check token html rendering.
+    $this->assertRaw('<b class="webform_computed_token_html">simple string:</b> This is a string<br />');
+    $this->assertRaw('<b class="webform_computed_token_html">complex string :</b> This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
+    $this->assertRaw('<b class="webform_computed_token_html">text_format:</b> <p>This is a <strong>text format</strong> string.</p>');
+    $this->assertRaw('<p>It contains "double" and \'single\' quotes with special characters like &lt;, &gt;, &lt;&gt;, and &gt;&lt;.</p><br />');
+    $this->assertRaw('<b class="webform_computed_token_html">xss:</b> &lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;<br />');
+
+    // Check token plain text rendering.
+    $this->assertRaw('<div class="webform-element webform-element-type-webform-computed-token js-form-item form-item js-form-type-item form-type-item js-form-item-webform-computed-token-text form-item-webform-computed-token-text" id="test_element_computed_token--webform_computed_token_text">');
+    $this->assertRaw('<label>webform_computed_token_text</label>');
+    $this->assertRaw('simple string: This is a string<br />');
+    $this->assertRaw('complex string : This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
+    $this->assertRaw('xss: &lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;<br />');
+
+    // Submit the computed token.
+    $sid = $this->postSubmission($token_webform);
+    $webform_submission = WebformSubmission::load($sid);
+    $data = $webform_submission->getData();
+
+    // Check value stored in the database.
+    $this->debug($data['webform_computed_token_store']);
+    $this->assertEqual($data['webform_computed_token_store'], "sid: $sid");
+
+    // Check values not stored in the database.
+    $this->assert(!isset($data['webform_computed_token_auto']));
+    $this->assert(!isset($data['webform_computed_token_html']));
+    $this->assert(!isset($data['webform_computed_token_text']));
+
+    /* Twig */
+
+    // Get computed Twig form.
+    $this->drupalGet('/webform/test_element_computed_twig');
+
+    // Check Twig trim.
+    $this->assertFieldByName('webform_computed_twig_trim', '<em>This is trimmed</em>  <br/>');
+
+    // Check Twig spaceless.
+    $this->assertFieldByName('webform_computed_twig_spaceless', '<em>This is spaceless</em><br/>');
+
+    // Get computed Twig preview.
+    $this->drupalPostForm('webform/test_element_computed_twig', [], t('Preview'));
+
+    // Check Twig auto detection.
+    $this->assertRaw('<b class="webform_computed_twig_auto">number:</b> 2 * 2 = 4<br />');
+    $this->assertRaw('<b class="webform_computed_twig_auto">simple string:</b> This is a string<br />');
+    $this->assertRaw('<b class="webform_computed_twig_auto">complex string:</b> This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
+    $this->assertRaw('<b class="webform_computed_twig_auto">text_format:</b> <p>This is a <strong>text format</strong> string.</p>');
+    $this->assertRaw('<p>It contains "double" and \'single\' quotes with special characters like &lt;, &gt;, &lt;&gt;, and &gt;&lt;.</p><br />');
+    $this->assertRaw('<b class="webform_computed_twig_auto">xss:</b> &lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;<br />');
+
+    // Check Twig html rendering.
+    $this->assertRaw('<b class="webform_computed_twig_html">number:</b> 2 * 2 = 4<br />');
+    $this->assertRaw('<b class="webform_computed_twig_html">simple string:</b> This is a string<br />');
+    $this->assertRaw('<b class="webform_computed_twig_html">complex string:</b> This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
+    $this->assertRaw('<b class="webform_computed_twig_html">xss:</b> &lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;<br />');
+
+    // Check Twig plain text rendering.
+    $this->assertRaw('number: 2 * 2 = 4<br />');
+    $this->assertRaw('simple string: This is a string<br />');
+    $this->assertRaw('complex string: This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
+    $this->assertRaw('text_format: This is a *text format* string.<br />');
+
+    // Check Twig data rendering.
+    $this->assertRaw('<b class="webform_computed_twig_data">number:</b> 2 * 2 = 4<br />');
+    $this->assertRaw('<b class="webform_computed_twig_data">simple string:</b> This is a string<br />');
+    $this->assertRaw('<b class="webform_computed_twig_data">complex string:</b> This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
+    $this->assertRaw('<b class="webform_computed_twig_data">text_format:</b> &lt;p&gt;This is a &lt;strong&gt;text format&lt;/strong&gt; string.&lt;/p&gt;');
+    $this->assertRaw('<b class="webform_computed_twig_data">xss:</b> &lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;<br />');
+
+    /* Ajax */
+
+    // Get computed ajax form.
+    $this->drupalGet('/webform/test_element_computed_ajax');
+
+    // Check that a and b are hidden via #hide_empty.
+    $this->assertRaw('<div style="display:none" class="js-form-item form-item js-form-type-item form-type-item js-form-item-webform-computed-token-a form-item-webform-computed-token-a">');
+    $this->assertRaw('<div style="display:none" class="js-form-item form-item js-form-type-item form-type-item js-form-item-webform-computed-token-b form-item-webform-computed-token-b">');
+
+    // Check a, b, computed default values.
+    $this->assertFieldByName('webform_computed_token_a', '');
+    $this->assertFieldByName('webform_computed_token_b', '');
+    $this->assertFieldByName('webform_computed_twig', 'Please enter a value for a and b.');
+    $this->assertFieldByName('webform_computed_twig_token', 'Please enter a value for a and b.');
+
+    // Calculate 2 + 4 = 6.
+    $edit = ['a[select]' => 2, 'b' => 4];
+
+    // Check a is updated.
+    $this->drupalPostAjaxForm(NULL, $edit, 'webform-computed-webform_computed_token_a-button');
+    $this->assertNoRaw('<div style="display:none" class="js-form-item form-item js-form-type-item form-type-item js-form-item-webform-computed-token-a form-item-webform-computed-token-a">');
+    $this->assertFieldByName('webform_computed_token_a', '2');
+    $this->assertFieldByName('webform_computed_token_b', '');
+    $this->assertFieldByName('webform_computed_twig', 'Please enter a value for a and b.');
+    $this->assertFieldByName('webform_computed_twig_token', 'Please enter a value for a and b.');
+
+    // Check b is updated.
+    $this->drupalPostAjaxForm(NULL, $edit, 'webform-computed-webform_computed_token_b-button');
+    $this->assertNoRaw('<div style="display:none" class="js-form-item form-item js-form-type-item form-type-item js-form-item-webform-computed-token-b form-item-webform-computed-token-b">');
+    $this->assertFieldByName('webform_computed_token_a', '2');
+    $this->assertFieldByName('webform_computed_token_b', '4');
+    $this->assertFieldByName('webform_computed_twig', 'Please enter a value for a and b.');
+    $this->assertFieldByName('webform_computed_twig_token', 'Please enter a value for a and b.');
+
+    // Check twig is updated.
+    $this->drupalPostAjaxForm(NULL, $edit, 'webform-computed-webform_computed_twig-button');
+    $this->assertFieldByName('webform_computed_token_a', '2');
+    $this->assertFieldByName('webform_computed_token_b', '4');
+    $this->assertFieldByName('webform_computed_twig', '2 + 4 = 6');
+    $this->assertFieldByName('webform_computed_twig_token', 'Please enter a value for a and b.');
+
+    // Check twig with token is updated.
+    $this->drupalPostAjaxForm(NULL, $edit, 'webform-computed-webform_computed_twig_token-button');
+    $this->assertFieldByName('webform_computed_token_a', '2');
+    $this->assertFieldByName('webform_computed_token_b', '4');
+    $this->assertFieldByName('webform_computed_twig', '2 + 4 = 6');
+    $this->assertFieldByName('webform_computed_twig_token', '2 + 4 = 6');
+  }
+
+}

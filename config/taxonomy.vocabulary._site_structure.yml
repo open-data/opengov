@@ -1,0 +1,8 @@
+uuid: 5671194c-212a-4da9-90be-19cceb094d68
+langcode: en
+status: true
+dependencies: {  }
+name: 'Site Structure'
+vid: _site_structure
+description: 'Hierarchical structure of Open Government.'
+weight: 0

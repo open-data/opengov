@@ -70,7 +70,7 @@ class DependencyTest extends FeedsKernelTestBase {
       ->delete();
 
     // Now delete the bundle.
-    $content_type = \Drupal::entityManager()
+    \Drupal::entityTypeManager()
       ->getStorage('node_type')
       ->load('article')
       ->delete();

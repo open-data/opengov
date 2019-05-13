@@ -1,0 +1,8 @@
+uuid: 30df1812-31e8-4100-a3fb-abaa9f385b62
+langcode: en
+status: true
+dependencies: {  }
+name: 'Commitment FreeTags'
+vid: commitment_freetags
+description: 'Commitment with "Free Tagging" support.'
+weight: 0

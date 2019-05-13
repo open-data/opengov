@@ -2,7 +2,9 @@
 
 namespace Drupal\Tests\feeds\Unit\Feeds\Parser;
 
+use Drupal\feeds\FeedInterface;
 use Drupal\feeds\Feeds\Parser\CsvParser;
+use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Result\FetcherResult;
 use Drupal\feeds\State;
 use Drupal\feeds\StateInterface;
@@ -48,16 +50,14 @@ class CsvParserTest extends FeedsUnitTestCase {
   public function setUp() {
     parent::setUp();
 
-    $this->feedType = $this->getMock('Drupal\feeds\FeedTypeInterface');
-    $this->feedType->method('getMappingSources')
-      ->will($this->returnValue([]));
+    $this->feedType = $this->getMock(FeedTypeInterface::class);
     $configuration = ['feed_type' => $this->feedType, 'line_limit' => 3];
     $this->parser = new CsvParser($configuration, 'csv', []);
     $this->parser->setStringTranslation($this->getStringTranslationStub());
 
     $this->state = new State();
 
-    $this->feed = $this->getMock('Drupal\feeds\FeedInterface');
+    $this->feed = $this->getMock(FeedInterface::class);
     $this->feed->expects($this->any())
       ->method('getType')
       ->will($this->returnValue($this->feedType));
@@ -69,6 +69,9 @@ class CsvParserTest extends FeedsUnitTestCase {
    * @covers ::parse
    */
   public function testParse() {
+    $this->feedType->method('getMappingSources')
+      ->will($this->returnValue([]));
+
     $this->feed->expects($this->any())
       ->method('getConfigurationFor')
       ->with($this->parser)
@@ -90,12 +93,60 @@ class CsvParserTest extends FeedsUnitTestCase {
   }
 
   /**
+   * Tests parsing with the "no_headers" option enabled.
+   */
+  public function testParseWithoutHeaders() {
+    // Enable "no_headers" option.
+    $config = [
+      'no_headers' => TRUE,
+    ] + $this->parser->defaultFeedConfiguration();
+
+    $this->feed->expects($this->any())
+      ->method('getConfigurationFor')
+      ->with($this->parser)
+      ->will($this->returnValue($config));
+
+    // Provide mapping sources.
+    $this->feedType->method('getMappingSources')
+      ->will($this->returnValue([
+        'column1' => [
+          'label' => 'Column 1',
+          'value' => 0,
+          'machine_name' => 'column1',
+        ],
+        'column2' => [
+          'label' => 'Column 2',
+          'value' => 1,
+          'machine_name' => 'column2',
+        ],
+      ]));
+
+    $file = $this->resourcesPath() . '/csv/content.csv';
+    $fetcher_result = new FetcherResult($file);
+
+    $result = $this->parser->parse($this->feed, $fetcher_result, $this->state);
+
+    // Assert that there are three items.
+    $this->assertSame(count($result), 3);
+    // Assert that each item has the expected value on the machine name.
+    $this->assertSame('guid', $result[0]->get('column1'));
+    $this->assertSame('title', $result[0]->get('column2'));
+    $this->assertSame('1', $result[1]->get('column1'));
+    $this->assertSame('Lorem ipsum', $result[1]->get('column2'));
+    $this->assertSame('2', $result[2]->get('column1'));
+    $this->assertSame('Ut wisi enim ad minim veniam', $result[2]->get('column2'));
+  }
+
+  /**
    * Tests parsing an empty CSV file.
    *
    * @covers ::parse
    * @expectedException \Drupal\feeds\Exception\EmptyFeedException
    */
   public function testEmptyFeed() {
+    $this->feedType->method('getMappingSources')
+      ->will($this->returnValue([]));
+
     touch('vfs://feeds/empty_file');
     $result = new FetcherResult('vfs://feeds/empty_file');
     $this->parser->parse($this->feed, $result, $this->state);
@@ -105,6 +156,9 @@ class CsvParserTest extends FeedsUnitTestCase {
    * Tests parsing a file with a few extra blank lines.
    */
   public function testFeedWithExtraBlankLines() {
+    $this->feedType->method('getMappingSources')
+      ->will($this->returnValue([]));
+
     // Set an high line limit.
     $configuration = ['feed_type' => $this->feedType, 'line_limit' => 100];
     $this->parser = new CsvParser($configuration, 'csv', []);

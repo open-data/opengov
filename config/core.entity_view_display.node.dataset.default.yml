@@ -1,0 +1,53 @@
+uuid: 83c1d5b7-bab0-4412-a591-abe3a5e8846a
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.dataset.comment
+    - field.field.node.dataset.field_type
+    - field.field.node.dataset.field_url
+    - field.field.node.dataset.field_uuid
+    - node.type.dataset
+  module:
+    - comment
+    - link
+    - user
+id: node.dataset.default
+targetEntityType: node
+bundle: dataset
+mode: default
+content:
+  comment:
+    weight: 2
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_type:
+    type: string
+    weight: 0
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_url:
+    type: link
+    weight: 1
+    region: content
+    label: inline
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+hidden:
+  field_uuid: true
+  langcode: true
+  links: true

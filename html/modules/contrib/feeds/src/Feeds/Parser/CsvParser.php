@@ -32,7 +32,7 @@ class CsvParser extends ParserBase {
     // Get sources.
     $sources = [];
     foreach ($feed->getType()->getMappingSources() as $key => $info) {
-      if (!empty($info['value'])) {
+      if (isset($info['value']) && trim(strval($info['value'])) !== '') {
         $sources[$info['value']] = $key;
       }
     }

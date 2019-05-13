@@ -48,6 +48,7 @@ abstract class FeedsBrowserTestBase extends BrowserTestBase {
     // Create an user with Feeds admin privileges.
     $this->adminUser = $this->drupalCreateUser([
       'administer feeds',
+      'access feed overview',
     ]);
     $this->drupalLogin($this->adminUser);
   }

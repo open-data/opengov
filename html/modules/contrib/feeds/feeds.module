@@ -5,10 +5,12 @@
  * Feeds hook implementations.
  */
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Template\Attribute;
+use Drupal\Core\Url;
 use Drupal\feeds\Entity\Feed;
 
 /**
@@ -18,6 +20,31 @@ function feeds_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'entity.feeds_feed_type.collection':
       return '<p>' . t('Create one or more feed types for pulling content into Drupal.') . '</p>';
+
+    case 'entity.feeds_feed_type.mapping':
+      return new FormattableMarkup('<p>@help_text</p>', [
+        '@help_text' => t('Define which elements of a single item of a feed (= %sources_label) map to which content pieces in Drupal (= %targets_label). To avoid importing duplicates, make sure that at least one definition has an %unique_target_label. An unique target means that a value for a target can only occur once. For example, only one item with the URL %example_url can exist.', [
+          '%sources_label' => t('Sources'),
+          '%targets_label' => t('Targets'),
+          '%unique_target_label' => t('Unique target'),
+          '%example_url' => 'http://example.com/content/1',
+        ]),
+      ]);
+
+    case 'entity.feeds_feed.import_form':
+      return '<p>' . t("The import task will run immediately, in the web UI. Don't close the browser until the import has been completed or the import would stop.") . '</p>';
+
+    case 'entity.feeds_feed.schedule_import_form':
+      $cron_required = [
+        '#type' => 'link',
+        '#url' => Url::fromUri('https://www.drupal.org/docs/user_guide/en/security-cron.html'),
+        '#title' => t('Requires cron to be configured.'),
+        '#attributes' => [
+          'target' => '_new',
+        ],
+      ];
+
+      return '<p>' . t('This is useful for large imports. The import task will be put on a queue and handled by a cron task.') . ' ' . \Drupal::service('renderer')->renderRoot($cron_required) . '</p>';
   }
 }
 
@@ -27,7 +54,7 @@ function feeds_help($route_name, RouteMatchInterface $route_match) {
 function feeds_cron() {
   $ids = \Drupal::entityQuery('feeds_feed')
     ->condition('queued', 0)
-    ->condition('next', REQUEST_TIME, '<=')
+    ->condition('next', \Drupal::time()->getRequestTime(), '<=')
     ->condition('next', -1, '<>')
     ->condition('status', 1)
     ->range(0, 100)
@@ -42,7 +69,7 @@ function feeds_cron() {
 
   // Delete queued timestamp after 12 hours assuming the update has failed.
   $ids = \Drupal::entityQuery('feeds_feed')
-    ->condition('queued', REQUEST_TIME - (3600 * 12), '<')
+    ->condition('queued', \Drupal::time()->getRequestTime() - (3600 * 12), '<')
     ->execute();
 
   foreach (Feed::loadMultiple($ids) as $feed) {

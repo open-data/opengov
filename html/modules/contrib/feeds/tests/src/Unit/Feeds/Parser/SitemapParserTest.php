@@ -67,7 +67,7 @@ class SitemapParserTest extends FeedsUnitTestCase {
    */
   public function testParse() {
     $file = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/tests/resources/sitemap-example.xml';
-    $fetcher_result = new RawFetcherResult(file_get_contents($file));
+    $fetcher_result = new RawFetcherResult(file_get_contents($file), $this->getMockFileSystem());
 
     $result = $this->parser->parse($this->feed, $fetcher_result, $this->state);
     $this->assertSame(count($result), 5);
@@ -82,7 +82,7 @@ class SitemapParserTest extends FeedsUnitTestCase {
    * @expectedException \Exception
    */
   public function testInvalidFeed() {
-    $fetcher_result = new RawFetcherResult('beep boop');
+    $fetcher_result = new RawFetcherResult('beep boop', $this->getMockFileSystem());
     $result = $this->parser->parse($this->feed, $fetcher_result, $this->state);
   }
 
@@ -93,7 +93,7 @@ class SitemapParserTest extends FeedsUnitTestCase {
    * @expectedException \Drupal\feeds\Exception\EmptyFeedException
    */
   public function testEmptyFeed() {
-    $result = new RawFetcherResult('');
+    $result = new RawFetcherResult('', $this->getMockFileSystem());
     $this->parser->parse($this->feed, $result, $this->state);
   }
 

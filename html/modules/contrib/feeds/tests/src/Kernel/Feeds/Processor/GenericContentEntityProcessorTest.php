@@ -103,7 +103,7 @@ class GenericContentEntityProcessorTest extends FeedsKernelTestBase {
     $feed->import();
 
     // Ensure no warnings nor errors were generated.
-    $messages = drupal_get_messages();
+    $messages = \Drupal::messenger()->all();
     $this->assertArrayNotHasKey('warning', $messages);
     $this->assertArrayNotHasKey('error', $messages);
 

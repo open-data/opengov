@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.commitment.body
     - field.field.node.commitment.comment
     - field.field.node.commitment.field_commitment_ambition
+    - field.field.node.commitment.field_reference_landing
     - node.type.commitment
   module:
     - comment
@@ -45,6 +46,15 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: text_textarea
+    region: content
+  field_reference_landing:
+    weight: 124
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
     region: content
   langcode:
     type: language_select
@@ -108,4 +118,9 @@ content:
       placeholder: ''
     region: content
     third_party_settings: {  }
+  url_redirects:
+    weight: 50
+    settings: {  }
+    third_party_settings: {  }
+    region: content
 hidden: {  }

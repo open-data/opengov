@@ -3,6 +3,7 @@
 namespace Drupal\Tests\feeds\Traits;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountSwitcherInterface;
 use Drupal\feeds\FeedInterface;
@@ -110,6 +111,27 @@ trait FeedsMockingTrait {
       ->method('getSettings')
       ->will($this->returnValue($settings));
 
+    return $definition;
+  }
+
+  /**
+   * Mocks the file system.
+   *
+   * @return \Drupal\Core\File\FileSystemInterface
+   *   A mocked file system.
+   */
+  protected function getMockFileSystem() {
+    $definition = $this->getMock(FileSystemInterface::class);
+    $definition->expects($this->any())
+      ->method('tempnam')
+      ->will($this->returnCallback(function () {
+        $args = func_get_args();
+        $dir = $args[1];
+        mkdir('vfs://feeds/' . $dir);
+        $file = 'vfs://feeds/' . $dir . '/' . mt_rand(10, 1000);
+        touch($file);
+        return $file;
+      }));
     return $definition;
   }
 

@@ -5,6 +5,7 @@ display:
     display_options:
       exposed_form:
         options:
+          submit_button: 'Appliquer les filtres'
           reset_button_label: Réinitialiser
           exposed_sorts_label: 'Trier par'
           sort_asc_label: Asc
@@ -44,6 +45,12 @@ display:
         created:
           expose:
             label: 'Les plus récents d''abord'
+        name:
+          expose:
+            label: 'Nom (A-Z)'
+        name_1:
+          expose:
+            label: 'Nom (Z-A)'
       title: Média
       empty:
         area_text_custom:
@@ -53,5 +60,44 @@ display:
     display_options:
       menu:
         title: Média
+        description: 'Permet aux utilisateurs de parcourir et d''administrer des éléments média'
   widget:
     display_title: Widget
+    display_options:
+      filters:
+        name:
+          expose:
+            label: Nom
+      arguments:
+        bundle:
+          exception:
+            title: Tout
+      header:
+        display_link_grid:
+          label: Grille
+        display_link_table:
+          label: Tableau
+  widget_table:
+    display_options:
+      fields:
+        thumbnail__target_id:
+          label: Vignette
+        name:
+          label: Nom
+        uid:
+          label: Auteur
+        changed:
+          label: 'Mis à jour'
+      filters:
+        name:
+          expose:
+            label: Nom
+      arguments:
+        bundle:
+          exception:
+            title: Tout
+      header:
+        display_link_grid:
+          label: Grille
+        display_link_table:
+          label: Tableau

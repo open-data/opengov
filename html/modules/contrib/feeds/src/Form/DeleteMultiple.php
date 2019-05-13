@@ -6,9 +6,9 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
 use Drupal\feeds\FeedStorageInterface;
-use Drupal\user\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -27,7 +27,7 @@ class DeleteMultiple extends ConfirmFormBase {
   /**
    * The tempstore factory.
    *
-   * @var \Drupal\user\PrivateTempStoreFactory
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
    */
   protected $tempStoreFactory;
 
@@ -48,7 +48,7 @@ class DeleteMultiple extends ConfirmFormBase {
   /**
    * Constructs a DeleteMultiple form object.
    *
-   * @param \Drupal\user\PrivateTempStoreFactory $temp_store_factory
+   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store_factory
    *   The tempstore factory.
    * @param \Drupal\feeds\FeedStorageInterface $storage
    *   The feed storage.
@@ -66,7 +66,7 @@ class DeleteMultiple extends ConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('user.private_tempstore'),
+      $container->get('tempstore.private'),
       $container->get('entity_type.manager')->getStorage('feeds_feed'),
       $container->get('current_user')
     );
@@ -127,7 +127,7 @@ class DeleteMultiple extends ConfirmFormBase {
       $this->tempStoreFactory->get('feeds_feed_multiple_delete_confirm')->delete($this->user->id());
       $count = count($this->feeds);
       $this->logger('feeds')->notice('Deleted @count feeds.', ['@count' => $count]);
-      drupal_set_message($this->formatPlural($count, 'Deleted 1 feed.', 'Deleted @count posts.'));
+      $this->messenger()->addMessage($this->formatPlural($count, 'Deleted 1 feed.', 'Deleted @count feeds.'));
     }
 
     $form_state->setRedirectUrl($this->getCancelUrl());

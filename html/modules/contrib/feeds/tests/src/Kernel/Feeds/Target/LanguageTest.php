@@ -38,16 +38,16 @@ class LanguageTest extends FeedsKernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    $language = $this->container->get('entity.manager')->getStorage('configurable_language')->create([
+    $language = $this->container->get('entity_type.manager')->getStorage('configurable_language')->create([
       'id' => 'es',
     ]);
     $language->save();
 
     // Create feed type.
     $this->feedType = $this->createFeedTypeForCsv([
-      'guid',
-      'title',
-      'langcode',
+      'guid' => 'guid',
+      'title' => 'title',
+      'langcode' => 'langcode',
     ]);
   }
 
@@ -67,7 +67,7 @@ class LanguageTest extends FeedsKernelTestBase {
     ]);
     $feed->import();
 
-    // Assert three created nodes.
+    // Assert two created nodes.
     $this->assertNodeCount(2);
 
     $expected = [

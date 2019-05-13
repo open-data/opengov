@@ -222,17 +222,17 @@ class FeedForm extends ContentEntityForm {
 
     if ($insert) {
       $this->logger('feeds')->notice('@type: added %title.', $context);
-      drupal_set_message($this->t('%title has been created.', $t_args));
+      $this->messenger()->addMessage($this->t('%title has been created.', $t_args));
     }
     else {
       $this->logger('feeds')->notice('@type: updated %title.', $context);
-      drupal_set_message($this->t('%title has been updated.', $t_args));
+      $this->messenger()->addMessage($this->t('%title has been updated.', $t_args));
     }
 
     if (!$feed->id()) {
       // In the unlikely case something went wrong on save, the feed will be
       // rebuilt and feed form redisplayed the same way as in preview.
-      drupal_set_message($this->t('The feed could not be saved.'), 'error');
+      $this->messenger()->addError($this->t('The feed could not be saved.'));
       $form_state->setRebuild();
       return;
     }

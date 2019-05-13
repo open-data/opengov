@@ -5,6 +5,9 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.commitment.body
+    - field.field.node.commitment.comment
+    - field.field.node.commitment.field_commitment_ambition
+    - field.field.node.commitment.field_reference_landing
     - node.type.commitment
   module:
     - text
@@ -28,4 +31,7 @@ content:
     third_party_settings: {  }
     region: content
 hidden:
+  comment: true
+  field_commitment_ambition: true
+  field_reference_landing: true
   langcode: true

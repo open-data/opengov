@@ -112,16 +112,6 @@ namespace {
 
   use Drupal\Core\Session\AccountInterface;
 
-  if (!function_exists('drupal_set_message')) {
-
-    /**
-     * Stub for drupal_set_message() function.
-     */
-    function drupal_set_message() {
-    }
-
-  }
-
   if (!function_exists('filter_formats')) {
 
     /**
@@ -144,20 +134,6 @@ namespace {
 
   }
 
-  if (!function_exists('drupal_tempnam')) {
-
-    /**
-     * Stub for drupal_tempnam() function.
-     */
-    function drupal_tempnam($scheme, $dir) {
-      mkdir('vfs://feeds/' . $dir);
-      $file = 'vfs://feeds/' . $dir . '/' . mt_rand(10, 1000);
-      touch($file);
-      return $file;
-    }
-
-  }
-
   if (!function_exists('file_prepare_directory')) {
 
     /**
@@ -165,17 +141,6 @@ namespace {
      */
     function file_prepare_directory(&$directory) {
       return mkdir($directory);
-    }
-
-  }
-
-  if (!function_exists('drupal_basename')) {
-
-    /**
-     * Stub for drupal_basename() function.
-     */
-    function drupal_basename($uri, $suffix = NULL) {
-      return basename($uri, $suffix);
     }
 
   }

@@ -1,0 +1,14 @@
+/**
+ * @file
+ * Classy theme styles.
+ */
+
+/**
+ * Make sure the date picker is in front of the dialog.
+ *
+ * @see core/themes/classy/css/components/dialog.css
+ * @see core/themes/seven/css/components/dialog.css
+ */
+.ui-datepicker {
+  z-index: 1261 !important;
+}

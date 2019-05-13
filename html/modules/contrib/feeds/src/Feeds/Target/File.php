@@ -218,7 +218,7 @@ class File extends EntityReference {
    *   In case the file extension is not valid.
    */
   protected function getFileName($url) {
-    $filename = trim(drupal_basename($url), " \t\n\r\0\x0B.");
+    $filename = trim(\Drupal::service('file_system')->basename($url), " \t\n\r\0\x0B.");
     $extension = substr($filename, strrpos($filename, '.') + 1);
 
     if (!preg_grep('/' . $extension . '/i', $this->fileExtensions)) {

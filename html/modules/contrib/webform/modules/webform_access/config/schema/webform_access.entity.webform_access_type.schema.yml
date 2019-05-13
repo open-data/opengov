@@ -1,0 +1,10 @@
+webform.webform_access_type.*:
+  type: config_entity
+  label: 'Access type'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'

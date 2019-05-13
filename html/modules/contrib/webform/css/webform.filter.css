@@ -1,0 +1,34 @@
+/**
+ * @file
+ * Filter styles
+ * @see /admin/structure/webform
+ * @see /admin/structure/webform/templates
+ */
+
+.webform-filter-form .form-submit {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+.webform-filter-form .form-item {
+  margin-right: 5px;
+}
+
+.webform-filter-form .form-item input {
+  max-width: 300px;
+}
+
+.webform-filter-form .form-item select {
+  max-width: 200px;
+}
+
+@media screen and (max-width: 600px) {
+  .webform-filter-form .form-item {
+    display: block;
+    margin-right: 0;
+  }
+  .webform-filter-form .form-item input,
+  .webform-filter-form .form-item select {
+    max-width: initial;
+  }
+}

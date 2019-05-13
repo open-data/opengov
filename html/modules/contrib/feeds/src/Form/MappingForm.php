@@ -71,7 +71,7 @@ class MappingForm extends FormBase {
           break;
 
         default:
-          drupal_set_message($this->t('Your changes will not be saved until you click the <em>Save</em> button at the bottom of the page.'), 'warning');
+          $this->messenger()->addWarning($this->t('Your changes will not be saved until you click the <em>Save</em> button at the bottom of the page.'));
           break;
       }
     }

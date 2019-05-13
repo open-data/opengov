@@ -10,17 +10,11 @@ use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Plugin\Type\Processor\EntityProcessorInterface;
-use LogicException;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
-use Drupal\Core\Entity\TranslatableInterface;
-use Drupal\user\EntityOwnerInterface;
-use Drupal\Core\Language\LanguageInterface;
 
 /**
  * Helper class for field mappers.
  */
-abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetInterface {
+abstract class FieldTargetBase extends TargetBase {
 
   /**
    * The field settings.
@@ -266,14 +260,8 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
    *
    * @return \Drupal\Core\Messenger\MessengerInterface
    *   The messenger service.
-   *
-   * @throws \LogicException
-   *   In case the messinger does not exist (we're on < Drupal core 8.5.0).
    */
   protected function getMessenger() {
-    if (!interface_exists('\Drupal\Core\Messenger\MessengerInterface')) {
-      throw new LogicException('Messenger not found. Install Drupal core 8.5.0 or later.');
-    }
     return \Drupal::messenger();
   }
 
@@ -289,14 +277,7 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
    *   message won't be repeated. Defaults to FALSE.
    */
   protected function addMessage($message, $type = 'status', $repeat = FALSE) {
-    try {
-      $this->getMessenger()->addMessage($message, $type, $repeat);
-    }
-    catch (LogicException $e) {
-      // Backwards compatibility with Drupal core < 8.5.0.
-      // @todo remove once Drupal core 8.6.0 is released.
-      drupal_set_message($message, $type, $repeat);
-    }
+    $this->getMessenger()->addMessage($message, $type, $repeat);
   }
 
   /**

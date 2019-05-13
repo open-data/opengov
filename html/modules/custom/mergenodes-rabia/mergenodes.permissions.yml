@@ -1,0 +1,14 @@
+'delete merge nodes':
+  title: Delete entity merge nodes
+  description: Allows users to delete merge nodes.
+'add merge nodes':
+  title: Add entity merge nodes
+'view merge nodes':
+  title: View entity merge nodes
+'edit merge nodes':
+  title: Edit entity merge nodes
+  description: Allows users to edit merge nodes.
+'administer merge nodes':
+  title: Administer settings
+  description: Allows users to alter the settings related to merge nodes.
+  restrict access: TRUE

@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * @file
+ * Contains voting_webform.module.
+ */
+
+use \Drupal\Core\Form\FormStateInterface;
+use \Drupal\webform\WebformSubmissionInterface;
+
+function getAverageVoteAndCount($uuid, $webform_id)
+{
+  if (empty($uuid)) {
+    return NULL;
+  }
+
+  try {
+    $connection = \Drupal::database();
+    $query = $connection->select('webform_submission_data', 't1');
+    $query->join('webform_submission_data', 't2', 't1.sid = t2.sid');
+    $query
+      ->fields('t2', ['value'])
+      ->condition('t1.webform_id', $webform_id)
+      ->condition('t1.name', 'dataset_uuid')
+      ->condition('t1.value', $uuid)
+      ->condition('t2.name', 'rating');
+    $result = $query->execute();
+
+    $vote_sum = 0;
+    $vote_count = 0;
+
+    while ($record = $result->fetchAssoc()) {
+      $vote_sum += $record['value'];
+      $vote_count++;
+    }
+
+    $vote_average = $vote_count != 0 ? ceil($vote_sum / $vote_count) : 0;
+    $vote_result["average"] = $vote_average;
+    $vote_result["count"] = $vote_count;
+    return $vote_result;
+  }
+
+  catch (Exception $e) {
+    \Drupal::logger('vote')->warning($webform_id . ': Exception thrown while trying to get vote average for dataset with uuid: ' . $uuid);
+    return NULL;
+  }
+}
+
+/**
+ * Implements template_preprocess_webform().
+ */
+function voting_webform_preprocess_webform(array &$variables) {
+  $webform_id = $variables['element']['#webform_id'];
+  if ($webform_id == 'vote') {
+    $uuid = \Drupal::request()->query->get('uuid');
+    $vote_result = getAverageVoteAndCount($uuid, $webform_id);
+    if ($vote_result) {
+      $variables['vote_average'] = $vote_result['average'];
+      $variables['vote_count'] = $vote_result['count'];
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_prepare_form().
+ */
+function voting_webform_webform_submission_prepare_form(WebformSubmissionInterface $webform_submission, $operation, FormStateInterface $form_state)
+{
+  // Get the submission's Webform.
+  $webform = $webform_submission->getWebform();
+
+  if ($webform->id() == 'vote') {
+    $url = \Drupal::request()->headers->get('referer');
+    if ($url) {
+      // set referred_url to send back to the referring page
+      $webform_submission->setElementData('referred_url', $url);
+    }
+    else {
+      \Drupal::logger('vote')->warning($webform->id() . ': No referring URL found');
+    }
+  }
+}

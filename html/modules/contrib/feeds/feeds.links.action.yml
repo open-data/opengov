@@ -12,6 +12,14 @@ feeds.import_action:
   cache_tags:
     - feeds_feed_locked
 
+feeds.schedule_import_action:
+  route_name: entity.feeds_feed.schedule_import_form
+  title: Import in background
+  appears_on:
+    - entity.feeds_feed.canonical
+  cache_tags:
+    - feeds_feed_locked
+
 feeds.clear_action:
   route_name: entity.feeds_feed.clear_form
   title: Delete items

@@ -1,0 +1,43 @@
+{
+  "name": "drupal/webform",
+  "description": "Enables the creation of webforms and questionnaires.",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "homepage": "https://drupal.org/project/webform",
+  "authors": [
+    {
+      "name": "Jacob Rockowitz (jrockowitz)",
+      "homepage": "https://www.drupal.org/u/jrockowitz",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Alexander Trotsenko (bucefal91)",
+      "homepage": "https://www.drupal.org/u/bucefal91",
+      "role": "Co-maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/webform?version=8.x",
+    "source": "http://cgit.drupalcode.org/webform",
+    "docs": "https://www.drupal.org/docs/8/modules/webform",
+    "forum": "https://drupal.stackexchange.com/questions/tagged/webform"
+  },
+  "extra": {
+    "drush": {
+      "services": {
+        "drush.services.yml": "^9"
+      }
+    }
+  },
+  "require-dev": {
+    "drupal/address": "~1.4",
+    "drupal/captcha": "~1.0",
+    "drupal/chosen": "~2.6",
+    "drupal/jsonapi": "~2.0",
+    "drupal/mailsystem": "~4.0",
+    "drupal/select2": "~1.1",
+    "drupal/telephone_validation": "^2.2",
+    "drupal/token": "~1.3"
+  }
+}

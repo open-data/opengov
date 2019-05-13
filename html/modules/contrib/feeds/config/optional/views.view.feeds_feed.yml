@@ -134,7 +134,7 @@ display:
               empty_column: false
               responsive: ''
           default: '-1'
-          empty_table: false
+          empty_table: true
       row:
         type: fields
       fields:
@@ -670,7 +670,17 @@ display:
       title: Feeds
       header: {  }
       footer: {  }
-      empty: {  }
+      empty:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          content: 'There are no feeds yet.'
+          plugin_id: result
       relationships:
         uid:
           id: uid
