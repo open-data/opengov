@@ -1,0 +1,23 @@
+uuid: a5c82db3-6aed-4aad-93a9-633db8255dc0
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.comment
+    - field.storage.comment.feeds_item
+  module:
+    - feeds
+id: comment.comment.feeds_item
+field_name: feeds_item
+entity_type: comment
+bundle: comment
+label: 'Feeds item'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:feeds_feed'
+  handler_settings: {  }
+field_type: feeds_item

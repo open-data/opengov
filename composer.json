@@ -133,8 +133,7 @@
                 "Comments created in translation are displayed only for admin role": "https://www.drupal.org/files/issues/2018-04-13/drupal-comment_translation_displayed_only_admin-2958935-9-D8.patch"
             },
             "drupal/feeds": {
-                "Language support in Feed import - allows make a mapping of language" : "https://www.drupal.org/files/issues/2018-11-01/feeds-language-target-2829283-31.patch",
-                "Language support in Feed import - content translation": "https://www.drupal.org/files/issues/2019-01-26/feeds-content-translation-2829283-42.patch"
+                "Language support in Feed import - allows make a mapping of language" : "https://www.drupal.org/files/issues/2018-11-01/feeds-language-target-2829283-31.patch"
             }
         },
        "installer-types": [

@@ -1,0 +1,34 @@
+uuid: b0bfb907-76fd-40a4-8150-10e0ca708a13
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.comment
+  module:
+    - comment
+label: 'External comments'
+id: external_comments
+description: 'Export external comments on dataset pages'
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'public://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:comment'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: false
+  owner_id: 0
+  authorize: true
+  skip_hash_check: false
+  values:
+    comment_type: comment
+custom_sources: {  }
+mappings: {  }

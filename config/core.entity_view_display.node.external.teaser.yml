@@ -1,0 +1,29 @@
+uuid: 0a00f828-e932-4869-a66d-ff6a96826a6b
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.external.comment
+    - field.field.node.external.field_type
+    - field.field.node.external.field_url
+    - field.field.node.external.field_uuid
+    - node.type.external
+  module:
+    - user
+id: node.external.teaser
+targetEntityType: node
+bundle: external
+mode: teaser
+content:
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  comment: true
+  field_type: true
+  field_url: true
+  field_uuid: true
+  langcode: true

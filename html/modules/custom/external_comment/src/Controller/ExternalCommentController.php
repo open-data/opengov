@@ -30,7 +30,7 @@ class ExternalCommentController extends CommentController {
     if ($this->validate($request, $ext_type, $uuid)) {
       // check if comments exist for this uuid
       $query = \Drupal::entityQuery('node')
-        ->condition('type', 'dataset')
+        ->condition('type', 'external')
         ->condition('status', 1)
         ->condition('field_type', $ext_type)
         ->condition('field_uuid', $uuid);
@@ -39,7 +39,7 @@ class ExternalCommentController extends CommentController {
       // if comments do not exist for this uuid then load the default node
       if (!$results) {
         $query = \Drupal::entityQuery('node')
-          ->condition('type', 'dataset')
+          ->condition('type', 'external')
           ->condition('status', 1)
           ->condition('field_uuid', 'default');
         $results = $query->execute();
@@ -85,7 +85,7 @@ class ExternalCommentController extends CommentController {
   public function getReplyForm(Request $request, EntityInterface $entity, $field_name, $pid = NULL) {
 
     // if commented on default node then create a new node and attach comment
-    if ($request->getMethod() == 'POST' && $entity->getEntityTypeId() == 'node' && $entity->bundle() == 'dataset'
+    if ($request->getMethod() == 'POST' && $entity->getEntityTypeId() == 'node' && $entity->bundle() == 'external'
       && $entity->get('title')->value == 'default' ) {
 
       // get url, uuid, title and type of request object
@@ -112,7 +112,7 @@ class ExternalCommentController extends CommentController {
         );
         $ext_type_fr = $types_fr[$ext_type];
 
-        $node = Node::create(['type' => 'dataset']);
+        $node = Node::create(['type' => 'external']);
         $node->set('title', $ext_type_en);
         $node->set('field_url', $url_en);
         $node->set('field_type', $ext_type_en);

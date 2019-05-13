@@ -1,0 +1,19 @@
+uuid: 4f98eaed-be0e-4f7f-8a83-15599934ad3a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_type
+    - node.type.external
+id: node.external.field_type
+field_name: field_type
+entity_type: node
+bundle: external
+label: Type
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

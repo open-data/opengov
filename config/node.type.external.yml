@@ -1,4 +1,4 @@
-uuid: ad22d2bf-8766-4ecb-97f8-702e172cf7b6
+uuid: 516a40e1-6374-4f6f-a2ef-b57c826cc6d2
 langcode: en
 status: true
 dependencies:
@@ -6,10 +6,11 @@ dependencies:
     - menu_ui
 third_party_settings:
   menu_ui:
-    available_menus: {  }
-    parent: ''
-name: Dataset
-type: dataset
+    available_menus:
+      - main
+    parent: 'main:'
+name: External
+type: external
 description: 'Placeholder nodes for external application such as datasets, visualizations, proactive disclosure etc.'
 help: ''
 new_revision: true

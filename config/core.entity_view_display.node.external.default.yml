@@ -1,0 +1,53 @@
+uuid: e5de2bb0-588c-4f1f-9ba2-4ac13f0fac96
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.external.comment
+    - field.field.node.external.field_type
+    - field.field.node.external.field_url
+    - field.field.node.external.field_uuid
+    - node.type.external
+  module:
+    - comment
+    - link
+    - user
+id: node.external.default
+targetEntityType: node
+bundle: external
+mode: default
+content:
+  comment:
+    weight: 2
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_type:
+    weight: 0
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_url:
+    weight: 1
+    label: inline
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+hidden:
+  field_uuid: true
+  langcode: true
+  links: true
