@@ -1,0 +1,7 @@
+elements: "e_mail:\n  '#title': Courriel\nname:\n  '#title': Nom\nsectors:\n  '#title': 'Le secteur d’activité me représentant le mieux est :'\n"
+handlers:
+  email:
+    label: Courriel
+    settings:
+      from_name: default
+      body: "&lt;p&gt;Soumis le [webform_submission:created]&lt;/p&gt;<br />\r\n&lt;p&gt;Soumis par : [webform_submission:user]&lt;/p&gt;<br />\r\n&lt;p&gt;Les valeurs soumises sont :&lt;/p&gt;<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"

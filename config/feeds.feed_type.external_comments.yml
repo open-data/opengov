@@ -4,6 +4,12 @@ status: true
 dependencies:
   config:
     - comment.type.comment
+    - core.base_field_override.comment.comment.created
+    - core.base_field_override.comment.comment.name
+    - core.base_field_override.comment.comment.status
+    - core.base_field_override.comment.comment.subject
+    - core.base_field_override.comment.comment.uid
+    - field.field.comment.comment.comment_body
   module:
     - comment
 label: 'External comments'
@@ -24,11 +30,135 @@ processor_configuration:
   update_existing: 1
   update_non_existent: _keep
   expire: -1
-  owner_feed_author: false
+  owner_feed_author: true
   owner_id: 0
-  authorize: true
+  authorize: false
   skip_hash_check: false
   values:
     comment_type: comment
-custom_sources: {  }
-mappings: {  }
+custom_sources:
+  subject:
+    label: subject
+    value: subject
+    machine_name: subject
+  comment:
+    label: comment
+    value: comment
+    machine_name: comment
+  created:
+    label: created
+    value: created
+    machine_name: created
+  entityid:
+    label: entityid
+    value: entityid
+    machine_name: entityid
+  entitytype:
+    label: entitytype
+    value: entitytype
+    machine_name: entitytype
+  uuid:
+    label: uuid
+    value: uuid
+    machine_name: uuid
+  '':
+    label: ''
+    value: ''
+    machine_name: ''
+  entitytitle:
+    label: entitytitle
+    value: entitytitle
+    machine_name: entitytitle
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+  pid:
+    label: pid
+    value: pid
+    machine_name: pid
+  status:
+    label: status
+    value: status
+    machine_name: status
+  thread:
+    label: thread
+    value: thread
+    machine_name: thread
+  field_name:
+    label: field_name
+    value: field_name
+    machine_name: field_name
+  username:
+    label: username
+    value: username
+    machine_name: username
+mappings:
+  -
+    target: subject
+    map:
+      value: subject
+    unique: {  }
+  -
+    target: comment_body
+    map:
+      value: comment
+    settings:
+      language: ''
+      format: rich_text
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      language: null
+      timezone: UTC
+  -
+    target: entity_id
+    map:
+      target_id: uuid
+    settings:
+      reference_by: field_uuid
+      feeds_item: guid
+      autocreate: '1'
+  -
+    target: entity_type
+    map:
+      value: entitytype
+    unique: {  }
+  -
+    target: uid
+    map:
+      target_id: uid
+    settings:
+      language: ''
+      reference_by: uid
+      feeds_item: guid
+      autocreate: 0
+  -
+    target: pid
+    map:
+      target_id: pid
+    settings:
+      reference_by: subject
+      autocreate: false
+      feeds_item: false
+  -
+    target: status
+    map:
+      value: status
+  -
+    target: thread
+    map:
+      value: thread
+    unique: {  }
+  -
+    target: field_name
+    map:
+      value: field_name
+    unique: {  }
+  -
+    target: name
+    map:
+      value: username
+    unique: {  }

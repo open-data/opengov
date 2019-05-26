@@ -1,0 +1,19 @@
+uuid: 3d8f0e28-29d2-4683-b47f-766c4858085e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_submitter_name
+    - node.type.app
+id: node.app.field_submitter_name
+field_name: field_submitter_name
+entity_type: node
+bundle: app
+label: 'Submitter Name'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,21 @@
+uuid: 26e4573b-6b86-49ea-ac9a-68c261aab735
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_app_charge
+    - node.type.app
+  module:
+    - options
+id: node.app.field_app_charge
+field_name: field_app_charge
+entity_type: node
+bundle: app
+label: Charge
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

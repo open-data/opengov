@@ -1,0 +1,13 @@
+uuid: 282f8b7c-bed5-4d7a-b2f4-07a55cf25805
+langcode: en
+status: true
+dependencies: {  }
+id: slideshow
+label: Slideshow
+description: 'Slideshows of media items.'
+source: image
+queue_thumbnail_downloads: false
+new_revision: false
+source_configuration:
+  source_field: field_media_image
+field_map: {  }

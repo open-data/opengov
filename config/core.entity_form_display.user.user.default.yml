@@ -4,11 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.user.user.feeds_item
+    - field.field.user.user.field_firstname
+    - field.field.user.user.field_lastname
     - field.field.user.user.user_picture
-    - image.style.thumbnail
   module:
-    - image
-    - path
     - user
 _core:
   default_config_hash: K-1rBM8mTIkFp9RqOC2tMRUukOQ1xbRCfSKK8dEddnA
@@ -18,31 +17,31 @@ bundle: user
 mode: default
 content:
   account:
-    weight: -10
-    region: content
-  contact:
-    weight: 5
-    region: content
-  language:
-    weight: 0
-    region: content
-  path:
-    type: path
-    weight: 30
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
-  timezone:
-    weight: 6
-    region: content
-  user_picture:
-    type: image_image
+  field_firstname:
+    weight: 0
     settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
-    weight: -1
+    type: string_textfield
+    region: content
+  field_lastname:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
 hidden:
+  contact: true
   feeds_item: true
   langcode: true
+  language: true
+  path: true
+  timezone: true
+  user_picture: true

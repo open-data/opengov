@@ -20,7 +20,17 @@ class Menu extends PreprocessBase implements PreprocessInterface {
    * {@inheritdoc}
    */
   protected function preprocessVariables(Variables $variables) {
-    foreach ($variables->items as &$item) {
+    $this->convertAttributes($variables->items);
+  }
+
+  /**
+   * Converts attributes to core's Attribute class.
+   *
+   * @param array $items
+   *   The menu items.
+   */
+  protected function convertAttributes(array &$items) {
+    foreach ($items as &$item) {
       $wrapperAttributes = new Attributes();
       $linkAttributes = new Attributes();
       if ($item['attributes'] instanceof Attribute || $item['attributes'] instanceof Attributes) {
@@ -37,6 +47,9 @@ class Menu extends PreprocessBase implements PreprocessInterface {
       // around this, just rewrap attributes in core's native Attribute class.
       $item['attributes'] = new Attribute($wrapperAttributes->getArrayCopy());
       $item['link_attributes'] = new Attribute($linkAttributes->getArrayCopy());
+      if ($item['below']) {
+        $this->convertAttributes($item['below']);
+      }
     }
   }
 

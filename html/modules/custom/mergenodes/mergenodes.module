@@ -22,14 +22,3 @@ function mergenodes_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
-
-/**
- * Implements hook_theme().
- */
-function mergenodes_theme() {
-  return [
-    'mergenodes' => [
-      'render element' => 'children',
-    ],
-  ];
-}

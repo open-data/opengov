@@ -1,0 +1,54 @@
+uuid: 2edef1a1-0d75-4217-b074-4dc8895715fc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.media.slideshow.field_media_image
+    - image.style.thumbnail
+    - media.type.slideshow
+  module:
+    - image
+    - user
+id: media.slideshow.default
+targetEntityType: media
+bundle: slideshow
+mode: default
+content:
+  created:
+    label: hidden
+    type: timestamp
+    weight: 0
+    region: content
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+    third_party_settings: {  }
+  field_media_image:
+    weight: 6
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  thumbnail:
+    type: image
+    weight: 5
+    label: hidden
+    settings:
+      image_style: thumbnail
+      image_link: ''
+    region: content
+    third_party_settings: {  }
+  uid:
+    label: hidden
+    type: author
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  langcode: true
+  name: true

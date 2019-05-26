@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.page.field_metatags
     - field.field.node.page.field_previousnodeid
     - node.type.page
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - metatag

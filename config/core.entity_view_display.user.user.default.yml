@@ -4,10 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.user.user.feeds_item
+    - field.field.user.user.field_firstname
+    - field.field.user.user.field_lastname
     - field.field.user.user.user_picture
-    - image.style.thumbnail
   module:
-    - image
     - user
 _core:
   default_config_hash: V51QPCKkgNREKtSmB9Iu2wmAMEpktVpnzklWaZV8UYo
@@ -16,18 +16,28 @@ targetEntityType: user
 bundle: user
 mode: default
 content:
-  member_for:
-    weight: 5
-    region: content
-  user_picture:
-    type: image
+  field_firstname:
     weight: 0
-    region: content
+    label: inline
     settings:
-      image_style: thumbnail
-      image_link: content
+      link_to_entity: false
     third_party_settings: {  }
-    label: hidden
+    type: string
+    region: content
+  field_lastname:
+    weight: 1
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  member_for:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
 hidden:
   feeds_item: true
   langcode: true
+  user_picture: true

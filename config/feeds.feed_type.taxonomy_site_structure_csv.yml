@@ -1,9 +1,10 @@
-uuid: 3fe52c87-f7b6-47ff-944f-beda68683894
+uuid: 93217059-1ca5-45f8-8bc2-b71b03b2b075
 langcode: en
 status: true
 dependencies:
   config:
-    - taxonomy.vocabulary._site_structure
+    - core.base_field_override.taxonomy_term.site_structure.name
+    - taxonomy.vocabulary.site_structure
   module:
     - taxonomy
 label: 'Taxonomy site structure CSV'
@@ -13,7 +14,7 @@ import_period: -1
 fetcher: upload
 fetcher_configuration:
   allowed_extensions: 'txt csv tsv xml opml'
-  directory: 'public://feeds'
+  directory: 'private://feeds'
 parser: csv
 parser_configuration:
   delimiter: ','
@@ -26,7 +27,7 @@ processor_configuration:
   expire: -1
   skip_hash_check: false
   values:
-    vid: _site_structure
+    vid: site_structure
   owner_id: 0
   authorize: false
   owner_feed_author: false
@@ -35,11 +36,49 @@ custom_sources:
     label: name
     value: name
     machine_name: name
+  status:
+    label: status
+    value: status
+    machine_name: status
+  weight:
+    label: weight
+    value: weight
+    machine_name: weight
+  parent:
+    label: parent
+    value: parent
+    machine_name: parent
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
 mappings:
   -
     target: name
     map:
       value: name
     unique: {  }
+  -
+    target: status
+    map:
+      value: status
+  -
+    target: weight
+    map:
+      value: weight
+  -
+    target: parent
+    map:
+      target_id: parent
     settings:
-      language: null
+      reference_by: name
+      autocreate: false
+      feeds_item: false
+  -
+    target: content_translation_uid
+    map:
+      target_id: uid
+    settings:
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0

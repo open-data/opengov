@@ -27,4 +27,33 @@ use Drupal\bootstrap\Plugin\Setting\DeprecatedSettingInterface;
  * @see \Drupal\bootstrap\Plugin\Setting\JavaScript\Popovers\PopoverAutoClose
  */
 class PopoverTriggerAutoclose extends PopoverAutoClose implements DeprecatedSettingInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeprecatedReason() {
+    return $this->t('Replaced with new setting. Will be removed in a future release.');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeprecatedReplacement() {
+    return '\Drupal\bootstrap\Plugin\Setting\JavaScript\Popovers\PopoverAutoClose';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeprecatedReplacementSetting() {
+    return $this->theme->getSettingPlugin('popover_auto_close');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeprecatedVersion() {
+    return '8.x-3.14';
+  }
+
 }

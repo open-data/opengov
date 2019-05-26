@@ -1,0 +1,29 @@
+uuid: 1adc0ff3-4a53-4434-976f-4909bdb3c07a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_more_apps_by
+    - node.type.app
+    - taxonomy.vocabulary.departments
+id: node.app.field_more_apps_by
+field_name: field_more_apps_by
+entity_type: node
+bundle: app
+label: 'More apps by'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      departments: departments
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

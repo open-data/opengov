@@ -1,0 +1,23 @@
+uuid: c63dd61b-195c-467e-90e2-9d1c9d5f6ce9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.feeds_item
+    - taxonomy.vocabulary.app_freetags
+  module:
+    - feeds
+id: taxonomy_term.app_freetags.feeds_item
+field_name: feeds_item
+entity_type: taxonomy_term
+bundle: app_freetags
+label: 'Feeds item'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:feeds_feed'
+  handler_settings: {  }
+field_type: feeds_item

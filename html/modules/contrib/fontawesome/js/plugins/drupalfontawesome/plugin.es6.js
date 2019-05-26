@@ -72,25 +72,29 @@
   });
 
   // Allow empty tags in the CKEditor since Font Awesome requires them.
-  $.each(drupalSettings.editor.fontawesome.allowedEmptyTags, (_, tag) => {
-    CKEDITOR.dtd.$removeEmpty[tag] = 0;
-  });
+  if ('editor' in drupalSettings && 'fontawesome' in drupalSettings.editor) {
+    $.each(drupalSettings.editor.fontawesome.allowedEmptyTags, (_, tag) => {
+      CKEDITOR.dtd.$removeEmpty[tag] = 0;
+    });
+  }
 
   // Define FontAwesome conversion functions.
   Drupal.FontAwesome = {};
 
   // Converts HTML tags to SVG by loading the attached libraries.
   Drupal.FontAwesome.tagsToSvg = (drupalSettings, thisEditor) => {
-    // Loop over each SVG library and include them. These convert the tags.
-    $.each(drupalSettings.editor.fontawesome.fontawesomeLibraries, (_, library) => {
-      // Create a script.
-      const $script = document.createElement('script');
-      const $editorInstance = CKEDITOR.instances[thisEditor.editor.name];
-      // Point the script at our library.
-      $script.src = library;
+    if ('editor' in drupalSettings && 'fontawesome' in drupalSettings.editor) {
+      // Loop over each SVG library and include them. These convert the tags.
+      $.each(drupalSettings.editor.fontawesome.fontawesomeLibraries, (_, library) => {
+        // Create a script.
+        const $script = document.createElement('script');
+        const $editorInstance = CKEDITOR.instances[thisEditor.editor.name];
+        // Point the script at our library.
+        $script.src = library;
 
-      $editorInstance.document.getHead().$.appendChild($script);
-    });
+        $editorInstance.document.getHead().$.appendChild($script);
+      });
+    }
   };
 
   // Converts the resulting SVG tags back to their original HTML tags.

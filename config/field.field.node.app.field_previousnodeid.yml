@@ -1,0 +1,23 @@
+uuid: eefcd37a-5dd7-4c1c-8f1c-a8d652617e42
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_previousnodeid
+    - node.type.app
+id: node.app.field_previousnodeid
+field_name: field_previousnodeid
+entity_type: node
+bundle: app
+label: previousNodeId
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

@@ -1,0 +1,11 @@
+uuid: 18c82562-44ab-480c-9613-15b5f759f2a6
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.device_formats
+id: taxonomy_term.device_formats
+target_entity_type_id: taxonomy_term
+target_bundle: device_formats
+default_langcode: site_default
+language_alterable: false

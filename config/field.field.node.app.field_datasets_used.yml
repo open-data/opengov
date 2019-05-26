@@ -1,0 +1,21 @@
+uuid: 184da1f6-7a77-40cb-9946-f7c185546798
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_datasets_used
+    - node.type.app
+  module:
+    - text
+id: node.app.field_datasets_used
+field_name: field_datasets_used
+entity_type: node
+bundle: app
+label: 'Datasets Used'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

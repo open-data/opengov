@@ -1,0 +1,23 @@
+uuid: bb901ba9-ad00-4071-9561-1731db7dd7f6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_image_link
+    - media.type.image
+  module:
+    - link
+id: media.image.field_image_link
+field_name: field_image_link
+entity_type: media
+bundle: image
+label: Link
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 2
+field_type: link

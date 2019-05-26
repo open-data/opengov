@@ -1,0 +1,18 @@
+uuid: 055d3a1e-15ab-42d4-b6f9-2e5029676906
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.site_structure
+id: taxonomy_term.site_structure.langcode
+field_name: langcode
+entity_type: taxonomy_term
+bundle: site_structure
+label: Language
+description: 'The term language code.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: language

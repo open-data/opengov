@@ -3,22 +3,23 @@ langcode: en
 status: true
 dependencies:
   config:
-    - comment.type.comment
+    - media.type.file
   module:
-    - comment
+    - media
 label: test
 id: test
 description: ''
 import_period: 3600
-fetcher: http
+fetcher: upload
 fetcher_configuration:
-  auto_detect_feeds: false
-  use_pubsubhubbub: false
-  fallback_hub: ''
-  request_timeout: 30
-parser: syndication
-parser_configuration: {  }
-processor: 'entity:comment'
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'private://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:media'
 processor_configuration:
   update_existing: 0
   update_non_existent: _keep
@@ -28,6 +29,6 @@ processor_configuration:
   authorize: false
   skip_hash_check: false
   values:
-    comment_type: comment
+    bundle: file
 custom_sources: {  }
 mappings: {  }

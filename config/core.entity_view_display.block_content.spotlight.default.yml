@@ -1,0 +1,33 @@
+uuid: 0408ac02-3ad7-405a-aa90-04b332897214
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.spotlight
+    - field.field.block_content.spotlight.body
+    - field.field.block_content.spotlight.field_spotlight_media
+  module:
+    - text
+id: block_content.spotlight.default
+targetEntityType: block_content
+bundle: spotlight
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_spotlight_media:
+    type: entity_reference_entity_view
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    region: content
+hidden:
+  langcode: true

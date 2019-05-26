@@ -1,0 +1,20 @@
+uuid: 1002d9e4-0e9f-4cdc-960e-15bdaa818e06
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+id: node.field_more_apps_by
+field_name: field_more_apps_by
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

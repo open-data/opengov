@@ -126,12 +126,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/minkphp/Mink.git",
-            "reference": "153e4bbee958fea4a6dc542105ff6013c06813e8"
+            "reference": "6d637f7af4816c26ad8a943da2e3f7eef1231bea"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/minkphp/Mink/zipball/153e4bbee958fea4a6dc542105ff6013c06813e8",
-            "reference": "153e4bbee958fea4a6dc542105ff6013c06813e8",
+            "url": "https://api.github.com/repos/minkphp/Mink/zipball/6d637f7af4816c26ad8a943da2e3f7eef1231bea",
+            "reference": "6d637f7af4816c26ad8a943da2e3f7eef1231bea",
             "shasum": ""
         },
         "require": {
@@ -148,7 +148,7 @@
             "behat/mink-zombie-driver": "fast and JS-enabled headless driver for any app (requires node.js)",
             "dmore/chrome-mink-driver": "fast and JS-enabled driver for any app (requires chromium or google chrome)"
         },
-        "time": "2019-05-07T14:41:06+00:00",
+        "time": "2019-05-14T09:56:49+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1419,17 +1419,17 @@
     },
     {
         "name": "cweagans/composer-patches",
-        "version": "1.6.5",
-        "version_normalized": "1.6.5.0",
+        "version": "1.6.6",
+        "version_normalized": "1.6.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/cweagans/composer-patches.git",
-            "reference": "2ec4f00ff5fb64de584c8c4aea53bf9053ecb0b3"
+            "reference": "1d89dcc730e7f42426c434b88261fcfb3bce651e"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/cweagans/composer-patches/zipball/2ec4f00ff5fb64de584c8c4aea53bf9053ecb0b3",
-            "reference": "2ec4f00ff5fb64de584c8c4aea53bf9053ecb0b3",
+            "url": "https://api.github.com/repos/cweagans/composer-patches/zipball/1d89dcc730e7f42426c434b88261fcfb3bce651e",
+            "reference": "1d89dcc730e7f42426c434b88261fcfb3bce651e",
             "shasum": ""
         },
         "require": {
@@ -1440,7 +1440,7 @@
             "composer/composer": "~1.0",
             "phpunit/phpunit": "~4.6"
         },
-        "time": "2018-05-11T18:00:16+00:00",
+        "time": "2018-10-24T15:51:16+00:00",
         "type": "composer-plugin",
         "extra": {
             "class": "cweagans\\Composer\\Patches"
@@ -2190,18 +2190,18 @@
     },
     {
         "name": "drupal/admin_toolbar",
-        "version": "1.26.0",
-        "version_normalized": "1.26.0.0",
+        "version": "1.27.0",
+        "version_normalized": "1.27.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/admin_toolbar.git",
-            "reference": "8.x-1.26"
+            "reference": "8.x-1.27"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/admin_toolbar-8.x-1.26.zip",
-            "reference": "8.x-1.26",
-            "shasum": "7be9f91008bf17cf49b43d1c8e2211e7a8e40ce4"
+            "url": "https://ftp.drupal.org/files/projects/admin_toolbar-8.x-1.27.zip",
+            "reference": "8.x-1.27",
+            "shasum": "fed1fbbdf8f805b1da63d73e7e2c54750f354d61"
         },
         "require": {
             "drupal/core": "*"
@@ -2212,8 +2212,8 @@
                 "dev-1.x": "1.x-dev"
             },
             "drupal": {
-                "version": "8.x-1.26",
-                "datestamp": "1549559402",
+                "version": "8.x-1.27",
+                "datestamp": "1558552081",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -2272,19 +2272,108 @@
         }
     },
     {
-        "name": "drupal/bootstrap",
-        "version": "3.17.0",
-        "version_normalized": "3.17.0.0",
+        "name": "drupal/autologout",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://git.drupalcode.org/project/bootstrap.git",
-            "reference": "8.x-3.17"
+            "url": "https://git.drupalcode.org/project/autologout.git",
+            "reference": "8.x-1.0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/bootstrap-8.x-3.17.zip",
-            "reference": "8.x-3.17",
-            "shasum": "7fec8e6bc1435b97952844315035b36c2dbc07b2"
+            "url": "https://ftp.drupal.org/files/projects/autologout-8.x-1.0.zip",
+            "reference": "8.x-1.0",
+            "shasum": "0a5f67d4393b0acdf8522b1b1a5c9eb40bb05d93"
+        },
+        "require": {
+            "drupal/core": "~8.0"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-1.x": "1.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-1.0",
+                "datestamp": "1494237185",
+                "security-coverage": {
+                    "status": "covered",
+                    "message": "Covered by Drupal's security advisory policy"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "AjK",
+                "homepage": "https://www.drupal.org/user/39030"
+            },
+            {
+                "name": "AjitS",
+                "homepage": "https://www.drupal.org/user/981944"
+            },
+            {
+                "name": "boshtian",
+                "homepage": "https://www.drupal.org/user/1773456"
+            },
+            {
+                "name": "dandrews",
+                "homepage": "https://www.drupal.org/user/2014490"
+            },
+            {
+                "name": "darksnow",
+                "homepage": "https://www.drupal.org/user/391915"
+            },
+            {
+                "name": "johnennew",
+                "homepage": "https://www.drupal.org/user/1150042"
+            },
+            {
+                "name": "jrglasgow",
+                "homepage": "https://www.drupal.org/user/36590"
+            },
+            {
+                "name": "kmasood",
+                "homepage": "https://www.drupal.org/user/1262860"
+            },
+            {
+                "name": "levelos",
+                "homepage": "https://www.drupal.org/user/54135"
+            },
+            {
+                "name": "prabeen.giri",
+                "homepage": "https://www.drupal.org/user/913078"
+            },
+            {
+                "name": "str8",
+                "homepage": "https://www.drupal.org/user/2865063"
+            }
+        ],
+        "description": "Adds automated timed logout.",
+        "homepage": "http://drupal.org/project/autologout",
+        "support": {
+            "source": "https://git.drupalcode.org/project/autologout"
+        }
+    },
+    {
+        "name": "drupal/bootstrap",
+        "version": "3.19.0",
+        "version_normalized": "3.19.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/bootstrap.git",
+            "reference": "8.x-3.19"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/bootstrap-8.x-3.19.zip",
+            "reference": "8.x-3.19",
+            "shasum": "6d000a1a470ac831185a46cb003d0c7870ac2a3d"
         },
         "require": {
             "drupal/core": "~8.0"
@@ -2295,15 +2384,12 @@
                 "dev-3.x": "3.x-dev"
             },
             "drupal": {
-                "version": "8.x-3.17",
-                "datestamp": "1548102180",
+                "version": "8.x-3.19",
+                "datestamp": "1557526081",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
                 }
-            },
-            "patches_applied": {
-                "Error: Unsupported operand types during providers JSON discovery": "https://www.drupal.org/files/issues/2019-02-04/3027569-23.patch"
             }
         },
         "installation-source": "dist",
@@ -2326,10 +2412,6 @@
                 "name": "Fabiano Sant'Ana (wundo)",
                 "homepage": "https://www.drupal.org/u/wundo",
                 "role": "Co-maintainer"
-            },
-            {
-                "name": "wundo",
-                "homepage": "https://www.drupal.org/user/25523"
             }
         ],
         "description": "Built to use Bootstrap, a sleek, intuitive, and powerful front-end framework for faster and easier web development.",
@@ -2703,17 +2785,17 @@
     },
     {
         "name": "drupal/core",
-        "version": "8.7.1",
-        "version_normalized": "8.7.1.0",
+        "version": "8.7.2",
+        "version_normalized": "8.7.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/drupal/core.git",
-            "reference": "969f24810fb31eac71dd624de593f551bd6dc2a3"
+            "reference": "31c01fe3b4eb8817e8ef127382a67c9e9d78e1a9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/drupal/core/zipball/969f24810fb31eac71dd624de593f551bd6dc2a3",
-            "reference": "969f24810fb31eac71dd624de593f551bd6dc2a3",
+            "url": "https://api.github.com/repos/drupal/core/zipball/31c01fe3b4eb8817e8ef127382a67c9e9d78e1a9",
+            "reference": "31c01fe3b4eb8817e8ef127382a67c9e9d78e1a9",
             "shasum": ""
         },
         "require": {
@@ -2890,7 +2972,7 @@
             "symfony/debug": "^3.4.0",
             "symfony/phpunit-bridge": "^3.4.3"
         },
-        "time": "2019-05-08T16:00:55+00:00",
+        "time": "2019-05-23T07:22:46+00:00",
         "type": "drupal-core",
         "extra": {
             "merge-plugin": {
@@ -2925,7 +3007,8 @@
             },
             "patches_applied": {
                 "Submitting a comment in the non default language redirects you to the default language": "https://www.drupal.org/files/issues/2019-05-08/2751269-redirect_to_current_node_language_after_post_comment-24.patch",
-                "Comments created in translation are displayed only for admin role": "https://www.drupal.org/files/issues/2018-04-13/drupal-comment_translation_displayed_only_admin-2958935-9-D8.patch"
+                "Comments created in translation are displayed only for admin role": "https://www.drupal.org/files/issues/2018-04-13/drupal-comment_translation_displayed_only_admin-2958935-9-D8.patch",
+                "Notice: Undefined index: target_bundles when new reference media field created": "https://www.drupal.org/files/issues/2019-05-18/undefined_index_target_bundles-3055516-4.patch"
             }
         },
         "installation-source": "dist",
@@ -3047,6 +3130,152 @@
         }
     },
     {
+        "name": "drupal/embed",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/embed.git",
+            "reference": "8.x-1.0"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/embed-8.x-1.0.zip",
+            "reference": "8.x-1.0",
+            "shasum": "cc746ad807260e01c7788dd82110dcebbb4d678a"
+        },
+        "require": {
+            "drupal/core": "~8.0"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-1.x": "1.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-1.0",
+                "datestamp": "1490755685",
+                "security-coverage": {
+                    "status": "covered",
+                    "message": "Covered by Drupal's security advisory policy"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "Dave Reid",
+                "homepage": "https://www.drupal.org/user/53892"
+            },
+            {
+                "name": "Devin Carlson",
+                "homepage": "https://www.drupal.org/user/290182"
+            },
+            {
+                "name": "Drupal Media Team",
+                "homepage": "https://www.drupal.org/user/3260690"
+            },
+            {
+                "name": "cs_shadow",
+                "homepage": "https://www.drupal.org/user/2828287"
+            },
+            {
+                "name": "slashrsm",
+                "homepage": "https://www.drupal.org/user/744628"
+            }
+        ],
+        "description": "Provide a framework for various different types of embeds in WYSIWYG editors, common functionality, interfaces, and standards.",
+        "homepage": "https://www.drupal.org/project/embed",
+        "support": {
+            "source": "https://git.drupalcode.org/project/embed",
+            "issues": "https://www.drupal.org/project/issues/embed",
+            "irc": "irc://irc.freenode.org/drupal-media"
+        }
+    },
+    {
+        "name": "drupal/entity_embed",
+        "version": "1.0.0-beta3",
+        "version_normalized": "1.0.0.0-beta3",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/entity_embed.git",
+            "reference": "8.x-1.0-beta3"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/entity_embed-8.x-1.0-beta3.zip",
+            "reference": "8.x-1.0-beta3",
+            "shasum": "2ecb2e88e5ecc217195dfa291b4959ea6b83aa8c"
+        },
+        "require": {
+            "drupal/core": "^8.4.0",
+            "drupal/embed": "*"
+        },
+        "require-dev": {
+            "drupal/entity_browser": "*"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-1.x": "1.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-1.0-beta3",
+                "datestamp": "1556906881",
+                "security-coverage": {
+                    "status": "not-covered",
+                    "message": "Beta releases are not covered by Drupal security advisories."
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "Dave Reid",
+                "homepage": "https://www.drupal.org/user/53892"
+            },
+            {
+                "name": "Devin Carlson",
+                "homepage": "https://www.drupal.org/user/290182"
+            },
+            {
+                "name": "Drupal Media Team",
+                "homepage": "https://www.drupal.org/user/3260690"
+            },
+            {
+                "name": "Wim Leers",
+                "homepage": "https://www.drupal.org/user/99777"
+            },
+            {
+                "name": "cs_shadow",
+                "homepage": "https://www.drupal.org/user/2828287"
+            },
+            {
+                "name": "phenaproxima",
+                "homepage": "https://www.drupal.org/user/205645"
+            },
+            {
+                "name": "slashrsm",
+                "homepage": "https://www.drupal.org/user/744628"
+            }
+        ],
+        "description": "Allows any entity to be embedded within a text area using a WYSIWYG editor.",
+        "homepage": "https://www.drupal.org/project/entity_embed",
+        "support": {
+            "source": "https://git.drupalcode.org/project/entity_embed",
+            "issues": "https://www.drupal.org/project/issues/entity_embed",
+            "irc": "irc://irc.freenode.org/drupal-media"
+        }
+    },
+    {
         "name": "drupal/feeds",
         "version": "3.0.0-alpha5",
         "version_normalized": "3.0.0.0-alpha5",
@@ -3076,9 +3305,6 @@
                     "status": "not-covered",
                     "message": "Project has not opted into security advisory coverage!"
                 }
-            },
-            "patches_applied": {
-                "Language support in Feed import - allows make a mapping of language": "https://www.drupal.org/files/issues/2018-11-01/feeds-language-target-2829283-31.patch"
             }
         },
         "installation-source": "dist",
@@ -3155,19 +3381,89 @@
         }
     },
     {
+        "name": "drupal/feeds_tamper",
+        "version": "dev-2.x",
+        "version_normalized": "dev-2.x",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/feeds_tamper.git",
+            "reference": "17a01118e9025127000d3b5798fb23738341742d"
+        },
+        "require": {
+            "drupal/core": "~8.0",
+            "drupal/feeds": "~3.0",
+            "drupal/tamper": "~1.0"
+        },
+        "require-dev": {
+            "drupal/feeds": "3.x-dev"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-2.x": "2.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-2.x-dev",
+                "datestamp": "1545321780",
+                "security-coverage": {
+                    "status": "not-covered",
+                    "message": "Dev releases are not covered by Drupal security advisories."
+                }
+            }
+        },
+        "installation-source": "source",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "Bobík",
+                "homepage": "https://www.drupal.org/user/123612"
+            },
+            {
+                "name": "MegaChriz",
+                "homepage": "https://www.drupal.org/user/654114"
+            },
+            {
+                "name": "franz",
+                "homepage": "https://www.drupal.org/user/581844"
+            },
+            {
+                "name": "mausolos",
+                "homepage": "https://www.drupal.org/user/642118"
+            },
+            {
+                "name": "twistor",
+                "homepage": "https://www.drupal.org/user/473738"
+            }
+        ],
+        "description": "Modify feeds data before it gets saved.",
+        "homepage": "http://drupal.org/project/feeds_tamper",
+        "keywords": [
+            "Drupal",
+            "feeds",
+            "tamper"
+        ],
+        "support": {
+            "source": "http://cgit.drupalcode.org/feeds_tamper",
+            "issues": "http://drupal.org/project/issues/feeds_tamper"
+        }
+    },
+    {
         "name": "drupal/fontawesome",
-        "version": "2.12.0",
-        "version_normalized": "2.12.0.0",
+        "version": "2.13.0",
+        "version_normalized": "2.13.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/fontawesome.git",
-            "reference": "8.x-2.12"
+            "reference": "8.x-2.13"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/fontawesome-8.x-2.12.zip",
-            "reference": "8.x-2.12",
-            "shasum": "ed8ea9c5354201db2f0eac2bf8f3a4c46403f307"
+            "url": "https://ftp.drupal.org/files/projects/fontawesome-8.x-2.13.zip",
+            "reference": "8.x-2.13",
+            "shasum": "3bf8bc202f429b6ad35777ae9229b8c1f1bad085"
         },
         "require": {
             "drupal/core": "~8.0"
@@ -3178,8 +3474,8 @@
                 "dev-2.x": "2.x-dev"
             },
             "drupal": {
-                "version": "8.x-2.12",
-                "datestamp": "1550692543",
+                "version": "8.x-2.13",
+                "datestamp": "1557577985",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -3217,7 +3513,81 @@
         "description": "The web's most popular icon set and toolkit.",
         "homepage": "https://www.drupal.org/project/fontawesome",
         "support": {
-            "source": "http://cgit.drupalcode.org/fontawesome"
+            "source": "https://git.drupalcode.org/project/fontawesome"
+        }
+    },
+    {
+        "name": "drupal/memcache",
+        "version": "2.0.0",
+        "version_normalized": "2.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/memcache.git",
+            "reference": "8.x-2.0"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/memcache-8.x-2.0.zip",
+            "reference": "8.x-2.0",
+            "shasum": "78c09097c42781343f4069b4823dce7acd98a8b1"
+        },
+        "require": {
+            "drupal/core": "~8.0"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-2.x": "2.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-2.0",
+                "datestamp": "1540546681",
+                "security-coverage": {
+                    "status": "covered",
+                    "message": "Covered by Drupal's security advisory policy"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "Fabianx",
+                "homepage": "https://www.drupal.org/user/693738"
+            },
+            {
+                "name": "Jeremy",
+                "homepage": "https://www.drupal.org/user/409"
+            },
+            {
+                "name": "bdragon",
+                "homepage": "https://www.drupal.org/user/53081"
+            },
+            {
+                "name": "catch",
+                "homepage": "https://www.drupal.org/user/35733"
+            },
+            {
+                "name": "damiankloip",
+                "homepage": "https://www.drupal.org/user/1037976"
+            },
+            {
+                "name": "jvandyk",
+                "homepage": "https://www.drupal.org/user/2375"
+            },
+            {
+                "name": "robertDouglass",
+                "homepage": "https://www.drupal.org/user/5449"
+            }
+        ],
+        "description": "High performance integration with memcache.",
+        "homepage": "http://drupal.org/project/memcache",
+        "support": {
+            "source": "https://git.drupalcode.org/project/memcache",
+            "issues": "https://www.drupal.org/project/issues/memcache"
         }
     },
     {
@@ -3477,6 +3847,125 @@
         "homepage": "https://www.drupal.org/project/redirect",
         "support": {
             "source": "https://git.drupalcode.org/project/redirect"
+        }
+    },
+    {
+        "name": "drupal/simple_sitemap",
+        "version": "3.1.0",
+        "version_normalized": "3.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/simple_sitemap.git",
+            "reference": "8.x-3.1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/simple_sitemap-8.x-3.1.zip",
+            "reference": "8.x-3.1",
+            "shasum": "7194caf8482c4a80a5b7eddf28d94e798bb4786d"
+        },
+        "require": {
+            "drupal/core": "~8.0",
+            "ext-xmlwriter": "*"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-3.x": "3.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-3.1",
+                "datestamp": "1555534615",
+                "security-coverage": {
+                    "status": "covered",
+                    "message": "Covered by Drupal's security advisory policy"
+                }
+            },
+            "drush": {
+                "services": {
+                    "drush.services.yml": "^9"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "Pawel Ginalski (gbyte.co)",
+                "homepage": "https://www.drupal.org/u/gbyte.co",
+                "email": "contact@gbyte.co",
+                "role": "Maintainer"
+            },
+            {
+                "name": "gbyte.co",
+                "homepage": "https://www.drupal.org/user/2381352"
+            }
+        ],
+        "description": "Creates a standard conform hreflang XML sitemap of the site content and provides a framework for developing other sitemap types.",
+        "homepage": "https://drupal.org/project/simple_sitemap",
+        "support": {
+            "source": "https://cgit.drupalcode.org/simple_sitemap",
+            "issues": "https://drupal.org/project/issues/simple_sitemap",
+            "irc": "irc://irc.freenode.org/drupal-contribute"
+        }
+    },
+    {
+        "name": "drupal/tamper",
+        "version": "dev-1.x",
+        "version_normalized": "dev-1.x",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/tamper.git",
+            "reference": "333bb7611f69342315d52cabcb904e28f52ababb"
+        },
+        "require": {
+            "drupal/core": "~8.0"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-1.x": "1.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-1.x-dev",
+                "datestamp": "1552441088",
+                "security-coverage": {
+                    "status": "not-covered",
+                    "message": "Project has not opted into security advisory coverage!"
+                }
+            }
+        },
+        "installation-source": "source",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "MegaChriz",
+                "homepage": "https://www.drupal.org/user/654114"
+            },
+            {
+                "name": "ericgsmith",
+                "homepage": "https://www.drupal.org/user/1649952"
+            },
+            {
+                "name": "twistor",
+                "homepage": "https://www.drupal.org/user/473738"
+            }
+        ],
+        "description": "Generic plugin to modify data.",
+        "homepage": "https://www.drupal.org/project/tamper",
+        "keywords": [
+            "Drupal",
+            "tamper"
+        ],
+        "support": {
+            "source": "http://cgit.drupalcode.org/tamper",
+            "issues": "http://drupal.org/project/issues/tamper"
         }
     },
     {
@@ -3871,17 +4360,17 @@
     },
     {
         "name": "egulias/email-validator",
-        "version": "2.1.7",
-        "version_normalized": "2.1.7.0",
+        "version": "2.1.8",
+        "version_normalized": "2.1.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/egulias/EmailValidator.git",
-            "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e"
+            "reference": "c26463ff9241f27907112fbcd0c86fa670cfef98"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/709f21f92707308cdf8f9bcfa1af4cb26586521e",
-            "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e",
+            "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/c26463ff9241f27907112fbcd0c86fa670cfef98",
+            "reference": "c26463ff9241f27907112fbcd0c86fa670cfef98",
             "shasum": ""
         },
         "require": {
@@ -3896,7 +4385,7 @@
         "suggest": {
             "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
         },
-        "time": "2018-12-04T22:38:24+00:00",
+        "time": "2019-05-16T22:02:54+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -4911,17 +5400,17 @@
     },
     {
         "name": "nikic/php-parser",
-        "version": "v4.2.1",
-        "version_normalized": "4.2.1.0",
+        "version": "v4.2.2",
+        "version_normalized": "4.2.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/nikic/PHP-Parser.git",
-            "reference": "5221f49a608808c1e4d436df32884cbc1b821ac0"
+            "reference": "1bd73cc04c3843ad8d6b0bfc0956026a151fc420"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/5221f49a608808c1e4d436df32884cbc1b821ac0",
-            "reference": "5221f49a608808c1e4d436df32884cbc1b821ac0",
+            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/1bd73cc04c3843ad8d6b0bfc0956026a151fc420",
+            "reference": "1bd73cc04c3843ad8d6b0bfc0956026a151fc420",
             "shasum": ""
         },
         "require": {
@@ -4931,7 +5420,7 @@
         "require-dev": {
             "phpunit/phpunit": "^6.5 || ^7.0"
         },
-        "time": "2019-02-16T20:54:15+00:00",
+        "time": "2019-05-25T20:07:01+00:00",
         "bin": [
             "bin/php-parse"
         ],
@@ -8813,17 +9302,17 @@
     },
     {
         "name": "twig/twig",
-        "version": "v1.40.1",
-        "version_normalized": "1.40.1.0",
+        "version": "v1.41.0",
+        "version_normalized": "1.41.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/twigphp/Twig.git",
-            "reference": "35889516bbd6bbe46a600c2c33b03515df4a076e"
+            "reference": "575cd5028362da591facde1ef5d7b94553c375c9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/twigphp/Twig/zipball/35889516bbd6bbe46a600c2c33b03515df4a076e",
-            "reference": "35889516bbd6bbe46a600c2c33b03515df4a076e",
+            "url": "https://api.github.com/repos/twigphp/Twig/zipball/575cd5028362da591facde1ef5d7b94553c375c9",
+            "reference": "575cd5028362da591facde1ef5d7b94553c375c9",
             "shasum": ""
         },
         "require": {
@@ -8835,11 +9324,11 @@
             "symfony/debug": "^2.7",
             "symfony/phpunit-bridge": "^3.4.19|^4.1.8"
         },
-        "time": "2019-04-29T14:12:28+00:00",
+        "time": "2019-05-14T11:59:08+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.40-dev"
+                "dev-master": "1.41-dev"
             }
         },
         "installation-source": "dist",
@@ -8881,22 +9370,21 @@
     },
     {
         "name": "typo3/phar-stream-wrapper",
-        "version": "v2.1.1",
-        "version_normalized": "2.1.1.0",
+        "version": "v2.1.2",
+        "version_normalized": "2.1.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/TYPO3/phar-stream-wrapper.git",
-            "reference": "e438b0c78652b33407983eb29d215a1a3f68f6f3"
+            "reference": "057622f5a3b92a5ffbea0fbaadce573500a62870"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/TYPO3/phar-stream-wrapper/zipball/e438b0c78652b33407983eb29d215a1a3f68f6f3",
-            "reference": "e438b0c78652b33407983eb29d215a1a3f68f6f3",
+            "url": "https://api.github.com/repos/TYPO3/phar-stream-wrapper/zipball/057622f5a3b92a5ffbea0fbaadce573500a62870",
+            "reference": "057622f5a3b92a5ffbea0fbaadce573500a62870",
             "shasum": ""
         },
         "require": {
             "brumann/polyfill-unserialize": "^1.0",
-            "ext-fileinfo": "*",
             "ext-json": "*",
             "php": "^5.3.3|^7.0"
         },
@@ -8904,7 +9392,10 @@
             "ext-xdebug": "*",
             "phpunit/phpunit": "^4.8.36"
         },
-        "time": "2019-05-05T17:30:51+00:00",
+        "suggest": {
+            "ext-fileinfo": "For PHP builtin file type guessing, otherwise uses internal processing"
+        },
+        "time": "2019-05-14T13:14:31+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -8980,17 +9471,17 @@
     },
     {
         "name": "webflo/drupal-core-require-dev",
-        "version": "8.7.1",
-        "version_normalized": "8.7.1.0",
+        "version": "8.7.2",
+        "version_normalized": "8.7.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/webflo/drupal-core-require-dev.git",
-            "reference": "91acb9e4723e371290b11eff67fbb5884d3c8e6c"
+            "reference": "0f1f36e71d63e05f1bb599e0bfd20f7722b700a2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/webflo/drupal-core-require-dev/zipball/91acb9e4723e371290b11eff67fbb5884d3c8e6c",
-            "reference": "91acb9e4723e371290b11eff67fbb5884d3c8e6c",
+            "url": "https://api.github.com/repos/webflo/drupal-core-require-dev/zipball/0f1f36e71d63e05f1bb599e0bfd20f7722b700a2",
+            "reference": "0f1f36e71d63e05f1bb599e0bfd20f7722b700a2",
             "shasum": ""
         },
         "require": {
@@ -8998,7 +9489,7 @@
             "behat/mink-goutte-driver": "^1.2",
             "behat/mink-selenium2-driver": "1.3.x-dev",
             "drupal/coder": "^8.3.1",
-            "drupal/core": "8.7.1",
+            "drupal/core": "8.7.2",
             "jcalderonzumba/gastonjs": "^1.0.2",
             "jcalderonzumba/mink-phantomjs-driver": "^0.3.1",
             "justinrainbow/json-schema": "^5.2",
@@ -9009,7 +9500,7 @@
             "symfony/debug": "^3.4.0",
             "symfony/phpunit-bridge": "^3.4.3"
         },
-        "time": "2019-05-08T17:31:44+00:00",
+        "time": "2019-05-23T07:31:39+00:00",
         "type": "metapackage",
         "notification-url": "https://packagist.org/downloads/",
         "license": [

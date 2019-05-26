@@ -31,7 +31,7 @@ that site is split into:
 - [Do you support X module?](#support)
 - [Do you support Internet Explorer?](#ie)
 - [Is Drupal Bootstrap a module or theme?](#module-or-theme)
-- [Where can I discuss an issue in real time?](#irc)
+- [Where can I discuss an issue in real time?](#discuss)
 - [Where should I make changes?](#changes)
 
 ---
@@ -98,13 +98,13 @@ functionality.
 
 ---
 
-### Q: Where can I discuss an issue in real time? {#irc}
-**A: In IRC**
+### Q: Where can I discuss an issue in real time? {#discuss}
+**A: In Slack**
 
-The [Drupal Bootstrap] project and its maintainers use the `#drupal-bootstrap`
-channel on the freenode.net IRC network to communicate in real time. Please read
+The [Drupal Bootstrap] project and its maintainers use the `#bootstrap` channel
+in the `drupal.slack.com` workspace to communicate in real time. Please read
 the following for more information on how to the community uses this technology:
-[Chat with the Drupal Community on IRC](https://www.drupal.org/irc).
+[Chat with the Drupal community using Slack](https://www.drupal.org/slack).
 
 Please keep in mind though, this **IS NOT** a "support" channel. It's primary
 use is to discuss issues and to help fix bugs with the base theme itself.

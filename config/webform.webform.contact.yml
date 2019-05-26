@@ -1,23 +1,24 @@
-uuid: afcaa31f-994c-438a-bd0b-babf9219a6b0
+uuid: d553f7a9-bebe-433e-a683-6185a3908d41
 langcode: en
 status: open
 dependencies:
   enforced:
     module:
       - webform
+      - webform
 _core:
-  default_config_hash: Db1CJM6FchEqqeVz5YJThCK0WB599y4NjQ4GkPcGF5g
+  default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU
 open: null
 close: null
 weight: 0
-uid: null
+uid: 1
 template: false
 archive: false
 id: contact
 title: Contact
-description: 'Basic email contact webform.'
+description: '&quot;Contact&quot; webform.'
 category: ''
-elements: "name:\n  '#title': 'Your Name'\n  '#type': textfield\n  '#required': true\n  '#default_value': '[current-user:display-name]'\nemail:\n  '#title': 'Your Email'\n  '#type': email\n  '#required': true\n  '#default_value': '[current-user:mail]'\nsubject:\n  '#title': Subject\n  '#type': textfield\n  '#required': true\n  '#test': 'Testing contact webform from [site:name]'\nmessage:\n  '#title': Message\n  '#type': textarea\n  '#required': true\n  '#test': 'Please ignore this email.'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': 'Send message'\n"
+elements: "subject:\n  '#title': Subject\n  '#type': textfield\n  '#required': true\n  '#test': 'Testing contact webform from [site:name]'\ncomments_and_feedback:\n  '#type': textarea\n  '#title': 'Comments and Feedback'\n  '#required': true\n  '#counter_type': character\n  '#counter_maximum': '2000'\n  '#counter_message': 'character(s) left'\n  '#smart_description': false\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'Your Email'\ntelephone:\n  '#type': tel\n  '#title': Telephone\n  '#pattern': '^\\+?\\d{0,}?(\\s|-|\\.){0,}?\\(?\\d{3}\\)?(\\s|-|\\.){0,}?\\d{3}(\\s|-|\\.){0,}?\\d{4}(\\s|-|\\.){0,}?(ex?t?|extension|x)?(\\s|-|\\.){0,}?\\d{0,}'\nconsent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    invisible:\n      ':input[name=\"consent\"]':\n        '!value': 'Yes'"
 css: ''
 javascript: ''
 settings:
@@ -26,7 +27,7 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  form_title: source_entity_webform
+  form_title: both
   form_submit_once: false
   form_exception_message: ''
   form_open_message: ''
@@ -92,7 +93,7 @@ settings:
   preview_excluded_elements: {  }
   preview_exclude_empty: true
   preview_exclude_empty_checkbox: false
-  draft: none
+  draft: ''
   draft_multiple: false
   draft_auto_save: false
   draft_saved_message: ''
@@ -124,9 +125,30 @@ settings:
   results_disabled: false
   results_disabled_ignore: false
   token_update: false
+  form_login: false
+  form_login_message: ''
+  submission_login: false
+  submission_login_message: ''
+  wizard_complete: true
+  wizard_complete_label: ''
+  form_submit_label: 'Send message'
+  form_submit_attributes: {  }
+  form_closed_message: ''
+  wizard_next_button_label: ''
+  wizard_next_button_attributes: {  }
+  wizard_prev_button_label: ''
+  wizard_prev_button_attributes: {  }
+  preview_next_button_label: ''
+  preview_next_button_attributes: {  }
+  preview_prev_button_label: ''
+  preview_prev_button_attributes: {  }
+  draft_button_label: ''
+  draft_button_attributes: {  }
 access:
   create:
     roles:
+      - anonymous
+      - authenticated
       - anonymous
       - authenticated
     users: {  }
@@ -182,6 +204,7 @@ handlers:
     settings:
       states:
         - completed
+        - completed
       to_mail: '[webform_submission:values:email:raw]'
       to_options: {  }
       cc_mail: ''
@@ -191,21 +214,21 @@ handlers:
       from_mail: _default
       from_options: {  }
       from_name: _default
-      subject: '[webform_submission:values:subject:raw]'
-      body: '[webform_submission:values:message:value]'
+      subject: '[webform_submission:values:subject:value]'
+      body: '[webform_submission:values]'
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
-      exclude_empty_checkbox: false
       html: true
       attachments: false
       twig: false
-      theme_name: ''
       debug: false
       reply_to: ''
       return_path: ''
       sender_mail: ''
       sender_name: ''
+      exclude_empty_checkbox: false
+      theme_name: ''
   email_notification:
     id: email
     label: 'Email notification'
@@ -216,27 +239,27 @@ handlers:
     settings:
       states:
         - completed
-      to_mail: _default
+      to_mail: od-do@canada.ca
       to_options: {  }
       cc_mail: ''
       cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
-      from_mail: '[webform_submission:values:email:raw]'
+      from_mail: _default
       from_options: {  }
-      from_name: '[webform_submission:values:name:raw]'
-      subject: '[webform_submission:values:subject:raw]'
-      body: '[webform_submission:values:message:value]'
+      from_name: '[webform_submission:values:subject:value]'
+      subject: '[webform_submission:values:subject:value]'
+      body: '[webform_submission:values]'
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
-      exclude_empty_checkbox: false
       html: true
       attachments: false
       twig: false
-      theme_name: ''
       debug: false
       reply_to: ''
       return_path: ''
       sender_mail: ''
       sender_name: ''
+      exclude_empty_checkbox: false
+      theme_name: ''

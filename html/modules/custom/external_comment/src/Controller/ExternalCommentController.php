@@ -102,20 +102,22 @@ class ExternalCommentController extends CommentController {
         $types_en = array(
           "dataset" => "Dataset",
           "visualization" => "Data Visualization",
-          "pd" => "Proactive Disclosure"
+          "pd" => "Proactive Disclosure",
+          "inventory" => "Open Data Inventory",
         );
         $ext_type_en = $types_en[$ext_type];
         $types_fr = array(
           "dataset" => "Jeu de données",
           "visualization" => "Visualisation de données",
-          "pd" => "Divulgation proactive"
+          "pd" => "Divulgation proactive",
+          "inventory" => "Répertoire de données ouvertes",
         );
         $ext_type_fr = $types_fr[$ext_type];
 
         $node = Node::create(['type' => 'external']);
         $node->set('title', $ext_type_en);
         $node->set('field_url', $url_en);
-        $node->set('field_type', $ext_type_en);
+        $node->set('field_type', $ext_type);
         $node->set('field_uuid', $uuid);
         $node->status = 1;
         $node->enforceIsNew();
@@ -125,7 +127,7 @@ class ExternalCommentController extends CommentController {
         $node_fr = $node->addTranslation('fr');
         $node_fr->set('title', $ext_type_fr);
         $node_fr->set('field_url', $url_fr);
-        $node_fr->set('field_type', $ext_type_fr);
+        $node_fr->set('field_type', $ext_type);
         $node_fr->set('field_uuid', $uuid);
         $node_fr->save();
 
@@ -155,7 +157,7 @@ class ExternalCommentController extends CommentController {
     $url_explode = explode("/",$referer_url);
     $referer_uuid = end($url_explode);
     $referer_type = prev($url_explode);
-    $types = array("dataset", "visualization", "pd");
+    $types = array("dataset", "visualization", "pd", "inventory");
 
     if ($referer_url) {
       $host_domain = $request->getSchemeAndHttpHost();

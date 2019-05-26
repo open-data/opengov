@@ -21,7 +21,6 @@ use Drupal\feeds\StateInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\user\EntityOwnerInterface;
-use Drupal\Core\Entity\TranslatableInterface;
 
 /**
  * Defines a base entity processor.
@@ -150,7 +149,6 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       // Set field values.
       $this->map($feed, $entity, $item);
       $this->entityValidate($entity);
-      $this->entityTranslationCheck($entity);
 
       // This will throw an exception on failure.
       $this->entitySaveAccess($entity);
@@ -404,26 +402,6 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
   }
 
   /**
-   * Check from config if the author of the entity should be the feed owner.
-   *
-   * @return bool
-   *   TRUE if entity author is the feed owner.
-   */
-  public function isOwnerFeedAuthor() {
-    return $this->configuration['owner_feed_author'];
-  }
-
-  /**
-   * Get from config entity owner id.
-   *
-   * @return int
-   *   Owner id.
-   */
-  public function getOwnerId() {
-    return $this->configuration['owner_id'];
-  }
-
-  /**
    * {@inheritdoc}
    */
   protected function entityValidate(EntityInterface $entity) {
@@ -496,39 +474,6 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     $message = \Drupal::service('renderer')->renderRoot($message_element);
 
     throw new ValidationException($message);
-  }
-
-  /**
-   * Check entity translation values to prevent fails.
-   *
-   * @param EntityInterface $entity
-   *   Entity being imported.
-   */
-  public function entityTranslationCheck(EntityInterface $entity) {
-    if ($entity instanceof TranslatableInterface) {
-      foreach ($entity->getTranslationLanguages(FALSE) as $language) {
-        $translation = $entity->getTranslation($language->getId());
-        $this->ensureTranslationLabel($entity, $translation);
-      }
-    }
-  }
-
-  /**
-   * Provide default value for entity label.
-   *
-   * This is done because it can happens if there is no label
-   * for the entity in a translation the import will fail
-   *
-   * @param EntityInterface $entity
-   *   Entity being imported.
-   * @param EntityInterface $translation
-   *   Current translation.
-   */
-  public function ensureTranslationLabel(EntityInterface $entity, EntityInterface $translation) {
-    if (empty($translation->label())) {
-      $label_key = $translation->getEntityType()->getKey('label');
-      $translation->{$label_key}->value = $entity->label();
-    }
   }
 
   /**
@@ -839,9 +784,8 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     }
 
     // Gather all of the values for this item.
-    // Values can be grouped by language.
-    $source_values_groups = [];
-    foreach ($mappings as $delta => $mapping) {
+    $source_values = [];
+    foreach ($mappings as $mapping) {
       $target = $mapping['target'];
 
       foreach ($mapping['map'] as $column => $source) {
@@ -851,38 +795,28 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
           continue;
         }
 
-        $plugin = $this->feedType->getTargetPlugin($delta);
-        if (method_exists($plugin, 'getLanguage')) {
-          $group = $plugin->getLanguage();
-        }
-        else {
-          $group = 'default';
-        }
-
-        if (!isset($source_values_groups[$target][$column])) {
-          $source_values_groups[$group][$target][$column] = [];
+        if (!isset($source_values[$target][$column])) {
+          $source_values[$target][$column] = [];
         }
 
         $value = $item->get($source);
         if (!is_array($value)) {
-          $source_values_groups[$group][$target][$column][] = $value;
+          $source_values[$target][$column][] = $value;
         }
         else {
-          $source_values_groups[$group][$target][$column] = array_merge($source_values_groups[$group][$target][$column], $value);
+          $source_values[$target][$column] = array_merge($source_values[$target][$column], $value);
         }
       }
     }
 
     // Rearrange values into Drupal's field structure.
     $field_values = [];
-    foreach ($source_values_groups as $group => $source_values) {
-      foreach ($source_values as $field => $field_value) {
-        $field_values[$group][$field] = [];
-        foreach ($field_value as $column => $values) {
-          // Use array_values() here to keep our $delta clean.
-          foreach (array_values($values) as $delta => $value) {
-            $field_values[$group][$field][$delta][$column] = $value;
-          }
+    foreach ($source_values as $field => $field_value) {
+      $field_values[$field] = [];
+      foreach ($field_value as $column => $values) {
+        // Use array_values() here to keep our $delta clean.
+        foreach (array_values($values) as $delta => $value) {
+          $field_values[$field][$delta][$column] = $value;
         }
       }
     }
@@ -890,9 +824,8 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     // Set target values.
     foreach ($mappings as $delta => $mapping) {
       $plugin = $this->feedType->getTargetPlugin($delta);
-      $group = $plugin->getLanguage();
-      if (isset($field_values[$group][$mapping['target']])) {
-        $plugin->setTarget($feed, $entity, $mapping['target'], $field_values[$group][$mapping['target']]);
+      if (isset($field_values[$mapping['target']])) {
+        $plugin->setTarget($feed, $entity, $mapping['target'], $field_values[$mapping['target']]);
       }
     }
 

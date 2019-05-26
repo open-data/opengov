@@ -11,7 +11,7 @@
       var $context = $(context);
 
       // General.
-      $context.find('#edit-general').drupalSetSummary(function () {
+      $context.find('[data-drupal-selector="edit-general"]').drupalSetSummary(function () {
         var summary = [];
         // Buttons.
         var size = $context.find('select[name="button_size"] :selected');
@@ -42,7 +42,7 @@
       });
 
       // Components.
-      $context.find('#edit-components').drupalSetSummary(function () {
+      $context.find('[data-drupal-selector="edit-components"]').drupalSetSummary(function () {
         var summary = [];
         // Breadcrumbs.
         var breadcrumb = parseInt($context.find('select[name="breadcrumb"]').val(), 10);
@@ -112,7 +112,7 @@
           });
       });
 
-      $context.find('#edit-javascript').drupalSetSummary(function () {
+      $context.find('[data-drupal-selector="edit-javascript"]').drupalSetSummary(function () {
         var summary = [];
         if ($context.find('input[name="modal_enabled"]').is(':checked')) {
           if ($jQueryUiBridge.is(':checked')) {
@@ -131,26 +131,44 @@
         return summary.join(', ');
       });
 
-      // Advanced.
-      $context.find('#edit-advanced').drupalSetSummary(function () {
+      // CDN.
+      $context.find('[data-drupal-selector="edit-cdn"]').drupalSetSummary(function () {
         var summary = [];
         var $cdnProvider = $context.find('select[name="cdn_provider"] :selected');
-        var cdnProvider = $cdnProvider.val();
-        if ($cdnProvider.length && cdnProvider.length) {
-          summary.push(Drupal.t('CDN provider: %provider', { '%provider': $cdnProvider.text() }));
+        if ($cdnProvider.length) {
+          var provider = $cdnProvider.text();
 
-          // jsDelivr CDN.
-          if (cdnProvider === 'jsdelivr') {
-            var $jsDelivrVersion = $context.find('select[name="cdn_jsdelivr_version"] :selected');
-            if ($jsDelivrVersion.length && $jsDelivrVersion.val().length) {
-              summary.push($jsDelivrVersion.text());
-            }
-            var $jsDelivrTheme = $context.find('select[name="cdn_jsdelivr_theme"] :selected');
-            if ($jsDelivrTheme.length && $jsDelivrTheme.val() !== 'bootstrap') {
-              summary.push($jsDelivrTheme.text());
+          var $version = $context.find('select[name="cdn_version"] :selected');
+          if ($version.length && $version.val().length) {
+            provider += ' - ' + $version.text();
+            var $theme = $context.find('select[name="cdn_theme"] :selected');
+            if ($theme.length) {
+              provider += ' (' + $theme.text() + ')';
             }
           }
+          else if ($cdnProvider.val() === 'custom') {
+            var $urls = $context.find('textarea[name="cdn_custom"]');
+            var urls = ($urls.val() + '').split(/\r\n|\n/).filter(Boolean);
+            provider += ' (' + Drupal.formatPlural(urls.length, '1 URL', '@count URLs') + ')';
+          }
+
+          summary.push(provider);
         }
+        return summary.join(', ');
+      });
+
+
+      // Advanced.
+      $context.find('[data-drupal-selector="edit-advanced"]').drupalSetSummary(function () {
+        var summary = [];
+        var deprecations = [];
+        if ($context.find('input[name="include_deprecated"]').is(':checked')) {
+          deprecations.push(Drupal.t('Included'));
+        }
+        deprecations.push($context.find('input[name="suppress_deprecated_warnings"]').is(':checked') ? Drupal.t('Warnings Suppressed') : Drupal.t('Warnings Shown'));
+        summary.push(Drupal.t('Deprecations: @value', {
+          '@value': deprecations.join(', '),
+        }));
         return summary.join(', ');
       });
     }
@@ -183,10 +201,11 @@
             }
           },
           complete: function () {
-            $preview.parent().find('select[name="cdn_jsdelivr_theme"]').bind('change', function () {
+            $preview.parent().find('select[name="cdn_theme"]').bind('change', function () {
               $preview.find('.bootswatch-preview').addClass('visually-hidden');
-              if ($(this).val().length) {
-                $preview.find('#bootstrap-theme-preview-' + $(this).val()).removeClass('visually-hidden');
+              var theme = $(this).val();
+              if (theme && theme.length) {
+                $preview.find('#bootstrap-theme-preview-' + theme).removeClass('visually-hidden');
               }
             }).change();
           }

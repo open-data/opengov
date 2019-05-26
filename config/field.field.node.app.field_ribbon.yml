@@ -1,0 +1,29 @@
+uuid: 7583d77c-027f-4065-abda-727f2f438754
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ribbon
+    - node.type.app
+    - taxonomy.vocabulary.app_ribbon
+id: node.app.field_ribbon
+field_name: field_ribbon
+entity_type: node
+bundle: app
+label: 'Publishers (Ribbon)'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      app_ribbon: app_ribbon
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

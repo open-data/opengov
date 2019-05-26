@@ -56,21 +56,25 @@
     }
   });
 
-  $.each(drupalSettings.editor.fontawesome.allowedEmptyTags, function (_, tag) {
-    CKEDITOR.dtd.$removeEmpty[tag] = 0;
-  });
+  if ('editor' in drupalSettings && 'fontawesome' in drupalSettings.editor) {
+    $.each(drupalSettings.editor.fontawesome.allowedEmptyTags, function (_, tag) {
+      CKEDITOR.dtd.$removeEmpty[tag] = 0;
+    });
+  }
 
   Drupal.FontAwesome = {};
 
   Drupal.FontAwesome.tagsToSvg = function (drupalSettings, thisEditor) {
-    $.each(drupalSettings.editor.fontawesome.fontawesomeLibraries, function (_, library) {
-      var $script = document.createElement('script');
-      var $editorInstance = CKEDITOR.instances[thisEditor.editor.name];
+    if ('editor' in drupalSettings && 'fontawesome' in drupalSettings.editor) {
+      $.each(drupalSettings.editor.fontawesome.fontawesomeLibraries, function (_, library) {
+        var $script = document.createElement('script');
+        var $editorInstance = CKEDITOR.instances[thisEditor.editor.name];
 
-      $script.src = library;
+        $script.src = library;
 
-      $editorInstance.document.getHead().$.appendChild($script);
-    });
+        $editorInstance.document.getHead().$.appendChild($script);
+      });
+    }
   };
 
   Drupal.FontAwesome.svgToTags = function (thisEditor) {

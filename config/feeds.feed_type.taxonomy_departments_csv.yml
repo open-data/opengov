@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.taxonomy_term.departments.field_previoustermid
     - taxonomy.vocabulary.departments
   module:
     - taxonomy
@@ -70,32 +69,18 @@ mappings:
     map:
       value: name
     unique: {  }
-    settings:
-      language: null
   -
     target: langcode
     map:
       value: langcode
-    settings:
-      language: null
-  -
-    target: content_translation_created
-    map:
-      value: created
-    settings:
-      language: null
-      timezone: UTC
   -
     target: status
     map:
       value: status
-    settings:
-      language: null
   -
     target: weight
     map:
       value: weight
-    settings: {  }
   -
     target: parent
     map:
@@ -109,13 +94,6 @@ mappings:
     map:
       target_id: uid
     settings:
-      language: ''
       reference_by: name
       feeds_item: guid
       autocreate: 0
-  -
-    target: field_previoustermid
-    map:
-      value: tid
-    settings:
-      language: null

@@ -47,11 +47,12 @@ class DefaultForm extends FormBase {
         drupal_set_message("No content type selected for mapping", 'warning');
       }
       else {
+        $comparefield = $content_type == 'external' ? 'field_uuid' : 'field_previousnodeid';
         // fetch all nodes of content type
         $query = \Drupal::entityQuery('node');
         $query->condition('type', $content_type);
-        $query->exists('field_previousnodeid');
-        $query->sort('field_previousnodeid');
+        $query->exists($comparefield);
+        $query->sort($comparefield);
         $query->sort('langcode');
         $nids = $query->execute();
         $nodes = \Drupal\node\Entity\Node::loadMultiple($nids);
@@ -61,7 +62,7 @@ class DefaultForm extends FormBase {
         foreach ($nodes as $node) {
           if ($node->get('langcode')->value == 'en') {
             foreach ($nodes as $node_translation) {
-              if (($node_translation->get('field_previousnodeid')->value == ($node->get('field_previousnodeid')->value))
+              if (($node_translation->get($comparefield)->value == ($node->get($comparefield)->value))
                 and ($node_translation->get('langcode')->value == 'fr')) {
                 $rows[] = array(
                   $node->get('title')->value,
@@ -119,11 +120,13 @@ class DefaultForm extends FormBase {
       drupal_set_message('No content type selected to merge', 'warning');
     }
     else {
+      $comparefield = $content_type == 'external' ? 'field_uuid' : 'field_previousnodeid';
+
       // 1. Fetch all nodes of content type
       $query = \Drupal::entityQuery('node');
       $query->condition('type', $content_type);
-      $query->exists('field_previousnodeid');
-      $query->sort('field_previousnodeid');
+      $query->exists($comparefield);
+      $query->sort($comparefield);
       $query->sort('langcode');
       $nids = $query->execute();
       $keys = array_keys($nids);
@@ -132,13 +135,13 @@ class DefaultForm extends FormBase {
       for($i = 0; $i < sizeof($keys); $i++) {
         // 2. Load the field_previousnodeid for the first node
         $node1 = $storage_handler->load($nids[$keys[$i]]);
-        $node1_previousnodeid = $node1->get('field_previousnodeid')->getValue();
+        $node1_previousnodeid = $node1->get($comparefield)->getValue();
         $node1_langcode = $node1->language()->getId();
 
         // 3. check the field_previousnodeid for the next node
         $node2 = $storage_handler->load($nids[$keys[$i+1]]);
         if ($node2) {
-          $node2_previousnodeid = $node2->get('field_previousnodeid')->getValue();
+          $node2_previousnodeid = $node2->get($comparefield)->getValue();
           $node2_langcode = $node2->language()->getId();
 
           if (($node1_previousnodeid[0]['value'] == $node2_previousnodeid[0]['value'])

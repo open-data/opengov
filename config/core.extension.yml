@@ -3,6 +3,7 @@ module:
   admin_toolbar: 0
   admin_toolbar_links_access_filter: 0
   admin_toolbar_tools: 0
+  autologout: 0
   automated_cron: 0
   block: 0
   block_content: 0
@@ -32,11 +33,13 @@ module:
   history: 0
   image: 0
   language: 0
+  layout_builder: 0
   layout_discovery: 0
   link: 0
   locale: 0
   media: 0
   media_library: 0
+  memcache: 0
   menu_breadcrumb: 0
   menu_ui: 0
   mergenodes: 0
@@ -45,6 +48,8 @@ module:
   metatag_twitter_cards: 0
   metatag_views: 0
   node: 0
+  og_ext_user: 0
+  og_ext_webform: 0
   options: 0
   page_cache: 0
   path: 0
@@ -54,6 +59,7 @@ module:
   search: 0
   serialization: 0
   shortcut: 0
+  simple_sitemap: 0
   system: 0
   taxonomy: 0
   text: 0
@@ -67,7 +73,6 @@ module:
   webform: 0
   webform_ui: 0
   workflows: 0
-  forum: 1
   menu_link_content: 1
   pathauto: 1
   content_translation: 10

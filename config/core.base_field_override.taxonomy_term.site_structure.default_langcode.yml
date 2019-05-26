@@ -1,0 +1,22 @@
+uuid: 3adc6a65-1f6b-43b6-bf34-f5c0ff432ad7
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.site_structure
+id: taxonomy_term.site_structure.default_langcode
+field_name: default_langcode
+entity_type: taxonomy_term
+bundle: site_structure
+label: 'Default translation'
+description: 'A flag indicating whether this is the default translation.'
+required: false
+translatable: true
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.departments.feeds_item
-    - field.field.taxonomy_term.departments.field_previoustermid
     - taxonomy.vocabulary.departments
   module:
     - text
@@ -20,15 +19,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_previoustermid:
-    weight: 1
-    label: above
-    settings:
-      thousand_separator: ''
-      prefix_suffix: true
-    third_party_settings: {  }
-    type: number_integer
-    region: content
 hidden:
   feeds_item: true
   langcode: true

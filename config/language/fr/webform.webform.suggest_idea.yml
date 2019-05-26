@@ -1,0 +1,10 @@
+elements: "submitted_by:\n  '#title': 'Soumis par'\n  '#description': 'Veuillez s.v.p. entrer votre nom ou nom d''usager dans le but que cette idée vous soit créditée.'\norganization:\n  '#title': Organisation\nidea_title:\n  '#title': 'Titre de l''idée'\nidea_description:\n  '#title': 'Description de l''idée'\nsuggested_keywords:\n  '#title': 'Veuillez s.v.p. fournir les mots-clés généralement utilisés, les mots officiels ou les phrases qui peuvent être utilisés pour décrire votre idée.'\n"
+settings:
+  confirmation_message: "<h2>Nous vous remercions de votre participation!</h2>\r\n\r\n<p>Votre idée ou commentaire devrait apparaître d’ici deux jours ouvrables.</p>"
+handlers:
+  email_1:
+    label: Courriel
+    settings:
+      from_name: default
+      subject: 'Proposez une idée pour le 2.0 Consultation Plan d''action sur la transparence gouvernementale'
+      body: "&lt;p&gt;Soumis le [webform_submission:created]&lt;/p&gt;<br />\r\n&lt;p&gt;Soumis par : [webform_submission:user]&lt;/p&gt;<br />\r\n&lt;p&gt;Les valeurs soumises sont :&lt;/p&gt;<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"

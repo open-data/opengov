@@ -258,6 +258,9 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#open' => TRUE,
       '#title' => $this->t('Scale'),
       '#description' => $this->t('Power Transform scaling effects icon size without changing or moving the container. This field will scale icons up or down with any arbitrary value, including decimals. Units are 1/16em.'),
+      '#element_validate' => [
+        [static::class, 'validatePowerTransforms'],
+      ],
     ];
     $element['settings']['power_transforms']['scale']['type'] = [
       '#type' => 'select',
@@ -268,9 +271,6 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
         'grow' => $this->t('Grow'),
       ],
       '#default_value' => isset($iconSettings['power_transforms']['scale']['type']) ? $iconSettings['power_transforms']['scale']['type'] : '',
-      '#element_validate' => [
-        [static::class, 'validatePowerTransforms'],
-      ],
     ];
     $element['settings']['power_transforms']['scale']['value'] = [
       '#type' => 'number',
@@ -290,6 +290,9 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#open' => TRUE,
       '#title' => $this->t('Position (Y Axis)'),
       '#description' => $this->t('Power Transform positioning effects icon location without changing or moving the container. This field will move icons up or down with any arbitrary value, including decimals. Units are 1/16em.'),
+      '#element_validate' => [
+        [static::class, 'validatePowerTransforms'],
+      ],
     ];
     $element['settings']['power_transforms']['position_y']['type'] = [
       '#type' => 'select',
@@ -300,9 +303,6 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
         'down' => $this->t('Down'),
       ],
       '#default_value' => isset($iconSettings['power_transforms']['position_y']['type']) ? $iconSettings['power_transforms']['position_y']['type'] : '',
-      '#element_validate' => [
-        [static::class, 'validatePowerTransforms'],
-      ],
     ];
     $element['settings']['power_transforms']['position_y']['value'] = [
       '#type' => 'number',
@@ -321,6 +321,9 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#open' => TRUE,
       '#title' => $this->t('Position (X Axis)'),
       '#description' => $this->t('Power Transform positioning effects icon location without changing or moving the container. This field will move icons up or down with any arbitrary value, including decimals. Units are 1/16em.'),
+      '#element_validate' => [
+        [static::class, 'validatePowerTransforms'],
+      ],
     ];
     $element['settings']['power_transforms']['position_x']['type'] = [
       '#type' => 'select',
@@ -331,9 +334,6 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
         'right' => $this->t('Right'),
       ],
       '#default_value' => isset($iconSettings['power_transforms']['position_x']['type']) ? $iconSettings['power_transforms']['position_x']['type'] : '',
-      '#element_validate' => [
-        [static::class, 'validatePowerTransforms'],
-      ],
     ];
     $element['settings']['power_transforms']['position_x']['value'] = [
       '#type' => 'number',
@@ -355,21 +355,22 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
    * Validate the Font Awesome power transforms.
    */
   public static function validatePowerTransforms($element, FormStateInterface $form_state) {
-    $value = $element['#value'];
-    if (strlen($value) == 0) {
-      $form_state->setValueForElement($element, '');
-      return;
-    }
+    $values = $form_state->getValue($element['#parents']);
 
-    // Check the value of the power transform.
-    $transformSettings = $form_state->getValues();
-    foreach (array_slice($element['#parents'], 0, 5) as $key) {
-      $transformSettings = $transformSettings[$key];
+    if (!empty($values['type']) && empty($values['value'])) {
+      $form_state->setError($element, t('Missing value for Font Awesome Power Transform %value. Please see @iconLink for information on correct values.', [
+        '%value' => $values['type'],
+        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js'))->toString(),
+      ]));
     }
-
-    if (!is_numeric($transformSettings['value'])) {
+    elseif (empty($values['type']) && !empty($values['value'])) {
+      $form_state->setError($element, t('Missing type value for Font Awesome Power Transform. Please see @iconLink for information on correct values.', [
+        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js'))->toString(),
+      ]));
+    }
+    if (!empty($values['value']) && !is_numeric($values['value'])) {
       $form_state->setError($element, t("Invalid value for Font Awesome Power Transform %value. Please see @iconLink for information on correct values.", [
-        '%value' => $value,
+        '%value' => $values['type'],
         '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js'))->toString(),
       ]));
     }

@@ -1,0 +1,5 @@
+elements: "rating:\n  '#title': 'Avez-vous trouvé cet applis utile?'\nactions:\n  '#submit__label': Coter\n"
+settings:
+  previous_submission_message: 'Vous avez déjà voté sur cet applis'
+  previous_submissions_message: 'Vous avez déjà voté sur cet applis'
+  confirmation_message: 'Merci d''avoir voté sur cet applis.'

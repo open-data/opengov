@@ -9,3 +9,7 @@ Comments created in translation are displayed only for admin role
 Source: https://www.drupal.org/files/issues/2018-04-13/drupal-comment_translation_displayed_only_admin-2958935-9-D8.patch
 
 
+Notice: Undefined index: target_bundles when new reference media field created
+Source: https://www.drupal.org/files/issues/2019-05-18/undefined_index_target_bundles-3055516-4.patch
+
+

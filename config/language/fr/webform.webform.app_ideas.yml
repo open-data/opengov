@@ -1,0 +1,7 @@
+elements: "name_of_application:\r\n  '#title': 'Nom de l''application suggérée'\r\npossible_supporting_datasets_if_applicable:\r\n  '#title': 'Fichiers de données de support possibles, le cas échéant'\r\ndescription_of_app:\r\n  '#title': 'Description de l''application'\r\nsharing_consent:\r\n  '#title': Consens\r\n  '#description': '<strong>Je consens à la communication de mes renseignements personnels entre les ministères du gouvernement du Canada dans le but de répondre à ma demande de renseignements.</strong>'\r\nactions:\r\n  '#title': 'Bouton(s) de soumission'\r\n"
+handlers:
+  email:
+    label: Courriel
+    settings:
+      from_name: default
+      body: "&lt;p&gt;Soumis le [webform_submission:created]&lt;/p&gt;<br />\r\n&lt;p&gt;Soumis par : [webform_submission:user]&lt;/p&gt;<br />\r\n&lt;p&gt;Les valeurs soumises sont :&lt;/p&gt;<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"

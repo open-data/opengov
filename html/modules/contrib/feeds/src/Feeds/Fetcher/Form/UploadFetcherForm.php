@@ -68,7 +68,7 @@ class UploadFetcherForm extends ExternalPluginFormBase implements ContainerInjec
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     $values =& $form_state->getValues();
-    \Drupal::logger('debug')->warning('<pre><code>' . print_r($values, TRUE) . '</code></pre>');
+
     $values['allowed_extensions'] = preg_replace('/\s+/', ' ', trim($values['allowed_extensions']));
 
     // Ensure that the upload directory exists.

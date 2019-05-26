@@ -5,8 +5,8 @@ description: 'The most popular icon set and toolkit on the web.'
 # core: 8.x
 configure: fontawesome.admin_settings
 
-# Information added by Drupal.org packaging script on 2019-02-20
-version: '8.x-2.12'
+# Information added by Drupal.org packaging script on 2019-05-11
+version: '8.x-2.13'
 core: '8.x'
 project: 'fontawesome'
-datestamp: 1550687592
+datestamp: 1557577994

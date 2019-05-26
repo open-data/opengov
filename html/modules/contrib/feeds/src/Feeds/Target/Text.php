@@ -73,14 +73,13 @@ class Text extends StringTarget implements ConfigurableTargetInterface {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return parent::defaultConfiguration() + ['format' => 'plain_text'];
+    return ['format' => 'plain_text'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = parent::buildConfigurationForm($form, $form_state);
     $options = [];
     foreach (filter_formats($this->user) as $id => $format) {
       $options[$id] = $format->label();
@@ -99,19 +98,14 @@ class Text extends StringTarget implements ConfigurableTargetInterface {
    * {@inheritdoc}
    */
   public function getSummary() {
-    $summary = [
-      parent::getSummary(),
-    ];
-
     $formats = \Drupal::entityTypeManager()
       ->getStorage('filter_format')
       ->loadByProperties(['status' => '1', 'format' => $this->configuration['format']]);
 
     if ($formats) {
       $format = reset($formats);
-      $summary[] = $this->t('Format: %format', ['%format' => $format->label()]);
+      return $this->t('Format: %format', ['%format' => $format->label()]);
     }
-    return $this->showSummary($summary);
   }
 
 }

@@ -3,7 +3,7 @@ description: 'This module will merge translations of nodes'
 
 type: module
 core: 8.x
-package: 'Custom'
+package: 'Open Government'
 version: 1.0
 
 dependencies:

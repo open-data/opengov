@@ -1,0 +1,85 @@
+uuid: 333164b4-1564-4c7c-9f78-52e208969796
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.external.field_type
+    - field.field.node.external.field_url
+    - field.field.node.external.field_uuid
+    - node.type.external
+  module:
+    - node
+label: 'Content external CSV'
+id: content_external_csv
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'public://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: true
+  owner_id: 0
+  authorize: true
+  skip_hash_check: false
+  values:
+    type: external
+custom_sources:
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  title:
+    label: title
+    value: title
+    machine_name: title
+  type:
+    label: type
+    value: type
+    machine_name: type
+  uuid:
+    label: uuid
+    value: uuid
+    machine_name: uuid
+  url:
+    label: url
+    value: url
+    machine_name: url
+  '':
+    label: ''
+    value: ''
+    machine_name: ''
+mappings:
+  -
+    target: langcode
+    map:
+      value: langcode
+  -
+    target: title
+    map:
+      value: title
+    unique: {  }
+  -
+    target: field_type
+    map:
+      value: type
+    unique: {  }
+  -
+    target: field_uuid
+    map:
+      value: uuid
+    unique: {  }
+  -
+    target: field_url
+    map:
+      uri: url
+      title: url

@@ -1,0 +1,29 @@
+uuid: 10d55f3f-86fc-42fe-947e-bf98ec0ff198
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_device_formats
+    - node.type.app
+    - taxonomy.vocabulary.device_formats
+id: node.app.field_device_formats
+field_name: field_device_formats
+entity_type: node
+bundle: app
+label: 'Device Formats'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      device_formats: device_formats
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

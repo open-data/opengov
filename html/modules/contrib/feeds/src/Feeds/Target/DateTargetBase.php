@@ -46,14 +46,13 @@ abstract class DateTargetBase extends FieldTargetBase implements ConfigurableTar
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return parent::defaultConfiguration() + ['timezone' => 'UTC'];
+    return ['timezone' => 'UTC'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = parent::buildConfigurationForm($form, $form_state);
     $form['timezone'] = [
       '#type' => 'select',
       '#title' => $this->t('Timezone handling'),
@@ -81,16 +80,11 @@ abstract class DateTargetBase extends FieldTargetBase implements ConfigurableTar
    * {@inheritdoc}
    */
   public function getSummary() {
-    $summary = [
-      parent::getSummary(),
-    ];
-
     $options = $this->getTimezoneOptions();
 
-    $summary[] = $this->t('Default timezone: %zone', [
+    return $this->t('Default timezone: %zone', [
       '%zone' => $options[$this->configuration['timezone']],
     ]);
-    return $this->showSummary($summary);
   }
 
   /**

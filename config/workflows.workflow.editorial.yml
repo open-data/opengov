@@ -3,8 +3,13 @@ langcode: en
 status: true
 dependencies:
   config:
+    - node.type.app
     - node.type.article
+    - node.type.commitment
+    - node.type.external
+    - node.type.landing_page
     - node.type.page
+    - node.type.suggested_dataset
   module:
     - content_moderation
 _core:
@@ -79,6 +84,11 @@ type_settings:
       weight: -2
   entity_types:
     node:
+      - app
       - article
+      - commitment
+      - external
+      - landing_page
       - page
+      - suggested_dataset
   default_moderation_state: draft

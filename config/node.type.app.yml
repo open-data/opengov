@@ -1,0 +1,18 @@
+uuid: 893df6d6-614a-4a5c-85de-ac728a36360c
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: App
+type: app
+description: 'Applications (mobile/web) associated with Open Government.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

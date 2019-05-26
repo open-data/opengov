@@ -1,0 +1,5 @@
+name: 'Alter custom block'
+description: 'Alter the content of custom block'
+type: module
+core: 8.x
+package: 'Open Government'

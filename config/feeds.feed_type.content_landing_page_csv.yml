@@ -70,13 +70,16 @@ custom_sources:
     label: nid
     value: nid
     machine_name: nid
+  url_alias:
+    label: url_alias
+    value: url_alias
+    machine_name: url_alias
 mappings:
   -
     target: uid
     map:
       target_id: uid
     settings:
-      language: ''
       reference_by: name
       feeds_item: guid
       autocreate: 0
@@ -85,7 +88,6 @@ mappings:
     map:
       value: created
     settings:
-      language: null
       timezone: UTC
   -
     target: body
@@ -93,43 +95,34 @@ mappings:
       value: body
       summary: ''
     settings:
-      language: ''
       format: rich_text
   -
     target: langcode
     map:
       value: langcode
-    settings:
-      language: null
   -
     target: moderation_state
     map:
       value: moderation_state
     unique: {  }
-    settings:
-      language: null
   -
     target: promote
     map:
       value: promote
-    settings:
-      language: null
   -
     target: sticky
     map:
       value: sticky
-    settings:
-      language: null
   -
     target: title
     map:
       value: title
     unique: {  }
-    settings:
-      language: null
   -
     target: field_previousnodeid
     map:
       value: nid
-    settings:
-      language: null
+  -
+    target: path
+    map:
+      alias: url_alias

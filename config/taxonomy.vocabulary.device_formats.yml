@@ -1,0 +1,8 @@
+uuid: 93e82a26-7e9b-4cb5-bc53-1c37562aa840
+langcode: en
+status: true
+dependencies: {  }
+name: 'Device Formats'
+vid: device_formats
+description: 'Device formats for various types of applications.'
+weight: 0

@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.departments.feeds_item
-    - field.field.taxonomy_term.departments.field_previoustermid
     - taxonomy.vocabulary.departments
   module:
     - path
@@ -22,13 +21,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_previoustermid:
-    weight: 31
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
-    type: number
-    region: content
   langcode:
     type: language_select
     weight: 2

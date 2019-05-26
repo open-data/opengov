@@ -1,0 +1,9 @@
+name: 'Open Government Extend Webform'
+description: 'Webform functionality related extensions'
+type: module
+core: 8.x
+package: 'Open Government'
+
+# Required modules
+dependencies:
+  - drupal:webform

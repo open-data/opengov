@@ -1,0 +1,7 @@
+elements: "event_name_in_full:\n  '#title': 'Nom de l''événement en entier'\nlocation:\n  '#title': Emplacement\nevent_website:\n  '#title': 'Site de l''événement'\nemail:\n  '#title': Courriel\nconsent_to_sharing_of_personal_information:\n  '#title': Consens\n  '#description': '<strong>Je consens à la communication de mes renseignements personnels entre les ministères du gouvernement du Canada dans le but de répondre à ma demande de renseignements.</strong>'\nactions:\n  '#title': 'Bouton(s) de soumission'\n"
+handlers:
+  email:
+    label: Courriel
+    settings:
+      from_name: default
+      body: "&lt;p&gt;Soumis le [webform_submission:created]&lt;/p&gt;<br />\r\n&lt;p&gt;Soumis par : [webform_submission:user]&lt;/p&gt;<br />\r\n&lt;p&gt;Les valeurs soumises sont :&lt;/p&gt;<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"

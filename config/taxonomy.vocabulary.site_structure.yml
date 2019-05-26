@@ -1,0 +1,10 @@
+uuid: a56f5f46-8d5a-45c6-ad80-46a34409e33c
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: nJNcfo5PP9FGEMpQ9t6_TCHEA9xDY06U9fiv3Vli6uE
+name: 'Site Structure'
+vid: site_structure
+description: 'Hierarchical structure of Open Government.'
+weight: 0

@@ -1,0 +1,262 @@
+uuid: 1fb057a4-9ab3-498e-97be-dd1ee2ed070a
+langcode: en
+status: open
+dependencies:
+  module:
+    - og_ext_webform
+open: null
+close: null
+weight: 0
+uid: 6147
+template: false
+archive: false
+id: informal_request_for_travel_or_h
+title: 'Informal Request for Travel or Hospitality Receipts'
+description: '&quot;Informal Request for Travel or Hospitality Receipts&quot; webform.'
+category: ''
+elements: "given_name:\n  '#type': textfield\n  '#title': 'Given Name'\n  '#required': true\nfamily_name:\n  '#type': textfield\n  '#title': 'Family Name'\n  '#required': true\nyour_e_mail_address:\n  '#type': email\n  '#title': 'Your E-mail Address'\n  '#required': true\nadditional_comments:\n  '#type': textarea\n  '#title': 'Additional Comments'\n  '#description': 'Explain what you want or why you are contacting this organization.'\nsolr_core:\n  '#type': hidden\n  '#title': 'Solr core'\n  '#value': 'pd_core_[current-page:url:args:value:1]'\nentity_id:\n  '#type': hidden\n  '#title': 'Entity ID'\n  '#value': '[current-page:url:args:last]'\norg_name_en:\n  '#type': hidden\n  '#title': 'Organization name'\nref_number:\n  '#type': hidden\n  '#title': 'Reference number'\nati_email:\n  '#type': hidden\n  '#title': 'ATI e-mail'\nmarkup:\n  '#type': webform_markup\n  '#markup': \"<br />\\nPlease note that institutions will respond to your request within 5 business days. If your requests is submitted outside of business hours, the first business day commence on the next business day.&nbsp;\\n\"\ni_have_read_understood_and_agree_with_the_above_privacy_notice_:\n  '#type': select\n  '#title': 'I have read, understood and agree with the above Privacy Notice and disclaimer.'\n  '#options':\n    'Yes': 'Yes'\n  '#required': true\n"
+css: ''
+javascript: ''
+settings:
+  ajax: false
+  ajax_scroll_top: form
+  page: true
+  page_submit_path: ''
+  page_confirm_path: ''
+  form_title: both
+  form_submit_once: false
+  form_exception_message: ''
+  form_open_message: ''
+  form_close_message: ''
+  form_previous_submissions: true
+  form_confidential: false
+  form_confidential_message: ''
+  form_remote_addr: true
+  form_convert_anonymous: false
+  form_prepopulate: false
+  form_prepopulate_source_entity: false
+  form_prepopulate_source_entity_required: false
+  form_prepopulate_source_entity_type: ''
+  form_reset: false
+  form_disable_autocomplete: false
+  form_novalidate: false
+  form_disable_inline_errors: false
+  form_required: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
+  form_autofocus: false
+  form_details_toggle: false
+  form_access_denied: default
+  form_access_denied_title: ''
+  form_access_denied_message: ''
+  form_access_denied_attributes: {  }
+  form_file_limit: ''
+  submission_label: ''
+  submission_log: false
+  submission_views: {  }
+  submission_views_replace: {  }
+  submission_user_columns: {  }
+  submission_user_duplicate: false
+  submission_access_denied: default
+  submission_access_denied_title: ''
+  submission_access_denied_message: ''
+  submission_access_denied_attributes: {  }
+  submission_exception_message: ''
+  submission_locked_message: ''
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
+  previous_submission_message: ''
+  previous_submissions_message: ''
+  autofill: false
+  autofill_message: ''
+  autofill_excluded_elements: {  }
+  wizard_progress_bar: true
+  wizard_progress_pages: false
+  wizard_progress_percentage: false
+  wizard_progress_link: false
+  wizard_start_label: ''
+  wizard_preview_link: false
+  wizard_confirmation: true
+  wizard_confirmation_label: ''
+  wizard_track: ''
+  preview: 0
+  preview_label: ''
+  preview_title: ''
+  preview_message: ''
+  preview_attributes: {  }
+  preview_excluded_elements: {  }
+  preview_exclude_empty: true
+  preview_exclude_empty_checkbox: false
+  draft: none
+  draft_multiple: false
+  draft_auto_save: false
+  draft_saved_message: ''
+  draft_loaded_message: ''
+  confirmation_type: page
+  confirmation_title: ''
+  confirmation_message: ''
+  confirmation_url: ''
+  confirmation_attributes: {  }
+  confirmation_back: true
+  confirmation_back_label: ''
+  confirmation_back_attributes: {  }
+  confirmation_exclude_query: false
+  confirmation_exclude_token: false
+  limit_total: null
+  limit_total_interval: null
+  limit_total_message: ''
+  limit_total_unique: false
+  limit_user: null
+  limit_user_interval: null
+  limit_user_message: ''
+  limit_user_unique: false
+  entity_limit_total: null
+  entity_limit_total_interval: null
+  entity_limit_user: null
+  entity_limit_user_interval: null
+  purge: none
+  purge_days: null
+  results_disabled: false
+  results_disabled_ignore: false
+  token_update: false
+  form_login: false
+  form_login_message: ''
+  submission_login: false
+  submission_login_message: ''
+access:
+  create:
+    roles:
+      - administrator
+      - creator
+      - editor
+      - reviewer
+      - comment_moderator
+    users: {  }
+    permissions: {  }
+  view_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  purge_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  view_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  administer:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  test:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  configuration:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+handlers:
+  solr_data_copy_handler:
+    id: solr_data_form_handler
+    label: 'Solr Data Copy Handler'
+    handler_id: solr_data_copy_handler
+    status: true
+    conditions: {  }
+    weight: 0
+    settings: {  }
+  notifications:
+    id: email
+    label: Notifications
+    handler_id: notifications
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: '[webform_submission:values:ati_email:raw]'
+      to_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      from_mail: '[webform_submission:values:your_e_mail_address:raw]'
+      from_options: {  }
+      from_name: _default
+      subject: 'Informal request for receipts / Requête de demande pour les reçus #[webform_submission:sid]'
+      body: _default
+      excluded_elements:
+        solr_core: solr_core
+        entity_id: entity_id
+        ati_email: ati_email
+      ignore_access: false
+      exclude_empty: true
+      html: false
+      attachments: false
+      twig: false
+      debug: false
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      exclude_empty_checkbox: false
+      theme_name: ''
+  confirmation:
+    id: email
+    label: Confirmation
+    handler_id: confirmation
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: '[webform_submission:values:your_e_mail_address:raw]'
+      to_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      subject: 'Informal request for receipts / Requête de demande pour les reçus #[webform_submission:sid]'
+      body: "Submitted on [webform_submission:created]\nSubmitted by: [webform_submission:user]\n\nSubmitted values are:\n[webform_submission:values]\n"
+      excluded_elements:
+        solr_core: solr_core
+        entity_id: entity_id
+        org_name_en: org_name_en
+        ref_number: ref_number
+        ati_email: ati_email
+      ignore_access: false
+      exclude_empty: true
+      html: false
+      attachments: false
+      twig: false
+      debug: false
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      exclude_empty_checkbox: false
+      theme_name: ''

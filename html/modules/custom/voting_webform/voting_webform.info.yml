@@ -2,7 +2,7 @@ name: 'Voting Webform'
 description: 'Webform functionality related extension for voting'
 type: module
 core: 8.x
-package: 'Custom'
+package: 'Open Government'
 
 # Required modules
 dependencies:

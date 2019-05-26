@@ -1,0 +1,22 @@
+uuid: 476835f6-3f2f-4ade-b9f4-43bd2ec9734f
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.spotlight
+    - field.storage.block_content.body
+  module:
+    - text
+id: block_content.spotlight.body
+field_name: body
+entity_type: block_content
+bundle: spotlight
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+field_type: text_with_summary

@@ -1,0 +1,16 @@
+uuid: b4b613c8-17d3-4693-914a-67ccf4a392e8
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.app_freetags
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: taxonomy_term.app_freetags
+target_entity_type_id: taxonomy_term
+target_bundle: app_freetags
+default_langcode: site_default
+language_alterable: false

@@ -58,10 +58,13 @@ display:
       pager:
         type: mini
         options:
-          items_per_page: 25
+          items_per_page: 100
           offset: 0
           id: 0
           total_pages: null
+          tags:
+            previous: ‹‹
+            next: ››
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -70,9 +73,6 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
-          tags:
-            previous: ‹‹
-            next: ››
       style:
         type: default
         options:
@@ -403,6 +403,8 @@ display:
         - 'config:core.entity_view_display.media.image.media_library'
         - 'config:core.entity_view_display.media.remote_video.default'
         - 'config:core.entity_view_display.media.remote_video.media_library'
+        - 'config:core.entity_view_display.media.slideshow.default'
+        - 'config:core.entity_view_display.media.slideshow.media_library'
         - 'config:core.entity_view_display.media.video.default'
         - 'config:core.entity_view_display.media.video.media_library'
   page:
@@ -411,7 +413,8 @@ display:
     display_title: Page
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender: {  }
       path: admin/content/media
       menu:
         type: tab
@@ -422,6 +425,19 @@ display:
         weight: 5
         context: '0'
         menu_name: admin
+      header:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          content: 'Displaying @start - @end of @total'
+          plugin_id: result
+      defaults:
+        header: false
     cache_metadata:
       max-age: 0
       contexts:
@@ -440,6 +456,8 @@ display:
         - 'config:core.entity_view_display.media.image.media_library'
         - 'config:core.entity_view_display.media.remote_video.default'
         - 'config:core.entity_view_display.media.remote_video.media_library'
+        - 'config:core.entity_view_display.media.slideshow.default'
+        - 'config:core.entity_view_display.media.slideshow.media_library'
         - 'config:core.entity_view_display.media.video.default'
         - 'config:core.entity_view_display.media.video.media_library'
   widget:
@@ -725,6 +743,8 @@ display:
         - 'config:core.entity_view_display.media.image.media_library'
         - 'config:core.entity_view_display.media.remote_video.default'
         - 'config:core.entity_view_display.media.remote_video.media_library'
+        - 'config:core.entity_view_display.media.slideshow.default'
+        - 'config:core.entity_view_display.media.slideshow.media_library'
         - 'config:core.entity_view_display.media.video.default'
         - 'config:core.entity_view_display.media.video.media_library'
   widget_table:
