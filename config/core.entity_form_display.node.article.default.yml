@@ -7,14 +7,17 @@ dependencies:
     - field.field.node.article.comment
     - field.field.node.article.feeds_item
     - field.field.node.article.field_image
-    - field.field.node.article.field_metatags
+    - field.field.node.article.field_media
+    - field.field.node.article.field_meta_tags
     - field.field.node.article.field_previousnodeid
     - field.field.node.article.field_tags
     - image.style.thumbnail
     - node.type.article
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - image
+    - media_library
     - metatag
     - path
     - text
@@ -48,8 +51,15 @@ content:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-  field_metatags:
-    weight: 5
+  field_media:
+    type: media_library_widget
+    weight: 52
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+    region: content
+  field_meta_tags:
+    weight: 51
     settings: {  }
     third_party_settings: {  }
     type: metatag_firehose

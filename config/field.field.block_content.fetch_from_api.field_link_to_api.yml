@@ -1,0 +1,19 @@
+uuid: 33a27d2d-fa6a-4c7b-a911-70e5d00903fe
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.fetch_from_api
+    - field.storage.block_content.field_link_to_api
+id: block_content.fetch_from_api.field_link_to_api
+field_name: field_link_to_api
+entity_type: block_content
+bundle: fetch_from_api
+label: 'Link to api'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -51,7 +51,7 @@ function getAverageVoteAndCount($uuid, $webform_id)
  */
 function voting_webform_preprocess_webform(array &$variables) {
   $webform_id = $variables['element']['#webform_id'];
-  if ($webform_id == 'vote') {
+  if ($webform_id === 'vote') {
     $uuid = \Drupal::request()->query->get('uuid');
     $vote_result = getAverageVoteAndCount($uuid, $webform_id);
     if ($vote_result) {
@@ -69,7 +69,7 @@ function voting_webform_webform_submission_prepare_form(WebformSubmissionInterfa
   // Get the submission's Webform.
   $webform = $webform_submission->getWebform();
 
-  if ($webform->id() == 'vote') {
+  if ($webform->id() === 'vote') {
     $url = \Drupal::request()->headers->get('referer');
     if ($url) {
       // set referred_url to send back to the referring page

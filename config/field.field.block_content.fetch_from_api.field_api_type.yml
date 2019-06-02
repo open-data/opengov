@@ -1,0 +1,21 @@
+uuid: 3dec01c6-ab69-47de-afd9-86e3c698a575
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.fetch_from_api
+    - field.storage.block_content.field_api_type
+id: block_content.fetch_from_api.field_api_type
+field_name: field_api_type
+entity_type: block_content
+bundle: fetch_from_api
+label: 'API type'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: dataset
+default_value_callback: ''
+settings: {  }
+field_type: string

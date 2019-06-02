@@ -57,7 +57,7 @@ class ExternalCommentController extends CommentController {
 
           // Load comment form
           $commentForm = $this->getReplyForm($request, $node, 'comment');
-          $commentForm['comment_form']['#action'] = ($node->get('title')->value == 'default')
+          $commentForm['comment_form']['#action'] = ($node->get('title')->value === 'default')
             ? str_replace('/comment/', '/external_comment/', $commentForm['comment_form']['#action'])
             : $commentForm['comment_form']['#action'];
           $commentFormHTML = \Drupal::service('renderer')->render($commentForm);
@@ -85,8 +85,8 @@ class ExternalCommentController extends CommentController {
   public function getReplyForm(Request $request, EntityInterface $entity, $field_name, $pid = NULL) {
 
     // if commented on default node then create a new node and attach comment
-    if ($request->getMethod() == 'POST' && $entity->getEntityTypeId() == 'node' && $entity->bundle() == 'external'
-      && $entity->get('title')->value == 'default' ) {
+    if ($request->getMethod() === 'POST' && $entity->getEntityTypeId() === 'node' && $entity->bundle() === 'external'
+      && $entity->get('title')->value === 'default' ) {
 
       // get url, uuid, title and type of request object
       $url = $request->headers->get('referer');
@@ -97,21 +97,21 @@ class ExternalCommentController extends CommentController {
       if ($this->validate($request,$ext_type, $uuid)) {
         // create node with the information gathered above
         $lang = strpos($url, '/en/') ? 'en' : 'fr';
-        $url_en = $lang == 'en' ? $url : str_replace('/fr/', '/en/', $url);
-        $url_fr = $lang == 'en' ? str_replace('/en/', '/fr/', $url) : $url;
-        $types_en = array(
+        $url_en = $lang === 'en' ? $url : str_replace('/fr/', '/en/', $url);
+        $url_fr = $lang === 'en' ? str_replace('/en/', '/fr/', $url) : $url;
+        $types_en = [
           "dataset" => "Dataset",
           "visualization" => "Data Visualization",
           "pd" => "Proactive Disclosure",
           "inventory" => "Open Data Inventory",
-        );
+        ];
         $ext_type_en = $types_en[$ext_type];
-        $types_fr = array(
+        $types_fr = [
           "dataset" => "Jeu de données",
           "visualization" => "Visualisation de données",
           "pd" => "Divulgation proactive",
           "inventory" => "Répertoire de données ouvertes",
-        );
+        ];
         $ext_type_fr = $types_fr[$ext_type];
 
         $node = Node::create(['type' => 'external']);
@@ -157,7 +157,7 @@ class ExternalCommentController extends CommentController {
     $url_explode = explode("/",$referer_url);
     $referer_uuid = end($url_explode);
     $referer_type = prev($url_explode);
-    $types = array("dataset", "visualization", "pd", "inventory");
+    $types = ["dataset", "visualization", "pd", "inventory"];
 
     if ($referer_url) {
       $host_domain = $request->getSchemeAndHttpHost();

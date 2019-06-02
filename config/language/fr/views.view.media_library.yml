@@ -5,7 +5,6 @@ display:
     display_options:
       exposed_form:
         options:
-          submit_button: 'Appliquer les filtres'
           reset_button_label: Réinitialiser
           exposed_sorts_label: 'Trier par'
           sort_asc_label: Asc

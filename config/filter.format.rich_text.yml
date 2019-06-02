@@ -4,6 +4,8 @@ status: true
 dependencies:
   module:
     - editor
+    - entity_embed
+    - token_filter
 name: 'Rich Text'
 format: rich_text
 weight: -10
@@ -66,3 +68,16 @@ filters:
     weight: -42
     settings:
       filter_url_length: 128
+  entity_embed:
+    id: entity_embed
+    provider: entity_embed
+    status: true
+    weight: 100
+    settings: {  }
+  token_filter:
+    id: token_filter
+    provider: token_filter
+    status: true
+    weight: 0
+    settings:
+      replace_empty: '0'

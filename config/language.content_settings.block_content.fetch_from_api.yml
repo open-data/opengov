@@ -1,0 +1,16 @@
+uuid: 6c3238d6-bbac-4f74-acb0-51067a327e69
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.fetch_from_api
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: block_content.fetch_from_api
+target_entity_type_id: block_content
+target_bundle: fetch_from_api
+default_langcode: site_default
+language_alterable: false

@@ -9,7 +9,7 @@ dependencies:
     - field.field.node.article.comment
     - field.field.node.article.feeds_item
     - field.field.node.article.field_image
-    - field.field.node.article.field_metatags
+    - field.field.node.article.field_meta_tags
     - field.field.node.article.field_previousnodeid
     - field.field.node.article.field_tags
     - image.style.large
@@ -17,7 +17,6 @@ dependencies:
   module:
     - comment
     - image
-    - metatag
     - text
     - user
 _core:
@@ -57,13 +56,6 @@ content:
       image_link: ''
     third_party_settings: {  }
     label: hidden
-  field_metatags:
-    weight: 111
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    type: metatag_empty_formatter
-    region: content
   field_tags:
     type: entity_reference_label
     weight: 10
@@ -79,5 +71,6 @@ content:
     third_party_settings: {  }
 hidden:
   feeds_item: true
+  field_meta_tags: true
   field_previousnodeid: true
   langcode: true

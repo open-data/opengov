@@ -1,0 +1,41 @@
+display:
+  recent:
+    display_options:
+      title: 'Articles récents'
+  all:
+    display_options:
+      menu:
+        title: Blogue
+      fields:
+        view_node:
+          text: 'Continuer la lecture ...'
+      filters:
+        combine:
+          expose:
+            label: Recherche
+          group_info:
+            description: ''
+      sorts:
+        title:
+          expose:
+            label: Titre
+      header:
+        result:
+          content: 'Affichage de @start - @end sur @total blogues'
+      empty:
+        area_text_custom:
+          content: 'Aucun blogue trouvé.'
+  default:
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Appliquer
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: 'Trier par'
+      pager:
+        options:
+          tags:
+            first: '« Premier'
+            last: 'Suivant »'
+      title: Blogue
+label: Blogue

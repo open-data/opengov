@@ -14,6 +14,7 @@ function alter_block_preprocess_block(&$variables)
   {
     $content = $variables['content']['#block_content'];
 
+    // add a search form below the search block type
     if( method_exists($content,'bundle') && $content->bundle() === 'search')
       {
         $url = $variables['content']['field_search_path'][0]['#url']->toString();
@@ -21,12 +22,41 @@ function alter_block_preprocess_block(&$variables)
 
         $body = $variables['content']['body'][0]['#text'];
         $searchForm = \Drupal::formBuilder()->getForm('Drupal\gcweb\Plugin\Form\CatalogSearchBlockForm');
-        $searchForm['query']['#placeholder'] = $variables['content']['field_search_placeholder'][0]['#context']['value'];
+        if (isset($variables['content']['field_search_placeholder'][0])) {
+          $searchForm['query']['#placeholder'] = $variables['content']['field_search_placeholder'][0]['#context']['value'];
+        }
         $searchForm['url']['#value'] = $url . '&' . $filterName . '=';
 
-        $searchFormHTML = \Drupal::service('renderer')->render($searchForm);
-//        $searchFormHTML = '';
+        // do not show form for layout builder since the layout builder disables forms and links
+        $request_uri = \Drupal::request()->getRequestUri();
+        $request_uri_explode = explode("/",$request_uri);
+        if (end($request_uri_explode) === 'layout') {
+          $searchFormHTML = '';
+        }
+        else {
+          $searchFormHTML = \Drupal::service('renderer')->render($searchForm);
+        }
+
         $variables['content']['body'][0]['#text'] = $body . $searchFormHTML;
+    }
+
+    // fetch results from external api and display new titles
+    elseif( method_exists($content,'bundle') && $content->bundle() === 'fetch_from_api')
+    {
+      $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+      $link = "http://localhost" . $variables['content']['field_link_to_api'][0]['#context']['value'];
+      $response = file_get_contents($link);
+      $data = json_decode($response, TRUE);
+      $titles = '<ul>';
+
+      for ($x = 0; $x < 6 /*sizeof($data['result']['results'])*/; $x++) {
+        $uuid = $data['result']['results'][$x]['id'];
+        $title = $data['result']['results'][$x]['title_translated'][$langcode];
+        $titles .= '<li>' . '<a href="/data/en/dataset/' . $uuid . '">' . $title . '</a>' . '</li>';
+      }
+
+      $titles .= '</ul>';
+      $variables['content']['body'][0]['#text'] = $titles;
     }
   }
 }

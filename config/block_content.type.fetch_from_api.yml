@@ -1,0 +1,8 @@
+uuid: ac7d0091-c14f-4d43-b129-2ea8925f05a5
+langcode: en
+status: true
+dependencies: {  }
+id: fetch_from_api
+label: 'External API'
+revision: 1
+description: 'Fetch data from external apis (such as ckan api) to display contents'

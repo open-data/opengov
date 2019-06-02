@@ -1,0 +1,26 @@
+uuid: 0eb82f8d-85a3-477c-8826-68012783c966
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.fetch_from_api
+    - field.storage.block_content.body
+  module:
+    - text
+id: block_content.fetch_from_api.body
+field_name: body
+entity_type: block_content
+bundle: fetch_from_api
+label: Body
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    summary: ''
+    value: "<p>No new titles found.</p>\r\n"
+    format: rich_text
+default_value_callback: ''
+settings:
+  display_summary: false
+field_type: text_with_summary

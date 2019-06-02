@@ -27,7 +27,7 @@ class UserAccessChecks implements AccessInterface {
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
     $roles = $account->getRoles();
     $count = count($roles);
-    if ($count == 1) {
+    if ($count === 1) {
       return AccessResultAllowed::allowedIf(!in_array('authenticated', $roles) === TRUE);
     }
     return AccessResult::neutral();

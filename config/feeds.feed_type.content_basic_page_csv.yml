@@ -81,22 +81,17 @@ mappings:
     map:
       value: title
     unique: {  }
-    settings:
-      language: null
   -
     target: moderation_state
     map:
       value: moderation_state
     unique: {  }
-    settings:
-      language: null
   -
     target: created
     map:
       value: created
     settings:
       timezone: UTC
-      language: null
   -
     target: body
     map:
@@ -104,19 +99,14 @@ mappings:
       summary: ''
     settings:
       format: rich_text
-      language: null
   -
     target: promote
     map:
       value: promote
-    settings:
-      language: null
   -
     target: sticky
     map:
       value: sticky
-    settings:
-      language: null
   -
     target: uid
     map:
@@ -125,16 +115,15 @@ mappings:
       reference_by: name
       feeds_item: guid
       autocreate: 0
-      language: null
   -
     target: field_previousnodeid
     map:
       value: nid
-    settings:
-      language: null
   -
     target: langcode
     map:
       value: langcode
-    settings:
-      language: null
+  -
+    target: path
+    map:
+      alias: url_alias

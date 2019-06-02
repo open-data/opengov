@@ -24,15 +24,17 @@ content:
     third_party_settings: {  }
     region: content
   field_search_filter:
-    weight: 1
+    type: string
+    weight: 2
+    region: content
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
-    region: content
   field_search_path:
+    type: link
     weight: 3
+    region: content
     label: hidden
     settings:
       trim_length: 80
@@ -41,15 +43,13 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
-    region: content
   field_search_placeholder:
-    weight: 2
+    type: string
+    weight: 1
+    region: content
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
-    region: content
 hidden:
   langcode: true

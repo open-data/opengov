@@ -1,0 +1,23 @@
+uuid: 2ba90b49-7741-4140-856e-849c6457db5a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_slideshow_title
+    - media.type.slideshow
+  module:
+    - link
+id: media.slideshow.field_slideshow_title
+field_name: field_slideshow_title
+entity_type: media
+bundle: slideshow
+label: Title
+description: 'add title for the slideshow image'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 2
+field_type: link

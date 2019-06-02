@@ -1,0 +1,42 @@
+uuid: 7b5a9081-aebe-43aa-b760-7d075ff64f9a
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.fetch_from_api
+    - field.field.block_content.fetch_from_api.body
+    - field.field.block_content.fetch_from_api.field_api_type
+    - field.field.block_content.fetch_from_api.field_link_to_api
+id: block_content.fetch_from_api.default
+targetEntityType: block_content
+bundle: fetch_from_api
+mode: default
+content:
+  field_api_type:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_link_to_api:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  info:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  body: true
+  langcode: true
+  translation: true

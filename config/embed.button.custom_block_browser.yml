@@ -1,0 +1,22 @@
+uuid: 5c187212-2a93-47bb-bf97-7992cf6799c3
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.block_content.full
+  content:
+    - 'file:file:eb67f41d-572b-4409-9274-ad835a1de082'
+  module:
+    - block_content
+    - entity_embed
+label: 'Custom block browser'
+id: custom_block_browser
+type_id: entity
+type_settings:
+  entity_type: block_content
+  bundles: {  }
+  display_plugins:
+    - 'view_mode:block_content.full'
+  entity_browser: ''
+  entity_browser_settings: null
+icon_uuid: eb67f41d-572b-4409-9274-ad835a1de082

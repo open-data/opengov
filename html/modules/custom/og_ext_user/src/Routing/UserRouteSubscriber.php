@@ -24,7 +24,7 @@ class UserRouteSubscriber extends RouteSubscriberBase {
 
     $path = '/admin/help';
     foreach ($collection->all() as $route) {
-      if (substr($route->getPath(), 0, 11) == $path) {
+      if (substr($route->getPath(), 0, 11) === $path) {
         $route->setRequirement(
           '_custom_access',
           '\Drupal\og_ext_user\AccessChecks\UserAccessChecks::access'

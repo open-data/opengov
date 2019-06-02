@@ -3,8 +3,8 @@ langcode: en
 status: true
 dependencies: {  }
 id: slideshow
-label: Slideshow
-description: 'Slideshows of media items.'
+label: 'Slideshow item'
+description: 'Slideshow item for the carousel'
 source: image
 queue_thumbnail_downloads: false
 new_revision: false
