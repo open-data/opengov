@@ -11,7 +11,9 @@ dependencies:
     - field.field.node.suggested_dataset.field_status
     - field.field.node.suggested_dataset.field_status_link
     - field.field.node.suggested_dataset.field_suggested_dataset_dept
+    - field.field.node.suggested_dataset.field_vote_up_down
     - node.type.suggested_dataset
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - link
@@ -124,12 +126,13 @@ content:
     region: content
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 14
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   comment: true
   feeds_item: true
   field_previousnodeid: true
+  field_vote_up_down: true
   status: true

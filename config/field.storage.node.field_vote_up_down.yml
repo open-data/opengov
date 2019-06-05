@@ -1,0 +1,20 @@
+uuid: ec048117-20f0-4c4c-850a-a47aac78fe41
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_vote_up_down
+field_name: field_vote_up_down
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

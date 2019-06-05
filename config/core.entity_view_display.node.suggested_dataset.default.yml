@@ -12,12 +12,234 @@ dependencies:
     - field.field.node.suggested_dataset.field_status
     - field.field.node.suggested_dataset.field_status_link
     - field.field.node.suggested_dataset.field_suggested_dataset_dept
+    - field.field.node.suggested_dataset.field_vote_up_down
     - node.type.suggested_dataset
+  content:
+    - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
   module:
+    - block_content
+    - bootstrap_layouts
     - comment
+    - layout_builder
     - link
     - text
     - user
+third_party_settings:
+  layout_builder:
+    allow_custom: false
+    enabled: true
+    sections:
+      -
+        layout_id: bs_2col
+        layout_settings:
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            left:
+              wrapper: div
+              classes:
+                col-sm-8: col-sm-8
+              add_region_classes: 1
+              attributes: ''
+            right:
+              wrapper: div
+              classes:
+                col-sm-4: col-sm-4
+              add_region_classes: 1
+              attributes: ''
+        components:
+          5e5e6719-4c96-4ef3-96d8-a5fc3ba0e00f:
+            uuid: 5e5e6719-4c96-4ef3-96d8-a5fc3ba0e00f
+            region: right
+            configuration:
+              id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
+              label: 'Pillars - social media'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: 0
+          d3e85a87-d986-4c47-8e86-fcca99fd3ccd:
+            uuid: d3e85a87-d986-4c47-8e86-fcca99fd3ccd
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:suggested_dataset:content_moderation_control'
+            additional: {  }
+            weight: 0
+          d95d0c2a-075e-4fee-a907-3d9f03bc22a1:
+            uuid: d95d0c2a-075e-4fee-a907-3d9f03bc22a1
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:suggested_dataset:links'
+            additional: {  }
+            weight: 1
+        third_party_settings: {  }
+      -
+        layout_id: bs_2col
+        layout_settings:
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            left:
+              wrapper: div
+              classes:
+                col-sm-4: col-sm-4
+              add_region_classes: 1
+              attributes: class|mrgn-tp-md
+            right:
+              wrapper: div
+              classes:
+                col-sm-8: col-sm-8
+              add_region_classes: 1
+              attributes: class|well
+        components:
+          efb0726a-6e70-4a07-a836-3292d21cbd37:
+            uuid: efb0726a-6e70-4a07-a836-3292d21cbd37
+            region: right
+            configuration:
+              id: 'field_block:node:suggested_dataset:field_suggested_dataset_dept'
+              label: Organization
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: above
+                type: string
+                settings:
+                  link_to_entity: false
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 6
+          e8f37253-8fc0-4ec1-807d-cf30fb80099b:
+            uuid: e8f37253-8fc0-4ec1-807d-cf30fb80099b
+            region: right
+            configuration:
+              id: 'field_block:node:suggested_dataset:body'
+              label: Description
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: above
+                type: text_default
+                settings: {  }
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 7
+          8a1d34d7-fe91-47c6-b21c-d51308e88fbc:
+            uuid: 8a1d34d7-fe91-47c6-b21c-d51308e88fbc
+            region: left
+            configuration:
+              id: 'field_block:node:suggested_dataset:field_vote_up_down'
+              label: Votes
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: inline
+                type: number_integer
+                settings:
+                  thousand_separator: ''
+                  prefix_suffix: false
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 0
+          08cef649-520e-46e3-98da-315f0f17581a:
+            uuid: 08cef649-520e-46e3-98da-315f0f17581a
+            region: left
+            configuration:
+              id: 'field_block:node:suggested_dataset:field_status'
+              label: Status
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: inline
+                type: string
+                settings:
+                  link_to_entity: false
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 2
+          91897a20-5a0f-46d9-a18f-02e184355f1b:
+            uuid: 91897a20-5a0f-46d9-a18f-02e184355f1b
+            region: left
+            configuration:
+              id: 'field_block:node:suggested_dataset:field_status_link'
+              label: 'Status link'
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: inline
+                type: link
+                settings:
+                  trim_length: null
+                  url_only: false
+                  url_plain: false
+                  rel: '0'
+                  target: '0'
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 4
+        third_party_settings: {  }
+      -
+        layout_id: bs_1col
+        layout_settings:
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            main:
+              wrapper: div
+              classes:
+                col-sm-12: col-sm-12
+              add_region_classes: 1
+              attributes: ''
+        components:
+          85f883bd-bbd3-46ea-8619-0fab126b7830:
+            uuid: 85f883bd-bbd3-46ea-8619-0fab126b7830
+            region: main
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:suggested_dataset:comment'
+              formatter:
+                label: above
+                settings:
+                  view_mode: default
+                  pager_id: 0
+                third_party_settings: {  }
+                type: comment_default
+            additional: {  }
+            weight: 7
+        third_party_settings: {  }
 id: node.suggested_dataset.default
 targetEntityType: node
 bundle: suggested_dataset
@@ -38,6 +260,11 @@ content:
       pager_id: 0
     third_party_settings: {  }
     type: comment_default
+    region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
     region: content
   field_previousnodeid:
     type: number_integer
@@ -75,6 +302,15 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     type: string
+    region: content
+  field_vote_up_down:
+    weight: 8
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
     region: content
   links:
     weight: 0

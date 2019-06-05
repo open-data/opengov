@@ -2,29 +2,6 @@ display:
   recent:
     display_options:
       title: 'Articles récents'
-  all:
-    display_options:
-      menu:
-        title: Blogue
-      fields:
-        view_node:
-          text: 'Continuer la lecture ...'
-      filters:
-        combine:
-          expose:
-            label: Recherche
-          group_info:
-            description: ''
-      sorts:
-        title:
-          expose:
-            label: Titre
-      header:
-        result:
-          content: 'Affichage de @start - @end sur @total blogues'
-      empty:
-        area_text_custom:
-          content: 'Aucun blogue trouvé.'
   default:
     display_options:
       exposed_form:
@@ -38,4 +15,20 @@ display:
             first: '« Premier'
             last: 'Suivant »'
       title: Blogue
+  all:
+    display_options:
+      filters:
+        combine:
+          expose:
+            label: Recherche
+      sorts:
+        created:
+          expose:
+            label: 'Rédigé le'
+        title:
+          expose:
+            label: Titre
+      header:
+        result:
+          content: 'Affichage de @start à @end sur @total blogues'
 label: Blogue

@@ -1,0 +1,25 @@
+uuid: 42a8736f-9acb-44e8-ae57-82dad07c9197
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vote_up_down
+    - node.type.suggested_dataset
+id: node.suggested_dataset.field_vote_up_down
+field_name: field_vote_up_down
+entity_type: node
+bundle: suggested_dataset
+label: Votes
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

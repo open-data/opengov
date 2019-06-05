@@ -6,7 +6,6 @@ dependencies:
     - core.base_field_override.node.article.created
     - core.base_field_override.node.article.promote
     - field.field.node.article.body
-    - field.field.node.article.field_image
     - field.field.node.article.field_previousnodeid
     - node.type.article
   module:
@@ -140,17 +139,6 @@ mappings:
     target: langcode
     map:
       value: langcode
-  -
-    target: field_image
-    map:
-      target_id: fid
-      alt: alt
-      title: ''
-    settings:
-      reference_by: fid
-      feeds_item: guid
-      existing: '2'
-      autocreate: 0
   -
     target: path
     map:

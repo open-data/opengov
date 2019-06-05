@@ -11,7 +11,7 @@ id: node.suggested_dataset.field_status_link
 field_name: field_status_link
 entity_type: node
 bundle: suggested_dataset
-label: 'Status link'
+label: 'Status Link'
 description: ''
 required: false
 translatable: true

@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.storage.node.body
     - field.storage.node.field_image
+    - field.storage.node.field_media
     - image.style.medium
     - node.type.article
     - system.menu.main
@@ -512,23 +513,13 @@ display:
         - 'config:field.storage.node.body'
         - 'config:field.storage.node.field_image'
   all:
-    display_plugin: page
+    display_plugin: block
     id: all
-    display_title: Page
+    display_title: 'All blogs list'
     position: 1
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      path: blog
-      menu:
-        type: normal
-        title: Blog
-        description: ''
-        expanded: false
-        parent: 'menu_link_content:f742c56b-11b4-4ab5-a760-f1eda4610edf'
-        weight: 0
-        context: '0'
-        menu_name: main
       fields:
         title:
           id: title
@@ -719,73 +710,10 @@ display:
           entity_type: node
           entity_field: created
           plugin_id: field
-        body:
-          id: body
-          table: node__body
-          field: body
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: true
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: true
-            trim: false
-            preserve_tags: '<markup>'
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: text_summary_or_trimmed
-          settings:
-            trim_length: 1000
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          plugin_id: field
-        field_image:
-          id: field_image
-          table: node__field_image
-          field: field_image
+        field_media:
+          id: field_media
+          table: node__field_media
+          field: field_media
           relationship: none
           group_type: group
           admin_label: ''
@@ -831,11 +759,122 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: target_id
-          type: image
+          type: entity_reference_entity_view
           settings:
-            image_style: medium
-            image_link: content
-          group_column: ''
+            view_mode: default
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
+        nothing:
+          id: nothing
+          table: views
+          field: nothing
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          alter:
+            alter_text: true
+            text: "<div class=\"row\">\r\n  <div class=\"col-sm-2\">\r\n    {{ field_media }}\r\n  </div>\r\n  <div class=\"col-sm-10\">\r\n    <h2 class=\"h3 mrgn-tp-0\">{{ title }}</h2>\r\n    <p>{{ created }}</p>\r\n    <p>\r\n      <span class=\"glyphicon glyphicon-comment mrgn-rght-sm\"></span>\r\n      {{ 'Comment'|t }} ({{ comment_count }})\r\n    </p>\r\n    </div>\r\n</div>"
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: false
+          plugin_id: custom
+        body:
+          id: body
+          table: node__body
+          field: body
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: true
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: true
+            trim: false
+            preserve_tags: '<markup>'
+            html: false
+          element_type: p
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: text_summary_or_trimmed
+          settings:
+            trim_length: 1000
+          group_column: value
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -854,7 +893,7 @@ display:
           group_type: group
           admin_label: ''
           label: ''
-          exclude: true
+          exclude: false
           alter:
             alter_text: false
             text: ''
@@ -899,55 +938,6 @@ display:
           absolute: false
           entity_type: node
           plugin_id: entity_link
-        nothing:
-          id: nothing
-          table: views
-          field: nothing
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: false
-          alter:
-            alter_text: true
-            text: "<div class=\"row\">\r\n  <div class=\"col-sm-2\">\r\n    {{ field_image }}\r\n  </div>\r\n  <div class=\"col-sm-10\">\r\n    <h2 class=\"h4 mrgn-tp-0\">{{ title }}</h2>\r\n    <div class=\"row mrgn-bttm-md\">\r\n      <div class=\"col-sm-6\"><small>{{ created }}</small></div>\r\n      <div class=\"col-sm-6\"><p class=\"pull-right\"><small><span class=\"glyphicon glyphicon-comment mrgn-rght-sm\"></span>{{ 'Comment'|t }} ({{ comment_count }})</small></p></div>\r\n    </div>\r\n    {{ body }} \r\n    <small>{{ view_node }}</small>\r\n  </div>\r\n</div>"
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: false
-          plugin_id: custom
       defaults:
         fields: false
         use_ajax: false
@@ -957,7 +947,7 @@ display:
         arguments: false
         header: false
         empty: false
-      use_ajax: false
+      use_ajax: true
       filters:
         status:
           value: '1'
@@ -1083,7 +1073,7 @@ display:
           order: DESC
           exposed: true
           expose:
-            label: Date
+            label: 'Authored on'
           granularity: second
           entity_type: node
           entity_field: created
@@ -1126,6 +1116,7 @@ display:
           tokenize: false
           content: 'No blog found.'
           plugin_id: text_custom
+      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:
@@ -1139,7 +1130,7 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.body'
-        - 'config:field.storage.node.field_image'
+        - 'config:field.storage.node.field_media'
   recent:
     display_plugin: block
     id: recent
@@ -1149,10 +1140,10 @@ display:
       display_extenders:
         metatag_display_extender: {  }
       fields:
-        field_image:
-          id: field_image
-          table: node__field_image
-          field: field_image
+        nid:
+          id: nid
+          table: node_field_data
+          field: nid
           relationship: none
           group_type: group
           admin_label: ''
@@ -1197,12 +1188,12 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: target_id
-          type: image
+          click_sort_column: value
+          type: number_integer
           settings:
-            image_style: ''
-            image_link: content
-          group_column: ''
+            thousand_separator: ''
+            prefix_suffix: true
+          group_column: value
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -1212,6 +1203,8 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+          entity_type: node
+          entity_field: nid
           plugin_id: field
         title:
           id: title
@@ -1278,6 +1271,69 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
+        field_media:
+          id: field_media
+          table: node__field_media
+          field: field_media
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_entity_view
+          settings:
+            view_mode: default
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
         nothing:
           id: nothing
           table: views
@@ -1289,7 +1345,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"row\">\r\n  <div class=\"col-sm-4\">{{ field_image}}</div>\r\n  <div class=\"col-sm-8\">{{ title }}</div>\r\n</div>"
+            text: "<div class=\"row\">\r\n  <div class=\"col-sm-4\">{{ field_media}}</div>\r\n  <div class=\"col-sm-8\">{{ title }}</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -1461,4 +1517,4 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
-        - 'config:field.storage.node.field_image'
+        - 'config:field.storage.node.field_media'

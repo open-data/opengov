@@ -1,0 +1,34 @@
+display:
+  default:
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Appliquer
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: 'Trier par'
+      fields:
+        title:
+          label: 'Titre du jeu de données '
+        body:
+          label: Description
+        field_suggested_dataset_dept:
+          label: Organisation
+        field_status:
+          label: État
+        field_vote_up_down:
+          label: Votez
+      filters:
+        combine:
+          expose:
+            label: Recherche
+      header:
+        result:
+          content: 'Affichage de @start à @end sur @total suggestions'
+      title: 'Jeux de données suggérés par les utilisateurs'
+      pager:
+        options:
+          tags:
+            first: '« Premier'
+            last: 'Dernier »'
+          expose:
+            items_per_page_label: 'Entrées par page'

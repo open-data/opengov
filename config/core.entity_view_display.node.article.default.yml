@@ -8,12 +8,10 @@ dependencies:
     - field.field.node.article.body
     - field.field.node.article.comment
     - field.field.node.article.feeds_item
-    - field.field.node.article.field_image
     - field.field.node.article.field_media
     - field.field.node.article.field_meta_tags
     - field.field.node.article.field_previousnodeid
     - field.field.node.article.field_tags
-    - image.style.large
     - node.type.article
     - views.view.blog
   content:
@@ -22,7 +20,6 @@ dependencies:
     - block_content
     - bootstrap_layouts
     - comment
-    - image
     - layout_builder
     - metatag
     - taxonomy
@@ -229,15 +226,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_image:
-    type: image
-    weight: 2
-    region: content
-    settings:
-      image_style: large
-      image_link: ''
-    third_party_settings: {  }
-    label: hidden
   field_media:
     type: entity_reference_entity_view
     weight: 8

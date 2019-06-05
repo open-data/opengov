@@ -7,13 +7,12 @@ dependencies:
     - field.field.node.article.body
     - field.field.node.article.comment
     - field.field.node.article.feeds_item
-    - field.field.node.article.field_image
+    - field.field.node.article.field_media
     - field.field.node.article.field_meta_tags
     - field.field.node.article.field_previousnodeid
     - field.field.node.article.field_tags
     - node.type.article
   module:
-    - image
     - text
     - user
 _core:
@@ -36,15 +35,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_image:
-    type: image
-    weight: 3
-    region: content
-    label: above
-    settings:
-      image_style: ''
-      image_link: ''
-    third_party_settings: {  }
   links:
     weight: 1
     region: content
@@ -53,6 +43,7 @@ content:
 hidden:
   comment: true
   feeds_item: true
+  field_media: true
   field_meta_tags: true
   field_previousnodeid: true
   field_tags: true
