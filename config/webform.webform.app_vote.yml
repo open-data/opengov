@@ -11,7 +11,7 @@ archive: false
 id: app_vote
 title: 'Vote (app)'
 description: 'Voting on apps using a webform'
-category: ''
+category: Voting
 elements: "dataset_uuid:\n  '#type': hidden\n  '#title': 'App node id'\n  '#default_value': '[current-page:query:uuid]'\n  '#prepopulate': true\nrating:\n  '#type': webform_rating\n  '#title': 'Did you find this app useful?'\n  '#title_display': inline\n  '#required': true\n  '#label_attributes':\n    class:\n      - h3\nreferred_url:\n  '#type': hidden\n  '#title': 'Referred URL'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': Rate"
 css: ''
 javascript: ''

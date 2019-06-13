@@ -1,19 +1,20 @@
-uuid: a43bcc70-4d37-47a4-898e-5ee288f3306f
+uuid: 707d5a30-62dc-48a1-947b-9c482e2be52e
 langcode: en
 status: true
 dependencies:
   config:
     - core.entity_view_display.comment.comment.default
-    - field.field.node.suggested_dataset.body
-    - field.field.node.suggested_dataset.comment
-    - field.field.node.suggested_dataset.feeds_item
-    - field.field.node.suggested_dataset.field_meta_tags
-    - field.field.node.suggested_dataset.field_previousnodeid
-    - field.field.node.suggested_dataset.field_status
-    - field.field.node.suggested_dataset.field_status_link
-    - field.field.node.suggested_dataset.field_suggested_dataset_dept
-    - field.field.node.suggested_dataset.field_vote_up_down
-    - node.type.suggested_dataset
+    - field.field.node.idea.body
+    - field.field.node.idea.comment
+    - field.field.node.idea.feeds_item
+    - field.field.node.idea.field_idea_permalink
+    - field.field.node.idea.field_idea_status
+    - field.field.node.idea.field_idea_submission_name
+    - field.field.node.idea.field_idea_tags
+    - field.field.node.idea.field_meta_tags
+    - field.field.node.idea.field_previousnodeid
+    - field.field.node.idea.field_vote_up_down
+    - node.type.idea
     - webform.webform.vote_up_down
   content:
     - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
@@ -22,8 +23,6 @@ dependencies:
     - bootstrap_layouts
     - comment
     - layout_builder
-    - layout_discovery
-    - link
     - text
     - user
     - webform
@@ -32,11 +31,6 @@ third_party_settings:
     allow_custom: false
     enabled: true
     sections:
-      -
-        layout_id: layout_onecol
-        layout_settings: {  }
-        components: {  }
-        third_party_settings: {  }
       -
         layout_id: bs_2col
         layout_settings:
@@ -60,8 +54,8 @@ third_party_settings:
               add_region_classes: 1
               attributes: ''
         components:
-          c584ae24-876f-454e-8c2c-eb6f3b2ed940:
-            uuid: c584ae24-876f-454e-8c2c-eb6f3b2ed940
+          57bde159-69e1-458c-83b5-0ef38e24382e:
+            uuid: 57bde159-69e1-458c-83b5-0ef38e24382e
             region: right
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
@@ -74,26 +68,16 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: 0
-          aae483c8-5f05-4575-8011-f7d448abca4c:
-            uuid: aae483c8-5f05-4575-8011-f7d448abca4c
+          f1984326-7496-4631-8d2f-6b4a7e317b3e:
+            uuid: f1984326-7496-4631-8d2f-6b4a7e317b3e
             region: left
             configuration:
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:suggested_dataset:content_moderation_control'
+              id: 'extra_field_block:node:idea:links'
             additional: {  }
             weight: 0
-          12507993-4387-4de3-9b9c-5930aa477f7c:
-            uuid: 12507993-4387-4de3-9b9c-5930aa477f7c
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:suggested_dataset:links'
-            additional: {  }
-            weight: 1
         third_party_settings: {  }
       -
         layout_id: bs_2col
@@ -110,7 +94,7 @@ third_party_settings:
               classes:
                 col-sm-4: col-sm-4
               add_region_classes: 1
-              attributes: class|mrgn-tp-md
+              attributes: ''
             right:
               wrapper: div
               classes:
@@ -118,14 +102,32 @@ third_party_settings:
               add_region_classes: 1
               attributes: class|well
         components:
-          a949ae57-1898-483b-96de-fb09ae012469:
-            uuid: a949ae57-1898-483b-96de-fb09ae012469
+          a116fbe4-d942-4a3e-8551-fea4cfdcfed2:
+            uuid: a116fbe4-d942-4a3e-8551-fea4cfdcfed2
+            region: left
+            configuration:
+              id: 'field_block:node:idea:field_idea_tags'
+              label: Étiquettes
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: above
+                type: entity_reference_label
+                settings:
+                  link: false
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 1
+          89376394-1226-493b-a156-39b670d3295b:
+            uuid: 89376394-1226-493b-a156-39b670d3295b
             region: right
             configuration:
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_suggested_dataset_dept'
+              id: 'field_block:node:idea:field_idea_submission_name'
               formatter:
                 label: above
                 settings:
@@ -134,63 +136,25 @@ third_party_settings:
                 type: string
             additional: {  }
             weight: 2
-          ac997583-4154-43ac-b024-b9e45babf456:
-            uuid: ac997583-4154-43ac-b024-b9e45babf456
+          fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e:
+            uuid: fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e
             region: right
             configuration:
+              id: 'field_block:node:idea:body'
+              label: Détails
+              provider: layout_builder
               label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:body'
               formatter:
                 label: above
                 type: text_default
                 settings: {  }
                 third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
             additional: {  }
             weight: 3
-          32eb149f-1a75-4d7b-8a2c-3dbc41ddd2d9:
-            uuid: 32eb149f-1a75-4d7b-8a2c-3dbc41ddd2d9
-            region: left
-            configuration:
-              id: 'field_block:node:suggested_dataset:field_status'
-              label: Status
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: inline
-                type: string
-                settings:
-                  link_to_entity: false
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: 4
-          99eae66a-01db-4041-8dde-bd2517e3c1b3:
-            uuid: 99eae66a-01db-4041-8dde-bd2517e3c1b3
-            region: left
-            configuration:
-              id: 'field_block:node:suggested_dataset:field_status_link'
-              label: 'Status Link'
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: inline
-                type: link
-                settings:
-                  trim_length: 80
-                  url_only: false
-                  url_plain: false
-                  rel: '0'
-                  target: '0'
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: 5
-          33d570cd-4026-4d93-955d-0ab86b8ce522:
-            uuid: 33d570cd-4026-4d93-955d-0ab86b8ce522
+          05a7618a-7e88-49aa-b4eb-f15cc63baf53:
+            uuid: 05a7618a-7e88-49aa-b4eb-f15cc63baf53
             region: left
             configuration:
               id: webform_block
@@ -202,7 +166,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: 6
+            weight: 2
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -221,14 +185,14 @@ third_party_settings:
               add_region_classes: 1
               attributes: ''
         components:
-          c35ebc98-dcb5-4f3d-8344-445118624ab1:
-            uuid: c35ebc98-dcb5-4f3d-8344-445118624ab1
+          c04b74d2-5572-4646-be51-87df4964e6fc:
+            uuid: c04b74d2-5572-4646-be51-87df4964e6fc
             region: main
             configuration:
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:comment'
+              id: 'field_block:node:idea:comment'
               formatter:
                 label: above
                 settings:
@@ -237,22 +201,22 @@ third_party_settings:
                 third_party_settings: {  }
                 type: comment_default
             additional: {  }
-            weight: 7
+            weight: 4
         third_party_settings: {  }
-id: node.suggested_dataset.default
+id: node.idea.default
 targetEntityType: node
-bundle: suggested_dataset
+bundle: idea
 mode: default
 content:
   body:
-    label: above
+    label: hidden
     type: text_default
     weight: 3
     settings: {  }
     third_party_settings: {  }
     region: content
   comment:
-    weight: 7
+    weight: 4
     label: above
     settings:
       view_mode: default
@@ -260,41 +224,7 @@ content:
     third_party_settings: {  }
     type: comment_default
     region: content
-  content_moderation_control:
-    weight: -20
-    settings: {  }
-    third_party_settings: {  }
-    region: content
-  field_previousnodeid:
-    type: number_integer
-    weight: 6
-    region: content
-    label: above
-    settings:
-      thousand_separator: ''
-      prefix_suffix: true
-    third_party_settings: {  }
-  field_status:
-    weight: 4
-    label: above
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-    type: string
-    region: content
-  field_status_link:
-    weight: 5
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    type: link
-    region: content
-  field_suggested_dataset_dept:
+  field_idea_submission_name:
     weight: 2
     label: above
     settings:
@@ -302,14 +232,13 @@ content:
     third_party_settings: {  }
     type: string
     region: content
-  field_vote_up_down:
-    weight: 8
+  field_idea_tags:
+    weight: 1
     label: above
     settings:
-      thousand_separator: ''
-      prefix_suffix: true
+      link: true
     third_party_settings: {  }
-    type: number_integer
+    type: entity_reference_label
     region: content
   links:
     weight: 0
@@ -318,5 +247,9 @@ content:
     third_party_settings: {  }
 hidden:
   feeds_item: true
+  field_idea_permalink: true
+  field_idea_status: true
   field_meta_tags: true
+  field_previousnodeid: true
+  field_vote_up_down: true
   langcode: true

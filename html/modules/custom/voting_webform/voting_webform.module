@@ -59,6 +59,12 @@ function voting_webform_preprocess_webform(array &$variables) {
       $variables['vote_count'] = $vote_result['count'];
     }
   }
+  elseif ($webform_id === 'vote_up_down') {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if ($node instanceof \Drupal\node\NodeInterface) {
+      $variables['vote_up_down_value'] = $node->get('field_vote_up_down')->value;
+    }
+  }
 }
 
 /**

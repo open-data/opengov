@@ -1,0 +1,18 @@
+uuid: 88cb1bd8-2c96-45a7-88be-e97e46e740a8
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.idea
+id: node.idea.title
+field_name: title
+entity_type: node
+bundle: idea
+label: Idea
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

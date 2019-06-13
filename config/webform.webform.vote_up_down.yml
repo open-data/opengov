@@ -1,31 +1,33 @@
-uuid: f8ba3532-9e43-4067-b36f-a5969c045557
+uuid: f7e1ac41-a81b-44fd-b028-a50d6cc1f1b6
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - voting_webform
 open: null
 close: null
 weight: 0
 uid: 1
 template: false
 archive: false
-id: vote
-title: Vote
-description: 'testing to implement voting using a webform'
+id: vote_up_down
+title: 'Vote up down'
+description: 'Simple webform to vote up or down on an entity.'
 category: Voting
-elements: "dataset_uuid:\n  '#type': hidden\n  '#title': 'Dataset UUID'\n  '#default_value': '[current-page:query:uuid]'\n  '#prepopulate': true\nrating:\n  '#type': webform_rating\n  '#title': 'Did you find this dataset useful?'\n  '#title_display': inline\n  '#required': true\n  '#label_attributes':\n    class:\n      - h3\nreferred_url:\n  '#type': hidden\n  '#title': 'Referred URL'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': Rate"
+elements: "actions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'"
 css: ''
 javascript: ''
 settings:
   ajax: true
   ajax_scroll_top: form
   page: true
-  page_submit_path: /vote
+  page_submit_path: ''
   page_confirm_path: ''
   form_title: source_entity_webform
-  form_submit_once: false
-  form_exception_message: 'Form exception message'
-  form_open_message: 'Form open message'
-  form_close_message: 'Form closed message'
+  form_submit_once: true
+  form_exception_message: ''
+  form_open_message: ''
+  form_close_message: ''
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
@@ -56,13 +58,7 @@ settings:
   submission_views_replace:
     webform_routes: {  }
     node_routes: {  }
-  submission_user_columns:
-    - serial
-    - created
-    - element__dataset_uuid
-    - element__vote_result
-    - element__rating
-    - element__referred_url
+  submission_user_columns: {  }
   submission_user_duplicate: false
   submission_access_denied: default
   submission_access_denied_title: ''
@@ -73,8 +69,8 @@ settings:
   submission_excluded_elements: {  }
   submission_exclude_empty: false
   submission_exclude_empty_checkbox: false
-  previous_submission_message: 'You have previously voted on this dataset'
-  previous_submissions_message: 'You have previously voted on this dataset'
+  previous_submission_message: ''
+  previous_submissions_message: ''
   autofill: false
   autofill_message: ''
   autofill_excluded_elements: {  }
@@ -100,28 +96,28 @@ settings:
   draft_auto_save: false
   draft_saved_message: ''
   draft_loaded_message: ''
-  confirmation_type: url_message
+  confirmation_type: inline
   confirmation_title: ''
-  confirmation_message: 'Thank you for voting on this dataset.'
-  confirmation_url: '[webform_submission:values:referred_url]'
+  confirmation_message: "<div class=\"alert alert-success\">\r\n<p>Thank you for submitting your vote.</p>\r\n</div>"
+  confirmation_url: ''
   confirmation_attributes: {  }
-  confirmation_back: true
+  confirmation_back: false
   confirmation_back_label: ''
   confirmation_back_attributes: {  }
   confirmation_exclude_query: false
   confirmation_exclude_token: false
-  limit_total: 10
-  limit_total_interval: 60
+  limit_total: null
+  limit_total_interval: null
   limit_total_message: ''
   limit_total_unique: false
-  limit_user: 10
-  limit_user_interval: 60
-  limit_user_message: ''
+  limit_user: null
+  limit_user_interval: 14515200
+  limit_user_message: 'You have already submitted your vote.'
   limit_user_unique: false
-  entity_limit_total: 10
-  entity_limit_total_interval: 60
-  entity_limit_user: 10
-  entity_limit_user_interval: 60
+  entity_limit_total: null
+  entity_limit_total_interval: null
+  entity_limit_user: 1
+  entity_limit_user_interval: 15724800
   purge: none
   purge_days: null
   results_disabled: false
@@ -135,8 +131,7 @@ access:
     users: {  }
     permissions: {  }
   view_any:
-    roles:
-      - administrator
+    roles: {  }
     users: {  }
     permissions: {  }
   update_any:
@@ -175,4 +170,12 @@ access:
     roles: {  }
     users: {  }
     permissions: {  }
-handlers: {  }
+handlers:
+  vote_up_down_submission_handler:
+    id: vote_up_down_handler
+    label: 'Vote Up Down Submission Handler'
+    handler_id: vote_up_down_submission_handler
+    status: true
+    conditions: {  }
+    weight: 0
+    settings: {  }

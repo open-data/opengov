@@ -1,0 +1,30 @@
+uuid: 0149dd2b-b8aa-48f7-9aba-470b84790423
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_commitment_status
+field_name: field_commitment_status
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: behind_schedule
+      label: '<p class="text-danger"><span class="mrgn-rght-md glyphicon glyphicon-unchecked"></span>Behind Schedule</p>'
+    -
+      value: on_schedule
+      label: '<p class="text-primary"><span class="mrgn-rght-md glyphicon glyphicon-ok-circle"></span>On Schedule</p>'
+    -
+      value: completed
+      label: '<p class="text-success"><span class="mrgn-rght-md glyphicon glyphicon-ok-sign"></span>Completed</p>'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

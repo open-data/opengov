@@ -24,7 +24,7 @@ settings:
       page: page
       landing_page: landing_page
     sort:
-      field: created
+      field: field_date_published
       direction: DESC
     auto_create: false
     auto_create_bundle: page

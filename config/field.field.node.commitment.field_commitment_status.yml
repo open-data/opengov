@@ -1,0 +1,21 @@
+uuid: 249748ee-c665-421a-8e2c-f3727dd38035
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_commitment_status
+    - node.type.commitment
+  module:
+    - options
+id: node.commitment.field_commitment_status
+field_name: field_commitment_status
+entity_type: node
+bundle: commitment
+label: Status
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,19 @@
+uuid: 2e9ccf26-ec6a-434f-8ebf-7fdd67f49e88
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_idea_permalink
+    - node.type.idea
+id: node.idea.field_idea_permalink
+field_name: field_idea_permalink
+entity_type: node
+bundle: idea
+label: Permalink
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

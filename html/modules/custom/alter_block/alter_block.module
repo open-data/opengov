@@ -45,18 +45,25 @@ function alter_block_preprocess_block(&$variables)
     {
       $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
       $link = "http://localhost" . $variables['content']['field_link_to_api'][0]['#context']['value'];
-      $response = file_get_contents($link);
-      $data = json_decode($response, TRUE);
-      $titles = '<ul>';
 
-      for ($x = 0; $x < 6 /*sizeof($data['result']['results'])*/; $x++) {
-        $uuid = $data['result']['results'][$x]['id'];
-        $title = $data['result']['results'][$x]['title_translated'][$langcode];
-        $titles .= '<li>' . '<a href="/data/en/dataset/' . $uuid . '">' . $title . '</a>' . '</li>';
-      }
+        $response = @file_get_contents($link);
+        if ($response === FALSE) {
+          \Drupal::logger('fetch from api')->error('Unable to fetch from api for ' . $link);
+          return;
+        }
+        else {
+          $data = json_decode($response, TRUE);
+          $titles = '<ul>';
 
-      $titles .= '</ul>';
-      $variables['content']['body'][0]['#text'] = $titles;
+          for ($x = 0; $x < 6 /*sizeof($data['result']['results'])*/; $x++) {
+            $uuid = $data['result']['results'][$x]['id'];
+            $title = $data['result']['results'][$x]['title_translated'][$langcode];
+            $titles .= '<li>' . '<a href="/data/' . $langcode . '/dataset/' . $uuid . '">' . $title . '</a>' . '</li>';
+          }
+
+          $titles .= '</ul>';
+          $variables['content']['body'][0]['#text'] = $titles;
+        }
     }
   }
 }

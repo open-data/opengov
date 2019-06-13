@@ -1,0 +1,25 @@
+uuid: a7d6eef8-e30a-49ce-bced-024f1d05835f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vote_up_down
+    - node.type.idea
+id: node.idea.field_vote_up_down
+field_name: field_vote_up_down
+entity_type: node
+bundle: idea
+label: Votes
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

@@ -1,31 +1,27 @@
-uuid: b084341c-8d49-458a-a170-ad4725201a32
+uuid: 5d7e92d8-d3e2-496f-8473-255bdc96efaa
 langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.commitment.body
-    - field.field.node.commitment.comment
-    - field.field.node.commitment.feeds_item
-    - field.field.node.commitment.field_commitment_ambition
-    - field.field.node.commitment.field_commitment_end_date
-    - field.field.node.commitment.field_commitment_pillars
-    - field.field.node.commitment.field_commitment_relevance
-    - field.field.node.commitment.field_commitment_status
-    - field.field.node.commitment.field_commitment_tags
-    - field.field.node.commitment.field_department
-    - field.field.node.commitment.field_meta_tags
-    - field.field.node.commitment.field_previousnodeid
-    - field.field.node.commitment.field_reference_landing
-    - node.type.commitment
-    - workflows.workflow.editorial
+    - field.field.node.idea.body
+    - field.field.node.idea.comment
+    - field.field.node.idea.feeds_item
+    - field.field.node.idea.field_idea_permalink
+    - field.field.node.idea.field_idea_status
+    - field.field.node.idea.field_idea_submission_name
+    - field.field.node.idea.field_idea_tags
+    - field.field.node.idea.field_meta_tags
+    - field.field.node.idea.field_previousnodeid
+    - field.field.node.idea.field_vote_up_down
+    - node.type.idea
   module:
     - content_moderation
     - metatag
     - path
     - text
-id: node.commitment.default
+id: node.idea.default
 targetEntityType: node
-bundle: commitment
+bundle: idea
 mode: default
 content:
   body:
@@ -43,23 +39,24 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_commitment_ambition:
-    weight: 15
+  field_idea_status:
+    weight: 11
     settings:
-      rows: 5
+      match_operator: CONTAINS
+      size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
+    type: entity_reference_autocomplete
     region: content
-  field_commitment_end_date:
-    weight: 16
+  field_idea_submission_name:
+    weight: 9
     settings:
-      rows: 5
+      size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
+    type: string_textfield
     region: content
-  field_commitment_pillars:
+  field_idea_tags:
     weight: 10
     settings:
       match_operator: CONTAINS
@@ -68,52 +65,11 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_commitment_relevance:
-    weight: 14
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings: {  }
-    type: text_textarea
-    region: content
-  field_commitment_status:
-    weight: 11
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
-  field_commitment_tags:
-    weight: 13
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_department:
-    weight: 12
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_meta_tags:
-    weight: 17
+    weight: 12
     settings: {  }
     third_party_settings: {  }
     type: metatag_firehose
-    region: content
-  field_reference_landing:
-    weight: 9
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
     region: content
   langcode:
     type: language_select
@@ -124,7 +80,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 19
+    weight: 13
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -171,12 +127,14 @@ content:
     region: content
     third_party_settings: {  }
   url_redirects:
-    weight: 18
+    weight: 14
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   comment: true
   feeds_item: true
+  field_idea_permalink: true
   field_previousnodeid: true
+  field_vote_up_down: true
   status: true

@@ -1,0 +1,19 @@
+uuid: 6db2ebf7-d392-415f-9467-1c8111dedd3a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_idea_submission_name
+    - node.type.idea
+id: node.idea.field_idea_submission_name
+field_name: field_idea_submission_name
+entity_type: node
+bundle: idea
+label: 'Submitted By'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

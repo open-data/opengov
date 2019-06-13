@@ -7,6 +7,7 @@ dependencies:
     - node.type.article
     - node.type.commitment
     - node.type.external
+    - node.type.idea
     - node.type.landing_page
     - node.type.page
     - node.type.suggested_dataset
@@ -88,6 +89,7 @@ type_settings:
       - article
       - commitment
       - external
+      - idea
       - landing_page
       - page
       - suggested_dataset

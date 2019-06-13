@@ -1,0 +1,21 @@
+uuid: 1213795d-b1f8-427e-ae21-c08f43c2ddd6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_commitment_end_date
+    - node.type.commitment
+  module:
+    - text
+id: node.commitment.field_commitment_end_date
+field_name: field_commitment_end_date
+entity_type: node
+bundle: commitment
+label: 'Reporting period'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

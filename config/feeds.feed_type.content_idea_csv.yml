@@ -1,0 +1,176 @@
+uuid: 4c2f6854-12d6-44fd-9c92-514767c6f7df
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.base_field_override.node.idea.title
+    - field.field.node.idea.body
+    - field.field.node.idea.field_idea_permalink
+    - field.field.node.idea.field_idea_status
+    - field.field.node.idea.field_idea_submission_name
+    - field.field.node.idea.field_idea_tags
+    - field.field.node.idea.field_previousnodeid
+    - node.type.idea
+  module:
+    - feeds_tamper
+    - node
+third_party_settings:
+  feeds_tamper:
+    tampers:
+      846750da-6245-4bb4-b03f-2dd041ba4a04:
+        separator: '|'
+        limit: null
+        plugin: explode
+        source: tags
+        weight: 0
+        uuid: 846750da-6245-4bb4-b03f-2dd041ba4a04
+label: 'Content idea CSV'
+id: content_idea_csv
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'private://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: true
+  owner_id: 0
+  authorize: false
+  skip_hash_check: false
+  values:
+    type: idea
+custom_sources:
+  title:
+    label: title
+    value: title
+    machine_name: title
+  created:
+    label: created
+    value: created
+    machine_name: created
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+  body:
+    label: body
+    value: body
+    machine_name: body
+  promote:
+    label: promote
+    value: promote
+    machine_name: promote
+  sticky:
+    label: sticky
+    value: sticky
+    machine_name: sticky
+  nid:
+    label: nid
+    value: nid
+    machine_name: nid
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  url_alias:
+    label: url_alias
+    value: url_alias
+    machine_name: url_alias
+  permalink:
+    label: permalink
+    value: permalink
+    machine_name: permalink
+  status:
+    label: status
+    value: status
+    machine_name: status
+  submitted_by:
+    label: submitted_by
+    value: submitted_by
+    machine_name: submitted_by
+  tags:
+    label: tags
+    value: tags
+    machine_name: tags
+mappings:
+  -
+    target: title
+    map:
+      value: title
+    unique: {  }
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      timezone: UTC
+  -
+    target: uid
+    map:
+      target_id: uid
+    settings:
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0
+  -
+    target: body
+    map:
+      value: body
+      summary: ''
+    settings:
+      format: rich_text
+  -
+    target: promote
+    map:
+      value: promote
+  -
+    target: sticky
+    map:
+      value: sticky
+  -
+    target: field_previousnodeid
+    map:
+      value: nid
+  -
+    target: langcode
+    map:
+      value: langcode
+  -
+    target: path
+    map:
+      alias: url_alias
+  -
+    target: field_idea_permalink
+    map:
+      value: permalink
+    unique: {  }
+  -
+    target: field_idea_status
+    map:
+      target_id: status
+    settings:
+      reference_by: name
+      autocreate: false
+      feeds_item: false
+  -
+    target: field_idea_submission_name
+    map:
+      value: submitted_by
+    unique: {  }
+  -
+    target: field_idea_tags
+    map:
+      target_id: tags
+    settings:
+      reference_by: name
+      autocreate: false
+      feeds_item: false

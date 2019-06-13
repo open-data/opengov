@@ -1,0 +1,29 @@
+uuid: 2f368a9b-18f0-4c3b-9cad-96a90c070765
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_commitment_pillars
+    - node.type.commitment
+    - taxonomy.vocabulary.site_structure
+id: node.commitment.field_commitment_pillars
+field_name: field_commitment_pillars
+entity_type: node
+bundle: commitment
+label: Pillars
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      site_structure: site_structure
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
