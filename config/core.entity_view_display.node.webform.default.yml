@@ -1,0 +1,170 @@
+uuid: 24b607e5-28c0-458b-bb82-ad96035c31a5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.webform.body
+    - field.field.node.webform.feeds_item
+    - field.field.node.webform.field_previousnodeid
+    - field.field.node.webform.field_webform
+    - node.type.webform
+  content:
+    - 'block_content:basic:54ed5b8f-aa43-4de2-8b44-96d07d012a56'
+    - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
+  module:
+    - block_content
+    - bootstrap_layouts
+    - layout_builder
+    - layout_discovery
+    - text
+    - user
+    - webform
+third_party_settings:
+  layout_builder:
+    allow_custom: false
+    enabled: true
+    sections:
+      -
+        layout_id: bs_2col
+        layout_settings:
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            left:
+              wrapper: div
+              classes:
+                col-sm-8: col-sm-8
+              add_region_classes: 1
+              attributes: ''
+            right:
+              wrapper: div
+              classes:
+                col-sm-4: col-sm-4
+              add_region_classes: 1
+              attributes: ''
+        components:
+          02d71a62-ff21-407c-a472-9851b5418ba3:
+            uuid: 02d71a62-ff21-407c-a472-9851b5418ba3
+            region: right
+            configuration:
+              id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
+              label: 'Pillars - social media'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: 0
+          01a50162-d3ae-439f-b3c1-5778f18792bf:
+            uuid: 01a50162-d3ae-439f-b3c1-5778f18792bf
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:webform:content_moderation_control'
+            additional: {  }
+            weight: 0
+          5c9c97ec-9324-48e1-b1c7-4ef3c36e1d69:
+            uuid: 5c9c97ec-9324-48e1-b1c7-4ef3c36e1d69
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:webform:links'
+            additional: {  }
+            weight: 1
+        third_party_settings: {  }
+      -
+        layout_id: layout_onecol
+        layout_settings: {  }
+        components:
+          529a4ee8-d761-4eb8-9e11-a8c2acd46753:
+            uuid: 529a4ee8-d761-4eb8-9e11-a8c2acd46753
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:webform:body'
+              formatter:
+                label: hidden
+                type: text_default
+                settings: {  }
+                third_party_settings: {  }
+            additional: {  }
+            weight: -10
+          f93993c1-d3d4-4335-b50f-40c83590f234:
+            uuid: f93993c1-d3d4-4335-b50f-40c83590f234
+            region: content
+            configuration:
+              id: 'block_content:54ed5b8f-aa43-4de2-8b44-96d07d012a56'
+              label: 'Privacy Notice'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: -8
+          cfc9e63c-567d-42ea-85ec-3fced657e9a7:
+            uuid: cfc9e63c-567d-42ea-85ec-3fced657e9a7
+            region: content
+            configuration:
+              id: 'field_block:node:webform:field_webform'
+              label: Webform
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: hidden
+                type: webform_entity_reference_entity_view
+                settings:
+                  source_entity: true
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: -9
+        third_party_settings: {  }
+id: node.webform.default
+targetEntityType: node
+bundle: webform
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  content_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_webform:
+    weight: 3
+    label: hidden
+    settings:
+      source_entity: true
+    third_party_settings: {  }
+    type: webform_entity_reference_entity_view
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  feeds_item: true
+  field_previousnodeid: true
+  langcode: true

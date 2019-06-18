@@ -1,0 +1,16 @@
+uuid: 7e5515f5-256c-415d-bbd3-99acf7c03730
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.webform
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.webform
+target_entity_type_id: node
+target_bundle: webform
+default_langcode: site_default
+language_alterable: false

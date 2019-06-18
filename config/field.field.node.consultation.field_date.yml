@@ -1,0 +1,21 @@
+uuid: cdc05823-8140-4857-a5f4-5815a6ca0e87
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_date
+    - node.type.consultation
+  module:
+    - datetime
+id: node.consultation.field_date
+field_name: field_date
+entity_type: node
+bundle: consultation
+label: 'Consultation period'
+description: 'Provide begin and end date for the consultation'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

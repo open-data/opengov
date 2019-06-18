@@ -61,10 +61,31 @@ function voting_webform_preprocess_webform(array &$variables) {
   }
   elseif ($webform_id === 'vote_up_down') {
     $node = \Drupal::routeMatch()->getParameter('node');
-    if ($node instanceof \Drupal\node\NodeInterface) {
+    if ($node instanceof \Drupal\node\NodeInterface && $node->hasField('field_vote_up_down')) {
       $variables['vote_up_down_value'] = $node->get('field_vote_up_down')->value;
     }
   }
+}
+
+function debug_func($var) {
+  foreach ($var as $key => $value) {
+    echo 'Key = ' . $key;
+    if (is_array($value)) {
+      echo ' Array = ';
+      var_dump(array_keys($value));
+      debug_func($var[$key]);
+    }
+    elseif (is_object($value)) {
+      echo ' Object = ' . get_class($value) . ' ' ;
+      var_dump(get_object_vars($value));
+    }
+    else {
+      echo ' Variable = ';
+      var_dump($value);
+    }
+    echo ('<br/><br/>');
+  }
+
 }
 
 /**

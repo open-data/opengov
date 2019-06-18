@@ -1,0 +1,28 @@
+uuid: fe07fba0-3a3a-4f71-9488-3bc646d0f54a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_idea_reference
+    - node.type.consultation
+    - node.type.idea
+id: node.consultation.field_idea_reference
+field_name: field_idea_reference
+entity_type: node
+bundle: consultation
+label: 'Idea Reference'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      idea: idea
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

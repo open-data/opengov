@@ -1,0 +1,103 @@
+uuid: 269bfcf5-690c-4555-9a1c-1b15515501b3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.consultation.body
+    - field.field.node.consultation.feeds_item
+    - field.field.node.consultation.field_consultation_status
+    - field.field.node.consultation.field_date
+    - field.field.node.consultation.field_idea_reference
+    - field.field.node.consultation.field_meta_tags
+    - field.field.node.consultation.field_previousnodeid
+    - node.type.consultation
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - datetime
+    - metatag
+    - path
+    - text
+id: node.consultation.default
+targetEntityType: node
+bundle: consultation
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 1
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_consultation_status:
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_date:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_idea_reference:
+    weight: 4
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_meta_tags:
+    weight: 9
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 8
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  feeds_item: true
+  field_previousnodeid: true
+  langcode: true
+  promote: true
+  status: true
+  sticky: true
+  uid: true

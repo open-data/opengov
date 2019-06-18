@@ -3,14 +3,24 @@ langcode: en
 status: true
 dependencies:
   config:
+    - block_content.type.basic
+    - block_content.type.fetch_from_api
+    - block_content.type.search
+    - block_content.type.slideshow
+    - block_content.type.spotlight
+    - media.type.file
+    - media.type.image
+    - media.type.slideshow
     - node.type.app
     - node.type.article
     - node.type.commitment
+    - node.type.consultation
     - node.type.external
     - node.type.idea
     - node.type.landing_page
     - node.type.page
     - node.type.suggested_dataset
+    - node.type.webform
   module:
     - content_moderation
 _core:
@@ -84,13 +94,25 @@ type_settings:
       to: in_review
       weight: -2
   entity_types:
+    block_content:
+      - basic
+      - fetch_from_api
+      - search
+      - slideshow
+      - spotlight
+    media:
+      - file
+      - image
+      - slideshow
     node:
       - app
       - article
       - commitment
+      - consultation
       - external
       - idea
       - landing_page
       - page
       - suggested_dataset
+      - webform
   default_moderation_state: draft

@@ -36,7 +36,7 @@ third_party_settings:
                 entity: layout_builder.entity
               id: 'extra_field_block:node:page:content_moderation_control'
             additional: {  }
-            weight: 0
+            weight: -10
           099b8e08-2a3c-4f2a-8491-9da999f3715f:
             uuid: 099b8e08-2a3c-4f2a-8491-9da999f3715f
             region: content
@@ -51,17 +51,7 @@ third_party_settings:
                 settings: {  }
                 third_party_settings: {  }
             additional: {  }
-            weight: 1
-          1d13ad0c-0716-4cfd-96cf-a42944b1df03:
-            uuid: 1d13ad0c-0716-4cfd-96cf-a42944b1df03
-            region: content
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:page:links'
-            additional: {  }
-            weight: 2
+            weight: -8
           bc7bd5e3-b1f7-41bf-851f-7ac98937291b:
             uuid: bc7bd5e3-b1f7-41bf-851f-7ac98937291b
             region: content
@@ -78,22 +68,17 @@ third_party_settings:
                 third_party_settings: {  }
                 type: comment_default
             additional: {  }
-            weight: 3
-          475c542b-1318-4fe5-9342-1e9f1e7c853b:
-            uuid: 475c542b-1318-4fe5-9342-1e9f1e7c853b
+            weight: -7
+          1d13ad0c-0716-4cfd-96cf-a42944b1df03:
+            uuid: 1d13ad0c-0716-4cfd-96cf-a42944b1df03
             region: content
             configuration:
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:page:field_meta_tags'
-              formatter:
-                label: above
-                settings: {  }
-                third_party_settings: {  }
-                type: metatag_empty_formatter
+              id: 'extra_field_block:node:page:links'
             additional: {  }
-            weight: 5
+            weight: -9
         third_party_settings: {  }
 _core:
   default_config_hash: g1S3_GLaxq4l3I9RIca5Mlz02MxI2KmOquZpHw59akM

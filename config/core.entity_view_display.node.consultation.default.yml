@@ -1,0 +1,172 @@
+uuid: 48f1be9c-3841-49a1-b1d4-9109d68d2741
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.consultation.body
+    - field.field.node.consultation.feeds_item
+    - field.field.node.consultation.field_consultation_status
+    - field.field.node.consultation.field_date
+    - field.field.node.consultation.field_idea_reference
+    - field.field.node.consultation.field_meta_tags
+    - field.field.node.consultation.field_previousnodeid
+    - field.field.node.consultation.layout_builder__layout
+    - node.type.consultation
+    - views.view.suggested_ideas
+  content:
+    - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
+  module:
+    - block_content
+    - bootstrap_layouts
+    - layout_builder
+    - text
+    - user
+    - views
+third_party_settings:
+  layout_builder:
+    allow_custom: true
+    enabled: true
+    sections:
+      -
+        layout_id: bs_2col
+        layout_settings:
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            left:
+              wrapper: div
+              classes:
+                col-sm-8: col-sm-8
+              add_region_classes: 1
+              attributes: ''
+            right:
+              wrapper: div
+              classes:
+                col-sm-4: col-sm-4
+              add_region_classes: 1
+              attributes: ''
+        components:
+          96d16765-2858-4e6a-865b-75f6857f3a43:
+            uuid: 96d16765-2858-4e6a-865b-75f6857f3a43
+            region: right
+            configuration:
+              id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
+              label: 'Pillars - social media'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: 0
+          56a19ae8-8ee7-4e45-9cd1-c63b6adf8893:
+            uuid: 56a19ae8-8ee7-4e45-9cd1-c63b6adf8893
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:consultation:content_moderation_control'
+            additional: {  }
+            weight: 0
+          e5975d1b-eea2-4f91-b76a-38fc38e80b52:
+            uuid: e5975d1b-eea2-4f91-b76a-38fc38e80b52
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:consultation:links'
+            additional: {  }
+            weight: 1
+        third_party_settings: {  }
+      -
+        layout_id: bs_2col
+        layout_settings:
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            left:
+              wrapper: div
+              classes:
+                col-sm-3: col-sm-3
+              add_region_classes: 1
+              attributes: ''
+            right:
+              wrapper: div
+              classes:
+                col-sm-9: col-sm-9
+              add_region_classes: 1
+              attributes: class|mrgn-tp-xl
+        components:
+          f5a412be-c388-48ec-9eec-f438112176bd:
+            uuid: f5a412be-c388-48ec-9eec-f438112176bd
+            region: right
+            configuration:
+              id: 'field_block:node:consultation:body'
+              label: Body
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: hidden
+                type: text_default
+                settings: {  }
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 0
+          2cb545fc-b08d-408e-b68d-17b896d3c5f8:
+            uuid: 2cb545fc-b08d-408e-b68d-17b896d3c5f8
+            region: right
+            configuration:
+              id: 'views_block:suggested_ideas-block_1'
+              label: ''
+              provider: views
+              label_display: visible
+              views_label: ''
+              items_per_page: none
+              context_mapping: {  }
+            additional: {  }
+            weight: 3
+        third_party_settings: {  }
+id: node.consultation.default
+targetEntityType: node
+bundle: consultation
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  content_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  feeds_item: true
+  field_consultation_status: true
+  field_date: true
+  field_idea_reference: true
+  field_meta_tags: true
+  field_previousnodeid: true
+  langcode: true
+  layout_builder__layout: true

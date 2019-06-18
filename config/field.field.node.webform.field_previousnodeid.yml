@@ -1,0 +1,23 @@
+uuid: 9c941064-f004-4205-8bb7-efe13d341c6e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_previousnodeid
+    - node.type.webform
+id: node.webform.field_previousnodeid
+field_name: field_previousnodeid
+entity_type: node
+bundle: webform
+label: previousNodeId
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

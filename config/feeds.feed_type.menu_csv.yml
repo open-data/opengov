@@ -4,7 +4,7 @@ status: true
 dependencies:
   module:
     - menu_link_content
-label: 'menu csv'
+label: 'Menu csv'
 id: menu_csv
 description: ''
 import_period: -1
@@ -28,5 +28,97 @@ processor_configuration:
   owner_id: 0
   authorize: false
   owner_feed_author: false
-custom_sources: {  }
-mappings: {  }
+custom_sources:
+  link__uri:
+    label: link__uri
+    value: link__uri
+    machine_name: link__uri
+  link__title:
+    label: link__title
+    value: link__title
+    machine_name: link__title
+  '':
+    label: ''
+    value: ''
+    machine_name: ''
+  content_translation_source:
+    label: content_translation_source
+    value: content_translation_source
+    machine_name: content_translation_source
+  enabled:
+    label: enabled
+    value: enabled
+    machine_name: enabled
+  external:
+    label: external
+    value: external
+    machine_name: external
+  rediscover:
+    label: rediscover
+    value: rediscover
+    machine_name: rediscover
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  title:
+    label: title
+    value: title
+    machine_name: title
+  menu_name:
+    label: menu_name
+    value: menu_name
+    machine_name: menu_name
+  parent:
+    label: parent
+    value: parent
+    machine_name: parent
+  weight:
+    label: weight
+    value: weight
+    machine_name: weight
+mappings:
+  -
+    target: link
+    map:
+      uri: link__uri
+      title: title
+  -
+    target: content_translation_source
+    map:
+      value: content_translation_source
+  -
+    target: enabled
+    map:
+      value: enabled
+  -
+    target: external
+    map:
+      value: external
+  -
+    target: rediscover
+    map:
+      value: rediscover
+  -
+    target: langcode
+    map:
+      value: langcode
+  -
+    target: title
+    map:
+      value: title
+    unique: {  }
+  -
+    target: menu_name
+    map:
+      value: menu_name
+    unique: {  }
+  -
+    target: parent
+    map:
+      value: parent
+    unique: {  }
+  -
+    target: weight
+    map:
+      value: weight

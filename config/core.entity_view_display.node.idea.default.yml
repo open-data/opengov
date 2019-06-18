@@ -78,6 +78,16 @@ third_party_settings:
               id: 'extra_field_block:node:idea:links'
             additional: {  }
             weight: 0
+          b64b7c94-f71b-4818-907f-b3f86d28d4d0:
+            uuid: b64b7c94-f71b-4818-907f-b3f86d28d4d0
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:idea:content_moderation_control'
+            additional: {  }
+            weight: 1
         third_party_settings: {  }
       -
         layout_id: bs_2col
@@ -92,13 +102,13 @@ third_party_settings:
             left:
               wrapper: div
               classes:
-                col-sm-4: col-sm-4
+                col-sm-3: col-sm-3
               add_region_classes: 1
               attributes: ''
             right:
               wrapper: div
               classes:
-                col-sm-8: col-sm-8
+                col-sm-9: col-sm-9
               add_region_classes: 1
               attributes: class|well
         components:
@@ -111,7 +121,7 @@ third_party_settings:
               provider: layout_builder
               label_display: '0'
               formatter:
-                label: above
+                label: visually_hidden
                 type: entity_reference_label
                 settings:
                   link: false
@@ -119,10 +129,27 @@ third_party_settings:
               context_mapping:
                 entity: layout_builder.entity
             additional: {  }
-            weight: 1
+            weight: -9
+          fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e:
+            uuid: fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e
+            region: right
+            configuration:
+              id: 'field_block:node:idea:body'
+              label: Détails
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: hidden
+                type: text_default
+                settings: {  }
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: 4
           89376394-1226-493b-a156-39b670d3295b:
             uuid: 89376394-1226-493b-a156-39b670d3295b
-            region: right
+            region: left
             configuration:
               label_display: '0'
               context_mapping:
@@ -135,26 +162,9 @@ third_party_settings:
                 third_party_settings: {  }
                 type: string
             additional: {  }
-            weight: 2
-          fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e:
-            uuid: fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e
-            region: right
-            configuration:
-              id: 'field_block:node:idea:body'
-              label: Détails
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: above
-                type: text_default
-                settings: {  }
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: 3
-          05a7618a-7e88-49aa-b4eb-f15cc63baf53:
-            uuid: 05a7618a-7e88-49aa-b4eb-f15cc63baf53
+            weight: -10
+          cfa8ceab-aa2e-4d3f-a024-45c4cd95d86d:
+            uuid: cfa8ceab-aa2e-4d3f-a024-45c4cd95d86d
             region: left
             configuration:
               id: webform_block
@@ -166,7 +176,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: 2
+            weight: -8
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -224,6 +234,11 @@ content:
     third_party_settings: {  }
     type: comment_default
     region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: left
   field_idea_submission_name:
     weight: 2
     label: above

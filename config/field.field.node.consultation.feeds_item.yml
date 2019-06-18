@@ -1,0 +1,23 @@
+uuid: 4108d4f5-1d29-40e3-8a1e-622711f6f6fb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.feeds_item
+    - node.type.consultation
+  module:
+    - feeds
+id: node.consultation.feeds_item
+field_name: feeds_item
+entity_type: node
+bundle: consultation
+label: 'Feeds item'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:feeds_feed'
+  handler_settings: {  }
+field_type: feeds_item

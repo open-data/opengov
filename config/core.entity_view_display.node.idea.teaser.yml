@@ -22,10 +22,24 @@ content:
       trim_length: 600
     third_party_settings: {  }
     region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     weight: 100
     settings: {  }
     third_party_settings: {  }
     region: content
 hidden:
+  comment: true
+  feeds_item: true
+  field_idea_permalink: true
+  field_idea_status: true
+  field_idea_submission_name: true
+  field_idea_tags: true
+  field_meta_tags: true
+  field_previousnodeid: true
+  field_vote_up_down: true
   langcode: true

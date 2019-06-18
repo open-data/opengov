@@ -1,0 +1,16 @@
+uuid: f7f8ff24-407b-4092-afcf-b5125b4f7847
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.consultation
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.consultation
+target_entity_type_id: node
+target_bundle: consultation
+default_langcode: site_default
+language_alterable: false

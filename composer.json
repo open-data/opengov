@@ -72,7 +72,6 @@
         "drupal/bootstrap_layouts": "5.1.0",
         "drupal/console": "^1.0.2",
         "drupal/core": "^8.7.0",
-        "drupal/entity_embed": "^1.0@beta",
         "drupal/feeds": "^3.0@alpha",
         "drupal/feeds_tamper": "2.x-dev",
         "drupal/fontawesome": "^2.9",
