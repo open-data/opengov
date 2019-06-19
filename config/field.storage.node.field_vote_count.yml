@@ -1,17 +1,17 @@
-uuid: b8300a4d-a41f-4e74-9ed9-3f1f706bd342
+uuid: 70ab4f3d-6f8a-47f0-94b6-75c84ac2b57c
 langcode: en
 status: true
 dependencies:
   module:
     - node
-    - webform
-id: node.field_rate
-field_name: field_rate
+id: node.field_vote_count
+field_name: field_vote_count
 entity_type: node
-type: webform
+type: integer
 settings:
-  target_type: webform
-module: webform
+  unsigned: false
+  size: normal
+module: core
 locked: false
 cardinality: 1
 translatable: true

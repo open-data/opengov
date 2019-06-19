@@ -10,7 +10,16 @@ field_name: field_app_charge
 entity_type: node
 type: list_string
 settings:
-  allowed_values: {  }
+  allowed_values:
+    -
+      value: none
+      label: Free
+    -
+      value: partial
+      label: 'Partially Free'
+    -
+      value: charged
+      label: 'Paid for'
   allowed_values_function: ''
 module: options
 locked: false

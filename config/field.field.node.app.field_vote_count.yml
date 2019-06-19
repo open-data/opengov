@@ -1,0 +1,25 @@
+uuid: 33c715fa-673d-4adf-b138-0e5dcf61df34
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vote_count
+    - node.type.app
+id: node.app.field_vote_count
+field_name: field_vote_count
+entity_type: node
+bundle: app
+label: 'Vote Count'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

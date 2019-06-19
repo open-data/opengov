@@ -1,0 +1,23 @@
+uuid: de5ed08a-c33c-4590-b18e-1ae3e919623c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vote_average
+    - node.type.app
+id: node.app.field_vote_average
+field_name: field_vote_average
+entity_type: node
+bundle: app
+label: 'Vote Average'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

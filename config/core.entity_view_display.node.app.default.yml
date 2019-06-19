@@ -17,11 +17,12 @@ dependencies:
     - field.field.node.app.field_more_apps_by
     - field.field.node.app.field_name
     - field.field.node.app.field_previousnodeid
-    - field.field.node.app.field_rate
     - field.field.node.app.field_ribbon
     - field.field.node.app.field_subject
     - field.field.node.app.field_submitter_name
     - field.field.node.app.field_url
+    - field.field.node.app.field_vote_average
+    - field.field.node.app.field_vote_count
     - node.type.app
   module:
     - comment
@@ -32,7 +33,6 @@ dependencies:
     - options
     - text
     - user
-    - webform
 id: node.app.default
 targetEntityType: node
 bundle: app
@@ -53,6 +53,11 @@ content:
       pager_id: 0
     third_party_settings: {  }
     type: comment_default
+    region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
     region: content
   field_app_charge:
     weight: 102
@@ -142,14 +147,6 @@ content:
     third_party_settings: {  }
     type: number_integer
     region: content
-  field_rate:
-    weight: 117
-    label: above
-    settings:
-      source_entity: true
-    third_party_settings: {  }
-    type: webform_entity_reference_entity_view
-    region: content
   field_ribbon:
     weight: 112
     label: above
@@ -185,6 +182,26 @@ content:
       target: ''
     third_party_settings: {  }
     type: link
+    region: content
+  field_vote_average:
+    weight: 120
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_decimal
+    region: content
+  field_vote_count:
+    weight: 119
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
     region: content
   links:
     weight: 100

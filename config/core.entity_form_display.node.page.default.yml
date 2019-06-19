@@ -12,7 +12,6 @@ dependencies:
     - node.type.page
     - workflows.workflow.editorial
   module:
-    - comment
     - content_moderation
     - metatag
     - path
@@ -33,12 +32,6 @@ content:
       placeholder: ''
       summary_rows: 3
     third_party_settings: {  }
-  comment:
-    type: comment_default
-    weight: 11
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   created:
     type: datetime_timestamp
     weight: 2
@@ -46,7 +39,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_meta_tags:
-    weight: 12
+    weight: 11
     settings: {  }
     third_party_settings: {  }
     type: metatag_firehose
@@ -112,6 +105,7 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  comment: true
   feeds_item: true
   field_previousnodeid: true
   langcode: true

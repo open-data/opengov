@@ -16,13 +16,15 @@ dependencies:
     - field.field.node.app.field_more_apps_by
     - field.field.node.app.field_name
     - field.field.node.app.field_previousnodeid
-    - field.field.node.app.field_rate
     - field.field.node.app.field_ribbon
     - field.field.node.app.field_subject
     - field.field.node.app.field_submitter_name
     - field.field.node.app.field_url
+    - field.field.node.app.field_vote_average
+    - field.field.node.app.field_vote_count
     - image.style.thumbnail
     - node.type.app
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -169,6 +171,20 @@ content:
     third_party_settings: {  }
     type: link_default
     region: content
+  field_vote_average:
+    weight: 28
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_vote_count:
+    weight: 27
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
   langcode:
     type: language_select
     weight: 1
@@ -231,5 +247,4 @@ content:
     third_party_settings: {  }
 hidden:
   comment: true
-  field_rate: true
   status: true

@@ -1,0 +1,34 @@
+uuid: 633b7e73-9fe6-4a3c-aa5d-1625a855ff19
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.app
+  module:
+    - node
+label: 'Content app CSV'
+id: content_app_csv
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'private://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: false
+  owner_id: 0
+  authorize: true
+  skip_hash_check: false
+  values:
+    type: app
+custom_sources: {  }
+mappings: {  }
