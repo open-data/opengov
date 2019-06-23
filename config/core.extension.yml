@@ -11,6 +11,7 @@ module:
   bootstrap_layouts: 0
   breakpoint: 0
   ckeditor: 0
+  ckeditor_codemirror: 0
   color: 0
   comment: 0
   config: 0

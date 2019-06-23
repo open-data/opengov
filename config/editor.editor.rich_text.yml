@@ -48,7 +48,6 @@ settings:
           name: 'Block Formatting'
           items:
             - Format
-            - Styles
         -
           name: Alignment
           items:
@@ -56,21 +55,33 @@ settings:
             - JustifyCenter
             - JustifyRight
             - JustifyBlock
-            - Outdent
-            - Indent
         -
           name: Other
           items:
-            - Undo
-            - Redo
             - Maximize
             - DrupalFontAwesome
-            - custom_block_browser
   plugins:
     language:
       language_list: un
     stylescombo:
       styles: 'h2 .h4|Look like Heading 4'
+    codemirror:
+      enable: true
+      startupMode: wysiwyg
+      mode: htmlmixed
+      theme: monokai
+      options:
+        lineNumbers: true
+        lineWrapping: true
+        matchBrackets: true
+        autoCloseTags: true
+        autoCloseBrackets: true
+        enableSearchTools: true
+        enableCodeFolding: true
+        enableCodeFormatting: true
+        autoFormatOnStart: true
+        autoFormatOnModeChange: true
+        autoFormatOnUncomment: true
     tokenbrowser:
       token_types: {  }
 image_upload:

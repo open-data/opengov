@@ -1,0 +1,91 @@
+uuid: cef5cadc-4b5d-4b92-865a-c742007819ab
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.redirect.redirect.feeds_item
+  module:
+    - redirect
+label: Redirect
+id: redirect
+description: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'private://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:redirect'
+processor_configuration:
+  update_existing: 1
+  update_non_existent: _keep
+  expire: -1
+  skip_hash_check: false
+  values:
+    type: redirect
+  owner_id: 0
+  authorize: false
+  owner_feed_author: false
+custom_sources:
+  created:
+    label: created
+    value: created
+    machine_name: created
+  to_uri:
+    label: to_uri
+    value: to_uri
+    machine_name: to_uri
+  langcode:
+    label: langcode
+    value: langcode
+    machine_name: langcode
+  status:
+    label: status
+    value: status
+    machine_name: status
+  uid:
+    label: uid
+    value: uid
+    machine_name: uid
+  from:
+    label: from
+    value: from
+    machine_name: from
+mappings:
+  -
+    target: created
+    map:
+      value: created
+    settings:
+      timezone: UTC
+  -
+    target: redirect_redirect
+    map:
+      uri: to_uri
+      title: ''
+  -
+    target: language
+    map:
+      value: langcode
+  -
+    target: status_code
+    map:
+      value: status
+  -
+    target: uid
+    map:
+      target_id: uid
+    settings:
+      reference_by: name
+      feeds_item: guid
+      autocreate: 0
+  -
+    target: feeds_item
+    map:
+      url: from
+      guid: ''
+    unique: {  }

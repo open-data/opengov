@@ -547,7 +547,22 @@ display:
           entity_type: redirect
           entity_field: language
           plugin_id: language
-      sorts: {  }
+      sorts:
+        created:
+          id: created
+          table: redirect
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          entity_type: redirect
+          entity_field: created
+          plugin_id: date
       title: Redirect
       header: {  }
       footer: {  }
