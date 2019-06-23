@@ -1,0 +1,25 @@
+{
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "w8tcha/ckeditor_codemirror",
+        "version": "v1.17.8",
+        "type": "drupal-library",
+        "extra": {
+          "installer-name": "ckeditor_codemirror"
+        },
+        "dist": {
+          "url": "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/releases/download/untagged-f790a6bee2e01b538b13/CKEditor-CodeMirror-Plugin.zip",
+          "type": "zip"
+        },
+        "require": {
+          "composer/installers": "~1.0"
+        }
+      }
+    }
+  ],
+  "require": {
+    "w8tcha/ckeditor_codemirror": "v1.17.8"
+  }
+}

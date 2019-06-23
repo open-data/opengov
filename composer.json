@@ -17,12 +17,17 @@
         {
             "type"    : "package",
             "package" : {
-                "name"    : "ckeditor/codemirror",
-                "version" : "v1.17.10",
+                "name"    : "w8tcha/ckeditor-codemirror",
+                "version" : "v1.17",
                 "type"    : "drupal-library",
                 "dist"    : {
-                    "url"  : "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/releases/download/v1.17.10/CKEditor-CodeMirror-Plugin.zip",
-                    "type" : "zip"
+                    "url"  : "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/archive/v1.17.11.tar.gz",
+                    "type" : "tar"
+                },
+                "source"  : {
+                    "url"       : "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git",
+                    "type"      : "git",
+                    "reference" : "v1.17"
                 }
             }
         },
@@ -63,6 +68,7 @@
     ],
     "require": {
         "php": ">=7.0",
+        "ext-json": "*",
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1.6.5",
         "drupal-composer/drupal-scaffold": "^2.5",
@@ -70,6 +76,7 @@
         "drupal/autologout": "^1.0",
         "drupal/bootstrap": "^3.17",
         "drupal/bootstrap_layouts": "5.1.0",
+        "drupal/ckeditor_codemirror": "^2.2",
         "drupal/console": "^1.0.2",
         "drupal/core": "^8.7.0",
         "drupal/feeds": "^3.0@alpha",
@@ -84,10 +91,10 @@
         "drupal/token_filter": "^1.1",
         "drupal/webform": "^5.2",
         "drush/drush": "^9.0.0",
-        "ext-json": "*",
         "fortawesome/font-awesome": "^5.7",
         "oomphinc/composer-installers-extender": "^1.1",
         "vlucas/phpdotenv": "^2.4",
+        "w8tcha/ckeditor-codemirror": "1.17",
         "webflo/drupal-finder": "^1.0.0",
         "webmozart/path-util": "^2.3",
         "wet-boew/theme-gcweb": "^5.0",

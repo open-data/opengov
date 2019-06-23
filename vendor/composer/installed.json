@@ -2481,6 +2481,62 @@
         }
     },
     {
+        "name": "drupal/ckeditor_codemirror",
+        "version": "2.2.0",
+        "version_normalized": "2.2.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/ckeditor_codemirror.git",
+            "reference": "8.x-2.2"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/ckeditor_codemirror-8.x-2.2.zip",
+            "reference": "8.x-2.2",
+            "shasum": "94ee9b186cecff08820d3368e6213f7c0c3f9af7"
+        },
+        "require": {
+            "drupal/core": "*"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-2.x": "2.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-2.2",
+                "datestamp": "1547825580",
+                "security-coverage": {
+                    "status": "covered",
+                    "message": "Covered by Drupal's security advisory policy"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "Nickolay Leshchev (Plazik)",
+                "homepage": "https://www.drupal.org/u/plazik",
+                "role": "Maintainer"
+            },
+            {
+                "name": "Christopher C. Wells (wells)",
+                "homepage": "https://www.drupal.org/u/wells",
+                "role": "Co-maintainer"
+            }
+        ],
+        "description": "Adds the CKEditor CodeMirror source syntax highlighter plugin.",
+        "homepage": "https://drupal.org/project/ckeditor_codemirror",
+        "support": {
+            "source": "http://cgit.drupalcode.org/ckeditor_codemirror",
+            "issues": "https://www.drupal.org/project/issues/ckeditor_codemirror?version=8.x"
+        }
+    },
+    {
         "name": "drupal/coder",
         "version": "8.3.3",
         "version_normalized": "8.3.3.0",
@@ -9396,6 +9452,23 @@
             "env",
             "environment"
         ]
+    },
+    {
+        "name": "w8tcha/ckeditor-codemirror",
+        "version": "v1.17",
+        "version_normalized": "1.17.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git",
+            "reference": "v1.17"
+        },
+        "dist": {
+            "type": "tar",
+            "url": "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/archive/v1.17.11.tar.gz",
+            "reference": "v1.17"
+        },
+        "type": "drupal-library",
+        "installation-source": "dist"
     },
     {
         "name": "webflo/drupal-core-require-dev",

@@ -1,0 +1,24 @@
+{
+  "name": "drupal/ckeditor_codemirror",
+  "description": "Adds the CKEditor CodeMirror source syntax highlighter plugin.",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "homepage": "https://drupal.org/project/ckeditor_codemirror",
+  "authors": [
+    {
+      "name": "Nickolay Leshchev (Plazik)",
+      "homepage": "https://www.drupal.org/u/plazik",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Christopher C. Wells (wells)",
+      "homepage": "https://www.drupal.org/u/wells",
+      "role": "Co-maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/ckeditor_codemirror?version=8.x",
+    "source": "http://cgit.drupalcode.org/ckeditor_codemirror"
+  }
+}

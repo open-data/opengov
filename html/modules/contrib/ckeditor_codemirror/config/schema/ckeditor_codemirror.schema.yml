@@ -1,0 +1,55 @@
+# Schema for the configuration files of the CKEditor CodeMirror module.
+
+ckeditor.plugin.codemirror:
+  type: config_object
+  label: 'CKEditor CodeMirror settings'
+  mapping:
+    enable:
+      type: boolean
+      label: 'Enabled'
+    mode:
+      type: string
+      label: 'Mode'
+    theme:
+      type: string
+      label: 'Theme'
+    startupMode:
+      type: string
+      label: 'Editor startup mode.'
+    options:
+      type: config_object
+      label: 'CodeMirror options'
+      mapping:
+        lineNumbers:
+          type: boolean
+          label: 'Show line numbers.'
+        lineWrapping:
+          type: boolean
+          label: 'Enable line wrapping.'
+        matchBrackets:
+          type: boolean
+          label: 'Highlight matching brackets.'
+        autoCloseTags:
+          type: boolean
+          label: 'Close tags automatically.'
+        autoCloseBrackets:
+          type: boolean
+          label: 'Close brackets automatically.'
+        enableSearchTools:
+          type: boolean
+          label: 'Enable search tools.'
+        enableCodeFolding:
+          type: boolean
+          label: 'Enable code folding.'
+        enableCodeFormatting:
+          type: boolean
+          label: 'Enable code formatting.'
+        autoFormatOnStart:
+          type: boolean
+          label: 'Format code on start.'
+        autoFormatOnModeChange:
+          type: boolean
+          label: 'Format code each time source is opened.'
+        autoFormatOnUncomment:
+          type: boolean
+          label: 'Format code when a line is uncommented.'

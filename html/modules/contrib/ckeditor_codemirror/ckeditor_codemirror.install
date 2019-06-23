@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the CKEditor CodeMirror module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function ckeditor_codemirror_requirements($phase) {
+  $return = [];
+
+  if ($phase != 'runtime') {
+    return $return;
+  }
+
+  // If the library is installed.
+  $library_path = _ckeditor_codemirror_get_library_path();
+  if (file_exists(DRUPAL_ROOT . '/' . $library_path . '/codemirror/plugin.js')) {
+    $return['ckeditor_codemirror_library'] = [
+      'title' => t('CKEditor CodeMirror'),
+      'severity' => REQUIREMENT_OK,
+      'value' => t('CKEditor CodeMirror plugin version %version installed at %path.',
+        [
+          '%path' => base_path() . $library_path,
+          '%version' => _ckeditor_codemirror_get_version(),
+        ]),
+    ];
+  }
+  else {
+    $return['ckeditor_codemirror_library'] = [
+      'title' => t('CKEditor CodeMirror'),
+      'severity' => REQUIREMENT_ERROR,
+      'value' => t('CKEditor CodeMirror plugin was not found. Download <a href=":link">the latest version of library</a>
+        and place it in the libraries directory (/libraries/ckeditor.codemirror).',
+        [
+          ':link' => 'https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/releases',
+        ]),
+    ];
+  }
+
+  return $return;
+}
+
+/**
+ * Gets the version information for the ckeditor_codemirror library.
+ *
+ * @return string
+ *   A string containing the version of the library or empty if the version
+ *   cannot be found.
+ */
+function _ckeditor_codemirror_get_version() {
+  // Provide defaults.
+  $options = [
+    'file' => 'plugin.js',
+    'pattern' => '@version:\s*[\'\"]?([0-9a-zA-Z\.-]+)[\'\"]?@',
+    'lines' => 20,
+    'cols' => 200,
+  ];
+
+  $version = '';
+  $library_path = _ckeditor_codemirror_get_library_path();
+  $file = DRUPAL_ROOT . '/' . $library_path . '/codemirror/' . $options['file'];
+  if (!empty($options['file']) && file_exists($file)) {
+    $file = fopen($file, 'r');
+    while ($options['lines'] && $line = fgets($file, $options['cols'])) {
+      if (preg_match($options['pattern'], $line, $version)) {
+        break;
+      }
+      $options['lines']--;
+    }
+    fclose($file);
+  }
+  return $version[1];
+}
