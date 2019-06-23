@@ -1,0 +1,52 @@
+uuid: 681414ac-3861-462b-943e-e517e0603e15
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.device_formats.field_icon
+    - taxonomy.vocabulary.device_formats
+  module:
+    - fontawesome
+    - path
+    - text
+id: taxonomy_term.device_formats.default
+targetEntityType: taxonomy_term
+bundle: device_formats
+mode: default
+content:
+  description:
+    type: text_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_icon:
+    weight: 31
+    settings: {  }
+    third_party_settings: {  }
+    type: fontawesome_icon_widget
+    region: content
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

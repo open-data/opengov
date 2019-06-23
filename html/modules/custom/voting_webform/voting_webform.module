@@ -65,27 +65,15 @@ function voting_webform_preprocess_webform(array &$variables) {
       $variables['vote_up_down_value'] = $node->get('field_vote_up_down')->value;
     }
   }
-}
-
-function debug_func($var) {
-  foreach ($var as $key => $value) {
-    echo 'Key = ' . $key;
-    if (is_array($value)) {
-      echo ' Array = ';
-      var_dump(array_keys($value));
-      debug_func($var[$key]);
+  elseif ($webform_id === 'app_vote') {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if ($node instanceof \Drupal\node\NodeInterface
+      && $node->hasField('field_vote_count')
+      && $node->hasField('field_vote_average')) {
+      $variables['vote_count'] = $node->get('field_vote_count')->value;
+      $variables['vote_average'] = $node->get('field_vote_average')->value;
     }
-    elseif (is_object($value)) {
-      echo ' Object = ' . get_class($value) . ' ' ;
-      var_dump(get_object_vars($value));
-    }
-    else {
-      echo ' Variable = ';
-      var_dump($value);
-    }
-    echo ('<br/><br/>');
   }
-
 }
 
 /**

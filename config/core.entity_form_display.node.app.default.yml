@@ -5,13 +5,14 @@ dependencies:
   config:
     - field.field.node.app.body
     - field.field.node.app.comment
+    - field.field.node.app.feeds_item
     - field.field.node.app.field_app_charge
     - field.field.node.app.field_datasets_used
     - field.field.node.app.field_date_published
     - field.field.node.app.field_developed_by
     - field.field.node.app.field_device_formats
-    - field.field.node.app.field_image
     - field.field.node.app.field_keywords
+    - field.field.node.app.field_media
     - field.field.node.app.field_meta_tags
     - field.field.node.app.field_more_apps_by
     - field.field.node.app.field_name
@@ -22,14 +23,13 @@ dependencies:
     - field.field.node.app.field_url
     - field.field.node.app.field_vote_average
     - field.field.node.app.field_vote_count
-    - image.style.thumbnail
     - node.type.app
     - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
-    - image
     - link
+    - media_library
     - metatag
     - path
     - text
@@ -90,14 +90,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_image:
-    weight: 8
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings: {  }
-    type: image_image
-    region: content
   field_keywords:
     weight: 20
     settings:
@@ -107,6 +99,13 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_media:
+    type: media_library_widget
+    weight: 8
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
   field_meta_tags:
     weight: 22
     settings: {  }
@@ -129,13 +128,6 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
-    region: content
-  field_previousnodeid:
-    weight: 26
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
-    type: number
     region: content
   field_ribbon:
     weight: 12
@@ -170,20 +162,6 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
-    region: content
-  field_vote_average:
-    weight: 28
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
-    type: number
-    region: content
-  field_vote_count:
-    weight: 27
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
-    type: number
     region: content
   langcode:
     type: language_select
@@ -247,4 +225,8 @@ content:
     third_party_settings: {  }
 hidden:
   comment: true
+  feeds_item: true
+  field_previousnodeid: true
+  field_vote_average: true
+  field_vote_count: true
   status: true

@@ -1,0 +1,23 @@
+label: 'Galerie d''applis'
+display:
+  default:
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Appliquer
+          exposed_sorts_label: 'Trier par'
+      pager:
+        options:
+          tags:
+            first: '« Précédent'
+            last: 'Suivant »'
+      filters:
+        field_ribbon_target_id:
+          expose:
+            label: Éditeur
+        field_device_formats_target_id:
+          expose:
+            label: Disponibilité
+        combine:
+          expose:
+            label: Recherche

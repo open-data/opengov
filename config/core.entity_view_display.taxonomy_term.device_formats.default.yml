@@ -1,0 +1,32 @@
+uuid: 628e0990-0cdb-4fde-9e4d-59ea6d51b3c4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.device_formats.field_icon
+    - taxonomy.vocabulary.device_formats
+  module:
+    - fontawesome
+    - text
+id: taxonomy_term.device_formats.default
+targetEntityType: taxonomy_term
+bundle: device_formats
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_icon:
+    weight: 0
+    label: hidden
+    settings:
+      layers: 0
+    third_party_settings: {  }
+    type: fontawesome_icon_formatter
+    region: content
+hidden:
+  langcode: true

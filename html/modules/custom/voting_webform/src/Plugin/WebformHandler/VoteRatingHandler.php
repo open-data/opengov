@@ -10,8 +10,8 @@ use Drupal\Core\Form\FormStateInterface;
  * Webform voteSubmission handler.
  *
  * @WebformHandler(
- *   id = "vote_up_down_handler",
- *   label = @Translation("Vote Up Down Submission Handler"),
+ *   id = "vote_rating_handler",
+ *   label = @Translation("Vote Maple Leaf Rating Submission Handler"),
  *   category = @Translation("voteSubmission"),
  *   description = @Translation("voteSubmission of a webform submission handler."),
  *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_SINGLE,
@@ -20,7 +20,7 @@ use Drupal\Core\Form\FormStateInterface;
  * )
  */
 
-class VoteUpDownHandler extends WebformHandlerBase
+class VoteRatingHandler extends WebformHandlerBase
 {
 
   /**
@@ -30,7 +30,9 @@ class VoteUpDownHandler extends WebformHandlerBase
     $node = \Drupal::routeMatch()->getParameter($webform_submission->getSourceEntity()->getEntityTypeId());
     if ($node instanceof \Drupal\node\NodeInterface) {
       if ($webform_submission->getSourceEntity()->id() === $node->id()) {
-        $node->field_vote_up_down = $node->get('field_vote_up_down')->value + 1;
+        $node->field_vote_average = (($node->get('field_vote_average')->value * $node->get('field_vote_count')->value)
+            + $form_state->getValue('rating')) / ($node->get('field_vote_count')->value + 1);
+        $node->field_vote_count = $node->get('field_vote_count')->value + 1;
         $node->save();
       }
     }
