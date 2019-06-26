@@ -1,7 +1,13 @@
 uuid: d13592b0-b114-4847-bba9-e1c1582959ec
 langcode: en
 status: closed
-dependencies: {  }
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 _core:
   default_config_hash: CNnU7U0MxhjBRJkCsweSMZQjhw1pCQyXgEeQ_SeN-qc
 open: null
@@ -13,7 +19,7 @@ archive: false
 id: app_ideas
 title: 'App Ideas'
 description: '&quot;App Ideas&quot; webform.'
-category: null
+category: ''
 elements: "name_of_application:\n  '#title': 'Name of suggested app'\n  '#type': textfield\npossible_supporting_datasets_if_applicable:\n  '#type': textfield\n  '#title': 'Possible supporting datasets, if applicable'\ndescription_of_app:\n  '#type': textarea\n  '#title': 'Description of app'\nsharing_consent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#required': true\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    invisible:\n      ':input[name=\"sharing_consent\"]':\n        '!value': 'Yes'\n"
 css: ''
 javascript: ''

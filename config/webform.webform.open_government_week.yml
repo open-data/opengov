@@ -1,11 +1,17 @@
 uuid: 280c9cdd-ca41-40f5-99a0-f10512a60c22
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 open: null
 close: null
 weight: 0
-uid: 9434
+uid: null
 template: false
 archive: false
 id: open_government_week

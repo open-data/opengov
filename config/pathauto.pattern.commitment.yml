@@ -1,0 +1,33 @@
+uuid: e06c49a1-93f5-4caf-8019-a49e7f5c5965
+langcode: en
+status: true
+dependencies:
+  module:
+    - language
+    - node
+id: commitment
+label: Commitment
+type: 'canonical_entities:node'
+pattern: 'commitment/[node:title]'
+selection_criteria:
+  762f7318-73bc-45ff-8fbd-971292237436:
+    id: node_type
+    bundles:
+      commitment: commitment
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 762f7318-73bc-45ff-8fbd-971292237436
+  9424c8f6-a410-487c-af18-88c445a2274a:
+    id: language
+    langcodes:
+      en: en
+    negate: false
+    context_mapping:
+      language: 'node:langcode:language'
+    uuid: 9424c8f6-a410-487c-af18-88c445a2274a
+selection_logic: and
+weight: -10
+relationships:
+  'node:langcode:language':
+    label: Language

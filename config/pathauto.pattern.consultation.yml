@@ -1,0 +1,22 @@
+uuid: e1b95e2a-a556-4614-9c52-7a87bbb06ded
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: consultation
+label: Consultation
+type: 'canonical_entities:node'
+pattern: 'consultations/[node:title]'
+selection_criteria:
+  d8acce66-aa89-4d64-a333-c7280032601d:
+    id: node_type
+    bundles:
+      consultation: consultation
+    negate: false
+    context_mapping:
+      node: node
+    uuid: d8acce66-aa89-4d64-a333-c7280032601d
+selection_logic: and
+weight: -5
+relationships: {  }

@@ -3,7 +3,12 @@ langcode: en
 status: open
 dependencies:
   module:
+    - honeypot
     - og_ext_webform
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 _core:
   default_config_hash: 3KMfwnJX9MY_3tJmNyqT_XDU5kCN089MDHRQe6cdXDo
 open: null

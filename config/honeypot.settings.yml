@@ -7,13 +7,13 @@ unprotected_forms:
 protect_all_forms: false
 log: false
 element_name: details
-time_limit: 5
+time_limit: 10
 expire: 300
 form_settings:
-  user_register_form: false
-  user_pass: false
+  user_register_form: true
+  user_pass: true
   contact_message_feedback_form: true
-  contact_message_personal_form: false
+  contact_message_personal_form: true
   node_app_form: false
   node_article_form: false
   node_commitment_form: false

@@ -1,7 +1,13 @@
 uuid: 2b89f322-c091-4e76-90d7-fc88a725357f
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 _core:
   default_config_hash: zpzcNikkWSCG8bj3tFEM7ba80eaob2-GJTBrl53rZZI
 open: null
@@ -13,7 +19,7 @@ archive: false
 id: suggest_open_information
 title: 'Suggest Open Information'
 description: '&quot;Suggest Open Information&quot; webform.'
-category: null
+category: ''
 elements: "name_of_information:\n  '#type': textfield\n  '#title': 'Name of information'\nfederal_government_institution_that_publishes_the_information:\n  '#type': textfield\n  '#title': 'Federal government institution that publishes the information'\ndescription_of_the_information_you_would_like_to_make_available:\n  '#type': textarea\n  '#title': 'Description of the dataset you would like to make available'\nadditional_comments_and_feedback:\n  '#type': textarea\n  '#title': 'Additional Comments and Feedback'\n  '#required': true\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'E-mail Address'\ntelephone:\n  '#type': tel\n  '#title': Telephone\nconsent:\n  '#type': select\n  '#title': consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#options': yes_no\n  '#required': true\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    invisible:\n      ':input[name=\"consent\"]':\n        '!value': 'Yes'"
 css: ''
 javascript: ''

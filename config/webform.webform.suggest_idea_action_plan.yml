@@ -1,7 +1,13 @@
 uuid: d9d9b2c3-feeb-4ee8-9efc-a3431e1b08b0
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 _core:
   default_config_hash: 33k2q3FXnjpm0ZB3acyZJgrHZw4_XwMlFgygEg9aw3g
 open: null
@@ -13,7 +19,7 @@ archive: false
 id: suggest_idea_action_plan
 title: 'Suggest a Idea for Action Plan'
 description: '&quot;Suggest a new idea&quot; webform.'
-category: null
+category: ''
 elements: "add_your_idea:\n  '#type': fieldset\n  '#title': 'Add your idea'\n  '#description': 'To add your idea, insert your name, indicate the theme, and outline your idea below.'\n  '#smart_description': false\n  your_name_optional:\n    '#type': textfield\n    '#title': 'Your name (optional)'\n  theme:\n    '#type': select\n    '#title': Theme\n    '#smart_description': false\n    '#description': 'Choose the theme that most closely relates to your idea.'\n    '#title_display': before\n    '#options':\n      1: 'Open Information'\n      2: 'Social and economic development'\n      3: 'Innovation and Prosperity'\n      4: 'Fiscal Transparency'\n      5: 'Enabling Citizens'\n    '#required': true\n  your_idea_label:\n    '#type': webform_markup\n    '#markup': '<p>Describe your idea. Be sure to include any milestones or key deliverables that could be accomplished within two years. You might also want to mention potential partners that could help implement the idea.</p>'\n  title:\n    '#type': textfield\n    '#title': Title\n    '#required': true\n  your_idea:\n    '#type': textarea\n    '#title': 'Your Idea'\n    '#required': true"
 css: ''
 javascript: ''

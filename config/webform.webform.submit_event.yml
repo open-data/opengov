@@ -1,7 +1,13 @@
 uuid: 7c150eb4-286f-439d-b467-c344e0f7e32e
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 _core:
   default_config_hash: jn1mOzzxA8PWcnp73NWo4GDT6kqtfXZXxOSk4aSvfqU
 open: null
@@ -13,7 +19,7 @@ archive: false
 id: submit_event
 title: 'Submit an Open Government Event'
 description: '&quot;Submit an Open Government Event&quot; webform.'
-category: null
+category: ''
 elements: "event_name_in_full:\n  '#type': textfield\n  '#title': 'Event Name in Full'\n  '#required': true\ndate:\n  '#type': date\n  '#title': Date\n  '#required': true\nlocation:\n  '#type': textfield\n  '#title': Location\nevent_website:\n  '#type': textfield\n  '#title': 'Event Website'\n  '#required': true\nemail:\n  '#type': email\n  '#title': Email\n  '#title_display': before\nconsent_to_sharing_of_personal_information:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#smart_description': false\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#required': true\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    invisible:\n      ':input[name=\"consent_to_sharing_of_personal_information\"]':\n        '!value': 'Yes'\n"
 css: ''
 javascript: ''

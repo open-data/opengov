@@ -1,0 +1,33 @@
+uuid: 50a018a8-4fc7-40ff-b63f-d4756218ae0c
+langcode: en
+status: true
+dependencies:
+  module:
+    - ctools
+    - taxonomy
+id: taxonomy
+label: Taxonomy
+type: 'canonical_entities:taxonomy_term'
+pattern: 'taxonomy/term/[term:name]'
+selection_criteria:
+  2bfc75d4-ff78-40a0-9ffb-08be1ed66340:
+    id: 'entity_bundle:taxonomy_term'
+    bundles:
+      app_categories: app_categories
+      app_freetags: app_freetags
+      app_ribbon: app_ribbon
+      commitment_freetags: commitment_freetags
+      consultation_status: consultation_status
+      departments: departments
+      device_formats: device_formats
+      idea_freetags: idea_freetags
+      idea_status: idea_status
+      site_structure: site_structure
+      subscriptions: subscriptions
+    negate: false
+    context_mapping:
+      taxonomy_term: taxonomy_term
+    uuid: 2bfc75d4-ff78-40a0-9ffb-08be1ed66340
+selection_logic: and
+weight: -5
+relationships: {  }

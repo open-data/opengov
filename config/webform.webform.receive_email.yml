@@ -1,7 +1,13 @@
 uuid: 784e8796-ffb0-41bc-a5d3-34710b948032
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 _core:
   default_config_hash: Kf63pmu8IkQ5Ol3mO0CbYvb1QbCVXnmmqv5mpS5PA4I
 open: null
@@ -13,7 +19,7 @@ archive: false
 id: receive_email
 title: 'Receive Open Government Email Form'
 description: '&quot;Receive Open Government Email&quot; webform.'
-category: null
+category: ''
 elements: "e_mail:\n  '#type': email\n  '#title': E-mail\n  '#default_value': '[current-user:mail]'\nname:\n  '#type': textfield\n  '#title': Name\nsectors:\n  '#type': webform_entity_radios\n  '#title': 'The sector/group that I identify most with is:'\n  '#target_type': taxonomy_term\n  '#selection_handler': 'default:taxonomy_term'\n  '#selection_settings':\n    target_bundles:\n      subscriptions: subscriptions\n    sort:\n      field: name\n"
 css: ''
 javascript: ''

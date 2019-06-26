@@ -1,7 +1,13 @@
 uuid: cac60320-b8bc-4754-a1d0-4b5a1588a84a
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 _core:
   default_config_hash: 0zeqHneO6AkBDZgGTtLBZwz0ZXCfFwrFohTpXqGvM98
 open: null
@@ -13,7 +19,7 @@ archive: false
 id: suggest_idea
 title: 'Suggest a Idea'
 description: '&quot;Suggest a Idea&quot; webform.'
-category: null
+category: ''
 elements: "submitted_by:\n  '#type': textfield\n  '#title': 'Submitted By'\n  '#smart_description': false\n  '#description': 'Please enter your name or alias if you want to be credited for your idea.'\n  '#default_value': '[current-user:account-name]'\norganization:\n  '#type': textfield\n  '#title': Organization\nidea_title:\n  '#type': textfield\n  '#title': 'Idea Title'\n  '#required': true\nidea_description:\n  '#type': textarea\n  '#title': 'Idea Description'\n  '#required': true\nsuggested_keywords:\n  '#type': textfield\n  '#title': 'Please enter commonly used keyword(s), formal word(s) or phases that can be used to describe your idea.'\nreference_consultation:\n  '#type': hidden\n  '#value': '[current-page:query:consultation]'\nreference_consultation_id:\n  '#type': hidden\n  '#value': '[current-page:query:consultation-id]'\n"
 css: ''
 javascript: ''
