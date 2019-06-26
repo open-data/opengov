@@ -4,5 +4,5 @@ status: true
 dependencies: {  }
 id: mid-term-self-assessment-20
 label: 'Mid-Term Self-Assessment 2014-16'
-description: 'Menu for versions of Mid-Term Self-Assessment 2014-16'
+description: 'Side menu - Menu for versions of Mid-Term Self-Assessment 2014-16'
 locked: false

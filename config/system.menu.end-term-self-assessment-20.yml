@@ -4,5 +4,5 @@ status: true
 dependencies: {  }
 id: end-term-self-assessment-20
 label: 'End-Term Self-Assessment 2014-16'
-description: 'Menu for versions of End-Term Self-Assessment 2014-16'
+description: 'Side menu - End-Term Self-Assessment 2014-16'
 locked: false

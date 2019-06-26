@@ -5,5 +5,5 @@ mergenodes.mergeNodesForm:
     _form: '\Drupal\mergenodes\Form\DefaultForm'
     _title: 'Merge translations of Nodes'
   requirements:
-    _access: 'TRUE'
+    _permission: 'access administration pages'
   

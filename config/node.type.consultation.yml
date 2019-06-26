@@ -8,7 +8,7 @@ third_party_settings:
   menu_ui:
     available_menus:
       - main
-    parent: 'main:'
+    parent: 'main:menu_link_content:45e5012e-f5fa-45d6-8b0b-0beb858b931c'
 name: Consultation
 type: consultation
 description: 'Used to create public consultation and allows people to comment and rate content.'

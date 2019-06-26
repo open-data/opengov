@@ -1,0 +1,7 @@
+content_type_breadcrumb.contentTypeBreadcrumbForm:
+  path: '/admin/config/user-interface/content-type-breadcrumb/form/config'
+  defaults:
+    _form: '\Drupal\content_type_breadcrumb\Form\ConfigForm'
+    _title: 'Administer breadcrumbs for Content types'
+  requirements:
+    _permission: 'access administration pages'

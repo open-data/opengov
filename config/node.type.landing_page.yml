@@ -8,7 +8,7 @@ third_party_settings:
   menu_ui:
     available_menus:
       - main
-    parent: 'main:'
+    parent: 'main:menu_link_content:691dc0a1-5b6a-4a55-9675-434687155849'
 name: 'Landing page'
 type: landing_page
 description: 'A special page with its own one-off layout and content.'

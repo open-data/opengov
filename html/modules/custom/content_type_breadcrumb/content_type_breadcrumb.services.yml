@@ -1,0 +1,5 @@
+services:
+  content_type_breadcrumb.breadcrumb:
+    class: Drupal\content_type_breadcrumb\Breadcrumb\ContentTypeBreadcrumbsBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

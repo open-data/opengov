@@ -1,0 +1,11 @@
+name: 'content_type_breadcrumb'
+description: 'The module generates custom breadcrumb for nodes of content type'
+
+type: module
+core: 8.x
+package: 'Open Government'
+version: 1.0
+configure: content_type_breadcrumb.form
+
+dependencies:
+  - drupal:menu_breadcrumb

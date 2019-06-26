@@ -18,6 +18,7 @@ module:
   config_translation: 0
   contact: 0
   content_moderation: 0
+  content_type_breadcrumb: 0
   contextual: 0
   ctools: 0
   datetime: 0

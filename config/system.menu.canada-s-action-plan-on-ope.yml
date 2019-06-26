@@ -4,5 +4,5 @@ status: true
 dependencies: {  }
 id: canada-s-action-plan-on-ope
 label: 'Canada’s Action Plan on Open Government 2.0'
-description: ''
+description: 'Side menu - Canada’s Action Plan on Open Government 2.0'
 locked: false

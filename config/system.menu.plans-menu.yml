@@ -1,0 +1,8 @@
+uuid: dbc8eecc-d6be-4049-b5fc-72d041850232
+langcode: und
+status: true
+dependencies: {  }
+id: plans-menu
+label: Plans
+description: 'Breadcrumb - Plans menu'
+locked: false

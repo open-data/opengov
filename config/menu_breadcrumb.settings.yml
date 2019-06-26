@@ -24,7 +24,52 @@ menu_breadcrumb_menus:
     enabled: 0
     taxattach: 0
     langhandle: 0
+  canada-s-4th-plan-on-open-g:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  canada-s-action-plan-on-ope:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  consultations:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  content-menu:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  plan-2016-2018:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  end-term-self-assessment-20:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
   footer:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  mid-term-self-assessment-20:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  plans:
+    weight: 0
+    enabled: 0
+    taxattach: 0
+    langhandle: 0
+  plans-menu:
     weight: 0
     enabled: 0
     taxattach: 0
@@ -41,3 +86,5 @@ menu_breadcrumb_menus:
     langhandle: 0
 _core:
   default_config_hash: MWtaH6iqiztF4V37kZZSpw-NZBbZijdlO_xMPIUCibY
+stop_on_first_match: false
+derived_active_trail: false
