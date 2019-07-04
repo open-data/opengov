@@ -12,7 +12,9 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
 
   private $config;
   private $menu_id;
-  private $views = ['pd_core_ati_details'];
+  private $views = ['pd_core_ati_details',
+    'pd_core_contracts_details',
+    ];
 
   public function __construct() {
     $this->config = \Drupal::config('content_type_breadcrumb.settings');

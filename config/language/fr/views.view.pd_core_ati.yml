@@ -13,10 +13,6 @@ display:
         year:
           expose:
             label: Année
-        organization_en:
-          expose: {  }
-        organization_fr:
-          expose: {  }
       filters:
         search_api_fulltext:
           expose:

@@ -8,7 +8,9 @@ use Drupal\views\Views;
 
 class ConfigForm extends ConfigFormBase {
 
-  private $views = [ 'pd_core_ati_details'];
+  private $views = [ 'pd_core_ati_details',
+    'pd_core_contracts_details',
+    ];
   /**
    * {@inheritdoc}
    */

@@ -37,7 +37,9 @@ function alter_view_views_pre_render(ViewExecutable $view) {
   $currentLang = $language_manager->getCurrentLanguage()->getId();
   $field_to_disable = $currentLang == 'en' ? 'fr' : 'en';
 
-  $views = ['pd_core_ati', 'pd_core_ati_details'];
+  $views = ['pd_core_ati', 'pd_core_ati_details',
+    'pd_core_contracts', 'pd_core_contracts_details',
+  ];
 
   if (in_array($view->id(), $views)) {
     // disable fields in other language
@@ -46,11 +48,18 @@ function alter_view_views_pre_render(ViewExecutable $view) {
         unset($view->field[$field->field]);
       }
     }
-    // disable sorts in other language
-    foreach ($view->exposed_widgets['sort_by']['#options'] as $key => $value) {
-      if (strpos($key, '_' . $field_to_disable) !== FALSE) {
-        unset($view->exposed_widgets['sort_by']['#options'][$key]);
+
+    // disable sorts in other language only for the list views
+    if (strpos($view->id(), '_details') === FALSE
+      && is_array($view->exposed_widgets['sort_by'])
+      && array_key_exists('#options', $view->exposed_widgets['sort_by'])) {
+
+      foreach ($view->exposed_widgets['sort_by']['#options'] as $key => $value) {
+        if (strpos($key, '_' . $field_to_disable) !== FALSE) {
+          unset($view->exposed_widgets['sort_by']['#options'][$key]);
+        }
       }
+
     }
   }
 }

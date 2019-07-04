@@ -210,8 +210,7 @@ handlers:
     settings:
       states:
         - completed
-        - completed
-      to_mail: '[webform_submission:values:email:raw]'
+      to_mail: '[webform_submission:values:e_mail_address:raw]'
       to_options: {  }
       cc_mail: ''
       cc_options: {  }

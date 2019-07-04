@@ -1,0 +1,100 @@
+uuid: a5e86ab4-c7f2-411c-bfd3-bfd70102c5ff
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.pd_core_contracts
+    - views.view.pd_core_contracts
+  module:
+    - search_api
+id: contracts_summary
+name: 'PD Contracts - Current Search'
+facets:
+  contracts_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    weight: -10
+    show_count: false
+  contracts_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    weight: -9
+    show_count: false
+  contracts_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    weight: -8
+    show_count: false
+  contracts_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    weight: -7
+    show_count: false
+  contracts_commodity_type_en:
+    checked: true
+    label: 'Commodity Type'
+    separator: ', '
+    weight: -6
+    show_count: false
+  contracts_commodity_type_fr:
+    checked: true
+    label: 'Type de marchandises'
+    separator: ', '
+    weight: -5
+    show_count: false
+  contracts_country_of_origin_en:
+    checked: true
+    label: 'Country of Origin'
+    separator: ', '
+    weight: -4
+    show_count: false
+  contracts_country_of_origin_fr:
+    checked: true
+    label: 'Pays d''origine'
+    separator: ', '
+    weight: -3
+    show_count: false
+  pd_contracts_multi_agreement_type_en:
+    checked: true
+    label: 'Agreement Type'
+    separator: ', '
+    weight: -2
+    show_count: false
+  pd_contracts_multi_agreement_type_fr:
+    checked: true
+    label: 'Type de contrats'
+    separator: ', '
+    weight: -1
+    show_count: false
+  contracts_contract_value_en:
+    checked: true
+    label: 'Contract Value'
+    separator: ', '
+    weight: 0
+    show_count: false
+  contracts_contract_value_fr:
+    checked: true
+    label: 'Valeur du contrat '
+    separator: ', '
+    weight: 1
+    show_count: false
+facet_source_id: 'search_api:views_block__pd_core_contracts__block_1'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Clear all filters'
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '10'
+    settings:
+      text:
+        value: 'There is no current search in progress.'
+        format: plain_text
