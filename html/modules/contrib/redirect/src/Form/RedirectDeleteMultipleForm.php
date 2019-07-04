@@ -132,7 +132,7 @@ class RedirectDeleteMultipleForm extends ConfirmFormBase {
       $this->privateTempStoreFactory->get('redirect_multiple_delete_confirm')->delete($this->currentUser->id());
       $count = count($this->redirects);
       $this->logger('redirect')->notice('Deleted @count redirects.', ['@count' => $count]);
-      drupal_set_message($this->stringTranslation->formatPlural($count, 'Deleted 1 redirect.', 'Deleted @count redirects.'));
+      $this->messenger()->addMessage($this->stringTranslation->formatPlural($count, 'Deleted 1 redirect.', 'Deleted @count redirects.'));
     }
     $form_state->setRedirect('redirect.list');
   }

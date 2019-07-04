@@ -20,7 +20,7 @@ class PathRedirect extends DrupalSqlBase {
   public function query() {
     // Select path redirects.
     $query = $this->select('path_redirect', 'p')
-      ->fields('p', array(
+      ->fields('p', [
         'rid',
         'source',
         'redirect',
@@ -29,7 +29,7 @@ class PathRedirect extends DrupalSqlBase {
         'language',
         'type',
         'last_used',
-      ));
+      ]);
 
     return $query;
   }
@@ -38,7 +38,7 @@ class PathRedirect extends DrupalSqlBase {
    * {@inheritdoc}
    */
   public function fields() {
-    $fields = array(
+    $fields = [
       'rid' => $this->t('Redirect ID'),
       'source' => $this->t('Source'),
       'redirect' => $this->t('Redirect'),
@@ -47,7 +47,7 @@ class PathRedirect extends DrupalSqlBase {
       'language' => $this->t('Language'),
       'type' => $this->t('Type'),
       'last_used' => $this->t('Last Used'),
-    );
+    ];
     return $fields;
   }
 

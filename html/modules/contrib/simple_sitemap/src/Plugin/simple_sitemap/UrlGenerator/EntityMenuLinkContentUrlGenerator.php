@@ -146,17 +146,25 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
 
     // If menu link is of entity type menu_link_content, take under account its entity override.
     else {
-      $entity_settings = $this->generator->getEntityInstanceSettings('menu_link_content', $meta_data['entity_id']);
+      $entity_settings = $this->generator
+        ->setVariants($this->sitemapVariant)
+        ->getEntityInstanceSettings('menu_link_content', $meta_data['entity_id']);
 
       if (empty($entity_settings['index'])) {
         return FALSE;
       }
     }
 
-    // There can be internal paths that are not rooted, like 'base:/path'.
     if ($url_object->isRouted()) {
+
+      // Do not include paths that have no URL.
+      if (in_array($url_object->getRouteName(), ['<nolink>', '<none>'])) {
+        return FALSE;
+      }
+
       $path = $url_object->getInternalPath();
     }
+    // There can be internal paths that are not rooted, like 'base:/path'.
     else { // Handle base scheme.
       if (strpos($uri = $url_object->toUriString(), 'base:/') === 0 ) {
         $path = $uri[6] === '/' ? substr($uri, 7) : substr($uri, 6);
@@ -173,12 +181,12 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
     $path_data = [
       'url' => $url_object,
       'lastmod' => !empty($entity) && method_exists($entity, 'getChangedTime')
-        ? date_iso8601($entity->getChangedTime())
+        ? date('c', $entity->getChangedTime())
         : NULL,
       'priority' => isset($entity_settings['priority']) ? $entity_settings['priority'] : NULL,
       'changefreq' => !empty($entity_settings['changefreq']) ? $entity_settings['changefreq'] : NULL,
       'images' => !empty($entity_settings['include_images']) && !empty($entity)
-        ? $this->getImages($entity->getEntityTypeId(), $entity->id())
+        ? $this->getEntityImageData($entity)
         : [],
 
       // Additional info useful in hooks.

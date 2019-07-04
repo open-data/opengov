@@ -1,0 +1,8 @@
+uuid: be5024ad-951c-4d15-b75a-ef918fca189d
+langcode: und
+status: true
+dependencies: {  }
+id: revitalizing-access-to-info
+label: 'Revitalizing access to information'
+description: 'Side menu - Revitalizing access to information'
+locked: false

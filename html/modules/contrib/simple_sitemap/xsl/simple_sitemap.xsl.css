@@ -64,29 +64,28 @@ table.sitemap thead tr .tablesorter-headerDesc .tablesorter-header-inner:after {
   right: 0;
 }
 
-table.sitemap tbody tr dl.translation-set {
-  padding: 0;
-  margin: 0;
-}
-
-table.sitemap tbody tr dl.translation-set dt {
-  text-transform: uppercase;
-  float: left;
-  padding: 0;
-  margin: 0 5px 0 0;
-}
-
-table.sitemap tbody tr dl.translation-set dt:after {
-  content: ":";
-}
-
-table.sitemap tbody tr dl.translation-set dd {
-  padding: 0;
-  margin: 0;
-}
-
-table.sitemap tbody tr ul.images {
+table.sitemap tbody tr ul {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+table.sitemap tbody tr ul li:not(:first-of-type) {
+  margin-top: 5px;
+}
+
+table.sitemap tbody tr ul li span {
+  margin-right: 5px;
+}
+
+table.sitemap tbody tr ul li span:after {
+  content: ":";
+}
+
+table.sitemap tbody tr ul.translation-set li span {
+  text-transform: uppercase;
+}
+
+table.sitemap tbody tr ul.images li span {
+  font-style: italic;
 }

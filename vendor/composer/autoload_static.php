@@ -10,7 +10,6 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
         '92c8763cd6170fce6fcfe7e26b4e8c10' => __DIR__ . '/..' . '/symfony/phpunit-bridge/bootstrap.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -50,6 +49,7 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         array (
             'Zumba\\Mink\\Driver\\' => 18,
             'Zumba\\GastonJS\\' => 15,
+            'ZipStream\\' => 10,
             'Zend\\Stdlib\\' => 12,
             'Zend\\Feed\\' => 10,
             'Zend\\Escaper\\' => 13,
@@ -99,6 +99,7 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
             'Symfony\\Bridge\\PsrHttpMessage\\' => 30,
             'Symfony\\Bridge\\PhpUnit\\' => 23,
             'Stecman\\Component\\Symfony\\Console\\BashCompletion\\' => 49,
+            'Solarium\\' => 9,
             'SelfUpdate\\' => 11,
         ),
         'R' => 
@@ -111,6 +112,7 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Prophecy\\' => 9,
             'PhpParser\\' => 10,
         ),
         'O' => 
@@ -123,6 +125,7 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         ),
         'L' => 
         array (
+            'League\\Csv\\' => 11,
             'League\\Container\\' => 17,
         ),
         'J' => 
@@ -162,6 +165,7 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
             'DrupalCodeGenerator\\' => 20,
             'Dotenv\\' => 7,
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Inflector\\' => 26,
             'Doctrine\\Common\\Cache\\' => 22,
             'Doctrine\\Common\\Annotations\\' => 28,
@@ -215,6 +219,10 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         'Zumba\\GastonJS\\' => 
         array (
             0 => __DIR__ . '/..' . '/jcalderonzumba/gastonjs/src',
+        ),
+        'ZipStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
         'Zend\\Stdlib\\' => 
         array (
@@ -364,6 +372,10 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         array (
             0 => __DIR__ . '/..' . '/stecman/symfony-console-completion/src',
         ),
+        'Solarium\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/solarium/solarium/src',
+        ),
         'SelfUpdate\\' => 
         array (
             0 => __DIR__ . '/..' . '/consolidation/self-update/src',
@@ -388,6 +400,10 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'Prophecy\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpspec/prophecy/src/Prophecy',
+        ),
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
@@ -399,6 +415,10 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         'Masterminds\\' => 
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
+        ),
+        'League\\Csv\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/csv/src',
         ),
         'League\\Container\\' => 
         array (
@@ -495,6 +515,10 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         'Doctrine\\Instantiator\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
+        ),
+        'Doctrine\\Common\\Lexer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/lexer/lib/Doctrine/Common/Lexer',
         ),
         'Doctrine\\Common\\Inflector\\' => 
         array (
@@ -607,10 +631,6 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         ),
         'P' => 
         array (
-            'Prophecy\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/phpspec/prophecy/src',
-            ),
             'PEAR' => 
             array (
                 0 => __DIR__ . '/..' . '/pear/pear_exception',
@@ -632,10 +652,6 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
             'DrupalPractice\\' => 
             array (
                 0 => __DIR__ . '/..' . '/drupal/coder/coder_sniffer/DrupalPractice',
-            ),
-            'Doctrine\\Common\\Lexer\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/lexer/lib',
             ),
             'Doctrine\\Common\\Collections\\' => 
             array (

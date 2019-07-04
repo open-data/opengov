@@ -96,15 +96,14 @@ class SimplesitemapTest extends SimplesitemapTestBase {
     $this->drupalGet($this->defaultSitemapUrl);
     $this->assertSession()->responseNotContains('node/' . $this->node->id());
 
-    //todo Not working
-//    // Test removing all custom paths from the sitemap.
-//    $this->generator->removeCustomLinks()
-//      ->generateSitemap('backend');
-//
-//    $this->drupalGet($this->defaultSitemapUrl);
-//    $this->assertSession()->responseNotContains(
-//      Url::fromRoute('<front>')->setAbsolute()->toString()
-//    );
+    // Test removing all custom paths from the sitemap.
+    $this->generator->removeCustomLinks()
+      ->generateSitemap('backend');
+
+    $this->drupalGet($this->defaultSitemapUrl);
+    $this->assertSession()->responseNotContains(
+      Url::fromRoute('<front>')->setAbsolute()->toString()
+    );
   }
 
   /**
@@ -176,17 +175,16 @@ class SimplesitemapTest extends SimplesitemapTestBase {
     $this->assertSession()->responseContains('node/' . $this->node->id());
     $this->assertSession()->responseContains('node/' . $node3->id());
 
-    // todo Now working
-//    // Set bundle 'index' setting to false.
-//    $this->generator
-//      ->setBundleSettings('node', 'page', ['index' => FALSE])
-//      ->setBundleSettings('node', 'blog', ['index' => FALSE])
-//      ->generateSitemap('backend');
-//
-//    $this->drupalGet($this->defaultSitemapUrl);
-//
-//    $this->assertSession()->responseNotContains('node/' . $this->node->id());
-//    $this->assertSession()->responseNotContains('node/' . $node3->id());
+    // Set bundle 'index' setting to false.
+    $this->generator
+      ->setBundleSettings('node', 'page', ['index' => FALSE])
+      ->setBundleSettings('node', 'blog', ['index' => FALSE])
+      ->generateSitemap('backend');
+
+    $this->drupalGet($this->defaultSitemapUrl);
+
+    $this->assertSession()->responseNotContains('node/' . $this->node->id());
+    $this->assertSession()->responseNotContains('node/' . $node3->id());
   }
 
   /**

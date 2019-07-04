@@ -1,6 +1,11 @@
 /**
  * @file
  * Bootstrap Modals.
+ *
+ * @param {jQuery} $
+ * @param {Drupal} Drupal
+ * @param {Drupal.bootstrap} Bootstrap
+ * @param {Attributes} Attributes
  */
 (function ($, Drupal, Bootstrap, Attributes) {
   'use strict';
@@ -65,15 +70,16 @@
       var BootstrapModal = this;
 
       // Override the Modal constructor.
-      var Modal = function (element, options) {
+      Bootstrap.Modal = function (element, options) {
         this.$body               = $(document.body);
         this.$element            = $(element);
         this.$dialog             = this.$element.find('.modal-dialog');
         this.$header             = this.$dialog.find('.modal-header');
+        this.$title              = this.$dialog.find('.modal-title');
         this.$close              = this.$header.find('.close');
         this.$footer             = this.$dialog.find('.modal-footer');
         this.$content            = this.$dialog.find('.modal-content');
-        this.$dialogBody         = this.$content.find('.modal-body');
+        this.$dialogBody         = this.$dialog.find('.modal-body');
         this.$backdrop           = null;
         this.isShown             = null;
         this.originalBodyPad     = null;
@@ -83,7 +89,7 @@
       };
 
       // Extend defaults to take into account for theme settings.
-      Modal.DEFAULTS = $.extend({}, BootstrapModal.DEFAULTS, {
+      Bootstrap.Modal.DEFAULTS = $.extend({}, BootstrapModal.DEFAULTS, {
         animation: !!settings.modal_animation,
         backdrop: settings.modal_backdrop === 'static' ? 'static' : !!settings.modal_backdrop,
         focusInput: !!settings.modal_focus_input,
@@ -95,12 +101,12 @@
       });
 
       // Copy over the original prototype methods.
-      Modal.prototype = BootstrapModal.prototype;
+      Bootstrap.Modal.prototype = BootstrapModal.prototype;
 
       /**
        * Handler for $.fn.modal('destroy').
        */
-      Modal.prototype.destroy = function () {
+      Bootstrap.Modal.prototype.destroy = function () {
         this.hide();
         Drupal.detachBehaviors(this.$element[0]);
         this.$element.removeData('bs.modal').remove();
@@ -109,7 +115,7 @@
       /**
        * Initialize the modal.
        */
-      Modal.prototype.init = function () {
+      Bootstrap.Modal.prototype.init = function () {
         if (this.options.remote) {
           this.$content.load(this.options.remote, $.proxy(function () {
             this.$element.trigger('loaded.bs.modal');
@@ -125,7 +131,7 @@
        * @param {Object} options
        *   The passed options.
        */
-      Modal.prototype.mapDialogOptions = function (options) {
+      Bootstrap.Modal.prototype.mapDialogOptions = function (options) {
         return options || {};
       }
 
@@ -154,11 +160,11 @@
             return;
           }
 
-          options = Bootstrap.normalizeObject($.extend({}, Modal.DEFAULTS, data && data.options, $this.data(), options));
+          options = Bootstrap.normalizeObject($.extend({}, Bootstrap.Modal.DEFAULTS, data && data.options, $this.data(), options));
           delete options['bs.modal'];
 
           if (!data) {
-            $this.data('bs.modal', (data = new Modal(this, options)));
+            $this.data('bs.modal', (data = new Bootstrap.Modal(this, options)));
             initialize = true;
           }
 
@@ -196,7 +202,7 @@
       };
 
       // Replace the plugin constructor with the new Modal constructor.
-      Plugin.Constructor = Modal;
+      Plugin.Constructor = Bootstrap.Modal;
 
       // Replace the data API so that it calls $.fn.modal rather than Plugin.
       // This allows sub-themes to replace the jQuery Plugin if they like with
@@ -514,14 +520,16 @@
         };
         variables = $.extend(true, {}, defaults, variables);
 
-        var title = variables.title;
+        if (typeof variables.title === 'string') {
+          variables.title = $.extend({}, defaults, { content: variables.title });
+        }
+
+        variables.title.attributes = Attributes.create(defaults.title.attributes).merge(variables.title.attributes);
+
+        var title = Drupal.theme('bootstrapModalTitle', variables.title);
         if (title) {
           var attributes = Attributes.create(defaults.attributes).merge(variables.attributes);
           attributes.set('id', attributes.get('id', variables.id + '--header'));
-
-          if (typeof title === 'string') {
-            title = $.extend({}, defaults.title, { content: title });
-          }
 
           output += '<div' + attributes + '>';
 
@@ -529,13 +537,59 @@
             output += Drupal.theme('bootstrapModalClose', _.omit(variables, 'attributes'));
           }
 
-          output += '<' + Drupal.checkPlain(title.tag) + Attributes.create(defaults.title.attributes).merge(title.attributes) + '>' + (title.html ? title.content : Drupal.checkPlain(title.content)) + '</' + Drupal.checkPlain(title.tag) + '>';
+          output += title;
 
           output += '</div>';
         }
 
         return output;
+      },
+
+      /**
+       * Theme function for a Bootstrap Modal title.
+       *
+       * @param {Object} [variables]
+       *   An object containing key/value pairs of variables.
+       *
+       * @return {string}
+       *   The HTML for the modal title.
+       */
+      bootstrapModalTitle: function (variables) {
+        var output = '';
+
+        var defaults = {
+          attributes: {
+            class: ['modal-title']
+          },
+          closeButton: true,
+          id: 'drupal-modal',
+          content: Drupal.t('Loading...'),
+          html: false,
+          tag: 'h4'
+        };
+
+        if (typeof variables === 'string') {
+          variables = $.extend({}, defaults, { content: title });
+        }
+
+        variables = $.extend(true, {}, defaults, variables);
+
+        var attributes = Attributes.create(defaults.attributes).merge(variables.attributes);
+        attributes.set('id', attributes.get('id', variables.id + '--title'));
+
+        output += '<' + Drupal.checkPlain(variables.tag) + Attributes.create(defaults.attributes).merge(variables.attributes) + '>';
+
+        if (variables.closeButton) {
+          output += Drupal.theme('bootstrapModalClose', _.omit(variables, 'attributes'));
+        }
+
+        output += (variables.html ? variables.content : Drupal.checkPlain(variables.content));
+
+        output += '</' + Drupal.checkPlain(variables.tag) + '>';
+
+        return output;
       }
+
     })
 
   });

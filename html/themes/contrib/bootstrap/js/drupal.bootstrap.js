@@ -6,11 +6,17 @@
 /**
  * All Drupal Bootstrap JavaScript APIs are contained in this namespace.
  *
- * @namespace
+ * @param {underscore} _
+ * @param {jQuery} $
+ * @param {Drupal} Drupal
+ * @param {drupalSettings} drupalSettings
  */
 (function (_, $, Drupal, drupalSettings) {
   'use strict';
 
+  /**
+   * @typedef Drupal.bootstrap
+   */
   var Bootstrap = {
     processedOnce: {},
     settings: drupalSettings.bootstrap || {}
@@ -312,6 +318,36 @@
   };
 
   /**
+   * Creates a handler that relays to another event name.
+   *
+   * @param {HTMLElement|jQuery} target
+   *   A target element.
+   * @param {String} name
+   *   The name of the event to trigger.
+   * @param {Boolean} [stopPropagation=true]
+   *   Flag indicating whether to stop the propagation of the event, defaults
+   *   to true.
+   *
+   * @return {Function}
+   *   An even handler callback function.
+   */
+  Bootstrap.relayEvent = function (target, name, stopPropagation) {
+    return function (e) {
+      if (stopPropagation === void 0 || stopPropagation) {
+        e.stopPropagation();
+      }
+      var $target = $(target);
+      var parts = name.split('.').filter(Boolean);
+      var type = parts.shift();
+      e.target = $target[0];
+      e.currentTarget = $target[0];
+      e.namespace = parts.join('.');
+      e.type = type;
+      $target.trigger(e);
+    };
+  };
+
+  /**
    * Replaces a Bootstrap jQuery plugin definition.
    *
    * @param {String} id
@@ -558,11 +594,7 @@
     }
   };
 
-  /**
-   * Add Bootstrap to the global Drupal object.
-   *
-   * @type {Bootstrap}
-   */
+  // Add Bootstrap to the global Drupal object.
   Drupal.bootstrap = Drupal.bootstrap || Bootstrap;
 
 })(window._, window.jQuery, window.Drupal, window.drupalSettings);

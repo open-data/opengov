@@ -1,0 +1,141 @@
+uuid: 987ca72f-bed5-49d6-99d2-0afc075b9c52
+langcode: en
+status: true
+dependencies:
+  module:
+    - search_api_solr
+    - search_api
+  config:
+    - search_api.server.pd_core_ati
+third_party_settings:
+  search_api_solr:
+    finalize: false
+    commit_before_finalize: false
+    commit_after_finalize: false
+    highlighter:
+      maxAnalyzedChars: 51200
+      fragmenter: gap
+      regex:
+        slop: 0.5
+        pattern: blank
+        maxAnalyzedChars: 10000
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
+      highlight:
+        mergeContiguous: false
+        requireFieldMatch: false
+        snippets: 3
+        fragsize: 0
+    advanced:
+      index_prefix: ''
+id: pd_core_ati
+name: 'Proactive Disclosure: ATI Index'
+description: 'Read-only search index for Solr core_ati'
+read_only: true
+field_settings:
+  disposition_en:
+    label: 'Disposition en'
+    datasource_id: solr_document
+    property_path: disposition_en
+    type: string
+  disposition_fr:
+    label: 'Disposition fr'
+    datasource_id: solr_document
+    property_path: disposition_fr
+    type: string
+  e_mail_ati_recipient:
+    label: 'E mail ati recipient'
+    datasource_id: solr_document
+    property_path: e_mail_ati_recipient
+    type: text
+  id:
+    label: Id
+    datasource_id: solr_document
+    property_path: id
+    type: string
+  month:
+    label: Month
+    datasource_id: solr_document
+    property_path: month
+    type: string
+  month_name_en:
+    label: 'Month name en'
+    datasource_id: solr_document
+    property_path: month_name_en
+    type: string
+  month_name_fr:
+    label: 'Month name fr'
+    datasource_id: solr_document
+    property_path: month_name_fr
+    type: string
+  nothing_to_report_en:
+    label: 'Nothing to report en'
+    datasource_id: solr_document
+    property_path: nothing_to_report_en
+    type: string
+  nothing_to_report_fr:
+    label: 'Nothing to report fr'
+    datasource_id: solr_document
+    property_path: nothing_to_report_fr
+    type: string
+  number_of_pages:
+    label: 'Number of pages'
+    datasource_id: solr_document
+    property_path: number_of_pages
+    type: string
+  organization_en:
+    label: 'Organization en'
+    datasource_id: solr_document
+    property_path: organization_en
+    type: text
+  organization_fr:
+    label: 'Organization fr'
+    datasource_id: solr_document
+    property_path: organization_fr
+    type: text
+  request_number:
+    label: 'Request number'
+    datasource_id: solr_document
+    property_path: request_number
+    type: text
+  request_summary_en:
+    label: 'Request summary en'
+    datasource_id: solr_document
+    property_path: request_summary_en
+    type: text
+  request_summary_fr:
+    label: 'Request summary fr'
+    datasource_id: solr_document
+    property_path: request_summary_fr
+    type: text
+  text:
+    label: Text
+    datasource_id: solr_document
+    property_path: text
+    type: text
+  year:
+    label: Year
+    datasource_id: solr_document
+    property_path: year
+    type: string
+datasource_settings:
+  solr_document:
+    id_field: id
+    request_handler: ''
+    default_query: '*:*'
+    label_field: ''
+    language_field: ''
+    url_field: ''
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  rendered_item: {  }
+  solr_date_range: {  }
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  index_directly: false
+  cron_limit: 50
+server: pd_core_ati

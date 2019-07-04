@@ -1,6 +1,12 @@
 /**
  * @file
  * Bootstrap Modals.
+ *
+ * @param {jQuery} $
+ * @param {Drupal} Drupal
+ * @param {Drupal.bootstrap} Bootstrap
+ * @param {Attributes} Attributes
+ * @param {drupalSettings} drupalSettings
  */
 (function ($, Drupal, Bootstrap, Attributes, drupalSettings) {
   'use strict';
@@ -20,92 +26,51 @@
       drupalSettings.dialog.buttonPrimaryClass = 'btn-primary';
     });
 
-    var relayEvent = function ($element, name, stopPropagation) {
-      return function (e) {
-        if (stopPropagation === void 0 || stopPropagation) {
-          e.stopPropagation();
-        }
-        var parts = name.split('.').filter(Boolean);
-        var type = parts.shift();
-        e.target = $element[0];
-        e.currentTarget = $element[0];
-        e.namespace = parts.join('.');
-        e.type = type;
-        $element.trigger(e);
-      };
-    };
+    // Create the "dialog" plugin bridge.
+    Bootstrap.Dialog.Bridge = function (options) {
+      var args = Array.prototype.slice.call(arguments);
+      var $element = $(this);
+      var type = options && options.dialogType || $element[0].dialogType || 'modal';
 
-    /**
-     * Proxy $.fn.dialog to $.fn.modal.
-     */
-    var Dialog = function (options) {
+      $element[0].dialogType = type;
+
+      var handler = Bootstrap.Dialog.Handler.get(type);
+
       // When only options are passed, jQuery UI dialog treats this like a
       // initialization method. Destroy any existing Bootstrap modal and
       // recreate it using the contents of the dialog HTML.
-      if (arguments.length === 1 && typeof options === 'object') {
-        this.each($.fn.dialog.ensureModalStructure);
+      if (args.length === 1 && typeof options === 'object') {
+        this.each(function () {
+          handler.ensureModalStructure(this, options);
+        });
 
         // Proxy to the Bootstrap Modal plugin, indicating that this is a
         // jQuery UI dialog bridge.
-        return $.fn.modal.apply(this, [{
+        return handler.invoke(this, {
           dialogOptions: options,
           jQueryUiBridge: true
-        }]);
+        });
       }
 
       // Otherwise, proxy all arguments to the Bootstrap Modal plugin.
-      return $.fn.modal.apply(this, arguments);
-    };
-
-    /**
-     * Ensures a DOM element has the appropriate structure for a modal.
-     *
-     * Note: this can get a little tricky. Core potentially already
-     * semi-processes a "dialog" if was created using an Ajax command
-     * (i.e. prepareDialogButtons in drupal.ajax.js). Because of this, the
-     * contents (HTML) of the existing element cannot simply be dumped into a
-     * newly created modal. This would destroy any existing event bindings.
-     * Instead, the contents must be "moved" (appended) to the new modal and
-     * then "moved" again back to the to the existing container as needed.
-     */
-    Dialog.ensureModalStructure = function () {
-      var $element = $(this);
-
-      // Immediately return if the modal was already converted into a proper modal.
-      if ($element.is('[data-drupal-theme="bootstrapModal"]')) {
-        return;
+      var ret;
+      try {
+        ret = handler.invoke.apply(handler, [this].concat(args));
+      }
+      catch (e) {
+        Bootstrap.warn(e);
       }
 
-      // Create a new modal.
-      var $modal = $(Drupal.theme('bootstrapModal', {
-        attributes: Attributes.create(this).remove('style').set('data-drupal-theme', 'bootstrapModal'),
-      }));
-
-      // Store a reference to the content inside the existing element container.
-      // This references the actual DOM node elements which will allow
-      // jQuery to "move" then when appending below. Using $.fn.children()
-      // does not return any text nodes present and $.fn.html() only returns
-      // a string representation of the content, which effectively destroys
-      // any prior event bindings or processing.
-      var $body = $element.find('.modal-body');
-      var $existing = $body[0] ? $body.contents() : $element.contents();
-
-      // Set the attributes of the dialog to that of the newly created modal.
-      $element.attr(Attributes.create($modal).toPlainObject());
-
-      // Append the newly created modal markup.
-      $element.append($modal.html());
-
-      // Move the existing HTML into the modal markup that was just appended.
-      $element.find('.modal-body').append($existing);
+      // If just one element and there was a result returned for the option passed,
+      // then return the result. Otherwise, just return the jQuery object.
+      return this.length === 1 && ret !== void 0 ? ret : this;
     };
 
-    Bootstrap.createPlugin('dialog', Dialog);
+    // Assign the jQuery "dialog" plugin to use to the bridge.
+    Bootstrap.createPlugin('dialog', Bootstrap.Dialog.Bridge);
 
-    /**
-     * Extend the Bootstrap Modal plugin constructor class.
-     */
-    Bootstrap.extendPlugin('modal', function () {
+    // Create the "modal" plugin bridge.
+    Bootstrap.Modal.Bridge = function () {
       var Modal = this;
 
       return {
@@ -140,7 +105,8 @@
            * Creates any necessary buttons from dialog options.
            */
           createButtons: function () {
-            this.$footer.find('.modal-buttons').remove();
+            var handler = Bootstrap.Dialog.Handler.get(this.$element);
+            this.$footer.find(handler.selectors.buttons).remove();
 
             // jQuery UI supports both objects and arrays. Unfortunately
             // developers have misunderstood and abused this by simply placing
@@ -199,19 +165,50 @@
            * Initializes the Bootstrap Modal.
            */
           init: function () {
+            var handler = Bootstrap.Dialog.Handler.get(this.$element);
+            if (!this.$dialog) {
+              this.$dialog = this.$element.find(handler.selectors.dialog);
+            }
+            this.$dialog.addClass('js-drupal-dialog');
+
+            if (!this.$header) {
+              this.$header = this.$dialog.find(handler.selectors.header);
+            }
+            if (!this.$title) {
+              this.$title = this.$dialog.find(handler.selectors.title);
+            }
+            if (!this.$close) {
+              this.$close = this.$header.find(handler.selectors.close);
+            }
+            if (!this.$footer) {
+              this.$footer = this.$dialog.find(handler.selectors.footer);
+            }
+            if (!this.$content) {
+              this.$content = this.$dialog.find(handler.selectors.content);
+            }
+            if (!this.$dialogBody) {
+              this.$dialogBody = this.$dialog.find(handler.selectors.body);
+            }
+
             // Relay necessary events.
             if (this.options.jQueryUiBridge) {
-              this.$element.on('hide.bs.modal',   relayEvent(this.$element, 'dialogbeforeclose', false));
-              this.$element.on('hidden.bs.modal', relayEvent(this.$element, 'dialogclose', false));
-              this.$element.on('show.bs.modal',   relayEvent(this.$element, 'dialogcreate', false));
-              this.$element.on('shown.bs.modal',  relayEvent(this.$element, 'dialogopen', false));
+              this.$element.on('hide.bs.modal',   Bootstrap.relayEvent(this.$element, 'dialogbeforeclose', false));
+              this.$element.on('hidden.bs.modal', Bootstrap.relayEvent(this.$element, 'dialogclose', false));
+              this.$element.on('show.bs.modal',   Bootstrap.relayEvent(this.$element, 'dialogcreate', false));
+              this.$element.on('shown.bs.modal',  Bootstrap.relayEvent(this.$element, 'dialogopen', false));
             }
 
             // Create a footer if one doesn't exist.
             // This is necessary in case dialog.ajax.js decides to add buttons.
             if (!this.$footer[0]) {
-              this.$footer = $(Drupal.theme('bootstrapModalFooter', {}, true)).insertAfter(this.$dialogBody);
+              this.$footer = handler.theme('footer', {}, true).insertAfter(this.$dialogBody);
             }
+
+            // Map the initial options.
+            $.extend(true, this.options, this.mapDialogOptions(this.options));
+
+            // Update buttons.
+            this.createButtons();
 
             // Now call the parent init method.
             this.super();
@@ -248,6 +245,9 @@
            *   The options to map.
            */
           mapDialogOptions: function (options) {
+            // Retrieve the dialog handler for this type.
+            var handler = Bootstrap.Dialog.Handler.get(this.$element);
+
             var mappedOptions = {};
             var dialogOptions = options.dialogOptions || {};
 
@@ -385,10 +385,10 @@
                 case 'draggable':
                   this.$content
                     .draggable({
-                      handle: '.modal-header',
-                      drag: relayEvent(this.$element, 'dialogdrag'),
-                      start: relayEvent(this.$element, 'dialogdragstart'),
-                      end: relayEvent(this.$element, 'dialogdragend')
+                      handle: handler.selectors.header,
+                      drag: Bootstrap.relayEvent(this.$element, 'dialogdrag'),
+                      start: Bootstrap.relayEvent(this.$element, 'dialogdragstart'),
+                      end: Bootstrap.relayEvent(this.$element, 'dialogdragend')
                     })
                     .draggable(dialogOptions.draggable ? 'enable' : 'disable');
                   break;
@@ -425,9 +425,9 @@
                 case 'resizable':
                   this.$content
                     .resizable({
-                      resize: relayEvent(this.$element, 'dialogresize'),
-                      start: relayEvent(this.$element, 'dialogresizestart'),
-                      end: relayEvent(this.$element, 'dialogresizeend')
+                      resize: Bootstrap.relayEvent(this.$element, 'dialogresize'),
+                      start: Bootstrap.relayEvent(this.$element, 'dialogresizestart'),
+                      end: Bootstrap.relayEvent(this.$element, 'dialogresizeend')
                     })
                     .resizable(dialogOptions.resizable ? 'enable' : 'disable');
                   break;
@@ -443,7 +443,7 @@
                   break;
 
                 case 'title':
-                  this.$dialog.find('.modal-title').text(dialogOptions.title);
+                  this.$title.text(dialogOptions.title);
                   break;
 
               }
@@ -505,7 +505,14 @@
           }
         }
       };
-    });
+    };
+
+    // Extend the Bootstrap Modal plugin constructor class.
+    Bootstrap.extendPlugin('modal', Bootstrap.Modal.Bridge);
+
+    // Register default core dialog type handlers.
+    Bootstrap.Dialog.Handler.register('dialog');
+    Bootstrap.Dialog.Handler.register('modal');
 
     /**
      * Extend Drupal theming functions.

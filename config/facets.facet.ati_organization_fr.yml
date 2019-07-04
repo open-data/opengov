@@ -1,0 +1,62 @@
+uuid: f123dfdd-4811-4675-853d-44bcd1c2c31d
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.pd_core_ati
+    - views.view.pd_core_ati
+  module:
+    - search_api
+id: ati_organization_fr
+name: 'PD ATI - Organisation'
+url_alias: ati_organization_fr
+weight: -3
+min_count: 1
+show_only_one_result: false
+field_identifier: organization_fr
+facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
+widget:
+  type: checkbox
+  config:
+    show_numbers: true
+    soft_limit: 10
+    soft_limit_settings:
+      show_less_label: 'Afficher moins'
+      show_more_label: 'Afficher plus'
+    show_reset_link: false
+    reset_text: 'Show all'
+    hide_reset_when_no_selection: false
+query_operator: or
+use_hierarchy: false
+expand_hierarchy: false
+enable_parent_when_child_gets_disabled: true
+hard_limit: 0
+exclude: false
+only_visible_when_facet_source_is_visible: false
+processor_configs:
+  active_widget_order:
+    processor_id: active_widget_order
+    weights:
+      sort: 20
+    settings:
+      sort: ASC
+  display_value_widget_order:
+    processor_id: display_value_widget_order
+    weights:
+      sort: 40
+    settings:
+      sort: ASC
+  hide_non_narrowing_result_processor:
+    processor_id: hide_non_narrowing_result_processor
+    weights:
+      build: 40
+    settings: {  }
+  url_processor_handler:
+    processor_id: url_processor_handler
+    weights:
+      pre_query: 50
+      build: 15
+    settings: {  }
+empty_behavior:
+  behavior: none
+show_title: false

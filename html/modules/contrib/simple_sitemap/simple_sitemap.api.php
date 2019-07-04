@@ -23,7 +23,7 @@ function hook_simple_sitemap_links_alter(array &$links, $sitemap_variant) {
 
   // Remove German URL for a certain path in the hreflang sitemap.
   foreach ($links as $key => $link) {
-    if ($link['path'] === 'node/1') {
+    if ($link['meta']['path'] === 'node/1') {
 
       // Remove 'loc' URL if it points to a german site.
       if ($link['langcode'] === 'de') {

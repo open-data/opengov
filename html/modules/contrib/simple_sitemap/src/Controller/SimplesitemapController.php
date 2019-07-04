@@ -91,6 +91,8 @@ class SimplesitemapController extends ControllerBase {
       '[priority]' => $this->t('Priority'),
       '[translation-set]' => $this->t('Translation set'),
       '[images]' => $this->t('Images'),
+      '[image-title]' => $this->t('Title'),
+      '[image-caption]' => $this->t('Caption'),
       '[jquery]' => base_path() . 'core/assets/vendor/jquery/jquery.min.js',
       '[jquery-tablesorter]' => base_path() . $module_path . '/xsl/jquery.tablesorter.min.js',
       '[parser-date-iso8601]' => base_path() . $module_path . '/xsl/parser-date-iso8601.min.js',

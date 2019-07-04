@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains views arguments collector.
- */
-
 namespace Drupal\simple_sitemap_views\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

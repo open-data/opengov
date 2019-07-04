@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Simple XML Sitemap display extender.
- */
-
 namespace Drupal\simple_sitemap_views\Plugin\views\display_extender;
 
 use Drupal\views\Plugin\views\display_extender\DisplayExtenderPluginBase;
@@ -264,7 +259,7 @@ class SimpleSitemapDisplayExtender extends DisplayExtenderPluginBase {
    *
    * @param array $form
    *   The form structure.
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   Current form state.
    */
   public function displaySitemapSettingsForm(array $form, FormStateInterface $form_state) {

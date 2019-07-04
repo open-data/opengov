@@ -40,17 +40,17 @@
 #}
 {%
   set classes = [
-  'field',
-  'field--name-' ~ field_name|clean_class,
-  'field--type-' ~ field_type|clean_class,
-  'field--label-' ~ label_display,
-]
+    'field',
+    'field--name-' ~ field_name|clean_class,
+    'field--type-' ~ field_type|clean_class,
+    'field--label-' ~ label_display,
+  ]
 %}
 {%
   set title_classes = [
-  'field--label',
-  label_display == 'visually_hidden' ? 'sr-only',
-]
+    'field--label',
+    label_display == 'visually_hidden' ? 'sr-only',
+  ]
 %}
 
 {% if label_hidden %}
@@ -69,13 +69,13 @@
   <div{{ attributes.addClass(classes) }}>
     <div{{ title_attributes.addClass(title_classes) }}>{{ label }}</div>
     {% if multiple %}
-    <div class="field--items">
-      {% endif %}
-      {% for item in items %}
-        <div{{ item.attributes.addClass('field--item') }}>{{ item.content }}</div>
-      {% endfor %}
-      {% if multiple %}
-    </div>
+      <div class="field--items">
+    {% endif %}
+    {% for item in items %}
+      <div{{ item.attributes.addClass('field--item') }}>{{ item.content }}</div>
+    {% endfor %}
+    {% if multiple %}
+      </div>
     {% endif %}
   </div>
 {% endif %}

@@ -3,7 +3,6 @@
 namespace Drupal\simple_sitemap;
 
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\simple_sitemap\Queue\QueueWorker;
 use Drupal\Core\Path\PathValidator;
@@ -47,11 +46,6 @@ class Simplesitemap {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-
-  /**
-   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
-   */
-  protected $entityTypeBundleInfo;
 
   /**
    * @var \Drupal\Core\Path\PathValidator
@@ -104,7 +98,6 @@ class Simplesitemap {
    * @param \Drupal\Core\Config\ConfigFactory $config_factory
    * @param \Drupal\Core\Database\Connection $database
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
    * @param \Drupal\Core\Path\PathValidator $path_validator
    * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
    * @param \Drupal\Component\Datetime\Time $time
@@ -117,7 +110,6 @@ class Simplesitemap {
     ConfigFactory $config_factory,
     Connection $database,
     EntityTypeManagerInterface $entity_type_manager,
-    EntityTypeBundleInfoInterface $entity_type_bundle_info,
     PathValidator $path_validator,
     DateFormatter $date_formatter,
     Time $time,
@@ -129,7 +121,6 @@ class Simplesitemap {
     $this->configFactory = $config_factory;
     $this->db = $database;
     $this->entityTypeManager = $entity_type_manager;
-    $this->entityTypeBundleInfo = $entity_type_bundle_info;
     $this->pathValidator = $path_validator;
     $this->dateFormatter = $date_formatter;
     $this->time = $time;
@@ -429,6 +420,8 @@ class Simplesitemap {
   /**
    * Sets settings for bundle or non-bundle entity types. This is done for the
    * currently set variant.
+   * Please note, this method takes only the first set
+   * variant into account. See todo.
    *
    * @param $entity_type_id
    * @param null $bundle_name
@@ -508,7 +501,7 @@ class Simplesitemap {
    *  Limit the result set to a specific bundle name.
    *
    * @param bool $supplement_defaults
-   *  Supplements the result set with default custom link settings.
+   *  Supplements the result set with default bundle settings.
    *
    * @param bool $multiple_variants
    *  If true, returns an array of results keyed by variant name, otherwise it
@@ -520,25 +513,17 @@ class Simplesitemap {
    */
   public function getBundleSettings($entity_type_id = NULL, $bundle_name = NULL, $supplement_defaults = TRUE, $multiple_variants = FALSE) {
 
+    $bundle_name = NULL !== $bundle_name ? $bundle_name : $entity_type_id;
     $all_bundle_settings = [];
 
     foreach ($variants = $this->getVariants(FALSE) as $variant) {
       if (NULL !== $entity_type_id) {
-        $bundle_name = NULL !== $bundle_name ? $bundle_name : $entity_type_id;
-
         $bundle_settings = $this->configFactory
           ->get("simple_sitemap.bundle_settings.$variant.$entity_type_id.$bundle_name")
           ->get();
 
-        // If not found and entity type is enabled, return default bundle settings.
         if (empty($bundle_settings) && $supplement_defaults) {
-          if ($this->entityTypeIsEnabled($entity_type_id)
-            && isset($this->entityTypeBundleInfo->getBundleInfo($entity_type_id)[$bundle_name])) {
-            self::supplementDefaultSettings('entity', $bundle_settings);
-          }
-          else {
-            $bundle_settings = NULL;
-          }
+          self::supplementDefaultSettings('entity', $bundle_settings);
         }
       }
       else {
@@ -552,20 +537,17 @@ class Simplesitemap {
         // Supplement default bundle settings for all bundles not found in simple_sitemap.bundle_settings.*.* configuration.
         if ($supplement_defaults) {
           foreach ($this->entityHelper->getSupportedEntityTypes() as $type_id => $type_definition) {
-            if ($this->entityTypeIsEnabled($type_id)) {
-              foreach($this->entityTypeBundleInfo->getBundleInfo($type_id) as $bundle => $bundle_definition) {
-                if (!isset($bundle_settings[$type_id][$bundle])) {
-                  self::supplementDefaultSettings('entity', $bundle_settings[$type_id][$bundle]);
-                }
+            foreach($this->entityHelper->getBundleInfo($type_id) as $bundle => $bundle_definition) {
+              if (!isset($bundle_settings[$type_id][$bundle])) {
+                self::supplementDefaultSettings('entity', $bundle_settings[$type_id][$bundle]);
               }
             }
           }
         }
       }
+
       if ($multiple_variants) {
-        if (!empty($bundle_settings)) {
-          $all_bundle_settings[$variant] = $bundle_settings;
-        }
+        $all_bundle_settings[$variant] = $bundle_settings;
       }
       else {
         return $bundle_settings;
@@ -706,6 +688,8 @@ class Simplesitemap {
    * Gets sitemap settings for an entity instance which overrides bundle
    * settings, or gets bundle settings, if they are not overridden. This is
    * done for the currently set variant.
+   * Please note, this method takes only the first set
+   * variant into account. See todo.
    *
    * @param string $entity_type_id
    * @param string $id
@@ -718,6 +702,7 @@ class Simplesitemap {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    *
    * @todo multiple variants
+   * @todo: May want to use Simplesitemap::supplementDefaultSettings('entity', $settings) inside here instead of calling it everywhere this method is called.
    */
   public function getEntityInstanceSettings($entity_type_id, $id) {
     if (empty($variants = $this->getVariants(FALSE))) {
@@ -780,19 +765,21 @@ class Simplesitemap {
 
   /**
    * Checks if an entity bundle (or a non-bundle entity type) is set to be
-   * indexed for the currently set variant.
+   * indexed for any of the currently set variants.
    *
    * @param string $entity_type_id
    * @param string|null $bundle_name
    *
    * @return bool
-   *
-   * @todo multiple variants
    */
   public function bundleIsIndexed($entity_type_id, $bundle_name = NULL) {
-    $settings = $this->getBundleSettings($entity_type_id, $bundle_name);
+    foreach ($this->getBundleSettings($entity_type_id, $bundle_name, FALSE, TRUE) as $settings) {
+      if (!empty($settings['index'])) {
+        return TRUE;
+      }
+    }
 
-    return !empty($settings['index']);
+    return FALSE;
   }
 
   /**

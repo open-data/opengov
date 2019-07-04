@@ -55,11 +55,13 @@ class LibraryInfo extends PluginBase implements AlterInterface {
           unset($libraries['drupal.dialog']['js']['misc/dialog/dialog.jquery-ui.js']);
 
           // Add the Modal jQuery UI Bridge.
+          $libraries['drupal.dialog']['dependencies'][] = 'bootstrap/dialog';
           $libraries['drupal.dialog']['dependencies'][] = 'bootstrap/modal.jquery.ui.bridge';
         }
         // Otherwise, just append the modal.
         else {
           $libraries['drupal.dialog']['dependencies'][] = 'bootstrap/modal';
+          $libraries['drupal.dialog']['dependencies'][] = 'bootstrap/dialog';
         }
       }
     }

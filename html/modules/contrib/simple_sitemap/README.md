@@ -25,7 +25,7 @@ content entity types including:
  * ...
 
 Contributed entity types like commerce products or media entities can be indexed
-as well. On top of that custom links and view pages can be added to the sitemap.
+as well. On top of that custom links and view pages can be added to sitemaps.
 
 To learn about XML sitemaps, see https://en.wikipedia.org/wiki/Sitemaps.
 
@@ -46,17 +46,18 @@ The module permission 'administer sitemap settings' can be configured under
 
 ### ENTITIES ###
 
-Initially only the home page is indexed in the sitemap. To include content into
-the sitemap, visit /admin/config/search/simplesitemap/entities to enable support
-for entity types of your choosing. Entity types which feature bundles can then
-be configured on a per-bundle basis, e.g.
+Initially only the home page is indexed in the default sitemap variant. To
+include content into a sitemap, visit
+/admin/config/search/simplesitemap/entities to enable support for entity types
+of your choosing. Bundleless entity types can be configured right on that page,
+for bundles of entity types visit the bundle's configuration pages, e.g.
 
  * /admin/structure/types/manage/[content type] for nodes
  * /admin/structure/taxonomy/manage/[taxonomy vocabulary] for taxonomy terms
  * /admin/structure/menu/manage/[menu] for menu items
  * ...
 
-When including an entity type or bundle into the sitemap, the priority setting
+When including an entity type or bundle into a sitemap, the priority setting
 can be set which will set the 'priority' parameter for all entities of that
 type. Same goes for the 'changefreq' setting. All Images referenced by the
 entities can be indexed as well. See https://en.wikipedia.org/wiki/Sitemaps to
@@ -69,6 +70,10 @@ override its sitemap settings.
 If you wish for the sitemap to reflect the new configuration instantly, check
 'Regenerate sitemaps after clicking save'. This setting only appears if a change
 in the settings has been detected.
+
+Once variants are set up in admin/config/search/simplesitemap/variants, all the
+above settings can be configured and overwritten on a per variant basis right
+from the UI.
 
 As the sitemaps are accessible to anonymous users, bear in mind that only links
 will be included which are accessible to anonymous users. There are no access

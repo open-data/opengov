@@ -48,11 +48,6 @@ function simple_sitemap_form_alter(&$form, FormStateInterface $form_state, $form
     '#weight' => 10,
   ];
 
-  // Attach some js magic to forms.
-  if ($f->getEntityCategory() !== 'instance') {
-    $form['#attached']['library'][] = 'simple_sitemap/form';
-  }
-
   // Only attach fieldset summary js to 'additional settings' vertical tabs.
   if (isset($form['additional_settings'])) {
     $form['#attached']['library'][] = 'simple_sitemap/fieldsetSummaries';
@@ -103,45 +98,46 @@ function simple_sitemap_entity_form_submit($form, FormStateInterface &$form_stat
     /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
     $generator = \Drupal::service('simple_sitemap.generator');
 
-    // Only save other values if indexing is enabled.
-    if ($settings['index'] = (bool) $values['simple_sitemap_index_content']) {
-      $settings['priority'] = $values['simple_sitemap_priority'];
-      $settings['changefreq'] = $values['simple_sitemap_changefreq'];
-      $settings['include_images'] = (bool) $values['simple_sitemap_include_images'];
-    }
+    foreach ($generator->getSitemapManager()->getSitemapVariants(NULL, FALSE) as $variant => $definition) {
 
-    // Deleting bundle settings for old bundle.
-    // See SimplesitemapEntitiesForm::submitForm().
-    // todo: Not necessary once https://www.drupal.org/project/simple_sitemap/issues/3014649 is implemented.
-    if (isset($form['simple_sitemap']['simple_sitemap_variant']['#default_value'])) {
-      $old_variant = $form['simple_sitemap']['simple_sitemap_variant']['#default_value'];
-      if ($old_variant !== $values['simple_sitemap_variant']) {
-        $generator->setVariants($old_variant)->removeBundleSettings($f->getEntityTypeId(), $f->getBundleName());
+      if (isset($values['index_' . $variant . '_' . $f->getEntityTypeId() . '_settings'])) { // Variants may have changed since form load.
+        $settings = [
+          'index' => (bool) $values['index_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
+          'priority' => $values['priority_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
+          'changefreq' => $values['changefreq_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
+          'include_images' => (bool) $values['include_images_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
+        ];
+
+        $generator->setVariants($variant);
+
+        switch ($f->getEntityCategory()) {
+
+          case 'bundle':
+            $generator->setBundleSettings($f->getEntityTypeId(),
+              !empty($f->getBundleName()) ? $f->getBundleName() : $f->getFormEntityId(),
+              $settings
+            );
+
+            if (empty($settings['index'])) {
+              $generator->removeEntityInstanceSettings($f->getEntityTypeId(), $f->getInstanceId());
+            }
+            break;
+
+          case 'instance':
+            $generator->setEntityInstanceSettings($f->getEntityTypeId(),
+              !empty($f->getInstanceId()) ? $f->getInstanceId() : $f->getFormEntityId(),
+              $settings
+            );
+            break;
+        }
       }
-    }
-
-    switch ($f->getEntityCategory()) {
-
-      case 'bundle':
-        $generator->setVariants($values['simple_sitemap_variant'])
-          ->setBundleSettings($f->getEntityTypeId(),
-            !empty($f->getBundleName()) ? $f->getBundleName() : $f->getFormEntityId(),
-          $settings
-        );
-        break;
-
-      case 'instance':
-        $generator->setVariants($values['simple_sitemap_variant'])
-          ->setEntityInstanceSettings($f->getEntityTypeId(),
-            !empty($f->getInstanceId()) ? $f->getInstanceId() : $f->getFormEntityId(),
-            $settings
-        );
-        break;
     }
 
     // Regenerate sitemaps according to user setting.
     if ($values['simple_sitemap_regenerate_now']) {
-      $generator->rebuildQueue()->generateSitemap();
+      $generator->setVariants(TRUE)
+        ->rebuildQueue()
+        ->generateSitemap();
     }
   }
 }

@@ -12,6 +12,7 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
 
   private $config;
   private $menu_id;
+  private $views = ['pd_core_ati_details'];
 
   public function __construct() {
     $this->config = \Drupal::config('content_type_breadcrumb.settings');
@@ -26,6 +27,7 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
       $type = key($parameters);
       $menu_for_type = $this->config->get('content_type_breadcrumb');
 
+      // apply breadcrumb for content types
       if ($type === "node" && method_exists($parameters[$type], 'getType')) {
         $content_type = $parameters[$type]->getType();
         if (array_key_exists('type_' . $content_type, $menu_for_type) && $menu_for_type['type_' . $content_type] != '') {
@@ -33,6 +35,14 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
           return true;
         }
       }
+
+      // apply breadcrumb for views
+      elseif ($type === 'view_id' && in_array($parameters[$type], $this->views)) {
+        $view_id = $parameters[$type];
+        $this->menu_id = str_replace("main:", '', $menu_for_type['view_' . $view_id]);
+        return true;
+      }
+
     } catch (\Exception $e) {
       \Drupal::logger('content breadcrumb')->error($e->getMessage());
     }

@@ -4,12 +4,6 @@ fieldsetSummaries:
     js/simple_sitemap.fieldsetSummaries.js: {}
   dependencies:
     - core/jquery
-form:
-  version: VERSION
-  js:
-    js/simple_sitemap.form.js: {}
-  dependencies:
-    - core/jquery
 sitemapEntities:
   version: VERSION
   js:

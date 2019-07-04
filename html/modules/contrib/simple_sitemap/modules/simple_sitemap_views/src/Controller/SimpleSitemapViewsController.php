@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\simple_sitemap_views\Controller\SimpleSitemapViewsController.
- */
-
 namespace Drupal\simple_sitemap_views\Controller;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;

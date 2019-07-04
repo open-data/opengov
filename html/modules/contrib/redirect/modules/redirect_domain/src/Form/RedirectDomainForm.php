@@ -160,6 +160,6 @@ class RedirectDomainForm extends ConfigFormBase {
     }
     $domain_config->set('domain_redirects', $domain_redirects);
     $domain_config->save();
-    drupal_set_message($this->t('The domain redirects have been saved.'));
+    $this->messenger()->addMessage($this->t('The domain redirects have been saved.'));
   }
 }

@@ -1,0 +1,10 @@
+name: 'PD ATI - Recherche en cours'
+processor_configs:
+  reset_facets:
+    settings:
+      link_text: 'Effacer tous'
+  show_text_when_empty:
+    settings:
+      text:
+        value: 'Il n''y a pas de recherche en cours.'
+        format: plain_text

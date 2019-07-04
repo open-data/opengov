@@ -60,10 +60,10 @@ class Redirect extends ContentEntityBase {
    *   Base 64 hash.
    */
   public static function generateHash($source_path, array $source_query, $language) {
-    $hash = array(
+    $hash = [
       'source' => mb_strtolower($source_path),
       'language' => $language,
-    );
+    ];
 
     if (!empty($source_query)) {
       $hash['source_query'] = $source_query;
@@ -76,9 +76,9 @@ class Redirect extends ContentEntityBase {
    * {@inheritdoc}
    */
   public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
-    $values += array(
+    $values += [
       'type' => 'redirect',
-    );
+    ];
   }
 
   /**
@@ -148,7 +148,7 @@ class Redirect extends ContentEntityBase {
    * @param array $query
    *   Query arguments.
    */
-  public function setSource($path, array $query = array()) {
+  public function setSource($path, array $query = []) {
     $this->redirect_source->set(0, ['path' => ltrim($path, '/'), 'query' => $query]);
   }
 
@@ -204,7 +204,7 @@ class Redirect extends ContentEntityBase {
    * @param array $options
    *   The source url options.
    */
-  public function setRedirect($url, array $query = array(), array $options = array()) {
+  public function setRedirect($url, array $query = [], array $options = []) {
     $uri = $url . ($query ? '?' . UrlHelper::buildQuery($query) : '');
     $external = UrlHelper::isValid($url, TRUE);
     $uri = ($external ? $url : 'internal:/' . ltrim($uri, '/'));
@@ -284,42 +284,42 @@ class Redirect extends ContentEntityBase {
       ->setLabel(t('User ID'))
       ->setDescription(t('The user ID of the node author.'))
       ->setDefaultValueCallback('\Drupal\redirect\Entity\Redirect::getCurrentUserId')
-      ->setSettings(array(
+      ->setSettings([
         'target_type' => 'user',
-      ));
+      ]);
 
     $fields['redirect_source'] = BaseFieldDefinition::create('redirect_source')
       ->setLabel(t('From'))
-      ->setDescription(t("Enter an internal Drupal path or path alias to redirect (e.g. %example1 or %example2). Fragment anchors (e.g. %anchor) are <strong>not</strong> allowed.", array('%example1' => 'node/123', '%example2' => 'taxonomy/term/123', '%anchor' => '#anchor')))
+      ->setDescription(t("Enter an internal Drupal path or path alias to redirect (e.g. %example1 or %example2). Fragment anchors (e.g. %anchor) are <strong>not</strong> allowed.", ['%example1' => 'node/123', '%example2' => 'taxonomy/term/123', '%anchor' => '#anchor']))
       ->setRequired(TRUE)
       ->setTranslatable(FALSE)
-      ->setDisplayOptions('form', array(
+      ->setDisplayOptions('form', [
         'type' => 'redirect_link',
         'weight' => -5,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE);
 
     $fields['redirect_redirect'] = BaseFieldDefinition::create('link')
       ->setLabel(t('To'))
       ->setRequired(TRUE)
       ->setTranslatable(FALSE)
-      ->setSettings(array(
+      ->setSettings([
         'link_type' => LinkItemInterface::LINK_GENERIC,
         'title' => DRUPAL_DISABLED
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'link',
         'weight' => -4,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE);
 
     $fields['language'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Language'))
       ->setDescription(t('The redirect language.'))
-      ->setDisplayOptions('form', array(
+      ->setDisplayOptions('form', [
         'type' => 'language_select',
         'weight' => 2,
-      ));
+      ]);
 
     $fields['status_code'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Status code'))
@@ -341,7 +341,7 @@ class Redirect extends ContentEntityBase {
    *   An array of default values.
    */
   public static function getCurrentUserId() {
-    return array(\Drupal::currentUser()->id());
+    return [\Drupal::currentUser()->id()];
   }
 
 }

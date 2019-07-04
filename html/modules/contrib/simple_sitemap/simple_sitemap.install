@@ -92,7 +92,6 @@ function simple_sitemap_schema() {
       'id' => [
         'description' => 'Sitemap chunk unique identifier.',
         'type' => 'int',
-        'size' => 'small',
         'not null' => TRUE,
         'unsigned' => TRUE,
       ],
@@ -106,7 +105,6 @@ function simple_sitemap_schema() {
       'delta' => [
         'description' => 'Delta of the chunk within the type scope.',
         'type' => 'int',
-        'size' => 'small',
         'not null' => TRUE,
         'unsigned' => TRUE,
       ],
@@ -169,6 +167,7 @@ function simple_sitemap_schema() {
     ],
     'primary key' => ['id'],
   ];
+
   return $schema;
 }
 
@@ -675,4 +674,33 @@ function simple_sitemap_update_8217() {
   $old_config->delete();
 
   return t('The XML sitemaps need to be regenerated.');
+}
+
+/**
+ * Changing id and delta fields of simple_sitemap table from smallint to int.
+ */
+function simple_sitemap_update_8301() {
+  $schema = \Drupal::database()->schema();
+
+  $schema->changeField(
+    'simple_sitemap',
+    'id',
+    'id', [
+      'description' => 'Sitemap chunk unique identifier.',
+      'type' => 'int',
+      'not null' => TRUE,
+      'unsigned' => TRUE,
+    ]
+  );
+
+  $schema->changeField(
+    'simple_sitemap',
+    'delta',
+    'delta', [
+      'description' => 'Delta of the chunk within the variant scope.',
+      'type' => 'int',
+      'not null' => TRUE,
+      'unsigned' => TRUE,
+    ]
+  );
 }

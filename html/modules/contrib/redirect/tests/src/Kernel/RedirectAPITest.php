@@ -25,7 +25,7 @@ class RedirectAPITest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = array('redirect', 'link', 'field', 'system', 'user', 'language', 'views');
+  public static $modules = ['redirect', 'link', 'field', 'system', 'user', 'language', 'views'];
 
   /**
    * {@inheritdoc}
@@ -36,7 +36,7 @@ class RedirectAPITest extends KernelTestBase {
     $this->installEntitySchema('redirect');
     $this->installEntitySchema('user');
     $this->installSchema('system', ['router']);
-    $this->installConfig(array('redirect'));
+    $this->installConfig(['redirect']);
 
     $language = ConfigurableLanguage::createFromLangcode('de');
     $language->save();
@@ -51,26 +51,26 @@ class RedirectAPITest extends KernelTestBase {
     // Create a redirect and test if hash has been generated correctly.
     /** @var \Drupal\redirect\Entity\Redirect $redirect */
     $redirect = $this->controller->create();
-    $redirect->setSource('some-url', array('key' => 'val'));
+    $redirect->setSource('some-url', ['key' => 'val']);
     $redirect->setRedirect('node');
 
     $redirect->save();
-    $this->assertEquals(Redirect::generateHash('some-url', array('key' => 'val'), Language::LANGCODE_NOT_SPECIFIED), $redirect->getHash());
+    $this->assertEquals(Redirect::generateHash('some-url', ['key' => 'val'], Language::LANGCODE_NOT_SPECIFIED), $redirect->getHash());
     // Update the redirect source query and check if hash has been updated as
     // expected.
-    $redirect->setSource('some-url', array('key1' => 'val1'));
+    $redirect->setSource('some-url', ['key1' => 'val1']);
     $redirect->save();
-    $this->assertEqual(Redirect::generateHash('some-url', array('key1' => 'val1'), Language::LANGCODE_NOT_SPECIFIED), $redirect->getHash());
+    $this->assertEqual(Redirect::generateHash('some-url', ['key1' => 'val1'], Language::LANGCODE_NOT_SPECIFIED), $redirect->getHash());
     // Update the redirect source path and check if hash has been updated as
     // expected.
-    $redirect->setSource('another-url', array('key1' => 'val1'));
+    $redirect->setSource('another-url', ['key1' => 'val1']);
     $redirect->save();
-    $this->assertEqual(Redirect::generateHash('another-url', array('key1' => 'val1'), Language::LANGCODE_NOT_SPECIFIED), $redirect->getHash());
+    $this->assertEqual(Redirect::generateHash('another-url', ['key1' => 'val1'], Language::LANGCODE_NOT_SPECIFIED), $redirect->getHash());
     // Update the redirect language and check if hash has been updated as
     // expected.
     $redirect->setLanguage('de');
     $redirect->save();
-    $this->assertEqual(Redirect::generateHash('another-url', array('key1' => 'val1'), 'de'), $redirect->getHash());
+    $this->assertEqual(Redirect::generateHash('another-url', ['key1' => 'val1'], 'de'), $redirect->getHash());
     // Create a few more redirects to test the select.
     for ($i = 0; $i < 5; $i++) {
       $redirect = $this->controller->create();
@@ -79,7 +79,7 @@ class RedirectAPITest extends KernelTestBase {
     }
     /** @var \Drupal\redirect\RedirectRepository $repository */
     $repository = \Drupal::service('redirect.repository');
-    $redirect = $repository->findMatchingRedirect('another-url', array('key1' => 'val1'), 'de');
+    $redirect = $repository->findMatchingRedirect('another-url', ['key1' => 'val1'], 'de');
     if (!empty($redirect)) {
       $this->assertEqual($redirect->getSourceUrl(), '/another-url?key1=val1');
     }
@@ -182,13 +182,13 @@ class RedirectAPITest extends KernelTestBase {
    * Test redirect_sort_recursive().
    */
   public function testSortRecursive() {
-    $test_cases = array(
-      array(
-        'input' => array('b' => 'aa', 'c' => array('c2' => 'aa', 'c1' => 'aa'), 'a' => 'aa'),
-        'expected' => array('a' => 'aa', 'b' => 'aa', 'c' => array('c1' => 'aa', 'c2' => 'aa')),
+    $test_cases = [
+      [
+        'input' => ['b' => 'aa', 'c' => ['c2' => 'aa', 'c1' => 'aa'], 'a' => 'aa'],
+        'expected' => ['a' => 'aa', 'b' => 'aa', 'c' => ['c1' => 'aa', 'c2' => 'aa']],
         'callback' => 'ksort',
-      ),
-    );
+      ],
+    ];
     foreach ($test_cases as $index => $test_case) {
       $output = $test_case['input'];
       redirect_sort_recursive($output, $test_case['callback']);
@@ -237,6 +237,32 @@ class RedirectAPITest extends KernelTestBase {
     catch (RedirectLoopException $e) {
       $this->pass('Properly detected a redirect loop.');
     }
+  }
+
+  /**
+   * Test loop detection reset.
+   */
+  public function testLoopDetectionReset() {
+    // Add a chained redirect that isn't a loop.
+    /** @var \Drupal\redirect\Entity\Redirect $source */
+    $source = $this->controller->create();
+    $source->setSource('source-redirect');
+    $source->setRedirect('target');
+    $source->save();
+
+    /** @var \Drupal\redirect\Entity\Redirect $target */
+    $target = $this->controller->create();
+    $target->setSource('target');
+    $target->setRedirect('second-target');
+    $target->save();
+
+    /** @var \Drupal\redirect\RedirectRepository $repository */
+    $repository = \Drupal::service('redirect.repository');
+    $found = $repository->findMatchingRedirect('target');
+    $this->assertEquals($target->id(), $found->id());
+
+    $found = $repository->findMatchingRedirect('source-redirect');
+    $this->assertEquals($target->id(), $found->id());
   }
 
   /**

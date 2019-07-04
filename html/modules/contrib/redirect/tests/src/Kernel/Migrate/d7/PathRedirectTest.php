@@ -21,7 +21,7 @@ class PathRedirectTest extends MigrateDrupalTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = array('redirect', 'link');
+  public static $modules = ['redirect', 'link'];
 
   /**
    * {@inheritdoc}

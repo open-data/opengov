@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\NodeType;
 use Drupal\media_entity\Entity\Media;
+use Drupal\Core\Database\Database;
 
 /**
  * Class DefaultForm.
@@ -98,12 +99,12 @@ class DefaultForm extends FormBase {
       '#value' => $this->t('Merge translations'),
     ];
 
-    // button to copy blog images to media
-    $form['copy_image_media'] = array(
-      '#name' => 'copy_image_media',
+    // button to archive nodes published in one langauge
+    $form['archive_dups'] = array(
+      '#name' => 'archive_dups',
       '#type' => 'submit',
-      '#value' => t('Copy Blog image field to media field'),
-      '#submit' => array([$this, 'copyImageMedia']),
+      '#value' => t('Archive duplicate nodes'),
+      '#submit' => array([$this, 'archiveDups']),
     );
 
     return $form;
@@ -113,31 +114,29 @@ class DefaultForm extends FormBase {
     $form_state->setRebuild();
   }
 
-  public function copyImageMedia(array &$form, FormStateInterface &$form_state) {
-    // 1. Load all blog nodes
-    $query = \Drupal::entityQuery('node');
-    $query->condition('type', 'article');
-    $nids = $query->execute();
-    $keys = array_keys($nids);
-    $storage_handler = \Drupal::entityTypeManager()->getStorage("node");
-    for($i = 0; $i < sizeof($keys); $i++) {
-      // 2. Load a node
-      $node = $storage_handler->load($nids[$keys[$i]]);
-      $file = $node->get('field_image');
-      if ($file[0]) {
-        // 3. Get image of node and copy it to media
-        $file_id = $file[0]->target_id;
-        $node->set('field_media', $file_id);
-        $node->save();
-        $media = $node->get('field_media');
-        $media_id = $media[0] ? $media[0]->value : 'undefined';
-        drupal_set_message($node->label() . ' Node id = ' . $node->id() . ' image_id = ' . $file_id . ' media id =' . $media_id);
-      }
-      else {
-        drupal_set_message($node->label() . ' Node id = ' . $node->id() . ' No file_id', 'error');
+  public function archiveDups(array &$form, FormStateInterface &$form_state) {
+    $content_type = $form_state->getValue('contenttype');
+    if (empty($content_type)) {
+      drupal_set_message('No content type selected to merge', 'warning');
+    }
+    else {
+      $query = \Drupal::entityQuery('node');
+      $query->condition('type', $content_type);
+      $nids = $query->execute();
+      $keys = array_keys($nids);
+      $storage_handler = \Drupal::entityTypeManager()->getStorage("node");
+      for ($i = 0; $i < sizeof($keys); $i++) {
+        // 2. Load a node
+        $node = $storage_handler->load($nids[$keys[$i]]);
+        if (!($node->hasTranslation('en') && $node->hasTranslation('fr'))) {
+          if ($node->get('moderation_state')->value === 'published') {
+            drupal_set_message('Archiving ' . $node->id() . ' - ' . $node->get('moderation_state')->value . ' - ' . $node->get('title')->value . '  because it is published in one language', 'warning');
+            $node->set('moderation_state', 'archived');
+            $node->save();
+          }
+        }
       }
     }
-
   }
 
   /**

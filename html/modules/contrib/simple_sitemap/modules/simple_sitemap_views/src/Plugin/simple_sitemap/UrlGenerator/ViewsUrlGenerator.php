@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Views URL generator.
- */
-
 namespace Drupal\simple_sitemap_views\Plugin\simple_sitemap\UrlGenerator;
 
 use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGeneratorBase;

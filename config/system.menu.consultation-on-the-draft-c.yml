@@ -1,0 +1,8 @@
+uuid: 63662ad5-be6c-46f1-85bf-7cc51ffe9b83
+langcode: und
+status: true
+dependencies: {  }
+id: consultation-on-the-draft-c
+label: 'Consultation on the draft Cabinet Directive on Regulation'
+description: 'side menu - Consultation on the draft Cabinet Directive on Regulation'
+locked: false

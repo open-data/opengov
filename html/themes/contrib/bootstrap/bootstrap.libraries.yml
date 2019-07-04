@@ -23,6 +23,13 @@ drupal.bootstrap:
     - core/drupalSettings
     - bootstrap/framework
 
+dialog:
+  js:
+    js/dialog.js: {}
+  dependencies:
+    - bootstrap/theme
+    - bootstrap/modal
+
 # Create a library placeholder for livereload.
 # This is altered dynamically based on the set URL.
 # @see \Drupal\bootstrap\Plugin\Alter\LibraryInfo::alter

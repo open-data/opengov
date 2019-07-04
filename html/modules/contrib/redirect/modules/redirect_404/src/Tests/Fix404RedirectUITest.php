@@ -169,7 +169,7 @@ class Fix404RedirectUITest extends Redirect404TestBase {
     $this->drupalPostForm(NULL, $edit, 'Save configuration');
     // Should redirect to 'Fix 404'. Check the 404 entry is not shown anymore.
     $this->assertUrl('admin/config/search/redirect/404');
-    $this->assertText('Configuration was saved.');
+    $this->assertText('The configuration options have been saved.');
     $this->assertNoText('node/' . $node2->id() . '/test');
     $this->assertText('There are no 404 errors to fix.');
 

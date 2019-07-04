@@ -1,0 +1,26 @@
+display:
+  block_1:
+    display_options:
+      fields:
+        nothing:
+          alter:
+            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_fr %}{{ nothing_to_report_fr }}{% else %}<a href=\"/fr/search/ati/reference/{{ id }}\">Req # {{ request_number }}</a>{%endif%}</h4>\r\n{{ request_summary_fr }}\r\n<p><small><strong>Organisation:</strong> {{ organization_fr}}</small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if number_of_pages %}<span class=\"h3 mrgn-tp-0\">{{ number_of_pages }} <small>page(s)</small></span><br />{% endif %}\r\n<small>{{ month_name_fr }} {{ year }}</small>\r\n</div>\r\n</div>"
+      exposed_form:
+        options:
+          submit_button: Recherche
+          exposed_sorts_label: 'Trier par'
+      sorts:
+        year:
+          expose:
+            label: Année
+        organization_en:
+          expose: {  }
+        organization_fr:
+          expose: {  }
+      filters:
+        search_api_fulltext:
+          expose:
+            label: Recherche
+      header:
+        result:
+          content: '<p><strong>Trouvé @total record(s) </strong></p>'

@@ -4,8 +4,8 @@ module:
   admin_toolbar_links_access_filter: 0
   admin_toolbar_tools: 0
   alter_block: 0
+  alter_view: 0
   autologout: 0
-  automated_cron: 0
   block: 0
   block_content: 0
   bootstrap_layouts: 0
@@ -20,12 +20,15 @@ module:
   content_moderation: 0
   content_type_breadcrumb: 0
   contextual: 0
+  csv_serialization: 0
   ctools: 0
   datetime: 0
   dblog: 0
   dynamic_page_cache: 0
   editor: 0
   external_comment: 0
+  facets: 0
+  facets_summary: 0
   feeds: 0
   feeds_tamper: 0
   field: 0
@@ -62,7 +65,10 @@ module:
   quickedit: 0
   rdf: 0
   redirect: 0
+  rest: 0
   search: 0
+  search_api: 0
+  search_api_solr: 0
   serialization: 0
   shortcut: 0
   simple_sitemap: 0
@@ -73,7 +79,6 @@ module:
   token: 0
   token_filter: 0
   toolbar: 0
-  tour: 0
   user: 0
   views_ui: 0
   voting_webform: 0

@@ -9,7 +9,6 @@ services:
       - '@config.factory'
       - '@database'
       - '@entity_type.manager'
-      - '@entity_type.bundle.info'
       - '@path.validator'
       - '@date.formatter'
       - '@datetime.time'
@@ -59,6 +58,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
+      - '@entity_type.bundle.info'
 
   simple_sitemap.form_helper:
     class: Drupal\simple_sitemap\Form\FormHelper
@@ -76,10 +76,15 @@ services:
       - '@messenger'
       - '@current_user'
 
-  simple_sitemap.path_processor_variant:
-    class: Drupal\simple_sitemap\PathProcessor\PathProcessorSitemapVariant
+  simple_sitemap.path_processor.variant.in:
+    class: Drupal\simple_sitemap\PathProcessor\PathProcessorSitemapVariantIn
     tags:
       - { name: path_processor_inbound, priority: 300 }
+
+  simple_sitemap.path_processor.variant.out:
+    class: Drupal\simple_sitemap\PathProcessor\PathProcessorSitemapVariantOut
+    tags:
+      - { name: path_processor_outbound, priority: 300 }
 
   logger.channel.simple_sitemap:
     parent: logger.channel_base

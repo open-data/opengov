@@ -1,0 +1,8 @@
+uuid: a7309739-7510-41cf-9fd9-87386131e602
+langcode: und
+status: true
+dependencies: {  }
+id: do-it-yourself-open-data-to
+label: 'Do-it-Yourself Open Data Toolkit'
+description: 'Side menu - Do-it-Yourself Open Data Toolkit'
+locked: false

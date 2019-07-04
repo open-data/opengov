@@ -2,11 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 **Note that references to the Font-Awesome-Pro repository refer to a GitHub
 repository that is by invitation only. You will get a 404 - Not Found if you do
 not have access**
+
+## [5.9.0](https://github.com/FortAwesome/Font-Awesome/releases/tag/5.9.0) - 2019-06-04
+
+**Minor version upgrade notice: there are some backward-incompatible changes to this release. See the
+[UPGRADING.md guide](https://github.com/FortAwesome/Font-Awesome-Pro/blob/master/UPGRADING.md) for more
+information.**
+
+### Added
+* An assortment of voted icons, updated icons, and new icons
+* New icons and updates to the text editor category
+* A flipped version of the phone and phone-alt icon
+
+### Changed
+* Removed the nintendo-switch icon by request of Nintendo
+* Sorted out the sort icons FortAwesome/Font-Awesome#9464 FortAwesome/Font-Awesome#9419 FortAwesome/Font-Awesome-Pro#915
+* De-crevassed the brain icons
+
+### Fixed
+* Proportions corrected on facebook-messenger brand icon
+
+---
 
 ## [5.8.2](https://github.com/FortAwesome/Font-Awesome/releases/tag/5.8.2) - 2019-05-07
 
@@ -15,7 +36,7 @@ not have access**
 
 ### Changed
 * Updated redhat, mailchimp brand icons
-* Updated Facebook brand icons in accordance with http://facebookbrand.com (facebook, facebook-f, facebook-square)
+* Updated Facebook brand icons in accordance with https://facebookbrand.com (facebook, facebook-f, facebook-square)
 * Updated Git brand icons (git, git-square, git-alt)
 * Removing the "at" character to prevent overlap with the at icon
 

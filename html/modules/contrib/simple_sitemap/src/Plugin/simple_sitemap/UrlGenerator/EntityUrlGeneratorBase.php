@@ -5,6 +5,7 @@ namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Url;
+use Drupal\file\Entity\File;
 use Drupal\simple_sitemap\EntityHelper;
 use Drupal\simple_sitemap\Logger;
 use Drupal\simple_sitemap\Simplesitemap;
@@ -204,15 +205,24 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
   }
 
   /**
-   * @param string $entity_type_name
-   * @param string $entity_id
+   * @param \Drupal\Core\Entity\ContentEntityBase $entity
+   *
    * @return array
    */
-  protected function getImages($entity_type_name, $entity_id) {
-    $images = [];
-    foreach ($this->entityHelper->getEntityImageUrls($entity_type_name, $entity_id) as $url) {
-      $images[]['path'] = $this->replaceBaseUrlWithCustom($url);
+  protected function getEntityImageData(ContentEntityBase $entity) {
+    $image_data = [];
+    foreach ($entity->getFieldDefinitions() as $field) {
+      if ($field->getType() === 'image') {
+        foreach ($entity->get($field->getName())->getValue() as $value) {
+          $image_data[] = [
+            'path' => file_create_url(File::load($value['target_id'])->getFileUri()),
+            'alt' => $value['alt'],
+            'title' => $value['title'],
+          ] ;
+        }
+      }
     }
-    return $images;
+
+    return $image_data;
   }
 }

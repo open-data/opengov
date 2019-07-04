@@ -204,7 +204,7 @@ class RedirectRequestSubscriber implements EventSubscriberInterface {
     // This needs to run before RouterListener::onKernelRequest(), which has
     // a priority of 32. Otherwise, that aborts the request if no matching
     // route is found.
-    $events[KernelEvents::REQUEST][] = array('onKernelRequestCheckRedirect', 33);
+    $events[KernelEvents::REQUEST][] = ['onKernelRequestCheckRedirect', 33];
     return $events;
   }
 

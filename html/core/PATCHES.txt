@@ -13,3 +13,11 @@ Notice: Undefined index: target_bundles when new reference media field created
 Source: https://www.drupal.org/files/issues/2019-05-18/undefined_index_target_bundles-3055516-4.patch
 
 
+Allow exposed form for non-ajax block displays
+Source: https://www.drupal.org/files/issues/2692297-8.patch
+
+
+Undefined index: identifier in view's DisplayPluginBase->isIdentifierUnique()
+Source: https://www.drupal.org/files/issues/2882031-10_0.patch
+
+

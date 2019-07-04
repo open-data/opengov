@@ -163,6 +163,9 @@ class CdnAsset {
     // Extract the necessary data from the file.
     list($path, $theme, $minified, $type) = static::extractParts($url);
 
+    // @todo Remove once PHP 5.5 is no longer supported (use array access).
+    $major = substr(Bootstrap::FRAMEWORK_VERSION, 0, 1);
+
     // Bootstrap's example theme.
     if ($theme === 'theme') {
       $theme = 'bootstrap_theme';
@@ -181,7 +184,7 @@ class CdnAsset {
     }
     // Other (e.g. bootswatch theme).
     else {
-      $bootswatchThemes = isset(static::$bootswatchThemes[Bootstrap::FRAMEWORK_VERSION[0]]) ? static::$bootswatchThemes[Bootstrap::FRAMEWORK_VERSION[0]] : [];
+      $bootswatchThemes = isset(static::$bootswatchThemes[$major]) ? static::$bootswatchThemes[$major] : [];
       if (!$theme || ($theme && !in_array($theme, $bootswatchThemes))) {
         $theme = in_array($path, $bootswatchThemes) ? $path : 'bootstrap';
       }
@@ -194,7 +197,7 @@ class CdnAsset {
     // If no version was provided, attempt to extract it.
     // @todo Move regular expression to a constant once PHP 5.5 is no longer
     // supported.
-    if (!isset($version) && preg_match('`(' . Bootstrap::FRAMEWORK_VERSION[0] . '\.\d+\.\d+)`', $url, $matches)) {
+    if (!isset($version) && preg_match('`(' . $major . '\.\d+\.\d+)`', $url, $matches)) {
       $version = $matches[1];
     }
 

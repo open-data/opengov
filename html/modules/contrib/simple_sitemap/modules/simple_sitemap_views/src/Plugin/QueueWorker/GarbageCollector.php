@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains queue worker for garbage collection.
- */
-
 namespace Drupal\simple_sitemap_views\Plugin\QueueWorker;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;

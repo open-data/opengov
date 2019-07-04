@@ -7,6 +7,35 @@
   Drupal.behaviors.dialog.ajaxCurrentButton = null;
   Drupal.behaviors.dialog.ajaxOriginalButton = null;
 
+  // Intercept the success event to add the dialog type to commands.
+  var success = Drupal.Ajax.prototype.success;
+  Drupal.Ajax.prototype.success = function (response, status) {
+    if (this.dialogType) {
+      for (var i = 0, l = response.length; i < l; i++) {
+        if (response[i].dialogOptions) {
+          response[i].dialogType = response[i].dialogOptions.dialogType = this.dialogType;
+          response[i].$trigger = response[i].dialogOptions.$trigger = $(this.element);
+        }
+      }
+    }
+    return success.apply(this, [response, status]);
+  };
+
+  var beforeSerialize = Drupal.Ajax.prototype.beforeSerialize;
+  Drupal.Ajax.prototype.beforeSerialize = function (element, options) {
+    // Add the dialog type currently in use.
+    if (this.dialogType) {
+      options.data['ajax_page_state[dialogType]'] = this.dialogType;
+
+      // Add the dialog element ID if it can be found (useful for closing it).
+      var id = $(this.element).parents('.js-drupal-dialog:first').attr('id');
+      if (id) {
+        options.data['ajax_page_state[dialogId]'] = id;
+      }
+    }
+    return beforeSerialize.apply(this, arguments);
+  };
+
   /**
    * Synchronizes a faux button with its original counterpart.
    *
@@ -39,7 +68,7 @@
   Drupal.behaviors.dialog.prepareDialogButtons = function prepareDialogButtons($dialog) {
     var _this = this;
     var buttons = [];
-    var $buttons = $dialog.find('.form-actions').find('button, input[type=submit], .form-actions a.button');
+    var $buttons = $dialog.find('.form-actions').find('button, input[type=submit], a.button, .btn');
     $buttons.each(function () {
       var $originalButton = $(this)
         // Prevent original button from being tabbed to.

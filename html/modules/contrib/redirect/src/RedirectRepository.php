@@ -99,6 +99,8 @@ class RedirectRepository {
       return $redirect;
     }
 
+    // Reset found redirects.
+    $this->foundRedirects = [];
     return NULL;
   }
 

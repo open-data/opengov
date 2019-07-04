@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains simple_sitemap.views service.
- */
-
 namespace Drupal\simple_sitemap_views;
 
 use Drupal\simple_sitemap_views\Plugin\views\display_extender\SimpleSitemapDisplayExtender;

@@ -1,0 +1,56 @@
+<?php
+
+use Drupal\Core\Render\Markup;
+use \Drupal\views\ViewExecutable;
+
+/**
+ * @file
+ * Contains alter_view.module.
+ */
+
+/**
+ * Implements template_preprocess_views_view_fields
+ * highlight search results
+ */
+function alter_view_preprocess_views_view_fields(&$variables) {
+  $view = $variables['view'];
+  if ($view->id() === 'blog' && $view->current_display === 'all' && $view->exposed_data['combine'] != '') {
+    $key = $view->exposed_data['combine'];
+    if (!empty($variables['fields']['body']->content)) {
+      /* @todo: trim to display substring with key in it */
+      /* @todo: preserve case when highlighting */
+      $body = $variables['fields']['body']->content->__toString();
+      $replace_body = Markup::create(str_ireplace($key, '<mark>' . $key . '</mark>', $body));
+      $variables['fields']['body']->content = $replace_body;
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render
+ * modify solr searches
+ * show language specific fields and sorts
+ * example description_en when English is the current language and description_fr when French is the current language
+ */
+function alter_view_views_pre_render(ViewExecutable $view) {
+  $language_manager = \Drupal::service('language_manager');
+  $currentLang = $language_manager->getCurrentLanguage()->getId();
+  $field_to_disable = $currentLang == 'en' ? 'fr' : 'en';
+
+  $views = ['pd_core_ati', 'pd_core_ati_details'];
+
+  if (in_array($view->id(), $views)) {
+    // disable fields in other language
+    foreach ($view->field as $field) {
+      if (strpos($field->field, '_' . $field_to_disable) !== FALSE) {
+        unset($view->field[$field->field]);
+      }
+    }
+    // disable sorts in other language
+    foreach ($view->exposed_widgets['sort_by']['#options'] as $key => $value) {
+      if (strpos($key, '_' . $field_to_disable) !== FALSE) {
+        unset($view->exposed_widgets['sort_by']['#options'][$key]);
+      }
+    }
+  }
+}

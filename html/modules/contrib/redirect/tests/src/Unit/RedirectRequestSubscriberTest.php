@@ -167,7 +167,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
     $subscriber = new RedirectRequestSubscriber(
       $this->getRedirectRepositoryStub('findMatchingRedirect', $redirect),
       $this->getLanguageManagerStub(),
-      $this->getConfigFactoryStub(array('redirect.settings' => array('passthrough_querystring' => $retain_query))),
+      $this->getConfigFactoryStub(['redirect.settings' => ['passthrough_querystring' => $retain_query]]),
       $alias_manager,
       $module_handler,
       $entity_manager,
@@ -255,7 +255,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
    * @return \Symfony\Component\HttpKernel\Event\PostResponseEvent
    *   The post response event object.
    */
-  protected function getPostResponseEvent($headers = array()) {
+  protected function getPostResponseEvent($headers = []) {
     $http_kernel = $this->getMockBuilder('\Symfony\Component\HttpKernel\HttpKernelInterface')
       ->getMock();
     $request = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
@@ -293,7 +293,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
       ->getMock();
     $language_manager->expects($this->any())
       ->method('getCurrentLanguage')
-      ->will($this->returnValue(new Language(array('id' => 'en'))));
+      ->will($this->returnValue(new Language(['id' => 'en'])));
 
     return $language_manager;
   }

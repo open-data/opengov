@@ -2,6 +2,9 @@
 namespace Drush\Commands\sql;
 
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
+use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
+use Consolidation\SiteProcess\Util\Tty;
 use Drupal\Core\Database\Database;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
@@ -10,11 +13,11 @@ use Drush\Exec\ExecTrait;
 use Drush\Sql\SqlBase;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Symfony\Component\Console\Input\InputInterface;
-use Drush\Utils\TerminalUtils;
 
-class SqlCommands extends DrushCommands
+class SqlCommands extends DrushCommands implements StdinAwareInterface
 {
     use ExecTrait;
+    use StdinAwareTrait;
 
     /**
      * Print database connection details.
@@ -135,6 +138,8 @@ class SqlCommands extends DrushCommands
      *   Open a SQL command-line interface using Drupal's credentials.
      * @usage drush sql:cli --extra=--progress-reports
      *   Open a SQL CLI and skip reading table information.
+     * @usage drush sql:cli < example.sql
+     *   Import sql statements from a file into the current database.
      * @remote-tty
      * @bootstrap max configuration
      */
@@ -142,8 +147,8 @@ class SqlCommands extends DrushCommands
     {
         $sql = SqlBase::create($options);
         $process = $this->processManager()->shell($sql->connect(), null, $sql->getEnv());
-        if (!TerminalUtils::isTty(false)) {
-            $process->setInput(STDIN);
+        if (!Tty::isTtySupported()) {
+            $process->setInput($this->stdin()->getStream());
         } else {
             $process->setTty($this->getConfig()->get('ssh.tty', $input->isInteractive()));
         }

@@ -6,10 +6,36 @@
  */
 
 /**
- * function preprocess block for custom block for type search
+ * function preprocess block for social media pillars block
+ * setup variables for citation
+ */
+function alter_block_preprocess_block__block_content__cf8209e7_dbe5_4f66_8146_5fc52de7832d(&$variables){
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if ($node instanceof \Drupal\node\NodeInterface) {
+    $variables['site_name'] = \Drupal::config('system.site')->get('name');
+    $variables['site_url'] = \Drupal::request()->getSchemeAndHttpHost() . \Drupal::request()->getRequestUri();
+    $variables['nid'] = $node->id();
+    $variables['node_title'] = $node->getTitle();
+    $variables['created'] = $node->getCreatedTime();
+    $variables['type'] = ucfirst(str_replace('_', ' ', $node->getType()));
+    $variables['language'] = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  }
+}
+
+/**
+ * function preprocess block for custom block for type:
+ * - search
+ * - fetch_from_api
+ * - pass language variable to facet block
  */
 function alter_block_preprocess_block(&$variables)
 {
+
+  // pass language variable to facet block
+  if (isset($variables['content'][0]['#facet']) || isset($variables['content'][0][0]['#facet'])) {
+    $variables['language'] = \Drupal::service('language_manager')->getCurrentLanguage()->getId();
+  }
+
   if (isset($variables['content']['#block_content']))
   {
     $content = $variables['content']['#block_content'];
