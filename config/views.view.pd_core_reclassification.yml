@@ -1,17 +1,17 @@
-uuid: d9a6fa8d-ddfd-44aa-925c-f4df64b9f697
+uuid: 992d8fa9-9b22-45c7-8ff6-40432ddf3059
 langcode: en
 status: true
 dependencies:
   config:
-    - search_api.index.pd_core_contracts
+    - search_api.index.pd_core_reclassification
   module:
     - search_api
-id: pd_core_contracts
-label: 'Proactive Disclosure: Contracts'
+id: pd_core_reclassification
+label: 'Proactive Disclosure: Position Reclassification'
 module: views
 description: ''
 tag: ''
-base_table: search_api_index_pd_core_contracts
+base_table: search_api_index_pd_core_reclassification
 base_field: search_api_id
 core: 8.x
 display:
@@ -39,7 +39,7 @@ display:
           submit_button: Search
           reset_button: false
           reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
+          exposed_sorts_label: Sort
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
@@ -73,10 +73,10 @@ display:
       row:
         type: fields
       fields:
-        contract_date:
-          id: contract_date
-          table: search_api_index_pd_core_contracts
-          field: contract_date
+        date_clean:
+          id: date_clean
+          table: search_api_index_pd_core_reclassification
+          field: date_clean
           relationship: none
           group_type: group
           admin_label: ''
@@ -84,7 +84,7 @@ display:
           exclude: true
           alter:
             alter_text: true
-            text: '{{ contract_date|trim|date(''Y-m-d'') }} '
+            text: '{{ date_clean |trim|date(''Y-m-d'') }}'
             make_link: false
             path: ''
             absolute: false
@@ -126,222 +126,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        contract_value:
-          id: contract_value
-          table: search_api_index_pd_core_contracts
-          field: contract_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        country_of_origin_en:
-          id: country_of_origin_en
-          table: search_api_index_pd_core_contracts
-          field: country_of_origin_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        country_of_origin_fr:
-          id: country_of_origin_fr
-          table: search_api_index_pd_core_contracts
-          field: country_of_origin_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        description_en:
-          id: description_en
-          table: search_api_index_pd_core_contracts
-          field: description_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        description_fr:
-          id: description_fr
-          table: search_api_index_pd_core_contracts
-          field: description_fr
+        date_year:
+          id: date_year
+          table: search_api_index_pd_core_reclassification
+          field: date_year
           relationship: none
           group_type: group
           admin_label: ''
@@ -393,7 +181,7 @@ display:
           plugin_id: search_api
         id:
           id: id
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: id
           relationship: none
           group_type: group
@@ -446,7 +234,7 @@ display:
           plugin_id: search_api
         nothing_to_report_en:
           id: nothing_to_report_en
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: nothing_to_report_en
           relationship: none
           group_type: group
@@ -499,8 +287,114 @@ display:
           plugin_id: search_api
         nothing_to_report_fr:
           id: nothing_to_report_fr
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: nothing_to_report_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        old_class_level:
+          id: old_class_level
+          table: search_api_index_pd_core_reclassification
+          field: old_class_level
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        old_class_group_code:
+          id: old_class_group_code
+          table: search_api_index_pd_core_reclassification
+          field: old_class_group_code
           relationship: none
           group_type: group
           admin_label: ''
@@ -552,7 +446,7 @@ display:
           plugin_id: search_api
         org_name_en:
           id: org_name_en
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: org_name_en
           relationship: none
           group_type: group
@@ -605,7 +499,7 @@ display:
           plugin_id: search_api
         org_name_fr:
           id: org_name_fr
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: org_name_fr
           relationship: none
           group_type: group
@@ -656,10 +550,434 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        vendor_name:
-          id: vendor_name
-          table: search_api_index_pd_core_contracts
-          field: vendor_name
+        pos_number:
+          id: pos_number
+          table: search_api_index_pd_core_reclassification
+          field: pos_number
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        pos_title_en:
+          id: pos_title_en
+          table: search_api_index_pd_core_reclassification
+          field: pos_title_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        pos_title_fr:
+          id: pos_title_fr
+          table: search_api_index_pd_core_reclassification
+          field: pos_title_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        ref_number:
+          id: ref_number
+          table: search_api_index_pd_core_reclassification
+          field: ref_number
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        new_class_group_fr:
+          id: new_class_group_fr
+          table: search_api_index_pd_core_reclassification
+          field: new_class_group_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        new_class_level:
+          id: new_class_level
+          table: search_api_index_pd_core_reclassification
+          field: new_class_level
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        new_class_group_code:
+          id: new_class_group_code
+          table: search_api_index_pd_core_reclassification
+          field: new_class_group_code
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        quarter_en:
+          id: quarter_en
+          table: search_api_index_pd_core_reclassification
+          field: quarter_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        quarter_fr:
+          id: quarter_fr
+          table: search_api_index_pd_core_reclassification
+          field: quarter_fr
           relationship: none
           group_type: group
           admin_label: ''
@@ -720,7 +1038,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "{% set contact_value_array = contract_value|split('.') %}\r\n<div class=\"row\">\r\n<div class=\"col-sm-9\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_en %}{{ nothing_to_report_en }}{% else %}<a href=\"/search/contracts/reference/{{ id }}\">{{ description_en }}</a>{%endif%}</h4>\r\n<strong>Vendor Name: </strong>{{ vendor_name }}<br><small><strong>Country of Origin:</strong> {{ country_of_origin_en }}</small>\r\n<p><small><strong>Organization:</strong> {{ org_name_en}}</small></p>\r\n</div>\r\n<div class=\"col-sm-3 text-right\">\r\n<span class=\"h3 mrgn-tp-0\">{{ contact_value_array[0] }}<sup><strong>.{{ contact_value_array[1] }}</strong></sup></span><br />\r\n<small>{% if nothing_to_report_en %}{{ quarter_en }}, {{ year }}{% else %}{{ contract_date }}{% endif %}</small></div>\r\n</div>\r\n"
+            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">\r\n{% if nothing_to_report_en %}\r\n{{ nothing_to_report_en }}\r\n{% else %}\r\n<a href=\"/search/reclassification/reference/{{ id }}\">{{ pos_title_en }}</a>\r\n{%endif%}\r\n</h4>\r\n{% if not nothing_to_report_en %}<p>Position # {{ pos_number }}</p>{%endif%}\r\n<p><small><strong>Organization:</strong> {{ org_name_en}}\r\n{% if not nothing_to_report_en %}<br />Ref # {{ ref_number }}{%endif%}</small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if not nothing_to_report_en %}<span class=\"h3 mrgn-tp-0\">{{ old_class_group_code }}-{{ old_class_level }} <span class=\"glyphicon glyphicon-arrow-right\"></span> {{ new_class_group_code }}-{{ new_class_level }}</span><br />{%endif%}\r\n<small>{% if nothing_to_report_en %}{{ quarter_en }}, {{ date_year }}{% else %}{{ date_clean }}{% endif %}</small>\r\n</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -761,7 +1079,7 @@ display:
       filters:
         search_api_fulltext:
           id: search_api_fulltext
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: search_api_fulltext
           relationship: none
           group_type: group
@@ -807,7 +1125,7 @@ display:
       sorts:
         date_clean:
           id: date_clean
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: date_clean
           relationship: none
           group_type: group
@@ -817,45 +1135,45 @@ display:
           expose:
             label: Date
           plugin_id: search_api
-        contract_value:
-          id: contract_value
-          table: search_api_index_pd_core_contracts
-          field: contract_value
+        old_class_group_code:
+          id: old_class_group_code
+          table: search_api_index_pd_core_reclassification
+          field: old_class_group_code
           relationship: none
           group_type: group
           admin_label: ''
           order: ASC
           exposed: true
           expose:
-            label: 'Contract Value'
+            label: 'Group Code'
           plugin_id: search_api
-        description_en:
-          id: description_en
-          table: search_api_index_pd_core_contracts
-          field: description_en
+        pos_title_en:
+          id: pos_title_en
+          table: search_api_index_pd_core_reclassification
+          field: pos_title_en
           relationship: none
           group_type: group
           admin_label: ''
           order: ASC
           exposed: true
           expose:
-            label: Description
+            label: 'Position Title'
           plugin_id: search_api
-        description_fr:
-          id: description_fr
-          table: search_api_index_pd_core_contracts
-          field: description_fr
+        pos_title_fr:
+          id: pos_title_fr
+          table: search_api_index_pd_core_reclassification
+          field: pos_title_fr
           relationship: none
           group_type: group
           admin_label: ''
           order: ASC
           exposed: true
           expose:
-            label: Description
+            label: 'Titre de poste'
           plugin_id: search_api
         org_name_en:
           id: org_name_en
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: org_name_en
           relationship: none
           group_type: group
@@ -867,7 +1185,7 @@ display:
           plugin_id: search_api
         org_name_fr:
           id: org_name_fr
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_reclassification
           field: org_name_fr
           relationship: none
           group_type: group
@@ -877,7 +1195,7 @@ display:
           expose:
             label: Organisation
           plugin_id: search_api
-      title: 'Proactive Disclosure: Contracts'
+      title: 'Proactive Disclosure: Position Reclassification'
       header:
         result:
           id: result

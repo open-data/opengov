@@ -1,0 +1,188 @@
+uuid: 4d9bed3b-2f67-42fe-a09c-e55b23db7105
+langcode: en
+status: true
+dependencies:
+  module:
+    - search_api_solr
+    - search_api
+  config:
+    - search_api.server.pd_core_reclassification
+third_party_settings:
+  search_api_solr:
+    finalize: false
+    commit_before_finalize: false
+    commit_after_finalize: false
+    highlighter:
+      maxAnalyzedChars: 51200
+      fragmenter: gap
+      regex:
+        slop: 0.5
+        pattern: blank
+        maxAnalyzedChars: 10000
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
+      highlight:
+        mergeContiguous: false
+        requireFieldMatch: false
+        snippets: 3
+        fragsize: 0
+    advanced:
+      index_prefix: ''
+id: pd_core_reclassification
+name: 'Proactive Disclosure: Reclassification Index'
+description: 'Read-only search index for Solr core_reclassification'
+read_only: true
+field_settings:
+  date_clean:
+    label: 'Date clean'
+    datasource_id: solr_document
+    property_path: date_clean
+    type: string
+  date_year:
+    label: 'Date year'
+    datasource_id: solr_document
+    property_path: date_year
+    type: string
+  id:
+    label: Id
+    datasource_id: solr_document
+    property_path: id
+    type: string
+  new_class_group_code:
+    label: 'New class group code'
+    datasource_id: solr_document
+    property_path: new_class_group_code
+    type: string
+  new_class_group_en:
+    label: 'New class group en'
+    datasource_id: solr_document
+    property_path: new_class_group_en
+    type: string
+  new_class_group_fr:
+    label: 'New class group fr'
+    datasource_id: solr_document
+    property_path: new_class_group_fr
+    type: string
+  new_class_level:
+    label: 'New class level'
+    datasource_id: solr_document
+    property_path: new_class_level
+    type: string
+  nothing_to_report_en:
+    label: 'Nothing to report en'
+    datasource_id: solr_document
+    property_path: nothing_to_report_en
+    type: string
+  nothing_to_report_fr:
+    label: 'Nothing to report fr'
+    datasource_id: solr_document
+    property_path: nothing_to_report_fr
+    type: string
+  old_class_group_code:
+    label: 'Old class group code'
+    datasource_id: solr_document
+    property_path: old_class_group_code
+    type: string
+  old_class_group_en:
+    label: 'Old class group en'
+    datasource_id: solr_document
+    property_path: old_class_group_en
+    type: string
+  old_class_group_fr:
+    label: 'Old class group fr'
+    datasource_id: solr_document
+    property_path: old_class_group_fr
+    type: string
+  old_class_level:
+    label: 'Old class level'
+    datasource_id: solr_document
+    property_path: old_class_level
+    type: string
+  old_class_level_en:
+    label: 'Old class level en'
+    datasource_id: solr_document
+    property_path: old_class_level_en
+    type: string
+  old_class_level_fr:
+    label: 'Old class level fr'
+    datasource_id: solr_document
+    property_path: old_class_level_fr
+    type: string
+  org_name_en:
+    label: 'Org name en'
+    datasource_id: solr_document
+    property_path: org_name_en
+    type: string
+  org_name_fr:
+    label: 'Org name fr'
+    datasource_id: solr_document
+    property_path: org_name_fr
+    type: string
+  pos_number:
+    label: 'Pos number'
+    datasource_id: solr_document
+    property_path: pos_number
+    type: string
+  pos_title_en:
+    label: 'Pos title en'
+    datasource_id: solr_document
+    property_path: pos_title_en
+    type: string
+  pos_title_fr:
+    label: 'Pos title fr'
+    datasource_id: solr_document
+    property_path: pos_title_fr
+    type: string
+  quarter_en:
+    label: 'Quarter en'
+    datasource_id: solr_document
+    property_path: quarter_en
+    type: string
+  quarter_fr:
+    label: 'Quarter fr'
+    datasource_id: solr_document
+    property_path: quarter_fr
+    type: string
+  reason_en:
+    label: 'Reason en'
+    datasource_id: solr_document
+    property_path: reason_en
+    type: string
+  reason_fr:
+    label: 'Reason fr'
+    datasource_id: solr_document
+    property_path: reason_fr
+    type: string
+  ref_number:
+    label: 'Ref number'
+    datasource_id: solr_document
+    property_path: ref_number
+    type: text
+  text:
+    label: Text
+    datasource_id: solr_document
+    property_path: text
+    type: text
+datasource_settings:
+  solr_document:
+    id_field: unique_id
+    request_handler: ''
+    default_query: '*:*'
+    label_field: ''
+    language_field: ''
+    url_field: ''
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  rendered_item: {  }
+  solr_date_range:
+    weights:
+      preprocess_index: 0
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  index_directly: false
+  cron_limit: 50
+server: pd_core_reclassification

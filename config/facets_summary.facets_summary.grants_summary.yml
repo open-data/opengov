@@ -1,0 +1,64 @@
+uuid: 2782e158-049c-4de9-976d-7463cbb43d86
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.pd_core_grants
+    - views.view.pd_core_grants
+  module:
+    - search_api
+id: grants_summary
+name: 'PD Grants - Current Search'
+facets:
+  grants_agreement_type_en:
+    checked: true
+    label: 'Agreement Type'
+    separator: ', '
+    weight: 0
+    show_count: false
+  grants_agreement_type_fr:
+    checked: true
+    label: 'Type d’entente'
+    separator: ', '
+    weight: 0
+    show_count: false
+  grants_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    weight: 0
+    show_count: false
+  grants_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    weight: 0
+    show_count: false
+  grants_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    weight: 0
+    show_count: false
+  grants_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    weight: 0
+    show_count: false
+facet_source_id: 'search_api:views_block__pd_core_grants__block_1'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Clear all filters'
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '10'
+    settings:
+      text:
+        value: 'There is no current search in progress.'
+        format: plain_text

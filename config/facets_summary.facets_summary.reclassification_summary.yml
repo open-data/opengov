@@ -1,0 +1,52 @@
+uuid: d931ead1-5848-47f5-a241-8a228270680b
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.pd_core_reclassification
+    - views.view.pd_core_reclassification
+  module:
+    - search_api
+id: reclassification_summary
+name: 'PD reclassification - Current Search'
+facets:
+  reclassification_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    weight: 0
+    show_count: false
+  reclassification_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    weight: 0
+    show_count: false
+  reclassification_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    weight: 0
+    show_count: false
+  reclassification_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    weight: 0
+    show_count: false
+facet_source_id: 'search_api:views_block__pd_core_reclassification__block_1'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Clear all filters'
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '10'
+    settings:
+      text:
+        value: 'There is no current search in progress.'
+        format: plain_text

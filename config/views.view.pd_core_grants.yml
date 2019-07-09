@@ -1,17 +1,17 @@
-uuid: d9a6fa8d-ddfd-44aa-925c-f4df64b9f697
+uuid: 9ee5809b-c12e-4c20-81d7-a2a3bbd2adfa
 langcode: en
 status: true
 dependencies:
   config:
-    - search_api.index.pd_core_contracts
+    - search_api.index.pd_core_grants
   module:
     - search_api
-id: pd_core_contracts
-label: 'Proactive Disclosure: Contracts'
+id: pd_core_grants
+label: 'Proactive Disclosure: Grants'
 module: views
-description: ''
+description: 'Search for Solr core_grants'
 tag: ''
-base_table: search_api_index_pd_core_contracts
+base_table: search_api_index_pd_core_grants
 base_field: search_api_id
 core: 8.x
 display:
@@ -39,7 +39,7 @@ display:
           submit_button: Search
           reset_button: false
           reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
+          exposed_sorts_label: Sort
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
@@ -72,64 +72,16 @@ display:
           default_row_class: true
       row:
         type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
       fields:
-        contract_date:
-          id: contract_date
-          table: search_api_index_pd_core_contracts
-          field: contract_date
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: true
-            text: '{{ contract_date|trim|date(''Y-m-d'') }} '
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        contract_value:
-          id: contract_value
-          table: search_api_index_pd_core_contracts
-          field: contract_value
+        agreement_type_en:
+          id: agreement_type_en
+          table: search_api_index_pd_core_grants
+          field: agreement_type_en
           relationship: none
           group_type: group
           admin_label: ''
@@ -179,10 +131,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        country_of_origin_en:
-          id: country_of_origin_en
-          table: search_api_index_pd_core_contracts
-          field: country_of_origin_en
+        agreement_type_fr:
+          id: agreement_type_fr
+          table: search_api_index_pd_core_grants
+          field: agreement_type_fr
           relationship: none
           group_type: group
           admin_label: ''
@@ -232,10 +184,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        country_of_origin_fr:
-          id: country_of_origin_fr
-          table: search_api_index_pd_core_contracts
-          field: country_of_origin_fr
+        agreement_value:
+          id: agreement_value
+          table: search_api_index_pd_core_grants
+          field: agreement_value
           relationship: none
           group_type: group
           admin_label: ''
@@ -285,10 +237,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        description_en:
-          id: description_en
-          table: search_api_index_pd_core_contracts
-          field: description_en
+        date_clean:
+          id: date_clean
+          table: search_api_index_pd_core_grants
+          field: date_clean
           relationship: none
           group_type: group
           admin_label: ''
@@ -338,63 +290,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        description_fr:
-          id: description_fr
-          table: search_api_index_pd_core_contracts
-          field: description_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        id:
-          id: id
-          table: search_api_index_pd_core_contracts
-          field: id
+        date_year:
+          id: date_year
+          table: search_api_index_pd_core_grants
+          field: date_year
           relationship: none
           group_type: group
           admin_label: ''
@@ -446,7 +345,7 @@ display:
           plugin_id: search_api
         nothing_to_report_en:
           id: nothing_to_report_en
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: nothing_to_report_en
           relationship: none
           group_type: group
@@ -499,7 +398,7 @@ display:
           plugin_id: search_api
         nothing_to_report_fr:
           id: nothing_to_report_fr
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: nothing_to_report_fr
           relationship: none
           group_type: group
@@ -552,7 +451,7 @@ display:
           plugin_id: search_api
         org_name_en:
           id: org_name_en
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: org_name_en
           relationship: none
           group_type: group
@@ -605,7 +504,7 @@ display:
           plugin_id: search_api
         org_name_fr:
           id: org_name_fr
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: org_name_fr
           relationship: none
           group_type: group
@@ -656,10 +555,328 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        vendor_name:
-          id: vendor_name
-          table: search_api_index_pd_core_contracts
-          field: vendor_name
+        partial_id:
+          id: partial_id
+          table: search_api_index_pd_core_grants
+          field: partial_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        quarter_en:
+          id: quarter_en
+          table: search_api_index_pd_core_grants
+          field: quarter_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        quarter_fr:
+          id: quarter_fr
+          table: search_api_index_pd_core_grants
+          field: quarter_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        recipient_city:
+          id: recipient_city
+          table: search_api_index_pd_core_grants
+          field: recipient_city
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        recipient_country_en:
+          id: recipient_country_en
+          table: search_api_index_pd_core_grants
+          field: recipient_country_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        recipient_country_fr:
+          id: recipient_country_fr
+          table: search_api_index_pd_core_grants
+          field: recipient_country_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        recipient_legal_name:
+          id: recipient_legal_name
+          table: search_api_index_pd_core_grants
+          field: recipient_legal_name
           relationship: none
           group_type: group
           admin_label: ''
@@ -720,7 +937,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "{% set contact_value_array = contract_value|split('.') %}\r\n<div class=\"row\">\r\n<div class=\"col-sm-9\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_en %}{{ nothing_to_report_en }}{% else %}<a href=\"/search/contracts/reference/{{ id }}\">{{ description_en }}</a>{%endif%}</h4>\r\n<strong>Vendor Name: </strong>{{ vendor_name }}<br><small><strong>Country of Origin:</strong> {{ country_of_origin_en }}</small>\r\n<p><small><strong>Organization:</strong> {{ org_name_en}}</small></p>\r\n</div>\r\n<div class=\"col-sm-3 text-right\">\r\n<span class=\"h3 mrgn-tp-0\">{{ contact_value_array[0] }}<sup><strong>.{{ contact_value_array[1] }}</strong></sup></span><br />\r\n<small>{% if nothing_to_report_en %}{{ quarter_en }}, {{ year }}{% else %}{{ contract_date }}{% endif %}</small></div>\r\n</div>\r\n"
+            text: "{% set value_array = agreement_value|replace({',': '', '$': ''})|striptags|trim|number_format('2', '.', ',')|split('.') %}\r\n<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n{% if nothing_to_report_en %}\r\n  <h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{{ nothing_to_report_en }}</h4>\r\n{% else %}\r\n  <h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">\r\n    <a href=\"/search/grants/reference/{{ partial_id }}\">{{ recipient_legal_name }}</a>\r\n  </h4>\r\n  <div>{{ recipient_city }}, {{ recipient_country_en }}</div>\r\n  <div class=\"label label-default\">{{ agreement_type_en }}</div>\r\n{%endif%}\r\n<p><small><strong>Organization:</strong> {{ org_name_en}}</small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n<span class=\"h3 mrgn-tp-0\">$ {{ value_array[0] }}<sup><strong>.{{ value_array[1] }}</strong></sup></span><br />\r\n<small>{% if nothing_to_report_en %}{{ quarter }}, {{ date_year }}{% else %}{{ date_clean|trim|date('Y-m-d') }}{% endif %}</small><br />\r\n</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -759,9 +976,51 @@ display:
           hide_alter_empty: false
           plugin_id: custom
       filters:
+        amendment_number:
+          id: amendment_number
+          table: search_api_index_pd_core_grants
+          field: amendment_number
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: current
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: search_api_string
         search_api_fulltext:
           id: search_api_fulltext
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: search_api_fulltext
           relationship: none
           group_type: group
@@ -807,7 +1066,7 @@ display:
       sorts:
         date_clean:
           id: date_clean
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: date_clean
           relationship: none
           group_type: group
@@ -817,45 +1076,21 @@ display:
           expose:
             label: Date
           plugin_id: search_api
-        contract_value:
-          id: contract_value
-          table: search_api_index_pd_core_contracts
-          field: contract_value
+        agreement_value:
+          id: agreement_value
+          table: search_api_index_pd_core_grants
+          field: agreement_value
           relationship: none
           group_type: group
           admin_label: ''
-          order: ASC
+          order: DESC
           exposed: true
           expose:
-            label: 'Contract Value'
-          plugin_id: search_api
-        description_en:
-          id: description_en
-          table: search_api_index_pd_core_contracts
-          field: description_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: true
-          expose:
-            label: Description
-          plugin_id: search_api
-        description_fr:
-          id: description_fr
-          table: search_api_index_pd_core_contracts
-          field: description_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: true
-          expose:
-            label: Description
+            label: Value
           plugin_id: search_api
         org_name_en:
           id: org_name_en
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: org_name_en
           relationship: none
           group_type: group
@@ -867,7 +1102,7 @@ display:
           plugin_id: search_api
         org_name_fr:
           id: org_name_fr
-          table: search_api_index_pd_core_contracts
+          table: search_api_index_pd_core_grants
           field: org_name_fr
           relationship: none
           group_type: group
@@ -877,7 +1112,7 @@ display:
           expose:
             label: Organisation
           plugin_id: search_api
-      title: 'Proactive Disclosure: Contracts'
+      title: 'Government Grants and Contributions'
       header:
         result:
           id: result

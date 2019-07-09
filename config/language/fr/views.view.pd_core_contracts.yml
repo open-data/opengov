@@ -15,7 +15,7 @@ display:
       fields:
         nothing:
           alter:
-            text: "{% set contact_value_array = contract_value|split('.') %}\r\n<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_fr %}{{ nothing_to_report_fr }}{% else %}<a href=\"/search/contracts/reference/{{ id }}\">{{ description_fr }}</a>{%endif%}</h4>\r\n<strong>Nom du fournisseur : </strong>{{ vendor_name }}<br><small><strong>Pays d'origine :</strong> {{ country_of_origin_fr }}</small>\r\n<p><small><strong>Organisation :</strong> {{ org_name_fr}}</small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n<span class=\"h3 mrgn-tp-0\">{{ contact_value_array[0] }}<sup><strong>.{{ contact_value_array[1] }}</strong></sup></span><br />\r\n<small>{% if nothing_to_report_fr %}{{ quarter_fr }}, {{ year }}{% else %}{{ contract_date }}{% endif %}</small></div>\r\n</div>\r\n"
+            text: "{% set contact_value_array = contract_value|split('.') %}\r\n<div class=\"row\">\r\n<div class=\"col-sm-9\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_fr %}{{ nothing_to_report_fr }}{% else %}<a href=\"/fr/search/contracts/reference/{{ id }}\">{{ description_fr }}</a>{%endif%}</h4>\r\n<strong>Nom du fournisseur : </strong>{{ vendor_name }}<br><small><strong>Pays d'origine :</strong> {{ country_of_origin_fr }}</small>\r\n<p><small><strong>Organisation :</strong> {{ org_name_fr}}</small></p>\r\n</div>\r\n<div class=\"col-sm-3 text-right\">\r\n<span class=\"h3 mrgn-tp-0\">{{ contact_value_array[0] }}<sup><strong>,{{ contact_value_array[1] }}</strong></sup></span><br />\r\n<small>{% if nothing_to_report_fr %}{{ quarter_fr }}, {{ year }}{% else %}{{ contract_date }}{% endif %}</small></div>\r\n</div>\r\n"
       filters:
         search_api_fulltext:
           expose:
@@ -26,4 +26,4 @@ display:
             label: 'Valeur du contrat'
       header:
         result:
-          content: '<p><strong>Trouvé @total record(s)</strong></p>'
+          content: '<p><strong>@total  résultats trouvé(s)</strong></p>'

@@ -1,0 +1,13 @@
+display:
+  default:
+    display_options:
+      fields:
+        ref_number:
+          label: 'Numéro de demande'
+        date_year:
+          label: Année
+        pos_number:
+          label: 'Numéro du poste'
+        old_class_level:
+          label: 'Numéro de niveau de la classification du poste reclassifié'
+      title: 'Reclassification de poste du gouvernement'

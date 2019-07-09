@@ -15,13 +15,25 @@ use \Drupal\views\ViewExecutable;
 function alter_view_preprocess_views_view_fields(&$variables) {
   $view = $variables['view'];
   if ($view->id() === 'blog' && $view->current_display === 'all' && $view->exposed_data['combine'] != '') {
-    $key = $view->exposed_data['combine'];
-    if (!empty($variables['fields']['body']->content)) {
-      /* @todo: trim to display substring with key in it */
-      /* @todo: preserve case when highlighting */
+    $keys = $keys = explode(' ' , preg_replace('/[^a-zA-Z0-9\s]/', '', $view->exposed_data['combine']));
+    if (is_array($keys) && !empty($variables['fields']['body']->content)) {
       $body = $variables['fields']['body']->content->__toString();
-      $replace_body = Markup::create(str_ireplace($key, '<mark>' . $key . '</mark>', $body));
+      foreach ($keys as $key) {
+        $body = highlight($key, $body);
+      }
+      $replace_body = Markup::create($body);
       $variables['fields']['body']->content = $replace_body;
+    }
+  }
+  elseif (isset($variables['view']->exposed_data['search_api_fulltext'])) {
+    $keys = explode(' ' , preg_replace('/[^a-zA-Z0-9\s]/', '', $view->exposed_data['search_api_fulltext']));
+    if (is_array($keys) && !empty($variables['fields']['nothing']->content)) {
+      $body = $variables['fields']['nothing']->content->__toString();
+      foreach ($keys as $key) {
+        $body = highlight($key, $body);
+      }
+      $replace_body = Markup::create($body);
+      $variables['fields']['nothing']->content = $replace_body;
     }
   }
 }
@@ -37,8 +49,11 @@ function alter_view_views_pre_render(ViewExecutable $view) {
   $currentLang = $language_manager->getCurrentLanguage()->getId();
   $field_to_disable = $currentLang == 'en' ? 'fr' : 'en';
 
-  $views = ['pd_core_ati', 'pd_core_ati_details',
+  $views = [
+    'pd_core_ati', 'pd_core_ati_details',
     'pd_core_contracts', 'pd_core_contracts_details',
+    'pd_core_grants', 'pd_core_grants_details',
+    'pd_core_reclassification', 'pd_core_reclassification_details',
   ];
 
   if (in_array($view->id(), $views)) {
@@ -51,7 +66,8 @@ function alter_view_views_pre_render(ViewExecutable $view) {
 
     // disable sorts in other language only for the list views
     if (strpos($view->id(), '_details') === FALSE
-      && is_array($view->exposed_widgets['sort_by'])
+      && is_array($view->exposed_widgets)
+      && array_key_exists('sort_by', $view->exposed_widgets)
       && array_key_exists('#options', $view->exposed_widgets['sort_by'])) {
 
       foreach ($view->exposed_widgets['sort_by']['#options'] as $key => $value) {
@@ -62,4 +78,25 @@ function alter_view_views_pre_render(ViewExecutable $view) {
 
     }
   }
+}
+
+/**
+ * Highlight function
+ * highlights first instance of key in string
+ * returns highlighted string
+ */
+
+function highlight($key, $string) {
+  if ($key && $string) {
+    $pos = stripos($string, $key);
+    $len = strlen($key);
+
+    if ($pos !== FALSE) {
+      $beginning = substr($string, 0, $pos);
+      $match = substr($string, $pos, $len);
+      $end = substr($string, $pos + $len);
+      $string = $beginning . '<mark>' . $match . '</mark>' . $end;
+    }
+  }
+  return $string;
 }

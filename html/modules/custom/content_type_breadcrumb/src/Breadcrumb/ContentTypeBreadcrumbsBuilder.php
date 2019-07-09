@@ -12,8 +12,11 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
 
   private $config;
   private $menu_id;
-  private $views = ['pd_core_ati_details',
+  private $views = [
+    'pd_core_ati_details',
     'pd_core_contracts_details',
+    'pd_core_grants_details',
+    'pd_core_reclassification_details',
     ];
 
   public function __construct() {
@@ -39,7 +42,9 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
       }
 
       // apply breadcrumb for views
-      elseif ($type === 'view_id' && in_array($parameters[$type], $this->views)) {
+      elseif ($type === 'view_id'
+        && in_array($parameters[$type], $this->views)
+        && isset($menu_for_type['view_' . $parameters[$type]])) {
         $view_id = $parameters[$type];
         $this->menu_id = str_replace("main:", '', $menu_for_type['view_' . $view_id]);
         return true;

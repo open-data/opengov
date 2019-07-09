@@ -263,12 +263,12 @@ field_settings:
     label: 'Procurement id'
     datasource_id: solr_document
     property_path: procurement_id
-    type: string
+    type: text
   reference_number:
     label: 'Reference number'
     datasource_id: solr_document
     property_path: reference_number
-    type: string
+    type: text
   reporting_period:
     label: 'Reporting period'
     datasource_id: solr_document
