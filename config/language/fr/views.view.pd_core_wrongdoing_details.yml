@@ -1,0 +1,11 @@
+display:
+  default:
+    display_options:
+      fields:
+        ref_number:
+          label: 'Numéro de demande'
+        file_id_number:
+          label: 'Numéro d’identification du fichier'
+        date_clean:
+          label: 'Date d’identification du fichier'
+      title: 'Actes répréhensibles fondés'

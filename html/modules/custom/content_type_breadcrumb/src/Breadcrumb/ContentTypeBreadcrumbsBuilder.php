@@ -17,6 +17,7 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
     'pd_core_contracts_details',
     'pd_core_grants_details',
     'pd_core_reclassification_details',
+    'pd_core_wrongdoing_details',
     ];
 
   public function __construct() {

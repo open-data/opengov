@@ -1,0 +1,52 @@
+uuid: 4f0ea72c-3f8d-4e9e-8f9b-20bd076949a5
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.pd_core_wrongdoing
+    - views.view.pd_core_wrongdoing
+  module:
+    - search_api
+id: wrongdoing_summary
+name: 'PD Wrongdoing - Current Search'
+facets:
+  wrongdoing_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    weight: 0
+    show_count: false
+  wrongdoing_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    weight: 0
+    show_count: false
+  wrongdoing_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    weight: 0
+    show_count: false
+  wrongdoing_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    weight: 0
+    show_count: false
+facet_source_id: 'search_api:views_block__pd_core_wrongdoing__block_1'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Clear all filters'
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '10'
+    settings:
+      text:
+        value: 'There is no current search in progress.'
+        format: plain_text

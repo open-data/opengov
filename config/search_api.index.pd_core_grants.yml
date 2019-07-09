@@ -104,6 +104,7 @@ field_settings:
     datasource_id: solr_document
     property_path: date_year
     type: string
+    boost: !!float 5
   description_en:
     label: 'Description en'
     datasource_id: solr_document
@@ -174,7 +175,6 @@ field_settings:
     datasource_id: solr_document
     property_path: partial_id
     type: text
-    boost: !!float 2
   prog_name_en:
     label: 'Prog name en'
     datasource_id: solr_document
@@ -261,7 +261,6 @@ field_settings:
     datasource_id: solr_document
     property_path: ref_number
     type: text
-    boost: !!float 2
   text:
     label: Text
     datasource_id: solr_document

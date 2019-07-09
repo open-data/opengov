@@ -54,9 +54,11 @@ function alter_view_views_pre_render(ViewExecutable $view) {
     'pd_core_contracts', 'pd_core_contracts_details',
     'pd_core_grants', 'pd_core_grants_details',
     'pd_core_reclassification', 'pd_core_reclassification_details',
+    'pd_core_wrongdoing', 'pd_core_wrongdoing_details',
   ];
 
   if (in_array($view->id(), $views)) {
+
     // disable fields in other language
     foreach ($view->field as $field) {
       if (strpos($field->field, '_' . $field_to_disable) !== FALSE) {

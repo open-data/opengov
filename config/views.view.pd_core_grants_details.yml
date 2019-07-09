@@ -51,7 +51,7 @@ display:
         type: default
         options:
           grouping: {  }
-          row_class: 'panel panel-primary mrgn-tp-md'
+          row_class: 'panel panel-default mrgn-tp-md'
           default_row_class: true
       row:
         type: fields
