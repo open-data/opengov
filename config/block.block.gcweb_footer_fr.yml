@@ -1,0 +1,33 @@
+uuid: 7b66d0bf-1e06-4b87-a6c4-11574494ca4a
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.footer-fr
+  module:
+    - language
+    - system
+  theme:
+    - gcweb
+id: gcweb_footer_fr
+theme: gcweb
+region: footer
+weight: 0
+provider: null
+plugin: 'system_menu_block:footer-fr'
+settings:
+  id: 'system_menu_block:footer-fr'
+  label: 'Footer menu FR'
+  provider: system
+  label_display: visible
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility:
+  language:
+    id: language
+    langcodes:
+      fr: fr
+    negate: false
+    context_mapping:
+      language: '@language.current_language_context:language_interface'

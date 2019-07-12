@@ -94,6 +94,11 @@ field_settings:
     datasource_id: solr_document
     property_path: internal_governance_kdollars
     type: string
+  internal_governance_kdollars_change:
+    label: 'Internal governance kdollars change'
+    datasource_id: solr_document
+    property_path: internal_governance_kdollars_change
+    type: string
   internal_governance_kdollars_previous_year:
     label: 'Internal governance kdollars previous year'
     datasource_id: solr_document
@@ -103,6 +108,11 @@ field_settings:
     label: 'Key stakeholders kdollars'
     datasource_id: solr_document
     property_path: key_stakeholders_kdollars
+    type: string
+  key_stakeholders_kdollars_change:
+    label: 'Key stakeholders kdollars change'
+    datasource_id: solr_document
+    property_path: key_stakeholders_kdollars_change
     type: string
   key_stakeholders_kdollars_previous_year:
     label: 'Key stakeholders kdollars previous year'
@@ -139,6 +149,11 @@ field_settings:
     datasource_id: solr_document
     property_path: minister_kdollars_change
     type: string
+  minister_kdollars_previous_year:
+    label: 'Minister kdollars previous year'
+    datasource_id: solr_document
+    property_path: minister_kdollars_previous_year
+    type: string
   non_public_servants_kdollars:
     label: 'Non public servants kdollars'
     datasource_id: solr_document
@@ -159,6 +174,11 @@ field_settings:
     datasource_id: solr_document
     property_path: operational_activities_kdollars
     type: string
+  operational_activities_kdollars_change:
+    label: 'Operational activities kdollars change'
+    datasource_id: solr_document
+    property_path: operational_activities_kdollars_change
+    type: string
   operational_activities_kdollars_previous_year:
     label: 'Operational activities kdollars previous year'
     datasource_id: solr_document
@@ -178,6 +198,11 @@ field_settings:
     label: 'Other kdollars'
     datasource_id: solr_document
     property_path: other_kdollars
+    type: string
+  other_kdollars_change:
+    label: 'Other kdollars change'
+    datasource_id: solr_document
+    property_path: other_kdollars_change
     type: string
   other_kdollars_previous_year:
     label: 'Other kdollars previous year'
@@ -219,6 +244,16 @@ field_settings:
     datasource_id: solr_document
     property_path: total_kdollars_en
     type: string
+  total_kdollars_fr:
+    label: 'Total kdollars fr'
+    datasource_id: solr_document
+    property_path: total_kdollars_fr
+    type: string
+  total_kdollars_previous_year:
+    label: 'Total kdollars previous year'
+    datasource_id: solr_document
+    property_path: total_kdollars_previous_year
+    type: string
   total_travel_kdollars:
     label: 'Total travel kdollars'
     datasource_id: solr_document
@@ -238,6 +273,11 @@ field_settings:
     label: 'Training kdollars'
     datasource_id: solr_document
     property_path: training_kdollars
+    type: string
+  training_kdollars_change:
+    label: 'Training kdollars change'
+    datasource_id: solr_document
+    property_path: training_kdollars_change
     type: string
   training_kdollars_previous_year:
     label: 'Training kdollars previous year'

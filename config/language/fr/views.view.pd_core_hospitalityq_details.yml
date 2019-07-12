@@ -1,0 +1,23 @@
+display:
+  default:
+    display_options:
+      fields:
+        ref_number:
+          label: 'Numéro de demande'
+        name:
+          label: Nom
+        total:
+          alter:
+            text: '{{ total }} $'
+        start_date:
+          label: 'Date de début'
+        end_date:
+          label: 'Date d''achèvement'
+        employee_attendees:
+          label: 'Participants (employés du gouvernement du Canada)'
+        guest_attendees:
+          label: 'Participants (invités)'
+      title: 'Frais d''accueil gouvernementaux'
+      footer:
+        area_text_custom:
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/fr/search/hospitalityq">Retour à la recherche&nbsp;<span class="fa fa-undo"></span></a></p>'

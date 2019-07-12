@@ -1,0 +1,64 @@
+uuid: 6efbda78-1812-47c0-9cb4-21d2ab8835ee
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.pd_core_hospitalityq
+    - views.view.pd_core_hospitalityq
+  module:
+    - search_api
+id: hospitalityq_summary
+name: 'PD Hospitality (Q) - Current Search'
+facets:
+  hospitalityq_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    weight: -10
+    show_count: false
+  hospitalityq_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    weight: -9
+    show_count: false
+  hospitalityq_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    weight: -8
+    show_count: false
+  hospitalityq_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    weight: -7
+    show_count: false
+  hospitalityq_total_en:
+    checked: true
+    label: Total
+    separator: ', '
+    weight: -6
+    show_count: false
+  hospitalityq_total_fr:
+    checked: true
+    label: Total
+    separator: ', '
+    weight: -5
+    show_count: false
+facet_source_id: 'search_api:views_block__pd_core_hospitalityq__block_1'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Clear all filters'
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '10'
+    settings:
+      text:
+        value: 'There is no current search in progress.'
+        format: plain_text

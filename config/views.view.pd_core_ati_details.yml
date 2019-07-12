@@ -702,6 +702,17 @@ display:
       sorts: {  }
       header: {  }
       footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          tokenize: false
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/ati">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
+          plugin_id: text_custom
         entity_webform:
           id: entity_webform
           table: views

@@ -4,7 +4,7 @@ display:
       exposed_form:
         options:
           submit_button: Recherche
-          exposed_sorts_label: 'Trier par'
+          exposed_sorts_label: Trier
       pager:
         options:
           tags:

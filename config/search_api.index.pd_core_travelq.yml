@@ -1,0 +1,216 @@
+uuid: 62154c16-e505-4eac-9efc-c5ba22815844
+langcode: en
+status: true
+dependencies:
+  module:
+    - search_api_solr
+    - search_api
+  config:
+    - search_api.server.pd_core_travelq
+third_party_settings:
+  search_api_solr:
+    finalize: false
+    commit_before_finalize: false
+    commit_after_finalize: false
+    highlighter:
+      maxAnalyzedChars: 51200
+      fragmenter: gap
+      regex:
+        slop: 0.5
+        pattern: blank
+        maxAnalyzedChars: 10000
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
+      highlight:
+        mergeContiguous: false
+        requireFieldMatch: false
+        snippets: 3
+        fragsize: 0
+    advanced:
+      index_prefix: ''
+id: pd_core_travelq
+name: 'Proactive Disclosure: Travel (Q) Index'
+description: ''
+read_only: true
+field_settings:
+  additional_comments_en:
+    label: 'Additional comments en'
+    datasource_id: solr_document
+    property_path: additional_comments_en
+    type: string
+  additional_comments_fr:
+    label: 'Additional comments fr'
+    datasource_id: solr_document
+    property_path: additional_comments_fr
+    type: string
+  airfare:
+    label: Airfare
+    datasource_id: solr_document
+    property_path: airfare
+    type: string
+  date_year:
+    label: 'Date year'
+    datasource_id: solr_document
+    property_path: date_year
+    type: string
+  destination_en:
+    label: 'Destination en'
+    datasource_id: solr_document
+    property_path: destination_en
+    type: string
+  destination_fr:
+    label: 'Destination fr'
+    datasource_id: solr_document
+    property_path: destination_fr
+    type: string
+  disclosure_group_en:
+    label: 'Disclosure group en'
+    datasource_id: solr_document
+    property_path: disclosure_group_en
+    type: string
+  disclosure_group_fr:
+    label: 'Disclosure group fr'
+    datasource_id: solr_document
+    property_path: disclosure_group_fr
+    type: string
+  end_date:
+    label: 'End date'
+    datasource_id: solr_document
+    property_path: end_date
+    type: string
+  id:
+    label: Id
+    datasource_id: solr_document
+    property_path: id
+    type: string
+  lodging:
+    label: Lodging
+    datasource_id: solr_document
+    property_path: lodging
+    type: string
+  meals:
+    label: Meals
+    datasource_id: solr_document
+    property_path: meals
+    type: string
+  month_en:
+    label: 'Month en'
+    datasource_id: solr_document
+    property_path: month_en
+    type: string
+  month_fr:
+    label: 'Month fr'
+    datasource_id: solr_document
+    property_path: month_fr
+    type: string
+  name:
+    label: Name
+    datasource_id: solr_document
+    property_path: name
+    type: string
+  nothing_to_report_en:
+    label: 'Nothing to report en'
+    datasource_id: solr_document
+    property_path: nothing_to_report_en
+    type: string
+  nothing_to_report_fr:
+    label: 'Nothing to report fr'
+    datasource_id: solr_document
+    property_path: nothing_to_report_fr
+    type: string
+  org_name_en:
+    label: 'Org name en'
+    datasource_id: solr_document
+    property_path: org_name_en
+    type: string
+  org_name_fr:
+    label: 'Org name fr'
+    datasource_id: solr_document
+    property_path: org_name_fr
+    type: string
+  other_expenses:
+    label: 'Other expenses'
+    datasource_id: solr_document
+    property_path: other_expenses
+    type: string
+  other_transport:
+    label: 'Other transport'
+    datasource_id: solr_document
+    property_path: other_transport
+    type: string
+  purpose_en:
+    label: 'Purpose en'
+    datasource_id: solr_document
+    property_path: purpose_en
+    type: string
+  purpose_fr:
+    label: 'Purpose fr'
+    datasource_id: solr_document
+    property_path: purpose_fr
+    type: string
+  ref_number:
+    label: 'Ref number'
+    datasource_id: solr_document
+    property_path: ref_number
+    type: text
+  start_date:
+    label: 'Start date'
+    datasource_id: solr_document
+    property_path: start_date
+    type: string
+  text:
+    label: Text
+    datasource_id: solr_document
+    property_path: text
+    type: text
+  title_en:
+    label: 'Title en'
+    datasource_id: solr_document
+    property_path: title_en
+    type: string
+  title_fr:
+    label: 'Title fr'
+    datasource_id: solr_document
+    property_path: title_fr
+    type: string
+  total:
+    label: Total
+    datasource_id: solr_document
+    property_path: total
+    type: string
+  total_en:
+    label: 'Total en'
+    datasource_id: solr_document
+    property_path: total_en
+    type: string
+  total_fr:
+    label: 'Total fr'
+    datasource_id: solr_document
+    property_path: total_fr
+    type: string
+  year:
+    label: Year
+    datasource_id: solr_document
+    property_path: year
+    type: string
+datasource_settings:
+  solr_document:
+    id_field: unique_id
+    request_handler: ''
+    default_query: '*:*'
+    label_field: ''
+    language_field: ''
+    url_field: ''
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  rendered_item: {  }
+  solr_date_range: {  }
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  index_directly: false
+  cron_limit: 50
+server: pd_core_travelq

@@ -10,7 +10,7 @@ dependencies:
 id: reclassification_year_en
 name: 'PD reclassification - Year'
 url_alias: reclassification_year_en
-weight: 0
+weight: -1
 min_count: 1
 show_only_one_result: false
 field_identifier: date_year

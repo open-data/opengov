@@ -10,7 +10,7 @@ dependencies:
 id: reclassification_organization_fr
 name: 'PD Reclassification - Organisation'
 url_alias: reclassification_organization_fr
-weight: 0
+weight: -2
 min_count: 1
 show_only_one_result: false
 field_identifier: org_name_fr

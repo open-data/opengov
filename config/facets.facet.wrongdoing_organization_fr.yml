@@ -10,7 +10,7 @@ dependencies:
 id: wrongdoing_organization_fr
 name: 'PD Wrongdoing - Organisation'
 url_alias: wrongdoing_organization_fr
-weight: 0
+weight: -3
 min_count: 1
 show_only_one_result: false
 field_identifier: org_name_fr

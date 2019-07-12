@@ -8,7 +8,7 @@ display:
       exposed_form:
         options:
           submit_button: Recherche
-          exposed_sorts_label: 'Trier par'
+          exposed_sorts_label: Trier
       sorts:
         year:
           expose:
@@ -20,3 +20,14 @@ display:
       header:
         result:
           content: '<p><strong>Trouvé @total record(s) </strong></p>'
+  default:
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Recherche
+          exposed_sorts_label: Trier
+      pager:
+        options:
+          tags:
+            first: '‹ précédent'
+            last: 'suivant ›'

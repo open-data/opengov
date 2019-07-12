@@ -1,0 +1,28 @@
+display:
+  default:
+    display_options:
+      fields:
+        ref_number:
+          label: 'Numéro de demande'
+        name:
+          label: Nom
+        airfare:
+          label: 'Frais aériens'
+        other_transport:
+          label: 'Autres frais de transport'
+        lodging:
+          label: Hébergement
+        meals:
+          label: 'Frais de repas et frais accessoires'
+        other_expenses:
+          label: 'Autres dépenses'
+        total:
+          label: 'Montant total'
+        start_date:
+          label: 'Date du début du voyage'
+        end_date:
+          label: 'Date de fin du voyage'
+      footer:
+        area_text_custom:
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/fr/search/travela">Retour à la recherche&nbsp;<span class="fa fa-undo"></span></a></p>'
+      title: 'Frais de voyage gouvernementaux'

@@ -28,3 +28,6 @@ display:
           alter:
             text: '{{ agreement_end_date|trim|date(''Y-m-d'') }}'
       title: 'Subventions et des contributions gouvernementaux'
+      footer:
+        area_text_custom:
+          content: "<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/fr/search/grants\">Retour à la recherche&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n"

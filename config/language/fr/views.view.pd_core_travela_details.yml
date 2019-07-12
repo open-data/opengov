@@ -1,0 +1,6 @@
+display:
+  default:
+    display_options:
+      footer:
+        area_text_custom:
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/fr/search/travela">Retour à la recherche&nbsp;<span class="fa fa-undo"></span></a></p>'

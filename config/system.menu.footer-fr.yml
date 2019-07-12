@@ -1,0 +1,8 @@
+uuid: 18e73971-4b79-403b-ae10-b7b25de4df82
+langcode: fr
+status: true
+dependencies: {  }
+id: footer-fr
+label: 'Footer FR'
+description: 'Site information links in French'
+locked: false
