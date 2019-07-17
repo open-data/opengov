@@ -5,6 +5,8 @@ dependencies:
   config:
     - search_api.index.pd_core_ati
     - webform.webform.ati_records
+  content:
+    - 'block_content:basic:54ed5b8f-aa43-4de2-8b44-96d07d012a56'
   module:
     - search_api
 id: pd_core_ati_details
@@ -713,6 +715,19 @@ display:
           tokenize: false
           content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/ati">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
           plugin_id: text_custom
+        entity_block_content:
+          id: entity_block_content
+          table: views
+          field: entity_block_content
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          tokenize: true
+          target: 54ed5b8f-aa43-4de2-8b44-96d07d012a56
+          view_mode: default
+          bypass_access: false
+          plugin_id: entity
         entity_webform:
           id: entity_webform
           table: views
