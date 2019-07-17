@@ -14,9 +14,20 @@ use Drupal\node\Entity\Node;
  */
 class ExternalCommentController extends CommentController {
 
+  private $types = [
+    "dataset" => "Dataset",
+    "inventory" => "Open Data Inventory",
+    ];
+
+  private $types_fr = [
+    "dataset" => "Jeu de données",
+    "inventory" => "Répertoire de données ouvertes",
+  ];
+
   /**
    * Render comment form for entities external to Drupal
    * @param Request $request
+   * @param $ext_type
    * @param $uuid
    * @return Response
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
@@ -99,33 +110,20 @@ class ExternalCommentController extends CommentController {
         $lang = strpos($url, '/en/') ? 'en' : 'fr';
         $url_en = $lang === 'en' ? $url : str_replace('/fr/', '/en/', $url);
         $url_fr = $lang === 'en' ? str_replace('/en/', '/fr/', $url) : $url;
-        $types_en = [
-          "dataset" => "Dataset",
-          "visualization" => "Data Visualization",
-          "pd" => "Proactive Disclosure",
-          "inventory" => "Open Data Inventory",
-        ];
-        $ext_type_en = $types_en[$ext_type];
-        $types_fr = [
-          "dataset" => "Jeu de données",
-          "visualization" => "Visualisation de données",
-          "pd" => "Divulgation proactive",
-          "inventory" => "Répertoire de données ouvertes",
-        ];
-        $ext_type_fr = $types_fr[$ext_type];
 
         $node = Node::create(['type' => 'external']);
-        $node->set('title', $ext_type_en);
+        $node->set('title', $this->types[$ext_type]);
         $node->set('field_url', $url_en);
         $node->set('field_type', $ext_type);
         $node->set('field_uuid', $uuid);
-        $node->status = 1;
         $node->enforceIsNew();
+        $node->setPublished();
+        $node->set('moderation_state', 'published');
         $node->save();
 
         // create a translation for the node
         $node_fr = $node->addTranslation('fr');
-        $node_fr->set('title', $ext_type_fr);
+        $node_fr->set('title', $this->types_fr[$ext_type]);
         $node_fr->set('field_url', $url_fr);
         $node_fr->set('field_type', $ext_type);
         $node_fr->set('field_uuid', $uuid);
@@ -136,7 +134,7 @@ class ExternalCommentController extends CommentController {
         return parent::getReplyForm($request, $node, $field_name, $pid);
       }
       else {
-        \Drupal::logger('external comment')->warning('External comment posted for dataset with no uuid');
+        \Drupal::logger('external comment')->warning('External comment posted for ' . $ext_type . ' with no uuid');
         return [];
       }
     }
@@ -157,7 +155,6 @@ class ExternalCommentController extends CommentController {
     $url_explode = explode("/",$referer_url);
     $referer_uuid = end($url_explode);
     $referer_type = prev($url_explode);
-    $types = ["dataset", "visualization", "pd", "inventory"];
 
     if ($referer_url) {
       $host_domain = $request->getSchemeAndHttpHost();
@@ -187,7 +184,7 @@ class ExternalCommentController extends CommentController {
     }
 
     // condition 4 - invalid type
-    elseif (($ext_type != $referer_type) || !(in_array($ext_type, $types))) {
+    elseif (($ext_type != $referer_type) || !(array_key_exists($ext_type, $this->types))) {
       \Drupal::logger('external comment')->warning('Invalid external application type');
       return false;
     }
@@ -199,8 +196,8 @@ class ExternalCommentController extends CommentController {
     }
 
     // condition 6 - invalid uuid
-    elseif (($uuid != $referer_uuid) || strlen($uuid) != 36) {
-      \Drupal::logger('external comment')->warning('Invalid dataset UUID');
+    elseif (($uuid != $referer_uuid) || (strlen($uuid) != 36 && strlen($uuid) != 32)) {
+      \Drupal::logger('external comment')->warning('Invalid UUID');
       return false;
     }
 

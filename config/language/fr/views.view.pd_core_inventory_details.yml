@@ -1,0 +1,11 @@
+display:
+  default:
+    display_options:
+      fields:
+        date_published:
+          label: 'Date de publication'
+        date_released:
+          label: 'Date de diffusion'
+      footer:
+        area_text_custom:
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/fr/search/inventory">Retour à la recherche&nbsp;<span class="fa fa-undo"></span></a></p>'

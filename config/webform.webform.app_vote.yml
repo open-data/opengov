@@ -11,8 +11,8 @@ uid: 1
 template: false
 archive: false
 id: app_vote
-title: 'Vote (app)'
-description: 'Voting on apps using a webform'
+title: 'Vote: Rating'
+description: 'Rate apps using a webform'
 category: Voting
 elements: "rating:\n  '#type': webform_rating\n  '#title': 'Did you find this app useful?'\n  '#title_display': invisible\n  '#required': true\n  '#label_attributes':\n    class:\n      - h3\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': Vote"
 css: ''

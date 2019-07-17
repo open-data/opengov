@@ -11,8 +11,8 @@ uid: 1
 template: false
 archive: false
 id: vote_up_down
-title: 'Vote up down'
-description: 'Simple webform to vote up or down on an entity.'
+title: 'Vote: Vote up or LIKE'
+description: 'Simple webform to vote up or like an entity.'
 category: Voting
 elements: "actions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'"
 css: ''

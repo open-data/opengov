@@ -14,6 +14,7 @@ use \Drupal\views\ViewExecutable;
  */
 function alter_view_preprocess_views_view_fields(&$variables) {
   $view = $variables['view'];
+
   if ($view->id() === 'blog' && $view->current_display === 'all' && $view->exposed_data['combine'] != '') {
     $keys = $keys = explode(' ' , preg_replace('/[^a-zA-Z0-9\s]/', '', $view->exposed_data['combine']));
     if (is_array($keys) && !empty($variables['fields']['body']->content)) {
@@ -54,6 +55,7 @@ function alter_view_views_pre_render(ViewExecutable $view) {
     'pd_core_contracts', 'pd_core_contracts_details',
     'pd_core_grants', 'pd_core_grants_details',
     'pd_core_hospitalityq', 'pd_core_hospitalityq_details',
+    'pd_core_inventory', 'pd_core_inventory_details',
     'pd_core_reclassification', 'pd_core_reclassification_details',
     'pd_core_travela', 'pd_core_travela_details',
     'pd_core_travelq', 'pd_core_travelq_details',
@@ -80,7 +82,56 @@ function alter_view_views_pre_render(ViewExecutable $view) {
           unset($view->exposed_widgets['sort_by']['#options'][$key]);
         }
       }
+    }
+  }
+}
 
+/**
+ * Implements hook_views_pre_view
+ * attach external comment form to the footer of view pd_core_inventory_details
+ */
+function alter_view_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() === 'pd_core_inventory_details') {
+    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $options = array(
+      'id' => 'area',
+      'table' => 'views',
+      'field' => 'area',
+      'relationship' => 'none',
+      'group_type' => 'group',
+      'admin_label' => '',
+      'empty' => false,
+      'tokenize' => false,
+      'content' => [
+        'value' => '<div data-ajax-replace="/' . $language . '/external-comment/inventory/' . $view->args[0] . '" ></div>',
+        'format' => 'full_html',
+      ],
+      'plugin_id' => 'text',
+    );
+    $view->setHandler($display_id, 'footer', 'area', $options);
+  }
+}
+
+/**
+ * Implements template_preprocess_views_bootstrap_table
+ * add vote column to pd_core_inventory
+ */
+function alter_view_preprocess_views_bootstrap_table(array &$variables) {
+  $view = $variables['view'];
+  if (is_object($view) && $view->id() === 'pd_core_inventory') {
+    for ($x=0; $x< sizeof($variables['rows']); $x++) {
+      $uuid = $view->result[$x]->_item->getField('id')->getValues();
+      $connection = \Drupal::database();
+      $query = $connection->select('external_voting', 'v');
+      $query->condition('v.uuid', $uuid, '=');
+      $query->fields('v', ['vote_count']);
+      $result = $query->execute();
+      $vote_count=0;
+      foreach ($result as $record) {
+        $vote_count = $record->vote_count;
+      }
+
+      $variables['rows'][$x]['columns']['nothing']['content'][0]['field_output']['#markup']= Markup::create($vote_count);
     }
   }
 }

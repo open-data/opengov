@@ -9,20 +9,20 @@ uid: 1
 template: false
 archive: false
 id: vote
-title: Vote
-description: 'testing to implement voting using a webform'
+title: 'Vote: Rating (external)'
+description: 'Rate external content such as datasets using a webform'
 category: Voting
-elements: "dataset_uuid:\n  '#type': hidden\n  '#title': 'Dataset UUID'\n  '#default_value': '[current-page:query:uuid]'\n  '#prepopulate': true\nrating:\n  '#type': webform_rating\n  '#title': 'Did you find this dataset useful?'\n  '#title_display': inline\n  '#required': true\n  '#label_attributes':\n    class:\n      - h3\nreferred_url:\n  '#type': hidden\n  '#title': 'Referred URL'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': Rate"
+elements: "dataset_uuid:\n  '#type': hidden\n  '#title': 'Dataset UUID'\n  '#default_value': '[current-page:query:uuid]'\n  '#prepopulate': true\nreferred_url:\n  '#type': hidden\n  '#title': 'Referred URL'\nrating:\n  '#type': webform_rating\n  '#title': 'Did you find this dataset useful?'\n  '#title_display': inline\n  '#required': true\n  '#label_attributes':\n    class:\n      - h3\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': Rate"
 css: ''
 javascript: ''
 settings:
-  ajax: true
+  ajax: false
   ajax_scroll_top: form
   page: true
   page_submit_path: /vote
   page_confirm_path: ''
   form_title: source_entity_webform
-  form_submit_once: false
+  form_submit_once: true
   form_exception_message: 'Form exception message'
   form_open_message: 'Form open message'
   form_close_message: 'Form closed message'
@@ -60,7 +60,6 @@ settings:
     - serial
     - created
     - element__dataset_uuid
-    - element__vote_result
     - element__rating
     - element__referred_url
   submission_user_duplicate: false
@@ -73,8 +72,8 @@ settings:
   submission_excluded_elements: {  }
   submission_exclude_empty: false
   submission_exclude_empty_checkbox: false
-  previous_submission_message: 'You have previously voted on this dataset'
-  previous_submissions_message: 'You have previously voted on this dataset'
+  previous_submission_message: ''
+  previous_submissions_message: ''
   autofill: false
   autofill_message: ''
   autofill_excluded_elements: {  }
@@ -102,7 +101,7 @@ settings:
   draft_loaded_message: ''
   confirmation_type: url_message
   confirmation_title: ''
-  confirmation_message: 'Thank you for voting on this dataset.'
+  confirmation_message: 'Thank you for rating this dataset.'
   confirmation_url: '[webform_submission:values:referred_url]'
   confirmation_attributes: {  }
   confirmation_back: true
@@ -114,14 +113,14 @@ settings:
   limit_total_interval: 60
   limit_total_message: ''
   limit_total_unique: false
-  limit_user: 10
-  limit_user_interval: 60
-  limit_user_message: ''
+  limit_user: null
+  limit_user_interval: 15724800
+  limit_user_message: 'You have previously rated this dataset'
   limit_user_unique: false
   entity_limit_total: 10
   entity_limit_total_interval: 60
-  entity_limit_user: 10
-  entity_limit_user_interval: 60
+  entity_limit_user: 1
+  entity_limit_user_interval: 15724800
   purge: none
   purge_days: null
   results_disabled: false

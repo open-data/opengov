@@ -4495,6 +4495,67 @@
         }
     },
     {
+        "name": "drupal/views_bootstrap",
+        "version": "4.1.0",
+        "version_normalized": "4.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/views_bootstrap.git",
+            "reference": "8.x-4.1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/views_bootstrap-8.x-4.1.zip",
+            "reference": "8.x-4.1",
+            "shasum": "61e907ad7e2aebf1d2132a206ad1818ef3a6491a"
+        },
+        "require": {
+            "drupal/core": "*"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-4.x": "4.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-4.1",
+                "datestamp": "1548889080",
+                "security-coverage": {
+                    "status": "covered",
+                    "message": "Covered by Drupal's security advisory policy"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0-or-later"
+        ],
+        "authors": [
+            {
+                "name": "aburrows",
+                "homepage": "https://www.drupal.org/user/577844"
+            },
+            {
+                "name": "ericpugh",
+                "homepage": "https://www.drupal.org/user/130084"
+            },
+            {
+                "name": "ikeigenwijs",
+                "homepage": "https://www.drupal.org/user/583238"
+            },
+            {
+                "name": "mrded",
+                "homepage": "https://www.drupal.org/user/556088"
+            }
+        ],
+        "description": "Views Bootstrap v4",
+        "homepage": "https://www.drupal.org/project/views_bootstrap",
+        "support": {
+            "source": "https://git.drupalcode.org/project/views_bootstrap"
+        }
+    },
+    {
         "name": "drupal/webform",
         "version": "5.2.0",
         "version_normalized": "5.2.0.0",

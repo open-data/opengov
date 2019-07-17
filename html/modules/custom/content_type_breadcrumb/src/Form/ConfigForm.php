@@ -13,6 +13,7 @@ class ConfigForm extends ConfigFormBase {
     'pd_core_contracts_details',
     'pd_core_grants_details',
     'pd_core_hospitalityq_details',
+    'pd_core_inventory_details',
     'pd_core_reclassification_details',
     'pd_core_travela_details',
     'pd_core_travelq_details',

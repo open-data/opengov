@@ -95,6 +95,7 @@
         "drupal/search_api_solr": "^2.7",
         "drupal/simple_sitemap": "^3.1",
         "drupal/token_filter": "^1.1",
+        "drupal/views_bootstrap": "^4.1",
         "drupal/webform": "^5.2",
         "drush/drush": "^9.0.0",
         "fortawesome/font-awesome": "^5.7",

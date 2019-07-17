@@ -6,7 +6,6 @@ external_comment.renderform:
     _title: 'Render External Comments'
   requirements:
     _permission: 'access content'
-    webform_id: '^[0-9 -]*'
     uuid: '^[0-9][A-Za-z0-9 -]*$'
   options:
     parameters:
