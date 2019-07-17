@@ -5,7 +5,7 @@ namespace Drupal\voting_webform\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Drupal\webform\Entity\Webform;
+//use Drupal\webform\Entity\Webform;
 
 /**
  * Class VotingWebformController.
@@ -25,26 +25,18 @@ class VotingWebformController extends ControllerBase {
     if ($this->validate($request, $uuid, 'Vote-Rating (external)')) {
       // get average vote result for uuid
       try {
+
+        // get current vote count and average
         $connection = \Drupal::database();
-        $query = $connection->select('webform_submission_data', 't1');
-        $query->join('webform_submission_data', 't2', 't1.sid = t2.sid');
-        $query
-          ->fields('t2', ['value'])
-          ->condition('t1.webform_id', 'vote')
-          ->condition('t1.name', 'dataset_uuid')
-          ->condition('t1.value', $uuid)
-          ->condition('t2.name', 'rating');
+        $query = $connection->select('external_rating', 'v');
+        $query->condition('v.uuid', $uuid, '=');
+        $query->fields('v', ['vote_count', 'vote_average']);
         $result = $query->execute();
+        $vote_average = 0;
 
-        $vote_sum= 0;
-        $vote_count=0;
-
-        while ($record = $result->fetchAssoc()) {
-          $vote_sum += $record['value'];
-          $vote_count ++;
+        foreach ($result as $record) {
+          $vote_average = round($record->vote_average);
         }
-
-        $vote_average = $vote_count != 0 ? ceil($vote_sum / $vote_count) : 0;
 
         switch ($vote_average) {
           case '1':

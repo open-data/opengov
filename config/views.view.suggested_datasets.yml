@@ -45,10 +45,10 @@ display:
       exposed_form:
         type: basic
         options:
-          submit_button: Apply
+          submit_button: Search
           reset_button: false
           reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
+          exposed_sorts_label: Sort
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
@@ -528,7 +528,7 @@ display:
           exposed: true
           expose:
             operator_id: combine_op
-            label: Search
+            label: ''
             description: ''
             use_operator: false
             operator: combine_op
@@ -599,7 +599,7 @@ display:
           group_type: group
           admin_label: ''
           empty: false
-          content: 'Displaying @start - @end of @total suggestions'
+          content: '<p><strong>Found @total record(s)</strong></p>'
           plugin_id: result
       footer: {  }
       empty: {  }

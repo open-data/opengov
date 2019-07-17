@@ -1,7 +1,9 @@
 uuid: f8ba3532-9e43-4067-b36f-a5969c045557
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - voting_webform
 open: null
 close: null
 weight: 0
@@ -114,13 +116,13 @@ settings:
   limit_total_message: ''
   limit_total_unique: false
   limit_user: null
-  limit_user_interval: 15724800
-  limit_user_message: 'You have previously rated this dataset'
+  limit_user_interval: null
+  limit_user_message: ''
   limit_user_unique: false
   entity_limit_total: 10
   entity_limit_total_interval: 60
-  entity_limit_user: 1
-  entity_limit_user_interval: 15724800
+  entity_limit_user: null
+  entity_limit_user_interval: null
   purge: none
   purge_days: null
   results_disabled: false
@@ -134,8 +136,7 @@ access:
     users: {  }
     permissions: {  }
   view_any:
-    roles:
-      - administrator
+    roles: {  }
     users: {  }
     permissions: {  }
   update_any:
@@ -174,4 +175,12 @@ access:
     roles: {  }
     users: {  }
     permissions: {  }
-handlers: {  }
+handlers:
+  maple_leaf_rating_external_webform_handler:
+    id: vote_rating_external
+    label: 'Maple leaf rating (external) Webform Handler'
+    handler_id: maple_leaf_rating_external_webform_handler
+    status: true
+    conditions: {  }
+    weight: 0
+    settings: {  }

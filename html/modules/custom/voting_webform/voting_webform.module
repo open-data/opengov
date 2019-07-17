@@ -99,26 +99,20 @@ function getAverageVoteAndCount($uuid, $webform_id)
   }
 
   try {
+    // get current vote count and average
     $connection = \Drupal::database();
-    $query = $connection->select('webform_submission_data', 't1');
-    $query->join('webform_submission_data', 't2', 't1.sid = t2.sid');
-    $query
-      ->fields('t2', ['value'])
-      ->condition('t1.webform_id', $webform_id)
-      ->condition('t1.name', 'dataset_uuid')
-      ->condition('t1.value', $uuid)
-      ->condition('t2.name', 'rating');
+    $query = $connection->select('external_rating', 'v');
+    $query->condition('v.uuid', $uuid, '=');
+    $query->fields('v', ['vote_count', 'vote_average']);
     $result = $query->execute();
-
-    $vote_sum = 0;
     $vote_count = 0;
+    $vote_average = 0;
 
-    while ($record = $result->fetchAssoc()) {
-      $vote_sum += $record['value'];
-      $vote_count++;
+    foreach ($result as $record) {
+      $vote_count = $record->vote_count;
+      $vote_average = round($record->vote_average);
     }
 
-    $vote_average = $vote_count != 0 ? ceil($vote_sum / $vote_count) : 0;
     $vote_result["average"] = $vote_average;
     $vote_result["count"] = $vote_count;
     return $vote_result;

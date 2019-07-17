@@ -3,9 +3,9 @@ display:
     display_options:
       exposed_form:
         options:
-          submit_button: Appliquer
+          submit_button: Recherche
           reset_button_label: Réinitialiser
-          exposed_sorts_label: 'Trier par'
+          exposed_sorts_label: Trier
       fields:
         title:
           label: 'Titre du jeu de données '
@@ -17,18 +17,16 @@ display:
           label: État
         field_vote_up_down:
           label: Votez
-      filters:
-        combine:
-          expose:
-            label: Recherche
       header:
         result:
-          content: 'Affichage de @start à @end sur @total suggestions'
+          content: '<p><strong>@total résultats trouvé(s)</strong></p>'
       title: 'Jeux de données suggérés par les utilisateurs'
       pager:
         options:
           tags:
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '‹‹ première'
+            last: 'dernière ››'
+            previous: '‹ précédent'
+            next: 'suivant ›'
           expose:
             items_per_page_label: 'Entrées par page'
