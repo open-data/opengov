@@ -4,13 +4,8 @@ status: true
 dependencies:
   config:
     - block_content.type.basic
-    - block_content.type.fetch_from_api
-    - block_content.type.search
     - block_content.type.slideshow
     - block_content.type.spotlight
-    - media.type.file
-    - media.type.image
-    - media.type.slideshow
     - node.type.app
     - node.type.article
     - node.type.commitment
@@ -96,14 +91,8 @@ type_settings:
   entity_types:
     block_content:
       - basic
-      - fetch_from_api
-      - search
       - slideshow
       - spotlight
-    media:
-      - file
-      - image
-      - slideshow
     node:
       - app
       - article

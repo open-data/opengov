@@ -29,11 +29,6 @@ third_party_settings:
     enabled: true
     sections:
       -
-        layout_id: layout_onecol
-        layout_settings: {  }
-        components: {  }
-        third_party_settings: {  }
-      -
         layout_id: bs_2col
         layout_settings:
           layout:
@@ -95,6 +90,16 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: 0
+          86c29c0a-490f-42d0-92ae-b3c498bedb17:
+            uuid: 86c29c0a-490f-42d0-92ae-b3c498bedb17
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:landing_page:content_moderation_control'
+            additional: {  }
+            weight: 3
         third_party_settings: {  }
       -
         layout_id: layout_onecol
@@ -186,34 +191,6 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: 0
-        third_party_settings: {  }
-      -
-        layout_id: bs_1col
-        layout_settings:
-          layout:
-            wrapper: div
-            classes:
-              row: row
-            add_layout_class: 1
-            attributes: ''
-          regions:
-            main:
-              wrapper: div
-              classes:
-                col-sm-12: col-sm-12
-              add_region_classes: 1
-              attributes: ''
-        components:
-          86c29c0a-490f-42d0-92ae-b3c498bedb17:
-            uuid: 86c29c0a-490f-42d0-92ae-b3c498bedb17
-            region: main
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:landing_page:content_moderation_control'
-            additional: {  }
-            weight: 3
         third_party_settings: {  }
 id: node.landing_page.default
 targetEntityType: node

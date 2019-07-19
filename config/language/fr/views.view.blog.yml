@@ -6,15 +6,21 @@ display:
     display_options:
       exposed_form:
         options:
-          submit_button: Appliquer
+          submit_button: Recherche
           reset_button_label: Réinitialiser
-          exposed_sorts_label: 'Trier par'
+          exposed_sorts_label: Trier
       pager:
         options:
           tags:
-            first: '« Premier'
-            last: 'Suivant »'
+            first: '‹‹ première'
+            last: 'dernière ››'
+            previous: '‹ précédent'
+            next: 'suivant ›'
       title: Blogue
+      sorts:
+        created:
+          expose:
+            label: Date
   all:
     display_options:
       filters:
@@ -24,11 +30,8 @@ display:
       sorts:
         created:
           expose:
-            label: 'Rédigé le'
+            label: Date
         title:
           expose:
             label: Titre
-      header:
-        result:
-          content: 'Affichage de @start à @end sur @total blogues'
 label: Blogue

@@ -5,8 +5,6 @@ namespace Drupal\mergenodes\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\NodeType;
-use Drupal\media_entity\Entity\Media;
-use Drupal\Core\Database\Database;
 
 /**
  * Class DefaultForm.
@@ -99,44 +97,11 @@ class DefaultForm extends FormBase {
       '#value' => $this->t('Merge translations'),
     ];
 
-    // button to archive nodes published in one langauge
-    $form['archive_dups'] = array(
-      '#name' => 'archive_dups',
-      '#type' => 'submit',
-      '#value' => t('Archive duplicate nodes'),
-      '#submit' => array([$this, 'archiveDups']),
-    );
-
     return $form;
   }
 
   public function viewMappings(array &$form, FormStateInterface &$form_state) {
     $form_state->setRebuild();
-  }
-
-  public function archiveDups(array &$form, FormStateInterface &$form_state) {
-    $content_type = $form_state->getValue('contenttype');
-    if (empty($content_type)) {
-      drupal_set_message('No content type selected to merge', 'warning');
-    }
-    else {
-      $query = \Drupal::entityQuery('node');
-      $query->condition('type', $content_type);
-      $nids = $query->execute();
-      $keys = array_keys($nids);
-      $storage_handler = \Drupal::entityTypeManager()->getStorage("node");
-      for ($i = 0; $i < sizeof($keys); $i++) {
-        // 2. Load a node
-        $node = $storage_handler->load($nids[$keys[$i]]);
-        if (!($node->hasTranslation('en') && $node->hasTranslation('fr'))) {
-          if ($node->get('moderation_state')->value === 'published') {
-            drupal_set_message('Archiving ' . $node->id() . ' - ' . $node->get('moderation_state')->value . ' - ' . $node->get('title')->value . '  because it is published in one language', 'warning');
-            $node->set('moderation_state', 'archived');
-            $node->save();
-          }
-        }
-      }
-    }
   }
 
   /**

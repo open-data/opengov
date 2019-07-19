@@ -62,7 +62,7 @@ class VotingWebformController extends ControllerBase {
             break;
         }
       }
-      catch (Exception $e) {
+      catch (\Exception $e) {
         \Drupal::logger('vote')->warning('Vote-Rating (external): Exception thrown while trying to get average vote with uuid: ' . $uuid);
         $renderHTML .= '<img class="image-actual" alt="This dataset is currently unrated" src="/modules/custom/voting_webform/images/zerostar.png">';
       }
