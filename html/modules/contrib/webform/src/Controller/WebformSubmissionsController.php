@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Provides route responses for webform submissions.
+ * Provides route responses for Webform submissions.
  */
 class WebformSubmissionsController extends ControllerBase {
 

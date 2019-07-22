@@ -5,6 +5,7 @@ namespace Drupal\webform\Element;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\Element\RenderElement;
 use Drupal\webform\Entity\Webform as WebformEntity;
+use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformInterface;
 
 /**
@@ -26,6 +27,8 @@ class Webform extends RenderElement {
       '#webform' => NULL,
       '#default_data' => [],
       '#action' => NULL,
+      '#sid' => NULL,
+      '#information' => NULL,
     ];
   }
 
@@ -38,40 +41,61 @@ class Webform extends RenderElement {
       return $element;
     }
 
-    if ($webform->access('submission_create')) {
-      $values = [];
-
-      // Set data.
-      $values['data'] = $element['#default_data'];
-
-      // Set source entity type and id.
-      if (!empty($element['#entity']) && $element['#entity'] instanceof EntityInterface) {
-        $values['entity_type'] = $element['#entity']->getEntityTypeId();
-        $values['entity_id'] = $element['#entity']->id();
+    if (!empty($element['#sid'])) {
+      $webform_submission = WebformSubmission::load($element['#sid']);
+      if ($webform_submission
+        && $webform_submission->access('update')
+        && $webform_submission->getWebform()->id() === $webform->id()) {
+        $element['webform_build'] = \Drupal::service('entity.form_builder')
+          ->getForm($webform_submission, 'edit');
       }
-      elseif (!empty($element['#entity_type']) && !empty($element['#entity_id'])) {
-        $values['entity_type'] = $element['#entity_type'];
-        $values['entity_id'] = $element['#entity_id'];
+      elseif ($webform->getSetting('form_access_denied') !== WebformInterface::ACCESS_DENIED_DEFAULT) {
+        // Set access denied message.
+        $element['webform_access_denied'] = static::buildAccessDenied($webform);
       }
+      else {
+        static::addCacheableDependency($element, $webform);
+      }
+    }
+    else {
+      if ($webform->access('submission_create')) {
+        $values = [];
 
-      // Build the webform.
-      $element['webform_build'] = $webform->getSubmissionForm($values);
+        // Set data.
+        $values['data'] = $element['#default_data'];
 
-      // Set custom form action.
+        // Set source entity type and id.
+        if (!empty($element['#entity']) && $element['#entity'] instanceof EntityInterface) {
+          $values['entity_type'] = $element['#entity']->getEntityTypeId();
+          $values['entity_id'] = $element['#entity']->id();
+        }
+        elseif (!empty($element['#entity_type']) && !empty($element['#entity_id'])) {
+          $values['entity_type'] = $element['#entity_type'];
+          $values['entity_id'] = $element['#entity_id'];
+        }
+
+        // Build the webform.
+        $element['webform_build'] = $webform->getSubmissionForm($values);
+      }
+      elseif ($webform->getSetting('form_access_denied') !== WebformInterface::ACCESS_DENIED_DEFAULT) {
+        // Set access denied message.
+        $element['webform_access_denied'] = static::buildAccessDenied($webform);
+      }
+      else {
+        static::addCacheableDependency($element, $webform);
+      }
+    }
+
+    if (isset($element['webform_build'])) {
+      // Set custom form submit action.
       if (!empty($element['#action'])) {
         $element['webform_build']['#action'] = $element['#action'];
       }
-    }
-    elseif ($webform->getSetting('form_access_denied') !== WebformInterface::ACCESS_DENIED_DEFAULT) {
-      // Set access denied message.
-      $element['webform_access_denied'] = static::buildAccessDenied($webform);
-    }
-    else {
-      // Add config and webform to cache contexts.
-      $config = \Drupal::configFactory()->get('webform.settings');
-      $renderer = \Drupal::service('renderer');
-      $renderer->addCacheableDependency($element, $config);
-      $renderer->addCacheableDependency($element, $webform);
+      // Hide submission information.
+      if ($element['#information'] === FALSE
+        && isset($element['webform_build']['information'])) {
+        $element['webform_build']['information']['#access'] = FALSE;
+      }
     }
 
     return $element;
@@ -84,7 +108,7 @@ class Webform extends RenderElement {
    *   A webform.
    *
    * @return array
-   *   A renderable array containing thea ccess denied message for a webform.
+   *   A renderable array containing thea access denied message for a webform.
    */
   public static function buildAccessDenied(WebformInterface $webform) {
     /** @var \Drupal\webform\WebformTokenManagerInterface $webform_token_manager */
@@ -106,12 +130,33 @@ class Webform extends RenderElement {
       'message' => WebformHtmlEditor::checkMarkup($message),
     ];
 
-    // Add config and webform to cache contexts.
-    $renderer = \Drupal::service('renderer');
-    $renderer->addCacheableDependency($build, $config);
-    $renderer->addCacheableDependency($build, $webform);
+    return static::addCacheableDependency($build, $webform);
+  }
 
-    return $build;
+  /**
+   * Adds webform.settings and webform as cache dependencies to a render array.
+   *
+   * @param array &$elements
+   *   The render array to update.
+   * @param \Drupal\webform\WebformInterface $webform
+   *   A webform.
+   *
+   * @return array
+   *   A render array with webform.settings and webform as cache dependencies.
+   */
+  public static function addCacheableDependency(array &$elements, WebformInterface $webform) {
+    // .
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+    $renderer = \Drupal::service('renderer');
+
+    // Track if webform.settings is updated.
+    $config = \Drupal::configFactory()->get('webform.settings');
+    $renderer->addCacheableDependency($elements, $config);
+
+    // Track if the webform is updated.
+    $renderer->addCacheableDependency($elements, $webform);
+
+    return $elements;
   }
 
 }

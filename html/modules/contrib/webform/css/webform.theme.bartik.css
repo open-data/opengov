@@ -23,6 +23,11 @@ table {
   margin-left: 1.6em;
 }
 
+.webform-submission-form .form-type-radio .webform-options-display-buttons-description.description,
+.webform-submission-form .form-type-checkbox .webform-options-display-buttons-description.description {
+  margin-left: 0;
+}
+
 /**
  * Tweak webform element form.
  */
@@ -40,10 +45,6 @@ table {
   min-width: 65px;
 }
 
-.webform-multiple-table td.webform-multiple-table--operations input {
-  margin: 0;
-}
-
 /**
  * Tweak details toggle state.
  */
@@ -58,6 +59,20 @@ table {
   color: #018fe2;
   text-decoration: none;
   border-bottom-style: solid;
+}
+
+/**
+ * Ajax form wrapper.
+ *
+ * Prevent messages top margin from causing the slide effect to
+ * jump when completed.
+ */
+.webform-ajax-form-wrapper[data-effect="slide"] .messages__wrapper:first-of-type {
+  padding-top: 28px;
+}
+
+.webform-ajax-form-wrapper[data-effect="slide"] .messages:first-of-type:first-child {
+  margin-top: 0;
 }
 
 /**

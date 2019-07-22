@@ -73,7 +73,7 @@ class WebformImageSelectImagesForm extends EntityForm {
         'label' => '<br/>' . $this->t('Machine name'),
       ],
       '#maxlength' => 32,
-      '#field_suffix' => ' (' . $this->t('Maximum @max characters', ['@max' => 32]) . ')',
+      '#field_suffix' => ($webform_images->isNew()) ? ' (' . $this->t('Maximum @max characters', ['@max' => 32]) . ')' : '',
       '#required' => TRUE,
       '#disabled' => !$webform_images->isNew(),
       '#default_value' => $webform_images->id(),

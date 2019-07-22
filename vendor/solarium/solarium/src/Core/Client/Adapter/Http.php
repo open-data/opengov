@@ -24,11 +24,10 @@ class Http extends Configurable implements AdapterInterface
      *
      * @return Response
      */
-    public function execute($request, $endpoint)
+    public function execute(Request $request, Endpoint $endpoint): Response
     {
         $context = $this->createContext($request, $endpoint);
-        $baseUri = $request->getIsServerRequest() ? $endpoint->getServerUri() : $endpoint->getCoreBaseUri();
-        $uri = $baseUri.$request->getUri();
+        $uri = AdapterHelper::buildUri($request, $endpoint);
 
         list($data, $headers) = $this->getData($uri, $context);
 
@@ -88,8 +87,7 @@ class Http extends Configurable implements AdapterInterface
 
         if (Request::METHOD_POST == $method) {
             if ($request->getFileUpload()) {
-                $helper = new AdapterHelper();
-                $data = $helper->buildUploadBodyFromRequest($request);
+                $data = AdapterHelper::buildUploadBodyFromRequest($request);
 
                 $content_length = strlen($data);
                 $request->addHeader("Content-Length: $content_length\r\n");
@@ -148,16 +146,9 @@ class Http extends Configurable implements AdapterInterface
      */
     protected function getData($uri, $context)
     {
-        // @codeCoverageIgnoreStart
         $data = @file_get_contents($uri, false, $context);
 
-        $headers = [];
-
-        if (isset($http_response_header)) {
-            $headers = $http_response_header;
-        }
-
-        return [$data, $headers];
-        // @codeCoverageIgnoreEnd
+        // @ see https://www.php.net/manual/en/reserved.variables.httpresponseheader.php
+        return [$data, $http_response_header];
     }
 }

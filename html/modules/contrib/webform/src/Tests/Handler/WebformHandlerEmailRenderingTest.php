@@ -49,17 +49,15 @@ class WebformHandlerEmailRenderingTest extends WebformTestBase {
     ];
     $this->postSubmission($webform, $edit);
 
-    /* BELOW TEST IS PASSING LOCALL BUT FAILING ON DRUPAL.ORG.
     // Check submitting contact form and sending emails using the
     // default bartik.theme.
     $sent_emails = $this->drupalGetMails();
-    $this->assertContains($sent_emails[0]['body'], 'HEADER 1 (CONTACT_EMAIL_CONFIRMATION)');
-    $this->assertContains($sent_emails[0]['body'], 'Please ignore this email.');
-    $this->assertContains($sent_emails[0]['body'],'address (contact_email_confirmation)');
-    $this->assertContains($sent_emails[1]['body'], 'HEADER 1 (GLOBAL)');
-    $this->assertContains($sent_emails[1]['body'], 'Please ignore this email.');
-    $this->assertContains($sent_emails[1]['body'],'address (global)');
-    */
+    $this->assertContains('HEADER 1 (CONTACT_EMAIL_CONFIRMATION)', $sent_emails[0]['body']);
+    $this->assertContains('Please ignore this email.', $sent_emails[0]['body']);
+    $this->assertContains('address (contact_email_confirmation)', $sent_emails[0]['body']);
+    $this->assertContains('HEADER 1 (GLOBAL)', $sent_emails[1]['body']);
+    $this->assertContains('Please ignore this email.', $sent_emails[1]['body']);
+    $this->assertContains('address (global)', $sent_emails[1]['body']);
 
     // Disable dedicated page which will cause the form to now use the
     // seven.theme.
@@ -74,19 +72,17 @@ class WebformHandlerEmailRenderingTest extends WebformTestBase {
     // Post submission and send emails.
     $this->postSubmission($webform, $edit);
 
-    /* BELOW TEST IS PASSING LOCALL BUT FAILING ON DRUPAL.ORG.
     // Check submitting contact form and sending emails using the
     // seven.theme but the rendered the emails still use the default
     // bartik.theme.
     // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::getMessage
     $sent_emails = $this->drupalGetMails();
-    $this->assertContains($sent_emails[2]['body'], 'HEADER 1 (CONTACT_EMAIL_CONFIRMATION)');
-    $this->assertContains($sent_emails[2]['body'], 'Please ignore this email.');
-    $this->assertContains($sent_emails[2]['body'],'address (contact_email_confirmation)');
-    $this->assertContains($sent_emails[3]['body'], 'HEADER 1 (GLOBAL)');
-    $this->assertContains($sent_emails[3]['body'], 'Please ignore this email.');
-    $this->assertContains($sent_emails[3]['body'],'address (global)');
-    */
+    $this->assertContains('HEADER 1 (CONTACT_EMAIL_CONFIRMATION)', $sent_emails[2]['body']);
+    $this->assertContains('Please ignore this email.', $sent_emails[2]['body']);
+    $this->assertContains('address (contact_email_confirmation)', $sent_emails[2]['body']);
+    $this->assertContains('HEADER 1 (GLOBAL)', $sent_emails[3]['body']);
+    $this->assertContains('Please ignore this email.', $sent_emails[3]['body']);
+    $this->assertContains('address (global)', $sent_emails[3]['body']);
   }
 
 }

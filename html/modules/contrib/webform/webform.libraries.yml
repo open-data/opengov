@@ -65,6 +65,14 @@ webform.admin.dropbutton:
   dependencies:
     - core/drupal.dropbutton
 
+webform.admin.off_canvas:
+  version: VERSION
+  js:
+    js/webform.admin.off-canvas.js: {}
+  dependencies:
+    - core/drupal.debounce
+    - core/drupal.dialog.off_canvas
+
 webform.admin.settings:
   version: VERSION
   css:
@@ -165,14 +173,6 @@ webform.confirmation.modal:
     - core/jquery.ui.dialog
     - webform/webform.confirmation
 
-# Contribute.
-
-webform.contribute:
-  version: VERSION
-  css:
-    theme:
-      css/webform.contribute.css: {}
-
 # Contextual
 
 webform.contextual:
@@ -249,11 +249,9 @@ webform.progress.tracker:
 
 webform.off_canvas:
   version: VERSION
-  js:
-    js/webform.off-canvas.js: {}
-  dependencies:
-    - core/drupal.debounce
-    - core/drupal.dialog.off_canvas
+  css:
+    component:
+      css/webform.off-canvas.css: {}
 
 # Promotions.
 
@@ -294,6 +292,12 @@ webform.tooltip:
     - core/jquery.ui.tooltip
 
 # Theme
+
+webform.theme.classy:
+  version: VERSION
+  css:
+    theme:
+      css/webform.theme.classy.css: {}
 
 webform.theme.bartik:
   version: VERSION
@@ -406,6 +410,18 @@ webform.element.checkbox_value:
   css:
     component:
       css/webform.element.checkbox_value.css: {}
+
+webform.element.choices:
+  version: VERSION
+  css:
+    component:
+      css/webform.element.choices.css: {}
+  js:
+    js/webform.element.choices.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery.once
+    - webform/libraries.choices
 
 webform.element.chosen:
   version: VERSION
@@ -526,7 +542,6 @@ webform.element.computed:
   js:
     js/webform.element.computed.js: {}
   dependencies:
-    - core/drupal.debounce
     - core/jquery.once
     - webform/webform.announce
 
@@ -558,6 +573,14 @@ webform.element.datelist:
   css:
     component:
       css/webform.element.datelist.css: {}
+
+webform.element.details:
+  version: VERSION
+  js:
+    js/webform.element.details.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery.once
 
 webform.element.details.save:
   version: VERSION
@@ -740,6 +763,8 @@ webform.element.options:
   css:
     component:
       css/webform.element.options.css: {}
+  js:
+    js/webform.element.options.js: {}
 
 webform.element.options.admin:
   version: VERSION
@@ -947,16 +972,32 @@ imce.input:
 
 # External libraries.
 
+libraries.choices:
+  remote: https://github.com/jshjohnson/Choices
+  version: '7.0.0'
+  license:
+    name: MIT
+    url: https://github.com/jshjohnson/Choices/blob/master/LICENSE
+    gpl-compatible: true
+  cdn:
+    /libraries/choices/: https://cdn.jsdelivr.net/gh/jshjohnson/Choices@v7.0.0/
+  css:
+    component:
+      css/webform.choices.base.css: {  }
+      /libraries/choices/public/assets/styles/choices.min.css: { minified: true }
+  js:
+    /libraries/choices/public/assets/scripts/choices.min.js: { minified: true }
+
 libraries.codemirror.text:
   remote: https://github.com/codemirror/codemirror
-  version: &webform_codemirror_version '5.44.0'
+  version: &webform_codemirror_version '5.47.0'
   license: &webform_codemirror_license
     name: MIT
     url: http://codemirror.net/LICENSE
     gpl-compatible: true
   cdn: &webform_codemirror_cdn
-    /libraries/codemirror/lib/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/
-    /libraries/codemirror/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/
+    /libraries/codemirror/lib/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.47.0/
+    /libraries/codemirror/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.47.0/
   css:
     component:
       /libraries/codemirror/lib/codemirror.css: {}
@@ -1035,13 +1076,13 @@ libraries.codemirror.twig:
 
 libraries.algolia.places:
   remote: https://github.com/algolia/places
-  version: '1.16.1'
+  version: '1.16.4'
   license:
     name: MIT
     url: https://github.com/algolia/places/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/algolia.places/dist/cdn/: https://cdn.jsdelivr.net/npm/places.js@1.16.1/dist/cdn/
+    /libraries/algolia.places/dist/cdn/: https://cdn.jsdelivr.net/npm/places.js@1.16.4/dist/cdn/
   js:
     /libraries/algolia.places/dist/cdn/places.js: {}
 
@@ -1116,13 +1157,13 @@ libraries.jquery.icheck.square:
 
 libraries.jquery.inputmask:
   remote: https://github.com/RobinHerbots/jquery.inputmask
-  version: '4.0.6'
+  version: '4.0.8'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.inputmask/: https://cdn.jsdelivr.net/gh/RobinHerbots/Inputmask@4.0.6/
+    /libraries/jquery.inputmask/: https://cdn.jsdelivr.net/gh/RobinHerbots/Inputmask@4.0.8/
   js:
     /libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js: { minified: true }
   dependencies:
@@ -1149,13 +1190,13 @@ libraries.jquery.intl-tel-input:
 
 libraries.jquery.rateit:
   remote: https://github.com/gjunge/rateit.js
-  version: '1.1.1'
+  version: '1.1.2'
   license:
     name: MIT
     url: https://github.com/gjunge/rateit.js/blob/master/LICENSE.md
     gpl-compatible: true
   cdn:
-    /libraries/jquery.rateit/: https://cdn.jsdelivr.net/gh/gjunge/rateit.js@1.1.1/
+    /libraries/jquery.rateit/: https://cdn.jsdelivr.net/gh/gjunge/rateit.js@1.1.2/
   css:
     component:
       /libraries/jquery.rateit/scripts/rateit.css: {}
@@ -1166,13 +1207,13 @@ libraries.jquery.rateit:
 
 libraries.jquery.select2:
   remote: https://select2.github.io/
-  version: '4.0.5'
+  version: '4.0.7'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.select2/dist/: https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/
+    /libraries/jquery.select2/dist/: https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/
   css:
     component:
       /libraries/jquery.select2/dist/css/select2.min.css: { minified: true }
@@ -1214,13 +1255,13 @@ libraries.jquery.textcounter:
 
 libraries.jquery.timepicker:
   remote: https://github.com/jonthornton/jquery-timepicker
-  version: '1.11.14'
+  version: '1.11.15'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.timepicker/: https://cdn.jsdelivr.net/gh/jonthornton/jquery-timepicker@1.11.14/
+    /libraries/jquery.timepicker/: https://cdn.jsdelivr.net/gh/jonthornton/jquery-timepicker@1.11.15/
   css:
     component:
       /libraries/jquery.timepicker/jquery.timepicker.min.css: { minified: true }

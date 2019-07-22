@@ -74,6 +74,7 @@ webform.help:
   path: '/admin/structure/webform/help'
   defaults:
     _controller: '\Drupal\webform\Controller\WebformHelpController::index'
+    _title: 'Webforms: Help'
   requirements:
     _permission: 'access content'
 
@@ -83,31 +84,6 @@ webform.help.video:
     _form: '\Drupal\webform\Form\WebformHelpVideoForm'
   requirements:
     _permission: 'access content'
-
-# Contribute
-
-webform.contribute:
-  path: '/admin/structure/webform/contribute'
-  defaults:
-    _controller: '\Drupal\webform\Controller\WebformContributeController::index'
-    _title: 'Webforms: Contribute'
-  requirements:
-    _permission: 'administer webform'
-
-webform.contribute.settings:
-  path: '/admin/structure/webform/contribute/configure'
-  defaults:
-    _form: '\Drupal\webform\Form\WebformContributeForm'
-    _title: 'Configure Community Information'
-  requirements:
-    _permission: 'administer webform'
-
-webform.contribute.autocomplete:
-  path: '/admin/structure/webform/contribute/autocomplete/{account_type}'
-  defaults:
-    _controller: '\Drupal\webform\Controller\WebformContributeController::autocomplete'
-  requirements:
-    _permission: 'administer webform'
 
 # Forms
 

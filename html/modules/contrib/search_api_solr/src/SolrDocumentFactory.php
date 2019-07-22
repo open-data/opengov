@@ -10,6 +10,8 @@ use Drupal\search_api\Item\ItemInterface;
  */
 class SolrDocumentFactory implements SolrDocumentFactoryInterface {
 
+  protected static $solr_document = 'solr_document';
+
   /**
    * A typed data manager.
    *
@@ -29,9 +31,11 @@ class SolrDocumentFactory implements SolrDocumentFactoryInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function create(ItemInterface $item) {
-    $plugin = $this->typedDataManager->getDefinition('solr_document')['class'];
+    $plugin = $this->typedDataManager->getDefinition(static::$solr_document)['class'];
     return $plugin::createFromItem($item);
   }
 

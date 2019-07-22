@@ -2,11 +2,11 @@
 
 namespace Solarium\Core\Client\Adapter;
 
-use Solarium\Core\Client;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Configurable;
+use Solarium\Core\ConfigurableInterface;
 use Solarium\Exception\HttpException;
 use Solarium\Exception\OutOfBoundsException;
 
@@ -50,7 +50,7 @@ class Zend2Http extends Configurable implements AdapterInterface
      *
      * @return self Provides fluent interface
      */
-    public function setOptions($options, $overwrite = false)
+    public function setOptions($options, bool $overwrite = false): ConfigurableInterface
     {
         parent::setOptions($options, $overwrite);
 
@@ -130,7 +130,7 @@ class Zend2Http extends Configurable implements AdapterInterface
      *
      * @return Response
      */
-    public function execute($request, $endpoint)
+    public function execute(Request $request, Endpoint $endpoint): Response
     {
         $client = $this->getZendHttp();
         $client->resetParameters();
@@ -138,32 +138,27 @@ class Zend2Http extends Configurable implements AdapterInterface
         switch ($request->getMethod()) {
             case Request::METHOD_GET:
                 $client->setMethod('GET');
-                $client->setParameterGet($request->getParams());
                 break;
             case Request::METHOD_POST:
                 $client->setMethod('POST');
                 if ($request->getFileUpload()) {
                     $this->prepareFileUpload($client, $request);
                 } else {
-                    $client->setParameterGet($request->getParams());
                     $client->setRawBody($request->getRawData());
                     $request->addHeader('Content-Type: text/xml; charset=UTF-8');
                 }
                 break;
             case Request::METHOD_HEAD:
                 $client->setMethod('HEAD');
-                $client->setParameterGet($request->getParams());
                 break;
             case Request::METHOD_DELETE:
                 $client->setMethod('DELETE');
-                $client->setParameterGet($request->getParams());
                 break;
             case Request::METHOD_PUT:
                 $client->setMethod('PUT');
                 if ($request->getFileUpload()) {
                     $this->prepareFileUpload($client, $request);
                 } else {
-                    $client->setParameterGet($request->getParams());
                     $client->setRawBody($request->getRawData());
                     $request->addHeader('Content-Type: application/json; charset=UTF-8');
                 }
@@ -173,8 +168,8 @@ class Zend2Http extends Configurable implements AdapterInterface
                 break;
         }
 
-        $baseUri = $request->getIsServerRequest() ? $endpoint->getServerUri() : $endpoint->getCoreBaseUri();
-        $uri = $baseUri.$request->getUri();
+        $uri = AdapterHelper::buildUri($request, $endpoint);
+
         $client->setUri($uri);
         $client->setHeaders($request->getHeaders());
         $this->timeout = $endpoint->getTimeout();
@@ -198,7 +193,7 @@ class Zend2Http extends Configurable implements AdapterInterface
      *
      * @return Response
      */
-    protected function prepareResponse($request, $response)
+    protected function prepareResponse(Request $request, \Zend\Http\Response $response)
     {
         if ($response->isClientError()) {
             throw new HttpException(
@@ -227,12 +222,7 @@ class Zend2Http extends Configurable implements AdapterInterface
      */
     protected function prepareFileUpload($client, $request)
     {
-        $filename = $request->getFileUpload();
-        $client->setFileUpload(
-            'content',
-            'content',
-            file_get_contents($filename),
-            'application/octet-stream; charset=binary'
-        );
+        $data = AdapterHelper::buildUploadBodyFromRequest($request);
+        $client->setRawBody($data);
     }
 }

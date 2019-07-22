@@ -39,7 +39,7 @@ class HttpException extends \RuntimeException implements ExceptionInterface
      * Exception constructor.
      *
      * The input message is a HTTP status message. Because an exception with the
-     * message 'Not Found' is not very clear it this message is tranformed to a
+     * message 'Not Found' is not very clear this message is transformed to a
      * more descriptive text. The original message is available using the
      * {@link getStatusMessage} method.
      *
@@ -47,7 +47,7 @@ class HttpException extends \RuntimeException implements ExceptionInterface
      * @param int|null    $code
      * @param string|null $body
      */
-    public function __construct($statusMessage, $code = null, $body = null)
+    public function __construct(string $statusMessage, int $code = null, string $body = null)
     {
         $this->statusMessage = $statusMessage;
         $this->body = $body;
@@ -68,7 +68,7 @@ class HttpException extends \RuntimeException implements ExceptionInterface
      *
      * @return string
      */
-    public function getStatusMessage()
+    public function getStatusMessage(): string
     {
         return $this->statusMessage;
     }
@@ -78,7 +78,7 @@ class HttpException extends \RuntimeException implements ExceptionInterface
      *
      * @return string
      */
-    public function getBody()
+    public function getBody(): ?string
     {
         return $this->body;
     }

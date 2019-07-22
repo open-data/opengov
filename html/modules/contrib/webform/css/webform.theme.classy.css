@@ -12,3 +12,14 @@
 .ui-datepicker {
   z-index: 1261 !important;
 }
+
+/**
+ * Ajax form wrapper.
+ *
+ * Prevent actions bottom margin from causing the slide effect to
+ * jump when completed.
+ */
+.webform-ajax-form-wrapper[data-effect="slide"] .form-actions {
+  margin-bottom: 0;
+  padding-bottom: 1em;
+}

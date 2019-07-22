@@ -2,11 +2,9 @@
 
 namespace Drupal\search_api_solr_admin\Form;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api\ServerInterface;
-use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -18,7 +16,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SolrReloadCoreForm extends FormBase {
 
   /**
-   * @var ServerInterface
+   * The Search API server entity.
+   *
+   * @var \Drupal\search_api\ServerInterface
    */
   private $search_api_server;
 
@@ -26,6 +26,7 @@ class SolrReloadCoreForm extends FormBase {
    * SolrReloadCoreForm constructor.
    *
    * @param \Drupal\search_api_solr\Form\MessengerInterface $messenger
+   *   The messenger.
    */
   public function __construct(MessengerInterface $messenger) {
     $this->messenger = $messenger;
@@ -63,11 +64,12 @@ class SolrReloadCoreForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $core = $this->search_api_server->getBackendConfig()['connector_config']['core'];
     try {
+      /** @var \Drupal\search_api_solr\SolrConnectorInterface $connector */
       $connector = $this->search_api_server->getBackend()->getSolrConnector();
       $result = $connector->reloadCore();
 
       if ($result) {
-        $this->messenger->addMessage($this->t('Core %core reloaded.', ['%core' => $core]));
+        $this->messenger->addMessage($this->t('Solr: %core reloaded.', ['%core' => $core]));
       }
     }
     catch (\Exception $e) {

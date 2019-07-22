@@ -16,6 +16,21 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**
+ * Implements hook_form_FORM_ID_alter() for language_content_settings_form().
+ */
+function webform_form_language_content_settings_form_alter(array &$form, FormStateInterface $form_state) {
+  // Completely remove webform_submission from Content language admin
+  // settings form, only when there are no previously saved
+  // 'language.content_settings.webform_submission.*' config files.
+  $has_saved_webform_submissions = count(\Drupal::configFactory()->listAll('language.content_settings.webform_submission.')) ? TRUE : FALSE;
+  if (!$has_saved_webform_submissions) {
+    unset($form['#label']['webform_submission']);
+    unset($form['entity_types']['#options']['webform_submission']);
+    unset($form['settings']['webform_submission']);
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function webform_form_locale_translate_edit_form_alter(&$form, FormStateInterface $form_state) {

@@ -54,6 +54,15 @@
         ajax_scroll_top:
           type: string
           label: 'Ajax scroll top'
+        ajax_progress_type:
+          type: string
+          label: 'Ajax progress type'
+        ajax_effect:
+          type: string
+          label: 'Ajax effect'
+        ajax_speed:
+          type: integer
+          label: 'Ajax speed'
         page:
           type: boolean
           label: 'Enable page'
@@ -63,6 +72,9 @@
         page_confirm_path:
           type: string
           label: 'Page confirm URL alias'
+        page_admin_theme:
+          type: boolean
+          label: 'Use admin theme for page'
         form_title:
           type: string
           label: 'Form title display'
@@ -332,6 +344,12 @@
         draft_loaded_message:
           type: text
           label: 'Draft loaded message'
+        draft_pending_single_message:
+          type: text
+          label: 'Draft pending single draft message'
+        draft_pending_multiple_message:
+          type: text
+          label: 'Draft pending multiple drafts message'
         confirmation_type:
           type: string
           label: 'Confirmation type'
@@ -362,6 +380,9 @@
         confirmation_exclude_token:
           type: boolean
           label: 'Exclude token from confirmation URL'
+        confirmation_update:
+          type: boolean
+          label: 'Display confirmation when submission is updated'
         limit_total:
           type: integer
           label: 'Limit total submissions'

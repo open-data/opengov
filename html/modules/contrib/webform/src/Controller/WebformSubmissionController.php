@@ -16,7 +16,7 @@ use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides route responses for webform submissions.
+ * Provides route responses for Webform submissions.
  */
 class WebformSubmissionController extends ControllerBase {
 

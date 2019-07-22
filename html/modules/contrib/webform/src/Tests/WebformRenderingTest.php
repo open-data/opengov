@@ -80,25 +80,22 @@ class WebformRenderingTest extends WebformTestBase {
 
     // Check HTML email.
     $this->assertEqual($html_email['subject'], 'submission label (&>');
-
     $this->assertEqual($html_email['params']['subject'], 'submission <em>label</em> (&><#)');
-    // Below tests are failing on Drupal.org but passing on localhost.
-    // $this->assertContains($html_email['params']['body'], '<b>submission_label</b><br />submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)<br /><br />');
-    // $this->assertContains($html_email['params']['body'], '<b>textfield_plain_text</b><br />{prefix}{default_value}{suffix}<br /><br />');
-    // $this->assertContains($html_email['params']['body'], '<b><em>textfield_markup</em></b><br /><em>{prefix}</em>{default_value}<em>{suffix}</em><br /><br />');
-    // $this->assertContains($html_email['params']['body'], '<b>textfield_special_characters (&amp;&gt;&lt;#)</b><br />(&amp;&gt;&lt;#){default_value}(&amp;&gt;&lt;#)<br /><br />');
-    // $this->assertContains($html_email['params']['body'], '<b>text_format_basic_html</b><br /><p><em>{default_value}</em></p><br /><br />');
+    $this->assertContains('<b>submission_label</b><br />submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)<br /><br />', $html_email['params']['body']);
+    $this->assertContains('<b>textfield_plain_text</b><br />{prefix}{default_value}{suffix}<br /><br />', $html_email['params']['body']);
+    $this->assertContains('<b><em>textfield_markup</em></b><br /><em>{prefix}</em>{default_value}<em>{suffix}</em><br /><br />', $html_email['params']['body']);
+    $this->assertContains('<b>textfield_special_characters (&amp;&gt;&lt;#)</b><br />(&amp;&gt;&lt;#){default_value}(&amp;&gt;&lt;#)<br /><br />', $html_email['params']['body']);
+    $this->assertContains('<b>text_format_basic_html</b><br /><p><em>{default_value}</em></p><br /><br />', $html_email['params']['body']);
 
     // Check plain text email.
     $this->assertEqual($text_email['subject'], 'submission label (&>');
     $this->assertEqual($text_email['params']['subject'], 'submission <em>label</em> (&><#)');
-    // Below tests are failing on Drupal.org but passing on localhost.
-    // $this->assertContains($text_email['params']['body'], 'submission_label: submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)');
-    // $this->assertContains($text_email['params']['body'], 'textfield_plain_text: {prefix}{default_value}{suffix}');
-    // $this->assertContains($text_email['params']['body'], 'textfield_markup: <em>{prefix}</em>{default_value}<em>{suffix}</em>');
-    // $this->assertContains($text_email['params']['body'], 'textfield_special_characters (&amp;&gt;: (&amp;&gt;&lt;#){default_value}(&amp;&gt;&lt;#)');
-    // $this->assertContains($text_email['params']['body'], 'text_format_basic_html:');
-    // $this->assertContains($text_email['params']['body'], '/{default_value}/');
+    $this->assertContains('submission_label: submission <em>label</em> (&><#)', $text_email['params']['body']);
+    $this->assertContains('textfield_plain_text: {prefix}{default_value}{suffix}', $text_email['params']['body']);
+    $this->assertContains('textfield_markup: {prefix}{default_value}{suffix}', $text_email['params']['body']);
+    $this->assertContains('textfield_special_characters (&>: (&>{default_value}(&>', $text_email['params']['body']);
+    $this->assertContains('text_format_basic_html:', $text_email['params']['body']);
+    $this->assertContains('/{default_value}/', $text_email['params']['body']);
 
     /**************************************************************************/
     // Submission.

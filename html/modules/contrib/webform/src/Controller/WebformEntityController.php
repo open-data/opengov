@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Provides route responses for webform.
+ * Provides route responses for Webform entity.
  */
 class WebformEntityController extends ControllerBase implements ContainerInjectionInterface {
 

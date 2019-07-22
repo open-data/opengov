@@ -60,8 +60,8 @@ class WebformRating extends Range {
     switch ($format) {
       case 'star':
         // Always return the raw value when the rating widget is included in an
-        // email.
-        if (!empty($options['email'])) {
+        // email or PDF.
+        if (!empty($options['email']) || !empty($options['pdf'])) {
           return parent::formatTextItem($element, $webform_submission, $options);
         }
 

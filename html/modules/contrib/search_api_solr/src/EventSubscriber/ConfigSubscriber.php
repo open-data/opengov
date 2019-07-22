@@ -5,6 +5,8 @@ namespace Drupal\search_api_solr\EventSubscriber;
 use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigInstallerInterface;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -16,11 +18,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ConfigSubscriber implements EventSubscriberInterface {
 
   /**
+   * The Config Installer.
+   *
    * @var \Drupal\Core\Config\ConfigInstallerInterface
    */
   protected $configInstaller;
 
   /**
+   * Constructs a ConfigSubscriber object.
+   *
    * @param \Drupal\Core\Config\ConfigInstallerInterface $configInstaller
    *   The Config Installer.
    */
@@ -40,21 +46,37 @@ class ConfigSubscriber implements EventSubscriberInterface {
    * Installs all available Solr Field Types for a new language.
    *
    * @param \Drupal\Core\Config\ConfigCrudEvent $event
+   *   The configuration event.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\search_api\SearchApiException
    */
   public function onConfigSave(ConfigCrudEvent $event) {
     $saved_config = $event->getConfig();
 
     if (preg_match('@^language\.entity\.(.+)@', $saved_config->getName(), $matches) &&
-        $matches[1] != 'und') {
+        $matches[1] != LanguageInterface::LANGCODE_NOT_SPECIFIED) {
       $restrict_by_dependency = [
         'module' => 'search_api_solr',
       ];
       // installOptionalConfig will not replace existing configs and it contains
       // a dependency check so we need not perform any checks ourselves.
       $this->configInstaller->installOptionalConfig(NULL, $restrict_by_dependency);
-    }
 
-    // @todo alert to trigger new config when an index is added => context
+      // If a new language is added, the existing indexes must be re-indexed to
+      // fill the language-specific sort fields for the new language.
+      foreach (search_api_solr_get_servers() as $server) {
+        foreach ($server->getIndexes() as $index) {
+          if ($index->status() && !$index->isReadOnly() && !$index->isReindexing()) {
+            $index->reindex();
+          }
+        }
+      }
+    }
+    elseif (preg_match('@^search_api_solr\.solr_field_type\..+@', $saved_config->getName(), $matches)) {
+      \Drupal::messenger()
+        ->addMessage(t("A new Solr field type has been installed due to configuration changes. It is advisable to download and deploy an updated config.zip to your Solr server."), MessengerInterface::TYPE_WARNING);
+    }
   }
 
 }

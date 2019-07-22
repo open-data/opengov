@@ -63,6 +63,7 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
     $form['form_settings']['status'] = [
       '#type' => 'radios',
       '#title' => $this->t('Form status'),
+      '#description' => $this->t('Form status applies to all instances of this webform. For example, if this webform is closed, all webform nodes and blocks will be closed.'),
       '#default_value' => $webform->get('status'),
       '#options' => [
         WebformInterface::STATUS_OPEN => $this->t('Open'),
@@ -185,12 +186,12 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
     $form['form_behaviors']['form_prepopulate_source_entity_required']['#states'] = [
       'visible' => [':input[name="form_prepopulate_source_entity"]' => ['checked' => TRUE]],
     ];
+    // Source entity type.
     $entity_type_options = [];
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
       $entity_type_options[$entity_type_id] = $entity_type->getLabel();
     }
     uasort($entity_type_options, 'strnatcasecmp');
-
     $form['form_behaviors']['form_prepopulate_source_entity_type'] = [
       '#type' => 'select',
       '#title' => 'Type of source entity to be populated using query string parameters',
@@ -202,7 +203,14 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
         'visible' => [':input[name="form_prepopulate_source_entity"]' => ['checked' => TRUE]],
       ],
     ];
-
+    // Hide "Submit previous page when browser back button is clicked" when
+    // Ajax is enabled.
+    if ($settings['ajax']) {
+      $form['form_behaviors']['form_submit_back']['#default'] = TRUE;
+      $form['form_behaviors']['form_submit_back']['#disabled'] = TRUE;
+      $form['form_behaviors']['form_submit_back']['#description'] .= '<br/><br/><em>' . t('This behavior is not supoported when Ajax is enabled.') . '</em>';
+    }
+    // Disable warning about drafts.
     if ($settings['draft'] !== WebformInterface::DRAFT_NONE) {
       $form['form_behaviors']['form_reset_message'] = [
         '#type' => 'webform_message',

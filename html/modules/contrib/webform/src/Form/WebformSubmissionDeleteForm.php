@@ -3,7 +3,7 @@
 namespace Drupal\webform\Form;
 
 use Drupal\Core\Entity\ContentEntityDeleteForm;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\WebformRequestInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -46,13 +46,13 @@ class WebformSubmissionDeleteForm extends ContentEntityDeleteForm implements Web
   /**
    * Constructs a WebformSubmissionDeleteForm object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository.
    * @param \Drupal\webform\WebformRequestInterface $request_handler
    *   The webform request handler.
    */
-  public function __construct(EntityManagerInterface $entity_manager, WebformRequestInterface $request_handler) {
-    parent::__construct($entity_manager);
+  public function __construct(EntityRepositoryInterface $entity_repository, WebformRequestInterface $request_handler) {
+    parent::__construct($entity_repository);
     $this->requestHandler = $request_handler;
   }
 
@@ -61,7 +61,7 @@ class WebformSubmissionDeleteForm extends ContentEntityDeleteForm implements Web
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('webform.request')
     );
   }

@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * Provides route responses for webform testing.
+ * Provides route responses for Webform testing.
  */
 class WebformTestController extends ControllerBase implements ContainerInjectionInterface {
 

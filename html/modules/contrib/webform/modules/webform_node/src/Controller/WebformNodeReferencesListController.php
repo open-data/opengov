@@ -150,12 +150,12 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getDefinition('node'),
-      $container->get('entity.manager')->getStorage('node'),
+      $container->get('entity_type.manager')->getDefinition('node'),
+      $container->get('entity_type.manager')->getStorage('node'),
       $container->get('date.formatter'),
-      $container->get('entity.manager')->getStorage('node_type'),
-      $container->get('entity.manager')->getStorage('field_config'),
-      $container->get('entity.manager')->getStorage('webform_submission'),
+      $container->get('entity_type.manager')->getStorage('node_type'),
+      $container->get('entity_type.manager')->getStorage('field_config'),
+      $container->get('entity_type.manager')->getStorage('webform_submission'),
       $container->get('webform.entity_reference_manager')
     );
   }

@@ -4,6 +4,7 @@ namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElementBase;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformTextHelper;
 use Drupal\webform\WebformSubmissionInterface;
 
@@ -100,6 +101,7 @@ abstract class TextBase extends WebformElementBase {
 
       $element['#attributes']['class'][] = 'js-webform-input-mask';
       $element['#attached']['library'][] = 'webform/webform.element.inputmask';
+      $element['#element_validate'][] = [get_called_class(), 'validateInputMask'];
     }
 
     // Input hiding.
@@ -225,6 +227,27 @@ abstract class TextBase extends WebformElementBase {
     }
     elseif ($min && $length < $min) {
       $form_state->setError($element, t('@name must be longer than %min @type but is currently %length @type long.', $t_args));
+    }
+  }
+
+  /**
+   * Form API callback. Validate input mask and display required error message.
+   *
+   * Makes sure a required element's value doesn't include the default
+   * input mask as the submitted value.
+   *
+   * Applies only to the currency input mask.
+   */
+  public static function validateInputMask(&$element, FormStateInterface $form_state, &$complete_form) {
+    // Set required error when input mask is submitted.
+    $input_masks = [
+      "'alias': 'currency'" => '$ 0.00',
+    ];
+    $input_mask = $element['#input_mask'];
+    if (!empty($element['#required'])
+      && isset($input_masks[$input_mask])
+      && $input_masks[$input_mask] == $element['#value']) {
+        WebformElementHelper::setRequiredError($element, $form_state);
     }
   }
 

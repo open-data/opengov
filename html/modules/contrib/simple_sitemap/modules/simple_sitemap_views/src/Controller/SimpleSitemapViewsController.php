@@ -2,6 +2,7 @@
 
 namespace Drupal\simple_sitemap_views\Controller;
 
+use Drupal\simple_sitemap\Form\FormHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\simple_sitemap_views\SimpleSitemapViews;
 use Drupal\Core\Controller\ControllerBase;
@@ -80,7 +81,12 @@ class SimpleSitemapViewsController extends ControllerBase {
     }
 
     // Show information about indexed displays.
-    $build['indexed_displays'] = $table;
+    $build['simple_sitemap_views'] = [
+      '#prefix' => FormHelper::getDonationText(),
+      '#title' => $this->t('Indexed view displays'),
+      '#type' => 'fieldset',
+      'table' => $table,
+    ];
     return $build;
   }
 

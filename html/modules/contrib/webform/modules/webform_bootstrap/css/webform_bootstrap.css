@@ -28,6 +28,13 @@
   display: inline;
 }
 
+.webform-element--title-inline .form-control,
+.webform-element--title-inline .select-wrapper {
+  display: inline;
+  width: inherit;
+}
+
+
 /**
  * Form composite title inline. (applies to radios and checkboxes)
  */

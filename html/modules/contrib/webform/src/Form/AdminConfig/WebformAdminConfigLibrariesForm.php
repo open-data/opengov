@@ -5,6 +5,7 @@ namespace Drupal\webform\Form\AdminConfig;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\TableSelect;
 use Drupal\webform\WebformLibrariesManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -192,21 +193,18 @@ class WebformAdminConfigLibrariesForm extends WebformAdminConfigBaseForm {
     ];
     TableSelect::setProcessTableSelectCallback($form['libraries_optional']['excluded_libraries']);
 
-    // Display warning message when select2 and chosen are enabled.
+    // Display warning message about select2, choices and chosen.
     $t_args = [
       ':select2_href' => $libraries['jquery.select2']['homepage_url']->toString(),
+      ':choices_href' => $libraries['choices']['homepage_url']->toString(),
       ':chosen_href' => $libraries['jquery.chosen']['homepage_url']->toString(),
     ];
     $form['libraries_optional']['select_message'] = [
       '#type' => 'webform_message',
       '#message_type' => 'warning',
-      '#message_message' => $this->t('<a href=":select2_href">Select2</a> and <a href=":chosen_href">Chosen</a> provide very similar functionality, most websites should only have one of these libraries enabled.', $t_args),
-      '#states' => [
-        'visible' => [
-          ':input[name="excluded_libraries[jquery.select2]"]' => ['checked' => TRUE],
-          ':input[name="excluded_libraries[jquery.chosen]"]' => ['checked' => TRUE],
-        ],
-      ],
+      '#message_message' => $this->t('<a href=":select2_href">Select2</a>, <a href=":choices_href">Choices</a>, and <a href=":chosen_href">Chosen</a> provide very similar functionality, most websites should only have one of these libraries enabled.', $t_args),
+      '#message_close' => TRUE,
+      '#message_storage' => WebformMessage::STORAGE_SESSION,
     ];
 
     // Libraries required.

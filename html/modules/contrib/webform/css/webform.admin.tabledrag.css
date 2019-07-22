@@ -13,6 +13,11 @@
   right: 0;
 }
 
+[dir="rtl"] .tabledrag-toggle-weight-wrapper button {
+  right: inherit;
+  left: 0;
+}
+
 @media screen and (max-width: 960px) {
   .tabledrag-toggle-weight-wrapper {
     float: right;
@@ -25,5 +30,5 @@
 }
 
 .webform-tabledrag-hide {
-  display: none; !important;
+  display: none;
 }

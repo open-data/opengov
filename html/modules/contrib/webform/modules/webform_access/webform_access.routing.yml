@@ -6,7 +6,7 @@ entity.webform_access_group.collection:
     _entity_list: 'webform_access_group'
     _title: 'Webforms: Access Group'
   requirements:
-    _permission: 'administer webform'
+    _custom_access: '\Drupal\webform_access\Access\WebformAccessGroupAccess::checkAdminAccess'
 
 entity.webform_access_group.add_form:
   path: '/admin/structure/webform/access/group/manage/add'

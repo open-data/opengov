@@ -11,6 +11,8 @@
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.chosen = Drupal.webform.chosen || {};
   Drupal.webform.chosen.options = Drupal.webform.chosen.options || {};
+  Drupal.webform.chosen.options.width = Drupal.webform.chosen.options.width || '100%';
+  Drupal.webform.chosen.options.widthInline = Drupal.webform.chosen.options.widtInline || '50%';
 
   /**
    * Initialize Chosen support.
@@ -55,7 +57,11 @@
             return;
           }
 
-          var options = $.extend({width: '100%'}, Drupal.webform.chosen.options);
+          var options = {};
+          if ($select.parents('.webform-element--title-inline').length) {
+            options.width = Drupal.webform.chosen.options.widthInline;
+          }
+          options = $.extend(options, Drupal.webform.chosen.options);
           if ($select.data('placeholder')) {
             if ($select.prop('multiple')) {
               options.placeholder_text_multiple = $select.data('placeholder');
@@ -67,10 +73,32 @@
               options.allow_single_deselect = true;
             }
           }
+          if ($select.data('limit')) {
+            options.max_selected_options = $select.data('limit');
+          }
+
+          // Remove required attribute from IE11 which breaks
+          // HTML5 clientside validation.
+          if (window.navigator.userAgent.indexOf('Trident/') !== false
+            && $select.attr('multiple')
+            && $select.attr('required')) {
+            $select.removeAttr('required');
+          }
 
           $select.chosen(options);
         });
     }
   };
+
+  var $document = $(document);
+
+  // Refresh chosen (select) widgets when they are disabled/enabled.
+  $document.on('state:disabled', function (e) {
+    var $chosen = $(e.target).find('.js-webform-chosen');
+    if ($(e.target).hasClass('js-webform-chosen')) {
+      $chosen.add(e.target);
+    }
+    $chosen.trigger('chosen:updated');
+  });
 
 })(jQuery, Drupal);

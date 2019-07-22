@@ -165,6 +165,50 @@ class WebformElementHelper {
   }
 
   /**
+   * Determine if element or sub-element has properties.
+   *
+   * @param array $element
+   *   An element.
+   * @param array $property
+   *   Element properties.
+   *
+   * @return bool
+   *   TRUE if element or sub-element has any property.
+   */
+  public static function hasProperties(array $element, array $properties) {
+    foreach ($element as $key => $value) {
+      // Recurse through sub-elements.
+      if (static::isElement($value, $key)) {
+        if (static::hasProperties($value, $properties)) {
+          return TRUE;
+        }
+      }
+      // Return TRUE if property exists and property value is NULL or equal.
+      elseif (array_key_exists($key, $properties) && ($properties[$key] === NULL || $properties[$key] === $value)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Determine if element or sub-element has property and value.
+   *
+   * @param array $element
+   *   An element.
+   * @param string $property
+   *   An element property.
+   * @param mixed|null $value
+   *   An element value.
+   *
+   * @return bool
+   *   TRUE if element or sub-element has property and value.
+   */
+  public static function hasProperty(array $elements, $property, $value = NULL) {
+    return static::hasProperties($elements, [$property => $value]);
+  }
+
+  /**
    * Get an associative array containing a render element's properties.
    *
    * @param array $element
@@ -249,7 +293,23 @@ class WebformElementHelper {
     }
 
     $attributes = [];
+
+    // Set .js-form-wrapper which is targeted by states.js hide/show logic.
     $attributes['class'][] = 'js-form-wrapper';
+
+    // Add .js-webform-states-hidden to hide elements when they are being rendered.
+    $attributes_properties = ['#wrapper_attributes', '#attributes'];
+    foreach ($attributes_properties as $attributes_property) {
+      if (isset($element[$attributes_property]) && isset($element[$attributes_property]['class'])) {
+        $index = array_search('js-webform-states-hidden', $element[$attributes_property]['class']);
+        if ($index !== FALSE) {
+          unset($element[$attributes_property]['class'][$index]);
+          $attributes['class'][] = 'js-webform-states-hidden';
+          break;
+        }
+      }
+    }
+
     $attributes['data-drupal-states'] = Json::encode($element['#states']);
 
     $element += ['#prefix' => '', '#suffix' => ''];
@@ -448,6 +508,33 @@ class WebformElementHelper {
       $flattened_elements += self::getFlattened($element);
     }
     return $flattened_elements;
+  }
+
+  /**
+   * Get reference to first element by name.
+   *
+   * @param array $elements
+   *   An associative array of elements.
+   * @param string $name
+   *   The element's name.
+   *
+   * @return array|null
+   *   Reference to found element.
+   */
+  public static function &getElement(array &$elements, $name) {
+    foreach (Element::children($elements) as $element_name) {
+      if ($element_name == $name) {
+        return $elements[$element_name];
+      }
+      elseif (is_array($elements[$element_name])) {
+        $child_elements =& $elements[$element_name];
+        if ($element = &static::getElement($child_elements, $name)) {
+          return $element;
+        }
+      }
+    }
+    $element = NULL;
+    return $element;
   }
 
   /**

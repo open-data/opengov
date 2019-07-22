@@ -4,33 +4,21 @@
  */
 
 /**
- * Drupal Association.
+ * Webform message with logo.
  */
-.webform-message .messages.messages--promotion_drupal_association {
-  color: #333;
-  background: #e0e0d8 url(../images/promotions/drupal-association-logo.png) 10px 10px no-repeat;
+.webform-message .messages.messages--webform {
+  color: #000;
+  background: #e0e0d8 url(../images/logo/webform_icon_36.png) 10px center no-repeat;
   background-size: auto;
   border-color: #a6a6a6 #a6a6a6 #a6a6a6 transparent; /* LTR */
   box-shadow: -8px 0 0 #a6a6a6; /* LTR */
-  padding-left: 120px; /* LTR */
+  padding-left: 56px; /* LTR */
   min-height: 20px;
 }
 
-[dir="rtl"] .webform-message .messages.messages--promotion_drupal_association {
-  border-color: #333 transparent #333 #333;
-  box-shadow: 8px 0 0 #333;
+[dir="rtl"] .webform-message .messages.messages--webform {
+  border-color: #a6a6a6 transparent #a6a6a6 #a6a6a6;
+  box-shadow: 8px 0 0 #a6a6a6;
   margin-left: 0;
-  padding-right: 45px;
-}
-
-
-@media screen and (max-width: 600px) {
-  .webform-message .messages.messages--promotion_drupal_association .button {
-    display: block;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 10px;
-    padding-bottom: 6px;
-    width: 100%;
-  }
+  padding-right: 56px;
 }

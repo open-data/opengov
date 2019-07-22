@@ -33,7 +33,7 @@ class WebformAccessTypeForm extends EntityForm {
         'label' => '<br/>' . $this->t('Machine name'),
       ],
       '#maxlength' => 32,
-      '#field_suffix' => ' (' . $this->t('Maximum @max characters', ['@max' => 32]) . ')',
+      '#field_suffix' => ($webform_access_type->isNew()) ? ' (' . $this->t('Maximum @max characters', ['@max' => 32]) . ')' : '',
       '#required' => TRUE,
       '#disabled' => !$webform_access_type->isNew(),
       '#default_value' => $webform_access_type->id(),

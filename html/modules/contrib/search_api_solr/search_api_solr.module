@@ -4,10 +4,14 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
-use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrAnySchemaBackend;
+use Drupal\search_api_solr\Form\IndexSolrMultisiteCloneForm;
+use Drupal\search_api_solr\Form\IndexSolrMultisiteUpdateForm;
 use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr\Utility\Utility;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * Implements hook_help().
@@ -34,63 +38,62 @@ function search_api_solr_help($route_name, RouteMatchInterface $route_match) {
  * Used to execute an optimization operation on all enabled Solr servers once a
  * day.
  *
+ * @throws \Drupal\Component\Plugin\Exception\PluginException
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  * @throws \Drupal\search_api\SearchApiException
+ * @throws \Drupal\search_api_solr\SearchApiSolrException
  */
 function search_api_solr_cron() {
+  $document_counts = [];
+  $optimize = FALSE;
   $request_time = \Drupal::time()->getRequestTime();
-  $action = \Drupal::config('search_api_solr.settings')->get('cron_action');
-  // We treat all unknown action settings as "none". However, we turn a blind
-  // eye for Britons and other people who can spell.
-  if (!in_array($action, ['spellcheck', 'optimize', 'optimise'])) {
-    return;
-  }
-  // 86400 seconds is one day. We use slightly less here to allow for some
+  // 86400 seconds are one day. We use slightly less here to allow for some
   // variation in the request time of the cron run, so that the time of day will
   // (more or less) stay the same.
   if ($request_time - \Drupal::state()->get('search_api_solr.last_optimize') > 86340) {
     \Drupal::state()->set('search_api_solr.last_optimize', $request_time);
-
-    foreach (search_api_solr_get_servers() as $server) {
-      try {
-        /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
-        $backend = $server->getBackend();
-        $connector = $backend->getSolrConnector();
-        $indexes = $server->getIndexes();
-        if (!$indexes) {
-          continue;
-        }
-
-        foreach ($indexes as $index) {
-          $backend->finalizeIndex($index);
-          $backend->getLogger()->info('Finalized Solr server @server.', ['@server' => $server->label()]);
-        }
-
-        if ($action != 'spellcheck') {
-          $connector->optimize();
-          $backend->getLogger()->info('Optimized Solr server @server.', ['@server' => $server->label()]);
-        }
-        else {
-          $autocomplete_query = $connector->getAutocompleteQuery();
-
-          $spellcheck_component = $autocomplete_query->getSpellcheck();
-          $spellcheck_component->setBuild(TRUE);
-
-          // Terms don't need to be build. Suggesters are configured to be
-          // buildOnCommit.
-          $connector->execute($autocomplete_query);
-          $backend->getLogger()->info('Rebuilt spellcheck dictionary on Solr server @server.', ['@server' => $server->label()]);
-        }
-
-      }
-      catch (SearchApiException $e) {
-        watchdog_exception('search_api', $e, '%type while optimizing Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
-      }
-    }
-
     // Delete cached endpoint data once a day.
     \Drupal::state()->delete('search_api_solr.endpoint.data');
+    $optimize = TRUE;
   }
+
+  foreach (search_api_solr_get_servers() as $server) {
+    try {
+      /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+      $backend = $server->getBackend();
+      $connector = $backend->getSolrConnector();
+      if ($indexes = $server->getIndexes()) {
+        $document_counts[$server->id()] = $backend->getDocumentCounts();
+
+        foreach ($indexes as $index) {
+          if ($backend->finalizeIndex($index)) {
+            $backend->getLogger()->info('Cron finalized Solr server @server.', ['@server' => $server->label()]);
+          }
+        }
+
+        if ($optimize && $backend->isOptimizeEnabled()) {
+          $connector->optimize($backend->getCollectionEndpoint($index));
+          $backend->getLogger()->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+        }
+      }
+    }
+    catch (SearchApiException $e) {
+      watchdog_exception('search_api', $e, '%type while maintaining Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
+    }
+  }
+
+  $search_all_rows = [];
+  foreach ($document_counts as $server_id => $counts) {
+    $search_all_rows[$server_id]['#total'] = Utility::normalizeMaxRows($counts['#total']);
+    unset($counts['#total']);
+    foreach ($counts as $site_hash => $index_doc_counts) {
+      foreach ($index_doc_counts as $index_id => $count) {
+        $search_all_rows[$server_id][$site_hash][$index_id] = Utility::normalizeMaxRows($count);
+      }
+    }
+  }
+  \Drupal::state()->set('search_api_solr.search_all_rows', $search_all_rows);
 }
 
 /**
@@ -121,10 +124,39 @@ function search_api_solr_default_index_third_party_settings() {
         'fragsize' => 0,
       ],
     ],
+    'mlt' => [
+      'mintf' => 1,
+      'mindf' => 1,
+      'maxdf' => 0,
+      'maxdfpct' => 0,
+      'minwl' => 0,
+      'maxwl' => 0,
+      'maxqt' => 100,
+      'maxntp' => 2000,
+      'boost' => FALSE,
+      'interestingTerms' => 'none',
+    ],
     'advanced' => [
       'index_prefix' => '',
+      'collection' => '',
+      'timezone' => '',
+    ],
+    'multilingual' => [
+      'limit_to_content_language' => FALSE,
+      'include_language_independent' => TRUE,
     ],
   ];
+}
+
+/**
+ * Merges the default third party settings to those of an index for Solr.
+ *
+ * @param array $third_party_settings
+ *
+ * @return array
+ */
+function search_api_solr_merge_default_index_third_party_settings(array $third_party_settings) {
+  return ArrayUtils::merge(search_api_solr_default_index_third_party_settings(), $third_party_settings, TRUE);
 }
 
 /**
@@ -145,7 +177,7 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
     if (!$index->isNew()) {
       $settings = $index->getThirdPartySettings('search_api_solr');
     }
-    $settings += search_api_solr_default_index_third_party_settings();
+    $settings = search_api_solr_merge_default_index_third_party_settings($settings);
 
     $form['third_party_settings']['search_api_solr'] = [
       '#tree' => TRUE,
@@ -187,6 +219,26 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
           ],
         ],
       ],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual'] = [
+      '#type' => 'details',
+      '#title' => t('Multilingual'),
+      '#tree' => TRUE,
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['limit_to_content_language'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Limit to current content language.'),
+      '#description' => t('Limit all search results for custom queries or search pages not managed by Views to current content language if no language is specified in the query.'),
+      '#default_value' => $settings['multilingual']['limit_to_content_language'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['include_language_independent'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Include language independent content in search results.'),
+      '#description' => t('This option will include content without a language assigned in the results of custom queries or search pages not managed by Views. For example, if you search for English content, but have an article with languague of "undefined", you will see those results as well. If you disable this option, you will only see content that matches the language.'),
+      '#default_value' => $settings['multilingual']['include_language_independent'],
     ];
 
     $form['third_party_settings']['search_api_solr']['highlighter'] = [
@@ -302,6 +354,95 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['highlighter']['highlight']['fragsize'],
     ];
 
+    $form['third_party_settings']['search_api_solr']['mlt'] = [
+      '#tree' => TRUE,
+      '#type' => 'details',
+      '#title' => t('MLT (MoreLikeThis)'),
+      '#collapsed' => TRUE,
+      '#description' => t('If a Search API MoreLikeThis block is configured for this index, these settings will be used.'),
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['mintf'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('mintf'),
+      '#description' => t('Specifies the Minimum Term Frequency, the frequency below which terms will be ignored in the source document.'),
+      '#default_value' => $settings['mlt']['mintf'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['mindf'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('mindf'),
+      '#description' => t('Specifies the Minimum Document Frequency, the frequency at which words will be ignored which do not occur in at least this many documents.'),
+      '#default_value' => $settings['mlt']['mindf'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['maxdf'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('maxdf'),
+      '#description' => t('Specifies the Maximum Document Frequency, the frequency at which words will be ignored which occur in more than this many documents.'),
+      '#default_value' => $settings['mlt']['maxdf'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['maxdfpct'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#max' => 100,
+      '#title' => t('maxdfpct'),
+      '#description' => t('Specifies the Maximum Document Frequency using a relative ratio to the number of documents in the index. The argument must be an integer between 0 and 100. For example 75 means the word will be ignored if it occurs in more than 75 percent of the documents in the index.'),
+      '#default_value' => $settings['mlt']['maxdfpct'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['minwl'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('minwl'),
+      '#description' => t('Sets the minimum word length below which words will be ignored.'),
+      '#default_value' => $settings['mlt']['minwl'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['maxwl'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('maxwl'),
+      '#description' => t('Sets the maximum word length above which words will be ignored.'),
+      '#default_value' => $settings['mlt']['maxwl'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['maxqt'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('maxqt'),
+      '#description' => t('Sets the maximum number of query terms that will be included in any generated query.'),
+      '#default_value' => $settings['mlt']['maxqt'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['maxntp'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('maxntp'),
+      '#description' => t('Sets the maximum number of tokens to parse in each example document field that is not stored with TermVector support.'),
+      '#default_value' => $settings['mlt']['maxntp'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['boost'] = [
+      '#type' => 'checkbox',
+      '#title' => t('boost'),
+      '#description' => t('Specifies if the query will be boosted by the interesting term relevance.'),
+      '#default_value' => $settings['mlt']['boost'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['mlt']['interestingTerms'] = [
+      '#type' => 'select',
+      '#options' => ['none' => 'none', 'list' => 'list', 'details' => 'details'],
+      '#title' => t('interestingTerms'),
+      '#description' => t('Controls how the MoreLikeThis component presents the "interesting" terms (the top TF/IDF terms) for the query. Supports three settings. The setting "list" lists the terms. The setting "none" lists no terms. The setting "details" lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.'),
+      '#default_value' => $settings['mlt']['interestingTerms'],
+    ];
+
+
     $form['third_party_settings']['search_api_solr']['advanced'] = [
       '#tree' => TRUE,
       '#type' => 'details',
@@ -315,6 +456,21 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['advanced']['index_prefix'],
     ];
 
+    $form['third_party_settings']['search_api_solr']['advanced']['collection'] = [
+      '#type' => 'textfield',
+      '#title' => t('Collection'),
+      '#description' => t("If the server uses a Solr Cloud connector, this setting overwrites the configured default collection if set."),
+      '#default_value' => $settings['advanced']['collection'],
+    ];
+
+    $zones = system_time_zones(TRUE, TRUE);
+    $form['third_party_settings']['search_api_solr']['advanced']['timezone'] = [
+      '#type' => 'select',
+      '#title' => t('Time zone'),
+      '#description' => t("For correct date calculations the time zone to use is sent to the Solr server. By default the individual time zone of the current user will be used. If not available the site's default time zone will be used as fallback. But by setting a time zone here you can force a time zone for every query targeting this index."),
+      '#default_value' => $settings['advanced']['timezone'],
+      '#options' => $zones,
+    ];
   }
 }
 
@@ -359,9 +515,7 @@ function search_api_solr_form_search_api_index_form_validate_server(&$element, F
  * @see _search_api_views_handler_mapping()
  */
 function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
-  $mapping['solr_text_ngram'] =
   $mapping['solr_text_omit_norms'] =
-  $mapping['solr_text_phonetic'] =
   $mapping['solr_text_suggester'] =
   $mapping['solr_text_unstemmed'] =
   $mapping['solr_text_wstoken'] = [
@@ -370,18 +524,6 @@ function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
     ],
     'filter' => [
       'id' => 'search_api_fulltext',
-    ],
-    'sort' => [
-      'id' => 'search_api',
-    ],
-  ];
-
-  $mapping['solr_string_ngram'] = [
-    'argument' => [
-      'id' => 'search_api',
-    ],
-    'filter' => [
-      'id' => 'search_api_string',
     ],
     'sort' => [
       'id' => 'search_api',
@@ -406,19 +548,11 @@ function search_api_solr_views_data_alter(array &$data) {
 }
 
 /**
- * Deletes all Solr Field Type and re-installs them from their yml files.
+ * Re-install all default Solr Field Types from their yml files.
  */
-function search_api_solr_delete_and_reinstall_all_field_types() {
-  $storage = \Drupal::entityTypeManager()->getStorage('solr_field_type');
-  $storage->delete($storage->loadMultiple());
-
-  /** @var \Drupal\Core\Config\ConfigInstallerInterface $config_installer */
-  $config_installer = \Drupal::service('config.installer');
-  $config_installer->installDefaultConfig('module', 'search_api_solr');
-  $restrict_by_dependency = [
-    'module' => 'search_api_solr',
-  ];
-  $config_installer->installOptionalConfig(NULL, $restrict_by_dependency);
+function search_api_solr_install_missing_field_types() {
+  module_load_include('install', 'search_api_solr');
+  search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -429,6 +563,7 @@ function search_api_solr_delete_and_reinstall_all_field_types() {
  * @return ServerInterface[]
  *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  * @throws \Drupal\search_api\SearchApiException
  */
 function search_api_solr_get_servers($only_active = TRUE) {
@@ -453,43 +588,49 @@ function search_api_solr_get_servers($only_active = TRUE) {
  *
  * Adds an operation to Solr servers to directly generate and download a config.
  *
- * @param \Drupal\Core\Entity\EntityInterface $server
+ * @param \Drupal\Core\Entity\EntityInterface $entity
  *
  * @return array
  * @throws \Drupal\search_api\SearchApiException
  */
-function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $server) {
+function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) {
   $operations = [];
   if (
-    $server instanceof Server &&
-    $server->getBackend() instanceof SolrBackendInterface &&
-    !($server->getBackend() instanceof SearchApiSolrAnySchemaBackend)
+    $entity instanceof ServerInterface &&
+    $entity->getBackend() instanceof SolrBackendInterface
   ) {
     $operations['get_config_zip'] = [
       'title' => t('Get config.zip'),
-      'url' => \Drupal\Core\Url::fromRoute('entity.solr_field_type.config_zip_collection', ['search_api_server' => $server->id()]),
+      'url' => \Drupal\Core\Url::fromRoute('entity.solr_field_type.config_zip_collection', ['search_api_server' => $entity->id()]),
       'weight' => 50,
     ];
+  }
+  elseif ($entity instanceof IndexInterface) {
+    if (
+      $entity->isServerEnabled() &&
+      $entity->getServerInstance()->getBackend() instanceof SolrBackendInterface &&
+      !$entity->isValidDatasource('solr_multisite_document')
+    ) {
+      $operations['clone_for_multisite'] = [
+        'title' => t('Clone for Multisite'),
+        'url' => \Drupal\Core\Url::fromRoute('entity.search_api_index.solr_multisite_clone_form', ['search_api_index' => $entity->id()]),
+        'weight' => 50,
+      ];
+    }
+    elseif ($entity->isValidDatasource('solr_multisite_document')) {
+      $operations['update_for_multisite'] = [
+        'title' => t('Update for Multisite'),
+        // @todo
+        'url' => \Drupal\Core\Url::fromRoute('entity.search_api_index.solr_multisite_update_form', ['search_api_index' => $entity->id()]),
+        'weight' => 50,
+      ];
+    }
   }
   return $operations;
 }
 
-/**
- * Implements function hook_search_api_items_indexed().
- *
- * @param \Drupal\search_api\Entity\Index $index
- * @param string[] $processed_ids
- *
- * @throws \Drupal\search_api\SearchApiException
- */
-function search_api_solr_search_api_items_indexed($index, $processed_ids) {
-  if ($index->getServerInstance()->getBackend() instanceof SolrBackendInterface) {
-    // The _search_all() streaming expression needs a row limit that much higher
-    // then the real number of rows. Therefore we set a 10 times higher row
-    // limit as indexed documents. To increase the number of query result cache
-    // hits we set "normalize" the nearest higher power of 2.
-    $rows = $index->getTrackerInstance()->getIndexedItemsCount() * 10;
-    for ($i = pow(2,14); $i < $rows; $i *= 2) {}
-    \Drupal::state()->set('search_api_solr.' . $index->id() . '.search_all_rows', $i);
-  }
+function search_api_solr_entity_type_alter(array &$entity_types) {
+  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  $entity_types['search_api_index']->setFormClass('solr_multisite_clone', IndexSolrMultisiteCloneForm::class);
+  $entity_types['search_api_index']->setFormClass('solr_multisite_update', IndexSolrMultisiteUpdateForm::class);
 }

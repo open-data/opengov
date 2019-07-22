@@ -47,9 +47,10 @@
         };
 
         if ($table.length) {
+          var isChrome = (/chrom(e|ium)/.test(window.navigator.userAgent.toLowerCase()));
           $filterRows = $table.find(sourceSelector);
           $input
-            .attr('autocomplete', 'off')
+            .attr('autocomplete', (isChrome) ? 'chrome-off' : 'off')
             .on('keyup', debounce(filterElementList, 200))
             .keyup();
 

@@ -18,7 +18,7 @@ function webform_devel_drush_command() {
     'examples' => [
       'webform-devel-reset' => 'Resets Webform user data and saved state for messages',
     ],
-    'aliases' => ['wfdr'],
+    'aliases' => ['wfdr', 'webform:devel:reset'],
   ];
 
   return $items;

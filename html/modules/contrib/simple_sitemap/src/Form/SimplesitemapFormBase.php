@@ -52,11 +52,4 @@ abstract class SimplesitemapFormBase extends ConfigFormBase {
     return ['simple_sitemap.settings'];
   }
 
-  /**
-   *
-   */
-  protected function getDonationText() {
-    return '<div class="description">' . $this->t('If you would like to say thanks and support the development of this module, a <a target="_blank" href="@url">donation</a> will be much appreciated.', ['@url' => 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5AFYRSBLGSC3W']) . '</div>';
-  }
-
 }

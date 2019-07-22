@@ -87,6 +87,20 @@ class FormHelper {
     'never',
   ];
 
+  protected static $cronIntervals = [
+    1,
+    3,
+    6,
+    12,
+    24,
+    48,
+    72,
+    96,
+    120,
+    144,
+    168,
+  ];
+
   /**
    * FormHelper constructor.
    * @param \Drupal\simple_sitemap\Simplesitemap $generator
@@ -569,5 +583,26 @@ class FormHelper {
    */
   public static function isValidChangefreq($changefreq) {
     return in_array($changefreq, self::$changefreqValues);
+  }
+
+  /**
+   * @return array
+   */
+  public static function getCronIntervalOptions() {
+    /** @var \Drupal\Core\Datetime\DateFormatter $formatter */
+    $formatter = \Drupal::service('date.formatter');
+    $intervals = array_flip(self::$cronIntervals);
+    foreach ($intervals as $interval => &$label) {
+      $label = $formatter->formatInterval($interval * 60 * 60);
+    }
+
+    return [0 => t('On every cron run')] + $intervals;
+  }
+
+  /**
+   * @return string
+   */
+  public static function getDonationText() {
+    return '<div class="description">' . t('If you would like to say thanks and support the development of this module, a <a target="_blank" href="@url">donation</a> will be much appreciated.', ['@url' => 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5AFYRSBLGSC3W']) . '</div>';
   }
 }

@@ -27,11 +27,6 @@ class WebformNodeAccessPermissionsTest extends WebformNodeTestBase {
   public function testAccessPermissions() {
     global $base_path;
 
-    // Create webform node that references the contact webform.
-    $webform = Webform::load('contact');
-    $node = $this->createWebformNode('contact');
-    $nid = $node->id();
-
     // Own webform submission user.
     $submission_own_account = $this->drupalCreateUser([
       'view own webform submission',
@@ -46,6 +41,25 @@ class WebformNodeAccessPermissionsTest extends WebformNodeTestBase {
       'edit any webform submission',
       'delete any webform submission',
     ]);
+
+    // Own webform submission node user.
+    $submission_own_node_account = $this->drupalCreateUser([
+      'view webform submissions own node',
+      'edit webform submissions own node',
+      'delete webform submissions own node',
+    ]);
+
+    // Any webform submission node user.
+    $submission_any_node_account = $this->drupalCreateUser([
+      'view webform submissions any node',
+      'edit webform submissions any node',
+      'delete webform submissions any node',
+    ]);
+
+    // Create webform node that references the contact webform.
+    $webform = Webform::load('contact');
+    $node = $this->createWebformNode('contact', ['uid' => $submission_own_node_account->id()]);
+    $nid = $node->id();
 
     /**************************************************************************/
     // Own submission permissions (authenticated).
@@ -117,6 +131,56 @@ class WebformNodeAccessPermissionsTest extends WebformNodeTestBase {
 
     // Check webform submission access allowed.
     $this->drupalGet("node/{$nid}/webform/submission/{$sid_1}");
+    $this->assertResponse(200);
+
+    /**************************************************************************/
+    // Own submission node permissions.
+    /**************************************************************************/
+
+    // Login as own node user.
+    $this->drupalLogin($submission_own_node_account);
+
+    // Check webform results access allowed.
+    $this->drupalGet("node/{$nid}/webform/results/submissions");
+    $this->assertResponse(200);
+    $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$sid_1}");
+    $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$sid_2}");
+
+    // Check webform submission access allowed.
+    $this->drupalGet("node/{$nid}/webform/submission/{$sid_1}");
+    $this->assertResponse(200);
+
+    // Check webform submission edit allowed.
+    $this->drupalGet("node/{$nid}/webform/submissions/{$sid_1}/edit");
+    $this->assertResponse(200);
+
+    // Check webform submission delete allowed.
+    $this->drupalGet("node/{$nid}/webform/submissions/{$sid_1}/delete");
+    $this->assertResponse(200);
+
+    /**************************************************************************/
+    // Any submission node permissions.
+    /**************************************************************************/
+
+    // Login as any node user.
+    $this->drupalLogin($submission_any_node_account);
+
+    // Check webform results access allowed.
+    $this->drupalGet("node/{$nid}/webform/results/submissions");
+    $this->assertResponse(200);
+    $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$sid_1}");
+    $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$sid_2}");
+
+    // Check webform submission access allowed.
+    $this->drupalGet("node/{$nid}/webform/submission/{$sid_1}");
+    $this->assertResponse(200);
+
+    // Check webform submission edit allowed.
+    $this->drupalGet("node/{$nid}/webform/submissions/{$sid_1}/edit");
+    $this->assertResponse(200);
+
+    // Check webform submission delete allowed.
+    $this->drupalGet("node/{$nid}/webform/submissions/{$sid_1}/delete");
     $this->assertResponse(200);
   }
 

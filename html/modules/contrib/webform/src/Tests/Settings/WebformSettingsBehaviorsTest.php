@@ -91,7 +91,7 @@ class WebformSettingsBehaviorsTest extends WebformTestBase {
     $this->drupalGet('/webform/test_form_disable_back');
     $this->assertRaw('webform.form.disable_back.js');
 
-    // Disable YAML specific form_disable_back setting.
+    // Disable webform specific form_disable_back setting.
     $webform_form_disable_back->setSetting('form_disable_back', FALSE);
     $webform_form_disable_back->save();
 
@@ -152,6 +152,15 @@ class WebformSettingsBehaviorsTest extends WebformTestBase {
     // Check webform has webform.form.submit_back.js.
     $this->drupalGet('/webform/test_form_submit_back');
     $this->assertRaw('webform.form.submit_back.js');
+
+    // Enable Ajax support.
+    $webform_form_submit_back->setSetting('ajax', TRUE);
+    $webform_form_submit_back->save();
+
+    // Check webform does have webform.form.submit_back.js when
+    // Ajax is enabled.
+    $this->drupalGet('/webform/test_form_submit_back');
+    $this->assertNoRaw('webform.form.submit_back.js');
 
     /**************************************************************************/
     /* Test webform (client-side) unsaved (form_unsaved) */

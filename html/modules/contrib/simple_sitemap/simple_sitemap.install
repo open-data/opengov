@@ -704,3 +704,17 @@ function simple_sitemap_update_8301() {
     ]
   );
 }
+
+/**
+ * Removing unused batch_process_limit key from simple_sitemap.settings
+ * configuration.
+ */
+function simple_sitemap_update_8302() {
+  $settings = \Drupal::service('config.factory')
+    ->getEditable('simple_sitemap.settings');
+
+  if (NULL !== $settings->get('batch_process_limit')) {
+    $settings->clear('batch_process_limit');
+    $settings->save();
+  }
+}

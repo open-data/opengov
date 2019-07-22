@@ -188,7 +188,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
 
     // Check the submission 1 (valid) record.
     $submission_1 = $this->loadSubmissionByProperty('notes', 'valid');
-    $this->assertEquals($submission_1->getElementData('summary'), 'valid');
+    $this->assertEquals('valid', $submission_1->getElementData('summary'));
     $this->assertEquals('e1d59c85-7096-4bee-bafa-1bd6798862e2', $submission_1->uuid());
     $this->assertEquals($this->rootUser->id(), $submission_1->getOwnerId());
 
@@ -272,7 +272,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
 
     // Check the submission 2 (validation warnings) record.
     $submission_2 = $this->loadSubmissionByProperty('notes', 'validation warnings');
-    $this->assertEquals($submission_2->getElementData('summary'), 'validation warnings');
+    $this->assertEquals('validation warnings', $submission_2->getElementData('summary'));
     $this->assertEquals('9a05b67b-a69a-43d8-a498-9bea83c1cbbe', $submission_2->uuid());
 
     // Check submission 2 data.
@@ -335,12 +335,12 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     // Check the submission 3 (validation warnings) record.
     $submission_3 = $this->loadSubmissionByProperty('notes', 'validation errors');
     $this->assertEquals('428e338b-d09c-4bb6-8e34-7dcea79f1f0d', $submission_3->uuid());
-    $this->assertEquals($submission_3->getElementData('summary'), 'validation errors');
+    $this->assertEquals('validation errors', $submission_3->getElementData('summary'));
 
     // Check submission 3 contain invalid data.
-    $this->assertEqual($submission_3->getElementData('checkboxes'), ['invalid']);
-    $this->assertEqual($submission_3->getElementData('email'), 'not an email address');
-    $this->assertEqual($submission_3->getElementData('emails')[2], 'not an email address');
+    $this->assertEquals(['invalid'], $submission_3->getElementData('checkboxes'));
+    $this->assertEquals('not an email address', $submission_3->getElementData('email'));
+    $this->assertEquals('not an email address', $submission_3->getElementData('emails')[2]);
 
     // Set not_mapped destination to summary using the UI.
     // Upload the webform.csv.
@@ -362,7 +362,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
 
     // Check that submission summary now is set to not mapped.
     $submission_1 = $this->loadSubmissionByProperty('notes', 'valid');
-    $this->assertEquals($submission_1->getElementData('summary'), '{not mapped}');
+    $this->assertEquals('{not mapped}', $submission_1->getElementData('summary'));
 
     // Upload the external.csv.
     $this->drupalPostForm(
@@ -382,7 +382,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
 
     // Check that external submissions exists.
     $submission_4 = $this->loadSubmissionByProperty('notes', 'valid external data');
-    $this->assertEquals($submission_4->getElementData('summary'), 'valid external data');
+    $this->assertEquals('valid external data', $submission_4->getElementData('summary'));
 
     // Upload the external.csv.
     $this->drupalPostForm(

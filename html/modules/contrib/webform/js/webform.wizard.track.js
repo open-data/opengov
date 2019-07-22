@@ -21,16 +21,6 @@
       // since conditional logic can skip pages.
       // Note: window.history is only supported by IE 10+.
       if (window.history && window.history.replaceState) {
-        // Track the form's current page for 8.5.x and below.
-        // @todo Remove the below code once only 8.6.x is supported.
-        // @see https://www.drupal.org/project/drupal/issues/2508796
-        $('form[data-webform-wizard-current-page]', context)
-          .once('webform-wizard-current-page')
-          .each(function () {
-            trackPage(this);
-          });
-
-        // Track the form's current page for 8.6.x and above.
         if ($(context).hasData('webform-wizard-current-page')) {
           trackPage(context);
         }

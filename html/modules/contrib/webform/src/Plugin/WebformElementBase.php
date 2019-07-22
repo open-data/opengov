@@ -21,13 +21,14 @@ use Drupal\Core\Url;
 use Drupal\webform\Element\WebformCompositeFormElementTrait;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Element\WebformMessage;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformOptions;
 use Drupal\webform\Plugin\WebformElement\Checkbox;
 use Drupal\webform\Plugin\WebformElement\Checkboxes;
 use Drupal\webform\Plugin\WebformElement\ContainerBase;
 use Drupal\webform\Plugin\WebformElement\Details;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
-use Drupal\webform\Twig\TwigExtension;
+use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformFormHelper;
@@ -205,6 +206,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       // Form display.
       'title_display' => '',
       'description_display' => '',
+      'help_display' => '',
       'field_prefix' => '',
       'field_suffix' => '',
       'disabled' => FALSE,
@@ -831,6 +833,11 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function alterForm(array &$element, array &$form, FormStateInterface $form_state) { }
+
+  /**
    * Webform element #after_build callback.
    *
    * Wrap #element_validate so that we suppress element validation errors.
@@ -855,7 +862,22 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       return FALSE;
     }
 
+    // Get the current user.
     $account = $account ?: $this->currentUser;
+
+    // If #private, check that the current user can 'view any submission'.
+    if (!empty($element['#private'])) {
+      // If #webform is missing, block access to the element.
+      if (empty($element['#webform'])) {
+        return FALSE;
+      }
+      // Check 'submission_view_any' access to the element's associated webform.
+      $webform = Webform::load($element['#webform']);
+      if (!$webform->access('submission_view_any', $account)) {
+        return FALSE;
+      }
+    }
+
     return $this->checkAccessRule($element, $operation, $account);
   }
 
@@ -1333,7 +1355,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       'items' => $items,
     ];
 
-    return TwigExtension::buildTwigTemplate($webform_submission, $template, $options, $context);
+    return WebformTwigExtension::buildTwigTemplate($webform_submission, $template, $options, $context);
   }
 
   /**
@@ -1520,10 +1542,10 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
 
     // Return inline template.
     if ($type === 'Text') {
-      return TwigExtension::renderTwigTemplate($webform_submission, $template, $options, $context);
+      return WebformTwigExtension::renderTwigTemplate($webform_submission, $template, $options, $context);
     }
     else {
-      return TwigExtension::buildTwigTemplate($webform_submission, $template, $options, $context);
+      return WebformTwigExtension::buildTwigTemplate($webform_submission, $template, $options, $context);
     }
   }
 
@@ -2156,7 +2178,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
   /**
    * {@inheritdoc}
    */
-  public function preCreate(array &$element, array $values) {}
+  public function preCreate(array &$element, array &$values) {}
 
   /**
    * {@inheritdoc}
@@ -2323,11 +2345,49 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       ],
       '#description' => $this->t('Determines the placement of the description.'),
     ];
+    $form['form']['display_container']['help_display'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Help display'),
+      '#empty_option' => $this->t('- Default -'),
+      '#options' => [
+        'title_before' => $this->t('Before title'),
+        'title_after' => $this->t('After title'),
+        'element_before' => $this->t('Before element'),
+        'element_after' => $this->t('After element'),
+      ],
+      '#description' => $this->t('Determines the placement of the help tooltip.'),
+    ];
 
     // Remove unsupported title and description display from composite elements.
     if ($this->isComposite()) {
       unset($form['form']['display_container']['title_display']['#options']['inline']);
       unset($form['form']['display_container']['description_display']['#options']['tooltip']);
+    }
+    // Remove unsupported title display from certain element types.
+    $element_types = [
+      'webform_codemirror',
+      'webform_email_confirm',
+      'webform_htmleditor',
+      'webform_mapping',
+      'webform_signature',
+    ];
+    if (in_array($this->getPluginId(), $element_types)) {
+      unset($form['form']['display_container']['title_display']['#options']['inline']);
+    }
+    // Remove unsupported title display from certain element types.
+    $element_types = [
+      'fieldset',
+      'details',
+      'webform_codemirror',
+      'webform_email_confirm',
+      'webform_htmleditor',
+      'webform_image_select',
+      'webform_likert',
+      'webform_mapping',
+      'webform_signature',
+    ];
+    if (in_array($this->getPluginId(), $element_types)) {
+      unset($form['form']['display_container']['title_display']['#options']['inline']);
     }
 
     $form['form']['field_container'] = $this->getFormInlineContainer();
@@ -2827,7 +2887,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
     ];
 
     /* Submission display */
-    $has_edit_twig_access = TwigExtension::hasEditTwigAccess();
+    $has_edit_twig_access = WebformTwigExtension::hasEditTwigAccess();
 
     $form['display'] = [
       '#type' => 'details',
@@ -2894,7 +2954,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
           $twig_variables["item.$format_name"] = "{{ item.$format_name }}";
         }
       }
-      $form['display']['item']['twig'] = TwigExtension::buildTwigHelp($twig_variables);
+      $form['display']['item']['twig'] = WebformTwigExtension::buildTwigHelp($twig_variables);
       $form['display']['item']['twig']['#states'] = $format_custom_states;
       WebformElementHelper::setPropertyRecursive($form['display']['item']['twig'], '#access', TRUE);
     }
@@ -2947,7 +3007,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
         '{{ value }}',
         '{{ items }}',
       ];
-      $form['display']['items']['twig'] = TwigExtension::buildTwigHelp($twig_variables);
+      $form['display']['items']['twig'] = WebformTwigExtension::buildTwigHelp($twig_variables);
       $form['display']['items']['twig']['#states'] = $format_items_custom_states;
       WebformElementHelper::setPropertyRecursive($form['display']['items']['twig'], '#access', TRUE);
     }

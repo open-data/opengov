@@ -55,8 +55,8 @@
         if (value) {
           $geocomplete.geocomplete('find', value);
         }
-        else if (navigator.geolocation && $geocomplete.attr('data-webform-location-geocomplete-geolocation')) {
-          navigator.geolocation.getCurrentPosition(function (position) {
+        else if (window.navigator.geolocation && $geocomplete.attr('data-webform-location-geocomplete-geolocation')) {
+          window.navigator.geolocation.getCurrentPosition(function (position) {
             $geocomplete.geocomplete('find', position.coords.latitude + ', ' + position.coords.longitude);
           });
         }

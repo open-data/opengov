@@ -333,6 +333,18 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
   public function finalize(array &$element, WebformSubmissionInterface $webform_submission = NULL);
 
   /**
+   * Alter an element's associated form.
+   *
+   * @param array $element
+   *   An element.
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function alterForm(array &$element, array &$form, FormStateInterface $form_state);
+
+  /**
    * Check element access (rules).
    *
    * @param string $operation
@@ -788,10 +800,10 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    *
    * @param array $element
    *   An element.
-   * @param mixed[] $values
+   * @param mixed[] &$values
    *   An array of values to set, keyed by property name.
    */
-  public function preCreate(array &$element, array $values);
+  public function preCreate(array &$element, array &$values);
 
   /**
    * Acts on a webform submission element after it is created.

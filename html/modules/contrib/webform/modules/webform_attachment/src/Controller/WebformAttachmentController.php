@@ -98,14 +98,17 @@ class WebformAttachmentController extends ControllerBase implements ContainerInj
       throw new AccessDeniedHttpException();
     }
 
-    /** @var \Drupal\webform_attachment\Element\WebformAttachmentInterface $element_plugin */
-    $element_info = $this->elementInfo->createInstance($element['#type']);
+    /** @var \Drupal\webform_attachment\Element\WebformAttachmentInterface $element_info */
+    // Get base form element for webform element derivatives.
+    // @see \Drupal\webform_entity_print\Plugin\Derivative\WebformEntityPrintWebformElementDeriver
+    list($type) = explode(':', $element['#type']);
+    $element_info = $this->elementInfo->createInstance($type);
 
     // Get attachment information.
     $attachment_name = $element_info::getFileName($element, $webform_submission);
     $attachment_mime = $element_info::getFileMimeType($element, $webform_submission);
     $attachment_content = $element_info::getFileContent($element, $webform_submission);
-    $attachment_size = mb_strlen($attachment_content);
+    $attachment_size = strlen($attachment_content);
     $attachment_download = (!empty($element['#download'])) ? 'attachment;' : '';
 
     // Make sure the attachment can be downloaded.

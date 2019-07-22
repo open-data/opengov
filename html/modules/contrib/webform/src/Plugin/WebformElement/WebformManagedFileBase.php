@@ -174,6 +174,13 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
   /**
    * {@inheritdoc}
    */
+  public function getTranslatableProperties() {
+    return array_merge(parent::getTranslatableProperties(), ['file_placeholder']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function supportsMultipleValues() {
     return TRUE;
   }
@@ -563,7 +570,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
     // Look for an existing temp files that have not been uploaded.
     $fids = $this->entityTypeManager->getStorage('file')->getQuery()
-      ->condition('status', FALSE)
+      ->condition('status', 0)
       ->condition('uid', $this->currentUser->id())
       ->condition('uri', $upload_location . '/' . $key . '.%', 'LIKE')
       ->execute();
@@ -897,6 +904,9 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+
+    // Remove unsupported inline title display.
+    unset($form['form']['display_container']['title_display']['#options']['inline']);
 
     $form['file'] = [
       '#type' => 'fieldset',
@@ -1360,7 +1370,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
    */
   public function getAttachments(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $attachments = [];
-    $files = $this->getTargetEntities($element, $webform_submission, $options);
+    $files = $this->getTargetEntities($element, $webform_submission, $options) ?: [];
     foreach ($files as $file) {
       $attachments[] = [
         'filecontent' => file_get_contents($file->getFileUri()),

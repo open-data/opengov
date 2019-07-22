@@ -5,6 +5,7 @@ namespace Drupal\webform\Element;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Render\Element;
+use Drupal\webform\Utility\WebformArrayHelper;
 
 /**
  * Provides a trait for webform composite form elements.
@@ -40,6 +41,19 @@ trait WebformCompositeFormElementTrait {
     // Apply wrapper attributes to attributes.
     if (isset($element['#wrapper_attributes'])) {
       $element['#attributes'] = NestedArray::mergeDeep($element['#attributes'], $element['#wrapper_attributes']);
+    }
+
+    // Remove .js-webform-states-hidden from attributes if the element has
+    // a states wrapper.
+    // @see \Drupal\webform\Plugin\WebformElement\WebformAddress
+    // @see \Drupal\webform\Plugin\WebformElement\WebformName
+    if (isset($element['#states']) && isset($element['#attributes']['class'])) {
+      /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
+      $element_manager = \Drupal::service('plugin.manager.webform.element');
+      $element_plugin = $element_manager->getElementInstance($element);
+      if ($element_plugin->getPluginDefinition()['states_wrapper']) {
+        WebformArrayHelper::removeValue($element['#attributes']['class'], 'js-webform-states-hidden');
+      }
     }
 
     // Set id and classes.

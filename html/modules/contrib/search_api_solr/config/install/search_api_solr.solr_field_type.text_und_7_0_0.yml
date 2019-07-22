@@ -5,7 +5,6 @@ dependencies:
     - search_api_solr
 id: text_und_7_0_0
 label: 'Language Undefined Text Field'
-managed_schema: false
 minimum_solr_version: 7.0.0
 custom_code: ''
 field_type_language_code: und
@@ -20,19 +19,19 @@ field_type:
       charFilters:
         -
           class: solr.MappingCharFilterFactory
-          mapping: mapping-ISOLatin1Accent.txt
+          mapping: accents_und.txt
       tokenizer:
         class: solr.WhitespaceTokenizerFactory
       filters:
         -
           class: solr.StopFilterFactory
           ignoreCase: true
-          words: stopwords.txt
+          words: stopwords_und.txt
         -
           class: solr.WordDelimiterGraphFilterFactory
           catenateNumbers: 1
           generateNumberParts: 1
-          protected: protwords.txt
+          protected: protwords_und.txt
           splitOnCaseChange: 0
           generateWordParts: 1
           preserveOriginal: 1
@@ -51,24 +50,24 @@ field_type:
       charFilters:
         -
           class: solr.MappingCharFilterFactory
-          mapping: mapping-ISOLatin1Accent.txt
+          mapping: accents_und.txt
       tokenizer:
         class: solr.WhitespaceTokenizerFactory
       filters:
         -
           class: solr.SynonymGraphFilterFactory
-          synonyms: synonyms.txt
+          synonyms: synonyms_und.txt
           expand: true
           ignoreCase: true
         -
           class: solr.StopFilterFactory
           ignoreCase: true
-          words: stopwords.txt
+          words: stopwords_und.txt
         -
           class: solr.WordDelimiterGraphFilterFactory
           catenateNumbers: 0
           generateNumberParts: 1
-          protected: protwords.txt
+          protected: protwords_und.txt
           splitOnCaseChange: 0
           generateWordParts: 1
           preserveOriginal: 1
@@ -82,8 +81,77 @@ field_type:
           class: solr.LowerCaseFilterFactory
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
+spellcheck_field_type:
+  name: text_spell_und
+  class: solr.TextField
+  positionIncrementGap: 100
+  analyzer:
+    charFilters:
+      -
+        class: solr.MappingCharFilterFactory
+        mapping: accents_und.txt
+    tokenizer:
+      class: solr.WhitespaceTokenizerFactory
+    filters:
+      -
+        class: solr.LengthFilterFactory
+        min: 2
+        max: 100
+      -
+        class: solr.LowerCaseFilterFactory
+      -
+        class: solr.RemoveDuplicatesTokenFilterFactory
+collated_field_type:
+  name: collated_und
+  class: solr.ICUCollationField
+  locale: en
+  strength: primary
+  caseLevel: false
 solr_configs:
   searchComponents:
+    -
+      name: spellcheck
+      class: solr.SpellCheckComponent
+      lst:
+        -
+          name: spellchecker
+          str:
+            -
+              name: name
+              VALUE: und
+            -
+              name: field
+              VALUE: spellcheck_und
+            -
+              name: classname
+              VALUE: solr.DirectSolrSpellChecker
+            -
+              name: distanceMeasure
+              VALUE: internal
+            -
+              name: accuracy
+              VALUE: '0.5'
+            -
+              name: maxEdits
+              VALUE: '2'
+            -
+              name: minPrefix
+              VALUE: '1'
+            -
+              name: maxInspections
+              VALUE: '5'
+            -
+              name: minQueryLength
+              VALUE: '4'
+            -
+              name: maxQueryFrequency
+              VALUE: '0.01'
+            -
+              name: thresholdTokenFrequency
+              VALUE: '.01'
+            -
+              name: onlyMorePopular
+              VALUE: 'true'
     -
       name: suggest
       class: solr.SuggestComponent
@@ -117,41 +185,6 @@ solr_configs:
               VALUE: 'false'
 text_files:
   stopwords: |
-    a
-    an
-    and
-    are
-    as
-    at
-    be
-    but
-    by
-    for
-    if
-    in
-    into
-    is
-    it
-    no
-    not
-    of
-    on
-    or
-    s
-    such
-    t
-    that
-    the
-    their
-    then
-    there
-    these
-    they
-    this
-    to
-    was
-    will
-    with
   synonyms: |
     drupal, durpal
   protwords: |

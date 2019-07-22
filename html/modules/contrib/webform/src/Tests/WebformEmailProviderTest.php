@@ -37,8 +37,14 @@ class WebformEmailProviderTest extends WebformTestBase {
     $this->assertRaw('Provided by the Webform module.');
     $this->assertRaw("Webform PHP mailer: Sends the message as plain text or HTML, using PHP's native mail() function.");
 
-    // Check Mail System: Default PHP mailer after mailsystem module installed.
+    /**************************************************************************/
+    // Mail System.
+    /**************************************************************************/
+
+    // Install mailsystem.module.
     \Drupal::service('module_installer')->install(['mailsystem']);
+
+    // Check Mail System: Default PHP mailer after mailsystem.module installed.
     $this->drupalGet('/admin/reports/status');
     $this->assertRaw('Provided by the Mail System module.');
     $this->assertNoRaw("Webform PHP mailer: Sends the message as plain text or HTML, using PHP's native mail() function.");
@@ -48,6 +54,29 @@ class WebformEmailProviderTest extends WebformTestBase {
     \Drupal::service('module_installer')->uninstall(['mailsystem']);
     $this->drupalGet('/admin/reports/status');
     $this->assertRaw("Webform PHP mailer: Sends the message as plain text or HTML, using PHP's native mail() function.");
+
+    // Uninstall mailsystem.module.
+    \Drupal::service('module_installer')->uninstall(['mailsystem']);
+
+    /**************************************************************************/
+    // SMTP.
+    /**************************************************************************/
+
+    // Install smtp.module.
+    \Drupal::service('module_installer')->install(['smtp']);
+
+    // Check Webform: Default PHP mailer after smtp.module installed
+    // but still turned off.
+    $this->drupalGet('/admin/reports/status');
+    $this->assertRaw('Provided by the Webform module.');
+
+    // Turn on the smtp.module via the UI.
+    // @see webform_form_smtp_admin_settings_alter()
+    $this->drupalPostForm('/admin/config/system/smtp', ['smtp_on' => TRUE], t('Save configuration'));
+
+    // Check SMTP: Default PHP mailer after smtp.module turned on.
+    $this->drupalGet('/admin/reports/status');
+    $this->assertNoRaw('Provided by the SMTP module.');
   }
 
 }

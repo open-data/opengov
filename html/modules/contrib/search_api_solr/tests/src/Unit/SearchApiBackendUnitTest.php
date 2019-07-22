@@ -15,10 +15,7 @@ use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\Tests\UnitTestCase;
 use Solarium\Core\Query\Helper;
-use Solarium\QueryType\Update\Query\Document\Document;
-
-// @see datetime.module
-define('DATETIME_STORAGE_TIMEZONE', 'UTC');
+use Solarium\QueryType\Update\Query\Document;
 
 /**
  * Tests functionality of the backend.
@@ -98,10 +95,7 @@ class SearchApiBackendUnitTest extends UnitTestCase {
   }
 
   /**
-   * Data provider for testIndexField method. Set of values can be extended to
-   * check other field types and values.
-   *
-   * @return array
+   * Data provider for testIndexField method.
    */
   public function addIndexFieldDataProvider() {
     return [
@@ -114,7 +108,11 @@ class SearchApiBackendUnitTest extends UnitTestCase {
       [TRUE, 'boolean', 'true'],
       ['2016-05-25T14:00:00+10', 'date', '2016-05-25T04:00:00Z'],
       ['1465819200', 'date', '2016-06-13T12:00:00Z'],
-      [new DateRangeValue('2016-05-25T14:00:00+10', '2017-05-25T14:00:00+10'), 'solr_date_range', '[2016-05-25T04:00:00Z TO 2017-05-25T04:00:00Z]'],
+      [
+        new DateRangeValue('2016-05-25T14:00:00+10', '2017-05-25T14:00:00+10'),
+        'solr_date_range',
+        '[2016-05-25T04:00:00Z TO 2017-05-25T04:00:00Z]',
+      ],
       [-1, 'integer', -1],
       [0, 'integer', 0],
       [1, 'integer', 1],
@@ -123,12 +121,12 @@ class SearchApiBackendUnitTest extends UnitTestCase {
       [1.3, 'decimal', 1.3],
       ['foo', 'string', 'foo'],
       [new TextValue('foo bar'), 'text', 'foo bar'],
-      [(new TextValue(''))->setTokens([new TextToken('bar')]), 'text', ['bar', 1]],
+      [(new TextValue(''))->setTokens([new TextToken('bar')]), 'text', 'bar'],
       // addIndexField() should not be called.
       [NULL, 'boolean', NULL],
       [NULL, 'date', NULL],
       [NULL, 'solr_date_range', NULL],
-      [NULL, 'integer',NULL],
+      [NULL, 'integer', NULL],
       [NULL, 'decimal', NULL],
       [NULL, 'string', NULL],
       ['', 'string', NULL],
@@ -136,4 +134,5 @@ class SearchApiBackendUnitTest extends UnitTestCase {
       [(new TextValue(''))->setTokens([new TextToken('')]), 'text', NULL],
     ];
   }
+
 }

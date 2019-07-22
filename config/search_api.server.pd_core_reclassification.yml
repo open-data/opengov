@@ -9,14 +9,14 @@ dependencies:
 id: pd_core_reclassification
 name: 'Proactive Disclosure: Reclassification'
 description: 'Connector for Solr core_reclassification'
-backend: search_api_solr_any_schema
+backend: search_api_solr
 backend_config:
   connector: standard
   connector_config:
     scheme: http
     host: localhost
     port: '8983'
-    path: /solr
+    path: /
     core: core_reclassification
     timeout: 5
     index_timeout: 5
@@ -32,3 +32,4 @@ backend_config:
   server_prefix: ''
   domain: generic
   site_hash: true
+  optimize: false

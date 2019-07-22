@@ -65,7 +65,7 @@ class WebformElementFormatCustomTest extends WebformElementTestBase {
 
     // Check caught exception is displayed to users with update access.
     // @see \Drupal\webform\Twig\TwigExtension::renderTwigTemplate
-    $this->assertRaw('(&quot;The &quot;[webform_submission:values:textfield_custom_token_exception]&quot; token is being called recursively.&quot;)');
+    $this->assertRaw('(&quot;The &quot;[webform_submission:values:textfield_custom_token_exception]&quot; is being called recursively.&quot;)');
     $this->assertRaw('<label>textfield_custom_token_exception</label>');
     $this->assertRaw('<em>EXCEPTION</em>');
 

@@ -52,6 +52,18 @@ class WebformElementHelpTest extends WebformElementTestBase {
 
     // Check section.
     $this->assertRaw('<h2 class="webform-section-title">help_section<span class="webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;help_section&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;{This is an example of help for a section element}&lt;/div&gt;"><span aria-hidden="true">?</span></span>');
+
+    // Check help display title after.
+    $this->assertRaw('<label for="edit-help-after-title">help_after_title<span class="webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;help_after_title&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;{This is an example of help}&lt;/div&gt;"><span aria-hidden="true">?</span></span></label>');
+
+    // Check help display title before.
+    $this->assertRaw('<label for="edit-help-before-title"><span class="webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;help_before_title&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;{This is an example of help}&lt;/div&gt;"><span aria-hidden="true">?</span></span>help_before_title</label>');
+
+    // Check help display element after.
+    $this->assertRaw('<span class="field-suffix"><span class="webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;help_after_element&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;{This is an example of help}&lt;/div&gt;"><span aria-hidden="true">?</span></span></span>');
+
+    // Check help display element before.
+    $this->assertRaw('<span class="field-prefix"><span class="webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;help_before_element&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;{This is an example of help}&lt;/div&gt;"><span aria-hidden="true">?</span></span></span>');
   }
 
 }

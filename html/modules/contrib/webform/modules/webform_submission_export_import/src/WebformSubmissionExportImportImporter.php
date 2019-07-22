@@ -404,12 +404,12 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
       // Get CSV values.
       $values = fgetcsv($handle);
       // Complete ignored empty rows.
-      if (empty($values)) {
+      if (empty($values) || $values == ['']) {
         continue;
       }
 
-      // Create CSV record.
       $record = array_combine($column_names, $values);
+
       // Trim all values.
       foreach ($record as $key => $value) {
         $record[$key] = trim($value);

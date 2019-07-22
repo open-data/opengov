@@ -100,12 +100,6 @@ webform.help.videos:
   parent_id: webform.help
   weight: 0
 
-webform.contribute:
-  title: 'Contribute'
-  route_name: webform.contribute
-  parent_id: webform.help
-  weight: 10
-
 # Form
 
 entity.webform.canonical:

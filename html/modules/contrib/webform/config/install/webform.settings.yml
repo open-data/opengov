@@ -1,8 +1,11 @@
 settings:
   default_status: open
   default_page_base_path: form
+  default_ajax_effect: fade
+  default_ajax_speed: 500
+  default_ajax_progress_type: throbber
   default_form_open_message: 'This form has not yet been opened to submissions.'
-  default_form_close_message: 'Sorry…This form is closed to new submissions.'
+  default_form_close_message: 'Sorry… This form is closed to new submissions.'
   default_form_exception_message: 'Unable to display this webform. Please contact the site administrator.'
   default_submit_button_label: Submit
   default_reset_button_label: Reset
@@ -24,7 +27,7 @@ settings:
     messages messages--error
     messages messages--warning
     messages messages--status
-    
+
   button_classes: ''
   default_wizard_prev_button_label: '< Previous Page'
   default_wizard_next_button_label: 'Next Page >'
@@ -38,6 +41,8 @@ settings:
   default_draft_button_label: 'Save Draft'
   default_draft_saved_message: 'Submission saved. You may return to this form later and it will restore the current values.'
   default_draft_loaded_message: 'A partially-completed form was found. Please complete the remaining portions.'
+  default_draft_pending_single_message: 'You have a pending draft for this webform. <a href="#">Load your pending draft</a>.'
+  default_draft_pending_multiple_message: 'You have pending drafts for this webform. <a href="#">View your pending drafts</a>.'
   default_confirmation_message: 'New submission added to [webform:title].'
   default_confirmation_back_label: 'Back to form'
   default_submission_label: '[webform_submission:submitted-to]: Submission #[webform_submission:serial]'
@@ -65,15 +70,15 @@ settings:
     messages messages--error
     messages messages--warning
     messages messages--status
-    
+
   confirmation_classes: |
     messages messages--error
     messages messages--warning
     messages messages--status
-    
+
   confirmation_back_classes: |
     button
-    
+
   default_limit_total_message: 'No more submissions are permitted.'
   default_limit_user_message: 'No more submissions are permitted.'
   dialog: false
@@ -130,14 +135,14 @@ element:
     messages messages--error
     messages messages--warning
     messages messages--status
-    
+
   classes: |
     container-inline clearfix
     form--inline clearfix
     messages messages--error
     messages messages--warning
     messages messages--status
-    
+
   horizontal_rule_classes: |
     webform-horizontal-rule--solid
     webform-horizontal-rule--dashed
@@ -148,7 +153,7 @@ element:
     webform-horizontal-rule--thick
     webform-horizontal-rule--flaired
     webform-horizontal-rule--glyph
-    
+
   default_description_display: ''
   default_more_title: More
   default_section_title_tag: h2
@@ -194,16 +199,16 @@ mail:
   default_body_text: |
     Submitted on [webform_submission:created]
     Submitted by: [webform_submission:user]
-    
+
     Submitted values are:
     [webform_submission:values]
-    
+
   default_body_html: |
     <p>Submitted on [webform_submission:created]</p>
     <p>Submitted by: [webform_submission:user]</p>
     <p>Submitted values are:</p>
     [webform_submission:values]
-    
+
   roles: {  }
 test:
   types: |
@@ -246,7 +251,7 @@ test:
     webform_time:
       - '09:00'
       - '17:00'
-    
+
   names: |
     first_name:
       - 'John'
@@ -286,18 +291,18 @@ test:
       - 'Loremipsum'
       - 'Oratione'
       - 'Dixisset'
-    
+
 ui:
   video_display: dialog
   details_save: true
   help_disabled: false
   dialog_disabled: false
   offcanvas_disabled: false
-  contribute_disabled: false
   promotions_disabled: false
   description_help: true
 libraries:
   excluded_libraries:
+    - choices
     - jquery.chosen
     - jquery.icheck
     - jquery.toggles
@@ -305,9 +310,6 @@ requirements:
   cdn: true
   bootstrap: true
   spam: true
-contribute:
-  account_type: user
-  account_id: null
 langcode: en
 third_party_settings:
   captcha:

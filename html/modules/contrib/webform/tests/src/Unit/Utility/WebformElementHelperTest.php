@@ -174,4 +174,62 @@ class WebformElementHelperTest extends UnitTestCase {
     ];
   }
 
+  /**
+   * Tests WebformElementHelper::hasProperty().
+   *
+   * @param array $elements
+   *   The array to run through WebformElementHelper::convertRenderMarkupToStrings().
+   * @param bool $expected
+   *   The expected result from calling the function.
+   *
+   * @see WebformElementHelper::HasProperty()
+   *
+   * @dataProvider providerHasProperty
+   */
+  public function testHasProperty(array $arguments, $expected) {
+    $result = WebformElementHelper::hasProperty($arguments[0], $arguments[1], $arguments[2]);
+    $this->assertEquals($expected, $result);
+  }
+
+  /**
+   * Data provider for testConvertRenderMarkupToStrings().
+   *
+   * @see testHasProperty()
+   */
+  public function providerHasProperty() {
+    return [
+      [
+        [[], '#required', NULL],
+        FALSE,
+        'Does not have #required',
+      ],
+      [
+        [['#required' => TRUE], '#required', NULL],
+        TRUE,
+        'Has #required',
+      ],
+      [
+        [['#required' => TRUE], '#required', 'value'],
+        FALSE,
+        '#required !== value',
+      ],
+      [
+        [['#required' => 'value'], '#required', 'value'],
+        TRUE,
+        '#required == value',
+      ],
+      [
+        [['nested' => ['#required' => TRUE]], '#required', NULL],
+        TRUE,
+        'Has nested #required',
+      ],
+      [
+        [['nested' => ['#required' => 'value']], '#required', 'value'],
+        TRUE,
+        'nested #required == value',
+      ],
+
+    ];
+  }
+
 }

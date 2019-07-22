@@ -107,6 +107,7 @@ trait WebformEntityReferenceWidgetTrait {
     $element['settings']['status'] = [
       '#type' => 'radios',
       '#title' => $this->t('Status'),
+      '#description' => $this->t('The open, closed, or scheduled status applies to only this webform instance.'),
       '#options' => [
         WebformInterface::STATUS_OPEN => $this->t('Open'),
         WebformInterface::STATUS_CLOSED => $this->t('Closed'),

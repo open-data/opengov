@@ -3078,3 +3078,50 @@ function webform_update_8162() {
 function webform_update_8163() {
   _webform_update_admin_settings();
 }
+
+/**
+ * Issue #3050884: Allow draft(s) previous message to be customized.
+ */
+function webform_update_8164() {
+  _webform_update_admin_settings();
+  _webform_update_webform_settings();
+}
+
+/**
+ * Issue #3053420: Allows Ajax visual effects to be customized.
+ */
+function webform_update_8165() {
+  _webform_update_admin_settings();
+  _webform_update_webform_settings();
+}
+
+/**
+ * Issue #3049023: All Webforms are listed on Content languages form.
+ */
+function webform_update_8166() {
+  _webform_update_webform_submission_translation();
+}
+
+/**
+ * Issue #3026111: Create a logo and header for the Webform module.
+ */
+function webform_update_8167() {
+  \Drupal::configFactory()->getEditable('webform.settings')
+    ->clear('ui.contribute_disabled')
+    ->clear('contribute')
+    ->save();
+}
+
+/**
+ * Issue #3033726: Provide option to redirect to a URL if Remote Post fails.
+ */
+function webform_update_8168() {
+  _webform_update_webform_handler_settings();
+}
+
+/**
+ * Issue #3062308: Add the ability to use admin theme for a webform's canonical route
+ */
+function webform_update_8169() {
+  _webform_update_webform_settings();
+}

@@ -111,7 +111,7 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
-      $container->get('entity.manager')->getStorage($entity_type->id()),
+      $container->get('entity_type.manager')->getStorage($entity_type->id()),
       $container->get('request_stack'),
       $container->get('current_user'),
       $container->get('entity_type.manager')
@@ -562,7 +562,8 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
     // If the user is not a webform admin, check access to each webform.
     if (!$this->isAdmin()) {
       foreach ($entities as $entity_id => $entity) {
-        if (!$entity->access('update') && !$entity->access('submission_view_any')) {
+        if (!$entity->access('update', $this->currentUser)
+          && !$entity->access('submission_view_any', $this->currentUser)) {
           unset($entities[$entity_id]);
         }
       }

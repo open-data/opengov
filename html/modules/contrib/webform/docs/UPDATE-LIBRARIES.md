@@ -73,7 +73,7 @@ Update libraries.zip
 Commit changes
 
     # Commit changes.
-    cd /private/var/www/sites/d8_webform/web/modules/sandbox/webform_libraries/
+    cd /var/www/sites/d8_webform/web/modules/sandbox/webform_libraries/
     git commit -am"Update webform_libraries"
     git push
 
@@ -81,5 +81,5 @@ Commit changes
 7. Update composer.libraries.json
 ----------------------------------
 
-    cd /private/var/www/sites/d8_webform/web/modules/sandbox/webform
+    cd /var/www/sites/d8_webform/web/modules/sandbox/webform
     drush webform:libraries:composer > composer.libraries.json

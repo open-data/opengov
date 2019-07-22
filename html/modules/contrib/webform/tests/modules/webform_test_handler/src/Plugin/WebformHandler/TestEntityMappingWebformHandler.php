@@ -74,7 +74,10 @@ class TestEntityMappingWebformHandler extends WebformHandlerBase {
       }
     }
 
-    $form['entity_type'] = [
+    $form['entity_type_container'] = [
+      '#type' => 'container',
+    ];
+    $form['entity_type_container']['entity_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Entity type'),
       '#default_value' => $this->configuration['entity_type'],
@@ -106,13 +109,13 @@ class TestEntityMappingWebformHandler extends WebformHandlerBase {
       $access = TRUE;
     }
 
-    $form['container'] = [
+    $form['bundle_container'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'webform-test-ajax-container'],
     ];
 
     $this->configuration['bundle'] = isset($bundle_options[$this->configuration['bundle']]) ? $this->configuration['bundle'] : reset(array_keys($bundle_options));
-    $form['container']['bundle'] = [
+    $form['bundle_container']['bundle'] = [
       '#type' => 'select',
       '#title' => $this->t('Bundles'),
       '#default_value' => $this->configuration['bundle'],
@@ -139,7 +142,7 @@ class TestEntityMappingWebformHandler extends WebformHandlerBase {
       $field_options[$field_name] = $field->getLabel();
     }
 
-    $form['container']['fields'] = [
+    $form['bundle_container']['fields'] = [
       '#type' => 'webform_mapping',
       '#title' => 'Fields',
       '#description' => $this->t('Please select which fields webform submission data should be mapped to'),
@@ -175,7 +178,7 @@ class TestEntityMappingWebformHandler extends WebformHandlerBase {
    *   An associative array containing entity reference details element.
    */
   public function ajaxCallback(array $form, FormStateInterface $form_state) {
-    return NestedArray::getValue($form, ['settings', 'container']);
+    return NestedArray::getValue($form, ['settings', 'bundle_container']);
   }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Solarium\Plugin\MinimumScoreFilter;
 
+use Solarium\Component\AbstractComponent;
 use Solarium\QueryType\Select\Query\Query as SelectQuery;
 
 /**
@@ -28,8 +29,8 @@ class Query extends SelectQuery
      */
     protected $options = [
         'handler' => 'select',
-        'resultclass' => 'Solarium\QueryType\Select\Result\Result',
-        'documentclass' => 'Solarium\QueryType\Select\Result\Document',
+        'resultclass' => Result::class,
+        'documentclass' => \Solarium\QueryType\Select\Result\Document::class,
         'query' => '*:*',
         'start' => 0,
         'rows' => 10,
@@ -46,17 +47,18 @@ class Query extends SelectQuery
      *
      * @return self Provides fluent interface
      */
-    public function setFilterMode($mode)
+    public function setFilterMode(string $mode): self
     {
-        return $this->setOption('filter_mode', $mode);
+        $this->setOption('filter_mode', $mode);
+        return $this;
     }
 
     /**
      * Get filter mode.
      *
-     * @return string
+     * @return string|null
      */
-    public function getFilterMode()
+    public function getFilterMode(): ?string
     {
         return $this->getOption('filter_mode');
     }
@@ -70,17 +72,18 @@ class Query extends SelectQuery
      *
      * @return self Provides fluent interface
      */
-    public function setFilterRatio($value)
+    public function setFilterRatio(float $value): self
     {
-        return $this->setOption('filterratio', $value);
+        $this->setOption('filterratio', $value);
+        return $this;
     }
 
     /**
      * Get filterratio option.
      *
-     * @return float
+     * @return float|null
      */
-    public function getFilterRatio()
+    public function getFilterRatio(): ?float
     {
         return $this->getOption('filterratio');
     }
@@ -90,7 +93,7 @@ class Query extends SelectQuery
      *
      * @return array
      */
-    public function getFields()
+    public function getFields(): array
     {
         $fields = parent::getFields();
         if (!in_array('score', $fields, true)) {
@@ -101,25 +104,15 @@ class Query extends SelectQuery
     }
 
     /**
-     * Make sure the filtering result class is always used.
-     *
-     * @return string
-     */
-    public function getResultClass()
-    {
-        return 'Solarium\Plugin\MinimumScoreFilter\Result';
-    }
-
-    /**
      * Get all registered components.
      *
      * @return AbstractComponent[]
      */
-    public function getComponents()
+    public function getComponents(): array
     {
         if (isset($this->components[self::COMPONENT_GROUPING])) {
-            $this->components[self::COMPONENT_GROUPING]->setOption('resultquerygroupclass', 'Solarium\Plugin\MinimumScoreFilter\QueryGroupResult');
-            $this->components[self::COMPONENT_GROUPING]->setOption('resultvaluegroupclass', 'Solarium\Plugin\MinimumScoreFilter\ValueGroupResult');
+            $this->components[self::COMPONENT_GROUPING]->setOption('resultquerygroupclass', QueryGroupResult::class);
+            $this->components[self::COMPONENT_GROUPING]->setOption('resultvaluegroupclass', ValueGroupResult::class);
         }
 
         return parent::getComponents();

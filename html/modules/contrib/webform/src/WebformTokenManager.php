@@ -395,7 +395,7 @@ class WebformTokenManager implements WebformTokenManagerInterface {
    *   {webform-token-suffixes} tags.
    */
   protected function prepareSuffixes($text, array $suffixes) {
-    if (preg_match_all('/\[(.+?)((?::' . implode('|:', $suffixes) . ')+)\]/', $text, $matches)) {
+    if (preg_match_all('/\[([^\]]+?)((?::' . implode('|:', $suffixes) . ')+)\]/', $text, $matches)) {
       foreach ($matches[0] as $index => $match) {
         $value = $matches[1][$index];
         $suffixes = $matches[2][$index];

@@ -32,14 +32,11 @@ class Value extends TextBase {
    * {@inheritdoc}
    */
   public function preview() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getElementSelectorOptions(array $element) {
-    return [];
+    return [
+      '#type' => 'value',
+      '#title' => $this->t('Value'),
+      '#value' => 'preview',
+    ];
   }
 
   /**

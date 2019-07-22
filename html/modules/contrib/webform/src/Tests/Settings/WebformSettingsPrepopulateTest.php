@@ -13,12 +13,28 @@ use Drupal\webform\Tests\WebformTestBase;
  */
 class WebformSettingsPrepopulateTest extends WebformTestBase {
 
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['block', 'webform'];
+
   /**
    * Webforms to load.
    *
    * @var array
    */
   protected static $testWebforms = ['test_form_prepopulate'];
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->placeBlocks();
+  }
 
   /**
    * Tests webform setting including confirmation.
@@ -114,6 +130,18 @@ class WebformSettingsPrepopulateTest extends WebformTestBase {
     // Check invalid source entity type displays error.
     $this->drupalGet('/webform/test_form_prepopulate', ['query' => ['source_entity_type' => 'webform', 'source_entity_id' => 'contact']]);
     $this->assertNoRaw('This webform is not available. Please contact the site administrator.');
+
+    /**************************************************************************/
+    /* Test webform_menu_local_tasks_alter() */
+    /**************************************************************************/
+
+    $this->drupalLogin($this->rootUser);
+
+    // Check query string parameters be be transfered from canonical to test.
+    // @see webform_menu_local_tasks_alter
+    $route_options = ['query' => ['source_entity_type' => 'webform', 'source_entity_id' => 'contact']];
+    $this->drupalGet('webform/test_form_prepopulate', $route_options);
+    $this->assertLinkByHref($webform_prepopulate->toUrl('canonical', $route_options)->toString());
   }
 
 }

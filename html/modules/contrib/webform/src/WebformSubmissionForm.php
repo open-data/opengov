@@ -7,8 +7,9 @@ use Drupal\Component\Utility\Bytes;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
@@ -24,6 +25,7 @@ use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Form\WebformDialogFormTrait;
 use Drupal\webform\Plugin\WebformElement\Hidden;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
+use Drupal\webform\Plugin\WebformElementWizardPageInterface;
 use Drupal\webform\Plugin\WebformHandlerInterface;
 use Drupal\webform\Plugin\WebformSourceEntityManager;
 use Drupal\webform\Utility\WebformArrayHelper;
@@ -31,7 +33,6 @@ use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Utility\WebformElementHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Provides a webform to collect and edit submissions.
@@ -148,6 +149,8 @@ class WebformSubmissionForm extends ContentEntityForm {
   /**
    * Constructs a WebformSubmissionForm object.
    *
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository.
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -168,7 +171,7 @@ class WebformSubmissionForm extends ContentEntityForm {
    *   The webform message manager.
    * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
    *   The webform token manager.
-   * @param \Drupal\webform\WebformSubmissionConditionsValidator $conditions_validator
+   * @param \Drupal\webform\WebformSubmissionConditionsValidatorInterface $conditions_validator
    *   The webform submission conditions (#states) validator.
    * @param \Drupal\webform\WebformEntityReferenceManagerInterface $webform_entity_reference_manager
    *   The webform entity reference manager.
@@ -176,7 +179,7 @@ class WebformSubmissionForm extends ContentEntityForm {
    *   The webform submission generation service.
    */
   public function __construct(
-    EntityManagerInterface $entity_manager,
+    EntityRepositoryInterface $entity_repository,
     ConfigFactoryInterface $config_factory,
     RendererInterface $renderer,
     AliasManagerInterface $alias_manager,
@@ -186,11 +189,11 @@ class WebformSubmissionForm extends ContentEntityForm {
     WebformThirdPartySettingsManagerInterface $third_party_settings_manager,
     WebformMessageManagerInterface $message_manager,
     WebformTokenManagerInterface $token_manager,
-    WebformSubmissionConditionsValidator $conditions_validator,
+    WebformSubmissionConditionsValidatorInterface $conditions_validator,
     WebformEntityReferenceManagerInterface $webform_entity_reference_manager,
     WebformSubmissionGenerateInterface $submission_generate
   ) {
-    parent::__construct($entity_manager);
+    parent::__construct($entity_repository);
     $this->configFactory = $config_factory;
     $this->renderer = $renderer;
     $this->requestHandler = $request_handler;
@@ -203,7 +206,6 @@ class WebformSubmissionForm extends ContentEntityForm {
     $this->conditionsValidator = $conditions_validator;
     $this->webformEntityReferenceManager = $webform_entity_reference_manager;
     $this->generate = $submission_generate;
-
   }
 
   /**
@@ -211,7 +213,7 @@ class WebformSubmissionForm extends ContentEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('config.factory'),
       $container->get('renderer'),
       $container->get('path.alias_manager'),
@@ -453,6 +455,16 @@ class WebformSubmissionForm extends ContentEntityForm {
     // Add the webform as a cacheable dependency.
     $this->renderer->addCacheableDependency($form, $webform);
 
+    // Kill page cache for scheduled webforms.
+    // @todo Remove once bubbling of element's max-age to page cache is fixed.
+    // @see https://www.drupal.org/project/webform/issues/3015760
+    // @see https://www.drupal.org/project/drupal/issues/2352009
+    if ($webform->isScheduled()
+      && $this->currentUser()->isAnonymous()
+      && $this->moduleHandler->moduleExists('page_cache')) {
+      \Drupal::service('page_cache_kill_switch')->trigger();
+    }
+
     // Display status messages.
     $this->displayMessages($form, $form_state);
 
@@ -465,11 +477,25 @@ class WebformSubmissionForm extends ContentEntityForm {
       $form['#webform_ajax_scroll_top'] = $this->getWebformSetting('ajax_scroll_top');
     }
 
+    // Alter element's form.
+    if (isset($form['elements']) && is_array($form['elements'])) {
+      $elements = $form['elements'];
+      $this->alterElementsForm($elements, $form, $form_state);
+    }
+
     // Server side #states API validation.
     $this->conditionsValidator->buildForm($form, $form_state);
 
     // Add Ajax callbacks.
-    $form = $this->buildAjaxForm($form, $form_state);
+    $ajax_settings = [
+      'effect' => $this->getWebformSetting('ajax_effect'),
+      'speed' => (int) $this->getWebformSetting('ajax_speed'),
+      'progress' => [
+        'type' => $this->getWebformSetting('ajax_progress_type'),
+        'message' => '',
+      ],
+    ];
+    $form = $this->buildAjaxForm($form, $form_state, $ajax_settings);
 
     // Alter webform via webform handler.
     $this->getWebform()->invokeHandlers('alterForm', $form, $form_state, $webform_submission);
@@ -673,8 +699,8 @@ class WebformSubmissionForm extends ContentEntityForm {
       $form['#attached']['library'][] = 'webform/webform.form.disable_back';
     }
 
-    // Attach browser back button.
-    if ($this->getWebformSetting('form_submit_back')) {
+    // Attach browser back button only when Ajax is disabled.
+    if ($this->getWebformSetting('form_submit_back') && !$this->isAjax()) {
       $form['#attached']['library'][] = 'webform/webform.form.submit_back';
     }
 
@@ -856,9 +882,10 @@ class WebformSubmissionForm extends ContentEntityForm {
 
     // Check total limit.
     if ($this->checkTotalLimit() && empty($this->getWebformSetting('limit_total_unique'))) {
-      $form = $this->getMessageManager()->append($form, WebformMessageManagerInterface::LIMIT_TOTAL_MESSAGE);
+      $form = $this->getMessageManager()->append($form, WebformMessageManagerInterface::LIMIT_TOTAL_MESSAGE, 'warning');
       if ($webform->access('submission_update_any')) {
         $form = $this->getMessageManager()->append($form, WebformMessageManagerInterface::ADMIN_CLOSED, 'info');
+        return FALSE;
       }
       else {
         return $form;
@@ -870,6 +897,7 @@ class WebformSubmissionForm extends ContentEntityForm {
       $form = $this->getMessageManager()->append($form, WebformMessageManagerInterface::LIMIT_USER_MESSAGE, 'warning');
       if ($webform->access('submission_update_any')) {
         $form = $this->getMessageManager()->append($form, WebformMessageManagerInterface::ADMIN_CLOSED, 'info');
+        return FALSE;
       }
       else {
         return $form;
@@ -949,12 +977,12 @@ class WebformSubmissionForm extends ContentEntityForm {
       && ($previous_draft_total = $this->getStorage()->getTotal($webform, $this->sourceEntity, $this->currentUser(), ['in_draft' => TRUE]))
     ) {
       if ($previous_draft_total > 1) {
-        $this->getMessageManager()->display(WebformMessageManagerInterface::DRAFTS_PREVIOUS);
+        $this->getMessageManager()->display(WebformMessageManagerInterface::DRAFT_PENDING_MULTIPLE);
       }
       else {
         $draft_submission = $this->getStorage()->loadDraft($webform, $this->sourceEntity, $this->currentUser());
         if (!$draft_submission || $webform_submission->id() != $draft_submission->id()) {
-          $this->getMessageManager()->display(WebformMessageManagerInterface::DRAFT_PREVIOUS);
+          $this->getMessageManager()->display(WebformMessageManagerInterface::DRAFT_PENDING_SINGLE);
         }
       }
     }
@@ -1678,9 +1706,17 @@ class WebformSubmissionForm extends ContentEntityForm {
     // Save and log webform submission.
     $webform_submission->save();
 
-    // Check limits and invalidate cached and rebuild.
-    if ($this->checkTotalLimit() || $this->checkUserLimit()) {
+    // Invalidate cache if any limits are specified.
+    if ($this->getWebformSetting('limit_total')
+      || $this->getWebformSetting('user_limit_total')
+      || $this->getWebformSetting('entity_limit_total')
+      || $this->getWebformSetting('entity_limit_user')
+    ) {
       Cache::invalidateTags(['webform:' . $this->getWebform()->id()]);
+    }
+
+    // Check limits rebuild.
+    if ($this->checkTotalLimit() || $this->checkUserLimit()) {
       $form_state->setRebuild();
     }
   }
@@ -1929,7 +1965,7 @@ class WebformSubmissionForm extends ContentEntityForm {
         '#attributes' => $preview_attributes,
         // Progress bar is -20.
         '#weight' => -10,
-        'submission' => $this->entityManager
+        'submission' => $this->entityTypeManager
           ->getViewBuilder('webform_submission')
           ->view($this->entity, 'preview'),
       ];
@@ -1939,12 +1975,16 @@ class WebformSubmissionForm extends ContentEntityForm {
       $pages = $this->getWebform()->getPages($this->operation);
       foreach ($pages as $page_key => $page) {
         if (isset($form['elements'][$page_key])) {
-          if ($page_key != $current_page) {
-            $form['elements'][$page_key]['#access'] = FALSE;
-            $this->hideElements($form['elements'][$page_key]);
-          }
-          else {
-            $form['elements'][$page_key]['#type'] = 'container';
+          $page_element =& $form['elements'][$page_key];
+          $page_element_plugin = $this->elementManager->getElementInstance($page_element);
+          if ($page_element_plugin instanceof WebformElementWizardPageInterface) {
+            if ($page_key != $current_page) {
+              $page_element_plugin->hidePage($page_element);
+            }
+            else {
+              $page_element_plugin->showPage($page_element);
+            }
+
           }
         }
       }
@@ -1998,7 +2038,9 @@ class WebformSubmissionForm extends ContentEntityForm {
     $state = $webform_submission->getState();
     $is_updated = ($state === WebformSubmissionInterface::STATE_UPDATED);
     $is_locked = ($state === WebformSubmissionInterface::STATE_LOCKED && $webform_submission->getChangedTime() > $webform_submission->getCompletedTime());
-    if ($is_updated || $is_locked) {
+    $confirmation_update = $this->getWebformSetting('confirmation_update');
+
+    if (($is_updated && !$confirmation_update) || $is_locked) {
       $this->getMessageManager()->display(WebformMessageManagerInterface::SUBMISSION_UPDATED);
       $form_state->setRedirect($route_name, $route_parameters, $route_options);
       return;
@@ -2101,25 +2143,6 @@ class WebformSubmissionForm extends ContentEntityForm {
   /****************************************************************************/
 
   /**
-   * Hide webform elements by settings their #access to FALSE.
-   *
-   * @param array $elements
-   *   An render array representing elements.
-   */
-  protected function hideElements(array &$elements) {
-    foreach ($elements as $key => &$element) {
-      if (!WebformElementHelper::isElement($element, $key)) {
-        continue;
-      }
-
-      // Set #access to FALSE which will suppresses webform #required validation.
-      $element['#access'] = FALSE;
-
-      $this->hideElements($element);
-    }
-  }
-
-  /**
    * Prepare webform elements.
    *
    * @param array $elements
@@ -2144,6 +2167,32 @@ class WebformSubmissionForm extends ContentEntityForm {
 
       // Recurse and prepare nested elements.
       $this->prepareElements($element, $form, $form_state);
+    }
+  }
+
+  /**
+   * Alter webform elements form.
+   *
+   * @param array $elements
+   *   An render array representing elements.
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  protected function alterElementsForm(array &$elements, array &$form, FormStateInterface $form_state) {
+    foreach ($elements as $key => &$element) {
+      if (!WebformElementHelper::isElement($element, $key)) {
+        continue;
+      }
+
+      $element_plugin = $this->elementManager->getElementInstance($element);
+      if ($element_plugin) {
+        $element_plugin->alterForm($element, $form, $form_state);
+      }
+
+      // Recurse and alter nested elements forms.
+      $this->alterElementsForm($element, $form, $form_state);
     }
   }
 
@@ -2182,7 +2231,13 @@ class WebformSubmissionForm extends ContentEntityForm {
    */
   protected function prepopulateData(array &$data) {
     if ($this->getWebformSetting('form_prepopulate')) {
-      $data += $this->getRequest()->query->all();
+      if ($this->operation === 'test') {
+        // Query string data should override existing test data.
+        $data = $this->getRequest()->query->all() + $data;
+      }
+      else {
+        $data += $this->getRequest()->query->all();
+      }
     }
     else {
       $elements = $this->getWebform()->getElementsPrepopulate();
@@ -2472,7 +2527,7 @@ class WebformSubmissionForm extends ContentEntityForm {
    *   The webform submission entity storage.
    */
   protected function getStorage() {
-    return $this->entityManager->getStorage('webform_submission');
+    return $this->entityTypeManager->getStorage('webform_submission');
   }
 
   /**
@@ -2555,6 +2610,9 @@ class WebformSubmissionForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   protected function isAjax() {
+    if ($this->operation === 'api') {
+      return FALSE;
+    }
     return $this->getWebformSetting('ajax', FALSE);
   }
 
@@ -2563,6 +2621,18 @@ class WebformSubmissionForm extends ContentEntityForm {
    */
   public function cancelAjaxForm(array &$form, FormStateInterface $form_state) {
     throw new \Exception('Webform submission Ajax form should never be cancelled. Only ::reset should be called.');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateAjaxForm(array &$form, FormStateInterface $form_state) {
+    if (!$this->isCallableAjaxCallback($form, $form_state)) {
+      // Invalidate cache tags to prevent any caching issues.
+      // @see https://www.drupal.org/project/drupal/issues/2352009
+      Cache::invalidateTags(['webform:' . $this->getWebform()->id()]);
+      $this->missingAjaxCallback($form, $form_state);
+    }
   }
 
   /****************************************************************************/
@@ -2621,9 +2691,9 @@ class WebformSubmissionForm extends ContentEntityForm {
    * @param array $values
    *   An array of submission form values and data.
    *
-   * @return array|\Drupal\Core\Entity\EntityInterface|null
-   *   An array of error messages if validation fails or
-   *   A webform submission is there are no validation errors.
+   * @return array|null
+   *   An array of error messages if validation fails
+   *   or NULL if there are no validation errors.
    */
   public static function validateFormValues(array $values) {
     return static::submitFormValues($values, TRUE);
@@ -2635,11 +2705,12 @@ class WebformSubmissionForm extends ContentEntityForm {
    * @param array $values
    *   An array of submission form values and data.
    * @param bool $validate_only
-   *   Flag to trigger only webform validation.
+   *   Flag to trigger only webform validation. Defaults to FALSE.
    *
-   * @return array|\Drupal\Core\Entity\EntityInterface|null
-   *   An array of error messages if validation fails or
-   *   A webform submission is there are no validation errors.
+   * @return array|\Drupal\webform\WebformSubmissionInterface|null
+   *   An array of error messages if validation fails
+   *   or a webform submission (when $validate_only is FALSE)
+   *   or NULL (when $validate_only is TRUE) if there are no validation errors.
    */
   public static function submitFormValues(array $values, $validate_only = FALSE) {
     $webform_submission = WebformSubmission::create($values);
@@ -2652,9 +2723,9 @@ class WebformSubmissionForm extends ContentEntityForm {
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
    *   WebformSubmission with values and data.
    *
-   * @return array|\Drupal\Core\Entity\EntityInterface|null
+   * @return array|null
    *   An array of error messages if validation fails or
-   *   A webform submission is there are no validation errors.
+   *   NULL if there are no validation errors.
    */
   public static function validateWebformSubmission(WebformSubmissionInterface $webform_submission) {
     return static::submitWebformSubmission($webform_submission, TRUE);
@@ -2666,11 +2737,12 @@ class WebformSubmissionForm extends ContentEntityForm {
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
    *   WebformSubmission with values and data.
    * @param bool $validate_only
-   *   Flag to trigger only webform validation.
+   *   Flag to trigger only webform validation. Defaults to FALSE.
    *
-   * @return array|\Drupal\Core\Entity\EntityInterface|null
-   *   An array of error messages if validation fails or
-   *   A webform submission is there are no validation errors.
+   * @return array|\Drupal\webform\WebformSubmissionInterface|null
+   *   An array of error messages if validation fails
+   *   or a webform submission (when $validate_only is FALSE)
+   *   or NULL (when $validate_only is TRUE) if there are no validation errors.
    */
   public static function submitWebformSubmission(WebformSubmissionInterface $webform_submission, $validate_only = FALSE) {
     /** @var \Drupal\webform\WebformSubmissionForm $form_object */

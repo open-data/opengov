@@ -195,11 +195,16 @@ function simple_sitemap_configurable_language_delete(ConfigurableLanguageInterfa
  */
 function simple_sitemap_entity_delete(EntityInterface $entity) {
 
-  /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
-  $generator = \Drupal::service('simple_sitemap.generator');
-  $generator->setVariants(TRUE)->removeEntityInstanceSettings(
-    $entity->getEntityTypeId(), $entity->id()
-  );
+  /** @var \Drupal\simple_sitemap\EntityHelper $entity_helper */
+  $entity_helper = \Drupal::service('simple_sitemap.entity_helper');
+  if ($entity_helper->supports($entity->getEntityType())) {
+
+    /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
+    $generator = \Drupal::service('simple_sitemap.generator');
+    $generator->setVariants(TRUE)->removeEntityInstanceSettings(
+      $entity->getEntityTypeId(), $entity->id()
+    );
+  }
 }
 
 /**

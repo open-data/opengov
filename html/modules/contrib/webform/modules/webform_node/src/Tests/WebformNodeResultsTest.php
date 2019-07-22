@@ -35,6 +35,8 @@ class WebformNodeResultsTest extends WebformNodeTestBase {
    * Tests webform node results.
    */
   public function testResults() {
+    global $base_path;
+
     $normal_user = $this->drupalCreateUser();
 
     $admin_user = $this->drupalCreateUser([
@@ -54,6 +56,7 @@ class WebformNodeResultsTest extends WebformNodeTestBase {
 
     // Create node.
     $node = $this->drupalCreateNode(['type' => 'webform']);
+    $nid = $node->id();
 
     /* Webform entity reference */
 
@@ -196,6 +199,9 @@ class WebformNodeResultsTest extends WebformNodeTestBase {
     $this->drupalLogin($any_user);
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
     $this->assertResponse(200);
+    foreach ($node_sids as $node_sid) {
+      $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$node_sid}");
+    }
 
     // Check accessing results posted to own webform node.
     $this->drupalLogin($own_user);
@@ -205,6 +211,9 @@ class WebformNodeResultsTest extends WebformNodeTestBase {
     $node->setOwnerId($own_user->id())->save();
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
     $this->assertResponse(200);
+    foreach ($node_sids as $node_sid) {
+      $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$node_sid}");
+    }
 
     // Check deleting webform node results.
     $this->drupalPostForm('node/' . $node->id() . '/webform/results/clear', ['confirm' => TRUE], t('Clear'));

@@ -7,10 +7,11 @@ use Solarium\Component\Result\Debug\Result as DebugResult;
 use Solarium\Component\Result\FacetSet as FacetSetResult;
 use Solarium\Component\Result\Grouping\Result as GroupingResult;
 use Solarium\Component\Result\Highlighting\Highlighting;
-use Solarium\Component\Result\MoreLikeThis\Result as MoreLikeThisResult;
+use Solarium\Component\Result\MoreLikeThis\MoreLikeThis;
 use Solarium\Component\Result\Spellcheck\Result as SpellcheckResult;
 use Solarium\Component\Result\Suggester\Result as SuggesterResult;
-use Solarium\Component\Result\Stats\Result as StatsResult;
+use Solarium\Component\Result\Stats\Stats;
+use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\Result\QueryType as BaseResult;
 
 /**
@@ -98,7 +99,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return int
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         $this->parseResponse();
 
@@ -113,7 +114,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return int
      */
-    public function getQueryTime()
+    public function getQueryTime(): int
     {
         $this->parseResponse();
 
@@ -126,9 +127,9 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      * Returns the total number of documents found by Solr (this is NOT the
      * number of document fetched from Solr!)
      *
-     * @return int
+     * @return int|null
      */
-    public function getNumFound()
+    public function getNumFound(): ?int
     {
         $this->parseResponse();
 
@@ -141,9 +142,9 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      * Returns the highest score of the documents in the total result for your current query (ignoring paging)
      * Will only be available if 'score' was one of the requested fields in your query
      *
-     * @return float
+     * @return float|null
      */
-    public function getMaxScore()
+    public function getMaxScore(): ?float
     {
         $this->parseResponse();
 
@@ -156,9 +157,9 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      * Returns the next cursor mark for deep paging
      * Will only be available if 'cursormark' was set for your query against Solr 4.7+
      *
-     * @return string
+     * @return string|null
      */
-    public function getNextCursorMark()
+    public function getNextCursorMark(): ?string
     {
         $this->parseResponse();
 
@@ -170,7 +171,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return DocumentInterface[]
      */
-    public function getDocuments()
+    public function getDocuments(): array
     {
         $this->parseResponse();
 
@@ -182,7 +183,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         $this->parseResponse();
 
@@ -194,7 +195,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         $this->parseResponse();
 
@@ -206,7 +207,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return array
      */
-    public function getComponents()
+    public function getComponents(): array
     {
         $this->parseResponse();
 
@@ -220,15 +221,11 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return mixed
      */
-    public function getComponent($key)
+    public function getComponent(string $key)
     {
         $this->parseResponse();
 
-        if (isset($this->components[$key])) {
-            return $this->components[$key];
-        }
-
-        return null;
+        return $this->components[$key] ?? null;
     }
 
     /**
@@ -236,9 +233,9 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return MoreLikeThisResult|null
+     * @return MoreLikeThis|null
      */
-    public function getMoreLikeThis()
+    public function getMoreLikeThis(): ?MoreLikeThis
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_MORELIKETHIS);
     }
@@ -250,7 +247,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return Highlighting|null
      */
-    public function getHighlighting()
+    public function getHighlighting(): ?Highlighting
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_HIGHLIGHTING);
     }
@@ -262,7 +259,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return GroupingResult|null
      */
-    public function getGrouping()
+    public function getGrouping(): ?GroupingResult
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_GROUPING);
     }
@@ -274,7 +271,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return FacetSetResult|null
      */
-    public function getFacetSet()
+    public function getFacetSet(): ?FacetSetResult
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_FACETSET);
     }
@@ -286,7 +283,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return SpellcheckResult|null
      */
-    public function getSpellcheck()
+    public function getSpellcheck(): ?SpellcheckResult
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_SPELLCHECK);
     }
@@ -298,7 +295,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return SuggesterResult|null
      */
-    public function getSuggester()
+    public function getSuggester(): ?SuggesterResult
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_SUGGESTER);
     }
@@ -308,9 +305,9 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * This is a convenience method that maps presets to getComponent
      *
-     * @return StatsResult|null
+     * @return Stats|null
      */
-    public function getStats()
+    public function getStats(): ?Stats
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_STATS);
     }
@@ -322,7 +319,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @return DebugResult|null
      */
-    public function getDebug()
+    public function getDebug(): ?DebugResult
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_DEBUG);
     }

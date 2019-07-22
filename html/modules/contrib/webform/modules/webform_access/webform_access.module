@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -166,7 +167,7 @@ function webform_access_webform_access(WebformInterface $webform, $operation, Ac
 
   /** @var \Drupal\webform\WebformRequestInterface $request_handler */
   $request_handler = \Drupal::service('webform.request');
-  $source_entity = $request_handler->getCurrentSourceEntity();
+  $source_entity = $request_handler->getCurrentSourceEntity(['webform_submission']);
   if (!$source_entity) {
     return AccessResult::neutral();
   }
@@ -205,7 +206,7 @@ function webform_access_webform_submission_access(WebformSubmissionInterface $we
   }
 
   $webform = $webform_submission->getWebform();
-  $source_entity = $webform_submission->getSourceEntity();
+  $source_entity = $webform_submission->getSourceEntity(['webform_submission']);
   if (!$source_entity) {
     return AccessResult::neutral();
   }
@@ -251,19 +252,22 @@ function webform_access_field_widget_form_alter(&$element, FormStateInterface $f
   if ($field_definition->getType() !== 'webform') {
     return;
   }
-  if ($items->getEntity()->getEntityTypeId() !== 'node') {
+
+  // Get the target entity.
+  $entity = $items->getEntity();
+
+  // Only nodes are currently supported.
+  if ($entity->getEntityTypeId() !== 'node') {
     return;
   }
 
-  $node = $items->getEntity();
-
-  $default_value = ($node->id()) ? \Drupal::database()->select('webform_access_group_entity', 'ge')
+  $default_value = ($entity->id()) ? \Drupal::database()->select('webform_access_group_entity', 'ge')
     ->fields('ge', ['group_id'])
-    ->condition('entity_type', 'node')
-    ->condition('entity_id', $node->id())
+    ->condition('entity_type', $entity->getEntityTypeId())
+    ->condition('entity_id', $entity->id())
     ->condition('webform_id', $element['target_id']['#default_value'])
     ->condition('field_name', $field_definition->getName())
-    ->execute()->fetchCol() : [];
+    ->execute()->fetchCol() : $items->webform_access_group ?: [];
 
   $element['settings']['webform_access_group'] = _webform_access_group_build_element(
     $default_value,
@@ -392,6 +396,10 @@ function _webform_access_user_profile_form_submit($form, FormStateInterface $for
       ->execute();
     WebformAccessGroup::load($group_id)->invalidateTags();
   }
+
+  // Invalidate 'webform_submission_list' cache tag when user is updated.
+  // @see _webform_clear_webform_submission_list_cache_tag()
+  Cache::invalidateTags(['webform_submission_list']);
 }
 
 /******************************************************************************/

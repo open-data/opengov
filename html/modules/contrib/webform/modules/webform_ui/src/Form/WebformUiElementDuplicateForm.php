@@ -31,7 +31,7 @@ class WebformUiElementDuplicateForm extends WebformUiElementFormBase {
 
     $element_initialized = $webform->getElement($key);
 
-    $t_args = ['@title' => $this->element['#admin_title'] ?: $this->element['#title']];
+    $t_args = ['@title' => $element_initialized['#admin_title'] ?: $element_initialized['#title']];
     $form['#title'] = $this->t('Duplicate @title element', $t_args);
 
     $this->action = $this->t('created');

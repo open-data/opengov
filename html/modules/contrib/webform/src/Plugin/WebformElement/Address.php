@@ -50,6 +50,7 @@ class Address extends WebformCompositeBase {
       // Form display.
       'title_display' => 'invisible',
       'description_display' => '',
+      'help_display' => '',
       // Form validation.
       'required' => FALSE,
       // Submission display.

@@ -129,7 +129,7 @@ class WebformThemeManager implements WebformThemeManagerInterface {
     if (!isset($this->activeTheme)) {
       $this->activeTheme = $this->themeManager->getActiveTheme();
     }
-    $current_theme_name = $this->configFactory->get('system.theme')->get($theme_name ?: 'default');
+    $current_theme_name = $theme_name ?: $this->configFactory->get('system.theme')->get('default');
     $current_theme = $this->themeInitialization->getActiveThemeByName($current_theme_name);
     $this->themeManager->setActiveTheme($current_theme);
   }

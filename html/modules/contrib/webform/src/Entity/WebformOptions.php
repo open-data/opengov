@@ -119,6 +119,17 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
   /**
    * {@inheritdoc}
    */
+  public function set($property_name, $value) {
+    // Make sure to reset decoded options when options are updated.
+    if ($property_name === 'options') {
+      $this->optionsDecoded = NULL;
+    }
+    return parent::set($property_name, $value);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOptions() {
     if (!isset($this->optionsDecoded)) {
       try {
@@ -127,7 +138,7 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
         $options = (is_array($options)) ? $options : [];
       }
       catch (\Exception $exception) {
-        $link = $this->link($this->t('Edit'), 'edit-form');
+        $link = $this->toLink($this->t('Edit'), 'edit-form')->toString();
         \Drupal::logger('webform')->notice('%title options are not valid. @message', ['%title' => $this->label(), '@message' => $exception->getMessage(), 'link' => $link]);
         $options = FALSE;
       }

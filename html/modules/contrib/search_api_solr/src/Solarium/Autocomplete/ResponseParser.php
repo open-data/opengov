@@ -4,6 +4,7 @@ namespace Drupal\search_api_solr\Solarium\Autocomplete;
 
 use Solarium\Core\Query\AbstractResponseParser;
 use Solarium\Core\Query\ResponseParserInterface;
+use Solarium\Core\Query\Result\ResultInterface;
 
 /**
  * Autocomplete response parser.
@@ -11,16 +12,9 @@ use Solarium\Core\Query\ResponseParserInterface;
 class ResponseParser extends AbstractResponseParser implements ResponseParserInterface {
 
   /**
-   * Get result data for the response.
-   *
-   *
-   * @param Result $result
-   *
-   * @throws \RuntimeException
-   *
-   * @return array
+   * {@inheritdoc}
    */
-  public function parse($result) {
+  public function parse(ResultInterface $result): array {
     $data = $result->getData();
     /** @var Query $query */
     $query = $result->getQuery();
@@ -40,4 +34,5 @@ class ResponseParser extends AbstractResponseParser implements ResponseParserInt
       ]
     );
   }
+
 }

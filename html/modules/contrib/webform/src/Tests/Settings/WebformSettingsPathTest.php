@@ -25,6 +25,10 @@ class WebformSettingsPathTest extends WebformTestBase {
 
     $node = $this->drupalCreateNode();
 
+    /**************************************************************************/
+    // With paths.
+    /**************************************************************************/
+
     $webform = Webform::create([
       'langcode' => 'en',
       'status' => WebformInterface::STATUS_OPEN,
@@ -130,6 +134,10 @@ class WebformSettingsPathTest extends WebformTestBase {
       ->set('settings.default_page_base_path', '')
       ->save();
 
+    /**************************************************************************/
+    // Without paths.
+    /**************************************************************************/
+
     $webform = Webform::create([
       'langcode' => 'en',
       'status' => WebformInterface::STATUS_OPEN,
@@ -151,6 +159,40 @@ class WebformSettingsPathTest extends WebformTestBase {
     $this->drupalGet($form_path);
     $this->assertResponse(404, 'Submit URL alias does not exist');
 
+    /**************************************************************************/
+    // Admin theme.
+    /**************************************************************************/
+
+    $this->drupalLogin($this->rootUser);
+
+    $webform = Webform::create([
+      'langcode' => 'en',
+      'status' => WebformInterface::STATUS_OPEN,
+      'id' => 'test_admin_theme',
+      'title' => 'test_admin_theme',
+      'elements' => Yaml::encode([
+        'test' => ['#markup' => 'test'],
+      ]),
+    ]);
+    $webform->save();
+
+    // Check that admin theme is not applied
+    $this->drupalGet('/webform/test_admin_theme');
+    $this->assertNoRaw('seven');
+
+    // Install Seven and set it as the default admin theme.
+    \Drupal::service('theme_handler')->install(['seven']);
+
+    $edit = [
+      'admin_theme' => 'seven',
+      'use_admin_theme' => TRUE,
+    ];
+    $this->drupalPostForm('admin/appearance', $edit, t('Save configuration'));
+    $webform->setSetting('page_admin_theme', TRUE)->save();
+
+    // Check that admin theme is applied
+    $this->drupalGet('/webform/test_admin_theme');
+    $this->assertRaw('seven');
   }
 
 }

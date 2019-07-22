@@ -26,8 +26,7 @@ table hr {
 }
 
 /* Add background to nested details */
-details details /* < 8.5.x  */,
-details.seven-details details.seven-details /* >= 8.6.x */ {
+details.seven-details details.seven-details {
   background-color: #f8f8f8;
 }
 
@@ -53,6 +52,7 @@ code {
 .ui-tooltip.ui-widget {
   background: #fe6;;
   border: 1px solid #ed5;
+  border-radius: 2px;
 }
 
 .webform-tabs .ui-tabs-nav .ui-tabs-anchor {
@@ -127,6 +127,11 @@ pre.webform-codemirror-runmode {
 }
 
 /* System tray divider */
+
+.ui-dialog.ui-dialog-off-canvas.webform-off-canvas {
+  z-index: 599 !important; /* Place off canvas under dialog overlay */
+}
+
 .ui-dialog.ui-dialog-off-canvas .ui-resizable-w {
   background-color: #bfbfba;
   border: 1px solid #6b6b6b;

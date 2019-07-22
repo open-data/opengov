@@ -3,7 +3,7 @@
 namespace Drupal\webform_attachment\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\Twig\TwigExtension;
+use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**
@@ -37,7 +37,7 @@ class WebformAttachmentTwig extends WebformAttachmentBase {
       '#mode' => 'twig',
       '#title' => $this->t('Twig'),
     ];
-    $form['attachment']['help'] = TwigExtension::buildTwigHelp();
+    $form['attachment']['help'] = WebformTwigExtension::buildTwigHelp();
     WebformElementHelper::setPropertyRecursive($form['attachment']['help'], '#access', TRUE);
 
     return $form;

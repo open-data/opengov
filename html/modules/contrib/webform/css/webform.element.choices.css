@@ -1,0 +1,13 @@
+/**
+ * @file
+ * Choices styles.
+ */
+
+.choices {
+  width: 100%;
+}
+
+.webform-element--title-inline .choices {
+  display: inline-block;
+  width: 50%;
+}

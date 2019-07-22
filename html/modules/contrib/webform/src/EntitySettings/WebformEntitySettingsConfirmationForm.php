@@ -99,6 +99,24 @@ class WebformEntitySettingsConfirmationForm extends WebformEntitySettingsBaseFor
       ],
       '#default_value' => $settings['confirmation_type'],
     ];
+    // None.
+    $form['confirmation_type']['none'] = [
+      '#type' => 'webform_message',
+      '#message_type' => 'warning',
+      '#message_message' => $this->t('This setting assumes that a webform handler will manage the displaying of a confirmation message.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="confirmation_type"]' => ['value' => WebformInterface::CONFIRMATION_NONE],
+        ],
+      ],
+    ];
+    $form['confirmation_type']['confirmation_update'] = [
+      '#title' => $this->t('Display confirmation when submission is updated.'),
+      '#description' => $this->t('If checked this select confirmation type and message will be displayed when the submission is updated. Otherwise, a status message will be displayed at the top the page when a submission is updated.'),
+      '#type' => 'checkbox',
+      '#return_type' => TRUE,
+      '#default_value' => $settings['confirmation_update'],
+    ];
 
     // Confirmation url.
     $form['confirmation_url'] = [
@@ -256,18 +274,6 @@ class WebformEntitySettingsConfirmationForm extends WebformEntitySettingsBaseFor
       '#default_value' => $settings['confirmation_back_attributes'],
     ];
     $form['back']['back_container']['token_tree_link'] = $this->tokenManager->buildTreeElement();
-
-    // None.
-    $form['confirmation_type']['none'] = [
-      '#type' => 'webform_message',
-      '#message_type' => 'warning',
-      '#message_message' => $this->t('This setting assumes that a webform handler will manage the displaying of a confirmation message.'),
-      '#states' => [
-        'visible' => [
-          ':input[name="confirmation_type"]' => ['value' => WebformInterface::CONFIRMATION_NONE],
-        ],
-      ],
-    ];
 
     $this->tokenManager->elementValidate($form);
 

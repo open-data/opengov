@@ -12,6 +12,15 @@ webform.settings:
         default_page_base_path:
           type: string
           label: 'Default base path'
+        default_ajax_progress_type:
+          type: string
+          label: 'Default Ajax progress type'
+        default_ajax_effect:
+          type: string
+          label: 'Default Ajax effect'
+        default_ajax_speed:
+          type: integer
+          label: 'Default Ajax speed'
         default_submit_button_label:
           type: label
           label: 'Default submit button label'
@@ -99,6 +108,12 @@ webform.settings:
         default_draft_loaded_message:
           type: text
           label: 'Default draft load message'
+        default_draft_pending_single_message:
+          type: text
+          label: 'Default draft pending single draft message'
+        default_draft_pending_multiple_message:
+          type: text
+          label: 'Default drafts pending multiple drafts message'
         default_confirmation_message:
           type: text
           label: 'Default confirmation message'
@@ -503,9 +518,6 @@ webform.settings:
         dialog_disabled:
           type: boolean
           label: 'Disable dialogs'
-        contribute_disabled:
-          type: boolean
-          label: 'Disable contribute'
         offcanvas_disabled:
           type: boolean
           label: 'Disable system tray'
@@ -541,16 +553,6 @@ webform.settings:
         spam:
           type: boolean
           label: 'Check if SPAM protection module is installed'
-    contribute:
-      type: mapping
-      label: Contribute
-      mapping:
-        account_type:
-          type: string
-          label: 'Account type'
-        account_id:
-          type: string
-          label: 'Account ID'
     third_party_settings:
       type: sequence
       label: 'Third party settings'

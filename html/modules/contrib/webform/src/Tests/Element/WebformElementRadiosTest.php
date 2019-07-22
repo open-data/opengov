@@ -33,6 +33,14 @@ class WebformElementRadiosTest extends WebformElementTestBase {
     $this->assertRaw('<input data-drupal-selector="edit-radios-help-one" type="radio" id="edit-radios-help-one" name="radios_help" value="one" class="form-radio" />');
     $this->assertRaw('<label for="edit-radios-help-one" class="option">One<span class="webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;One&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is a description&lt;/div&gt;"><span aria-hidden="true">?</span></span>');
 
+    // Check radios displayed as buttons.
+    $this->assertRaw('<div id="edit-radios-buttons" class="js-webform-radios webform-options-display-buttons form-radios"><div class="webform-options-display-buttons-wrapper">');
+    $this->assertRaw('<input data-drupal-selector="edit-radios-buttons-yes" class="visually-hidden form-radio" type="radio" id="edit-radios-buttons-yes" name="radios_buttons" value="Yes" />');
+    $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-radios-buttons-yes">Yes</label>');
+
+    // Check radios displayed as buttons with description.
+    $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-radios-buttons-description-one"><div class="webform-options-display-buttons-title">One</div><div class="webform-options-display-buttons-description description">This is a description</div></label>');
+
     // Check radios results does not include description.
     $edit = [
       'radios_required' => 'Yes',

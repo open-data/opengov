@@ -115,7 +115,7 @@ class WebformCustomComposite extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  protected function buildCompositeElementsTable() {
+  protected function buildCompositeElementsTable(array $form, FormStateInterface $form_state) {
     return [
       '#type' => 'webform_element_composite',
       '#title' => $this->t('Elements'),

@@ -43,17 +43,21 @@ tr.webform-states-table--state td select {
   vertical-align: middle;
 }
 
-.webform-states-table td.webform-states-table--operations input {
-  margin: 0 2px;
-}
-
-.webform-states-table td.webform-states-table--operations input {
+.webform-states-table td.webform-states-table--operations input[type="image"] {
   opacity: 0.4;
+  box-sizing: border-box;
+  width: 20px;
+  min-width: initial;
+  max-width: initial;
+  margin: 0;
+  border: 2px solid #333;
+  border-radius: 50%;
+  padding: 2px;
 }
 
-.webform-states-table td.webform-states-table--operations input:hover,
-.webform-states-table td.webform-states-table--operations input:focus,
-.webform-states-table td.webform-states-table--operations input:active {
+.webform-states-table td.webform-states-table--operations input[type="image"]:hover,
+.webform-states-table td.webform-states-table--operations input[type="image"]:focus,
+.webform-states-table td.webform-states-table--operations input[type="image"]:active {
   opacity: 1;
   background: none;
 }

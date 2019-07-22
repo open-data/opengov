@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Provides route responses for webform options options.
+ * Provides route responses for Webform options.
  */
 class WebformOptionsController extends ControllerBase {
 

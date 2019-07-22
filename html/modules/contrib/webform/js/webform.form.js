@@ -7,6 +7,8 @@
 
   'use strict';
 
+  var isChrome = (/chrom(e|ium)/.test(window.navigator.userAgent.toLowerCase()));
+
   /**
    * Remove single submit event listener.
    *
@@ -39,7 +41,25 @@
    */
   Drupal.behaviors.webformAutofocus = {
     attach: function (context) {
-      $(context).find('.webform-submission-form.js-webform-autofocus :input:visible:enabled:first').focus();
+      $(context).find('.webform-submission-form.js-webform-autofocus :input:visible:enabled:first')
+        .focus();
+    }
+  };
+
+  /**
+   * Autocomplete.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Attaches the behavior for the webform autofocusing.
+   */
+  Drupal.behaviors.webformAutocomplete = {
+    attach: function (context) {
+      if (isChrome) {
+        $(context).find('.webform-submission-form input[autocomplete="off"]')
+          .attr('autocomplete', 'chrome-off');
+      }
     }
   };
 
@@ -50,7 +70,8 @@
    *
    * @prop {Drupal~behaviorAttach} attach
    *   Attaches the behavior for disabling webform autosubmit.
-   *   Wizard pages need to be progressed with the Previous or Next buttons, not by pressing Enter.
+   *   Wizard pages need to be progressed with the Previous or Next buttons,
+   *   not by pressing Enter.
    */
   Drupal.behaviors.webformDisableAutoSubmit = {
     attach: function (context) {

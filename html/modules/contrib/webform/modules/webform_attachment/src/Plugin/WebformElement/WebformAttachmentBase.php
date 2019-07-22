@@ -57,7 +57,6 @@ abstract class WebformAttachmentBase extends WebformElementBase implements Webfo
   protected function formatHtmlItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     /** @var \Drupal\webform_attachment\Element\WebformAttachmentInterface $attachment_element */
     $attachment_element = $this->getFormElementClassDefinition();
-
     $format = $this->getItemFormat($element);
     switch ($format) {
       case 'name';
@@ -169,7 +168,6 @@ abstract class WebformAttachmentBase extends WebformElementBase implements Webfo
       '#title' => $this->t('File name'),
       '#description' => $this->t("Please enter the attachment's file name with a file extension. The file extension will be used to determine the attachment's content (mime) type."),
       '#maxlength' => NULL,
-      '#required' => TRUE,
     ];
     $form['attachment']['link_title'] = [
       '#type' => 'textfield',
@@ -198,6 +196,17 @@ abstract class WebformAttachmentBase extends WebformElementBase implements Webfo
       '#weight' => 10,
     ];
     $form['attachment']['tokens'] = ['#access' => TRUE, '#weight' => 10] + $this->tokenManager->buildTreeElement();
+
+    // Add warning about disabled attachments.
+    $form['conditional_logic']['states_attachment'] = [
+      '#type' => 'webform_message',
+      '#message_message' => t('Disabled attachments will not be included as file attachments in sent emails.'),
+      '#message_type' => 'warning',
+      '#message_close' => TRUE,
+      '#message_storage' => WebformMessage::STORAGE_SESSION,
+      '#access' => TRUE,
+    ];
+
     return $form;
   }
 
@@ -213,6 +222,12 @@ abstract class WebformAttachmentBase extends WebformElementBase implements Webfo
    * {@inheritdoc}
    */
   public function getAttachments(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    /** @var \Drupal\webform\WebformSubmissionConditionsValidatorInterface $conditions_validator */
+    $conditions_validator = \Drupal::service('webform_submission.conditions_validator');
+    if (!$conditions_validator->isElementEnabled($element, $webform_submission)) {
+      return [];
+    }
+
     /** @var \Drupal\webform_attachment\Element\WebformAttachmentInterface $attachment_element */
     $attachment_element = $this->getFormElementClassDefinition();
 

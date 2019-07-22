@@ -42,10 +42,10 @@
 
         options.countDown = (options.max) ? true : false;
         if (!options.counterText) {
-          options.counterText = (options.type === 'word') ? Drupal.t('%d word(s) entered') : Drupal.t('%d characters(s) entered');
+          options.counterText = (options.type === 'word') ? Drupal.t('%d word(s) entered') : Drupal.t('%d character(s) entered');
         }
         if (!options.countDownText) {
-          options.countDownText = (options.type === 'word') ? Drupal.t('%d word(s) remaining') : Drupal.t('%d characters(s) remaining');
+          options.countDownText = (options.type === 'word') ? Drupal.t('%d word(s) remaining') : Drupal.t('%d character(s) remaining');
         }
 
         options = $.extend(options, Drupal.webform.counter.options);

@@ -399,7 +399,7 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    * @param mixed[] $values
    *   An array of values to set, keyed by property name.
    */
-  public function preCreate(array $values);
+  public function preCreate(array &$values);
 
   /**
    * Acts on a webform submission after it is created.

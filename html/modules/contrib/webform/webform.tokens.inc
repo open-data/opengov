@@ -6,15 +6,21 @@
  */
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\Xss;
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Datetime\Entity\DateFormat;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\user\Entity\User;
+use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
 use Drupal\webform\Plugin\WebformElement\WebformComputedBase;
 use Drupal\webform\Utility\WebformDateHelper;
+use Drupal\webform\Utility\WebformLogicHelper;
+use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\Url;
 
@@ -84,10 +90,19 @@ function webform_token_info() {
     'name' => t('In draft'),
     'description' => t('Is the webform submission in draft.'),
   ];
+  $webform_submission['state'] = [
+    'name' => t('State'),
+    'description' => t('The state of the webform submission. (Unsaved, Draft, Completed, Updated, Locked, or Converted)'),
+  ];
+  $webform_submission['state:raw'] = [
+    'name' => t('State (Raw value)'),
+    'description' => t('The state raw value untranslated of the webform submission. (unsaved, draft, completed, updated, locked, or converted)'),
+  ];
   $webform_submission['label'] = [
     'name' => t('Label'),
     'description' => t('The label of the webform submission.'),
   ];
+  // Limit: Webform.
   $webform_submission['limit:webform'] = [
     'name' => t('Total submissions limit'),
     'description' => t('The total number of submissions allowed for the webform.'),
@@ -96,10 +111,19 @@ function webform_token_info() {
     'name' => t('Total submissions limit interval'),
     'description' => t('The total submissions interval for the webform.'),
   ];
+  $webform_submission['interval:webform:wait'] = [
+    'name' => t('Wait time before next submission'),
+    'description' => t('The amount of time before the next allowed submission for the webform.'),
+  ];
   $webform_submission['total:webform'] = [
     'name' => t('Total submissions'),
     'description' => t('The current number of submissions for the webform.'),
   ];
+  $webform_submission['remaining:webform'] = [
+    'name' => t('Remaining number of submissions'),
+    'description' => t('The remaining number of submissions for the webform.'),
+  ];
+  // Limit: User.
   $webform_submission['limit:user'] = [
     'name' => t('Per user submission limit'),
     'description' => t('The total number of submissions allowed per user for the webform.'),
@@ -108,10 +132,19 @@ function webform_token_info() {
     'name' => t('Per user submission limit interval'),
     'description' => t('The total submissions interval per user for the webform.'),
   ];
+  $webform_submission['interval:user:wait'] = [
+    'name' => t('Per user wait time before next submission'),
+    'description' => t('The amount of time before the next allowed submission per user for the webform.'),
+  ];
   $webform_submission['total:user'] = [
     'name' => t('Per user total submissions'),
     'description' => t('The current number of submissions for the user for the webform.'),
   ];
+  $webform_submission['remaining:user'] = [
+    'name' => t('Per user remaining number of submissions'),
+    'description' => t('The remaining number of submissions for the user for the webform.'),
+  ];
+  // Limit: Source entity.
   $webform_submission['limit:webform:source_entity'] = [
     'name' => t('Total submissions limit per source entity'),
     'description' => t('The total number of submissions allowed for the webform source entity.'),
@@ -120,21 +153,38 @@ function webform_token_info() {
     'name' => t('Total submissions limit interval per source entity'),
     'description' => t('The total submissions interval for the webform source entity.'),
   ];
+  $webform_submission['interval:webform:source_entity:wait'] = [
+    'name' => t('Wait time before next submission for a source entity'),
+    'description' => t('The amount of time before the next allowed submission for the webform source entity.'),
+  ];
   $webform_submission['total:webform:source_entity'] = [
     'name' => t('Total submissions for source entity'),
     'description' => t('The current number of submissions for the webform source entity.'),
   ];
+  $webform_submission['remaining:webform:source_entity'] = [
+    'name' => t('Remaining number of submissions for source entity'),
+    'description' => t('Remaining number of submissions for the webform source entity.'),
+  ];
+  // Limit: User and Source entity.
   $webform_submission['limit:user:source_entity'] = [
-    'name' => t('Per user submission limit per source entity'),
+    'name' => t('Per user submission limit for a source entity'),
     'description' => t('The total number of submissions allowed per user for the webform source entity.'),
   ];
   $webform_submission['interval:user:source_entity'] = [
-    'name' => t('Per user submission limit interval per source entity'),
+    'name' => t('Per user submission limit interval for a source entity'),
     'description' => t('The total submissions interval per user for the webform source entity.'),
   ];
+  $webform_submission['interval:user:source_entity:wait'] = [
+    'name' => t('Per user wait time before next submission for a source entity'),
+    'description' => t('The amount of time before the next allowed submission per user for the webform source entity.'),
+  ];
   $webform_submission['total:user:source_entity'] = [
-    'name' => t('Per user total submissions for source entity'),
+    'name' => t('Per user total submissions for a source entity'),
     'description' => t('The current number of submissions for the user for the webform source entity.'),
+  ];
+  $webform_submission['remaining:user:source_entity'] = [
+    'name' => t('Per user remaining number of submissions for a source entity'),
+    'description' => t('The remaining number of submissions for the user for the webform source entity.'),
   ];
 
   // Dynamic tokens for webform submissions.
@@ -147,7 +197,8 @@ function webform_token_info() {
     'name' => t('Submission values'),
     'description' => Markup::create(t('Webform tokens from submitted data.') .
       _webform_token_render_more(t('Learn about submission value tokens'),
-        t("Replace the '?' with…") . '<br />' .
+        t("Omit the '?' to output all values. Output all values as HTML using [webform_submissions:values:html].") . '<br />' .
+        t("To output individual elements, replace the '?' with…") . '<br />' .
         '<ul>' .
         '<li>element_key</li>' .
         '<li>element_key:format:items</li>' .
@@ -266,6 +317,22 @@ function webform_token_info() {
     'name' => t('Close date'),
     'description' => t('The date the webform is closed to new submissions.'),
     'type' => 'date',
+  ];
+  $webform['element'] = [
+    'name' => t('Element properties'),
+    'description' => Markup::create(t('Webform element property tokens.') .
+      _webform_token_render_more(t('Learn about element property tokens'),
+        t("Replace the '?' with…") . '<br />' .
+        '<ul>' .
+        '<li>element_key:title</li>' .
+        '<li>element_key:description</li>' .
+        '<li>element_key:help</li>' .
+        '<li>element_key:more</li>' .
+        '</ul>' .
+        t("For example, to display an email element's title (aka #title) you would use the [webform:element:email:title] token.")
+      )
+    ),
+    'dynamic' => TRUE,
   ];
   $webform['handler'] = [
     'name' => t('Handler response'),
@@ -403,7 +470,23 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           break;
 
         case 'in-draft':
-          $replacements[$original] = $webform_submission->in_draft->value ? t('Yes') : t('No');
+          $replacements[$original] = $webform_submission->isDraft() ? t('Yes') : t('No');
+          break;
+
+        case 'state':
+          $replacements[$original] = $webform_submission->getState();
+          break;
+
+        case 'state:label':
+          $states = [
+            WebformSubmissionInterface::STATE_DRAFT => t('Draft'),
+            WebformSubmissionInterface::STATE_COMPLETED => t('Completed'),
+            WebformSubmissionInterface::STATE_CONVERTED => t('Converted'),
+            WebformSubmissionInterface::STATE_UPDATED => t('Updated'),
+            WebformSubmissionInterface::STATE_UNSAVED => t('Unsaved'),
+            WebformSubmissionInterface::STATE_LOCKED => t('Locked'),
+          ];
+          $replacements[$original] = $states[$webform_submission->getState()];
           break;
 
         case 'current-page':
@@ -488,8 +571,20 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           $replacements[$original] = WebformDateHelper::getIntervalText($webform->getSetting('limit_total_interval'));
           break;
 
+        case 'interval:webform:wait':
+          $replacements[$original] = _webform_token_get_interval_wait('limit_total_interval', $bubbleable_metadata, $webform);
+          break;
+
         case 'total:webform':
           $replacements[$original] = $submission_storage->getTotal($webform);
+          break;
+
+        case 'remaining:webform':
+          $limit = $webform->getSetting('limit_total');
+          $total = $submission_storage->getTotal($webform);
+          if ($limit && $total !== NULL) {
+            $replacements[$original] = ($limit > $total) ? $limit - $total : 0;
+          }
           break;
 
         case 'limit:user':
@@ -500,8 +595,20 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           $replacements[$original] = WebformDateHelper::getIntervalText($webform->getSetting('limit_user_interval'));
           break;
 
+        case 'interval:user:wait':
+          $replacements[$original] = _webform_token_get_interval_wait('limit_user_interval', $bubbleable_metadata, $webform, NULL, $account);
+          break;
+
         case 'total:user':
           $replacements[$original] = $submission_storage->getTotal($webform, NULL, $account);
+          break;
+
+        case 'remaining:user':
+          $limit = $webform->getSetting('limit_user');
+          $total = $submission_storage->getTotal($webform, NULL, $account);
+          if ($limit && $total !== NULL) {
+            $replacements[$original] = ($limit > $total) ? $limit - $total : 0;
+          }
           break;
 
         case 'limit:webform:source_entity':
@@ -512,8 +619,20 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           $replacements[$original] = WebformDateHelper::getIntervalText($webform->getSetting('entity_limit_total_interval'));
           break;
 
+        case 'interval:webform:source_entity:wait':
+          $replacements[$original] = $source_entity ? _webform_token_get_interval_wait('entity_limit_total_interval', $bubbleable_metadata, $webform, $source_entity) : '';
+          break;
+
         case 'total:webform:source_entity':
           $replacements[$original] = $source_entity ? $submission_storage->getTotal($webform, $source_entity) : '';
+          break;
+
+        case 'remaining:webform:source_entity':
+          $limit = $webform->getSetting('entity_limit_total');
+          $total = $source_entity ? $submission_storage->getTotal($webform, $source_entity) : NULL;
+          if ($limit && $total !== NULL) {
+            $replacements[$original] = ($limit > $total) ? $limit - $total : 0;
+          }
           break;
 
         case 'limit:user:source_entity':
@@ -524,8 +643,20 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           $replacements[$original] = WebformDateHelper::getIntervalText($webform->getSetting('entity_limit_user_interval'));
           break;
 
+        case 'interval:user:source_entity:wait':
+          $replacements[$original] = $source_entity ? _webform_token_get_interval_wait('entity_limit_user_interval', $bubbleable_metadata, $webform, $source_entity, $account) : '';
+          break;
+
         case 'total:user:source_entity':
           $replacements[$original] = $source_entity ? $submission_storage->getTotal($webform, $source_entity, $account) : '';
+          break;
+
+        case 'remaining:user:source_entity':
+          $limit = $webform->getSetting('entity_limit_user');
+          $total = $source_entity ? $submission_storage->getTotal($webform, $source_entity, $account) : NULL;
+          if ($limit && $total !== NULL) {
+            $replacements[$original] = ($limit > $total) ? $limit - $total : 0;
+          }
           break;
 
       }
@@ -615,6 +746,31 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
     }
 
     /* Dynamic tokens. */
+
+    if (($element_tokens = $token_service->findWithPrefix($tokens, 'element'))) {
+      foreach ($element_tokens as $key => $original) {
+        if (strpos($key, ':') === FALSE) {
+          $element_key = $key;
+          $element_property = 'title';
+        }
+        else {
+          list($element_key, $element_property) = explode(':', $key);
+        }
+        $element_property = $element_property ?: 'title';
+        $element = $webform->getElement($element_key);
+        if ($element && isset($element["#$element_property"]) && is_string($element["#$element_property"])) {
+          $token_value = $element["#$element_property"];
+          if (in_array($element_property, ['description', 'help', 'more', 'terms_content'])) {
+            $token_value = WebformHtmlEditor::checkMarkup($token_value);
+            $token_value = \Drupal::service('renderer')->renderPlain($token_value);
+          }
+          else {
+            $token_value = Markup::create(Xss::filter($token_value));
+          }
+          $replacements[$original] = $token_value;
+        }
+      }
+    }
 
     if (($handler_tokens = $token_service->findWithPrefix($tokens, 'handler'))) {
       foreach ($handler_tokens as $key => $original) {
@@ -794,6 +950,11 @@ function _webform_token_get_submission_value($value_token, array $options, Webfo
     $element['#format_items'] = array_shift($keys);
   }
 
+  $token = "[webform_submission:values:$value_token]";
+  if (WebformLogicHelper::startRecursionTracking($token) === FALSE) {
+    return '';
+  }
+
   $format_method = (empty($options['html'])) ? 'formatText' : 'formatHtml';
   $token_value = $element_manager->invokeMethod($format_method, $element, $webform_submission, $options);
   if (is_array($token_value)) {
@@ -812,6 +973,10 @@ function _webform_token_get_submission_value($value_token, array $options, Webfo
     $token_value = (string) $token_value;
   }
 
+  if (WebformLogicHelper::stopRecursionTracking($token) === FALSE) {
+    return '';
+  }
+
   return $token_value;
 }
 
@@ -827,13 +992,11 @@ function _webform_token_get_submission_value($value_token, array $options, Webfo
  *   Webform submission values.
  */
 function _webform_token_get_submission_values(array $options, WebformSubmissionInterface $webform_submission) {
-  static $rendering;
-  if ($rendering) {
-    $token = (!empty($options['html'])) ? '[webform_submission:values:html]' : '[webform_submission:values]';
-    throw new \LogicException("Recursive rendering of $token detected.");
-  }
+  $token = (!empty($options['html'])) ? '[webform_submission:values:html]' : '[webform_submission:values]';
 
-  $rendering = TRUE;
+  if (WebformLogicHelper::startRecursionTracking($token) === FALSE) {
+    return '';
+  }
 
   $submission_format = (!empty($options['html'])) ? 'html' : 'text';
   /** @var \Drupal\webform\WebformSubmissionViewBuilderInterface $view_builder */
@@ -845,7 +1008,9 @@ function _webform_token_get_submission_values(array $options, WebformSubmissionI
   // included in an email.
   $value = \Drupal::service('renderer')->renderPlain($token_value);
 
-  $rendering = FALSE;
+  if (WebformLogicHelper::stopRecursionTracking($token) === FALSE) {
+    return '';
+  }
 
   return $value;
 }
@@ -868,4 +1033,52 @@ function _webform_token_render_more($more_title, $more) {
     '#more_title' => $more_title,
   ];
   return (string) \Drupal::service('renderer')->renderPlain($build);
+}
+
+/**
+ * Get interval wait time.
+ *
+ * @param string $interval_setting
+ *   Interval setting name.
+ * @param \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata
+ *   (optional) Object to collect path processors' bubbleable metadata.
+ * @param \Drupal\webform\WebformInterface|null $webform
+ *   (optional) A webform. If set the total number of submissions for the
+ *   Webform will be returned.
+ * @param \Drupal\Core\Entity\EntityInterface|null $source_entity
+ *   (optional) A webform submission source entity.
+ * @param \Drupal\Core\Session\AccountInterface|null $account
+ *   (optional) A user account.
+ *
+ * @return string
+ *   Formatted interval wait time.
+ */
+function _webform_token_get_interval_wait($interval_setting, BubbleableMetadata $bubbleable_metadata, WebformInterface $webform = NULL, EntityInterface $source_entity = NULL, AccountInterface $account = NULL) {
+  // Get last submission completed time.
+  /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
+  $submission_storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
+  $last_submission = $submission_storage->getLastSubmission($webform, $source_entity, $account);
+  if (!$last_submission) {
+    return '';
+  }
+
+  $completed_time = $last_submission->getCompletedTime();
+
+  // Get interval.
+  $interval = $webform->getSetting($interval_setting);
+
+  // Get wait time.
+  $wait_time = ($completed_time + $interval);
+
+  // Get request time.
+  $request_time = \Drupal::request()->server->get('REQUEST_TIME');
+
+  // Set cache max age.
+  $max_age = ($wait_time - $request_time);
+  $bubbleable_metadata->setCacheMaxAge(($max_age > 0) ? $max_age : 0);
+
+  // Format time diff until next allows submission.
+  /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
+  $date_formatter = \Drupal::service('date.formatter');
+  return $date_formatter->formatTimeDiffUntil($wait_time);
 }

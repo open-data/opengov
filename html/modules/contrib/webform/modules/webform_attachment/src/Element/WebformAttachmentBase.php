@@ -67,7 +67,7 @@ abstract class WebformAttachmentBase extends RenderElement implements WebformAtt
    * {@inheritdoc}
    */
   public static function getFileName(array $element, WebformSubmissionInterface $webform_submission) {
-    if (isset($element['#filename'])) {
+    if (!empty($element['#filename'])) {
       /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
       $token_manager = \Drupal::service('webform.token_manager');
 

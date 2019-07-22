@@ -54,29 +54,29 @@ class SimpleSitemapViewsTest extends SimpleSitemapViewsTestBase {
   public function testAddArgumentsToIndex() {
     // Arguments with the wrong value should not be indexed.
     $this->sitemapViews->addArgumentsToIndex($this->testView, ['page2']);
-    $this->assertEquals(0, $this->sitemapViews->getArgumentsFromIndexCount());
+    $this->assertIndexSize(0);
 
     // Non-indexable arguments should not be indexed.
     $args = ['page', $this->node->getTitle(), $this->node->id()];
     $this->sitemapViews->addArgumentsToIndex($this->testView, $args);
-    $this->assertEquals(0, $this->sitemapViews->getArgumentsFromIndexCount());
+    $this->assertIndexSize(0);
 
     // The argument set should not be indexed more than once.
     for ($i = 0; $i < 2; $i++) {
       $this->sitemapViews->addArgumentsToIndex($this->testView, ['page']);
-      $this->assertEquals(1, $this->sitemapViews->getArgumentsFromIndexCount());
+      $this->assertIndexSize(1);
     }
 
     // A new set of arguments must be indexed.
     $args = ['page', $this->node->getTitle()];
     $this->sitemapViews->addArgumentsToIndex($this->testView, $args);
-    $this->assertEquals(2, $this->sitemapViews->getArgumentsFromIndexCount());
+    $this->assertIndexSize(2);
 
     // The number of argument sets in the index for one view display should not
     // exceed the maximum number of link variations.
     $args = ['page', $this->node2->getTitle()];
     $this->sitemapViews->addArgumentsToIndex($this->testView, $args);
-    $this->assertEquals(2, $this->sitemapViews->getArgumentsFromIndexCount());
+    $this->assertIndexSize(2);
   }
 
   /**
@@ -97,6 +97,61 @@ class SimpleSitemapViewsTest extends SimpleSitemapViewsTestBase {
     $this->assertSession()->responseContains($test_view_url);
     $this->assertSession()->responseContains("$test_view_url/page");
     $this->assertSession()->responseContains("$test_view_url/page/$title");
+  }
+
+  /**
+   * Tests the garbage collection process.
+   */
+  public function testGarbageCollector() {
+    // Disable cron generation, since data can be removed
+    // from the index during generation.
+    $this->generator->saveSetting('cron_generate', FALSE);
+
+    // Record with the wrong set of indexed arguments must be removed.
+    $this->addRecordToIndex(
+      $this->testView->id(),
+      $this->testView->current_display,
+      ['type', 'title', 'nid'],
+      ['page', $this->node->getTitle(), $this->node->id()]
+    );
+    $this->cron->run();
+    $this->assertIndexSize(0);
+
+    // Record of a non-existent view must be removed.
+    $this->addRecordToIndex(
+      'simple_sitemap_fake_view',
+      $this->testView->current_display,
+      ['type', 'title'],
+      ['page', $this->node->getTitle()]
+    );
+    $this->cron->run();
+    $this->assertIndexSize(0);
+
+    // Record of a non-existent display must be removed.
+    $this->addRecordToIndex(
+      $this->testView->id(),
+      'simple_sitemap_fake_display',
+      ['type', 'title'],
+      ['page', $this->node->getTitle()]
+    );
+    $this->cron->run();
+    $this->assertIndexSize(0);
+
+    // The number of records should not exceed the specified limit.
+    for ($i = 0; $i < 3; $i++) {
+      $this->addRecordToIndex(
+        $this->testView->id(),
+        $this->testView->current_display,
+        ['type', 'title'],
+        ['page2', "Node$i"]
+      );
+    }
+    $this->cron->run();
+    $this->assertIndexSize(2);
+
+    // Records about pages with empty result must be removed during generation.
+    $this->generator->generateSitemap('backend');
+    $this->assertIndexSize(0);
   }
 
 }

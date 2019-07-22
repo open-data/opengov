@@ -7,7 +7,12 @@ use Solarium\Component\ComponentAwareQueryTrait;
 use Solarium\Component\QueryTraits\SpellcheckTrait;
 use Solarium\Component\QueryTraits\SuggesterTrait;
 use Solarium\Component\QueryTraits\TermsTrait;
+use Solarium\Component\Spellcheck;
+use Solarium\Component\Suggester;
+use Solarium\Component\Terms;
 use Solarium\Core\Query\AbstractQuery;
+use Solarium\Core\Query\RequestBuilderInterface;
+use Solarium\Core\Query\ResponseParserInterface;
 
 /**
  * Autocomplete query.
@@ -26,43 +31,41 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface {
    */
   protected $options = [
     'handler' => 'autocomplete',
-    'resultclass' => 'Drupal\search_api_solr\Solarium\Autocomplete\Result',
+    'resultclass' => Result::class,
   ];
 
-  public function __construct($options = null) {
+  /**
+   * Constructs a Query object.
+   */
+  public function __construct($options = NULL) {
     $this->componentTypes = [
-      ComponentAwareQueryInterface::COMPONENT_SPELLCHECK => 'Solarium\Component\Spellcheck',
-      ComponentAwareQueryInterface::COMPONENT_SUGGESTER => 'Solarium\Component\Suggester',
-      ComponentAwareQueryInterface::COMPONENT_TERMS => 'Solarium\Component\Terms',
+      ComponentAwareQueryInterface::COMPONENT_SPELLCHECK => Spellcheck::class,
+      ComponentAwareQueryInterface::COMPONENT_SUGGESTER => Suggester::class,
+      ComponentAwareQueryInterface::COMPONENT_TERMS => Terms::class,
     ];
 
     parent::__construct($options);
   }
 
   /**
-   * Get type for this query.
-   *
-   * @return string
+   * {@inheritdoc}
    */
-  public function getType() {
+  public function getType(): string {
     return 'autocomplete';
   }
 
   /**
-   * Get a requestbuilder for this query.
-   *
-   * @return RequestBuilder
+   * {@inheritdoc}
    */
-  public function getRequestBuilder() {
+  public function getRequestBuilder(): RequestBuilderInterface {
     return new RequestBuilder();
   }
 
   /**
-   * Get a response parser for this query.
-   *
-   * @return ResponseParser
+   * {@inheritdoc}
    */
-  public function getResponseParser() {
+  public function getResponseParser(): ResponseParserInterface {
     return new ResponseParser();
   }
+
 }

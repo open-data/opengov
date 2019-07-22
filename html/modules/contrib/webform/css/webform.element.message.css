@@ -50,6 +50,12 @@ html.js .webform-message--close .webform-message__link {
   font-size: 24px;
 }
 
+html[dir="rtl"].js .webform-message--close .webform-message__link {
+  top: 11px;
+  right: inherit;
+  left: 10px;
+}
+
 .webform-message__link {
   color: inherit;
   opacity: 0.33;

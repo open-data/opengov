@@ -110,6 +110,24 @@ class WebformTestAjaxBlock extends BlockBase implements ContainerFactoryPluginIn
       ],
     ];
 
+    $webform_style_guide = Webform::load('example_style_guide');
+    $dialog_links = [
+      'style_guide' => [
+        'title' => $this->t('Open style guide'),
+        'url' => $webform_style_guide->toUrl('canonical'),
+        'attributes' => [
+          'data-dialog-type' => 'dialog',
+          'data-dialog-renderer' => 'off_canvas',
+          'data-dialog-options' => Json::encode([
+            'width' => 600,
+            'dialogClass' => 'ui-dialog-off-canvas webform-off-canvas',
+          ]),
+          'class' => [
+            'use-ajax',
+          ],
+        ],
+      ],
+    ];
     return [
       'ajax' => [
         '#prefix' => '<h3>' . $this->t('Ajax links') . '</h3>',
@@ -120,6 +138,11 @@ class WebformTestAjaxBlock extends BlockBase implements ContainerFactoryPluginIn
         '#prefix' => '<h3>' . $this->t('Inline (Global) links') . '</h3>',
         '#theme' => 'links',
         '#links' => $inline_links,
+      ],
+      'dialog' => [
+        '#prefix' => '<h3>' . $this->t('Dialog/Offcanvas links') . '</h3>',
+        '#theme' => 'links',
+        '#links' => $dialog_links,
       ],
       '#attached' => ['library' => ['core/drupal.ajax']],
     ];

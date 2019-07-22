@@ -59,7 +59,7 @@ class WebformEntityAddForm extends BundleEntityFormBase {
       ],
       '#maxlength' => 32,
       '#field_suffix' => ' (' . $this->t('Maximum @max characters', ['@max' => 32]) . ')',
-      '#disabled' => (bool) $webform->id() && $this->operation != 'duplicate',
+      '#disabled' => (bool) ($webform->id() && $this->operation !== 'duplicate'),
       '#required' => TRUE,
     ];
     $form['title'] = [

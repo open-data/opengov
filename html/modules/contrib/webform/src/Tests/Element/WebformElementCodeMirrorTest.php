@@ -125,7 +125,7 @@ class WebformElementCodeMirrorTest extends WebformElementTestBase {
     ];
     $this->drupalPostForm('webform/test_element_codemirror', $edit, t('Submit'));
     $this->assertRaw('<em class="placeholder">twig_basic</em> is not valid.');
-    $this->assertRaw('Unclosed &quot;variable&quot; in &quot;{# inline_template_start #}{{ value &quot; at line 1.');
+    $this->assertRaw('Unclosed &quot;variable&quot; in');
   }
 
 }

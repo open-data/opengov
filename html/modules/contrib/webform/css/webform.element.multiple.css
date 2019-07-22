@@ -85,9 +85,14 @@
 }
 
 .webform-multiple-table td input[type="image"] {
-  padding: 0;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  min-width: initial;
+  max-width: initial;
+  box-sizing: border-box;
+  margin: 0;
+  border: 2px solid #333;
+  border-radius: 50%;
+  padding: 2px;
 }
 
 .webform-multiple-table .container-inline input[type="submit"] {
@@ -99,6 +104,15 @@
  */
 .webform-multiple-table .form-item + .form-item {
   margin-top: .2em;
+}
+
+/**
+ * Fix margin be checkboxes and radios.
+ */
+.webform-multiple-table .form-checkboxes .form-item,
+.webform-multiple-table .form-radios .form-item {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
 }
 
 /**

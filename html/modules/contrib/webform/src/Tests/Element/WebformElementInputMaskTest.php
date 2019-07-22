@@ -26,7 +26,7 @@ class WebformElementInputMaskTest extends WebformElementTestBase {
 
     // Check default values.
     $this->postSubmission($webform);
-    $this->assertRaw("currency: ''
+    $this->assertRaw("currency: '$ 1.00'
 datetime: ''
 decimal: ''
 email: ''
@@ -91,6 +91,13 @@ custom: ''");
     foreach ($edit as $name => $value) {
       $this->assertRaw('<em class="placeholder">' . $name . '</em> field is not in the right format.');
     }
+
+    // Check currency submitted as the default input (ie $ 0.00) triggers
+    // required validation.
+    // @see \Drupal\webform\Plugin\WebformElement\TextBase::validateInputMask
+    $this->postSubmission($webform, ['currency' => '$ 0.00']);
+    $this->assertRaw('currency field is required.');
+
   }
 
 }

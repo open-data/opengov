@@ -17,6 +17,25 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 interface SolrBackendInterface extends BackendInterface {
 
   /**
+   * The minimum required Solr schema version.
+   */
+  const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '8.3.4';
+
+  /**
+   * The separator to indicate the start of a language ID.
+   *
+   * We must not use any character that has a special meaning within regular
+   * expressions. Additionally we have to avoid characters that are valid for
+   * Drupal machine names.
+   * The end of a language ID is indicated by an underscore '_' which could not
+   * occur within the language ID itself because Drupal uses lanague tags.
+   *
+   * @see http://de2.php.net/manual/en/regexp.reference.meta.php
+   * @see https://www.w3.org/International/articles/language-tags/
+   */
+  const SEARCH_API_SOLR_LANGUAGE_SEPARATOR = ';';
+
+  /**
    * Creates a list of all indexed field names mapped to their Solr field names.
    *
    * The special fields "search_api_id" and "search_api_relevance" are also
@@ -28,14 +47,51 @@ interface SolrBackendInterface extends BackendInterface {
    * @param bool $reset
    *   (optional) Whether to reset the static cache.
    *
+   * @throws \Drupal\search_api\SearchApiException
+   *
    * @see SearchApiSolrBackend::search()
    */
   public function getSolrFieldNames(IndexInterface $index, $reset = FALSE);
 
   /**
+   * Gets a language-specific mapping from Drupal to Solr field names.
+   *
+   * @param string $language_id
+   *   The language to get the mapping for.
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   * @param bool $reset
+   *   (optional) Whether to reset the static cache.
+   *
+   * @return array
+   *   The language-specific mapping from Drupal to Solr field names.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  public function getLanguageSpecificSolrFieldNames($language_id, IndexInterface $index, $reset = FALSE);
+
+  /**
+   * Gets a language-specific mapping from Drupal to Solr field names.
+   *
+   * @param array $language_ids
+   *   The language to get the mapping for.
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   * @param bool $reset
+   *   (optional) Whether to reset the static cache.
+   *
+   * @return array
+   *   The language-specific mapping from Drupal to Solr field names.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  public function getSolrFieldNamesKeyedByLanguage(array $language_ids, IndexInterface $index, $reset = FALSE);
+
+  /**
    * Returns the Solr connector used for this backend.
    *
    * @return \Drupal\search_api_solr\SolrConnectorInterface
+   *   The Solr connector object.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
@@ -45,12 +101,14 @@ interface SolrBackendInterface extends BackendInterface {
    * Retrieves a Solr document from an search api index item.
    *
    * @param \Drupal\search_api\IndexInterface $index
-   *   The search api index.
+   *   The Search API index entity.
    * @param \Drupal\search_api\Item\ItemInterface $item
    *   An item to get documents for.
    *
-   * @return \Solarium\QueryType\Update\Query\Document\Document
+   * @return \Solarium\QueryType\Update\Query\Document
    *   A solr document.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   public function getDocument(IndexInterface $index, ItemInterface $item);
 
@@ -58,14 +116,16 @@ interface SolrBackendInterface extends BackendInterface {
    * Retrieves Solr documents from search api index items.
    *
    * @param \Drupal\search_api\IndexInterface $index
-   *   The search api index.
+   *   The Search API index.
    * @param \Drupal\search_api\Item\ItemInterface[] $items
    *   An array of items to get documents for.
    * @param \Solarium\QueryType\Update\Query\Query $update_query
    *   The existing update query the documents should be added to.
    *
-   * @return \Solarium\QueryType\Update\Query\Document\Document[]
+   * @return \Solarium\QueryType\Update\Query\Document[]
    *   An array of solr documents.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   public function getDocuments(IndexInterface $index, array $items, UpdateQuery $update_query = NULL);
 
@@ -77,6 +137,8 @@ interface SolrBackendInterface extends BackendInterface {
    *
    * @return string
    *   The text extracted from the file.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   public function extractContentFromFile($filepath);
 
@@ -84,6 +146,7 @@ interface SolrBackendInterface extends BackendInterface {
    * Returns the targeted content domain of the server.
    *
    * @return string
+   *   The content domain.
    */
   public function getDomain();
 
@@ -91,26 +154,107 @@ interface SolrBackendInterface extends BackendInterface {
    * Indicates if the Solr server uses a managed schema.
    *
    * @return bool
-   *   True if the Solr server uses a managed schema, false if the Solr server
+   *   TRUE if the Solr server uses a managed schema, FALSE if the Solr server
    *   uses a classic schema.
    */
   public function isManagedSchema();
 
   /**
+   * Indicates if the Solr index should be optimized daily.
+   *
+   * @return bool
+   *   TRUE if the Solr index should be optimized daily, FALSE otherwise.
+   */
+  public function isOptimizeEnabled();
+
+  /**
    * Returns a ready to use query string to filter results by index and site.
    *
    * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
    *
    * @return string
+   *   The query string filter.
    */
   public function getIndexFilterQueryString(IndexInterface $index);
+
+  /**
+   * Returns the endpoint to use for the index.
+   *
+   * In case of Solr Cloud an index might use a different Solr collection.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *
+   * @return \Solarium\Core\Client\Endpoint
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  public function getCollectionEndpoint(IndexInterface $index);
+
+  /**
+   * Returns the Solr settings for the given index.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return array
+   *   An associative array of settings.
+   *
+   * @deprecated use \Drupal\search_api_solr\Utility\Utility::getIndexSolrSettings()
+   */
+  public function getIndexSolrSettings(IndexInterface $index);
+
+    /**
+   * Prefixes an index ID as configured.
+   *
+   * The resulting ID will be a concatenation of the following strings:
+   * - If set, the server-specific index_prefix.
+   * - If set, the index-specific prefix.
+   * - The index's machine name.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return string
+   *   The prefixed machine name.
+   */
+  public function getIndexId(IndexInterface $index);
+
+  /**
+   * Returns the targeted Index ID. In case of multisite it might differ.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return string
+   *   The targeted Index ID.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  public function getTargetedIndexId(IndexInterface $index);
+
+  /**
+   * Returns the targeted site hash. In case of multisite it might differ.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return string
+   *   The targeted site hash.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  public function getTargetedSiteHash(IndexInterface $index);
 
   /**
    * Executes a streaming expression.
    *
    * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The query used for the streaming expression.
    *
    * @return \Solarium\QueryType\Stream\Result
+   *   The streaming expression result.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
@@ -121,8 +265,10 @@ interface SolrBackendInterface extends BackendInterface {
    * Executes a graph streaming expression.
    *
    * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The query used for the graph streaming expression.
    *
    * @return \Solarium\QueryType\Graph\Result
+   *   The graph streaming expression result.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
@@ -136,9 +282,63 @@ interface SolrBackendInterface extends BackendInterface {
    * to the index from the drupal side.
    *
    * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
    *
+   * @return bool
+   *   TRUE if a finalization run, FALSE otherwise. FALSE doesn't indicate an
+   *   error!
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function finalizeIndex(IndexInterface $index);
+
+  /**
+   * Gets schema language statistics for the multilingual Solr server.
+   *
+   * @return array
+   *   Stats as associative array keyed by language IDs and a boolean value to
+   *   indicate if corresponding field types are existing on the server's
+   *   current schema.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function getSchemaLanguageStatistics();
+
+  /**
+   * Get document counts for this server, in total and per site / index.
+   *
+   * @return array
+   *   An associative array of document counts.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function getDocumentCounts();
+
+  /**
+   * Get the max document versions, in total and per site / index / datasource.
+   *
+   * _version_ numbers are important for replication and checkpoints.
+   *
+   * @return array
+   *   An associative array of max document versions.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function getMaxDocumentVersions();
+
+  /**
+   * Gets a list of Solr Field Types that are disabled for this backend.
+   *
+   * @return String[]
+   */
+  public function getDisabledFieldTypes(): array;
 
 }

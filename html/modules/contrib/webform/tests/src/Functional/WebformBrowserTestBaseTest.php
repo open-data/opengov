@@ -59,11 +59,11 @@ class WebformBrowserTestBaseTest extends WebformBrowserTestBase {
     // Check submission load not from cache.
     $webform_submission = $this->loadSubmission($sid);
     $this->assertNotNull($webform_submission);
-    $this->assertEquals($webform_submission->getWebform()->id(), 'contact');
+    $this->assertEquals('contact', $webform_submission->getWebform()->id());
 
     // Check submission email.
     $last_email = $this->getLastEmail();
-    $this->assertEquals($last_email['id'], 'webform_contact_email_notification');
+    $this->assertEquals('webform_contact_email_notification', $last_email['id']);
 
     // Check purge submission deletes the submission.
     $this->purgeSubmissions();

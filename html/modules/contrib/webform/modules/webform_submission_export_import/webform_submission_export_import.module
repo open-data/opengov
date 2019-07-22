@@ -74,7 +74,10 @@ function webform_submission_export_import_local_tasks_alter(&$local_tasks) {
  * @see file_save_upload_single()
  */
 function _webform_submission_export_import_file_save_upload_single(\SplFileInfo $file_info, $form_field_name, array $validators = [], $destination = FALSE, $replace = FILE_EXISTS_RENAME) {
-  $user = \Drupal::currentUser();
+  /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+  $file_system = \Drupal::service('file_system');
+  $current_user = \Drupal::currentUser();
+
   // Check for file upload errors and return FALSE for this file if a lower
   // level system error occurred. For a complete list of errors:
   // See http://php.net/manual/features.file-upload.errors.php.
@@ -111,7 +114,7 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
 
   // Begin building file entity.
   $values = [
-    'uid' => $user->id(),
+    'uid' => $current_user->id(),
     'status' => 0,
     'filename' => $file_info->getClientOriginalName(),
     'uri' => $file_info->getRealPath(),
@@ -169,8 +172,8 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   }
 
   // Assert that the destination contains a valid stream.
-  $destination_scheme = file_uri_scheme($destination);
-  if (!file_stream_wrapper_valid_scheme($destination_scheme)) {
+  $destination_scheme = $file_system->uriScheme($destination);
+  if (!$file_system->validScheme($destination_scheme)) {
     \Drupal::messenger()->addError(t('The file could not be uploaded because the destination %destination is invalid.', ['%destination' => $destination]));
     return FALSE;
   }
@@ -225,7 +228,7 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   }
 
   // Set the permissions on the new file.
-  drupal_chmod($file->getFileUri());
+  $file_system->chmod($file->getFileUri());
 
   // If we are replacing an existing file re-use its database record.
   // @todo Do not create a new entity in order to update it. See
@@ -244,7 +247,7 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
 
   // Allow an anonymous user who creates a non-public file to see it. See
   // \Drupal\file\FileAccessControlHandler::checkAccess().
-  if ($user->isAnonymous() && $destination_scheme !== 'public') {
+  if ($current_user->isAnonymous() && $destination_scheme !== 'public') {
     $session = \Drupal::request()->getSession();
     $allowed_temp_files = $session->get('anonymous_allowed_file_ids', []);
     $allowed_temp_files[$file->id()] = $file->id();

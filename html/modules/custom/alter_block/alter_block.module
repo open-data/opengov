@@ -80,8 +80,8 @@ function alter_block_preprocess_block(&$variables)
         else {
           $data = json_decode($response, TRUE);
           $titles = '<ul>';
-
-          for ($x = 0; $x < 6 /*sizeof($data['result']['results'])*/; $x++) {
+          $size = sizeof($data['result']['results']) < 6 ? sizeof($data['result']['results']) : 6;
+          for ($x = 0; $x < $size; $x++) {
             $uuid = $data['result']['results'][$x]['id'];
             $title = $data['result']['results'][$x]['title_translated'][$langcode];
             $titles .= '<li>' . '<a href="/data/' . $langcode . '/dataset/' . $uuid . '">' . $title . '</a>' . '</li>';

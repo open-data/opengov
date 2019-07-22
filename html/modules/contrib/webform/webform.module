@@ -120,7 +120,7 @@ function webform_modules_uninstalled($modules) {
     $config->save();
   }
 
-  // Check HTML email provider support as modules are ininstalled.
+  // Check HTML email provider support as modules are uninstalled.
   /** @var \Drupal\webform\WebformEmailProviderInterface $email_provider */
   $email_provider = \Drupal::service('webform.email_provider');
   $email_provider->check();
@@ -168,7 +168,7 @@ function webform_local_tasks_alter(&$local_tasks) {
 /**
  * Implements hook_menu_local_tasks_alter().
  */
-function webform_menu_local_tasks_alter(&$data, $route_name) {
+function webform_menu_local_tasks_alter(&$data, $route_name, \Drupal\Core\Cache\RefinableCacheableDependencyInterface $cacheability) {
   // Change config entities 'Translate *' tab to be just label 'Translate'.
   $webform_entities = [
     'webform',
@@ -206,6 +206,26 @@ function webform_menu_local_tasks_alter(&$data, $route_name) {
         }
       }
     }
+  }
+
+  // Allow webform query string parameters be be transfered
+  // from canonical to test URL.
+  $route_names = [
+    'entity.webform.canonical', 'entity.webform.test_form',
+    'entity.node.canonical', 'entity.node.webform.test_form',
+  ];
+  if (in_array($route_name, $route_names)) {
+    if ($query = \Drupal::request()->query->all()) {
+      foreach ($route_names as $route_name) {
+        if (isset($data['tabs'][0][$route_name])) {
+          $url =& $data['tabs'][0][$route_name]['#link']['url'];
+          $url->setOption('query', $query);
+        }
+      }
+    }
+
+    // Query string to cache context webform canonical and test routes.
+    $cacheability->addCacheContexts(['url.query_args']);
   }
 }
 
@@ -291,6 +311,23 @@ function _webform_form_webform_submission_form_after_build($form, FormStateInter
   ];
   $form['#theme_wrappers'] = ['webform'];
   return $form;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function webform_form_smtp_admin_settings_alter(&$form, FormStateInterface $form_state) {
+  $form['#submit'][] = '_webform_form_smtp_admin_settings_submit';
+}
+
+/**
+ * Submit callback for SMTP admin settings.
+ */
+function _webform_form_smtp_admin_settings_submit(&$form, FormStateInterface $form_state) {
+  // Since the SMTP module can enabled or disabled, check HTML email provider.
+  /** @var \Drupal\webform\WebformEmailProviderInterface $email_provider */
+  $email_provider = \Drupal::service('webform.email_provider');
+  $email_provider->check();
 }
 
 /**
@@ -409,9 +446,9 @@ function webform_token_info_alter(&$data) {
 }
 
 /**
- * Implements hook_entity_presave().
+ * Implements hook_entity_update().
  */
-function webform_entity_presave(EntityInterface $entity) {
+function webform_entity_update(EntityInterface $entity) {
   _webform_clear_webform_submission_list_cache_tag($entity);
 }
 
@@ -448,9 +485,25 @@ function webform_entity_delete(EntityInterface $entity) {
  * @see webform_query_webform_submission_access_alter()
  */
 function _webform_clear_webform_submission_list_cache_tag(EntityInterface $entity) {
-  if (in_array($entity->getEntityTypeId(), ['user', 'user_role'])) {
+  if ($entity->getEntityTypeId() === 'user') {
+    $original_target_ids = [];
+    if ($entity->original) {
+      foreach ($entity->original->roles as $item) {
+        $original_target_ids[$item->target_id] = $item->target_id;
+      }
+    }
+    $target_ids = [];
+    foreach ($entity->roles as $item) {
+      $target_ids[$item->target_id] = $item->target_id;
+    }
+    if (array_diff_assoc($original_target_ids, $target_ids)) {
+      Cache::invalidateTags(['webform_submission_list']);
+    }
+  }
+  elseif ($entity->getEntityTypeId() === 'user_role') {
     Cache::invalidateTags(['webform_submission_list']);
   }
+
 }
 
 /**
@@ -541,7 +594,6 @@ function webform_mail_alter(&$message) {
  */
 function webform_page_attachments(array &$attachments) {
   $route_name = \Drupal::routeMatch()->getRouteName();
-  $url = Url::fromRoute('<current>')->toString();
 
   // Attach global libraries only to webform specific pages.
   if (preg_match('/^(webform\.|^entity\.([^.]+\.)?webform)/', $route_name)) {
@@ -552,20 +604,6 @@ function webform_page_attachments(array &$attachments) {
   // library is loaded by the webform block is placed using Ajax.
   if (strpos($route_name, 'block.admin_display') === 0) {
     $attachments['#attached']['library'][] = 'webform/webform.block';
-  }
-
-  // Attach 'Contribute' section style.
-  if ($route_name === 'webform.contribute') {
-    /** @var \Drupal\webform\WebformContributeManagerInterface $contribute_manager */
-    $contribute_manager = \Drupal::service('webform.contribute_manager');
-    $attachments['#attached']['html_head'][] = [
-      [
-        '#type' => 'html_tag',
-        '#tag' => 'style',
-        '#value' => $contribute_manager->getStyle(),
-      ],
-      'webform_contribute',
-    ];
   }
 
   // Attach webform dialog library and options to every page.
@@ -674,7 +712,7 @@ function webform_css_alter(&$css, AttachedAssetsInterface $assets) {
   // Remove the stable.theme's off-canvas CSS reset for webform admin routes.
   // @see https://www.drupal.org/project/drupal/issues/2826722
   //
-  // NOTE: Most admin themes correct style jQuery UI dialogs because Drupal's
+  // NOTE: Most admin themes correctly style jQuery UI dialogs because Drupal's
   // admin UI, especially Views, relies on them.
   $use_off_canvas = WebformDialogHelper::useOffCanvas();
   $is_admin_route = \Drupal::service('router.admin_context')->isAdminRoute();
@@ -883,6 +921,7 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
     return $element;
   }
 
+  // Description display.
   if (!empty($element['#options_description_display'])) {
     $description_property_name = ($element['#options_description_display'] == 'help') ? '#help' : '#description';
     foreach (Element::children($element) as $key) {
@@ -896,6 +935,43 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
       $element[$key]['#title'] = $title;
       $element[$key]['#webform_element'] = TRUE;
       $element[$key][$description_property_name] = $description;
+    }
+  }
+
+  // Display as buttons.
+  if (!empty($element['#options_display']) && $element['#options_display'] === 'buttons') {
+    foreach (Element::children($element) as $key) {
+      // Add wrapper which is needed to make flexbox work with tables.
+      $element[$key]['#prefix'] = '<div class="webform-options-display-buttons-wrapper">';
+      $element[$key]['#suffix'] = '</div>';
+
+      // Move radio #description inside the #title (aka label).
+      if (!empty($element[$key]['#description'])) {
+        $build = [
+          'title' => [
+            '#markup' => $element[$key]['#title'],
+            '#prefix' => '<div class="webform-options-display-buttons-title">',
+            '#suffix' => '</div>',
+          ],
+          'description' => [
+            '#markup' => $element[$key]['#description'],
+            '#prefix' => '<div class="webform-options-display-buttons-description description">',
+            '#suffix' => '</div>',
+          ],
+        ];
+        $element[$key]['#title'] = \Drupal::service('renderer')->render($build);
+        unset($element[$key]['#description']);
+      }
+
+      // Add .visually-hidden class radio/checkbox.
+      $element[$key]['#attributes']['class'][] = 'visually-hidden';
+
+      // Add class to label attributes.
+      $element[$key]['#label_attributes']['class'][] = 'webform-options-display-buttons-label';
+
+      // Add #option_display to button.
+      // @see \Drupal\webform_bootstrap_test_theme\Plugin\Preprocess\FormElement::preprocessElement
+      $element[$key]['#option_display'] = 'button';
     }
   }
 
@@ -1104,6 +1180,16 @@ function webform_query_webform_submission_access_alter(AlterableInterface $query
       }
     }
   }
+  else {
+    /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
+    $submission_storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
+    $sids = $submission_storage->getAnonymousSubmissionIds($account);
+    if ($sids) {
+      foreach ($webform_submission_tables as $table) {
+        $table['condition']->condition($table['alias'] . '.sid', $sids, 'IN');
+      }
+    }
+  }
 
   // Alter query based on access rules.
   /** @var \Drupal\webform\WebformAccessRulesManagerInterface $access_rules_manager */
@@ -1148,6 +1234,31 @@ function webform_query_webform_submission_access_alter(AlterableInterface $query
         $condition->condition($table['alias'] . '.uid', $account->id());
         $condition->condition($table['alias'] . '.webform_id', $webform_id);
         $table['condition']->condition($condition);
+      }
+    }
+  }
+
+  // Alter query based on webform node access permissions.
+  // @see webform_node_node_access()
+  // @todo Figure out how to move the below code to the webform_node.module.
+  if (\Drupal::moduleHandler()->moduleExists('webform_node')) {
+    $route_name = \Drupal::routeMatch()->getRouteName();
+    if (preg_match('/entity\.([^.]+)\.webform\.results_submissions/', $route_name, $match)) {
+      $entity_type = $match[1];
+      if ($account->hasPermission('view webform submissions any node')) {
+        foreach ($webform_submission_tables as $table) {
+          $table['condition']->condition($table['alias'] . '.entity_type', $entity_type);
+        }
+      }
+      elseif ($account->hasPermission('view webform submissions own node')) {
+        $entity_id = \Drupal::routeMatch()->getRawParameter($entity_type);
+        foreach ($webform_submission_tables as $table) {
+          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
+          $condition = $query->andConditionGroup();
+          $condition->condition($table['alias'] . '.entity_type', $entity_type);
+          $condition->condition($table['alias'] . '.entity_id', $entity_id);
+          $table['condition']->condition($condition);
+        }
       }
     }
   }

@@ -36,6 +36,13 @@ field.value.webform:
     close:
       type: string
       label: 'Webform close date/time'
+    # @todo Figure how and if this can be moved to webform_access.schema.yml.
+    webform_access_group:
+      type: sequence
+      label: 'Access groups'
+      sequence:
+        type: string
+        label: 'Access group'
 
 field.widget.settings.webform_entity_reference_autocomplete:
   type: mapping

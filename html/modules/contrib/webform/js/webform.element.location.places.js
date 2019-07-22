@@ -65,8 +65,8 @@
 
         // Disable autocomplete.
         // @see https://gist.github.com/niksumeiko/360164708c3b326bd1c8
-        var isChrome = /Chrome/.test(window.navigator.userAgent) && /Google Inc/.test(window.navigator.vendor);
-        $input.attr('autocomplete', (isChrome) ? 'off' : 'false');
+        var isChrome = (/chrom(e|ium)/.test(window.navigator.userAgent.toLowerCase()));
+        $input.attr('autocomplete', (isChrome) ? 'chrome-off' : 'off');
 
         // Sync values on change and clear events.
         placesAutocomplete.on('change', function (e) {
@@ -80,6 +80,30 @@
             setValue(destination, '');
           });
         });
+
+        // If there is no default value see if the default value should be set
+        // to the browser's current geolocation.
+        // @see https://community.algolia.com/places/examples.html#dynamic-form
+        if ($input.val() === ''
+          && window.navigator.geolocation
+          && $input.attr('data-webform-location-places-geolocation')) {
+
+          placesAutocomplete.on('reverse', function (e) {
+            var suggestion = e.suggestions[0];
+            $input.val(suggestion.value);
+            $.each(mapping, function (source, destination) {
+              var value = (source === 'lat' || source === 'lng' ? suggestion.latlng[source] : suggestion[source]) || '';
+              setValue(destination, value);
+            });
+          });
+
+          window.navigator.geolocation.getCurrentPosition(function (response) {
+            var coords = response.coords;
+            var lat = coords.latitude.toFixed(6);
+            var lng = coords.longitude.toFixed(6);
+            placesAutocomplete.reverse(lat + ',' + lng);
+          });
+        }
 
         /**
          * Set attribute value.

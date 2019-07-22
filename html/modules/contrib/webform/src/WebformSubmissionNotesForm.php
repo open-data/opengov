@@ -3,7 +3,7 @@
 namespace Drupal\webform;
 
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Form\WebformDialogFormTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,8 +27,8 @@ class WebformSubmissionNotesForm extends ContentEntityForm {
   /**
    * Constructs a ContentEntityForm object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository.
    * @param \Drupal\webform\WebformRequestInterface $webform_request
    *   The webform request handler.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
@@ -36,9 +36,9 @@ class WebformSubmissionNotesForm extends ContentEntityForm {
    * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time service.
    */
-  public function __construct(EntityManagerInterface $entity_manager, WebformRequestInterface $webform_request, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL) {
+  public function __construct(EntityRepositoryInterface $entity_repository, WebformRequestInterface $webform_request, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL) {
     // Calling the parent constructor.
-    parent::__construct($entity_manager, $entity_type_bundle_info, $time);
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
 
     $this->requestHandler = $webform_request;
   }
@@ -48,7 +48,7 @@ class WebformSubmissionNotesForm extends ContentEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('webform.request'),
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time')
@@ -97,18 +97,16 @@ class WebformSubmissionNotesForm extends ContentEntityForm {
       '#return_value' => TRUE,
       '#access' => $this->isDialog() ? FALSE : TRUE,
     ];
-    $form['uid'] = [
-      '#type' => 'entity_autocomplete',
-      '#title' => $this->t('Submitted by'),
-      '#description' => $this->t('The username of the user that submitted the webform.'),
-      '#target_type' => 'user',
-      '#selection_setttings' => [
-        'include_anonymous' => FALSE,
-      ],
-      '#required' => TRUE,
-      '#default_value' => $webform_submission->getOwner(),
-      '#access' => $this->currentUser()->hasPermission('administer users'),
-    ];
+    if ($this->currentUser()->hasPermission('administer users')) {
+      $form['uid'] = [
+        '#type' => 'entity_autocomplete',
+        '#title' => $this->t('Submitted by'),
+        '#description' => $this->t('The username of the user that submitted the webform.'),
+        '#target_type' => 'user',
+        '#required' => TRUE,
+        '#default_value' => $webform_submission->getOwner(),
+      ];
+    }
 
     $form['#attached']['library'][] = 'webform/webform.admin';
 

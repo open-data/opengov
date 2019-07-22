@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
+use Drupal\webform\Plugin\WebformElementOtherInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 
@@ -15,7 +16,7 @@ use Drupal\webform\WebformSubmissionConditionsValidator;
  *   category = @Translation("Options elements"),
  * )
  */
-class WebformCheckboxesOther extends Checkboxes implements WebformOtherInterface {
+class WebformCheckboxesOther extends Checkboxes implements WebformElementOtherInterface {
 
   /**
    * {@inheritdoc}

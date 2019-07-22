@@ -33,7 +33,7 @@ class JsonQuery extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return FacetSetInterface::JSON_FACET_QUERY;
     }
@@ -43,7 +43,7 @@ class JsonQuery extends AbstractFacet implements JsonFacetInterface, FacetSetInt
      *
      * @return \Solarium\Core\Query\Helper
      */
-    public function getHelper()
+    public function getHelper(): Helper
     {
         return new Helper();
     }

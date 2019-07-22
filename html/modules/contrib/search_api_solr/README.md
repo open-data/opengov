@@ -19,12 +19,8 @@ This module provides an implementation of the Search API which uses an Apache
 Solr search server for indexing and searching. Before enabling or using this
 module, you'll have to follow the instructions given in INSTALL.md first.
 
-The minimum support version for Search API Solr Search 8.x-2.x is Solr 6.6.
+The minimum support version for Search API Solr Search 8.x-3.x is Solr 6.4.
 Any version below might work if you use your own Solr config.
-
-For more detailed documentation, see the
-[handbook](https://drupal.org/node/1999280)
-
 
 Supported optional features
 ---------------------------
@@ -51,10 +47,9 @@ Regarding third-party features, the following are supported:
     a "More like this" block for node pages build with Views.
 - multisite
   - Introduced by module: search_api_solr
-  - Currently WIP for 8.x-2.x
 - spellcheck
   - Introduced by module: search_api_solr
-  - Currently WIP for 8.x-2.x
+  - Views integration provided by search_api_spellcheck
 - attachments
   - Introduced by module: search_api_attachments
 - location
@@ -83,30 +78,9 @@ By default the Highlighting processor provided by Search API uses PHP to create
 highlighted snippets or an excerpt based on the entities loaded from the
 database. Solr itself can do that much better, especially for different
 languages. If you check `Retrieve result data from Solr` and `Highlight
-retrieved data` on the server edit page, the Highlighting processor will use
+retrieved data` on the index edit page, the Highlighting processor will use
 this data directly and bypass it's own logic. To do the highlighting, Solr will
 use the configuration of the Highlighting processor.
-
-Hidden variables
-----------------
-
-- search_api_solr.settings.cron_action (default: "spellcheck")
-  The Search API Solr Search module can automatically execute some upkeep
-  operations daily during cron runs. This variable determines what particular
-  operation is carried out.
-  - spellcheck: The "default" spellcheck dictionary used by Solr will be rebuilt
-  so that spellchecking reflects the latest index state.
-  - optimize: An "optimize" operation [9] is executed on the Solr server. As a
-  result of this, all spellcheck dictionaries (that have "buildOnOptimize" set
-  to "true") will be rebuilt, too.
-  - none: No action is executed.
-  If an unknown setting is encountered, it is interpreted as "none".
-- search_api_solr.settings.site_hash (default: random)
-  A unique hash specific to the local site, created the first time it is needed.
-  Only change this if you want to display another server's results and you know
-  what you are doing. Old indexed items will be lost when the hash is changed
-  (without being automatically deleted from the Solr server!) and all items will
-  have to be reindexed. Should only contain alphanumeric characters.
 
 Connectors
 ----------
@@ -186,7 +160,7 @@ Support
 
 Support is currently provided via our
 [issue queue](https://www.drupal.org/project/issues/search_api_solr?version=8.x)
-or on https://drupalchat.eu/channel/search.
+or on https://drupalchat.me/channel/search.
 
 Developers
 ----------

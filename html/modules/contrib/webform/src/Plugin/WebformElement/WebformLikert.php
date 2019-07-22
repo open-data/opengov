@@ -42,6 +42,7 @@ class WebformLikert extends WebformElementBase {
       // Form display.
       'title_display' => '',
       'description_display' => '',
+      'help_display' => '',
       'disabled' => FALSE,
       // Form validation.
       'required' => FALSE,

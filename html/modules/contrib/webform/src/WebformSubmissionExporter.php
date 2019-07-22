@@ -893,7 +893,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
    * {@inheritdoc}
    */
   public function getBatchLimit() {
-    return $this->configFactory->get('webform.settings')->get('batch.default_batch_export_size') ?: 500;
+    return $this->getExporter()->getBatchLimit();
   }
 
   /**

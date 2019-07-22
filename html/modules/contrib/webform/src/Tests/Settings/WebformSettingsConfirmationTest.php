@@ -57,8 +57,26 @@ class WebformSettingsConfirmationTest extends WebformTestBase {
     $this->assertUrl('webform/test_confirmation_message');
 
     // Check confirmation page with custom query parameters.
-    $this->postSubmission($webform_confirmation_message, [], NULL, ['query' => ['custom' => 'param']]);
+    $sid = $this->postSubmission($webform_confirmation_message, [], NULL, ['query' => ['custom' => 'param']]);
     $this->assertUrl('webform/test_confirmation_message', ['query' => ['custom' => 'param']]);
+
+    // Sleep for 1 second to ensure the submission's timestamp indicates
+    // it was update.
+    sleep(1);
+
+    // Check default message when submission is updated.
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_message/submission/$sid/edit", [], t('Save'));
+    $this->assertNoRaw('This is a <b>custom</b> confirmation message. (test: )');
+    $this->assertRaw('Submission updated in <em class="placeholder">Test: Confirmation: Message</em>.');
+
+    // Set display confirmation when submission is updated.
+    $webform_confirmation_message->setSetting('confirmation_update', TRUE)
+      ->save();
+
+    // Check default message when submission is updated.
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_message/submission/$sid/edit", [], t('Save'));
+    $this->assertRaw('This is a <b>custom</b> confirmation message. (test: )');
+    $this->assertNoRaw('Submission updated in <em class="placeholder">Test: Confirmation: Message</em>.');
 
     /* Test confirmation message (confirmation_type=modal) */
 

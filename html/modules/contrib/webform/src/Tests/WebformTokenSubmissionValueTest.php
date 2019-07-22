@@ -44,6 +44,13 @@ class WebformTokenSubmissionValueTest extends WebformTestBase {
     // Check anonymous token handling.
     $this->postSubmission($webform);
     $tokens = [
+      // Element.
+      'webform:element:email' => 'email',
+      'webform:element:email:title' => 'email',
+      'webform:element:email:description' => '<em>This is an email address</em>',
+      'webform:element:not_element:description' => '[webform:element:not_element:description]',
+      'webform:element:email:not_property' => '[webform:element:email:not_property]',
+
       // Emails.
       'webform_submission:values:email' => 'example@example.com',
       'webform_submission:values:emails:0' => 'one@example.com',

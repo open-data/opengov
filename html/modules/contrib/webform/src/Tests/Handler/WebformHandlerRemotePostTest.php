@@ -183,6 +183,18 @@ options:
     preg_match('/&quot;confirmation_number&quot;:&quot;([a-zA-z0-9]+)&quot;/', $this->getRawContent(), $match);
     $this->assertRaw('Your confirmation number is ' . $match[1] . '.');
 
+    // Set remote post error URL to homepage.
+    $handler = $webform->getHandler('remote_post');
+    $configuration = $handler->getConfiguration();
+    $configuration['settings']['error_url'] = $webform->toUrl('canonical', ['query' => ['error' => '1']])->toString();
+    $handler->setConfiguration($configuration);
+    $webform->save();
+
+    // Check 404 Not Found with custom error uri.
+    $this->postSubmission($webform, ['response_type' => '404']);
+    $this->assertNoRaw('This is a custom 404 not found message.');
+    $this->assertUrl($webform->toUrl('canonical', ['query' => ['error' => '1']])->setAbsolute()->toString());
+
     /**************************************************************************/
     // PUT.
     /**************************************************************************/
@@ -224,8 +236,7 @@ options:
     custom_header: 'true'");
 
     // Check request URL contains query string.
-    // @todo restore tests once the Drupal 8.6.x issue is resolved.
-    //$this->assertRaw("http://webform-test-handler-remote-post/completed?custom_completed=1&amp;custom_data=1&amp;first_name=John&amp;last_name=Smith&amp;response_type=200");
+    $this->assertRaw("http://webform-test-handler-remote-post/completed?custom_completed=1&amp;custom_data=1&amp;response_type=200&amp;first_name=John&amp;last_name=Smith");
 
     // Check response data.
     $this->assertRaw("message: 'Processed completed request.'");

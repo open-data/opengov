@@ -397,6 +397,56 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
     ];
     $form['confirmation_settings']['token_tree_link'] = $this->tokenManager->buildTreeElement();
 
+    // Ajax settings.
+    $form['ajax_settings'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Ajax settings'),
+      '#open' => TRUE,
+      '#tree' => TRUE,
+    ];
+    $form['ajax_settings']['default_ajax_progress_type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Default Ajax progress type'),
+      '#description' => $this->t("Select the default progress indicator displayed when Ajax is triggered."),
+      '#options' => [
+        'throbber' => $this->t('Throbber'),
+        'fullscreen' => $this->t('Full screen'),
+      ],
+      '#default_value' => $settings['default_ajax_progress_type'],
+      '#required' => TRUE,
+    ];
+    $form['ajax_settings']['default_ajax_effect'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Default Ajax effect'),
+      '#description' => $this->t("Select the default effect displayed when Ajax is triggered."),
+      '#options' => [
+        'none' => $this->t('None'),
+        'fade' => $this->t('Fade'),
+        'slide' => $this->t('Slide'),
+      ],
+      '#default_value' => $settings['default_ajax_effect'],
+      '#required' => TRUE,
+    ];
+    $form['ajax_settings']['default_ajax_speed'] = [
+      '#type' => 'webform_select_other',
+      '#title' => $this->t('Default Ajax speed'),
+      '#description' => $this->t("Select the default effect speed."),
+      '#other__type' => 'number',
+      '#other__placeholder' => '',
+      '#other__field_suffix' => $this->t('milliseconds'),
+      '#options' => [
+        '500' => $this->t('@number milliseconds', ['@number' => '500']),
+        '1000' => $this->t('@number milliseconds', ['@number' => '1000']),
+        '1500' => $this->t('@number milliseconds', ['@number' => '1500']),
+      ],
+      '#states' => [
+        'visible' => [
+          ':input[name="ajax_settings[default_ajax_effect]"]' => ['!value' => 'none'],
+        ],
+      ],
+      '#default_value' => $settings['default_ajax_speed'],
+    ];
+
     // Dialog settings.
     $form['dialog_settings'] = [
       '#type' => 'details',
@@ -509,7 +559,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       ];
       $form['dialog_settings']['dialog_messages']['module_message'] = [
         '#type' => 'webform_message',
-        '#message_message' => $this->t('To add the .webform-dialog class to a link\'s attributes, please use the <a href=":editor_advanced_link_href">D8 Editor Advanced link</a> or <a href=":menu_link_attributes_href">Menu Link Attributes</a> module.', $t_args),
+        '#message_message' => $this->t('To add the .webform-dialog class to a link\'s attributes, please use the <a href=":editor_advanced_link_href">D8 Editor Advanced link</a> or <a href=":menu_link_attributes_href">Menu Link Attributes</a> modules.', $t_args),
         '#message_type' => 'info',
         '#message_close' => TRUE,
         '#message_storage' => WebformMessage::STORAGE_SESSION,
@@ -563,6 +613,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       + $form_state->getValue('wizard_settings')
       + $form_state->getValue('preview_settings')
       + $form_state->getValue('confirmation_settings')
+      + $form_state->getValue('ajax_settings')
       + $form_state->getValue('dialog_settings');
 
     // Track if we need to trigger an update of all webform paths

@@ -77,6 +77,25 @@ abstract class WebformLocationBase extends WebformCompositeBase {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
+    $form['composite']['geolocation'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t("Use the browser's Geolocation as the default value"),
+      '#description' => $this->t('The <a href="http://www.w3schools.com/html/html5_geolocation.asp">HTML Geolocation API</a> is used to get the geographical position of a user. Since this can compromise privacy, the position is not available unless the user approves it.'),
+      '#return_value' => TRUE,
+    ];
+    $form['composite']['hidden'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t("Hide the location element and collect the browser's Geolocation in the background"),
+      '#return_value' => TRUE,
+      '#states' => [
+        'visible' => [
+          ':input[name="properties[geolocation]"]' => [
+            'checked' => TRUE,
+          ],
+        ],
+      ],
+    ];
+
     // Reverted #required label.
     $form['validation']['required']['#description'] = $this->t('Check this option if the user must enter a value.');
 
@@ -86,7 +105,7 @@ abstract class WebformLocationBase extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  protected function buildCompositeElementsTable() {
+  protected function buildCompositeElementsTable(array $form, FormStateInterface $form_state) {
     $header = [
       $this->t('Key'),
       $this->t('Title/Placeholder'),

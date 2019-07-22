@@ -70,14 +70,81 @@ elements: |
     '#title': help_section
     '#help': '{This is an example of help for a section element}'
     '#description': '{This is an example of help for a section element}'
+  help_before_title:
+    '#type': textfield
+    '#title': help_before_title
+    '#help': '{This is an example of help}'
+    '#help_display': title_before
+  help_after_title:
+    '#type': textfield
+    '#title': help_after_title
+    '#help': '{This is an example of help}'
+    '#help_display': title_after
+  help_before_element:
+    '#type': textfield
+    '#title': help_before_element
+    '#help': '{This is an example of help}'
+    '#help_display': element_before
+  help_after_element:
+    '#type': textfield
+    '#title': help_after_element
+    '#help': '{This is an example of help}'
+    '#help_display': element_after
+  help_after_element_flexbox:
+    '#type': webform_flexbox
+    help_before_element_01:
+      '#type': textfield
+      '#title': help_before_element_01
+      '#help': '{This is an example of help}'
+      '#field_suffix': suffix
+      '#field_prefix': prefix
+      '#help_display': element_before
+    help_after_element_02:
+      '#type': textfield
+      '#title': help_after_element_02
+      '#field_suffix': suffix
+      '#field_prefix': prefix
+      '#help': '{This is an example of help}'
+      '#help_display': element_after
+  help_before_radios:
+    '#type': radios
+    '#title': help_before_radios
+    '#options': yes_no
+    '#help': '{This is an example of help}'
+    '#help_display': element_before
+  help_after_radios:
+    '#type': radios
+    '#title': help_after_radios
+    '#options': yes_no
+    '#help': '{This is an example of help}'
+    '#help_display': element_after
+  help_before_details:
+    '#type': details
+    '#title': help_before_details
+    '#help': '{This is an example of help}'
+    '#help_display': element_before
+    'help_before_details':
+      '#markup': '{This is markup}'
+  help_after_details:
+    '#type': details
+    '#title': help_after_details
+    '#help': '{This is an example of help}'
+    '#help_display': element_after
+    'help_after_details':
+      '#markup': '{This is markup}'
+
 css: ''
 javascript: ''
 settings:
   ajax: false
   ajax_scroll_top: form
+  ajax_progress_type: ''
+  ajax_effect: ''
+  ajax_speed: null
   page: true
   page_submit_path: ''
   page_confirm_path: ''
+  page_admin_theme: false
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -149,6 +216,8 @@ settings:
   draft_auto_save: false
   draft_saved_message: ''
   draft_loaded_message: ''
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
   confirmation_type: page
   confirmation_title: ''
   confirmation_message: ''
@@ -159,6 +228,7 @@ settings:
   confirmation_back_attributes: {  }
   confirmation_exclude_query: false
   confirmation_exclude_token: false
+  confirmation_update: false
   limit_total: null
   limit_total_interval: null
   limit_total_message: ''

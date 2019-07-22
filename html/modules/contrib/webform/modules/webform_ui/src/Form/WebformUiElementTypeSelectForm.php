@@ -4,6 +4,7 @@ namespace Drupal\webform_ui\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\webform\Plugin\WebformElementWizardPageInterface;
 use Drupal\webform\WebformInterface;
 
 /**
@@ -46,8 +47,8 @@ class WebformUiElementTypeSelectForm extends WebformUiElementTypeFormBase {
         continue;
       }
 
-      // Skip wizard page which has a dedicated URL.
-      if ($element_type === 'webform_wizard_page') {
+      // Skip wizard-type pages, which have a dedicated URL.
+      if ($webform_element instanceof WebformElementWizardPageInterface) {
         continue;
       }
 

@@ -3,6 +3,7 @@
 namespace Solarium\QueryType\Server\CoreAdmin\Query\Action;
 
 use Solarium\QueryType\Server\CoreAdmin\Query\Query as CoreAdminQuery;
+use Solarium\QueryType\Server\Query\Action\AbstractAction;
 
 /**
  * Class RequestStatus.
@@ -28,18 +29,19 @@ class RequestStatus extends AbstractAction
      *
      * @return self Provides fluent interface
      */
-    public function setRequestId($requestId)
+    public function setRequestId($requestId): self
     {
-        return $this->setOption('requestid', $requestId);
+        $this->setOption('requestid', $requestId);
+        return $this;
     }
 
     /**
      * Get the requestId where that status should be retrieved for.
      *
-     * @return string
+     * @return string|null
      */
-    public function getRequestId(): string
+    public function getRequestId(): ?string
     {
-        return (string) $this->getOption('requestid');
+        return $this->getOption('requestid');
     }
 }

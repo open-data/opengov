@@ -34,16 +34,6 @@ interface WebformMessageManagerInterface {
   const SUBMISSION_DEFAULT_CONFIRMATION = 'submission_default_confirmation';
 
   /**
-   * Submission previous.
-   */
-  const PREVIOUS_SUBMISSION = 'previous_submission';
-
-  /**
-   * Submissions previous.
-   */
-  const PREVIOUS_SUBMISSIONS = 'previous_submissions';
-
-  /**
    * Submission updates.
    */
   const SUBMISSION_UPDATED = 'submission_updated';
@@ -68,15 +58,31 @@ interface WebformMessageManagerInterface {
    */
   const HANDLER_SUBMISSION_REQUIRED = 'handler_submission_required';
 
-  /**
-   * Draft previous.
-   */
-  const DRAFT_PREVIOUS = 'draft_previous';
+  /****************************************************************************/
+  // Configurable custom message constants with :href argument.
+  // Values corresponds to admin config and webform settings
+  // with *_message appended.
+  /****************************************************************************/
 
   /**
-   * Drafts previous.
+   * Submission previous.
    */
-  const DRAFTS_PREVIOUS = 'drafts_previous';
+  const PREVIOUS_SUBMISSION = 'previous_submission';
+
+  /**
+   * Submissions previous.
+   */
+  const PREVIOUS_SUBMISSIONS = 'previous_submissions';
+
+  /**
+   * Draft pending single.
+   */
+  const DRAFT_PENDING_SINGLE = 'draft_pending_single';
+
+  /**
+   * Draft pending multiple.
+   */
+  const DRAFT_PENDING_MULTIPLE = 'draft_pending_multiple';
 
   /****************************************************************************/
   // Configurable custom message constants.

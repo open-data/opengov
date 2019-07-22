@@ -29,6 +29,9 @@ third_party_settings:
         fragsize: 0
     advanced:
       index_prefix: ''
+    multilingual:
+      limit_to_content_language: false
+      include_language_independent: true
 id: pd_core_ati
 name: 'Proactive Disclosure: ATI Index'
 description: 'Read-only search index for Solr core_ati'

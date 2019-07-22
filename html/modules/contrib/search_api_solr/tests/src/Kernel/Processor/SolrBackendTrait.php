@@ -20,8 +20,8 @@ trait SolrBackendTrait {
    *
    * @param string $module
    *   The module that provides the server config.
-   * @param $config
-   *   The server config
+   * @param string $config
+   *   The path to the server config YAML file.
    */
   protected function enableSolrServer($module, $config) {
     $this->server = Server::create(
@@ -46,7 +46,7 @@ trait SolrBackendTrait {
    */
   protected function indexItems() {
     $index_status = parent::indexItems();
-    $this->ensureCommit($this->server);
+    $this->ensureCommit($this->index);
     return $index_status;
   }
 
@@ -55,7 +55,8 @@ trait SolrBackendTrait {
    */
   protected function tearDown() {
     $this->index->clear();
-    $this->ensureCommit($this->server);
+    $this->ensureCommit($this->index);
     parent::tearDown();
   }
+
 }

@@ -217,8 +217,8 @@ function _webform_update_options_settings() {
     'options' => '',
   ];
 
-  $config_factory = \Drupal::configFactory();
   // Update 'webform.webform_options.*' configuration.
+  $config_factory = \Drupal::configFactory();
   foreach ($config_factory->listAll('webform.webform_options.') as $webform_config_name) {
     $webform_options_config = $config_factory->getEditable($webform_config_name);
 
@@ -283,6 +283,23 @@ function _webform_update_field_storage_definitions() {
 function _webform_update_webform_submission_storage_schema() {
   $manager = \Drupal::entityDefinitionUpdateManager();
   $manager->updateEntityType($manager->getEntityType('webform_submission'));
+}
+
+/**
+ * Update webform submission translations.
+ */
+function _webform_update_webform_submission_translation() {
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('language.content_settings.webform_submission.') as $config_name) {
+    $config = $config_factory->getEditable($config_name);
+    // Make sure 'Default language' (default_langcode) and
+    // 'Show language selector on create and edit pages' (language_alterable)
+    // have not been customized.
+    if ($config->get('default_langcode') === 'site_default'
+      && $config->get('language_alterable') === FALSE) {
+      $config_factory->getEditable($config_name)->delete();
+    }
+  }
 }
 
 /**

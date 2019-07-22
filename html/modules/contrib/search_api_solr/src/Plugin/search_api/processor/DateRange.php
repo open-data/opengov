@@ -27,8 +27,8 @@ class DateRange extends ProcessorPluginBase {
   public function preprocessIndexItems(array $items) {
     foreach ($items as $item) {
       /** @var \Drupal\search_api\Item\FieldInterface $field */
-      foreach ($item->getFields() as $name => $field) {
-        if ('solr_date_range' == $field->getType()) {
+      foreach ($item->getFields() as $field) {
+        if ('solr_date_range' === $field->getType()) {
           $values = [];
           $required_properties = [
             $item->getDatasourceId() => [
@@ -37,7 +37,7 @@ class DateRange extends ProcessorPluginBase {
             ],
           ];
           $item_values = $this->getFieldsHelper()->extractItemValues([$item], $required_properties);
-          foreach ($item_values as $key => $dates) {
+          foreach ($item_values as $dates) {
             $start_dates = $dates['start'];
             $end_dates = $dates['end'];
 

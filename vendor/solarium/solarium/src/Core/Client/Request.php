@@ -40,12 +40,23 @@ class Request extends Configurable implements RequestParamsInterface
     const METHOD_PUT = 'PUT';
 
     /**
+     * V1 API.
+     */
+    const API_V1 = 'v1';
+
+    /**
+     * V2 API.
+     */
+    const API_V2 = 'v2';
+
+    /**
      * Default options.
      *
      * @var array
      */
     protected $options = [
         'method' => self::METHOD_GET,
+        'api' => self::API_V1,
     ];
 
     /**
@@ -78,11 +89,11 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set request handler.
      *
-     * @param string $handler
+     * @param string|null $handler
      *
      * @return self Provides fluent interface
      */
-    public function setHandler($handler)
+    public function setHandler(?string $handler): self
     {
         $this->setOption('handler', $handler);
 
@@ -92,9 +103,9 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Get request handler.
      *
-     * @return string
+     * @return string|null
      */
-    public function getHandler()
+    public function getHandler(): ?string
     {
         return $this->getOption('handler');
     }
@@ -108,7 +119,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function setMethod($method)
+    public function setMethod(string $method): self
     {
         $this->setOption('method', $method);
 
@@ -118,9 +129,9 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Get request method.
      *
-     * @return string
+     * @return string|null
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->getOption('method');
     }
@@ -128,9 +139,9 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Get raw POST data.
      *
-     * @return string
+     * @return string|null
      */
-    public function getRawData()
+    public function getRawData(): ?string
     {
         return $this->rawData;
     }
@@ -144,7 +155,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function setRawData($data)
+    public function setRawData(string $data): self
     {
         $this->rawData = $data;
 
@@ -156,7 +167,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return string|null
      */
-    public function getFileUpload()
+    public function getFileUpload(): ?string
     {
         return $this->getOption('file');
     }
@@ -169,9 +180,9 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @throws RuntimeException
      *
-     * @return self
+     * @return self Provides fluent interface
      */
-    public function setFileUpload($filename)
+    public function setFileUpload($filename): self
     {
         if (!is_file($filename) || !is_readable($filename)) {
             throw new RuntimeException("Unable to read file '{$filename}' for upload");
@@ -187,7 +198,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -199,7 +210,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function setHeaders($headers)
+    public function setHeaders(array $headers): self
     {
         $this->clearHeaders();
         $this->addHeaders($headers);
@@ -214,7 +225,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function addHeader($value)
+    public function addHeader($value): self
     {
         $this->headers[] = $value;
 
@@ -228,7 +239,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function addHeaders($headers)
+    public function addHeaders(array $headers): self
     {
         foreach ($headers as $header) {
             $this->addHeader($header);
@@ -242,7 +253,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function clearHeaders()
+    public function clearHeaders(): self
     {
         $this->headers = [];
 
@@ -252,9 +263,9 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Get an URI for this request.
      *
-     * @return string
+     * @return string|null
      */
-    public function getUri()
+    public function getUri(): ?string
     {
         return $this->getHandler().'?'.$this->getQueryString();
     }
@@ -269,7 +280,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return self Provides fluent interface
      */
-    public function setAuthentication($username, $password)
+    public function setAuthentication(string $username, string $password): self
     {
         $this->setOption('username', $username);
         $this->setOption('password', $password);
@@ -282,7 +293,7 @@ class Request extends Configurable implements RequestParamsInterface
      *
      * @return array
      */
-    public function getAuthentication()
+    public function getAuthentication(): array
     {
         return [
             'username' => $this->getOption('username'),
@@ -294,10 +305,14 @@ class Request extends Configurable implements RequestParamsInterface
      * Execute a request outside of the core context in the global solr context.
      *
      * @param bool $isServerRequest
+     *
+     * @return self Provides fluent interface
      */
-    public function setIsServerRequest($isServerRequest = false)
+    public function setIsServerRequest(bool $isServerRequest = false): self
     {
         $this->setOption('isserverrequest', $isServerRequest);
+
+        return $this;
     }
 
     /**
@@ -309,6 +324,30 @@ class Request extends Configurable implements RequestParamsInterface
     public function getIsServerRequest(): bool
     {
         return $this->getOption('isserverrequest') ?? false;
+    }
+
+    /**
+     * Set Solr API version.
+     *
+     * @param string $api
+     *
+     * @return self Provides fluent interface
+     */
+    public function setApi($api): self
+    {
+        $this->setOption('api', $api);
+
+        return $this;
+    }
+
+    /**
+     * Returns Solr API version.
+     *
+     * @return string|null
+     */
+    public function getApi(): ?string
+    {
+        return $this->getOption('api');
     }
 
     /**
@@ -331,7 +370,7 @@ class Request extends Configurable implements RequestParamsInterface
                     $this->setHeaders($value);
                     break;
                 case 'authentication':
-                    if (isset($value['username']) && isset($value['password'])) {
+                    if (isset($value['username'], $value['password'])) {
                         $this->setAuthentication($value['username'], $value['password']);
                     }
             }
@@ -341,7 +380,7 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * @return string
      */
-    public function getHash()
+    public function getHash(): string
     {
         return spl_object_hash($this);
     }

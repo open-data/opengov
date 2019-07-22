@@ -94,9 +94,6 @@ class WebformBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     elseif ($route_name === 'webform.reports_plugins.elements.test') {
       $this->type = 'webform_plugins_elements';
     }
-    elseif (strpos($route_name, 'webform.contribute') === 0) {
-      $this->type = 'webform_contribute';
-    }
     elseif (strpos($route_name, 'webform.help.') === 0) {
       $this->type = 'webform_help';
     }

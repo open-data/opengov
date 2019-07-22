@@ -12,6 +12,13 @@ use Drupal\webform\Tests\WebformTestBase;
 class WebformCompositeTest extends WebformTestBase {
 
   /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['webform_ui'];
+
+  /**
    * Webforms to load.
    *
    * @var array
@@ -22,7 +29,6 @@ class WebformCompositeTest extends WebformTestBase {
    * Test composite element.
    */
   public function testComposite() {
-
     /* Display */
 
     $this->drupalGet('/webform/test_composite');
@@ -72,6 +78,28 @@ class WebformCompositeTest extends WebformTestBase {
     ];
     $this->drupalPostForm('webform/test_composite', $edit, t('Submit'));
     $this->assertRaw('Name field is required.');
+
+    /* Custom options */
+
+    $this->drupalLogin($this->rootUser);
+
+    // Check editing custom options are renderd.
+    $this->drupalGet('/webform/test_composite');
+    $this->assertRaw('<select data-drupal-selector="edit-address-custom-options-state-province" id="edit-address-custom-options-state-province" name="address_custom_options[state_province]" class="form-select"><option value="" selected="selected">- None -</option><option value="Yes">Yes</option><option value="No">No</option></select>');
+    $this->assertRaw('<select data-drupal-selector="edit-address-custom-options-country" id="edit-address-custom-options-country" name="address_custom_options[country]" class="form-select"><option value="" selected="selected">- None -</option><option value="one">One</option><option value="two">Two</option><option value="three">Three</option></select>');
+
+    // Check composite element with custom options warning message.
+    $this->drupalGet('/admin/structure/webform/manage/test_composite/element/address_custom_options/edit');
+    $this->assertRaw('<em>Custom options can only be updated via the <a href="' . base_path() . 'admin/structure/webform/manage/test_composite/source">YAML source</a>.</em>');
+
+    // Save composite element with custom options.
+    $this->drupalPostForm('/admin/structure/webform/manage/test_composite/element/address_custom_options/edit', [], t('Save'));
+
+    // Check editing custom options are not removed.
+    $this->drupalGet('/webform/test_composite');
+    $this->assertRaw('<select data-drupal-selector="edit-address-custom-options-state-province" id="edit-address-custom-options-state-province" name="address_custom_options[state_province]" class="form-select"><option value="" selected="selected">- None -</option><option value="Yes">Yes</option><option value="No">No</option></select>');
+    $this->assertRaw('<select data-drupal-selector="edit-address-custom-options-country" id="edit-address-custom-options-country" name="address_custom_options[country]" class="form-select"><option value="" selected="selected">- None -</option><option value="one">One</option><option value="two">Two</option><option value="three">Three</option></select>');
+
   }
 
 }

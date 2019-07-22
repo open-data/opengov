@@ -27,7 +27,7 @@ class SimplesitemapVariantsForm extends SimplesitemapFormBase {
       '#title' => $this->t('Sitemap variants'),
       '#type' => 'fieldset',
       '#markup' => '<div class="description">' . $this->t('Define sitemap variants. A sitemap variant is a sitemap instance of a certain type (specific sitemap generator and URL generators) accessible under a certain URL.<br>Each variant can have its own entity bundle settings (to be defined on bundle edit pages).') . '</div>',
-      '#prefix' => $this->getDonationText(),
+      '#prefix' => FormHelper::getDonationText(),
     ];
 
     $form['simple_sitemap_variants']['variants'] = [
@@ -67,7 +67,7 @@ class SimplesitemapVariantsForm extends SimplesitemapFormBase {
         $form_state->setErrorByName('', $this->t("<strong>Line @line</strong>: The variant name cannot be empty.", $placeholders));
       }
 
-      if (!preg_match('/^[\w-_]+$/', $variant_name)) {
+      if (!preg_match('/^[\w\-_]+$/', $variant_name)) {
         $form_state->setErrorByName('', $this->t("<strong>Line @line</strong>: The variant name <em>@name</em> can only include alphanumeric characters, dashes and underscores.", $placeholders));
       }
 

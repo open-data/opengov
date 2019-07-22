@@ -56,7 +56,7 @@ class WebformCommands extends WebformCommandsBase {
    * @option sticky Flagged/starred submission status.
    * @option files Download files: "1" or "0" (default). If set to 1, the exported CSV file and any submission file uploads will be download in a gzipped tar file.
    * @option destination The full path and filename in which the CSV or archive should be stored. If omitted the CSV file or archive will be outputted to the command line.
-   * @aliases wfx
+   * @aliases wfx,webform-export
    */
   public function drush_webform_export($webform = NULL, array $options = ['exporter' => NULL, 'delimiter' => NULL, 'multiple-delimiter' => NULL, 'file-name' => NULL, 'header-format' => NULL, 'options-item-format' => NULL, 'options-single-format' => NULL, 'options-multiple-format' => NULL, 'entity-reference-items' => NULL, 'excluded-columns' => NULL, 'uuid' => NULL, 'entity-type' => NULL, 'entity-id' => NULL, 'range-type' => NULL, 'range-latest' => NULL, 'range-start' => NULL, 'range-end' => NULL, 'order' => NULL, 'state' => NULL, 'sticky' => NULL, 'files' => NULL, 'destination' => NULL]) {
     $this->cliService->drush_webform_export($webform);
@@ -85,7 +85,7 @@ class WebformCommands extends WebformCommandsBase {
    * @option treat_warnings_as_errors Treat all warnings as errors.
    * @option entity-type The entity type to which this submission was submitted from.
    * @option entity-id The ID of the entity of which this webform submission was submitted from.
-   * @aliases wfi
+   * @aliases wfi,webform-import
    */
   public function drush_webform_import($webform = NULL, $import_uri = NULL, array $options = ['skip_validation' => NULL, 'treat_warnings_as_errors' => NULL, 'entity-type' => NULL, 'entity-id' => NULL]) {
     $this->cliService->drush_webform_import($webform, $import_uri);
@@ -118,7 +118,7 @@ class WebformCommands extends WebformCommandsBase {
    *   Delete 'Contact' webform submissions.
    * @usage drush webform:purge ::all
    *   Purge all webform submissions.
-   * @aliases wfp
+   * @aliases wfp,webform-purge
    */
   public function drush_webform_purge($webform_id = NULL, array $options = ['all' => FALSE, 'entity-type' => NULL, 'entity-id' => NULL]) {
     $this->cliService->drush_webform_purge($webform_id);
@@ -146,7 +146,7 @@ class WebformCommands extends WebformCommandsBase {
    * @option prefix Prefix for file names to be tidied. (Defaults to webform)
    * @usage drush webform:tidy webform
    *   Tidies YAML configuration files in 'webform/config' for the Webform module
-   * @aliases wft
+   * @aliases wft,webform-tidy
    */
   public function drush_webform_tidy($target = NULL, array $options = ['dependencies' => FALSE, 'prefix' => NULL]) {
     $this->cliService->drush_webform_tidy($target);
@@ -162,7 +162,7 @@ class WebformCommands extends WebformCommandsBase {
    * @command webform:libraries:status
    * @usage webform:libraries:status
    *   Displays the status of third party libraries required by the Webform module.
-   * @aliases wfls
+   * @aliases wfls,webform-libraries-status
    */
   public function drush_webform_libraries_status() {
     $this->cliService->drush_webform_libraries_status();
@@ -178,7 +178,7 @@ class WebformCommands extends WebformCommandsBase {
    * @command webform:libraries:make
    * @usage webform:libraries:make
    *   Generates libraries YAML to be included in a drush.make.yml file.
-   * @aliases wflm
+   * @aliases wflm,webform-libraries-make
    */
   public function drush_webform_libraries_make() {
     $this->cliService->drush_webform_libraries_make();
@@ -195,7 +195,7 @@ class WebformCommands extends WebformCommandsBase {
    * @option disable-tls If set to true all HTTPS URLs will be tried with HTTP instead and no network level encryption is performed.
    * @usage webform:libraries:composer
    *   Generates the Webform module's composer.json with libraries as repositories.
-   * @aliases wflc
+   * @aliases wflc,webform-libraries-composer
    */
   public function drush_webform_libraries_composer(array $options = ['disable-tls' => FALSE]) {
     $this->cliService->drush_webform_libraries_composer();
@@ -211,7 +211,7 @@ class WebformCommands extends WebformCommandsBase {
    * @command webform:libraries:download
    * @usage webform:libraries:download
    *   Download third party libraries required by the Webform module.
-   * @aliases wfld
+   * @aliases wfld,webform-libraries-download
    */
   public function drush_webform_libraries_download() {
     $this->cliService->drush_webform_libraries_download();
@@ -227,7 +227,7 @@ class WebformCommands extends WebformCommandsBase {
    * @command webform:libraries:remove
    * @usage webform:libraries:remove
    *   Removes all downloaded third party libraries required by the Webform module.
-   * @aliases wflr
+   * @aliases wflr,webform-libraries-remove
    */
   public function drush_webform_libraries_remove() {
     $this->cliService->drush_webform_libraries_remove();
@@ -256,7 +256,7 @@ class WebformCommands extends WebformCommandsBase {
    * @option feedback An integer representing interval for insertion rate logging. Defaults to 1000
    * @option entity-type The entity type to which this submission was submitted from.
    * @option entity-id The ID of the entity of which this webform submission was submitted from.
-   * @aliases wfg
+   * @aliases wfg,webform-generate
    */
   public function drush_webform_generate($webform_id = NULL, $num = NULL, array $options = ['kill' => FALSE, 'feedback' => NULL, 'entity-type' => NULL, 'entity-id' => NULL]) {
     $this->cliService->drush_webform_generate($webform_id, $num);
@@ -272,7 +272,7 @@ class WebformCommands extends WebformCommandsBase {
    * @command webform:repair
    * @usage webform:repair
    *   Repairs admin configuration and webform settings are up-to-date.
-   * @aliases wfr
+   * @aliases wfr,webform-repair
    */
   public function drush_webform_repair() {
     $this->cliService->drush_webform_repair();
@@ -297,7 +297,7 @@ class WebformCommands extends WebformCommandsBase {
    * @command webform:docs
    * @usage webform:repair
    *   Generates HTML documentation used by the Webform module's documentation pages.
-   * @aliases wfd
+   * @aliases wfd,webform-docs
    */
   public function drush_webform_docs() {
     $this->cliService->drush_webform_docs();
@@ -323,7 +323,7 @@ class WebformCommands extends WebformCommandsBase {
    * @option disable-tls If set to true all HTTPS URLs will be tried with HTTP instead and no network level encryption is performed.
    * @usage webform:composer:update
    *   Updates the Drupal installation's composer.json to include the Webform module's selected libraries as repositories.
-   * @aliases wfcu
+   * @aliases wfcu,webform-composer-update
    */
   public function drush_webform_composer_update(array $options = ['disable-tls' => FALSE]) {
     $this->cliService->drush_webform_composer_update();
@@ -339,7 +339,7 @@ class WebformCommands extends WebformCommandsBase {
    * @command webform:generate:commands
    * @usage drush webform:generate:commands
    *   Generate Drush commands from webform.drush.inc for Drush 8.x to WebformCommands for Drush 9.x.
-   * @aliases wfgc
+   * @aliases wfgc,webform-generate-commands
    */
   public function drush_webform_generate_commands() {
     $this->cliService->drush_webform_generate_commands();

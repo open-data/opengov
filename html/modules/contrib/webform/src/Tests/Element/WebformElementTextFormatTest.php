@@ -51,8 +51,20 @@ class WebformElementTextFormatTest extends WebformElementTestBase {
 
     // Check that formats and tips are removed and/or hidden.
     $this->drupalGet('/webform/test_element_text_format');
-    $this->assertRaw('<div class="filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" id="edit-text-format-format">');
+    // @todo Remove once Drupal 8.8.x is only supported.
+    if (floatval(\Drupal::VERSION) >= 8.8) {
+      $this->assertRaw('<div class="js-filter-wrapper filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" id="edit-text-format-format">');
+    }
+    else {
+      $this->assertRaw('<div class="filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" id="edit-text-format-format">');
+    }
     $this->assertRaw('<div class="filter-help js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format-help" style="display: none" id="edit-text-format-format-help">');
+
+    // Check description + more.
+    $this->assertRaw('<div data-drupal-selector="edit-text-format-description-more" id="edit-text-format-description-more--description" class="description"><div class="webform-element-description">This is a description</div>');
+    $this->assertRaw('<div id="edit-text-format-description-more--more" class="js-webform-element-more webform-element-more">');
+    $this->assertRaw('<div class="webform-element-more--link"><a role="button" href="#edit-text-format-description-more--more--content">More</a></div>');
+    $this->assertRaw('<div id="edit-text-format-description-more--more--content" class="webform-element-more--content">This is more</div>');
 
     // Check 'text_format' values.
     $this->drupalGet('/webform/test_element_text_format');

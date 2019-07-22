@@ -86,7 +86,7 @@ class WebformSettingsDraftTest extends WebformTestBase {
       $this->drupalGet("webform/$webform_id");
       $this->assertNoRaw('You have an existing draft');
       $this->assertNoFieldByName('name', 'John Smith');
-      $this->assertRaw('Sorry…This form is closed to new submissions.');
+      $this->assertRaw('Sorry… This form is closed to new submissions.');
       $webform->setStatus(TRUE)->save();
 
       // Login admin account.
@@ -235,6 +235,7 @@ class WebformSettingsDraftTest extends WebformTestBase {
     // Test webform draft multiple.
     /**************************************************************************/
 
+    $config = \Drupal::configFactory()->getEditable('webform.settings');
     $this->drupalLogin($normal_user);
 
     $webform = Webform::load('test_form_draft_multiple');
@@ -249,6 +250,21 @@ class WebformSettingsDraftTest extends WebformTestBase {
     $this->assertNoRaw('You have saved drafts.');
     $this->assertRaw('You have a pending draft for this webform.');
     $this->assertFieldByName('name', '');
+
+    // Check customizing default draft previous message.
+    $default_draft_pending_single_message = $config->get('settings.default_draft_pending_single_message');
+    $config->set('settings.default_draft_pending_single_message', '{default_draft_pending_single_message}')->save();
+    $this->drupalGet('/webform/test_form_draft_multiple');
+    $this->assertNoRaw('You have a pending draft for this webform.');
+    $this->assertRaw('{default_draft_pending_single_message}');
+    $config->set('settings.default_draft_pending_single_message', $default_draft_pending_single_message)->save();
+
+    // Check customizing draft previous message.
+    $webform->setSetting('draft_pending_single_message', '{draft_pending_single_message}')->save();
+    $this->drupalGet('/webform/test_form_draft_multiple');
+    $this->assertNoRaw('You have a pending draft for this webform.');
+    $this->assertRaw('{draft_pending_single_message}');
+    $webform->setSetting('draft_pending_single_message', '')->save();
 
     // Check load pending draft using token.
     $this->drupalGet('/webform/test_form_draft_multiple');
@@ -268,6 +284,21 @@ class WebformSettingsDraftTest extends WebformTestBase {
     $this->drupalGet('/webform/test_form_draft_multiple');
     $this->assertNoRaw('You have a pending draft for this webform.');
     $this->assertRaw('You have pending drafts for this webform. <a href="' . base_path() . 'webform/test_form_draft_multiple/drafts">View your pending drafts</a>.');
+
+    // Check customizing default drafts previous message.
+    $default_draft_pending_multiple_message = $config->get('settings.default_draft_pending_multiple_message');
+    $config->set('settings.default_draft_pending_multiple_message', '{default_draft_pending_multiple_message}')->save();
+    $this->drupalGet('/webform/test_form_draft_multiple');
+    $this->assertNoRaw('You have pending drafts for this webform.');
+    $this->assertRaw('{default_draft_pending_multiple_message}');
+    $config->set('settings.default_draft_pending_multiple_message', $default_draft_pending_multiple_message)->save();
+
+    // Check customizing drafts previous message.
+    $webform->setSetting('draft_pending_multiple_message', '{draft_pending_multiple_message}')->save();
+    $this->drupalGet('/webform/test_form_draft_multiple');
+    $this->assertNoRaw('You have pending drafts for this webform.');
+    $this->assertRaw('{draft_pending_multiple_message}');
+    $webform->setSetting('draft_pending_multiple_message', '')->save();
 
     // Check user drafts now has second draft.
     $this->drupalGet('/webform/test_form_draft_multiple/drafts');

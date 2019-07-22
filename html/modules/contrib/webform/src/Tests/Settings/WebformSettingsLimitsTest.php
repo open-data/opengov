@@ -25,7 +25,7 @@ class WebformSettingsLimitsTest extends WebformTestBase {
    *
    * @var array
    */
-  protected static $testWebforms = ['test_form_limit'];
+  protected static $testWebforms = ['test_form_limit', 'test_form_limit_wait'];
 
   /**
    * {@inheritdoc}
@@ -63,6 +63,12 @@ class WebformSettingsLimitsTest extends WebformTestBase {
     $this->assertRaw('0 webform submission(s)');
     $this->assertRaw('4 webform limit (every minute)');
 
+    // Check submission limit tokens.
+    $this->assertRaw('limit:webform: 4');
+    $this->assertRaw('remaining:webform: 4');
+    $this->assertRaw('limit:user: 1');
+    $this->assertRaw('remaining:user: 1');
+
     $this->drupalLogin($own_submission_user);
 
     // Check that draft does not count toward limit.
@@ -99,6 +105,10 @@ class WebformSettingsLimitsTest extends WebformTestBase {
     $this->drupalGet("admin/structure/webform/manage/test_form_limit/submission/$sid/edit");
     $this->assertFieldByName('op', 'Save');
     $this->assertNoRaw('No more submissions are permitted.');
+
+    // Check submission limit tokens do count submission.
+    $this->assertRaw('remaining:webform: 2');
+    $this->assertRaw('remaining:user: 0');
 
     // Check submission limit blocks.
     $this->assertRaw('1 user submission(s)');
@@ -169,6 +179,17 @@ class WebformSettingsLimitsTest extends WebformTestBase {
     $this->drupalGet('/webform/test_form_limit');
     $this->assertRaw('0 user submission(s)');
     $this->assertRaw('0 webform submission(s)');
+
+    /**************************************************************************/
+    // Wait.
+    /**************************************************************************/
+
+    $webform_limit_wait = Webform::load('test_form_limit_wait');
+
+    $this->postSubmission($webform_limit_wait);
+
+    $this->drupalGet('/webform/test_form_limit_wait');
+    $this->assertPattern('/webform_submission:interval:user:wait =&gt; \d+ seconds/');
   }
 
 }

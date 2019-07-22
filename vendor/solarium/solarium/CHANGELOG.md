@@ -4,6 +4,123 @@ All notable changes to the solarium library will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.0.3]
+### Fixed
+- Solarium\QueryType\MoreLikeThis\Query::setBoost()
+
+### Changed
+- Solarium\Core\Query\AbstractQuery::setTimeZone() now accepts \DateTimeZone objects as parameter
+
+
+## [5.0.2]
+### Fixed
+- Spellchecker result isn't NULL in case of no suggestions and correctly spelled
+- RangeFacet Result
+- Solarium\QueryType\Select\Result and Component return types
+- Solarium\Component\Highlighting::setFields() should accept comma separated string, too
+- Solarium\Component\Result\Grouping\ValueGroup various return types
+- Solarium\Component\RequestBuilder\RequestParamsTrait::addParam should not add empty arrays
+- MinimumScoreFilterPlugin
+- Running the examples
+
+### Added
+- Solarium\Component\MoreLikeThis::setInterestingTerms()
+- Solarium\Component\MoreLikeThis::setMatchInclude()
+- Solarium\Component\MoreLikeThis::setMatchOffset()
+
+
+## [5.0.1]
+### Fixed
+- Getting started documentation
+
+
+## [5.0.0]
+### Added
+- Component\Result\Facet\Bucket::getFacetSet()
+
+
+## [5.0.0-rc.1]
+### Added
+- Spellcheck\Suggestion::getOriginalTerm()
+- QueryType\Stream\ExpressionBuilder
+
+### Changed
+- Usage of composer and autoloader in examples.
+
+### Fixed
+- Query::setFields() should accept comma separated string, too.
+- Readthedocs theme
+
+### Deprecated
+- QueryType\Stream\Expression is deprecated. Use QueryType\Stream\ExpressionBuilder instead.
+
+
+## [5.0.0-beta.1]
+### Added
+- Support multiple spellcheck dictionaries
+
+### Fixed
+- Helper::rangeQuery() must not escape point values. Added a new parameter to turn off escaping.
+
+
+## [5.0.0-alpha.2]
+### Added
+- Introduced FacetResultInterface
+
+### Fixed
+- TypeError: Return value of Solarium\Component\Result\FacetSet::getFacet()
+
+
+## [5.0.0-alpha.1]
+### Added
+- Solr 8 support
+
+### Changed
+- Updated dev and test environments to newer package versions, for example PHPUnit 8.0
+- Use PHP 7.1 style argument and return type declarations
+- PHP 7.1 or higher required
+- Refactored the two variants of DocumentInterface to become one to reduce confusion
+
+### Removed
+- PHP 7.0 support
+
+### Fixed
+- Status codes of the HTTPAdapter
+
+
+## [4.3.0-alpha.2]
+### Added
+- Basic V2 API support
+- Endpoint::getV2BaseUri
+
+### Changed
+- AdapterHelper functions are static
+
+### Fixed
+- In the past, the V1 API endpoint `solr` was not added automatically, so most users set it as path on the endpoint. This bug was discovered with the addition of V2 API support. In almost every setup, the path has to be set to `/` instead of `/solr` with this release!
+
+
+## [4.3.0-alpha.1]
+### Added
+- Experimental support for collection API
+- Parameter 'distrib' for queries
+
+### Changed
+- Deprecation of Endpoint::getBaseUri is revoked! It transparently forwards to getCollectionBaseUri or getCoreBaseUri now
+- Endpoint::getBaseUri, ::getBaseCoreUri and ::getBaseCollectionUri throw UnexpectedValueException if no core or collection has been set
+
+### Removed
+- Symfony 2.x support
+- Zend 1.x support
+- PECL::Http adapter
+- PHP 7.0 support
+- Solr 1.4 result parser
+
+### Fixed
+- Support for add-distinct and removeregex modifiers in Document::setFieldModifier
+- Zend2Http adapter caused duplicate request parameters
+
+
 ## [4.2.0]
 ### Fixed
 - If a term contains a space, the space needs to be quoted by Helper::escapeTerm()
@@ -14,6 +131,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Support for managed resources
 - Support for add-distinct and removeregex modifiers
+- Basic support for Collections API (create, delete, reload, clusterstatus)
 
 ## [4.2.0-beta.1]
 ### Added
@@ -29,7 +147,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Managed resources, stopwords and synonyms query types
 
 ### Deprecated
-- Endpoint::getBaseUri is deprecated. Please use getServerUri or getCoreBaseUri now.
+- Endpoint::getBaseUri is deprecated. Please use getServerUri or getCoreBaseUri now
 
 ### Fixed
 - Allow multiple Field Facets for the same field by dynamically using local facet params if required

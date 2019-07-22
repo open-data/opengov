@@ -149,16 +149,20 @@ class WebformRequest implements WebformRequestInterface {
    * {@inheritdoc}
    */
   public function getCurrentWebform() {
-    $source_entity = static::getCurrentSourceEntity('webform');
-    if ($source_entity && ($webform = $this->webformEntityReferenceManager->getWebform($source_entity))) {
-      return $webform;
-    }
-
     $webform = $this->routeMatch->getParameter('webform');
     if (is_string($webform)) {
       $webform = $this->entityTypeManager->getStorage('webform')->load($webform);
     }
-    return $webform;
+    if ($webform) {
+      return $webform;
+    }
+
+    $source_entity = static::getCurrentSourceEntity('webform');
+    if ($source_entity && ($source_entity_webform = $this->webformEntityReferenceManager->getWebform($source_entity))) {
+      return $source_entity_webform;
+    }
+
+    return NULL;
   }
 
   /**

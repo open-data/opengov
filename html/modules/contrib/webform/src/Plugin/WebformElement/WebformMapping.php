@@ -44,6 +44,7 @@ class WebformMapping extends WebformElementBase {
       // Form display.
       'title_display' => '',
       'description_display' => '',
+      'help_display' => '',
       'disabled' => FALSE,
       // Form validation.
       'required' => FALSE,
@@ -56,6 +57,7 @@ class WebformMapping extends WebformElementBase {
       // Mapping settings.
       'arrow' => '→',
       'source' => [],
+      'source__description_display' => 'description',
       'source__title' => 'Source',
       'destination' => [],
       'destination__type' => 'select',
@@ -137,7 +139,8 @@ class WebformMapping extends WebformElementBase {
         ];
 
         $rows = [];
-        foreach ($element['#source'] as $source_key => $source_title) {
+        foreach ($element['#source'] as $source_key => $source_text) {
+          list($source_title) = explode(WebformOptionsHelper::DESCRIPTION_DELIMITER, $source_text);
           $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $destination_title = ($destination_value) ? WebformOptionsHelper::getOptionText($destination_value, $element['#destination']) : $this->t('[blank]');
           $rows[$source_key] = [
@@ -159,7 +162,8 @@ class WebformMapping extends WebformElementBase {
       case 'value':
       case 'list':
         $items = [];
-        foreach ($element['#source'] as $source_key => $source_title) {
+        foreach ($element['#source'] as $source_key => $source_text) {
+          list($source_title) = explode(WebformOptionsHelper::DESCRIPTION_DELIMITER, $source_text);
           $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $destination_title = ($destination_value) ? WebformOptionsHelper::getOptionText($destination_value, $element['#destination']) : $this->t('[blank]');
           $items[$source_key] = ['#markup' => "$source_title $arrow $destination_title"];
@@ -203,7 +207,8 @@ class WebformMapping extends WebformElementBase {
       case 'table':
       case 'list':
         $list = [];
-        foreach ($element['#source'] as $source_key => $source_title) {
+        foreach ($element['#source'] as $source_key => $source_text) {
+          list($source_title) = explode(WebformOptionsHelper::DESCRIPTION_DELIMITER, $source_text);
           $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $destination_title = ($destination_value) ? WebformOptionsHelper::getOptionText($destination_value, $element['#destination']) : $this->t('[blank]');
           $list[] = "$source_title $arrow $destination_title";
@@ -380,8 +385,16 @@ class WebformMapping extends WebformElementBase {
       '#label' => $this->t('source'),
       '#labels' => $this->t('sources'),
       '#required' => TRUE,
+      '#options_description' => TRUE,
     ];
-
+    $form['mapping']['mapping_source']['source__description_display'] = [
+      '#title' => $this->t('Source description display'),
+      '#type' => 'select',
+      '#options' => [
+        'description' => $this->t('Description'),
+        'help' => $this->t('Help text'),
+      ],
+    ];
     $form['mapping']['mapping_destination'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Mapping destination'),

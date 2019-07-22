@@ -102,7 +102,7 @@ class TestWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function preCreate(array $values) {
+  public function preCreate(array &$values) {
     $this->displayMessage(__FUNCTION__);
   }
 

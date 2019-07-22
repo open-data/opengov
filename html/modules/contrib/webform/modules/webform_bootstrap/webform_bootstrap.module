@@ -149,7 +149,7 @@ function webform_bootstrap_preprocess_input(&$variables) {
       $element['#title'] = t('Add');
       $element['#icon'] = \Drupal\bootstrap\Bootstrap::glyphicon('plus-sign');
     }
-    elseif (strpos($variables['attributes']['src'], '/webform/images/icons/ex.svg') !== FALSE) {
+    elseif (strpos($variables['attributes']['src'], '/webform/images/icons/minus.svg') !== FALSE) {
       $element['#title'] = t('Remove');
       $element['#icon'] = \Drupal\bootstrap\Bootstrap::glyphicon('minus-sign');
     }

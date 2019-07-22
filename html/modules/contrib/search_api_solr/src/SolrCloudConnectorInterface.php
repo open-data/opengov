@@ -7,7 +7,7 @@ use Solarium\QueryType\Graph\Query as GraphQuery;
 use Solarium\QueryType\Stream\Query as StreamQuery;
 
 /**
- *
+ * The Solr Cloud connector interface.
  */
 interface SolrCloudConnectorInterface extends SolrConnectorInterface {
 
@@ -15,13 +15,29 @@ interface SolrCloudConnectorInterface extends SolrConnectorInterface {
    * Returns the Solr collection name.
    *
    * @return string
+   *   The Solr collection name.
    */
   public function getCollectionName();
+
+  /**
+   * Temporarily set a different collection name for the connection.
+   *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   */
+  public function setCollectionNameFromEndpoint(Endpoint $endpoint);
+
+  /**
+   * Returns the Solr collection name used to store topic checkpoints.
+   *
+   * @return string
+   */
+  public function getCheckpointsCollectionName();
 
   /**
    * Returns a link to the Solr collection, if the necessary options are set.
    *
    * @return \Drupal\Core\Link
+   *   The link to the Solr collection.
    */
   public function getCollectionLink();
 
@@ -67,20 +83,30 @@ interface SolrCloudConnectorInterface extends SolrConnectorInterface {
    * Executes a stream query.
    *
    * @param \Solarium\QueryType\Stream\Query $query
+   *   The Solarium stream query.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint.
    *
    * @return \Solarium\QueryType\Stream\Result
+   *   The Solarium stream result.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function stream(StreamQuery $query, Endpoint $endpoint = NULL);
+  public function stream(StreamQuery $query, ?Endpoint $endpoint = NULL);
 
   /**
-   * Executes a stream query.
+   * Executes a graph query.
    *
    * @param \Solarium\QueryType\Graph\Query $query
+   *   The Solarium graph query.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint.
    *
    * @return \Solarium\QueryType\Graph\Result
+   *   The Solarium graph result.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function graph(GraphQuery $query, Endpoint $endpoint = NULL);
+  public function graph(GraphQuery $query, ?Endpoint $endpoint = NULL);
 
 }

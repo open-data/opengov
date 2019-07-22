@@ -29,7 +29,12 @@ class Checkbox extends BooleanBase {
       // iCheck settings.
       'icheck' => '',
     ] + parent::getDefaultProperties();
-    unset($properties['unique'], $properties['unique_entity'], $properties['unique_user'], $properties['unique_error']);
+    unset(
+      $properties['unique'],
+      $properties['unique_entity'],
+      $properties['unique_user'],
+      $properties['unique_error']
+    );
     return $properties;
   }
 

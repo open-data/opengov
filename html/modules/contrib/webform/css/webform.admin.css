@@ -65,7 +65,6 @@ td.webform-results-table__icon {
 /* Entire row is clickable. @see Drupal.behaviors.webformTableRowHref */
 .webform-results-table tbody tr {
   cursor: pointer;
-  cursor: hand;
 }
 
 /* Limit image height to 60px */

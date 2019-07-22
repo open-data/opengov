@@ -67,11 +67,11 @@ page_02_checkbox_unchecked: 0");
     // Check page_02_textfield_enabled is disabled.
     $this->assertRaw('<input data-drupal-selector="edit-page-02-textfield-enabled" aria-describedby="edit-page-02-textfield-enabled--description" disabled="disabled" type="text" id="edit-page-02-textfield-enabled" name="page_02_textfield_enabled" value="" size="60" maxlength="255" class="form-text" />');
 
-    // Check page_02_textfield_visible is not visible.
-    $this->assertNoFieldByName('page_02_textfield_visible', '{default_value}');
+    // Check page_02_textfield_visible is hidden via .js-webform-states-hidden.
+    $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-page-02-textfield-visible form-item-page-02-textfield-visible">');
 
-    // Check page_02_textfield_visible_slide is not visible.
-    $this->assertNoFieldByName('page_02_textfield_visible_slide', '{default_value}');
+    // Check page_02_textfield_visible_slide is hidden via .js-webform-states-hidden.
+    $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-page-02-textfield-visible-slide form-item-page-02-textfield-visible-slide">');
 
     // Check page_02_textfield_invisible is visible.
     $this->assertFieldByName('page_02_textfield_invisible', '{default_value}');
@@ -159,11 +159,15 @@ page_02_checkbox_unchecked: 0");
     // Check page_02_textfield_visible_slide is visible.
     $this->assertFieldByName('page_02_textfield_visible_slide', '{default_value}');
 
-    // Check page_02_textfield_invisible is not visible.
+    // Check page_02_textfield_invisible is hidden with no default value.
+    $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-page-02-textfield-invisible form-item-page-02-textfield-invisible">');
     $this->assertNoFieldByName('page_02_textfield_invisible', '{default_value}');
+    $this->assertFieldByName('page_02_textfield_invisible', '');
 
-    // Check page_02_textfield_invisible_slide is not visible.
+    // Check page_02_textfield_invisible_slides is hidden with no default value.
+    $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-page-02-textfield-invisible-slide form-item-page-02-textfield-invisible-slide">');
     $this->assertNoFieldByName('page_02_textfield_invisible_slide', '{default_value}');
+    $this->assertFieldByName('page_02_textfield_invisible_slide', '');
 
     // Check page_02_checkbox_checked is checked.
     $this->assertRaw('<input data-drupal-selector="edit-page-02-checkbox-checked" aria-describedby="edit-page-02-checkbox-checked--description" type="checkbox" id="edit-page-02-checkbox-checked" name="page_02_checkbox_checked" value="1" checked="checked" class="form-checkbox" />');

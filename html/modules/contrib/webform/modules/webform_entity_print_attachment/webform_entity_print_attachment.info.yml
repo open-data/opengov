@@ -1,0 +1,14 @@
+name: 'Webform Entity Print (PDF) Attachment [EXPERIMENTAL]'
+type: module
+description: 'Provides Webform Entity Print (PDF) Attachment integration.'
+package: Webform
+# core: 8.x
+dependencies:
+  - 'webform:webform_attachment'
+  - 'webform:webform_entity_print'
+
+# Information added by Drupal.org packaging script on 2019-07-18
+version: '8.x-5.3'
+core: '8.x'
+project: 'webform'
+datestamp: 1563460092

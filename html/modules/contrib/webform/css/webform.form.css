@@ -4,6 +4,28 @@
  */
 
 /**
+ * Element states.
+ * @see \Drupal\webform\WebformSubmissionConditionsValidator::buildForm
+ * @see \Drupal\webform\Utility\WebformElementHelper::fixStatesWrapper
+ * @see \Drupal\webform\Plugin\WebformElement\TextFormat::preRenderFixTextFormatStates
+ * @see text-format-wrapper.html.twig
+ */
+.js-form-item.js-webform-states-hidden,
+.js-form-submit.js-webform-states-hidden,
+.js-form-wrapper.js-webform-states-hidden,
+.js-webform-text-format-hidden > .js-text-format-wrapper {
+  display: none;
+}
+
+/**
+ * Make sure flexbox is always using 'display: flex' when toggled via #states.
+ * @see https://stackoverflow.com/questions/38491653/jquery-show-a-flex-box/4121
+ */
+.webform-flexbox.js-webform-states-hidden[style*='display: block'] {
+  display: flex !important;
+}
+
+/**
  * Container inline
  */
 .form-item .container-inline {
@@ -19,11 +41,15 @@
 }
 
 /**
- * Element title inline.
+ * Element title inline.z
  */
 .webform-element--title-inline > label {
   display: inline;
   padding-right: 0.5em;
+}
+
+.webform-element--title-inline > div.container-inline {
+  display: inline;
 }
 
 /**

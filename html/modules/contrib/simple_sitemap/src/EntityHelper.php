@@ -5,6 +5,7 @@ namespace Drupal\simple_sitemap;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Url;
@@ -105,18 +106,24 @@ class EntityHelper {
    *   Objects of entity types that can be indexed by the sitemap.
    */
   public function getSupportedEntityTypes() {
-
-    /** @var \Drupal\Core\Entity\ContentEntityTypeInterface[] $entity_types */
-    $entity_types = $this->entityTypeManager->getDefinitions();
-    foreach ($entity_types as $entity_type_id => $entity_type) {
-      if (!$entity_type instanceof ContentEntityTypeInterface
-        || !method_exists($entity_type, 'getBundleEntityType')
-        || !$entity_type->hasLinkTemplate('canonical')) {
-        unset($entity_types[$entity_type_id]);
-      }
-    }
-    return $entity_types;
+    return array_filter($this->entityTypeManager->getDefinitions(), [$this, 'supports']);
   }
+
+  /**
+   * Determines if an entity type is supported or not.
+   *
+   * @return bool
+   *   TRUE if entity type supported by Simple Sitemap, FALSE if not.
+   */
+  public function supports(EntityTypeInterface $entity_type) {
+    if (!$entity_type instanceof ContentEntityTypeInterface
+      || !method_exists($entity_type, 'getBundleEntityType')
+      || !$entity_type->hasLinkTemplate('canonical')) {
+      return FALSE;
+    }
+
+    return TRUE;
+   }
 
   /**
    * Checks whether an entity type does not provide bundles.

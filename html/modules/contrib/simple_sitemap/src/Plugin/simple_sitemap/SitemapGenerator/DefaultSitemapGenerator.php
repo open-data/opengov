@@ -39,6 +39,7 @@ class DefaultSitemapGenerator extends SitemapGeneratorBase {
 
   /**
    * DefaultSitemapGenerator constructor.
+   *
    * @param array $configuration
    * @param string $plugin_id
    * @param mixed $plugin_definition
@@ -108,8 +109,18 @@ class DefaultSitemapGenerator extends SitemapGeneratorBase {
 
     $this->writer->writeGeneratedBy();
     $this->writer->startElement('urlset');
+    $this->addSitemapAttributes();
+    $this->addLinks($links);
+    $this->writer->endElement();
+    $this->writer->endDocument();
 
-    // Add attributes to document.
+    return $this->writer->outputMemory();
+  }
+
+  /**
+   * Adds attributes to the sitemap.
+   */
+  protected function addSitemapAttributes() {
     $attributes = self::$attributes;
     if (!$this->isHreflangSitemap()) {
       unset($attributes['xmlns:xhtml']);
@@ -119,68 +130,98 @@ class DefaultSitemapGenerator extends SitemapGeneratorBase {
     foreach ($attributes as $name => $value) {
       $this->writer->writeAttribute($name, $value);
     }
-
-    // Add URLs to document.
-    $sitemap_variant = $this->sitemapVariant;
-    $this->moduleHandler->alter('simple_sitemap_links', $links, $sitemap_variant);
-    foreach ($links as $link) {
-
-      // Add each translation variant URL as location to the sitemap.
-      $this->writer->startElement('url');
-      $this->writer->writeElement('loc', $link['url']);
-
-      // If more than one language is enabled, add all translation variant URLs
-      // as alternate links to this location turning the sitemap into a hreflang
-      // sitemap.
-      if (isset($link['alternate_urls']) && $this->isHreflangSitemap()) {
-        foreach ($link['alternate_urls'] as $language_id => $alternate_url) {
-          $this->writer->startElement('xhtml:link');
-          $this->writer->writeAttribute('rel', 'alternate');
-          $this->writer->writeAttribute('hreflang', $language_id);
-          $this->writer->writeAttribute('href', $alternate_url);
-          $this->writer->endElement();
-        }
-      }
-
-      // Add lastmod if any.
-      if (isset($link['lastmod'])) {
-        $this->writer->writeElement('lastmod', $link['lastmod']);
-      }
-
-      // Add changefreq if any.
-      if (isset($link['changefreq'])) {
-        $this->writer->writeElement('changefreq', $link['changefreq']);
-      }
-
-      // Add priority if any.
-      if (isset($link['priority'])) {
-        $this->writer->writeElement('priority', $link['priority']);
-      }
-
-      // Add images if any.
-      if (!empty($link['images'])) {
-        foreach ($link['images'] as $image) {
-          $this->writer->startElement('image:image');
-          $this->writer->writeElement('image:loc', $image['path']);
-          if (strlen($image['title']) > 0) {
-            $this->writer->writeElement('image:title', $image['title']);
-          }
-          if (strlen($image['alt']) > 0) {
-            $this->writer->writeElement('image:caption', $image['alt']);
-          }
-          $this->writer->endElement();
-        }
-      }
-
-      $this->writer->endElement();
-    }
-    $this->writer->endElement();
-    $this->writer->endDocument();
-
-    return $this->writer->outputMemory();
   }
 
   /**
+   * Adds URL elements to the sitemap.
+   *
+   * @param array $links
+   */
+  protected function addLinks(array $links) {
+    $sitemap_variant = $this->sitemapVariant;
+    $this->moduleHandler->alter('simple_sitemap_links', $links, $sitemap_variant);
+    foreach ($links as $url_data) {
+      $this->writer->startElement('url');
+      $this->addUrl($url_data);
+      $this->writer->endElement();
+    }
+  }
+
+  /**
+   * Adds a URL element to the sitemap.
+   *
+   * @param array $url_data
+   *   The array of properties for this URL.
+   */
+  protected function addUrl(array $url_data) {
+    $this->writer->writeElement('loc', $url_data['url']);
+
+    // If more than one language is enabled, add all translation variant URLs
+    // as alternate links to this link turning the sitemap into a hreflang
+    // sitemap.
+    if (isset($url_data['alternate_urls']) && $this->isHreflangSitemap()) {
+      $this->addAlternateUrls($url_data['alternate_urls']);
+    }
+
+    // Add lastmod if any.
+    if (isset($url_data['lastmod'])) {
+      $this->writer->writeElement('lastmod', $url_data['lastmod']);
+    }
+
+    // Add changefreq if any.
+    if (isset($url_data['changefreq'])) {
+      $this->writer->writeElement('changefreq', $url_data['changefreq']);
+    }
+
+    // Add priority if any.
+    if (isset($url_data['priority'])) {
+      $this->writer->writeElement('priority', $url_data['priority']);
+    }
+
+    // Add images if any.
+    if (!empty($url_data['images'])) {
+      foreach ($url_data['images'] as $image) {
+        $this->writer->startElement('image:image');
+        $this->writer->writeElement('image:loc', $image['path']);
+        if (strlen($image['title']) > 0) {
+          $this->writer->writeElement('image:title', $image['title']);
+        }
+        if (strlen($image['alt']) > 0) {
+          $this->writer->writeElement('image:caption', $image['alt']);
+        }
+        $this->writer->endElement();
+      }
+    }
+  }
+
+  /**
+   * Adds all translation variant URLs as alternate URLs to a URL.
+   *
+   * @param array $alternate_urls
+   */
+  protected function addAlternateUrls(array $alternate_urls) {
+    foreach ($alternate_urls as $language_id => $alternate_url) {
+      $this->writer->startElement('xhtml:link');
+      $this->addAlternateUrl($language_id, $alternate_url);
+      $this->writer->endElement();
+    }
+  }
+
+  /**
+   * Adds a translation variant URL as alternate URL to a URL.
+   *
+   * @param $language_id
+   * @param $alternate_url
+   */
+  protected function addAlternateUrl($language_id, $alternate_url) {
+    $this->writer->writeAttribute('rel', 'alternate');
+    $this->writer->writeAttribute('hreflang', $language_id);
+    $this->writer->writeAttribute('href', $alternate_url);
+  }
+
+  /**
+   * Checks if sitemap is hreflang compliant.
+   *
    * @return bool
    */
   protected function isHreflangSitemap() {

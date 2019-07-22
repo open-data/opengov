@@ -54,10 +54,13 @@ trait WebformEntityTrait {
       '_webform_settings' => $settings,
     ];
 
+    // Make sure settings has a limit.
+    $settings += ['limit' => 0];
+
     /** @var \Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface $selection_manager */
     $selection_manager = \Drupal::service('plugin.manager.entity_reference_selection');
     $handler = $selection_manager->getInstance($selection_handler_options);
-    $referenceable_entities = $handler->getReferenceableEntities();
+    $referenceable_entities = $handler->getReferenceableEntities(NULL, 'CONTAINS', $settings['limit']);
 
     // Flatten all bundle grouping since they are not applicable to
     // WebformEntity elements.

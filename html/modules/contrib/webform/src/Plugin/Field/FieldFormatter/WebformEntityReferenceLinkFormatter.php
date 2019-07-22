@@ -8,6 +8,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\webform\Element\WebformMessage;
+use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformMessageManagerInterface;
 use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -186,6 +187,20 @@ class WebformEntityReferenceLinkFormatter extends WebformEntityReferenceFormatte
       }
 
       if ($entity->isOpen()) {
+        $link_label = $this->getSetting('label');
+        if (strpos($link_label, '[webform_submission') !== FALSE) {
+          $link_entity = WebformSubmission::create([
+            'webform_id' => $entity->id(),
+            'entity_type' => $source_entity->getEntityTypeId(),
+            'entity_id' => $source_entity->id(),
+          ]);
+          // Invoke override settings to all webform handlers to adjust any
+          // form settings.
+          $link_entity->getWebform()->invokeHandlers('overrideSettings', $link_entity);
+        }
+        else {
+          $link_entity = $entity;
+        }
         $link_options = [
           'query' => [
             'source_entity_type' => $source_entity->getEntityTypeId(),
@@ -194,7 +209,7 @@ class WebformEntityReferenceLinkFormatter extends WebformEntityReferenceFormatte
         ];
         $link = [
           '#type' => 'link',
-          '#title' => ['#markup' => $this->tokenManager->replace($this->getSetting('label'), $entity)],
+          '#title' => ['#markup' => $this->tokenManager->replace($link_label, $link_entity)],
           '#url' => $entity->toUrl('canonical', $link_options),
           '#attributes' => $this->getSetting('attributes') ?: [],
         ];

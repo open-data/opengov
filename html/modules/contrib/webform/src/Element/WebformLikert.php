@@ -284,7 +284,7 @@ class WebformLikert extends FormElement {
 
     if (!empty($element['#required'])) {
       foreach ($element['#questions'] as $question_key => $question_title) {
-        if (empty($value[$question_key])) {
+        if (is_null($value[$question_key])) {
           $form_state->setError($element['table'][$question_key]['likert_question'], t('@name field is required.', ['@name' => $question_title]));
         }
       }

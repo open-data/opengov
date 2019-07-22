@@ -163,7 +163,7 @@ class ExampleWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function preCreate(array $values) {
+  public function preCreate(array &$values) {
     $this->debug(__FUNCTION__);
   }
 

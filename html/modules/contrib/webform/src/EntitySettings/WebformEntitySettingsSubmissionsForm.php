@@ -620,6 +620,28 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
       '#return_value' => TRUE,
       '#default_value' => $settings['draft_multiple'],
     ];
+    $form['draft_settings']['draft_container']['draft_pending_single_message'] = [
+      '#type' => 'webform_html_editor',
+      '#title' => $this->t('Draft pending single draft message'),
+      '#description' => $this->t('Message to be displayed when a single draft is saved.'),
+      '#default_value' => $settings['draft_pending_single_message'],
+      '#states' => [
+        'visible' => [
+          ':input[name="draft_multiple"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $form['draft_settings']['draft_container']['draft_pending_multiple_message'] = [
+      '#type' => 'webform_html_editor',
+      '#title' => $this->t('Draft pending multiple drafts message'),
+      '#description' => $this->t('Message to be displayed when multiple drafts are saved.'),
+      '#default_value' => $settings['draft_pending_multiple_message'],
+      '#states' => [
+        'visible' => [
+          ':input[name="draft_multiple"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
     $form['draft_settings']['draft_container']['draft_auto_save'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Automatically save as draft when paging, previewing, and when there are validation errors.'),

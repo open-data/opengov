@@ -49,11 +49,18 @@ function webform_demo_region_contact_install() {
     ],
   ];
 
-  // Create role.
-  $role = Role::create(['id' => 'demo_region', 'label' => 'Demo region']);
-  $role->grantPermission('access toolbar');
-  $role->grantPermission('view the administration theme');
-  $role->save();
+  // Create admin role.
+  $admin_role = Role::create(['id' => 'demo_region_admin', 'label' => 'Demo region admin']);
+  $admin_role->grantPermission('access toolbar');
+  $admin_role->grantPermission('view the administration theme');
+  $admin_role->grantPermission('access webform overview');
+  $admin_role->save();
+
+  // Create user role.
+  $user_role = Role::create(['id' => 'demo_region_user', 'label' => 'Demo region user']);
+  $user_role->grantPermission('access toolbar');
+  $user_role->grantPermission('view the administration theme');
+  $user_role->save();
 
   // Create webform access types.
   foreach ($types as $type_name => $type) {
@@ -78,6 +85,17 @@ function webform_demo_region_contact_install() {
     $webform_node->webform->close = '';
     $webform_node->save();
 
+    // Create region type admin user.
+    $webform_access_group_admin_id = 'demo_region_' . $region_name . '_admin';
+    $admin = User::create([
+      'name' => $webform_access_group_admin_id,
+      'password' => $webform_access_group_admin_id,
+      'mail' => "$webform_access_group_admin_id@test.com",
+      'status' => 1,
+    ]);
+    $admin->addRole('demo_region_admin');
+    $admin->save();
+
     foreach ($types as $type_name => $type) {
       $webform_access_group_id = 'demo_region_' . $region_name . '_' . $type_name;
       $webform_access_type_id = 'demo_region_' . $type_name;
@@ -88,6 +106,7 @@ function webform_demo_region_contact_install() {
         'id' => $webform_access_group_id,
         'type' => $webform_access_type_id,
         'permissions' => $type['permissions'],
+        'emails' => ["$webform_access_type_id@test.com"],
       ];
       $webform_access_group = WebformAccessGroup::create($values);
 
@@ -101,11 +120,14 @@ function webform_demo_region_contact_install() {
         'mail' => "$webform_access_group_id@test.com",
         'status' => 1,
       ]);
-      $user->addRole('demo_region');
+      $user->addRole('demo_region_user');
       $user->save();
 
       // Add user to webform access group.
       $webform_access_group->addUserId($user->id());
+
+      // Add admin user to webform's access group.
+      $webform_access_group->addAdminId($admin->id());
 
       // Save webform access group.
       $webform_access_group->save();

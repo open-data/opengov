@@ -363,6 +363,86 @@ elements: |
         '#title': 'URL (Link)'
         '#default_value': 'http://example.com'
         '#format': link
+    value:
+      '#type': details
+      '#title': Value
+      value_value:
+        '#type': value
+        '#title': 'Value (Value)'
+        '#value': preview
+        '#format': value
+      value_raw:
+        '#type': value
+        '#title': 'Value (Raw value)'
+        '#value': preview
+        '#format': raw
+  file_attachment_elements:
+    '#type': details
+    '#title': 'File attachment elements'
+    '#open': true
+    'webform_entity_print_attachment:pdf':
+      '#type': details
+      '#title': 'Attachment PDF'
+      'webform_entity_print_attachment:pdf_link':
+        '#type': webform_entity_print_attachment
+        '#title': 'Attachment PDF (File link)'
+        '#default_value': Loremipsum
+        '#format': link
+      'webform_entity_print_attachment:pdf_name':
+        '#type': webform_entity_print_attachment
+        '#title': 'Attachment PDF (File name)'
+        '#default_value': Loremipsum
+        '#format': name
+      'webform_entity_print_attachment:pdf_url':
+        '#type': webform_entity_print_attachment
+        '#title': 'Attachment PDF (File URL)'
+        '#default_value': Loremipsum
+        '#format': url
+    webform_attachment_token:
+      '#type': details
+      '#title': 'Attachment token'
+      webform_attachment_token_link:
+        '#type': webform_attachment_token
+        '#title': 'Attachment token (File link)'
+        '#format': link
+      webform_attachment_token_name:
+        '#type': webform_attachment_token
+        '#title': 'Attachment token (File name)'
+        '#format': name
+      webform_attachment_token_url:
+        '#type': webform_attachment_token
+        '#title': 'Attachment token (File URL)'
+        '#format': url
+    webform_attachment_twig:
+      '#type': details
+      '#title': 'Attachment Twig'
+      webform_attachment_twig_link:
+        '#type': webform_attachment_twig
+        '#title': 'Attachment Twig (File link)'
+        '#format': link
+      webform_attachment_twig_name:
+        '#type': webform_attachment_twig
+        '#title': 'Attachment Twig (File name)'
+        '#format': name
+      webform_attachment_twig_url:
+        '#type': webform_attachment_twig
+        '#title': 'Attachment Twig (File URL)'
+        '#format': url
+    webform_attachment_url:
+      '#type': details
+      '#title': 'Attachment URL'
+      webform_attachment_url_link:
+        '#type': webform_attachment_url
+        '#title': 'Attachment URL (File link)'
+        '#format': link
+      webform_attachment_url_name:
+        '#type': webform_attachment_url
+        '#title': 'Attachment URL (File name)'
+        '#format': name
+      webform_attachment_url_url:
+        '#type': webform_attachment_url
+        '#title': 'Attachment URL (File URL)'
+        '#format': url
   options_elements:
     '#type': details
     '#title': 'Options elements'
@@ -558,26 +638,26 @@ elements: |
       webform_computed_token_value:
         '#type': webform_computed_token
         '#title': 'Computed token (Value)'
-        '#format': value
         '#template': 'This is a Computed token value.'
+        '#format': value
       webform_computed_token_raw:
         '#type': webform_computed_token
         '#title': 'Computed token (Raw value)'
-        '#format': raw
         '#template': 'This is a Computed token value.'
+        '#format': raw
     webform_computed_twig:
       '#type': details
       '#title': 'Computed Twig'
       webform_computed_twig_value:
         '#type': webform_computed_twig
         '#title': 'Computed Twig (Value)'
-        '#format': value
         '#template': 'This is a Computed Twig value.'
+        '#format': value
       webform_computed_twig_raw:
         '#type': webform_computed_twig
         '#title': 'Computed Twig (Raw value)'
-        '#format': raw
         '#template': 'This is a Computed Twig value.'
+        '#format': raw
   date_time_elements:
     '#type': details
     '#title': 'Date/time elements'
@@ -813,7 +893,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
+        '#default_value': 2
         '#format': value
       entity_autocomplete_raw:
         '#type': entity_autocomplete
@@ -822,7 +902,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
+        '#default_value': 2
         '#format': raw
       entity_autocomplete_link:
         '#type': entity_autocomplete
@@ -831,7 +911,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
+        '#default_value': 2
         '#format': link
       entity_autocomplete_id:
         '#type': entity_autocomplete
@@ -840,7 +920,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
+        '#default_value': 2
         '#format': id
       entity_autocomplete_label:
         '#type': entity_autocomplete
@@ -849,7 +929,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
+        '#default_value': 2
         '#format': label
       entity_autocomplete_text:
         '#type': entity_autocomplete
@@ -858,7 +938,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
+        '#default_value': 2
         '#format': text
       entity_autocomplete_teaser:
         '#type': entity_autocomplete
@@ -867,7 +947,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
+        '#default_value': 2
         '#format': teaser
       entity_autocomplete_default:
         '#type': entity_autocomplete
@@ -876,8 +956,8 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 1
-        '#format': _default
+        '#default_value': 2
+        '#format': default
     webform_entity_radios:
       '#type': details
       '#title': 'Entity radios'
@@ -984,7 +1064,7 @@ elements: |
           1: Administrator
           0: Anonymous
         '#default_value': 1
-        '#format': _default
+        '#format': default
     webform_entity_select:
       '#type': details
       '#title': 'Entity select'
@@ -1083,7 +1163,7 @@ elements: |
           1: Administrator
           0: Anonymous
         '#default_value': 1
-        '#format': _default
+        '#format': default
     webform_term_select:
       '#type': details
       '#title': 'Term select'
@@ -1134,7 +1214,7 @@ elements: |
         '#title': 'Term select (Default)'
         '#vocabulary': tags
         '#default_value': Loremipsum
-        '#format': _default
+        '#format': default
       webform_term_select_breadcrumb:
         '#type': webform_term_select
         '#title': 'Term select (Breadcrumb)'
@@ -1200,14 +1280,19 @@ elements: |
         '#title': 'Machine name (Raw value)'
         '#default_value': loremipsum
         '#format': raw
+  
 css: ''
 javascript: ''
 settings:
   ajax: false
   ajax_scroll_top: form
+  ajax_progress_type: ''
+  ajax_effect: ''
+  ajax_speed: null
   page: true
   page_submit_path: ''
   page_confirm_path: ''
+  page_admin_theme: false
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -1279,6 +1364,8 @@ settings:
   draft_auto_save: false
   draft_saved_message: ''
   draft_loaded_message: ''
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
   confirmation_type: page
   confirmation_title: ''
   confirmation_message: ''
@@ -1289,6 +1376,7 @@ settings:
   confirmation_back_attributes: {  }
   confirmation_exclude_query: false
   confirmation_exclude_token: false
+  confirmation_update: false
   limit_total: null
   limit_total_interval: null
   limit_total_message: ''

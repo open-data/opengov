@@ -59,7 +59,7 @@ class SimplesitemapEntitiesForm extends SimplesitemapFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form['simple_sitemap_entities']['#prefix'] = $this->getDonationText();
+    $form['simple_sitemap_entities']['#prefix'] = FormHelper::getDonationText();
 
     $form['simple_sitemap_entities']['entities'] = [
       '#title' => $this->t('Sitemap entities'),

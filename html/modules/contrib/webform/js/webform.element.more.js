@@ -16,7 +16,7 @@
     attach: function (context) {
       $(context).find('.js-webform-element-more').once('webform-element-more').each(function (event) {
         var $more = $(this);
-        var $a = $more.find('a');
+        var $a = $more.find('a').first();
         var $content = $more.find('.webform-element-more--content');
 
         // Add aria-* attributes.

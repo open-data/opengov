@@ -74,7 +74,7 @@ class WebformScheduledEmailCommands extends DrushCommands {
    *   The maximum number of emails to be scheduled. If set to 0 no emails will be scheduled. (Default 1000)
    * @option send_limit
    *   The maximum number of emails to be sent. If set to 0 no emails will be sent. (Default 500)
-   * @aliases wfsec
+   * @aliases wfsec,webform-scheduled-email-cron
    *
    * @see webform_scheduled_email_cron_process()
    */

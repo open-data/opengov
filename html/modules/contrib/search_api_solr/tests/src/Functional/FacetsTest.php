@@ -44,7 +44,7 @@ class FacetsTest extends SearchApiBrowserTestBase {
     if ($this->indexId) {
       $index = Index::load($this->indexId);
       $index->clear();
-      $this->ensureCommit($index->getServerInstance());
+      $this->ensureCommit($index);
     }
     parent::tearDown();
   }
@@ -102,7 +102,7 @@ class FacetsTest extends SearchApiBrowserTestBase {
   protected function indexItems($index_id) {
     $index_status = $this->doindexItems($index_id);
     $index = Index::load($this->indexId);
-    $this->ensureCommit($index->getServerInstance());
+    $this->ensureCommit($index);
     return $index_status;
   }
 
@@ -147,7 +147,12 @@ class FacetsTest extends SearchApiBrowserTestBase {
       /** @var \Behat\Mink\Element\NodeElement $url */
       $url = $urls[$index];
       $url_target = $this->getAbsoluteUrl($url->getAttribute('href'));
-      $this->assertTrue(TRUE, new FormattableMarkup('Clicked link %label (@url_target) from @url_before', ['%label' => $label, '@url_target' => $url_target, '@url_before' => $url_before]));
+      $message = new FormattableMarkup('Clicked link %label (@url_target) from @url_before', [
+        '%label' => $label,
+        '@url_target' => $url_target,
+        '@url_before' => $url_before,
+      ]);
+      $this->assertTrue(TRUE, $message);
       return $this->drupalGet($url_target);
     }
     $this->assertTrue(FALSE, new FormattableMarkup('Link %label does not exist on @url_before', ['%label' => $label, '@url_before' => $url_before]));

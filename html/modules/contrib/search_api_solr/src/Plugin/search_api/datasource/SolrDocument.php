@@ -12,7 +12,6 @@ use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api_solr\SolrDocumentFactoryInterface;
 use Drupal\search_api_solr\SolrFieldManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Represents a datasource which exposes external Solr Documents.
@@ -24,6 +23,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
+
+  protected $solr_field = 'solr_field';
+  protected $solr_document = 'solr_document';
 
   use PluginFormTrait;
   use LoggerTrait;
@@ -41,19 +43,6 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    * @var \Drupal\search_api_solr\SolrFieldManagerInterface
    */
   protected $solrFieldManager;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    /** @var static $datasource */
-    $datasource = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-
-    $datasource->setSolrDocumentFactory($container->get('solr_document.factory'));
-    $datasource->setSolrFieldManager($container->get('solr_field.manager'));
-
-    return $datasource;
-  }
 
   /**
    * Sets the Solr document factory.
@@ -75,7 +64,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    *   The Solr document factory.
    */
   public function getSolrDocumentFactory() {
-    return $this->solrDocumentFactory ?: \Drupal::getContainer()->get('solr_document.factory');
+    return $this->solrDocumentFactory ?: \Drupal::getContainer()->get($this->solr_document . '.factory');
   }
 
   /**
@@ -98,11 +87,13 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    *   The Solr field manager.
    */
   public function getSolrFieldManager() {
-    return $this->solrFieldManager ?: \Drupal::getContainer()->get('solr_field.manager');
+    return $this->solrFieldManager ?: \Drupal::getContainer()->get($this->solr_field . '.manager');
   }
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function getItemId(ComplexDataInterface $item) {
     return $this->getFieldValue($item, 'id_field');
@@ -110,6 +101,8 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function getItemLabel(ComplexDataInterface $item) {
     return $this->getFieldValue($item, 'label_field');
@@ -117,6 +110,8 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function getItemLanguage(ComplexDataInterface $item) {
     if ($this->configuration['language_field']) {
@@ -127,6 +122,8 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function getItemUrl(ComplexDataInterface $item) {
     try {
@@ -149,6 +146,8 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    * @return mixed|null
    *   The scalar value of the specified field (first value for multi-valued
    *   fields), if it exists; NULL otherwise.
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   protected function getFieldValue(ComplexDataInterface $item, $config_key) {
     if (empty($this->configuration[$config_key])) {
@@ -165,12 +164,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function getPropertyDefinitions() {
-    $fields = [];
-    $server_id = $this->index->getServerId();
-    if ($server_id) {
-      $fields = $this->getSolrFieldManager()->getFieldDefinitions($server_id);
-    }
-    return $fields;
+    return $this->getSolrFieldManager()->getFieldDefinitions($this->index);
   }
 
   /**
@@ -217,7 +211,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
     $fields = $single_valued_fields = [];
     foreach ($this->getPropertyDefinitions() as $name => $property) {
       $fields[$name] = $property->getLabel();
-      if (!$property->isMultivalued()) {
+      if (!$property->isList()) {
         $single_valued_fields[$name] = $property->getLabel();
       }
     }
@@ -261,13 +255,13 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
     $form['advanced']['language_field'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Language field'),
-      '#description' => $this->t('Enter the name of the field from your Solr schema that should be considered the label (if any).'),
+      '#description' => $this->t('Enter the name of the field from your Solr schema that should be considered the language (if any).'),
       '#default_value' => $this->configuration['language_field'],
     ];
     $form['advanced']['url_field'] = [
       '#type' => 'textfield',
       '#title' => $this->t('URL field'),
-      '#description' => $this->t('Enter the name of the field from your Solr schema that should be considered the label (if any).'),
+      '#description' => $this->t('Enter the name of the field from your Solr schema that should be considered the URL (if any).'),
       '#default_value' => $this->configuration['url_field'],
     ];
     // If there is already a valid server, we can transform the text fields into

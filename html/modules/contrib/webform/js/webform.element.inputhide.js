@@ -7,7 +7,7 @@
 
   'use strict';
 
-  var isChrome = /Chrome/.test(window.navigator.userAgent) && /Google Inc/.test(window.navigator.vendor);
+  var isChrome = (/chrom(e|ium)/.test(window.navigator.userAgent.toLowerCase()));
 
   /**
    * Initialize input hiding.
@@ -38,7 +38,7 @@
           $(this)
             .on('blur', function () {
               this.type = 'password';
-              $(this).attr('autocomplete', 'off');
+              $(this).attr('autocomplete', (isChrome) ? 'chrome-off' : 'off');
             })
             .on('focus', function () {
               this.type = type;

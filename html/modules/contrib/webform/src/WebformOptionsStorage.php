@@ -4,6 +4,7 @@ namespace Drupal\webform;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Uuid\UuidInterface;
+use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -62,9 +63,13 @@ class WebformOptionsStorage extends ConfigEntityStorage implements WebformOption
    *   The element info manager.
    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
    *   The webform element manager.
+   * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
+   *   The memory cache.
+   *
+   * @todo Webform 8.x-6.x: Move $memory_cache right after $language_manager.
    */
-  public function __construct(EntityTypeInterface $entity_type, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager) {
-    parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager);
+  public function __construct(EntityTypeInterface $entity_type, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager, MemoryCacheInterface $memory_cache = NULL) {
+    parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager, $memory_cache);
     $this->elementInfo = $element_info;
     $this->elementManager = $element_manager;
   }
@@ -79,7 +84,8 @@ class WebformOptionsStorage extends ConfigEntityStorage implements WebformOption
       $container->get('uuid'),
       $container->get('language_manager'),
       $container->get('plugin.manager.element_info'),
-      $container->get('plugin.manager.webform.element')
+      $container->get('plugin.manager.webform.element'),
+      $container->get('entity.memory_cache')
     );
   }
 
@@ -127,9 +133,7 @@ class WebformOptionsStorage extends ConfigEntityStorage implements WebformOption
 
     $likert_options = [];
     foreach ($webform_options as $id => $webform_option) {
-      if (strpos($id, 'likert_') === 0) {
-        $likert_options[$id] = str_replace(t('Likert') . ': ', '', $webform_option->label());
-      }
+      $likert_options[$id] = str_replace(t('Likert') . ': ', '', $webform_option->label());
     }
     return $likert_options;
   }

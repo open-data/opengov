@@ -31,6 +31,7 @@ class WebformSection extends ContainerBase {
       // Title.
       'title_tag' => \Drupal::config('webform.settings')->get('element.default_section_title_tag'),
       'title_display' => '',
+      'help_display' => '',
     ] + parent::getDefaultProperties();
   }
 

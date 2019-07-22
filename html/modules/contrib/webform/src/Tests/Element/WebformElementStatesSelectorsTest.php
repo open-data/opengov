@@ -70,6 +70,16 @@ class WebformElementStatesSelectorsTest extends WebformElementTestBase {
         $this->assertCssSelect($selector);
       }
     }
+
+    $webform = Webform::load('test_example_elements');
+
+    // Check the value element is excluded.
+    $selectors = $webform->getElementsSelectorOptions();
+    $this->assert(!isset($selectors[':input[name="value"]']));
+
+    // Check the value element is included.
+    $selectors = $webform->getElementsSelectorOptions(['excluded_elements' => []]);
+    $this->assertEqual($selectors[':input[name="value"]'], 'Value [Value]');
   }
 
 }

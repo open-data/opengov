@@ -1,0 +1,13 @@
+name: 'Webform Entity Print (PDF) Attachment Test'
+type: module
+description: 'Support module for webform entity print (PDF) attachment testing.'
+package: Testing
+# core: 8.x
+dependencies:
+  - 'webform:webform_entity_print_attachment'
+
+# Information added by Drupal.org packaging script on 2019-07-18
+version: '8.x-5.3'
+core: '8.x'
+project: 'webform'
+datestamp: 1563460092

@@ -66,15 +66,20 @@ elements: |
     '#type': webform_attachment_twig
     '#title': attachment_twig
     '#filename': 'attachment_twig-[current-date:html_date].xml'
-    '#template': "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<asx:abap xmlns:asx=\"http://www.sap.com/abapxml\" version=\"1.0\">\r\n   <asx:values>\r\n      <VERSION>1.0</VERSION>\r\n      <SENDER>{{ webform_id }}</SENDER>\r\n      <WEBFORM_ID>{{ data.email }}</WEBFORM_ID>\r\n      <SOURCE>\r\n        {% for key, value in data %}\r\n         <o2PARAVALU>\r\n            <NAME>{{ (elements_flattened[key]['#xml_name']) ? elements_flattened[key]['#xml_name'] : key }}</NAME>\r\n            <VALUE>{{ value }}</VALUE>\r\n         </o2PARAVALU>\r\n        {% endfor %}      \r\n      </SOURCE>\r\n   </asx:values>\r\n</asx:abap>"
+    '#template': "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<asx:abap xmlns:asx=\"http://www.sap.com/abapxml\" version=\"1.0\">\n   <asx:values>\n      <VERSION>1.0</VERSION>\n      <SENDER>{{ webform_id }}</SENDER>\n      <WEBFORM_ID>{{ data.email }}</WEBFORM_ID>\n      <SOURCE>\n        {% for key, value in data %}\n         <o2PARAVALU>\n            <NAME>{{ (elements_flattened[key]['#xml_name']) ? elements_flattened[key]['#xml_name'] : key }}</NAME>\n            <VALUE>{{ value }}</VALUE>\n         </o2PARAVALU>\n        {% endfor %}      \n      </SOURCE>\n   </asx:values>\n</asx:abap>"
+  
 css: ''
 javascript: ''
 settings:
   ajax: false
   ajax_scroll_top: form
+  ajax_progress_type: ''
+  ajax_effect: ''
+  ajax_speed: null
   page: true
   page_submit_path: ''
   page_confirm_path: ''
+  page_admin_theme: false
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -146,6 +151,8 @@ settings:
   draft_auto_save: false
   draft_saved_message: ''
   draft_loaded_message: ''
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
   confirmation_type: page
   confirmation_title: ''
   confirmation_message: ''
@@ -156,6 +163,7 @@ settings:
   confirmation_back_attributes: {  }
   confirmation_exclude_query: false
   confirmation_exclude_token: false
+  confirmation_update: false
   limit_total: null
   limit_total_interval: null
   limit_total_message: ''

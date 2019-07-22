@@ -21,6 +21,9 @@ function webform_ui_entity_type_alter(array &$entity_types) {
     $handlers['form']['edit'] = 'Drupal\webform_ui\WebformUiEntityElementsForm';
     $handlers['form']['quick_edit'] = 'Drupal\webform_ui\WebformUiEntityElementsForm';
     $webform_entity_type->setHandlerClass('form', $handlers['form']);
+
+    // Add 'source' to link template.
+    $webform_entity_type->setLinkTemplate('source-form', '/admin/structure/webform/manage/{webform}/source');
   }
 
   if (isset($entity_types['webform_options'])) {
@@ -36,6 +39,9 @@ function webform_ui_entity_type_alter(array &$entity_types) {
     $handlers['form']['edit'] = 'Drupal\webform_ui\WebformUiOptionsForm';
     $handlers['form']['duplicate'] = 'Drupal\webform_ui\WebformUiOptionsForm';
     $webform_options_entity_type->setHandlerClass('form', $handlers['form']);
+
+    // Add 'source' to link template.
+    $webform_options_entity_type->setLinkTemplate('source-form', '/admin/structure/webform/manage/{webform}/source');
   }
 }
 

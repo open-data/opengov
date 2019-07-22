@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Plugin\WebformHandler;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -82,9 +83,19 @@ class SettingsWebformHandler extends WebformHandlerBase {
     $setting_definitions = $this->getSettingsDefinitions();
     $setting_override = $this->getSettingsOverride();
     foreach ($setting_override as $name => $value) {
+      switch ($setting_definitions[$name]['type']) {
+        case 'label':
+        case 'text':
+        case 'string':
+          $value = Unicode::truncate(strip_tags($value), 100, TRUE, TRUE);
+          break;
+
+        default:
+          break;
+      }
       $settings['settings'][$name] = [
         'title' => $setting_definitions[$name]['label'],
-        'value' => $value,
+        'value' => ['#markup' => $value],
       ];
     }
 

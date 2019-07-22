@@ -28,7 +28,7 @@ class WebformResultsClearForm extends WebformSubmissionsDeleteFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $submission_total = $this->submissionStorage->getTotal($this->webform, $this->sourceEntity);
+    $submission_total = $this->getSubmissionTotal();
     if ($submission_total) {
       return parent::buildForm($form, $form_state);
     }
@@ -60,7 +60,7 @@ class WebformResultsClearForm extends WebformSubmissionsDeleteFormBase {
    * {@inheritdoc}
    */
   public function getDescription() {
-    $submission_total = $this->submissionStorage->getTotal($this->webform, $this->sourceEntity);
+    $submission_total = $this->getSubmissionTotal();
 
     $t_args = [
       '%label' => $this->getLabel(),

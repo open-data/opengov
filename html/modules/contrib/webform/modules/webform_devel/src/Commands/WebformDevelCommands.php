@@ -3,8 +3,8 @@
 namespace Drupal\webform_devel\Commands;
 
 use Drupal\Core\Serialization\Yaml;
-use Drupal\Core\State\State;
-use Drupal\user\UserData;
+use Drupal\Core\State\StateInterface;
+use Drupal\user\UserDataInterface;
 use Drupal\webform\Utility\WebformYaml;
 use Drush\Commands\DrushCommands;
 use Drush\Exceptions\UserAbortException;
@@ -25,19 +25,19 @@ class WebformDevelCommands extends DrushCommands {
   /**
    * The user data service.
    *
-   * @var \Drupal\user\UserData
+   * @var \Drupal\user\UserDataInterface
    */
   protected $userData;
 
   /**
    * The construct method.
    *
-   * @param \Drupal\Core\State\State $state
+   * @param \Drupal\Core\State\StateInterface $state
    *   Provides the state system.
-   * @param \Drupal\user\UserData $user_data
+   * @param \Drupal\user\UserDataInterface $user_data
    *   The user data service.
    */
-  public function __construct(State $state, UserData $user_data) {
+  public function __construct(StateInterface $state, UserDataInterface $user_data) {
     parent::__construct();
     $this->state = $state;
     $this->userData = $user_data;
@@ -47,7 +47,7 @@ class WebformDevelCommands extends DrushCommands {
    * Executes devel export config.
    *
    * @command webform:devel:config:update
-   * @aliases wfdcu
+   * @aliases wfdcu,webform-devel-reset
    */
   public function drush_webform_devel_config_update() {
     module_load_include('inc', 'webform', 'includes/webform.install');

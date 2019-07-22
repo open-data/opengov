@@ -70,7 +70,7 @@ class WebformImageSelect extends Select {
             'data-summary' => ".$wrapper_class .webform-image-select-summary",
             'data-no-results' => ".$wrapper_class .webform-image-select-no-results",
             'data-element' => ".$wrapper_class .thumbnails",
-            'data-source' =>  ".thumbnail p",
+            'data-source' => ".thumbnail p",
             'data-parent' => 'li',
             'data-selected' => '.selected',
             'title' => t('Enter a keyword to filter by.'),
@@ -103,12 +103,6 @@ class WebformImageSelect extends Select {
           ? $element['#field_prefix']
           : ['#markup' => $element['#field_prefix']];
       }
-    }
-
-    // Set limit.
-    if ($element['#multiple'] && $element['#multiple'] > 1) {
-      $element['#attributes']['data-limit'] = $element['#multiple'];
-      $element['#multiple'] = TRUE;
     }
 
     // Serialize images as JSON to 'data-images' attributes.

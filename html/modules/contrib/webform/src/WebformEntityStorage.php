@@ -4,6 +4,7 @@ namespace Drupal\webform;
 
 use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Database\Connection;
@@ -55,9 +56,13 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
    *   The database connection to be used.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
+   * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
+   *   The memory cache.
+   *
+   * @todo Webform 8.x-6.x: Move $memory_cache right after $language_manager.
    */
-  public function __construct(EntityTypeInterface $entity_type, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, Connection $database, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager);
+  public function __construct(EntityTypeInterface $entity_type, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, Connection $database, EntityTypeManagerInterface $entity_type_manager, MemoryCacheInterface $memory_cache = NULL) {
+    parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager, $memory_cache);
     $this->database = $database;
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -72,7 +77,8 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
       $container->get('uuid'),
       $container->get('language_manager'),
       $container->get('database'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('entity.memory_cache')
     );
   }
 
@@ -86,7 +92,8 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
     // @see '_webform_ui_temp_form'
     // @see \Drupal\webform_ui\Form\WebformUiElementTestForm
     // @see \Drupal\webform_ui\Form\WebformUiElementTypeFormBase
-    if ($id = $entity->id()) {
+    $id = $entity->id();
+    if ($id && $id === '_webform_ui_temp_form') {
       $this->setStaticCache([$id => $entity]);
     }
     return $entity;

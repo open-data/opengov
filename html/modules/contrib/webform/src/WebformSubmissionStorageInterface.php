@@ -592,6 +592,10 @@ interface WebformSubmissionStorageInterface extends ContentEntityStorageInterfac
    */
   public function loadDraft(WebformInterface $webform, EntityInterface $source_entity = NULL, AccountInterface $account = NULL);
 
+  /****************************************************************************/
+  // Anonymous submission methods.
+  /****************************************************************************/
+
   /**
    * React to an event when a user logs in.
    *
@@ -599,5 +603,17 @@ interface WebformSubmissionStorageInterface extends ContentEntityStorageInterfac
    *   Account that has just logged in.
    */
   public function userLogin(UserInterface $account);
+
+  /**
+   * Get anonymous user's submission ids.
+   *
+   * @param \Drupal\Core\Session\AccountInterface|null $account
+   *   A user account.
+   *
+   * @return array|
+   *   A array of submission ids or NULL if the user us not anonymous or has
+   *   not saved submissions.
+   */
+  public function getAnonymousSubmissionIds(AccountInterface $account);
 
 }

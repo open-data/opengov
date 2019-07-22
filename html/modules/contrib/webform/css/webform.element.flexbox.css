@@ -67,6 +67,21 @@
     width: 70%;
   }
 
+  .webform-flex--container > .webform-element-help-container--element > input,
+  .webform-flex--container > .webform-element-help-container--element > select {
+    width: 85%;
+  }
+
+  .webform-flex--container > .webform-has-field-prefix.webform-element-help-container--element > input,
+  .webform-flex--container > .webform-has-field-suffix.webform-element-help-container--element > select {
+    width: 70%;
+  }
+
+  .webform-flex--container > .webform-has-field-prefix.webform-has-field-suffix.webform-element-help-container--element > input,
+  .webform-flex--container > .webform-has-field-prefix.webform-has-field-suffix.webform-element-help-container--element > select {
+    width: 50%;
+  }
+
   .webform-flex--1 {
     -webkit-flex: 1;
     flex: 1;

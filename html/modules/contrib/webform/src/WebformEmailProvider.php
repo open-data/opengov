@@ -73,7 +73,7 @@ class WebformEmailProvider implements WebformEmailProviderInterface {
     // Check if a contrib module is handling sending email.
     $mail_modules = $this->getModules();
     foreach ($mail_modules as $module) {
-      if ($this->moduleHandler->moduleExists($module)) {
+      if ($this->moduleEnabled($module)) {
         return $this->uninstall();
       }
     }
@@ -130,7 +130,7 @@ class WebformEmailProvider implements WebformEmailProviderInterface {
     else {
       $modules = $this->getModules();
       foreach ($modules as $module) {
-        if ($this->moduleHandler->moduleExists($module)) {
+        if ($this->moduleEnabled($module)) {
           return $module;
         }
       }
@@ -143,6 +143,23 @@ class WebformEmailProvider implements WebformEmailProviderInterface {
    */
   public function getModuleName() {
     return ($module = $this->getModule()) ? $this->moduleHandler->getName($module) : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function moduleEnabled($module) {
+    // Make sure module exists and is installed.
+    if (!$this->moduleHandler->moduleExists($module)) {
+      return FALSE;
+    }
+
+    // Make sure SMTP module is enabled.
+    if ($module === 'smtp' && !$this->configFactory->get('smtp.settings')->get('smtp_on')) {
+      return FALSE;
+    }
+
+    return TRUE;
   }
 
   /**

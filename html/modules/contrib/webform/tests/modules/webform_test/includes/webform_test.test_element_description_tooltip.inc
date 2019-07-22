@@ -23,9 +23,7 @@ function webform_test_test_element_description_tooltip() {
     'basic_elements' => [],
     'advanced_elements' => [],
   ];
-  foreach ($definitions as $definition) {
-    $element_type = $definition['id'];
-
+  foreach ($definitions as $element_type => $definition) {
     $webform_element = $elements[$element_type];
     $element = _webform_test_get_element_preview($element_type);
     if (!$element || !$webform_element->hasProperty('description_display')) {

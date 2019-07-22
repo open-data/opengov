@@ -3,15 +3,14 @@
 namespace Drupal\search_api_solr\Plugin\search_api_autocomplete\suggester;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
-use Drupal\search_api_autocomplete\AutocompleteBackendInterface;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggester\SuggesterPluginBase;
 use Drupal\search_api_solr\SolrAutocompleteInterface;
-use Drupal\search_api_solr\SolrMultilingualBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
 
 /**
@@ -32,6 +31,9 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_autocomplete\SearchApiAutocompleteException
    */
   public static function supportsSearch(SearchInterface $search) {
     return (bool) static::getBackend($search->getIndex());
@@ -50,6 +52,9 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_autocomplete\SearchApiAutocompleteException
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $search = $this->getSearch();
@@ -76,13 +81,11 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
     ];
 
     $langcode_options['any'] = $this->t('Any language');
-    if ($server->getBackend()  instanceof SolrMultilingualBackendInterface) {
-      $langcode_options['multilingual'] = $this->t('Let the multilingual Solr server handle it dynamically.');
-    }
+    $langcode_options['multilingual'] = $this->t('Let the Solr server handle it dynamically.');
     foreach (\Drupal::languageManager()->getLanguages() as $language) {
       $langcode_options[$language->getId()] = $language->getName();
     }
-    $langcode_options['und'] = $this->t('Undefined');
+    $langcode_options[LanguageInterface::LANGCODE_NOT_SPECIFIED] = $this->t('Undefined');
 
     $form['drupal/langcode'] = [
       '#type' => 'radios',
@@ -105,6 +108,9 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_autocomplete\SearchApiAutocompleteException
    */
   public function getAutocompleteSuggestions(QueryInterface $query, $incomplete_key, $user_input) {
     if (!($backend = static::getBackend($this->getSearch()->getIndex()))) {
@@ -116,10 +122,10 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
     if ($config['search_api_solr/site_hash']) {
       $options['context_filter_tags'][] = 'search_api_solr/site_hash:' . Utility::getSiteHash();
     }
-    if (!empty($config['search_api/index']) && 'any' != $config['search_api/index']) {
+    if (!empty($config['search_api/index']) && 'any' !== $config['search_api/index']) {
       $options['context_filter_tags'][] = 'search_api/index:' . $config['search_api/index'];
     }
-    if ('any' != $config['drupal/langcode']) {
+    if ('any' !== $config['drupal/langcode']) {
       $options['context_filter_tags'][] = 'drupal/langcode:' . $config['drupal/langcode'];
     }
 
@@ -132,7 +138,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
    * @param \Drupal\search_api\IndexInterface $index
    *   The search index.
    *
-   * @return SolrAutocompleteInterface|null
+   * @return \Drupal\search_api_solr\SolrAutocompleteInterface|null
    *   The backend plugin of the index's server, if it exists and supports
    *   autocomplete; NULL otherwise.
    *

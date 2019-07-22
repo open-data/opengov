@@ -28,11 +28,7 @@ class WebformSubmissionsPurgeForm extends WebformSubmissionsDeleteFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $submission_total = $this->entityTypeManager
-      ->getStorage('webform_submission')
-      ->getQuery()
-      ->count()
-      ->execute();
+    $submission_total = $this->getSubmissionTotal();
     if ($submission_total) {
       return parent::buildForm($form, $form_state);
     }
@@ -62,16 +58,13 @@ class WebformSubmissionsPurgeForm extends WebformSubmissionsDeleteFormBase {
    * {@inheritdoc}
    */
   public function getDescription() {
-    $submission_total = $this->entityTypeManager
-      ->getStorage('webform_submission')
-      ->getQuery()
-      ->count()
-      ->execute();
     $form_total = $this->entityTypeManager
       ->getStorage('webform')
       ->getQuery()
       ->count()
       ->execute();
+
+    $submission_total = $this->getSubmissionTotal();
 
     $t_args = [
       '@submission_total' => $submission_total,
@@ -124,6 +117,20 @@ class WebformSubmissionsPurgeForm extends WebformSubmissionsDeleteFormBase {
    */
   public function getFinishedMessage() {
     return $this->t('Webform submissions purged.');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSubmissionTotal() {
+    if (!isset($this->submissionTotal)) {
+      $this->submissionTotal = $this->entityTypeManager
+      ->getStorage('webform_submission')
+      ->getQuery()
+      ->count()
+      ->execute();
+    }
+    return $this->submissionTotal;
   }
 
 }

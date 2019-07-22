@@ -346,6 +346,22 @@
     setTimeout(function () {Drupal.announce(response.text, response.priority);}, 200);
   };
 
+  /**
+   * Triggers confirm page reload.
+   *
+   * @param {Drupal.Ajax} [ajax]
+   *   A {@link Drupal.ajax} object.
+   * @param {object} response
+   *   Ajax response.
+   * @param {string} response.message
+   *   A message to be displayed in the confirm dialog..
+   */
+  Drupal.AjaxCommands.prototype.webformConfirmReload = function (ajax, response) {
+    if (window.confirm(response.message)) {
+      window.location.reload(true);
+    }
+  };
+
   /** ********************************************************************** **/
   // Helper functions.
   /** ********************************************************************** **/

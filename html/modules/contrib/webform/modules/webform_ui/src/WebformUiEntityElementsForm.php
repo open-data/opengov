@@ -4,6 +4,7 @@ namespace Drupal\webform_ui;
 
 use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\OptGroup;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Form\FormStateInterface;
@@ -351,7 +352,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
 
       if (empty($element['#title'])) {
         if (!empty($element['#markup'])) {
-          $element['#title'] = ['#markup' => Unicode::truncate(strip_tags($element['#markup']), 100, TRUE, TRUE)];
+          $element['#title'] = Markup::create(Unicode::truncate(strip_tags($element['#markup']), 100, TRUE, TRUE));
         }
         else {
           $element['#title'] = '[' . $element_key . ']';

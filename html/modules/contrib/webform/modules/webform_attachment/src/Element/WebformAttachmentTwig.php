@@ -2,7 +2,7 @@
 
 namespace Drupal\webform_attachment\Element;
 
-use Drupal\webform\Twig\TwigExtension;
+use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
@@ -27,7 +27,7 @@ class WebformAttachmentTwig extends WebformAttachmentBase {
   public static function getFileContent(array $element, WebformSubmissionInterface $webform_submission) {
     $options = [];
     $template = $element['#template'];
-    $content = TwigExtension::renderTwigTemplate($webform_submission, $template, $options);
+    $content = WebformTwigExtension::renderTwigTemplate($webform_submission, $template, $options);
     return (!empty($element['#trim'])) ? trim($content) : $content;
   }
 

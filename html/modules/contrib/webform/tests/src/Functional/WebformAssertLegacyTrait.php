@@ -54,35 +54,35 @@ trait WebformAssertLegacyTrait {
   /**
    * @see \Drupal\simpletest\TestBase::assertEqual()
    */
-  protected function assertEqual($actual, $expected, $message = '') {
+  protected function assertEqual($expected, $actual, $message = '') {
     $this->assertEquals($expected, $actual, $message);
   }
 
   /**
    * @see \Drupal\simpletest\TestBase::assertNotEqual()
    */
-  protected function assertNotEqual($actual, $expected, $message = '') {
+  protected function assertNotEqual($expected, $actual, $message = '') {
     $this->assertNotEquals($expected, $actual, $message);
   }
 
   /**
    * @see \Drupal\simpletest\TestBase::assertIdentical()
    */
-  protected function assertIdentical($actual, $expected, $message = '') {
+  protected function assertIdentical($expected, $actual, $message = '') {
     $this->assertSame($expected, $actual, $message);
   }
 
   /**
    * @see \Drupal\simpletest\TestBase::assertNotIdentical()
    */
-  protected function assertNotIdentical($actual, $expected, $message = '') {
+  protected function assertNotIdentical($expected, $actual, $message = '') {
     $this->assertNotSame($expected, $actual, $message);
   }
 
   /**
    * @see \Drupal\simpletest\TestBase::assertIdenticalObject()
    */
-  protected function assertIdenticalObject($actual, $expected, $message = '') {
+  protected function assertIdenticalObject($expected, $actual, $message = '') {
     // Note: ::assertSame checks whether its the same object. ::assertEquals
     // though compares
     $this->assertEquals($expected, $actual, $message);
