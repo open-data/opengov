@@ -84,16 +84,6 @@ third_party_settings:
               id: 'extra_field_block:node:suggested_dataset:content_moderation_control'
             additional: {  }
             weight: 0
-          12507993-4387-4de3-9b9c-5930aa477f7c:
-            uuid: 12507993-4387-4de3-9b9c-5930aa477f7c
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:suggested_dataset:links'
-            additional: {  }
-            weight: 1
         third_party_settings: {  }
       -
         layout_id: bs_2col
@@ -320,3 +310,4 @@ hidden:
   feeds_item: true
   field_meta_tags: true
   langcode: true
+  search_api_excerpt: true

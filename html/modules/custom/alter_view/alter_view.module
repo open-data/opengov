@@ -26,7 +26,7 @@ function alter_view_preprocess_views_view_fields(&$variables) {
       $variables['fields']['body']->content = $replace_body;
     }
   }
-  elseif (isset($variables['view']->exposed_data['search_api_fulltext'])) {
+  elseif (isset($view->exposed_data['search_api_fulltext'])) {
     $keys = explode(' ' , preg_replace('/[^a-zA-Z0-9\s]/', '', $view->exposed_data['search_api_fulltext']));
     if (is_array($keys) && !empty($variables['fields']['nothing']->content)) {
       $body = $variables['fields']['nothing']->content->__toString();

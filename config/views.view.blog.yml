@@ -768,69 +768,6 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
-        body:
-          id: body
-          table: node__body
-          field: body
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: true
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: true
-            trim: false
-            preserve_tags: '<markup>'
-            html: false
-          element_type: p
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: text_summary_or_trimmed
-          settings:
-            trim_length: 1000
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          plugin_id: field
         view_node:
           id: view_node
           table: node
@@ -895,7 +832,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<h2 class=\"h3 mrgn-tp-0 panel-body\">{{ title }}</h2>\r\n<div class=\"row panel-body\">\r\n<div class=\"col-lg-2 col-md-3 col-sm-3\">\r\n  <a href=\"{{ view_node }}\">{{ field_media }}</a>  \r\n</div>\r\n<div class=\"col-lg-10 col-md-9 col-sm-9\">\r\n  <p>{{ created }}</p>\r\n  <p><span class=\"glyphicon glyphicon-comment mrgn-rght-sm\"></span>{{ 'Comment'|t }} ({{ comment_count }})</p>\r\n  <p>{{ body }}</p>\r\n</div>\r\n</div>"
+            text: "<div class=\"row panel-body\">\r\n<div class=\"col-lg-2 col-md-3 col-sm-3\">\r\n  <a href=\"{{ view_node }}\">{{ field_media }}</a>  \r\n</div>\r\n<div class=\"col-lg-10 col-md-9 col-sm-9\">\r\n  <h2 class=\"h3 mrgn-tp-0\">{{ title }}</h2>\r\n  <p>{{ created }}</p>\r\n  <p><span class=\"glyphicon glyphicon-comment mrgn-rght-sm\"></span>{{ 'Comment'|t }} ({{ comment_count }})</p>\r\n</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -933,6 +870,69 @@ display:
           empty_zero: false
           hide_alter_empty: false
           plugin_id: custom
+        body:
+          id: body
+          table: node__body
+          field: body
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: true
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: true
+            trim: false
+            preserve_tags: '<markup>'
+            html: false
+          element_type: p
+          element_class: panel-body
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: text_summary_or_trimmed
+          settings:
+            trim_length: 1000
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
       defaults:
         fields: false
         use_ajax: false
@@ -1050,7 +1050,6 @@ display:
               3: {  }
           fields:
             title: title
-            created: created
             body: body
           plugin_id: combine
       filter_groups:
@@ -1782,7 +1781,12 @@ display:
         row: false
         pager: false
         sorts: false
-      use_ajax: true
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        link_display: false
+        link_url: false
+      use_ajax: false
       filters:
         status:
           value: '1'
@@ -1864,23 +1868,10 @@ display:
           separator: ''
           hide_empty: true
       pager:
-        type: mini
+        type: some
         options:
           items_per_page: 10
           offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: ''
-            next: ''
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
       sorts:
         created:
           id: created
@@ -1897,12 +1888,16 @@ display:
           entity_type: node
           entity_field: created
           plugin_id: date
+      use_more: true
+      use_more_always: true
+      use_more_text: more
+      link_display: custom_url
+      link_url: /en/blog
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags:

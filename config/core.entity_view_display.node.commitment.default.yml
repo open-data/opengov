@@ -83,16 +83,6 @@ third_party_settings:
               id: 'extra_field_block:node:commitment:content_moderation_control'
             additional: {  }
             weight: 0
-          3187534c-acd0-465a-9387-99e15b7f7ad5:
-            uuid: 3187534c-acd0-465a-9387-99e15b7f7ad5
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:commitment:links'
-            additional: {  }
-            weight: 1
         third_party_settings: {  }
       -
         layout_id: layout_onecol
@@ -284,3 +274,4 @@ hidden:
   field_previousnodeid: true
   langcode: true
   layout_builder__layout: true
+  search_api_excerpt: true

@@ -6,6 +6,7 @@ dependencies:
     - comment.type.comment
     - field.field.comment.comment.comment_body
     - field.field.comment.comment.feeds_item
+    - field.field.comment.comment.field_previouscid
   module:
     - text
 _core:
@@ -45,3 +46,4 @@ content:
     third_party_settings: {  }
 hidden:
   feeds_item: true
+  field_previouscid: true

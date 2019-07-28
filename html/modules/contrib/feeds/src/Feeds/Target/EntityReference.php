@@ -259,6 +259,10 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
       }
     }
     else {
+      if ($this->configuration['reference_by'] == 'uid' && $values['target_id'] == 0) {
+        $values['target_id'] = '0';
+        return;
+      }
       if ($target_id = $this->findEntity($values['target_id'], $this->configuration['reference_by'])) {
         $values['target_id'] = $target_id;
         return;

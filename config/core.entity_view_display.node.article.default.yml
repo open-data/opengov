@@ -68,16 +68,6 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: 0
-          f69b9514-fd7b-4b09-84f2-5a0151941a80:
-            uuid: f69b9514-fd7b-4b09-84f2-5a0151941a80
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:article:links'
-            additional: {  }
-            weight: 4
           f3b99357-2d6a-4eb7-9960-9b6dd1e5f682:
             uuid: f3b99357-2d6a-4eb7-9960-9b6dd1e5f682
             region: left
@@ -258,3 +248,4 @@ hidden:
   feeds_item: true
   field_previousnodeid: true
   langcode: true
+  search_api_excerpt: true

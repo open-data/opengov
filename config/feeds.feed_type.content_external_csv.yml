@@ -58,6 +58,10 @@ custom_sources:
     label: ''
     value: ''
     machine_name: ''
+  status:
+    label: status
+    value: status
+    machine_name: status
 mappings:
   -
     target: langcode
@@ -83,3 +87,8 @@ mappings:
     map:
       uri: url
       title: url
+  -
+    target: moderation_state
+    map:
+      value: status
+    unique: {  }

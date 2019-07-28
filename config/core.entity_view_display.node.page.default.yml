@@ -50,16 +50,6 @@ third_party_settings:
               add_region_classes: 1
               attributes: ''
         components:
-          1d13ad0c-0716-4cfd-96cf-a42944b1df03:
-            uuid: 1d13ad0c-0716-4cfd-96cf-a42944b1df03
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:page:links'
-            additional: {  }
-            weight: -9
           aea63d77-60bf-408e-8694-654978632575:
             uuid: aea63d77-60bf-408e-8694-654978632575
             region: left
@@ -167,3 +157,4 @@ hidden:
   field_previousnodeid: true
   langcode: true
   layout_builder__layout: true
+  search_api_excerpt: true

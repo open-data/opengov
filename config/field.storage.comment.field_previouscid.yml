@@ -1,0 +1,20 @@
+uuid: 9d2cc86d-211d-462c-a2c9-f304297ba415
+langcode: en
+status: true
+dependencies:
+  module:
+    - comment
+id: comment.field_previouscid
+field_name: field_previouscid
+entity_type: comment
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

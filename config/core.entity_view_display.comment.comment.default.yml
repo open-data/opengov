@@ -5,6 +5,8 @@ dependencies:
   config:
     - comment.type.comment
     - field.field.comment.comment.comment_body
+    - field.field.comment.comment.feeds_item
+    - field.field.comment.comment.field_previouscid
   module:
     - text
 _core:
@@ -27,4 +29,7 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  feeds_item: true
+  field_previouscid: true
   langcode: true
+  search_api_excerpt: true

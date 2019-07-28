@@ -6,6 +6,9 @@ display:
           label: 'Date de publication'
         date_released:
           label: 'Date de diffusion'
+        nothing:
+          alter:
+            text: "{% set is_valid_url = portal_url_fr|raw|split('http://')|length==1 and portal_url_fr|raw|split('https://')|length==1 ? 0 : 1 %}\r\n<div class=\"row mrgn-tp-lg\">\r\n  <div class=\"col-sm-3\">\r\n    <h2 class=\"h4 mrgn-tp-md\">Langue :</h2><p>{{ language_fr }}</p>\r\n    <h2 class=\"h4\">Architecture des activités de programme :</h2><p>{{ program_alignment_architecture_fr }}</p>\r\n    {% if date_published %}<h2 class=\"h4\">Date de publication :</h2><p>{{ date_published }}{% endif %}\r\n    {% if date_released %}<h2 class=\"h4\">Date de diffusion :</h2><p>{{ date_released }}</p>{% endif %}\r\n  </div>\r\n  <div class=\"col-sm-9\">\r\n    <div class=\"well\">\r\n      <h2 class=\"h4 mrgn-tp-0\">Organisation :</h2><p>{{ org_name_fr }}</p>\r\n      {% if portal_url_fr %}<h2 class=\"h4\">Enregistrement du Portail du gouvernement ouvert :</h2><p>\r\n        {% if is_valid_url %}\r\n          <a href=\"{{ portal_url_fr }}\">{{ portal_url_fr }}</a>\r\n        {% else %}\r\n          {{ portal_url_fr }}\r\n        {% endif %}\r\n        </p>\r\n      {% endif %}\r\n      <h2 class=\"h4\">Description :</h2><p>{{ description_fr }}</p>\r\n    </div>\r\n  </div>\r\n</div>"
       footer:
         area_text_custom:
           content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/fr/search/inventory">Retour à la recherche&nbsp;<span class="fa fa-undo"></span></a></p>'

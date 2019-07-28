@@ -2,6 +2,9 @@ uuid: 2dc6d194-c9d8-4e63-abdc-5adc25e77219
 langcode: en
 status: true
 dependencies:
+  config:
+    - block_content.type.fetch_from_api
+    - block_content.type.search
   module:
     - block_content
     - user
@@ -517,6 +520,47 @@ display:
           entity_type: block_content
           entity_field: langcode
           plugin_id: language
+        type_1:
+          id: type_1
+          table: block_content_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: 'not in'
+          value:
+            fetch_from_api: fetch_from_api
+            search: search
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: block_content
+          entity_field: type
+          plugin_id: bundle
       sorts: {  }
       title: 'Custom block library'
       header:

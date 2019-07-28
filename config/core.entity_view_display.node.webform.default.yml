@@ -71,16 +71,6 @@ third_party_settings:
               id: 'extra_field_block:node:webform:content_moderation_control'
             additional: {  }
             weight: 0
-          5c9c97ec-9324-48e1-b1c7-4ef3c36e1d69:
-            uuid: 5c9c97ec-9324-48e1-b1c7-4ef3c36e1d69
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:webform:links'
-            additional: {  }
-            weight: 1
         third_party_settings: {  }
       -
         layout_id: layout_onecol
@@ -168,3 +158,4 @@ hidden:
   feeds_item: true
   field_previousnodeid: true
   langcode: true
+  search_api_excerpt: true

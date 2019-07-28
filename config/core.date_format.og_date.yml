@@ -1,0 +1,8 @@
+uuid: cc87cb56-decf-474c-9405-825169a3dc25
+langcode: en
+status: true
+dependencies: {  }
+id: og_date
+label: 'OG Date'
+locked: false
+pattern: 'F d, Y - g:i A'

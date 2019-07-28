@@ -134,29 +134,29 @@ class DefaultForm extends FormBase {
 
       for($i = 0; $i < sizeof($keys); $i++) {
         // 2. Load the field_previousnodeid for the first node
-        $node1 = $storage_handler->load($nids[$keys[$i]]);
-        $node1_previousnodeid = $node1->get($comparefield)->getValue();
-        $node1_langcode = $node1->language()->getId();
+        if ($node1 = $storage_handler->load($nids[$keys[$i]])) {
+          $node1_previousnodeid = $node1->get($comparefield)->getValue();
+          $node1_langcode = $node1->language()->getId();
 
-        // 3. check the field_previousnodeid for the next node
-        $node2 = $storage_handler->load($nids[$keys[$i+1]]);
-        if ($node2) {
-          $node2_previousnodeid = $node2->get($comparefield)->getValue();
-          $node2_langcode = $node2->language()->getId();
+          // 3. check the field_previousnodeid for the next node
+          $node2 = $storage_handler->load($nids[$keys[$i + 1]]);
+          if ($node2) {
+            $node2_previousnodeid = $node2->get($comparefield)->getValue();
+            $node2_langcode = $node2->language()->getId();
 
-          if (($node1_previousnodeid[0]['value'] == $node2_previousnodeid[0]['value'])
-            and ($node1_langcode != $node2_langcode)) {
-            // 4. If both have same value for field_previousnodeid merge the second node as a translation and delete after merging
-            $node1->addTranslation($node2_langcode, $node2->getTranslation($node2_langcode)->toArray());
-            $node1->save();
-            $node2->delete();
-            drupal_set_message('Merged translation' . $node2->get('title')->value . ' with ' . $node1->get('title')->value );
+            if (($node1_previousnodeid[0]['value'] == $node2_previousnodeid[0]['value'])
+              and ($node1_langcode != $node2_langcode)) {
+              // 4. If both have same value for field_previousnodeid merge the second node as a translation and delete after merging
+              $node1->addTranslation($node2_langcode, $node2->getTranslation($node2_langcode)->toArray());
+              $node1->save();
+              $node2->delete();
+              drupal_set_message('Merged translation' . $node2->get('title')->value . ' with ' . $node1->get('title')->value);
 
-            // move counter one ahead
-            $i++;
-          }
-          else {
-            drupal_set_message('No translation found for ' . $node1->get('title')->value, 'error');
+              // move counter one ahead
+              $i++;
+            } else {
+              drupal_set_message('No translation found for ' . $node1->get('title')->value, 'error');
+            }
           }
         }
       }

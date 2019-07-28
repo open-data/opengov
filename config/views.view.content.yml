@@ -2,6 +2,8 @@ uuid: dde85ad2-ec1c-496b-a4ab-6f0899c7ad20
 langcode: en
 status: true
 dependencies:
+  config:
+    - node.type.external
   module:
     - content_moderation
     - node
@@ -541,6 +543,46 @@ display:
           plugin_id: string
           entity_type: node
           entity_field: title
+        type_1:
+          id: type_1
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: 'not in'
+          value:
+            external: external
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
       sorts: {  }
       title: Content
       empty:

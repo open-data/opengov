@@ -51,7 +51,7 @@ field_settings:
     label: 'E mail ati recipient'
     datasource_id: solr_document
     property_path: e_mail_ati_recipient
-    type: text
+    type: string
   id:
     label: Id
     datasource_id: solr_document
@@ -91,12 +91,12 @@ field_settings:
     label: 'Organization en'
     datasource_id: solr_document
     property_path: organization_en
-    type: text
+    type: string
   organization_fr:
     label: 'Organization fr'
     datasource_id: solr_document
     property_path: organization_fr
-    type: text
+    type: string
   request_number:
     label: 'Request number'
     datasource_id: solr_document
@@ -106,12 +106,12 @@ field_settings:
     label: 'Request summary en'
     datasource_id: solr_document
     property_path: request_summary_en
-    type: text
+    type: string
   request_summary_fr:
     label: 'Request summary fr'
     datasource_id: solr_document
     property_path: request_summary_fr
-    type: text
+    type: string
   text:
     label: Text
     datasource_id: solr_document

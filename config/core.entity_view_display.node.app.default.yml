@@ -88,16 +88,6 @@ third_party_settings:
               id: 'extra_field_block:node:app:content_moderation_control'
             additional: {  }
             weight: 0
-          af6f1839-3a8c-4dd1-b224-0b39ee5eca63:
-            uuid: af6f1839-3a8c-4dd1-b224-0b39ee5eca63
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:app:links'
-            additional: {  }
-            weight: 1
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -464,3 +454,4 @@ hidden:
   field_vote_average: true
   field_vote_count: true
   langcode: true
+  search_api_excerpt: true

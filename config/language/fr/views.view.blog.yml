@@ -2,6 +2,7 @@ display:
   recent:
     display_options:
       title: 'Articles récents'
+      use_more_text: plus
   default:
     display_options:
       exposed_form:

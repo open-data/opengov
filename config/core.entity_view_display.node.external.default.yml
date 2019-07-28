@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_display.comment.comment.default
     - field.field.node.external.comment
+    - field.field.node.external.feeds_item
     - field.field.node.external.field_type
     - field.field.node.external.field_url
     - field.field.node.external.field_uuid
@@ -27,14 +28,11 @@ content:
     third_party_settings: {  }
     type: comment_default
     region: content
-  field_type:
+  content_moderation_control:
     weight: 0
-    label: inline
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-    type: string
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_url:
     weight: 1
     label: inline
@@ -48,6 +46,9 @@ content:
     type: link
     region: content
 hidden:
+  feeds_item: true
+  field_type: true
   field_uuid: true
   langcode: true
   links: true
+  search_api_excerpt: true
