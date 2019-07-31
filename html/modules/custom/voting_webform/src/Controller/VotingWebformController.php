@@ -97,10 +97,10 @@ class VotingWebformController extends ControllerBase {
     $referer_uuid = end($url_explode);
 
     if ($referer_url) {
-      $host_domain = $request->getSchemeAndHttpHost();
+      $host_domain = $request->getHttpHost();
       $url_components = parse_url($referer_url);
-      $referer_domain = $url_components['scheme'] . '://' . $url_components['host'];
-      if ($url_components['port']) {
+      $referer_domain = $url_components['host'];
+      if (array_key_exists('port', $url_components)) {
         $referer_domain .= ':' . $url_components['port'];
       }
     }
