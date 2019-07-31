@@ -1,9 +1,7 @@
-
 mergenodes.mergeNodesForm:
   path: '/mergenodes/form/default'
   defaults:
     _form: '\Drupal\mergenodes\Form\DefaultForm'
     _title: 'Merge translations of Nodes'
   requirements:
-    _permission: 'access administration pages'
-  
+    _permission: 'administer site configuration'

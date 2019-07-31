@@ -7,5 +7,10 @@ label: Reviewer
 weight: 5
 is_admin: null
 permissions:
-  - 'use text format full_html'
+  - 'access administration pages'
+  - 'access content overview'
+  - 'access contextual links'
+  - 'access toolbar'
+  - 'use editorial transition review'
   - 'use text format rich_text'
+  - 'view any unpublished content'

@@ -36,9 +36,6 @@ display:
         entity_id:
           label: 'Posté sur'
           separator: ', '
-        changed:
-          label: 'Mis à jour'
-          separator: ', '
         operations:
           label: Actions
         name_1:
@@ -50,9 +47,6 @@ display:
         combine:
           expose:
             label: 'Nom de l''auteur'
-        langcode:
-          expose:
-            label: Langue
       title: Commentaires
       empty:
         area_text_custom:
@@ -79,9 +73,6 @@ display:
         combine:
           expose:
             label: 'Nom de l''auteur'
-        langcode:
-          expose:
-            label: Langue
       fields:
         comment_bulk_form:
           action_title: Action
@@ -95,9 +86,6 @@ display:
           separator: ', '
         entity_id:
           label: 'Posté sur'
-          separator: ', '
-        changed:
-          label: 'Mis à jour'
           separator: ', '
         operations:
           label: Actions

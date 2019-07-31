@@ -88,7 +88,7 @@
         "drupal/honeypot": "1.29.0",
         "drupal/memcache": "2.0.0",
         "drupal/menu_breadcrumb": "1.9.0",
-        "drupal/metatag": "1.8.0",
+        "drupal/metatag": "1.9.0",
         "drupal/pathauto": "1.4.0",
         "drupal/redirect": "1.4.0",
         "drupal/search_api": "1.14.0",
@@ -145,6 +145,9 @@
             "drupal/core": "-p2"
         },
         "patches": {
+            "drupal/views_bootstrap": {
+                "Setting \"columns\" is missing on buildOptionsForm": "https://www.drupal.org/files/issues/2019-02-19/setting-columns-is-missing-on-buildOptionsForm-3034141-1.patch"
+            },
             "drupal/core": {
                 "Submitting a comment in the non default language redirects you to the default language": "https://www.drupal.org/files/issues/2019-05-08/2751269-redirect_to_current_node_language_after_post_comment-24.patch",
                 "Comments created in translation are displayed only for admin role": "https://www.drupal.org/files/issues/2018-04-13/drupal-comment_translation_displayed_only_admin-2958935-9-D8.patch",

@@ -4,4 +4,4 @@ content_type_breadcrumb.contentTypeBreadcrumbForm:
     _form: '\Drupal\content_type_breadcrumb\Form\ConfigForm'
     _title: 'Administer breadcrumbs for Content types'
   requirements:
-    _permission: 'access administration pages'
+    _permission: 'administer site configuration'

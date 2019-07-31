@@ -6,4 +6,12 @@ id: comment_moderator
 label: 'Comment Moderator'
 weight: 4
 is_admin: null
-permissions: {  }
+permissions:
+  - 'access administration pages'
+  - 'access content overview'
+  - 'access contextual links'
+  - 'access toolbar'
+  - 'administer comments'
+  - 'edit own comments'
+  - 'skip comment approval'
+  - 'use text format rich_text'

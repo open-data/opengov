@@ -49,11 +49,11 @@ display:
       exposed_form:
         type: basic
         options:
-          submit_button: Apply
-          reset_button: false
+          submit_button: Search
+          reset_button: true
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
+          expose_sort_order: false
           sort_asc_label: Asc
           sort_desc_label: Desc
       pager:
@@ -455,14 +455,14 @@ display:
           entity_type: comment
           entity_field: entity_id
           plugin_id: commented_entity
-        changed:
-          id: changed
+        created:
+          id: created
           table: comment_field_data
-          field: changed
+          field: created
           relationship: none
           group_type: group
           admin_label: ''
-          label: Updated
+          label: 'Post date'
           exclude: false
           alter:
             alter_text: false
@@ -520,7 +520,7 @@ display:
           separator: ', '
           field_api_classes: false
           entity_type: comment
-          entity_field: changed
+          entity_field: created
           plugin_id: field
         operations:
           id: operations
@@ -758,52 +758,11 @@ display:
             name: name
             name_1: name_1
           plugin_id: combine
-        langcode:
-          id: langcode
-          table: comment_field_data
-          field: langcode
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: langcode_op
-            label: Language
-            description: ''
-            use_operator: false
-            operator: langcode_op
-            identifier: langcode
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: comment
-          entity_field: langcode
-          plugin_id: language
       sorts:
-        changed:
-          id: changed
+        created:
+          id: created
           table: comment_field_data
-          field: changed
+          field: created
           relationship: none
           group_type: group
           admin_label: ''
@@ -813,7 +772,7 @@ display:
             label: ''
           granularity: second
           entity_type: comment
-          entity_field: changed
+          entity_field: created
           plugin_id: date
       title: Comments
       header: {  }
@@ -882,9 +841,28 @@ display:
         context: '0'
         menu_name: admin
       display_description: 'The approved comments listing.'
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender: {  }
       exposed_block: false
       display_comment: ''
+      sorts:
+        created:
+          id: created
+          table: comment_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          entity_type: comment
+          entity_field: created
+          plugin_id: date
+      defaults:
+        sorts: false
     cache_metadata:
       contexts:
         - 'languages:language_content'
@@ -1031,54 +1009,14 @@ display:
             name: name
             name_1: name_1
           plugin_id: combine
-        langcode:
-          id: langcode
-          table: comment_field_data
-          field: langcode
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: langcode_op
-            label: Language
-            description: ''
-            use_operator: false
-            operator: langcode_op
-            identifier: langcode
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: comment
-          entity_field: langcode
-          plugin_id: language
       defaults:
         filters: false
         filter_groups: false
         fields: false
         header: false
         footer: false
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender: {  }
       fields:
         comment_bulk_form:
           id: comment_bulk_form
@@ -1394,14 +1332,14 @@ display:
           entity_type: comment
           entity_field: entity_id
           plugin_id: commented_entity
-        changed:
-          id: changed
+        created:
+          id: created
           table: comment_field_data
-          field: changed
+          field: created
           relationship: none
           group_type: group
           admin_label: ''
-          label: Updated
+          label: 'Post date'
           exclude: false
           alter:
             alter_text: false
@@ -1459,7 +1397,7 @@ display:
           separator: ', '
           field_api_classes: false
           entity_type: comment
-          entity_field: changed
+          entity_field: created
           plugin_id: field
         operations:
           id: operations
@@ -1592,7 +1530,7 @@ display:
           admin_label: ''
           empty: true
           tokenize: false
-          content: '<a href="[site:url]/admin/content/comment/export/comment-export.csv" class="button">Download as CSV</a>'
+          content: "<a href=\"[site:url]/admin/content/comment/export/comment-export.csv\" class=\"button btn btn-success\"><span class=\"glyphicon glyphicon-download-alt\"></span> Download as CSV</a>\r\n"
           plugin_id: text_custom
     cache_metadata:
       contexts:

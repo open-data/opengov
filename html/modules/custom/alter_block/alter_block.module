@@ -70,7 +70,10 @@ function alter_block_preprocess_block(&$variables)
     elseif( method_exists($content,'bundle') && $content->bundle() === 'fetch_from_api')
     {
       $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
-      $link = "http://localhost" . $variables['content']['field_link_to_api'][0]['#context']['value'];
+      $host_domain = \Drupal::request()->getSchemeAndHttpHost();
+      if ($host_domain) {
+        $url_components = parse_url($host_domain);
+        $link =  $url_components['scheme'] . '://' . $url_components['host']. $variables['content']['field_link_to_api'][0]['#context']['value'];
 
         $response = @file_get_contents($link);
         if ($response === FALSE) {
@@ -90,6 +93,7 @@ function alter_block_preprocess_block(&$variables)
           $titles .= '</ul>';
           $variables['content']['body'][0]['#text'] = $titles;
         }
+      }
     }
   }
 }

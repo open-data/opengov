@@ -1,0 +1,78 @@
+--- modules/comment/comment.module
++++ modules/comment/comment.module
+@@ -671,41 +671,43 @@
+ 
+   $variables['submitted'] = t('Submitted by @username on @datetime', ['@username' => $variables['author'], '@datetime' => $variables['created']]);
+ 
++  // Default parent comment variables to empty string.
++  $variables['parent_comment'] = '';
++  $variables['parent_author'] = '';
++  $variables['parent_created'] = '';
++  $variables['parent_changed'] = '';
++  $variables['parent_title'] = '';
++  $variables['parent_permalink'] = '';
++  $variables['parent'] = '';
++
+   if ($comment->hasParentComment()) {
+     // Fetch and store the parent comment information for use in templates.
+-    $comment_parent = $comment->getParentComment();
+-    $account_parent = $comment_parent->getOwner();
+-    $variables['parent_comment'] = $comment_parent;
+-    $username = [
+-      '#theme' => 'username',
+-      '#account' => $account_parent,
+-    ];
+-    $variables['parent_author'] = \Drupal::service('renderer')->render($username);
+-    $variables['parent_created'] = format_date($comment_parent->getCreatedTime());
+-    // Avoid calling format_date() twice on the same timestamp.
+-    if ($comment_parent->getChangedTime() == $comment_parent->getCreatedTime()) {
+-      $variables['parent_changed'] = $variables['parent_created'];
+-    }
+-    else {
+-      $variables['parent_changed'] = format_date($comment_parent->getChangedTime());
++    // Protect against orphaned comments.
++    if ($comment_parent = $comment->getParentComment()) {
++      $account_parent = $comment_parent->getOwner();
++      $variables['parent_comment'] = $comment_parent;
++      $username = [
++        '#theme' => 'username',
++        '#account' => $account_parent,
++      ];
++      $variables['parent_author'] = \Drupal::service('renderer')->render($username);
++      $variables['parent_created'] = format_date($comment_parent->getCreatedTime());
++      // Avoid calling format_date() twice on the same timestamp.
++      if ($comment_parent->getChangedTime() == $comment_parent->getCreatedTime()) {
++        $variables['parent_changed'] = $variables['parent_created'];
++      }
++      else {
++        $variables['parent_changed'] = format_date($comment_parent->getChangedTime());
++      }
++      $permalink_uri_parent = $comment_parent->permalink();
++      $attributes = $permalink_uri_parent->getOption('attributes') ?: [];
++      $attributes += ['class' => ['permalink'], 'rel' => 'bookmark'];
++      $permalink_uri_parent->setOption('attributes', $attributes);
++      $variables['parent_title'] = \Drupal::l($comment_parent->getSubject(), $permalink_uri_parent);
++      $variables['parent_permalink'] = \Drupal::l(t('Parent permalink'), $permalink_uri_parent);
++      $variables['parent'] = t('In reply to @parent_title by @parent_username',
++          ['@parent_username' => $variables['parent_author'], '@parent_title' => $variables['parent_title']]);
+     }
+-    $permalink_uri_parent = $comment_parent->permalink();
+-    $attributes = $permalink_uri_parent->getOption('attributes') ?: [];
+-    $attributes += ['class' => ['permalink'], 'rel' => 'bookmark'];
+-    $permalink_uri_parent->setOption('attributes', $attributes);
+-    $variables['parent_title'] = \Drupal::l($comment_parent->getSubject(), $permalink_uri_parent);
+-    $variables['parent_permalink'] = \Drupal::l(t('Parent permalink'), $permalink_uri_parent);
+-    $variables['parent'] = t('In reply to @parent_title by @parent_username',
+-        ['@parent_username' => $variables['parent_author'], '@parent_title' => $variables['parent_title']]);
+-  }
+-  else {
+-    $variables['parent_comment'] = '';
+-    $variables['parent_author'] = '';
+-    $variables['parent_created'] = '';
+-    $variables['parent_changed'] = '';
+-    $variables['parent_title'] = '';
+-    $variables['parent_permalink'] = '';
+-    $variables['parent'] = '';
+   }
+ 
+   // Helpful $content variable for templates.
