@@ -75,23 +75,26 @@ function alter_block_preprocess_block(&$variables)
         $url_components = parse_url($host_domain);
         $link =  $url_components['scheme'] . '://' . $url_components['host']. $variables['content']['field_link_to_api'][0]['#context']['value'];
 
-        $response = @file_get_contents($link);
-        if ($response === FALSE) {
+        $client = \Drupal::httpClient();
+        try {
+          $request = $client->get($link);
+          if ($request->getStatusCode() == '200') {
+            $response = $request->getBody()->getContents();
+            $data = json_decode($response, TRUE);
+            $titles = '<ul>';
+            $size = sizeof($data['result']['results']) < 6 ? sizeof($data['result']['results']) : 6;
+            for ($x = 0; $x < $size; $x++) {
+              $uuid = $data['result']['results'][$x]['id'];
+              $title = $data['result']['results'][$x]['title_translated'][$langcode];
+              $titles .= '<li>' . '<a href="/data/' . $langcode . '/dataset/' . $uuid . '">' . $title . '</a>' . '</li>';
+            }
+            $titles .= '</ul>';
+            $variables['content']['body'][0]['#text'] = $titles;
+          }
+        }
+        catch (Exception $e) {
           \Drupal::logger('fetch from api')->error('Unable to fetch from api for ' . $link);
           return;
-        }
-        else {
-          $data = json_decode($response, TRUE);
-          $titles = '<ul>';
-          $size = sizeof($data['result']['results']) < 6 ? sizeof($data['result']['results']) : 6;
-          for ($x = 0; $x < $size; $x++) {
-            $uuid = $data['result']['results'][$x]['id'];
-            $title = $data['result']['results'][$x]['title_translated'][$langcode];
-            $titles .= '<li>' . '<a href="/data/' . $langcode . '/dataset/' . $uuid . '">' . $title . '</a>' . '</li>';
-          }
-
-          $titles .= '</ul>';
-          $variables['content']['body'][0]['#text'] = $titles;
         }
       }
     }
