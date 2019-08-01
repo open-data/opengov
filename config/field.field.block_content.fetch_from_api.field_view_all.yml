@@ -1,0 +1,23 @@
+uuid: ef62c3ee-4c23-435a-a315-fc6ffbe4cd14
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.fetch_from_api
+    - field.storage.block_content.field_view_all
+  module:
+    - link
+id: block_content.fetch_from_api.field_view_all
+field_name: field_view_all
+entity_type: block_content
+bundle: fetch_from_api
+label: 'View All link'
+description: 'Link to view all results'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+field_type: link

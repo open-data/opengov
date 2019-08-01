@@ -7,7 +7,9 @@ dependencies:
     - field.field.block_content.fetch_from_api.body
     - field.field.block_content.fetch_from_api.field_api_type
     - field.field.block_content.fetch_from_api.field_link_to_api
+    - field.field.block_content.fetch_from_api.field_view_all
   module:
+    - link
     - text
 id: block_content.fetch_from_api.default
 targetEntityType: block_content
@@ -37,5 +39,18 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
+  field_view_all:
+    weight: 3
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
 hidden:
   langcode: true
+  search_api_excerpt: true

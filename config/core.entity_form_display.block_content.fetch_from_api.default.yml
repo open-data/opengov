@@ -7,6 +7,10 @@ dependencies:
     - field.field.block_content.fetch_from_api.body
     - field.field.block_content.fetch_from_api.field_api_type
     - field.field.block_content.fetch_from_api.field_link_to_api
+    - field.field.block_content.fetch_from_api.field_view_all
+  module:
+    - content_moderation
+    - link
 id: block_content.fetch_from_api.default
 targetEntityType: block_content
 bundle: fetch_from_api
@@ -28,6 +32,14 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
+  field_view_all:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
   info:
     type: string_textfield
     weight: 0
@@ -35,6 +47,12 @@ content:
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  moderation_state:
+    type: moderation_state_default
+    weight: 4
+    settings: {  }
+    region: content
     third_party_settings: {  }
 hidden:
   body: true
