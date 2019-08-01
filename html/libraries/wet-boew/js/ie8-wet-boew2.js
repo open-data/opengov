@@ -1,7 +1,7 @@
 /*!
  * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
  * wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * v4.0.31 - 2019-06-20
+ * v4.0.30 - 2019-02-11
  *
  *//**
  * @title WET-BOEW JQuery Helper Methods
@@ -27,54 +27,6 @@ wb.getData = function( element, dataName ) {
 	}
 
 	return dataObj;
-};
-
-/*
- * Initiate an in-browser download from a blob
- * @param blob: a reference to a blob object
- * @param filename: a suggested file name to save as under
- * @param title: (Optional) a title added to the link. Its use case is for web analytics tracking.
-*/
-wb.download = function( blob, filename, title ) {
-
-	var objectURL = URL.createObjectURL( blob ),
-		anchor = document.createElement( "a" );
-
-	filename = filename || "unnamed"; // Ensure a filename is defined
-
-	anchor.textContent = title || "";
-	anchor.download = filename;
-
-	anchor.hidden = true;
-	document.body.appendChild( anchor ); // Added to the body for the web analytic tracking use case.
-
-	if ( window.navigator.msSaveOrOpenBlob ) {
-
-		// This is for IE11 support
-		anchor.addEventListener( "click", function( ) {
-			window.navigator.msSaveOrOpenBlob( blob, filename );
-		} );
-		anchor.setAttribute( "target", "_blank" );
-	} else {
-		anchor.href = objectURL;
-	}
-
-	anchor.click();
-
-	// Clean the DOM, remove the accessory anchor at the next tick
-	setTimeout( function() {
-		document.body.removeChild( anchor );
-	}, 1 );
-
-	// Revoke the ojbect, A setTimeout is used because Blob API don't have a download complete event.
-	setTimeout( function() {
-		if ( typeof objectURL === "string" ) {
-			URL.revokeObjectURL( objectURL );
-		} else {
-			objectURL.remove();
-		}
-	}, 40000 ); // The revoking time is arbitrary
-
 };
 
 } )( jQuery, wb );
@@ -5041,34 +4993,20 @@ var componentName = "wb-feeds",
 	 * @method corsEntry
 	 */
 	corsEntry = function( xmlDoc, limit ) {
-		var entries = xmlDoc.getElementsByTagName( "entry" ).length,
-			limit = limit,
-			arr_entry = [],
+		var arr_entry = [],
 			corsObj = {},
+			limit = limit,
 			jsonString = JSON.stringify( xmlToJson( xmlDoc ) ),
 			jsonObj = JSON.parse( jsonString ),
 			i, iCache;
-		if ( limit > entries || limit === 0 || limit === null ) {
-			limit = entries;
-		}
-		if ( entries === 1 ) {
-			iCache = jsonObj.feed.entry;
+		for ( i = 0; i < limit; i++ ) {
+			iCache = jsonObj.feed.entry[ i ];
 			corsObj = {
 				title: iCache.title[ "#text" ],
-				link: ( iCache.link ? iCache.link[ "@attributes" ].href : iCache.id[ "#text" ] ),
+				link: iCache.id[ "#text" ],
 				updated: iCache.updated[ "#text" ]
 			};
 			arr_entry.push( corsObj );
-		} else if ( entries ) {
-			for ( i = 0; i < limit; i++ ) {
-				iCache = jsonObj.feed.entry[ i ];
-				corsObj = {
-					title: iCache.title[ "#text" ],
-					link: ( iCache.link ? iCache.link[ "@attributes" ].href : iCache.id[ "#text" ] ),
-					updated: iCache.updated[ "#text" ]
-				};
-				arr_entry.push( corsObj );
-			}
 		}
 		return arr_entry;
 	},
@@ -6128,22 +6066,10 @@ var componentName = "wb-geomap",
 		// returns DOM object = proceed with init
 		// returns undefined = do not proceed with init (e.g., already initialized)
 		var elm = wb.init( event, componentName, selector ),
-			$elm, $map, $leg, modeJS;
+			$elm, modeJS;
 
 		if ( elm ) {
 			$elm = $( elm );
-			$map = $elm.find( ".wb-geomap-map" );
-			$leg = $elm.find( ".wb-geomap-legend" );
-
-			// Initialize the map height for the loader
-			$map.height( $map.width() * 0.8 );
-			$map.append( "<div class='geomap-progress'><span class='wb-inv'>" + wb.i18n( "load" ) + "</span></div>" );
-			$leg.append( "<div class='skeleton-lgnd-1'><span class='skeleton-lgnd-3'></span></div>" +
-					"<div class='skeleton-lgnd-2'><span class='skeleton-lgnd-3'></span></div>" +
-					"<div class='skeleton-lgnd-2'><span class='skeleton-lgnd-3'></span></div>" +
-					"<div class='skeleton-lgnd-2'><span class='skeleton-lgnd-3'></span></div>" +
-					"<div  class='skeleton-lgnd-1'><span class='skeleton-lgnd-3'></span></div>" );
-
 			modeJS = wb.getMode() + ".js";
 
 			Modernizr.load( [ {
@@ -6151,7 +6077,7 @@ var componentName = "wb-geomap",
 				// For loading multiple dependencies
 				both: [
 					"site!deps/proj4" + modeJS,
-					"site!deps/ol" + modeJS,
+					"site!deps/OpenLayers" + modeJS,
 					"site!deps/geomap-lib" + modeJS
 				],
 				complete: function() {
@@ -7486,47 +7412,6 @@ var componentName = "wb-mltmd",
 
 			// Only initialize the i18nText once
 			if ( !i18nText ) {
-
-				// YT workaround for when played inside a modal dialog, like with lightbox
-				//
-				// the issue is when the iFrame is moved, it reloads and then it doesn't emit the right event to
-				// adjust the WET multimedia controller to represent its current state.
-				//
-				// This needs to be executed only once, that is why it is in the i18nText conditional
-				window.addEventListener( "message", function( e ) {
-					var data, frames, i, i_len, i_cache;
-
-					// Ensure we don't conflict with other postMessage listener
-					try {
-						data = JSON.parse( e.data );
-
-						// Only for a specific YT message
-						if ( data.event && data.event === "infoDelivery" && data.info && data.info.playerState ) {
-
-							// Find the iFrame and evaluate if it needs to be reposted
-							frames = document.getElementsByTagName( "iframe" );
-
-							i_len = frames.length;
-							for ( i = 0; i < i_len; i++ ) {
-								i_cache = frames[ i ];
-								if ( i_cache.dataset.L2 && i_cache.contentWindow === e.source  ) {
-
-									// Prepare the event data and emulate the YT object for our event management need
-									youTubeEvents.call( i_cache, {
-										target: i_cache.parentElement.parentElement.object,
-										data: data.info.playerState
-									} );
-									break;
-								}
-							}
-						}
-					} catch ( err ) { }
-				} );
-
-				//
-				// END YT workaround
-				//
-
 				i18n = wb.i18n;
 				i18nText = {
 					play: i18n( "mmp-play" ),
@@ -7952,8 +7837,7 @@ var componentName = "wb-mltmd",
 			$media = $( media ),
 			timeline = function() {
 				$media.trigger( "timeupdate" );
-			},
-			$mltmPlayerElm;
+			};
 
 		switch ( event.data ) {
 		case null:
@@ -7970,12 +7854,6 @@ var componentName = "wb-mltmd",
 			media.timeline = clearInterval( media.timeline );
 			break;
 		case 1:
-			if ( media.dataset.L2 ) {
-
-				// Reset the close caption state when iframe was reloaded
-				$mltmPlayerElm = $media.parentsUntil( selector ).parent();
-				youTubeApi.call( $mltmPlayerElm.get( 0 ), "setCaptionsVisible", $mltmPlayerElm.hasClass( captionClass ) );
-			}
 			$media
 				.trigger( "canplay" )
 				.trigger( "play" )
@@ -8135,22 +8013,6 @@ $document.on( youtubeEvent, selector, function( event, data ) {
 
 		data.media = $media;
 		data.ytPlayer = ytPlayer;
-
-		// Detect if the YT player reloads, like when magnific Popup show the modal, because it moves the iframe
-		// and then the iframe gets refreshed and reloaded. So the issue is that the iframe stops emitting the event
-		// needed to adjust the multimedia player controler, like the "onStateChange" event.
-		$media.on( "load", function( evt ) {
-
-			var elm = evt.currentTarget,
-				ds = elm.dataset;
-
-			// Do nothing on the first load and add a flag to indicate it is loaded a second time
-			if ( ds.L1 ) {
-				ds.L2 = true;
-			} else {
-				ds.L1 = true;
-			}
-		} );
 
 		$this.trigger( renderUIEvent, [ "youtube", data ] );
 	}
@@ -8314,13 +8176,6 @@ $document.on( "keyup", ctrls, function( event ) {
 
 $document.on( "wb-activate", selector, function() {
 	this.player( "play" );
-} );
-
-$document.on( "closed.wb-overlay", ".wb-overlay", function( event ) {
-	var mltmdPlayer = event.currentTarget.querySelector( selector );
-	if ( mltmdPlayer ) {
-		mltmdPlayer.player( "pause" );
-	}
 } );
 
 $document.on( multimediaEvents, selector, function( event, simulated ) {
@@ -8782,8 +8637,6 @@ var componentName = "wb-overlay",
 				sourceLinks[ overlayId ] = null;
 			}, 1 );
 		}
-
-		$overlay.trigger( "opened" + selector );
 	},
 
 	closeOverlay = function( overlayId, noFocus, userClosed ) {
@@ -8810,8 +8663,6 @@ var componentName = "wb-overlay",
 
 		// Delete the source link reference
 		delete sourceLinks[ overlayId ];
-
-		$overlay.trigger( "closed" + selector );
 	};
 
 $document.on( "timerpoke.wb " + initEvent + " keydown open" + selector +
@@ -9812,6 +9663,10 @@ var componentName = "wb-share",
 				name: "Blogger",
 				url: "http://www.blogger.com/blog_this.pyra?t=&amp;u={u}&amp;n={t}"
 			},
+			delicious: {
+				name: "Delicious",
+				url: "http://delicious.com/post?url={u}&amp;title={t}"
+			},
 			digg: {
 				name: "Digg",
 				url: "http://digg.com/submit?phase=2&amp;url={u}&amp;title={t}"
@@ -9827,6 +9682,10 @@ var componentName = "wb-share",
 			gmail: {
 				name: "Gmail",
 				url: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=&su={t}&body={u}%0A{d}"
+			},
+			googleplus: {
+				name: "Google+",
+				url: "https://plus.google.com/share?url={u}&amp;hl=" + document.documentElement.lang
 			},
 			linkedin: {
 				name: "LinkedIn®",
@@ -9844,13 +9703,17 @@ var componentName = "wb-share",
 				name: "reddit",
 				url: "http://reddit.com/submit?url={u}&amp;title={t}"
 			},
+			stumbleupon: {
+				name: "StumbleUpon",
+				url: "http://www.stumbleupon.com/submit?url={u}&amp;title={t}"
+			},
 			tumblr: {
 				name: "tumblr",
 				url: "http://www.tumblr.com/share/link?url={u}&amp;name={t}&amp;description={d}"
 			},
 			twitter: {
 				name: "Twitter",
-				url: "https://twitter.com/intent/tweet?text={t}&url={u}"
+				url: "http://twitter.com/home?status={t}%20{u}"
 			},
 			yahoomail: {
 				name: "Yahoo! Mail",
@@ -10119,7 +9982,7 @@ var componentName = "wb-tables",
 $document.on( "timerpoke.wb " + initEvent, selector, init );
 
 // Handle the draw.dt event
-$document.on( "draw.dt", selector, function( event, settings ) {
+$document.on( "init.dt draw.dt", selector, function( event, settings ) {
 	var $elm = $( event.target ),
 		pagination = $elm.next( ".bottom" ).find( "div:first-child" ),
 		paginate_buttons = $elm.next( ".bottom" ).find( ".paginate_button" ),
@@ -10161,13 +10024,14 @@ $document.on( "draw.dt", selector, function( event, settings ) {
 					.attr( "aria-pressed", "true" );
 	}
 
+	if ( event.type === "init" ) {
+
+		// Identify that initialization has completed
+		wb.ready( $elm, componentName );
+	}
+
 	// Identify that the table has been updated
 	$elm.trigger( "wb-updated" + selector, [ settings ] );
-} );
-
-// Identify that initialization has completed
-$document.on( "init.dt", function( event ) {
-	wb.ready( $( event.target ), componentName );
 } );
 
 // Handle the draw.dt event
@@ -10182,76 +10046,30 @@ $document.on( "submit", ".wb-tables-filter", function( event ) {
 	$datatable.search( "" ).columns().search( "" );
 
 	// Lets loop throug all options
-	var $lastColumn = -1, $cbVal = "";
+	var $value = "", $lastColumn = -1;
 	$form.find( "[name]" ).each( function() {
 		var $elm = $( this ),
-			$value = "",
-			$regex = "",
-			$isAopts = $elm.data( "aopts" ),
 			$column = parseInt( $elm.attr( "data-column" ), 10 );
 
-		// Ignore the advanced options fields
-		if ( $isAopts ) {
-			return;
-		}
-
-		// Filters based on input type
 		if ( $elm.is( "select" ) ) {
 			$value = $elm.find( "option:selected" ).val();
 		} else if ( $elm.is( ":checkbox" ) ) {
-
-			// Verifies if using same checkbox list
-			if ( $column !== $lastColumn || $lastColumn === -1 ) {
-				$cbVal = "";
+			if ( $column !== $lastColumn && $lastColumn !== -1 ) {
+				$value = "";
 			}
 			$lastColumn = $column;
 
-			// Verifies if checkbox is checked before setting value
 			if ( $elm.is( ":checked" ) ) {
-				var $aoptsSelector = "[data-aopts*='\"column\": \"" + $column + "\"']:checked",
-					$aopts = $( $aoptsSelector ),
-					$aoType = ( $aopts && $aopts.data( "aopts" ) ) ? $aopts.data( "aopts" ).type.toLowerCase() : "";
-
-				if ( $aoType === "both" ) {
-					$cbVal += "(?=.*\\b" + $elm.val() + "\\b)";
-				} else {
-					$cbVal += ( $cbVal.length > 0 ) ? "|" : "";
-					$cbVal += $elm.val();
-				}
-
-				$value = $cbVal;
-				$value = $value.replace( /\s/g, "\\s*" );
-
-				// Adjust regex based on advanced options
-				switch ( $aoType ) {
-				case "both":
-					$regex = "(" + $value + ").*";
-					break;
-				case "either":
-					$regex = "^(" + $value + ")$";
-					break;
-				case "and":
-					$regex = ( $value.indexOf( "|" ) > -1 ) ? "^(" + $value + "|[,\\s])(" + $value + "|[,\\s])+$" : "(" + $value + ")";
-					break;
-				case "any":
-				default:
-					$regex = "(" + $value + ")";
-					break;
-				}
+				$value += ( $value.length > 0 ) ? "|" : "";
+				$value += $elm.val();
 			}
 		} else {
 			$value = $elm.val();
 		}
 
 		if ( $value ) {
-
-			// Verifies if regex was preset, if not preset use 'contains value' as default
-			if ( !$regex ) {
-				$value = $value.replace( /\s/g, "\\s*" );
-				$regex = "(" + $value + ")";
-			}
-
-			$datatable.column( $column ).search( $regex, true ).draw();
+			$value = $value.replace( /\s/g, "\\s*" );
+			$datatable.column( $column ).search( "(" + $value + ")", true ).draw();
 		}
 	} );
 
@@ -10268,7 +10086,6 @@ $document.on( "click", ".wb-tables-filter [type='reset']", function( event ) {
 
 	$form.find( "select" ).prop( "selectedIndex", 0 );
 	$form.find( "input:checkbox" ).prop( "checked", false );
-	$form.find( "input:radio" ).prop( "checked", false );
 	$form.find( "input[type=date]" ).val( "" );
 
 	return false;
@@ -11705,16 +11522,6 @@ var componentName = "wb-toggle",
 		} else if ( !selector ) {
 			return $link.data( componentName + "-state" ) || data.stateOff;
 
-		// When toggling multiple <details> elements, state is "off" if any are collapsed
-		} else if ( selector === "details" && !type ) {
-			var anyCollapsed = false;
-			getElements( $link, data ).each( function() {
-				if ( !$( this ).attr( "open" ) ) {
-					anyCollapsed = true;
-				}
-			} );
-			return anyCollapsed ? data.stateOff : data.stateOn;
-
 		// Get the current on/off state of the elements specified by the selector and parent
 		} else if ( states.hasOwnProperty( selector ) ) {
 			return states[ selector ].hasOwnProperty( parent ) ?
@@ -12097,7 +11904,7 @@ $document.on( clickEvents, linkSelector, function( event ) {
 	var testHref = event.currentTarget.getAttribute( "href" );
 
 	// Same page links only
-	if ( testHref.length > 1 && testHref.charAt( 0 ) === "#" && !event.isDefaultPrevented() &&
+	if ( testHref.charAt( 0 ) === "#" && !event.isDefaultPrevented() &&
 		( $linkTarget = $( "#" + wb.jqEscape( testHref.substring( 1 ) ) ) ).length !== 0 ) {
 		wb.ignoreHashChange = true;
 		$linkTarget.trigger( setFocusEvent );

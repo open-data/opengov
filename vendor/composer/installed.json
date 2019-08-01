@@ -11027,34 +11027,34 @@
     },
     {
         "name": "wet-boew/theme-gcweb",
-        "version": "v5.1",
-        "version_normalized": "5.1.0.0",
+        "version": "v5.0.1",
+        "version_normalized": "5.0.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wet-boew/themes-cdn.git",
-            "reference": "v5.1-gcweb"
+            "reference": "v5.0.1-gcweb"
         },
         "dist": {
             "type": "tar",
-            "url": "https://github.com/wet-boew/themes-cdn/archive/v5.1-gcweb.tar.gz",
-            "reference": "v5.1-gcweb"
+            "url": "https://github.com/wet-boew/themes-cdn/archive/v5.0.1-gcweb.tar.gz",
+            "reference": "v5.0.1-gcweb"
         },
         "type": "drupal-library",
         "installation-source": "dist"
     },
     {
         "name": "wet-boew/wet-boew",
-        "version": "v4.0.31",
-        "version_normalized": "4.0.31.0",
+        "version": "v4.0.30",
+        "version_normalized": "4.0.30.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wet-boew/wet-boew-cdn.git",
-            "reference": "v4.0.31"
+            "reference": "v4.0.30"
         },
         "dist": {
             "type": "tar",
-            "url": "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.31.tar.gz",
-            "reference": "v4.0.31"
+            "url": "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.30.tar.gz",
+            "reference": "v4.0.30"
         },
         "type": "drupal-library",
         "installation-source": "dist"
