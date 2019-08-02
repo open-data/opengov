@@ -87,6 +87,11 @@ field_settings:
     datasource_id: solr_document
     property_path: agreement_value
     type: string
+  amendment_date:
+    label: 'Amendment date'
+    datasource_id: solr_document
+    property_path: amendment_date
+    type: string
   amendment_number:
     label: 'Amendment number'
     datasource_id: solr_document

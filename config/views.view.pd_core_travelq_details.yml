@@ -640,59 +640,6 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        airfare:
-          id: airfare
-          table: search_api_index_pd_core_travelq
-          field: airfare
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: Airfare
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: strong
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: p
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: true
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
         destination_en:
           id: destination_en
           table: search_api_index_pd_core_travelq
@@ -799,6 +746,59 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
+        airfare:
+          id: airfare
+          table: search_api_index_pd_core_travelq
+          field: airfare
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Airfare
+          exclude: false
+          alter:
+            alter_text: true
+            text: '${{ airfare|trim|number_format(2, ''.'', '','') }}'
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: strong
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: p
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: true
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
         other_transport:
           id: other_transport
           table: search_api_index_pd_core_travelq
@@ -809,8 +809,8 @@ display:
           label: 'Other Transportation'
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: "${{ other_transport|trim|number_format(2, '.', ',') }}\r\n"
             make_link: false
             path: ''
             absolute: false
@@ -862,8 +862,8 @@ display:
           label: Lodging
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '${{ lodging|trim|number_format(2, ''.'', '','') }}'
             make_link: false
             path: ''
             absolute: false
@@ -915,8 +915,8 @@ display:
           label: 'Meals and Incidentals'
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '${{ meals|trim|number_format(2, ''.'', '','') }}'
             make_link: false
             path: ''
             absolute: false
@@ -968,8 +968,8 @@ display:
           label: 'Other Expenses'
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '${{ other_expenses|trim|number_format(2, ''.'', '','') }}'
             make_link: false
             path: ''
             absolute: false
@@ -1021,8 +1021,8 @@ display:
           label: 'Total Amount'
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '${{ total|trim|number_format(2, ''.'', '','') }}'
             make_link: false
             path: ''
             absolute: false

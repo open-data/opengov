@@ -8,16 +8,28 @@ display:
           label: Nom
         airfare:
           label: 'Frais aériens'
+          alter:
+            text: '{{ airfare|trim|number_format(2, '','', '','') }} $'
         other_transport:
           label: 'Autres frais de transport'
+          alter:
+            text: "{{ other_transport|trim|number_format(2, ',', ',') }} $\r\n"
         lodging:
           label: Hébergement
+          alter:
+            text: '{{ lodging|trim|number_format(2, '','', '','') }} $'
         meals:
           label: 'Frais de repas et frais accessoires'
+          alter:
+            text: '{{ meals|trim|number_format(2, '','', '','') }} $'
         other_expenses:
           label: 'Autres dépenses'
+          alter:
+            text: '{{ other_expenses|trim|number_format(2, '','', '','') }} $'
         total:
           label: 'Montant total'
+          alter:
+            text: '{{ total|trim|number_format(2, '','', '','') }} $'
         start_date:
           label: 'Date du début du voyage'
         end_date:

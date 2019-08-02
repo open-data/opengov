@@ -27,6 +27,8 @@ display:
         agreement_end_date:
           alter:
             text: '{{ agreement_end_date|trim|date(''Y-m-d'') }}'
+        amendment_date:
+          label: 'Date de modification'
       title: 'Subventions et des contributions gouvernementaux'
       footer:
         area_text_custom:
