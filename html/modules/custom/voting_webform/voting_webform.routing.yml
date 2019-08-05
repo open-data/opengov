@@ -13,11 +13,11 @@ voting_webform.getVoteAverage:
   dependencies:
     - drupal:webform
 
-#voting_webform.getVoteUpExternalForm:
-#  path: '/vote-up-external/{uuid}'
+#voting_webform.getRatingExternalForm:
+#  path: '/rate-external/{uuid}'
 #  defaults:
-#    _controller: '\Drupal\voting_webform\Controller\VotingWebformController::getVoteUpExternalForm'
-#    _title: 'Render the vote up external webform'
+#    _controller: '\Drupal\voting_webform\Controller\VotingWebformController::getRatingExternalForm'
+#    _title: 'Render the rating external webform'
 #  requirements:
 #    _permission: 'access content'
 #    uuid: '^[0-9][A-Za-z0-9 -]*$'

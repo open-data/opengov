@@ -1,0 +1,25 @@
+/* webform */
+.webform-submission-form {
+  margin-top: 10px;
+  background: #eee;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1em;
+}
+
+/* rating */
+div.svg div.rateit-range {
+  background: url(../images/rating/mapleleaf-normal.svg) !important;
+}
+
+div.svg div.rateit-hover {
+  background: url(../images/rating/mapleleaf-hover.svg) !important;
+}
+
+div.svg div.rateit-selected {
+  background: url(../images/rating/mapleleaf-selected.svg) !important;
+}
+
+div.svg div.rateit-preset {
+  background: url(../images/rating/mapleleaf-preset.svg) !important;
+}

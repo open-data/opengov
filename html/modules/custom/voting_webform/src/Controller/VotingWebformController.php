@@ -72,21 +72,39 @@ class VotingWebformController extends ControllerBase {
     return new Response($renderHTML);
   }
 
-/*  public function getVoteUpExternalForm(Request $request, $uuid)  {
+/*
+  public function getRatingExternalForm(Request $request, $uuid)  {
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $action = '/'. $langcode . '/vote?uuid=' . $uuid;
     $renderHTML = '';
-    $referer_url = $request->headers->get('referer');
-    $url_explode = explode("/",$referer_url);
-    $uuid = end($url_explode);
 
-    // only render the form if validated
-    if ($this->validate($request, $uuid, 'Vote-Vote up or LIKE (external)')) {
-      $vote_webform = [
-        '#type' => 'webform',
-        '#webform' => 'vote_up_down_external',
-        '#default_data' => [ 'referred_url' => $referer_url, 'uuid' => $uuid ],
-      ];
-      $renderHTML .= \Drupal::service('renderer')->render($vote_webform);
-    }
+    $vote_webform = [
+      '#type' => 'webform',
+      '#webform' => 'vote',
+      '#default_data' => ['dataset_uuid' => $uuid],
+    ];
+    $vote_webformHTML = \Drupal::service('renderer')->render($vote_webform);
+    $vote_webformHTML = str_replace('form_action_p_pvdeGsVG5zNF_XLGPTvYSKCf43t8qZYSwcfZl2uzM', $action, $vote_webformHTML);
+
+    $renderHTML .= '<link rel="stylesheet" media="all" href="/modules/custom/voting_webform/css/rating.css">';
+    $renderHTML .= '<link rel="stylesheet" media="all" href="https://cdn.jsdelivr.net/gh/gjunge/rateit.js@1.1.2/scripts/rateit.css">';
+    $renderHTML .= '<link rel="stylesheet" media="all" href="/modules/contrib/webform/css/webform.element.rating.css">';
+    $renderHTML .= $vote_webformHTML;
+    $renderHTML .= '<script src="https://cdn.jsdelivr.net/gh/gjunge/rateit.js@1.1.2/scripts/jquery.rateit.min.js"></script>';
+    $renderHTML .= '<script src="/modules/contrib/webform/js/webform.element.rating.js?v=8.7.5"></script>';
+    $renderHTML .= '<script src="/core/assets/vendor/jquery/jquery.min.js?v=3.2.1"></script>';
+
+    // highlighted block or messaging
+    $block_manager = \Drupal::service('plugin.manager.block');
+    $config = [];
+    $plugin_block = $block_manager->createInstance('system_messages_block', $config);
+    $access_result = $plugin_block->access(\Drupal::currentUser());
+    $messages = is_object($access_result) && $access_result->isForbidden() || is_bool($access_result) && !$access_result
+      ? []
+      : $plugin_block->build();
+    $messagesHTML = \Drupal::service('renderer')->render($messages);
+    $renderHTML .= $messagesHTML;
+
     return new Response($renderHTML);
   }
 */
