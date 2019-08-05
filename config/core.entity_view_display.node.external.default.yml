@@ -12,7 +12,6 @@ dependencies:
     - node.type.external
   module:
     - comment
-    - link
     - user
 id: node.external.default
 targetEntityType: node
@@ -20,7 +19,7 @@ bundle: external
 mode: default
 content:
   comment:
-    weight: 2
+    weight: 1
     label: above
     settings:
       view_mode: default
@@ -33,21 +32,10 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_url:
-    weight: 1
-    label: inline
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    type: link
-    region: content
 hidden:
   feeds_item: true
   field_type: true
+  field_url: true
   field_uuid: true
   langcode: true
   links: true
