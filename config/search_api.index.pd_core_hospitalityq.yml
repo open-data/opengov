@@ -47,6 +47,11 @@ field_settings:
     datasource_id: solr_document
     property_path: additional_comments_fr
     type: string
+  date_clean:
+    label: 'Date clean'
+    datasource_id: solr_document
+    property_path: date_clean
+    type: string
   date_year:
     label: 'Date year'
     datasource_id: solr_document
@@ -176,6 +181,16 @@ field_settings:
     label: 'Total fr'
     datasource_id: solr_document
     property_path: total_fr
+    type: string
+  vendor_en:
+    label: 'Vendor en'
+    datasource_id: solr_document
+    property_path: vendor_en
+    type: string
+  vendor_fr:
+    label: 'Vendor fr'
+    datasource_id: solr_document
+    property_path: vendor_fr
     type: string
 datasource_settings:
   solr_document:

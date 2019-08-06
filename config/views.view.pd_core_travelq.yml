@@ -1082,6 +1082,18 @@ display:
           expose:
             label: Date
           plugin_id: search_api
+        date_clean:
+          id: date_clean
+          table: search_api_index_pd_core_travelq
+          field: date_clean
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: true
+          expose:
+            label: Date
+          plugin_id: search_api
         total:
           id: total
           table: search_api_index_pd_core_travelq

@@ -40,13 +40,13 @@ third_party_settings:
             left:
               wrapper: div
               classes:
-                col-sm-8: col-sm-8
+                col-md-8: col-md-8
               add_region_classes: 1
               attributes: ''
             right:
               wrapper: div
               classes:
-                col-sm-4: col-sm-4
+                col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
         components:
@@ -88,13 +88,13 @@ third_party_settings:
             left:
               wrapper: div
               classes:
-                col-sm-3: col-sm-3
+                col-md-3: col-md-3
               add_region_classes: 1
               attributes: ''
             right:
               wrapper: div
               classes:
-                col-sm-9: col-sm-9
+                col-md-9: col-md-9
               add_region_classes: 1
               attributes: class|mrgn-tp-xl
         components:
