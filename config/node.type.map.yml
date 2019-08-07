@@ -1,0 +1,18 @@
+uuid: fa2e2f3f-6934-47bd-95e3-25f8b5f3312d
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:menu_link_content:02ef4224-64c7-4283-94ab-57169ce76ae6'
+name: Map
+type: map
+description: 'Maps gallery for Federal Geospatial Platform (https://gcgeo.gc.ca/en/mapGallery.html)'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

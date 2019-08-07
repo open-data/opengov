@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * Implements hook_preprocess_field()
+ * Pass on language variable to twig file
+ */
+function map_preprocess_field(&$variables, $hook) {
+  if ($variables['field_name'] === 'field_map_key') {
+    $variables['language'] = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  }
+}
+
+/**
+ * Implements hook_preprocess_node()
+ * attach additional libraries to map contents
+ */
+function map_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  if ($node->getType() == 'map') {
+    // disable caching on map
+    \Drupal::service('page_cache_kill_switch')->trigger();
+
+    // attach polyfill for IE
+    $browser = $_SERVER['HTTP_USER_AGENT'];
+    if (preg_match("/MSIE/", $browser) || preg_match("/Trident.*rv\:11\./", $browser)) {
+      $variables['#attached']['library'][] = 'map/polyfill.ie';
+    }
+
+    // fetch map keys
+    $size = sizeof($node->get('field_map_key')->getValue());
+    $map_keys = '';
+    for ($x = 0; $x < $size; $x++) {
+      $map_keys .= $node->get('field_map_key')->getValue()[$x]['value'] . ',';
+    }
+
+    // attach libraries
+    $variables['#attached']['drupalSettings']['map_keys'] = $map_keys;
+    $variables['#attached']['library'][] = 'map/mapview';
+    $variables['#attached']['library'][] = 'map/fgpv';
+  }
+}
+
+/**
+ * Implements hook_preprocess_node_view()
+ * disable caching on map contents
+ */
+function map_node_view(array &$build, \Drupal\node\NodeInterface $node, $display, $view_mode) {
+  if ($node->getType() == 'map' && $view_mode == 'full') {
+    // disable caching on map
+    $build['#cache']['max-age'] = 0;
+  }
+}

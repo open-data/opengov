@@ -1,0 +1,22 @@
+uuid: e4649648-ccab-4e2a-ae86-f596d707fb5b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: map
+label: Map
+type: 'canonical_entities:node'
+pattern: 'map/[node:title]'
+selection_criteria:
+  0025692c-91c8-47e3-8f43-19031456eb61:
+    id: node_type
+    bundles:
+      map: map
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 0025692c-91c8-47e3-8f43-19031456eb61
+selection_logic: and
+weight: -5
+relationships: {  }

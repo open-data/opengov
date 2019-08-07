@@ -1,0 +1,22 @@
+uuid: f1f6538f-76c4-4ff3-8db7-00b7bf703190
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.map
+  module:
+    - text
+id: node.map.body
+field_name: body
+entity_type: node
+bundle: map
+label: 'Map description'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

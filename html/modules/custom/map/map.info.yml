@@ -1,0 +1,9 @@
+name: 'map'
+type: module
+description: 'Implement FGP viewer for map content type'
+core: 8.x
+package: 'Open Government'
+dependencies:
+  - drupal:node
+  - drupal:comment
+  - drupal:system (>=8.2.0)

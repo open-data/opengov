@@ -13,6 +13,7 @@ dependencies:
     - node.type.external
     - node.type.idea
     - node.type.landing_page
+    - node.type.map
     - node.type.page
     - node.type.suggested_dataset
     - node.type.webform
@@ -101,6 +102,7 @@ type_settings:
       - external
       - idea
       - landing_page
+      - map
       - page
       - suggested_dataset
       - webform

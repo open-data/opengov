@@ -1,0 +1,6 @@
+map.render:
+  path: '/map/{title}'
+#  defaults:
+#    _controller: '\Drupal\map\Controller::render()'
+  options:
+    no_cache: TRUE
