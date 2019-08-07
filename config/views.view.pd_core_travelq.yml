@@ -1070,18 +1070,6 @@ display:
           fields: {  }
           plugin_id: search_api_fulltext
       sorts:
-        date_year:
-          id: date_year
-          table: search_api_index_pd_core_travelq
-          field: date_year
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: DESC
-          exposed: true
-          expose:
-            label: Date
-          plugin_id: search_api
         date_clean:
           id: date_clean
           table: search_api_index_pd_core_travelq
