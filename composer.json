@@ -35,16 +35,16 @@
             "type"    : "package",
             "package" : {
                 "name"    : "wet-boew/wet-boew",
-                "version" : "v4.0.30",
+                "version" : "v4.0.31",
                 "type"    : "drupal-library",
                 "dist"    : {
-                    "url"  : "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.30.tar.gz",
+                    "url"  : "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.31.tar.gz",
                     "type" : "tar"
                 },
                 "source"  : {
                     "url"       : "https://github.com/wet-boew/wet-boew-cdn.git",
                     "type"      : "git",
-                    "reference" : "v4.0.30"
+                    "reference" : "v4.0.31"
                 }
             }
         },
@@ -52,16 +52,16 @@
             "type"    : "package",
             "package" : {
                 "name"    : "wet-boew/theme-gcweb",
-                "version" : "v5.0.1",
+                "version" : "v5.1",
                 "type"    : "drupal-library",
                 "dist"    : {
-                    "url"  : "https://github.com/wet-boew/themes-cdn/archive/v5.0.1-gcweb.tar.gz",
+                    "url"  : "https://github.com/wet-boew/themes-cdn/archive/v5.1-gcweb.tar.gz",
                     "type" : "tar"
                 },
                 "source"  : {
                     "url"       : "https://github.com/wet-boew/themes-cdn.git",
                     "type"      : "git",
-                    "reference" : "v5.0.1-gcweb"
+                    "reference" : "v5.1-gcweb"
                 }
             }
         }
@@ -104,8 +104,8 @@
         "w8tcha/ckeditor-codemirror": "1.17",
         "webflo/drupal-finder": "^1.0.0",
         "webmozart/path-util": "^2.3",
-        "wet-boew/theme-gcweb": "5.0.1",
-        "wet-boew/wet-boew": "v4.0.30",
+        "wet-boew/theme-gcweb": "5.1",
+        "wet-boew/wet-boew": "v4.0.31",
         "zaporylie/composer-drupal-optimizations": "^1.0"
     },
     "require-dev": {
