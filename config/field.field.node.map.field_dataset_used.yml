@@ -1,17 +1,17 @@
-uuid: 1f4b876e-e074-421e-b2f4-74da1e825904
+uuid: b870f0f3-8dfd-4507-97a1-8978a24dbfe2
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_url
+    - field.storage.node.field_dataset_used
     - node.type.map
   module:
     - link
-id: node.map.field_url
-field_name: field_url
+id: node.map.field_dataset_used
+field_name: field_dataset_used
 entity_type: node
 bundle: map
-label: URL
+label: 'Datasets used'
 description: ''
 required: false
 translatable: true

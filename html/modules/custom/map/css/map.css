@@ -6,12 +6,3 @@
   position: relative;
   width: 100%;
 }
-
-.map-gallery {
-  position: relative;
-  border: 1px solid #BBB;
-  background: #eee;
-  float: left;
-  width: 100%;
-  text-align: center;
-}

@@ -104,7 +104,9 @@ class ViewsBootstrap {
     if (preg_match('~col-[a-z]{2}-([0-9]*)~', $size, $matches)) {
       return 12 / $matches[1];
     }
-
+    if (preg_match('~col-([0-9]*)~', $size, $matches)) {
+      return 12 / $matches[1];
+    }
     return FALSE;
   }
 

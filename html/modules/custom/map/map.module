@@ -17,9 +17,6 @@ function map_preprocess_field(&$variables, $hook) {
 function map_preprocess_node(&$variables) {
   $node = $variables['node'];
   if ($node->getType() == 'map') {
-    // disable caching on map
-    \Drupal::service('page_cache_kill_switch')->trigger();
-
     // attach polyfill for IE
     $browser = $_SERVER['HTTP_USER_AGENT'];
     if (preg_match("/MSIE/", $browser) || preg_match("/Trident.*rv\:11\./", $browser)) {
