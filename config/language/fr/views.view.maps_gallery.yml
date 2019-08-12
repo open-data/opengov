@@ -1,0 +1,9 @@
+display:
+  block_2:
+    display_options:
+      header:
+        area_text_custom:
+          content: '<p>Voici quelques cartes pour vous permettre de commencer :</p><br/>'
+      footer:
+        area_text_custom:
+          content: "<br/><p>Veuillez <a href=\"mailto:NRCan.fgp-pgf.RNCan@Canada.ca?subject=PGF%20-%20Suggestion%20pour%20la%20galerie%20de%20cartes\">suggérer d’autres cartes</a> que vous aimeriez pouvoir consulter.\r\n</p><br/>\r\n"
