@@ -4,8 +4,8 @@ display:
     display_options:
       exposed_form:
         options:
-          submit_button: Appliquer
-          exposed_sorts_label: 'Trier par'
+          submit_button: Rechercher
+          exposed_sorts_label: Trier
       pager:
         options:
           tags:
@@ -21,3 +21,8 @@ display:
         combine:
           expose:
             label: Recherche
+  block_1:
+    display_options:
+      header:
+        result:
+          content: '<p><strong>@total résultats trouvé(s)</strong></p>'
