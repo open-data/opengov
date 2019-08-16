@@ -1,0 +1,1085 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -114.37248,
+                    62.45411,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Yellowknife",
+                "city": "Yellowknife",
+                "province": "NT",
+                "url": "<a href=\"http://opendata.yellowknife.ca/\">Open Data</a> (en anglais seulement)"
+            },
+            "id": "nt_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -63.6229474,
+                    44.6492671,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Région et municipalité de Halifax",
+                "city": "Halifax",
+                "province": "NS",
+                "url": "<a href=\"http://www.halifax.ca/opendata/\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "ns_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -66.66655,
+                    45.945462,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Fredericton",
+                "city": "Fredericton",
+                "province": "NB",
+                "url": "<a href=\"http://www.fredericton.ca/fr/donnees-ouvertes\">Portail données ouvertes</a>"
+            },
+            "id": "nb_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -66.06658,
+                    45.28034,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Saint John",
+                "city": "Saint John",
+                "province": "NB",
+                "url": "<a href=\"http://catalogue-fr-saintjohn.opendata.arcgis.com/?locale=fr\">Portail données ouvertes</a>"
+            },
+            "id": "nb_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -75.6269264,
+                    45.485499,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Gatineau",
+                "city": "Gatineau",
+                "province": "QC",
+                "url": "<a href=\"http://gatineau.ca/donneesouvertes/default_fr.aspx\">Portail de données ouvertes</a>"
+            },
+            "id": "qc_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -73.7120832,
+                    45.5601451,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Montréal",
+                "city": "Montréal",
+                "province": "QC",
+                "url": "<a href=\"http://donnees.ville.montreal.qc.ca/\">Portail de données ouvertes</a>"
+            },
+            "id": "qc_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -71.3460728,
+                    46.8580074,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Québec",
+                "city": "Québec",
+                "province": "QC",
+                "url": "<a href=\"http://donnees.ville.quebec.qc.ca/\">Données ouvertes</a>"
+            },
+            "id": "qc_3"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -71.9741315,
+                    45.417094,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Sherbrooke",
+                "city": "Sherbrooke",
+                "province": "QC",
+                "url": "<a href=\"https://www.donneesquebec.ca/fr/organisation/ville-de-sherbrooke/\">Données ouvertes Sherbrooke</a>"
+            },
+            "id": "qc_4"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -73.7124089,
+                    45.6066487,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Laval",
+                "city": "Laval",
+                "province": "QC",
+                "url": "<a href=\"http://www.donneesquebec.ca/fr/organisation/ville-de-laval\">Données ouvertes Laval</a>"
+            },
+            "id": "qc_5"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -73.4400814,
+                    45.7532854,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Repentigny",
+                "city": "Repentigny",
+                "province": "QC",
+                "url": "<a href=\"https://www.donneesquebec.ca/fr/organisation/ville-de-repentigny/\">Données ouvertes Repentigny</a>"
+            },
+            "id": "qc_6"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -72.7435254,
+                    46.5618559,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Shawinigan",
+                "city": "Shawinigan",
+                "province": "QC",
+                "url": "<a href=\"https://www.donneesquebec.ca/fr/organisation/ville-de-shawinigan/\">Données ouvertes Shawinigan</a>"
+            },
+            "id": "qc_7"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -68.53497,
+                    48.43898,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Rimouski",
+                "city": "Rimouski",
+                "province": "QC",
+                "url": "<a href=\"https://www.donneesquebec.ca/fr/organisation/ville-de-rimouski/\">Données ouvertes Rimouski</a>"
+            },
+            "id": "qc_8"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -73.872875,
+                    45.668896,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Blainville",
+                "city": "Blainville",
+                "province": "QC",
+                "url": "<a href=\"https://www.donneesquebec.ca/fr/organisation/ville-de-blainville/\">Données ouvertes Blainville</a>"
+            },
+            "id": "qc_9"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.767,
+                    43.683,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Brampton",
+                "city": "Brampton",
+                "province": "ON",
+                "url": "<a href=\"http://www.brampton.ca/EN/City-Hall/OpenGov/Pages/Welcome.aspx\">OpenGov Brampton</a> (en anglais seulement)"
+            },
+            "id": "on_20"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.8419155,
+                    43.3814301,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Burlington",
+                "city": "Burlington",
+                "province": "ON",
+                "url": "<a href=\"http://www.burlington.ca/en/services-for-you/open-data.asp\">Open Data Burlington</a> (en anglais seulement)"
+            },
+            "id": "on_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.9353958,
+                    43.2608104,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Hamilton",
+                "city": "Hamilton",
+                "province": "ON",
+                "url": "<a href=\"http://www.hamilton.ca/city-initiatives/strategies-actions/open-accessible-data\">Open and Accessible Data</a> (en anglais seulement)"
+            },
+            "id": "on_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -81.24862,
+                    42.948881,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de London",
+                "city": "London",
+                "province": "ON",
+                "url": "<a href=\"http://www.london.ca/city-hall/open-data/Pages/default.aspx\">Open Data</a> (en anglais seulement)"
+            },
+            "id": "on_3"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.6754895,
+                    43.6091721,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Mississauga",
+                "city": "Mississauga",
+                "province": "ON",
+                "url": "<a href=\"http://www.mississauga.ca/portal/residents/mississaugadata\">Mississauga Data</a> (en anglais seulement)"
+            },
+            "id": "on_4"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.0880345,
+                    43.0539325,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Niagara Falls",
+                "city": "Niagara Falls",
+                "province": "ON",
+                "url": "<a href=\"http://www.niagarafalls.ca/services/open\">Open Data</a> (en anglais seulement)"
+            },
+            "id": "on_5"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -75.8002568,
+                    45.2501566,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville d’Ottawa",
+                "city": "Ottawa",
+                "province": "ON",
+                "url": "<a href=\"http://ottawa.ca/fr/hotel-de-ville/decouvrir-votre-ville/donnees-ouvertes\">Données ouvertes Ottawa</a>"
+            },
+            "id": "on_6"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -81.02674,
+                    46.60685,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville du Grand Sudbury",
+                "city": "Sudbury",
+                "province": "ON",
+                "url": "<a href=\"http://opendata.greatersudbury.ca\">Portail de données ouvertes</a>"
+            },
+            "id": "on_8"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.3777061,
+                    43.7182713,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Toronto",
+                "city": "Toronto",
+                "province": "ON",
+                "url": "<a href=\"http://www.toronto.ca/open\">Open Data - Accessing City Hall</a> (en anglais seulement)"
+            },
+            "id": "on_9"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.5467194,
+                    43.4822185,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Waterloo",
+                "city": "Waterloo",
+                "province": "ON",
+                "url": "<a href=\"http://www.waterloo.ca/en/government/opendata.asp\">Open Data Waterloo</a> (en anglais seulement)"
+            },
+            "id": "on_10"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.2297889,
+                    42.9803594,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Welland",
+                "city": "Welland",
+                "province": "ON",
+                "url": "<a href=\"http://www.welland.ca/open/\">Open Data Welland</a> (en anglais seulement)"
+            },
+            "id": "on_11"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -83.002882,
+                    42.2912792,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Windsor",
+                "city": "Windsor",
+                "province": "ON",
+                "url": "<a href=\"http://www.citywindsor.ca/opendata/Pages/Open-Data-Catalogue.aspx\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "on_12"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.240168,
+                    43.534433,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Guelph",
+                "city": "Guelph",
+                "province": "ON",
+                "url": "<a href=\"http://openguelph.wpengine.com/open-data-guelph/\">Open Data Guelph</a> (en anglais seulement)"
+            },
+            "id": "on_13"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.330038,
+                    43.0416077,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Région de Niagara",
+                "city": "Niagara",
+                "province": "ON",
+                "url": "<a href=\"http://www.niagararegion.ca/government/opendata/default.aspx\">Open Data Niagara</a> (en anglais seulement)"
+            },
+            "id": "on_14"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.5283199,
+                    43.4782486,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Région de Waterloo",
+                "city": "Waterloo",
+                "province": "ON",
+                "url": "<a href=\"http://www.regionofwaterloo.ca/en/regionalgovernment/OpenDataHome.asp\">Open Data Portal</a>"
+            },
+            "id": "on_15"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.4833,
+                    43.45,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Kitchener",
+                "city": "Kitchener",
+                "province": "ON",
+                "url": "<a href=\"http://www.kitchener.ca/en/insidecityhall/Open-Government.asp\">Open Government</a> (en anglais seulement)"
+            },
+            "id": "on_16"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -76.9,
+                    44.95,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Comté de Frontenac Nord",
+                "city": "Frontenac Nord",
+                "province": "ON",
+                "url": "<a href=\"http://data.nftwp.opendata.arcgis.com/\">North Frontenac Township Open Data</a> (en anglais seulement)"
+            },
+            "id": "on_17"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.8833,
+                    42.9333,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Comté de Haldimand",
+                "city": "Haldimand County",
+                "province": "ON",
+                "url": "<a href=\"http://opendata.haldimandcounty.on.ca/\">Open Data</a> (en anglais seulement)"
+            },
+            "id": "on_18"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.6667,
+                    44.3333,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Comté de Grey",
+                "city": "Comté de Grey",
+                "province": "ON",
+                "url": "<a href=\"http://opendata.grey.ca\">Grey County Open Data</a> (en anglais seulement)"
+            },
+            "id": "on_19"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.4770299,
+                    43.6817971,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Région de York",
+                "city": "York",
+                "province": "ON",
+                "url": "<a href=\"http://www.york.ca/wps/portal/yorkhome/yorkregion/yr/statisticsanddata/opendata\">Open Data</a> (en anglais seulement)"
+            },
+            "id": "on_21"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.8184356689,
+                    44.1763267517,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Région de Durham",
+                "city": "Durham",
+                "province": "ON",
+                "url": "<a href=\"http://opendata.durham.ca/\">Open Data</a> (en anglais seulement)"
+            },
+            "id": "on_22"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.9067105,
+                    49.8503479,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Brandon",
+                "city": "Brandon",
+                "province": "MB",
+                "url": "<a href=\"http://opengov.brandon.ca/\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "mb_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -97.1522251,
+                    49.853822,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Winnipeg",
+                "city": "Winnipeg",
+                "province": "MB",
+                "url": "<a href=\"https://data.winnipeg.ca/\">Le catalogue de données ouvertes de la ville de Winnipeg</a> (en anglais seulement)"
+            },
+            "id": "mb_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -104.6166075,
+                    50.4513789,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Regina",
+                "city": "Regina",
+                "province": "SK",
+                "url": "<a href=\"http://open.regina.ca/\">Open Government Data Initiative</a> (en anglais seulement)"
+            },
+            "id": "sk_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -106.646727,
+                    52.1396545,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Saskatoon",
+                "city": "Saskatoon",
+                "province": "SK",
+                "url": "<a href=\"http://opendata-saskatoon.cloudapp.net/\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "sk_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -115.5683895,
+                    51.176934,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Banff",
+                "city": "Banff",
+                "province": "AB",
+                "url": "<a href=\"http://www.banffopendata.ca/\">Open Government Data Initiative</a> (en anglais seulement)"
+            },
+            "id": "ab_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -114.0741556,
+                    51.013117,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Calgary",
+                "city": "Calgary",
+                "province": "AB",
+                "url": "<a href=\"https://cityonline.calgary.ca/Pages/Category.aspx?cat=CITYonlineDefault&category=PublicData\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "ab_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -113.4939486,
+                    53.5558774,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville d’Edmonton",
+                "city": "Edmonton",
+                "province": "AB",
+                "url": "<a href=\"https://data.edmonton.ca/\">Open Data Catalogue (en anglais seulement)</a>"
+            },
+            "id": "ab_3"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -118.8203951,
+                    55.159757,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Comté de Grande Prairie",
+                "city": "Grande Prairie",
+                "province": "AB",
+                "url": "<a href=\"http://data.countygp.ab.ca/\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "ab_4"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -110.7093926,
+                    50.0514124,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Medicine Hat",
+                "city": "Medicine Hat",
+                "province": "AB",
+                "url": "<a href=\"http://www.medicinehat.ca/index.aspx?page=392\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "ab_5"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -113.8040925,
+                    52.266716,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Red Deer",
+                "city": "Red Deer",
+                "province": "AB",
+                "url": "<a href=\"http://data.reddeer.ca/\">Red Deer Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "ab_6"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -113.1214835,
+                    53.6244045,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Comté de Strathcona",
+                "city": "Strathcona County",
+                "province": "AB",
+                "url": "<a href=\"https://data.strathcona.ca/\">Open Data Portal</a> (en anglais seulement)"
+            },
+            "id": "ab_7"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -118.7986,
+                    55.1699,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "City of Grande Prairie",
+                "city": "Grande Prairie",
+                "province": "AB",
+                "url": "<a href=\"https://data.cityofgp.com/\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "ab_8"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -114.0708,
+                    51.0486,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Région de Calgary",
+                "city": "Calgary",
+                "province": "AB",
+                "url": "<a href=\"https://data.calgary.ca/\">Calgary Region Open Data</a> (en anglais seulement)"
+            },
+            "id": "ab_9"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -121.9498565,
+                    49.1372365,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Chilliwack",
+                "city": "Chilliwack",
+                "province": "BC",
+                "url": "<a href=\"http://www.chilliwack.com/main/page.cfm?id=2329\">Open Data Catalogue</a>"
+            },
+            "id": "bc_1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -119.4546625,
+                    49.8996925,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Kelowna",
+                "city": "Kelowna",
+                "province": "BC",
+                "url": "<a href=\"http://www.kelowna.ca/CM/Page3936.aspx\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "bc_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.5699272,
+                    49.1064192,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Canton de Langley",
+                "city": "Langley",
+                "province": "BC",
+                "url": "<a href=\"https://data.tol.ca/\">Open Data</a> (en anglais seulement)"
+            },
+            "id": "bc_3"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -123.9370211,
+                    49.1731669,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Nanaimo",
+                "city": "Nanaimo",
+                "province": "BC",
+                "url": "<a href=\"http://data.nanaimo.ca/\">Nanaimo Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "bc_4"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -119.4281635,
+                    49.9549794,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "District régional de Central Okanagan",
+                "city": "Central Okanagan",
+                "province": "BC",
+                "url": "<a href=\"http://www.regionaldistrict.com/services/gis/\">Geographic Information Systems</a> (en anglais seulement)"
+            },
+            "id": "bc_5"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -118.9631315,
+                    50.3731165,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "District régional de North Okanagan",
+                "city": "North Okanagan",
+                "province": "BC",
+                "url": "<a href=\"https://www.kelowna.ca/city-services/city-maps-open-data/open-data-catalogue\">Digital Data</a> (en anglais seulement)"
+            },
+            "id": "bc_6"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.7524185,
+                    53.9268985,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Prince George",
+                "city": "Prince George",
+                "province": "BC",
+                "url": "<a href=\"http://data-cityofpg.opendata.arcgis.com/\">Open Data Catalogue</a> (en anglais seulement)>"
+            },
+            "id": "bc_7"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -123.3767223,
+                    48.4592626,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "District de Saanich",
+                "city": "Saanich",
+                "province": "BC",
+                "url": "<a href=\"http://www.saanich.ca/EN/main/local-government/data-catalogue-1.html\">Saanich Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "bc_8"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.8006651,
+                    49.1111779,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Surrey",
+                "city": "Surrey",
+                "province": "BC",
+                "url": "<a href=\"http://www.surrey.ca/city-services/658.aspx\">Surrey Open Data</a> (en anglais seulement)"
+            },
+            "id": "bc_9"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -123.123904,
+                    49.2569777,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Vancouver",
+                "city": "Vancouver",
+                "province": "BC",
+                "url": "<a href=\"http://vancouver.ca/your-government/open-data-catalogue.aspx\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "bc_10"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -123.070389,
+                    49.3169377,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "District de North Vancouver",
+                "city": "Vancouver",
+                "province": "BC",
+                "url": "<a href=\"http://geoweb.dnv.org/\">GEOweb</a> (en anglais seulement)"
+            },
+            "id": "bc_11"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -123.365556,
+                    48.428611,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Victoria",
+                "city": "Victoria",
+                "province": "BC",
+                "url": "<a href=\"http://www.victoria.ca/opendata\">Open Data Catalogue</a> (en anglais seulement)"
+            },
+            "id": "bc_12"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -135.0845781,
+                    60.6997545,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Whitehorse",
+                "city": "Whitehorse",
+                "province": "YT",
+                "url": "<a href=\"http://data.whitehorse.ca/\">GIS Open Data</a> (en anglais seulement)"
+            },
+            "id": "yt_1"
+        }
+    ]
+}

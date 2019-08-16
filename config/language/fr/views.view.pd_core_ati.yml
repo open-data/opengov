@@ -45,3 +45,7 @@ display:
       footer:
         area_text_custom:
           content: '<a href="/fr/search/ati">Voir tout</a>'
+      fields:
+        nothing:
+          alter:
+            text: '<a href="/fr/search/ati/reference/{{ id }}">{{ request_summary_fr }}</a>'

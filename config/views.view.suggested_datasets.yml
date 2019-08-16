@@ -53,34 +53,17 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       pager:
-        type: full
+        type: none
         options:
-          items_per_page: 25
           offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: ‹‹
-            next: ››
-            first: '« First'
-            last: 'Last »'
-          expose:
-            items_per_page: true
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '25, 50, 75, 100'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
       style:
         type: table
         options:
           grouping: {  }
           row_class: ''
-          default_row_class: true
-          override: true
-          sticky: true
+          default_row_class: false
+          override: false
+          sticky: false
           caption: ''
           summary: ''
           description: ''
@@ -92,7 +75,7 @@ display:
             field_vote_up_down: field_vote_up_down
           info:
             title:
-              sortable: true
+              sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
@@ -106,21 +89,21 @@ display:
               empty_column: false
               responsive: ''
             field_suggested_dataset_dept:
-              sortable: true
+              sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
             field_status:
-              sortable: true
+              sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
             field_vote_up_down:
-              sortable: true
+              sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
@@ -400,8 +383,8 @@ display:
           label: Votes
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '{{ field_vote_up_down__value|number_format(0,''.'','''') }}'
             make_link: false
             path: ''
             absolute: false
@@ -515,53 +498,6 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
-        combine:
-          id: combine
-          table: views
-          field: combine
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: word
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: combine_op
-            label: ''
-            description: ''
-            use_operator: false
-            operator: combine_op
-            identifier: combine
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          fields:
-            title: title
-            body: body
-            field_suggested_dataset_dept: field_suggested_dataset_dept
-            field_status: field_status
-          plugin_id: combine
       sorts:
         field_vote_up_down_value:
           id: field_vote_up_down_value
@@ -590,32 +526,20 @@ display:
           expose:
             label: ''
           granularity: second
-      header:
-        result:
-          id: result
-          table: views
-          field: result
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          content: '<p><strong>Found @total record(s)</strong></p>'
-          plugin_id: result
+      header: {  }
       footer: {  }
       empty: {  }
       relationships: {  }
       arguments: {  }
       display_extenders:
         metatag_display_extender: {  }
-      use_ajax: true
+      use_ajax: false
       title: 'Datasets suggested by users'
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
-        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags:
@@ -637,8 +561,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
-        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags:

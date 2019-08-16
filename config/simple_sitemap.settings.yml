@@ -5,7 +5,7 @@ generate_duration: 10000
 remove_duplicates: true
 skip_untranslated: true
 xsl: true
-base_url: ''
+base_url: 'https://open.canada.ca'
 default_variant: default
 custom_links_include_images: false
 excluded_languages: {  }

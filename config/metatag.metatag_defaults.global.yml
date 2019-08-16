@@ -7,8 +7,12 @@ _core:
 id: global
 label: Global
 tags:
+  abstract: '[current-page:title]'
   canonical_url: '[current-page:url]'
+  content_language: '[node:langcode]'
+  description: '[site:slogan]'
+  keywords: 'open government,open data,open information,open dialogue,proactive disclosure, access to information, open government partnership, open data catalog, government contracts, government grants and contributions,blog,app,map,data inventory,dataset,license,api'
   title: '[current-page:title] | [site:name]'
-  dcterms_creator: 'Treasury Board Secretariat of Canada'
+  dcterms_creator: 'Open Government, Treasury Board Secretariat of Canada'
   dcterms_language: '[node:langcode]'
   dcterms_title: '[node:title]'

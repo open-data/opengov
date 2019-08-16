@@ -1,0 +1,209 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -68.5250267,
+                    63.7512492,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Géosciences au Nunavut",
+                "city": "Iqaluit",
+                "province": "NU",
+                "url": "<a href=\"http://cngo.ca/fr/\" target=\"_blank\">Bureau géoscientifique Canada-Nunavut</a>"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -114.3713674,
+                    62.4546879,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Géosciences aux Territoires du Nord-Ouest",
+                "city": "Yellowknife",
+                "province": "NT",
+                "url": "<a href=\"http://www.nwtgeoscience.ca/google_earth/\" target=\"_blank\">Northwest Territories Geoscience Office</a> (en anglais seulement)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.54,
+                    43.4689,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Le catalogue des données polaires",
+                "city": "Waterloo",
+                "province": "ON",
+                "url": "<a href=\"https://polardata.ca/\" target=\"_blank\">Université de Waterloo</a>"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -63.5714,
+                    44.6478,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "GeoNOVA",
+                "city": "Nova Scotia",
+                "province": "NS",
+                "url": "<a href=\"http://www.novascotia.ca/geonova/home/default.asp\" target=\"_blank\">GeoNOVA Portal</a> (en anglais seulement)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -97.1375,
+                    49.8998,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Manitoba Land Initiative",
+                "city": "Winnipeg",
+                "province": "MB",
+                "url": "<a href=\"http://mli2.gov.mb.ca/\" target=\"_blank\">Manitoba Land Initiative</a> (en anglais seulement)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -135.0568,
+                    60.7212,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Geomatics Yukon",
+                "city": "Whitehorse",
+                "province": "YT",
+                "url": "<a href=\"http://www.geomaticsyukon.ca/\" target=\"_blank\">Geomatics Yukon</a> (en anglais seulement)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -66.6431,
+                    45.9636,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "GeoNB",
+                "city": "Fredericton",
+                "province": "NB",
+                "url": "<a href=\"http://www.snb.ca/geonb1/f/index-F.asp\" target=\"_blank\">Portail GeoNB</a>"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -114.3718,
+                    62.454,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Northwest Territories Centre for Geomatics",
+                "city": "Yellowknife",
+                "province": "NT",
+                "url": "<a href=\"http://www.geomatics.gov.nt.ca/\" target=\"_blank\">Centre for Geomatics</a> (en anglais seulement)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -63.1202,
+                    46.2478,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Geographic Information for PEI",
+                "city": "Charlottetown",
+                "province": "PE",
+                "url": "<a href=\"http://www.gov.pe.ca/gis/\" target=\"_blank\">GIS Data Layers: Geographic Information for PEI</a> (en anglais seulement)"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -68.5333,
+                    48.45,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Observatoire global du Saint-Laurent",
+                "city": "Rimouski",
+                "province": "QC",
+                "url": "<a href=\"http://slgo.ca/fr/donnees.html\" target=\"_blank\">Observatoire global du Saint-Laurent</a>"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -66.6667,
+                    45.95,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Commission de l'enseignement supérieur des Provinces maritimes",
+                "city": "Fredericton",
+                "province": "NB",
+                "url": "<a href=\"http://www.cespm.ca/research/maritimeuniversitystatistics/opendata.aspx\" target=\"_blank\">Commission de l'enseignement supérieur des Provinces</a>"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.3139,
+                    43.3583,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "The Grand River Conservation Authority (GRCA)",
+                "city": "Cambridge",
+                "province": "ON",
+                "url": "<a href=\"http://maps.grandriver.ca/data-gis.html\" target=\"_blank\">The Grand River Conservation Authority Office (en anglais seulement)</a>"
+            }
+        }
+    ]
+}
