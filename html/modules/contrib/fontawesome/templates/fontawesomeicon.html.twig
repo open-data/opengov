@@ -10,10 +10,11 @@
  * - settings: the additional Font Awesome style settings.
  * - transforms: Font Awesome power transforms.
  * - mask: Font Awesome mask.
+ * - css: Additional inline CSS styles (for duotone, etc).
  *
  * @ingroup themeable
  */
 #}
 <div class="fontawesome-icon">
-  <{{tag }} class="{{ style }} {{ name }} {{ settings }}" data-fa-transform="{{ transforms }}" data-fa-mask="{{ mask }}"></{{ tag }}>
+  <{{tag }} class="{{ style }} {{ name }} {{ settings }}" data-fa-transform="{{ transforms }}" data-fa-mask="{{ mask }}" style="{{ css }}"></{{ tag }}>
 </div>

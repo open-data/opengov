@@ -123,6 +123,11 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
     if ($configurationSettings->get('method') == 'webfonts') {
       // Webfonts method.
       $fontawesomeLibraries[] = 'fontawesome/fontawesome.webfonts';
+
+      // Attach the shim file if needed.
+      if ($configurationSettings->get('use_shim')) {
+        $fontawesomeLibraries[] = 'fontawesome/fontawesome.webfonts.shim';
+      }
     }
     else {
       // SVG method.
@@ -139,6 +144,7 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
     foreach ($items as $item) {
       // Get the icon settings.
       $iconSettings = unserialize($item->get('settings')->getValue());
+      $cssStyles = [];
 
       // Format mask.
       $iconMask = '';
@@ -157,14 +163,38 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
       }
       unset($iconSettings['power_transforms']);
 
+      // Move duotone settings into the render.
+      if (isset($iconSettings['duotone'])) {
+        // Handle swap opacity flag.
+        if (!empty($iconSettings['duotone']['swap-opacity'])) {
+          $iconSettings['swap-opacity'] = $iconSettings['duotone']['swap-opacity'];
+        }
+        // Handle custom CSS styles.
+        if (!empty($iconSettings['duotone']['opacity']['primary'])) {
+          $cssStyles[] = '--fa-primary-opacity: ' . $iconSettings['duotone']['opacity']['primary'] . ';';
+        }
+        if (!empty($iconSettings['duotone']['opacity']['secondary'])) {
+          $cssStyles[] = '--fa-secondary-opacity: ' . $iconSettings['duotone']['opacity']['secondary'] . ';';
+        }
+        if (!empty($iconSettings['duotone']['color']['primary'])) {
+          $cssStyles[] = '--fa-primary-color: ' . $iconSettings['duotone']['color']['primary'] . ';';
+        }
+        if (!empty($iconSettings['duotone']['color']['secondary'])) {
+          $cssStyles[] = '--fa-secondary-color: ' . $iconSettings['duotone']['color']['secondary'] . ';';
+        }
+
+        unset($iconSettings['duotone']);
+      }
+
       $icons[] = [
         '#theme' => 'fontawesomeicon',
         '#tag' => $configurationSettings->get('tag'),
         '#name' => 'fa-' . $item->get('icon_name')->getValue(),
         '#style' => $item->get('style')->getValue(),
-        '#settings' => implode(' ', $iconSettings),
+        '#settings' => implode(' ', array_filter($iconSettings)),
         '#transforms' => implode(' ', $iconTransforms),
         '#mask' => $iconMask,
+        '#css' => implode(' ', $cssStyles),
       ];
     }
 

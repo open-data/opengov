@@ -1,56 +1,63 @@
 fontawesome.svg:
-  remote: &fontawesome_remote https://use.fontawesome.com/releases/v5.8.2/fontawesome-free-5.8.2-web.zip
+  remote: &fontawesome_remote https://use.fontawesome.com/releases/v5.10.0/fontawesome-free-5.10.0-web.zip
   license: &fontawesome_svg_license
     name: CC BY 4.0
     url: https://fontawesome.com/license
     gpl-compatible: true
-  version: &fontawesome_version "5.8.2"
+  version: &fontawesome_version "5.10.0"
+  header: true
   js:
-    /libraries/fontawesome/js/all.js: { minified: true }
+    /libraries/fontawesome/js/all.js: { minified: true, attributes: { defer: true } }
 
 fontawesome.svg.shim:
   version: *fontawesome_version
   license: *fontawesome_svg_license
+  header: true
   js:
-    /libraries/fontawesome/js/v4-shims.js: { minified: true }
+    /libraries/fontawesome/js/v4-shims.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg
 
 fontawesome.svg.base:
   version: *fontawesome_version
   license: *fontawesome_svg_license
+  header: true
   js:
-    /libraries/fontawesome/js/fontawesome.js: { minified: true }
+    /libraries/fontawesome/js/fontawesome.js: { minified: true, attributes: { defer: true } }
 
 fontawesome.svg.solid:
   version: *fontawesome_version
   license: *fontawesome_svg_license
+  header: true
   js:
-    /libraries/fontawesome/js/solid.js: { minified: true }
+    /libraries/fontawesome/js/solid.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
 fontawesome.svg.regular:
   version: *fontawesome_version
   license: *fontawesome_svg_license
+  header: true
   js:
-    /libraries/fontawesome/js/regular.js: { minified: true }
+    /libraries/fontawesome/js/regular.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
 fontawesome.svg.light:
   version: *fontawesome_version
   license: *fontawesome_svg_license
+  header: true
   js:
-    /libraries/fontawesome/js/light.js: { minified: true }
+    /libraries/fontawesome/js/light.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
 fontawesome.svg.brands:
   version: *fontawesome_version
   license: *fontawesome_svg_license
+  header: true
   js:
-    /libraries/fontawesome/js/brands.js: { minified: true }
+    /libraries/fontawesome/js/brands.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 

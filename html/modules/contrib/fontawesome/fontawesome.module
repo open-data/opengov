@@ -165,6 +165,14 @@ function fontawesome_ckeditor_css_alter(&$css, $editor) {
     $fontawesome_library = \Drupal::service('library.discovery')->getLibraryByName('fontawesome', 'fontawesome.webfonts');
     // Attach it's CSS.
     $css[] = $fontawesome_library['css'][0]['data'];
+
+    // Attach the shim CSS if needed.
+    if (Drupal::config('fontawesome.settings')->get('use_shim')) {
+      // Load the library.
+      $fontawesome_library_shim = \Drupal::service('library.discovery')->getLibraryByName('fontawesome', 'fontawesome.webfonts.shim');
+      // Attach it's CSS.
+      $css[] = $fontawesome_library_shim['css'][0]['data'];
+    }
   }
 }
 
@@ -280,6 +288,7 @@ function fontawesome_theme($existing, $type, $theme, $path) {
         'settings' => NULL,
         'transforms' => NULL,
         'mask' => NULL,
+        'css' => NULL,
       ],
     ],
   ];
