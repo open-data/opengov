@@ -22,6 +22,8 @@ dependencies:
     - field.field.node.app.field_subject
     - field.field.node.app.field_submitter_name
     - field.field.node.app.field_url
+    - field.field.node.app.field_vote_average
+    - field.field.node.app.field_vote_count
     - node.type.app
     - webform.webform.app_vote
   content:
@@ -218,7 +220,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: entity_reference_label
             additional: {  }
-            weight: -8
+            weight: -6
           06f21032-5dc0-40f8-93cb-6295f4ffd31f:
             uuid: 06f21032-5dc0-40f8-93cb-6295f4ffd31f
             region: left
@@ -236,22 +238,6 @@ third_party_settings:
                 type: datetime_default
             additional: {  }
             weight: -7
-          f4bb91ea-6747-4fd8-9eda-00d214af9631:
-            uuid: f4bb91ea-6747-4fd8-9eda-00d214af9631
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:app:field_device_formats'
-              formatter:
-                label: above
-                settings:
-                  link: false
-                third_party_settings: {  }
-                type: entity_reference_label
-            additional: {  }
-            weight: -6
           e5d97aca-6674-4e52-8f70-3dcf4329f85b:
             uuid: e5d97aca-6674-4e52-8f70-3dcf4329f85b
             region: right
@@ -285,8 +271,26 @@ third_party_settings:
                 type: text_default
             additional: {  }
             weight: -10
-          3c017a59-f1b2-45eb-a7ee-6d9fc6fbe524:
-            uuid: 3c017a59-f1b2-45eb-a7ee-6d9fc6fbe524
+          f4bb91ea-6747-4fd8-9eda-00d214af9631:
+            uuid: f4bb91ea-6747-4fd8-9eda-00d214af9631
+            region: left
+            configuration:
+              id: 'field_block:node:app:field_device_formats'
+              label: 'Device Formats'
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: above
+                type: entity_reference_entity_view
+                settings:
+                  view_mode: default
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: -8
+          3f1e1d65-c87c-4461-a2d3-62e0938027cf:
+            uuid: 3f1e1d65-c87c-4461-a2d3-62e0938027cf
             region: left
             configuration:
               id: webform_block
@@ -298,7 +302,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: -3
+            weight: -5
         third_party_settings: {  }
       -
         layout_id: bs_1col
