@@ -35,6 +35,9 @@ function map_preprocess_node(&$variables) {
     $variables['#attached']['library'][] = 'map/mapview';
     $variables['#attached']['library'][] = 'map/fgpv';
   }
+  elseif ($node->getType() == 'landing_page' && $node->id() == '45') {
+    $variables['#attached']['library'][] = 'map/geomap';
+  }
 }
 
 /**

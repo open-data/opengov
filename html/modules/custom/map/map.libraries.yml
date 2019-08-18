@@ -22,3 +22,8 @@ mapview:
     - core/jquery
     - core/jquery.once
     - core/drupalSettings
+
+geomap:
+  version: VERSION
+  js:
+    /modules/custom/map/js/geomap/geomap.js: {}
