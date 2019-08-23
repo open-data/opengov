@@ -1498,7 +1498,7 @@ display:
           exposed: true
           expose:
             operator_id: field_device_formats_target_id_op
-            label: 'Device Formats'
+            label: 'Device Format'
             description: ''
             use_operator: false
             operator: field_device_formats_target_id_op

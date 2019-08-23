@@ -2,7 +2,7 @@ services:
   content_type_breadcrumb.breadcrumb:
     class: Drupal\content_type_breadcrumb\Breadcrumb\ContentTypeBreadcrumbsBuilder
     tags:
-      - { name: breadcrumb_builder, priority: 100 }
+      - { name: breadcrumb_builder, priority: 1005 }
   content_type_breadcrumb.commitment:
     class: Drupal\content_type_breadcrumb\Breadcrumb\CommitmentBreadcrumbsBuilder
     tags:

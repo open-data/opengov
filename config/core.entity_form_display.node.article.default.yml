@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.article.body
     - field.field.node.article.comment
     - field.field.node.article.feeds_item
+    - field.field.node.article.field_blog_author_name
     - field.field.node.article.field_media
     - field.field.node.article.field_meta_tags
     - field.field.node.article.field_previousnodeid
@@ -40,6 +41,15 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_blog_author_name:
+    weight: 53
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_media:
     type: media_library_widget
     weight: 52

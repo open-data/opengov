@@ -26,3 +26,16 @@ display:
       header:
         result:
           content: '<p><strong>@total résultats trouvé(s)</strong></p>'
+      filters:
+        combine:
+          expose:
+            label: Recherche
+        field_ribbon_target_id:
+          expose:
+            label: Éditeur
+        field_subject_target_id:
+          expose:
+            label: Sujet
+        field_device_formats_target_id:
+          expose:
+            label: 'Format du dispositif'

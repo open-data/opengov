@@ -2,7 +2,7 @@ display:
   recent:
     display_options:
       title: 'Articles récents'
-      use_more_text: plus
+      use_more_text: 'Voir tout'
   default:
     display_options:
       exposed_form:
@@ -28,11 +28,28 @@ display:
         combine:
           expose:
             label: Recherche
-      sorts:
-        created:
+          group_info:
+            description: ''
+        field_blog_author_name_target_id:
           expose:
-            label: Date
+            label: Auteur
+      sorts:
         title:
           expose:
             label: Titre
+      empty:
+        area_text_custom:
+          admin_label: '<p><strong>Aucun article de blogue trouvé.</strong></p><br/>'
+          content: '<p><strong>Aucun article de blogue trouvé.</strong></p><br/>'
+      header:
+        result:
+          admin_label: '<p><strong>@total article de blogue trouvé.</strong></p>'
+          content: '<p><strong>@total article de blogue trouvé.</strong></p>'
+      fields:
+        nothing:
+          alter:
+            text: "<div class=\"row\">\r\n  <div class=\"col-lg-10 col-md-9 col-sm-9\">\r\n    <h2 class=\"h3 mrgn-tp-0\">{{ title }}</h2>\r\n    <p>par {{ field_blog_author_name }} le {{ created }}</p> \r\n    <p class=\"excerpt\">{{ body }}</p>\r\n  </div>\r\n  <div class=\"col-lg-2 col-md-3 col-sm-3\">\r\n    <a href=\"{{ view_node }}\">{{ field_media }}</a>  \r\n  </div>\r\n</div>"
+        field_blog_author_name:
+          alter:
+            text: '<a href="/fr/taxonomy/term/{{ field_blog_author_name__target_id }}" title="Lire plus de blogs par {{ field_blog_author_name }}">{{ field_blog_author_name }}</a>'
 label: Blogue

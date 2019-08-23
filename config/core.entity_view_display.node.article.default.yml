@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.article.body
     - field.field.node.article.comment
     - field.field.node.article.feeds_item
+    - field.field.node.article.field_blog_author_name
     - field.field.node.article.field_media
     - field.field.node.article.field_meta_tags
     - field.field.node.article.field_previousnodeid
@@ -68,6 +69,24 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: 0
+          dda22670-38f6-408a-9526-29c84125ce9a:
+            uuid: dda22670-38f6-408a-9526-29c84125ce9a
+            region: left
+            configuration:
+              id: 'field_block:node:article:field_blog_author_name'
+              label: 'Blog author name'
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: hidden
+                type: entity_reference_label
+                settings:
+                  link: true
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: -10
           f3b99357-2d6a-4eb7-9960-9b6dd1e5f682:
             uuid: f3b99357-2d6a-4eb7-9960-9b6dd1e5f682
             region: left
@@ -81,13 +100,13 @@ third_party_settings:
                 type: timestamp
                 settings:
                   date_format: custom
-                  custom_date_format: 'l, F jS, Y'
+                  custom_date_format: 'F j, Y'
                   timezone: ''
                 third_party_settings: {  }
               context_mapping:
                 entity: layout_builder.entity
             additional: {  }
-            weight: 5
+            weight: -9
         third_party_settings: {  }
       -
         layout_id: bs_2col
@@ -216,6 +235,14 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_blog_author_name:
+    weight: 9
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: left
   field_media:
     type: entity_reference_entity_view
     weight: 8

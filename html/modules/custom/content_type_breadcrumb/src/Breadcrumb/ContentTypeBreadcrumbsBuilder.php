@@ -5,8 +5,8 @@ use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
-use Drupal\Driver\Exception\Exception;
 use Drupal\Core\Url;
+use Drupal\taxonomy\TermInterface;
 
 class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
 
@@ -47,7 +47,7 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
       }
 
       // apply breadcrumb for views
-      elseif ($type === 'view_id'
+      if ($type === 'view_id'
         && in_array($parameters[$type], $this->views)
         && isset($menu_for_type['view_' . $parameters[$type]])) {
         $view_id = $parameters[$type];
@@ -55,7 +55,17 @@ class ContentTypeBreadcrumbsBuilder implements BreadcrumbBuilderInterface{
         return true;
       }
 
-    } catch (\Exception $e) {
+      // apply breadcrumb for taxonomy terms
+      if ($attributes->getRouteName() == 'entity.taxonomy_term.canonical'
+       && $attributes->getParameter('taxonomy_term') instanceof TermInterface) {
+        $vocabulary = $attributes->getParameter('taxonomy_term')->bundle();
+        if (array_key_exists('vocabulary_' . $vocabulary, $menu_for_type) && $menu_for_type['vocabulary_' . $vocabulary] != '') {
+          $this->menu_id = str_replace("main:", '', $menu_for_type['vocabulary_' . $vocabulary]);
+          return true;
+        }
+      }
+
+   } catch (\Exception $e) {
       \Drupal::logger('content breadcrumb')->error($e->getMessage());
     }
   }
