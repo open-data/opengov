@@ -98,7 +98,11 @@ class FieldBlockDeriver extends DeriverBase implements ContainerDeriverInterface
 
         foreach ($field_info['bundles'] as $bundle) {
           $derivative = $base_plugin_definition;
-          $field_definition = $this->entityFieldManager->getFieldDefinitions($entity_type_id, $bundle)[$field_name];
+          $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type_id, $bundle);
+          if (empty($field_definitions[$field_name])) {
+            continue;
+          }
+          $field_definition = $field_definitions[$field_name];
 
           // Store the default formatter on the definition.
           $derivative['default_formatter'] = '';

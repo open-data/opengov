@@ -46,6 +46,13 @@ class ConfigForm extends ConfigFormBase {
       $form['#tree'] = TRUE;
       $config = $this->config('content_type_breadcrumb.settings');
 
+      // Menus
+      // @todo support language handling when separate menus are used for each language
+      $menus = ['main' => 'Main navigation'];
+      if (\Drupal\system\Entity\Menu::load('main-navigation-fr')) {
+        $menus['main-navigation-fr'] = 'Main navigation FR';
+      }
+
       // Content types
       $form['node_group'] = [
         '#type' => 'details',
@@ -61,7 +68,7 @@ class ConfigForm extends ConfigFormBase {
           ? 'main:'
           : $config->get('content_type_breadcrumb.type_' . $id);
 
-        $form['node_group']['type_' . $id] = \Drupal::service('menu.parent_form_selector')->parentSelectElement($parent, $config->get('content_type_breadcrumb.type_' . $id), ['main' => 'Main navigation']);
+        $form['node_group']['type_' . $id] = \Drupal::service('menu.parent_form_selector')->parentSelectElement($parent, $config->get('content_type_breadcrumb.type_' . $id), $menus);
         $form['node_group']['type_' . $id]['#title'] = $this->t($contentType->label());
         $form['node_group']['type_' . $id]['#description'] = $this->t('Select the parent menu for content type');
         $form['node_group']['type_' . $id]['#attributes']['class'][] = 'menu-title-select';
@@ -76,18 +83,20 @@ class ConfigForm extends ConfigFormBase {
       foreach ($this->views as $view) {
         $id = $view;
         $view = Views::getView($id);
-        $displays = $view->storage->get('display');
+        if ($view) {
+          $displays = $view->storage->get('display');
 
-        foreach ($displays as $display) {
-          if ($display['display_plugin'] == 'page') {
-            $parent = $config->get('content_type_breadcrumb.view_' . $id) == ""
-              ? 'main:'
-              : $config->get('content_type_breadcrumb.view_' . $id);
+          foreach ($displays as $display) {
+            if ($display['display_plugin'] == 'page') {
+              $parent = $config->get('content_type_breadcrumb.view_' . $id) == ""
+                ? 'main:'
+                : $config->get('content_type_breadcrumb.view_' . $id);
 
-            $form['view_group']['view_' . $id] = \Drupal::service('menu.parent_form_selector')->parentSelectElement($parent, $config->get('content_type_breadcrumb.view_' . $id), ['main' => 'Main navigation']);
-            $form['view_group']['view_' . $id]['#title'] = isset($display['display_title']) ? $this->t($display['display_title']) : $id;
-            $form['view_group']['view_' . $id]['#description'] = $this->t('Select the parent menu for view page');
-            $form['view_group']['view_' . $id]['#attributes']['class'][] = 'menu-title-select';
+              $form['view_group']['view_' . $id] = \Drupal::service('menu.parent_form_selector')->parentSelectElement($parent, $config->get('content_type_breadcrumb.view_' . $id), $menus);
+              $form['view_group']['view_' . $id]['#title'] = isset($display['display_title']) ? $this->t($display['display_title']) : $id;
+              $form['view_group']['view_' . $id]['#description'] = $this->t('Select the parent menu for view page');
+              $form['view_group']['view_' . $id]['#attributes']['class'][] = 'menu-title-select';
+            }
           }
         }
       }
@@ -107,7 +116,7 @@ class ConfigForm extends ConfigFormBase {
           ? 'main:'
           : $config->get('content_type_breadcrumb.vocab_' . $id);
 
-        $form['vocabulary_group']['vocabulary_' . $id] = \Drupal::service('menu.parent_form_selector')->parentSelectElement($parent, $config->get('content_type_breadcrumb.type_' . $id), ['main' => 'Main navigation']);
+        $form['vocabulary_group']['vocabulary_' . $id] = \Drupal::service('menu.parent_form_selector')->parentSelectElement($parent, $config->get('content_type_breadcrumb.type_' . $id), $menus);
         $form['vocabulary_group']['vocabulary_' . $id]['#title'] = $this->t($vocabulary->get('name'));
         $form['vocabulary_group']['vocabulary_' . $id]['#description'] = $this->t('Select the parent menu for taxonomy vocabulary');
         $form['vocabulary_group']['vocabulary_' . $id]['#attributes']['class'][] = 'menu-title-select';
