@@ -1,0 +1,6 @@
+webform_resend.admin:
+  title: 'Resend webform submission emails'
+  description: 'Resend emails for previous webform submissions'
+  parent: system.admin_config_development
+  route_name: webform_resend.DefaultForm
+  weight: 100

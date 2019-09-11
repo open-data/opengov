@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains webform_resend.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function webform_resend_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the webform_resend module.
+    case 'help.page.webform_resend':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Resend webform submissions') . '</p>';
+      return $output;
+
+    default:
+  }
+}

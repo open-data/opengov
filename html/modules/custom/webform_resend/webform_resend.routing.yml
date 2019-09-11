@@ -1,0 +1,7 @@
+webform_resend.DefaultForm:
+  path: '/webform_resend/form/default'
+  defaults:
+    _form: '\Drupal\webform_resend\Form\DefaultForm'
+    _title: 'Resend Webform Submission Emails'
+  requirements:
+    _permission: 'administer site configuration'

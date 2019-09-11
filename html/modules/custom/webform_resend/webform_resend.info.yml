@@ -1,0 +1,7 @@
+name: 'webform_resend'
+description: 'Resend webform submissions'
+
+type: module
+core: 8.x
+package: 'Open Government'
+version: 1.0
