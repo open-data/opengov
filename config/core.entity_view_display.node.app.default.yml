@@ -200,7 +200,7 @@ third_party_settings:
               formatter:
                 label: above
                 settings:
-                  link: false
+                  link: true
                 third_party_settings: {  }
                 type: entity_reference_label
             additional: {  }
@@ -225,17 +225,19 @@ third_party_settings:
             uuid: 06f21032-5dc0-40f8-93cb-6295f4ffd31f
             region: left
             configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
               id: 'field_block:node:app:field_date_published'
+              label: 'Date de publication'
+              provider: layout_builder
+              label_display: '0'
               formatter:
                 label: above
+                type: datetime_custom
                 settings:
-                  format_type: medium
                   timezone_override: ''
+                  date_format: 'F j, Y'
                 third_party_settings: {  }
-                type: datetime_default
+              context_mapping:
+                entity: layout_builder.entity
             additional: {  }
             weight: -7
           e5d97aca-6674-4e52-8f70-3dcf4329f85b:
@@ -289,8 +291,8 @@ third_party_settings:
                 entity: layout_builder.entity
             additional: {  }
             weight: -8
-          3f1e1d65-c87c-4461-a2d3-62e0938027cf:
-            uuid: 3f1e1d65-c87c-4461-a2d3-62e0938027cf
+          3372bc16-e19a-4514-92de-fe6a9d1a8b59:
+            uuid: 3372bc16-e19a-4514-92de-fe6a9d1a8b59
             region: left
             configuration:
               id: webform_block

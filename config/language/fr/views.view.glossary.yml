@@ -17,9 +17,6 @@ display:
             items_per_page_label: 'Éléments par page'
             items_per_page_options_all_label: '- Tout -'
             offset_label: Décalage
-          tags:
-            previous: ‹‹
-            next: ››
       fields:
         title:
           label: Titre

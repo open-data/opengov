@@ -4,5 +4,5 @@ status: true
 dependencies: {  }
 id: plans-menu
 label: Plans
-description: 'Breadcrumb - Plans menu'
+description: 'OBSOLETE - DO NOT USE - Breadcrumb - Plans menu'
 locked: false

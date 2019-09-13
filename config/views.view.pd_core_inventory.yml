@@ -38,7 +38,7 @@ display:
         type: basic
         options:
           submit_button: Search
-          reset_button: false
+          reset_button: true
           reset_button_label: Reset
           exposed_sorts_label: Sort
           expose_sort_order: true
@@ -840,7 +840,18 @@ display:
           content: '<p><strong>Found @total record(s) </strong></p>'
           plugin_id: result
       footer: {  }
-      empty: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: "<p><strong>No results found.</strong></p>\r\n<p>Please try again with a different search term.</p>\r\n<br/><br/>\r\n"
+          plugin_id: text_custom
       relationships: {  }
       arguments: {  }
       display_extenders: {  }

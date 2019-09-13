@@ -1210,7 +1210,7 @@ display:
           group_type: group
           admin_label: ''
           empty: false
-          content: '<p><strong>Found @total blog post(s).</strong></p>'
+          content: '<!--<p><strong>Found @total blog post(s).</strong></p>-->'
           plugin_id: result
       empty:
         area_text_custom:

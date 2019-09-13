@@ -5,6 +5,7 @@ display:
         options:
           submit_button: Recherche
           exposed_sorts_label: Trier
+          reset_button_label: Effacer
       pager:
         options:
           tags:
@@ -22,3 +23,6 @@ display:
       header:
         result:
           content: '<p><strong>@total résultats trouvé(s)</strong></p>'
+      empty:
+        area_text_custom:
+          content: "<p><strong>Aucun résultat trouvé.</strong></p> \r\n<p>Veuillez entrer un nouveau mot-clé.</p>\r\n<br/><br/>\r\n"

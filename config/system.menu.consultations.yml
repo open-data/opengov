@@ -4,5 +4,5 @@ status: true
 dependencies: {  }
 id: consultations
 label: Consultations
-description: 'Breadcrumb - Consultations menu'
+description: 'OBSOLETE - DO NOT USE - Breadcrumb - Consultations menu'
 locked: false

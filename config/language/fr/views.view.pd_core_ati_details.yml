@@ -12,5 +12,8 @@ display:
       footer:
         area_text_custom:
           content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/fr/search/ati">Retour à la recherche&nbsp;<span class="fa fa-undo"></span></a></p>'
+      empty:
+        area_text_custom:
+          content: "<br/><br/>\r\n<p><strong>Aucun résultat trouvé.</strong></p>\r\n<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/fr/search/ati\">Retour à la recherche&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n<br/><br/>"
   details:
     display_title: 'Demande d''accès à l''information informelle dossiers précédemment publiés'

@@ -741,7 +741,18 @@ display:
           view_mode: default
           bypass_access: false
           plugin_id: entity
-      empty: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: "<br/><br/>\r\n<p><strong>No results found.</strong></p>\r\n<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/search/ati\">Back to Search&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n<br/><br/>"
+          plugin_id: text_custom
       relationships: {  }
       arguments:
         id:

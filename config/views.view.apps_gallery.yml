@@ -736,7 +736,7 @@ display:
         type: views_bootstrap_grid
         options:
           grouping: {  }
-          row_class: mrgn-bttm-lg
+          row_class: ''
           default_row_class: true
           alignment: horizontal
           columns: '3'
@@ -753,6 +753,7 @@ display:
         filters: false
         filter_groups: false
         header: false
+        empty: false
       row:
         type: fields
         options:
@@ -1213,7 +1214,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"box\">\r\n  {{ field_ribbon }}\r\n  <h2 class=\"h4\">{{ title }}</h2>\r\n  <p>{{ field_vote_average }}</p>\r\n  <p><strong>Publisher:</strong> {{ field_developed_by }}</p>\r\n  {{ body }}\r\n  {{ field_device_formats }}\r\n</div>"
+            text: "<div class=\"box mrgn-bttm-lg\">\r\n  {{ field_ribbon }}\r\n  <h2 class=\"h4\">{{ title }}</h2>\r\n  <p>{{ field_vote_average }}</p>\r\n  <p><strong>Publisher:</strong> {{ field_developed_by }}</p>\r\n  {{ body }}\r\n  {{ field_device_formats }}\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -1548,6 +1549,18 @@ display:
           empty: false
           content: '<p><strong>Found @total record(s)</strong></p>'
           plugin_id: result
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: "<p><strong>No results found.</strong></p>\r\n<p>Please try again with a different search term.</p>\r\n<br/><br/>\r\n"
+          plugin_id: text_custom
     cache_metadata:
       max-age: -1
       contexts:

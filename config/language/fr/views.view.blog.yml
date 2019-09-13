@@ -43,8 +43,7 @@ display:
           content: '<p><strong>Aucun article de blogue trouvé.</strong></p><br/>'
       header:
         result:
-          admin_label: '<p><strong>@total article de blogue trouvé.</strong></p>'
-          content: '<p><strong>@total article de blogue trouvé.</strong></p>'
+          content: '<!--<p><strong>@total article de blogue trouvé.</strong></p>-->'
       fields:
         nothing:
           alter:

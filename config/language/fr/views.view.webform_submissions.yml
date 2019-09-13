@@ -13,8 +13,6 @@ display:
       pager:
         options:
           tags:
-            previous: ‹‹
-            next: ››
             first: '« Premier'
             last: 'Dernier »'
           expose:

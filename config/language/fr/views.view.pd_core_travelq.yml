@@ -5,6 +5,7 @@ display:
         options:
           submit_button: Recherche
           exposed_sorts_label: Trier
+          reset_button_label: Effacer
       pager:
         options:
           tags:
@@ -15,7 +16,7 @@ display:
       fields:
         nothing:
           alter:
-            text: "{% set total_array = total|striptags|trim|number_format('2', '.', ',')|split('.') %}\r\n<div class=\"row\">\r\n  <div class=\"col-sm-8\">\r\n    {% if nothing_to_report_fr %}\r\n      <h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{{ nothing_to_report_fr }}</h4>\r\n      <p><small><strong>Organisation:</strong> {{ org_name_fr }}</small></p>\r\n    {% else %}\r\n      <h4 class=\"mrgn-tp-0 mrgn-bttm-sm\"><a href=\"/fr/search/travelq/reference/{{ id }}\">{{ name }}</a></h4>\r\n      {{ title_fr }}<br><small>{{ destination_fr }}</small>\r\n      <p><small><strong>Organisation:</strong> {{ org_name_fr }}<br>Ref # {{ ref_number }}</small></p>\r\n    {%endif%}\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n  {% if nothing_to_report_fr %}\r\n    <small>{{ month_fr }}, {{ date_year }}</small>\r\n  {% else %}\r\n    <span class=\"h3 mrgn-tp-0\">{{ total_array[0] }}<sup><strong>,{{ total_array[1] }}</strong></sup> $</span><br />\r\n    <small>{{ start_date }}{% if start_date != end_date %} au {{ end_date }}{% endif %}</small>\r\n  {% endif %}\r\n</div>\r\n</div>"
+            text: "{% set total_array = total|striptags|trim|number_format('2', '.', ',')|split('.') %}\r\n<div class=\"row\">\r\n  <div class=\"col-sm-8\">\r\n    {% if nothing_to_report_fr %}\r\n      <h2 class=\"h4 mrgn-tp-0\"><span class=\"hgl\">{{ nothing_to_report_fr }}</span></h2>\r\n      <p><small><strong>Organisation:</strong> <span class=\"hgl\">{{ org_name_fr }}</span></small></p>\r\n    {% else %}\r\n      <h2 class=\"h4 mrgn-tp-0\"><a href=\"/fr/search/travelq/reference/{{ id }}\"><span class=\"hgl\">{{ name }}</span></a></h2>\r\n      <span class=\"hgl\">{{ title_fr }}</span><br><small><span class=\"hgl\">{{ destination_fr }}</span></small>\r\n      <p><small><strong>Organisation:</strong> <span class=\"hgl\">{{ org_name_fr }}</span><br>Ref # <span class=\"hgl\">{{ ref_number }}</span></small></p>\r\n    {%endif%}\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n  {% if nothing_to_report_fr %}\r\n    <small>{{ month_fr }}, {{ date_year }}</small>\r\n  {% else %}\r\n    <span class=\"h3 mrgn-tp-0\">{{ total_array[0] }}<sup><strong>,{{ total_array[1] }}</strong></sup> $</span><br />\r\n    <small>{{ start_date }}{% if start_date != end_date %} au {{ end_date }}{% endif %}</small>\r\n  {% endif %}\r\n</div>\r\n</div>"
       filters:
         search_api_fulltext:
           expose:
@@ -23,3 +24,6 @@ display:
       header:
         result:
           content: '<p><strong>@total résultats trouvé(s)</strong></p>'
+      empty:
+        area_text_custom:
+          content: "<p><strong>Aucun résultat trouvé.</strong></p> \r\n<p>Veuillez entrer un nouveau mot-clé.</p>\r\n<br/><br/>\r\n"
