@@ -112,9 +112,9 @@ class ConfigForm extends ConfigFormBase {
 
       foreach ($vocabularies as $vocabulary) {
         $id = $vocabulary->id();
-        $parent = $config->get('content_type_breadcrumb.vocab_' . $id) == ""
+        $parent = $config->get('content_type_breadcrumb.vocabulary_' . $id) == ""
           ? 'main:'
-          : $config->get('content_type_breadcrumb.vocab_' . $id);
+          : $config->get('content_type_breadcrumb.vocabulary_' . $id);
 
         $form['vocabulary_group']['vocabulary_' . $id] = \Drupal::service('menu.parent_form_selector')->parentSelectElement($parent, $config->get('content_type_breadcrumb.type_' . $id), $menus);
         $form['vocabulary_group']['vocabulary_' . $id]['#title'] = $this->t($vocabulary->get('name'));
