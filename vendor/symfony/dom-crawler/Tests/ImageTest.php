@@ -16,11 +16,9 @@ use Symfony\Component\DomCrawler\Image;
 
 class ImageTest extends TestCase
 {
-    /**
-     * @expectedException \LogicException
-     */
     public function testConstructorWithANonImgTag()
     {
+        $this->expectException('LogicException');
         $dom = new \DOMDocument();
         $dom->loadHTML('<html><div><div></html>');
 

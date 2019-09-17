@@ -78,7 +78,7 @@
         "drupal/bootstrap_layouts": "5.1.0",
         "drupal/ckeditor_codemirror": "2.2.0",
         "drupal/console": "1.9.1",
-        "drupal/core": "8.7.6",
+        "drupal/core": "8.7.7",
         "drupal/csv_serialization": "1.4.0",
         "drupal/facets": "1.4.0",
         "drupal/feeds": "^3.0@alpha",
@@ -155,7 +155,9 @@
                 "Notice: Undefined index: target_bundles when new reference media field created": "https://www.drupal.org/files/issues/2019-05-18/undefined_index_target_bundles-3055516-4.patch",
                 "Allow exposed form for non-ajax block displays": "https://www.drupal.org/files/issues/2692297-8.patch",
                 "Undefined index: identifier in view's DisplayPluginBase->isIdentifierUnique()": "https://www.drupal.org/files/issues/2882031-10_0.patch",
-                "Error: Call to a member function getLabel() after enable layout_builder": "https://www.drupal.org/files/issues/2018-07-16/2985882-entityfield-2.patch"
+                "Error: Call to a member function getLabel() after enable layout_builder": "https://www.drupal.org/files/issues/2018-07-16/2985882-entityfield-2.patch",
+                "Performance Degradation in Layout Builder and other places likely": "https://www.drupal.org/files/issues/2019-08-21/d8_entity_validation.patch",
+                "Terrible performance when rendering multi-value fields in views": "https://www.drupal.org/files/issues/2018-04-03/views-multivalue_field_rendering_performance-2846485-23.patch"
             }
         },
        "installer-types": [

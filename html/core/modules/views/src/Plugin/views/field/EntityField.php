@@ -714,7 +714,6 @@ class EntityField extends FieldPluginBase implements CacheableDependencyInterfac
    */
   public function renderItems($items) {
     if (!empty($items)) {
-      $items = $this->prepareItemsByDelta($items);
       if ($this->options['multi_type'] == 'separator' || !$this->options['group_rows']) {
         $separator = $this->options['multi_type'] == 'separator' ? Xss::filterAdmin($this->options['separator']) : '';
         $build = [
@@ -899,7 +898,7 @@ class EntityField extends FieldPluginBase implements CacheableDependencyInterfac
         'raw' => $build_list['#items'][$delta],
       ];
     }
-    return $items;
+    return $this->prepareItemsByDelta($items);
   }
 
   /**
