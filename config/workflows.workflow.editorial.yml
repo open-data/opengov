@@ -3,9 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - block_content.type.basic
-    - block_content.type.slideshow
-    - block_content.type.spotlight
     - node.type.app
     - node.type.article
     - node.type.commitment
@@ -90,10 +87,6 @@ type_settings:
       to: in_review
       weight: -2
   entity_types:
-    block_content:
-      - basic
-      - slideshow
-      - spotlight
     node:
       - app
       - article

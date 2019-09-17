@@ -5,8 +5,6 @@ dependencies:
   config:
     - core.base_field_override.media.file.created
     - core.base_field_override.media.file.name
-    - core.base_field_override.media.file.uid
-    - field.field.media.file.feeds_item
     - field.field.media.file.field_media_file
     - media.type.file
   module:
@@ -81,13 +79,6 @@ mappings:
       value: name
     unique: {  }
   -
-    target: feeds_item
-    map:
-      url: ''
-      guid: uuid
-    unique:
-      guid: '1'
-  -
     target: langcode
     map:
       value: langcode
@@ -107,5 +98,4 @@ mappings:
       target_id: uid
     settings:
       reference_by: name
-      feeds_item: guid
       autocreate: 0

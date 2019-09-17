@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.user.user.feeds_item
     - field.field.user.user.field_firstname
     - field.field.user.user.field_lastname
     - field.field.user.user.user_picture
@@ -37,9 +36,13 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
+  google_analytics:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    region: content
 hidden:
   contact: true
-  feeds_item: true
   langcode: true
   language: true
   path: true

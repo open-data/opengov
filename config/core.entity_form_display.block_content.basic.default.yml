@@ -5,7 +5,6 @@ dependencies:
   config:
     - block_content.type.basic
     - field.field.block_content.basic.body
-    - field.field.block_content.basic.feeds_item
     - workflows.workflow.editorial
   module:
     - content_moderation
@@ -41,6 +40,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   langcode: true
   translation: true

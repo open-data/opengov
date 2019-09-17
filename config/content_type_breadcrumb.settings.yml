@@ -23,7 +23,7 @@ content_type_breadcrumb:
   vocabulary_app_categories: 'main:menu_link_content:e9c65de2-964b-4d89-8051-7f59ff201351'
   vocabulary_app_freetags: ''
   vocabulary_app_ribbon: ''
-  vocabulary_blog_author: ''
+  vocabulary_blog_author: 'main:menu_link_content:a92b4794-19e1-465f-847c-5f1d9620ba37'
   vocabulary_commitment_freetags: ''
   vocabulary_consultation_status: ''
   vocabulary_departments: ''
