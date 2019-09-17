@@ -5,7 +5,6 @@ voting_webform.getVoteAverage:
     _title: 'Get average votes'
   requirements:
     _permission: 'access content'
-    uuid: '^[0-9][A-Za-z0-9 -]*$'
   options:
     parameters:
       uuid:
