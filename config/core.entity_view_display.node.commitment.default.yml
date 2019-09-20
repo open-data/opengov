@@ -6,7 +6,6 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.commitment.body
     - field.field.node.commitment.comment
-    - field.field.node.commitment.feeds_item
     - field.field.node.commitment.field_commitment_ambition
     - field.field.node.commitment.field_commitment_end_date
     - field.field.node.commitment.field_commitment_pillars
@@ -270,7 +269,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   field_previousnodeid: true
   langcode: true
   layout_builder__layout: true

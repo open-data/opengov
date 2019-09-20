@@ -5,7 +5,6 @@ dependencies:
   config:
     - field.field.node.suggested_dataset.body
     - field.field.node.suggested_dataset.comment
-    - field.field.node.suggested_dataset.feeds_item
     - field.field.node.suggested_dataset.field_meta_tags
     - field.field.node.suggested_dataset.field_previousnodeid
     - field.field.node.suggested_dataset.field_status
@@ -132,7 +131,6 @@ content:
     third_party_settings: {  }
 hidden:
   comment: true
-  feeds_item: true
   field_previousnodeid: true
   field_vote_up_down: true
   status: true

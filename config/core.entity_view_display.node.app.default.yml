@@ -6,7 +6,6 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.app.body
     - field.field.node.app.comment
-    - field.field.node.app.feeds_item
     - field.field.node.app.field_app_charge
     - field.field.node.app.field_datasets_used
     - field.field.node.app.field_date_published
@@ -450,7 +449,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   field_app_charge: true
   field_meta_tags: true
   field_name: true

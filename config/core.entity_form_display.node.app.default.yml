@@ -5,7 +5,6 @@ dependencies:
   config:
     - field.field.node.app.body
     - field.field.node.app.comment
-    - field.field.node.app.feeds_item
     - field.field.node.app.field_app_charge
     - field.field.node.app.field_datasets_used
     - field.field.node.app.field_date_published
@@ -225,7 +224,6 @@ content:
     third_party_settings: {  }
 hidden:
   comment: true
-  feeds_item: true
   field_previousnodeid: true
   field_vote_average: true
   field_vote_count: true

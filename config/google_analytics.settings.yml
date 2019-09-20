@@ -1,4 +1,4 @@
-account: UA-00000000-00
+account: UA-19331166-10
 premium: false
 domain_mode: 2
 cross_domains: "open.canada.ca\r\nouvert.canada.ca"
@@ -8,7 +8,6 @@ visibility:
   user_role_mode: 0
   user_role_roles:
     anonymous: anonymous
-    authenticated: authenticated
   user_account_mode: 0
 track:
   outbound: true

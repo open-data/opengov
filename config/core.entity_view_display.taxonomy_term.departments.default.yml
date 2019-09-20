@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.taxonomy_term.departments.feeds_item
     - taxonomy.vocabulary.departments
   module:
     - text
@@ -20,5 +19,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   langcode: true
+  search_api_excerpt: true

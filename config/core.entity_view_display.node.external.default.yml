@@ -5,7 +5,6 @@ dependencies:
   config:
     - core.entity_view_display.comment.comment.default
     - field.field.node.external.comment
-    - field.field.node.external.feeds_item
     - field.field.node.external.field_type
     - field.field.node.external.field_url
     - field.field.node.external.field_uuid
@@ -33,7 +32,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   field_type: true
   field_url: true
   field_uuid: true

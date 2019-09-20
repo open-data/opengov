@@ -27,8 +27,6 @@ module:
   external_comment: 0
   facets: 0
   facets_summary: 0
-  feeds: 0
-  feeds_tamper: 0
   field: 0
   field_ui: 0
   file: 0
@@ -48,7 +46,6 @@ module:
   memcache: 0
   menu_breadcrumb: 0
   menu_ui: 0
-  mergenodes: 0
   metatag: 0
   metatag_dc: 0
   metatag_twitter_cards: 0
@@ -66,7 +63,6 @@ module:
   serialization: 0
   simple_sitemap: 0
   system: 0
-  tamper: 0
   taxonomy: 0
   text: 0
   token: 0

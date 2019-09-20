@@ -1,5 +1,0 @@
-services:
-  feeds_test_multiple_cron_runs.feed_subscriber:
-    class: Drupal\feeds_test_multiple_cron_runs\EventSubscriber\FeedSubscriber
-    tags:
-      - {name: event_subscriber}

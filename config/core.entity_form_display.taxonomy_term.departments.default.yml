@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.taxonomy_term.departments.feeds_item
     - taxonomy.vocabulary.departments
   module:
     - path
@@ -47,5 +46,4 @@ content:
     settings: {  }
     third_party_settings: {  }
     region: content
-hidden:
-  feeds_item: true
+hidden: {  }

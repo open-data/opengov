@@ -6,7 +6,6 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.idea.body
     - field.field.node.idea.comment
-    - field.field.node.idea.feeds_item
     - field.field.node.idea.field_idea_permalink
     - field.field.node.idea.field_idea_status
     - field.field.node.idea.field_idea_submission_name
@@ -251,7 +250,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   field_idea_permalink: true
   field_idea_status: true
   field_meta_tags: true

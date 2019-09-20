@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - field.field.node.consultation.body
-    - field.field.node.consultation.feeds_item
     - field.field.node.consultation.field_consultation_status
     - field.field.node.consultation.field_date
     - field.field.node.consultation.field_idea_reference
@@ -152,7 +151,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   field_consultation_status: true
   field_date: true
   field_idea_reference: true

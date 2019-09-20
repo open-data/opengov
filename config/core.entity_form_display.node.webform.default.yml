@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - field.field.node.webform.body
-    - field.field.node.webform.feeds_item
     - field.field.node.webform.field_previousnodeid
     - field.field.node.webform.field_webform
     - node.type.webform
@@ -102,6 +101,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   field_previousnodeid: true
   status: true

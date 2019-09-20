@@ -7,7 +7,6 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.article.body
     - field.field.node.article.comment
-    - field.field.node.article.feeds_item
     - field.field.node.article.field_blog_author_name
     - field.field.node.article.field_media
     - field.field.node.article.field_meta_tags
@@ -272,7 +271,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  feeds_item: true
   field_previousnodeid: true
   langcode: true
   search_api_excerpt: true
