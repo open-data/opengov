@@ -1,6 +1,7 @@
 {
     "type": "FeatureCollection",
     "features": [
+
         {
             "type": "Feature",
             "geometry": {
@@ -72,6 +73,24 @@
                 "url": "<a href=\"http://www.saintjohn.ca/en/home/cityhall/financeadmin/informationtechnology/opendata/default.aspx\">Open Data Portal</a>"
             },
             "id": "nb_2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -64.7782,
+                    46.0878,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "City of Moncton",
+                "city": "Moncton",
+                "province": "NB",
+                "url": "<a href=\"http://open.moncton.ca/\">Open Data Portal</a>"
+            },
+            "id": "nb_3"
         },
         {
             "type": "Feature",

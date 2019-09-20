@@ -78,6 +78,24 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
+                    -64.7782,
+                    46.0878,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ville de Moncton",
+                "city": "Ville de Moncton",
+                "province": "NB",
+                "url": "<a href=\"http://ouvert.moncton.ca/?locale=fr/\">Portail Données ouvertes</a>"
+            },
+            "id": "nb_3"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
                     -75.6269264,
                     45.485499,
                     0
