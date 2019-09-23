@@ -3337,10 +3337,11 @@
                 "Undefined index: identifier in view's DisplayPluginBase->isIdentifierUnique()": "https://www.drupal.org/files/issues/2882031-10_0.patch",
                 "Error: Call to a member function getLabel() after enable layout_builder": "https://www.drupal.org/files/issues/2018-07-16/2985882-entityfield-2.patch",
                 "Performance Degradation in Layout Builder and other places likely": "https://www.drupal.org/files/issues/2019-08-21/d8_entity_validation.patch",
-                "Terrible performance when rendering multi-value fields in views": "https://www.drupal.org/files/issues/2018-04-03/views-multivalue_field_rendering_performance-2846485-23.patch"
+                "Terrible performance when rendering multi-value fields in views": "https://www.drupal.org/files/issues/2018-04-03/views-multivalue_field_rendering_performance-2846485-23.patch",
+                "Views exposed sort filters does not sort with facets": "https://www.drupal.org/files/issues/2018-10-30/views-exposed-sort-filters-2992672-10.patch"
             }
         },
-        "installation-source": "source",
+        "installation-source": "dist",
         "autoload": {
             "psr-4": {
                 "Drupal\\Core\\": "lib/Drupal/Core",
@@ -3836,18 +3837,18 @@
     },
     {
         "name": "drupal/menu_breadcrumb",
-        "version": "1.10.0",
-        "version_normalized": "1.10.0.0",
+        "version": "1.11.0",
+        "version_normalized": "1.11.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/menu_breadcrumb.git",
-            "reference": "8.x-1.10"
+            "reference": "8.x-1.11"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/menu_breadcrumb-8.x-1.10.zip",
-            "reference": "8.x-1.10",
-            "shasum": "d8539da4069d0f4269dde11429b058fae5e43eb5"
+            "url": "https://ftp.drupal.org/files/projects/menu_breadcrumb-8.x-1.11.zip",
+            "reference": "8.x-1.11",
+            "shasum": "8a867303e9c66be3d7cf54ba2be73919f3c880e4"
         },
         "require": {
             "drupal/core": "~8.0"
@@ -3858,8 +3859,8 @@
                 "dev-1.x": "1.x-dev"
             },
             "drupal": {
-                "version": "8.x-1.10",
-                "datestamp": "1564669385",
+                "version": "8.x-1.11",
+                "datestamp": "1567506484",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -3905,25 +3906,25 @@
     },
     {
         "name": "drupal/metatag",
-        "version": "1.9.0",
-        "version_normalized": "1.9.0.0",
+        "version": "1.10.0",
+        "version_normalized": "1.10.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/metatag.git",
-            "reference": "8.x-1.9"
+            "reference": "8.x-1.10"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/metatag-8.x-1.9.zip",
-            "reference": "8.x-1.9",
-            "shasum": "230960752c5afa17337fb69bae853bccb1a26ecd"
+            "url": "https://ftp.drupal.org/files/projects/metatag-8.x-1.10.zip",
+            "reference": "8.x-1.10",
+            "shasum": "06275ae0f72cfcdbec8b8e8fd5d0863a5967bbcc"
         },
         "require": {
             "drupal/core": "*",
             "drupal/token": "^1.0"
         },
         "require-dev": {
-            "drupal/devel": "^1.0",
+            "drupal/devel": "^2.0",
             "drupal/metatag_dc": "*",
             "drupal/metatag_open_graph": "*",
             "drupal/page_manager": "^4.0",
@@ -3938,8 +3939,8 @@
                 "dev-1.x": "1.x-dev"
             },
             "drupal": {
-                "version": "8.x-1.9",
-                "datestamp": "1563995941",
+                "version": "8.x-1.10",
+                "datestamp": "1567099985",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -4171,18 +4172,18 @@
     },
     {
         "name": "drupal/search_api_solr",
-        "version": "3.2.0",
-        "version_normalized": "3.2.0.0",
+        "version": "3.4.0",
+        "version_normalized": "3.4.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/search_api_solr.git",
-            "reference": "8.x-3.2"
+            "reference": "8.x-3.4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/search_api_solr-8.x-3.2.zip",
-            "reference": "8.x-3.2",
-            "shasum": "0c7f7e083f694eacf89f90ff7d44d4ea9ee8eeb6"
+            "url": "https://ftp.drupal.org/files/projects/search_api_solr-8.x-3.4.zip",
+            "reference": "8.x-3.4",
+            "shasum": "1990a5e6d24bfaaab9200c646e3fd0c511d2ac46"
         },
         "require": {
             "consolidation/annotated-command": "^2.12",
@@ -4221,8 +4222,8 @@
                 "dev-3.x": "3.x-dev"
             },
             "drupal": {
-                "version": "8.x-3.2",
-                "datestamp": "1562599986",
+                "version": "8.x-3.4",
+                "datestamp": "1568822586",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -4545,18 +4546,18 @@
     },
     {
         "name": "drupal/webform",
-        "version": "5.3.0",
-        "version_normalized": "5.3.0.0",
+        "version": "5.4.0",
+        "version_normalized": "5.4.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/webform.git",
-            "reference": "8.x-5.3"
+            "reference": "8.x-5.4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/webform-8.x-5.3.zip",
-            "reference": "8.x-5.3",
-            "shasum": "0ac8066ed09c688d7900f35d961ea521c6da6e3a"
+            "url": "https://ftp.drupal.org/files/projects/webform-8.x-5.4.zip",
+            "reference": "8.x-5.4",
+            "shasum": "367de6af2485d3838ec80f41c536f6ecc52a405f"
         },
         "require": {
             "drupal/core": "*"
@@ -4587,8 +4588,8 @@
                 "dev-5.x": "5.x-dev"
             },
             "drupal": {
-                "version": "8.x-5.3",
-                "datestamp": "1563460085",
+                "version": "8.x-5.4",
+                "datestamp": "1566209286",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"

@@ -1,0 +1,14 @@
+uuid: f6b18f8b-c6dd-4b5f-b96d-e4b3cc9cfe6b
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.business_owner
+  module:
+    - user
+id: user_remove_role_action.business_owner
+label: 'Remove the Business Owner role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: business_owner

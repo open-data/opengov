@@ -1,0 +1,10 @@
+uuid: 06a51fca-aa33-4231-b948-b834ef30426c
+langcode: en
+status: true
+dependencies: {  }
+id: business_owner
+label: 'Business Owner'
+weight: 6
+is_admin: null
+permissions:
+  - 'view any webform submission'

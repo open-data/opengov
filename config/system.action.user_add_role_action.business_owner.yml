@@ -1,0 +1,14 @@
+uuid: f648096e-df96-4b37-b0ad-1bd5b0f5a1bd
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.business_owner
+  module:
+    - user
+id: user_add_role_action.business_owner
+label: 'Add the Business Owner role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: business_owner
