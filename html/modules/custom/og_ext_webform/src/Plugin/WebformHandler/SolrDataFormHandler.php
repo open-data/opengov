@@ -21,20 +21,24 @@ use Drupal\webform\webformSubmissionInterface;
 class SolrDataFormHandler extends WebformHandlerBase {
 
   public function preSave(WebformSubmissionInterface $webform_submission) {
-    $values = $webform_submission->getData();
-    $index = Index::load($values['solr_core']);
+    $webform_values = $webform_submission->getData();
+    $index = Index::load($webform_values['solr_core']);
     if ($index) {
       $query = $index->query();
-      $query->addCondition('id', $values['entity_id']);
+      $query->addCondition('id', $webform_values['entity_id']);
       $results = $query->execute();
       $items = $results->getResultItems();
       if (!empty($items)) {
         $row = reset($items);
         $field_names = array_keys($row->getFields());
+        $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
 
-        foreach ($field_names as $field_name) {
-          if (isset($values[$field_name])) {
-            $webform_submission->setElementData($field_name, implode(", ", $row->getField($field_name)->getValues()));
+        foreach ($webform_values as $key => $value) {
+          if (in_array($key, $field_names) || in_array($key . '_' . $langcode, $field_names)) {
+            $solr_field_value = (!empty($row->getField($key . '_' . $langcode)))
+              ? $row->getField($key . '_' . $langcode)->getValues()
+              : $row->getField($key)->getValues();
+            $webform_submission->setElementData($key, implode(", ", $solr_field_value));
           }
         }
       }

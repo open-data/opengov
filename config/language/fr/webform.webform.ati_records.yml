@@ -5,7 +5,7 @@ settings:
 handlers:
   confirmation:
     settings:
-      body: "FR -- This is an automated e-mail. You are receiving this because you contacted an organization about an ATI Request. Here are the values that you submitted:<br />\r\n<br />\r\n&lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />\r\n&lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />\r\n&lt;p&gt;Submitted values are:&lt;/p&gt;<br />\r\n[webform_submission:values]<br />\r\n&nbsp;\r\n"
+      body: "<p>Ceci est un courriel automatisé. Vous le recevez parce que vous avez communiqué avec une organisation au sujet d’une demande d’accès à l’information. Voici les valeurs que vous avez soumises :</p>\r\n\r\n<p><strong>Soumis le :</strong> [webform_submission:created]</p>\r\n<p><strong>Proposé par :</strong> [webform_submission:user]</p>\r\n<p>Les valeurs soumises sont : </p>\r\n[webform_submission:values]\r\n"
   notifications:
     settings:
-      body: "FR -- This is an automated e-mail. You are receiving this because you contacted an organization about an ATI Request. Here are the values that you submitted:\r\n\r\n<p>Submitted on [webform_submission:created]</p>\r\n<p>Submitted by: [webform_submission:user]</p>\r\n<p>Submitted values are:</p>\r\n[webform_submission:values]\r\n\r\n"
+      body: "Ceci est un courriel automatisé. Vous le recevez parce que vous avez communiqué avec une organisation au sujet d’une demande d’accès à l’information. Voici les valeurs que vous avez soumises :\r\n\r\nSoumis le : [webform_submission:created]\r\nProposé par : [webform_submission:user]\r\nLes valeurs soumises sont :\r\n[webform_submission:values]\r\n"
