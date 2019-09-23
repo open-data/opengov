@@ -265,7 +265,7 @@ class WebformSubmissionDevelGenerate extends DevelGenerateBase implements Contai
 
     $entity_type = $form_state->getValue('entity-type');
     $entity_id = $form_state->getValue('entity-id');
-    if ($entity_type || $entity_id) {
+    if ($entity_type) {
       if ($error = $this->validateEntity($webform_ids, $entity_type, $entity_id)) {
         $form_state->setErrorByName('entity_type', $error);
       }

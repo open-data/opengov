@@ -1,6 +1,7 @@
 settings:
   default_status: open
   default_page_base_path: form
+  default_ajax: false
   default_ajax_effect: fade
   default_ajax_speed: 500
   default_ajax_progress_type: throbber
@@ -111,6 +112,7 @@ batch:
 purge:
   cron_size: 100
 element:
+  machine_name_pattern: a-z0-9_
   empty_message: '{Empty}'
   allowed_tags: admin
   wrapper_classes: "container-inline clearfix\nform--inline clearfix\nmessages messages--error\nmessages messages--warning\nmessages messages--status\n"
@@ -166,12 +168,12 @@ test:
   names: "first_name:\r\n  - 'John'\r\n  - 'Paul'\r\n  - 'Ringo'\r\n  - 'George'\r\nlast_name:\r\n  - 'Lennon'\r\n  - 'McCartney'\r\n  - 'Starr'\r\n  - 'Harrison'\r\naddress:\r\n  - '10 Main Street'\r\n  - '11 Brook Alley Road. APT 1'\r\nzip:\r\n  - '11111'\r\n  - '12345'\r\n  - '12345-6789'\r\npostal_code:\r\n  - '11111'\r\n  - '12345'\r\n  - '12345-6789'\r\nphone:\r\n  - '123-456-7890'\r\n  - '098-765-4321'\r\nfax:\r\n  - '123-456-7890'\r\n  - '098-765-4321'\r\ncity:\r\n  - 'Springfield'\r\n  - 'Pleasantville'\r\n  - 'Hill Valley'\r\nurl:\r\n  - 'http://example.com'\r\n  - 'http://test.com'\r\ndefault:\r\n  - 'Loremipsum'\r\n  - 'Oratione'\r\n  - 'Dixisset'\r\n"
 ui:
   video_display: dialog
-  description_help: true
   details_save: true
   help_disabled: false
   dialog_disabled: false
   offcanvas_disabled: false
   promotions_disabled: false
+  description_help: true
 libraries:
   excluded_libraries:
     - jquery.chosen

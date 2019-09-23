@@ -82,6 +82,11 @@ thead th .dropbutton {
   font-weight: bold;
 }
 
+.webform-ui-elements-table tr.webform-ui-element-disabled {
+  background-color: #F5F5F5;
+  color: #666;
+}
+
 .webform-ui-elements-table tr.webform-ui-element-type-details input,
 .webform-ui-elements-table tr.webform-ui-element-type-details select,
 .webform-ui-elements-table tr.webform-ui-element-type-fieldset input,

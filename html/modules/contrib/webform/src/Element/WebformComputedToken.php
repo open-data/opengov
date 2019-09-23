@@ -14,7 +14,7 @@ class WebformComputedToken extends WebformComputedBase {
   /**
    * {@inheritdoc}
    */
-  public static function processValue(array $element, WebformSubmissionInterface $webform_submission) {
+  public static function computeValue(array $element, WebformSubmissionInterface $webform_submission) {
     $mode = static::getMode($element);
 
     /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */

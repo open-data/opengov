@@ -14,6 +14,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\PageCache\ResponsePolicy\KillSwitch;
 use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Render\Element;
@@ -147,6 +148,13 @@ class WebformSubmissionForm extends ContentEntityForm {
   protected $statesPrefix;
 
   /**
+   * The kill switch.
+   *
+   * @var \Drupal\Core\PageCache\ResponsePolicy\KillSwitch
+   */
+  protected $killSwitch;
+
+  /**
    * Constructs a WebformSubmissionForm object.
    *
    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
@@ -177,6 +185,8 @@ class WebformSubmissionForm extends ContentEntityForm {
    *   The webform entity reference manager.
    * @param \Drupal\webform\WebformSubmissionGenerateInterface $submission_generate
    *   The webform submission generation service.
+   * @param \Drupal\Core\PageCache\ResponsePolicy\KillSwitch $killSwitch
+   *   The page cache kill switch service.
    */
   public function __construct(
     EntityRepositoryInterface $entity_repository,
@@ -191,7 +201,8 @@ class WebformSubmissionForm extends ContentEntityForm {
     WebformTokenManagerInterface $token_manager,
     WebformSubmissionConditionsValidatorInterface $conditions_validator,
     WebformEntityReferenceManagerInterface $webform_entity_reference_manager,
-    WebformSubmissionGenerateInterface $submission_generate
+    WebformSubmissionGenerateInterface $submission_generate,
+    KillSwitch $killSwitch
   ) {
     parent::__construct($entity_repository);
     $this->configFactory = $config_factory;
@@ -206,6 +217,7 @@ class WebformSubmissionForm extends ContentEntityForm {
     $this->conditionsValidator = $conditions_validator;
     $this->webformEntityReferenceManager = $webform_entity_reference_manager;
     $this->generate = $submission_generate;
+    $this->killSwitch = $killSwitch;
   }
 
   /**
@@ -225,7 +237,8 @@ class WebformSubmissionForm extends ContentEntityForm {
       $container->get('webform.token_manager'),
       $container->get('webform_submission.conditions_validator'),
       $container->get('webform.entity_reference_manager'),
-      $container->get('webform_submission.generate')
+      $container->get('webform_submission.generate'),
+      $container->get('page_cache_kill_switch')
     );
   }
 
@@ -462,7 +475,7 @@ class WebformSubmissionForm extends ContentEntityForm {
     if ($webform->isScheduled()
       && $this->currentUser()->isAnonymous()
       && $this->moduleHandler->moduleExists('page_cache')) {
-      \Drupal::service('page_cache_kill_switch')->trigger();
+      $this->killSwitch->trigger();
     }
 
     // Display status messages.
@@ -483,9 +496,6 @@ class WebformSubmissionForm extends ContentEntityForm {
       $this->alterElementsForm($elements, $form, $form_state);
     }
 
-    // Server side #states API validation.
-    $this->conditionsValidator->buildForm($form, $form_state);
-
     // Add Ajax callbacks.
     $ajax_settings = [
       'effect' => $this->getWebformSetting('ajax_effect'),
@@ -504,6 +514,9 @@ class WebformSubmissionForm extends ContentEntityForm {
     $form_id = $this->getFormId();
     $this->thirdPartySettingsManager->alter('webform_submission_form', $form, $form_state, $form_id);
 
+    // Server side #states API validation.
+    $this->conditionsValidator->buildForm($form, $form_state);
+    
     return $form;
   }
 

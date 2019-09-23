@@ -24,6 +24,11 @@ elements: |
     '#title': managed_file_multiple
     '#file_extensions': txt
     '#multiple': true
+  managed_file_multiple_two:
+    '#type': managed_file
+    '#title': managed_file_multiple_two
+    '#file_extensions': txt
+    '#multiple': 2
   managed_file_single_button:
     '#type': managed_file
     '#title': managed_file_single_button
@@ -59,7 +64,7 @@ elements: |
     '#file_extensions': txt
     '#file_placeholder': 'This is the multiple file upload placeholder'
     '#multiple': true
-  
+
 css: ''
 javascript: ''
 settings:

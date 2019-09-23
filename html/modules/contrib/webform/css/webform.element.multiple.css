@@ -86,6 +86,7 @@
 
 .webform-multiple-table td input[type="image"] {
   width: 20px;
+  height: auto;
   min-width: initial;
   max-width: initial;
   box-sizing: border-box;

@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
@@ -128,7 +129,7 @@ function template_preprocess_webform_confirmation(array &$variables) {
   foreach ($assets as $type => $value) {
     if ($value) {
       $variables['#attached']['library'][] = "webform/webform.assets.$type";
-      $variables['#attached']['drupalSettings']['webform']['assets'][$type][$webform->id()] = md5($value);
+      $variables['#attached']['drupalSettings']['webform']['assets'][$type][$webform->id()] = Crypt::hashBase64($value);
     }
   }
 

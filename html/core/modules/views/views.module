@@ -669,6 +669,39 @@ function views_form_views_exposed_form_alter(&$form, FormStateInterface $form_st
   $form['form_build_id']['#access'] = FALSE;
   $form['form_token']['#access'] = FALSE;
   $form['form_id']['#access'] = FALSE;
+  if (\Drupal::moduleHandler()->moduleExists('facets_pretty_paths')) {
+    $current_path = \Drupal::request()->getRequestUri();
+    $current_route_name = \Drupal::service('current_route_match')->getRouteName();
+    if ($current_route_name) {
+      $form['#action'] = $current_path;
+    }
+  }
+  else {
+    // Check if this form is a Search API form. This could be replaced with the
+    // value of a custom Views setting like e.g. "Include facets".
+    if ($view = $form_state->getStorage()['view']) {
+
+      if (substr(key($form_state->getStorage()['view']->getBaseTables()), 0, 17) === 'search_api_index_') {
+
+        if (\Drupal::moduleHandler()->moduleExists('facets')) {
+          // Get query parameters.
+          $query_parameters = Drupal::request()->query->all();
+          // If any facet query parameters are provided.
+          if (!empty($query_parameters['f'])) {
+            // Iterate through facet query parameters.
+            foreach ($query_parameters['f'] as $key => $value) {
+              // Add hidden form field for facet parameter.
+              $form['f[' . $key . ']'] = [
+                '#type' => 'hidden',
+                '#value' => $value,
+                '#weight' => -1,
+              ];
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 /**

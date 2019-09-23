@@ -719,7 +719,9 @@ function webform_css_alter(&$css, AttachedAssetsInterface $assets) {
   $is_webform_route = preg_match('/(^webform|^entity\.webform|^entity\.node\.webform)/', \Drupal::routeMatch()->getRouteName());
   if ($use_off_canvas && $is_admin_route && $is_webform_route) {
     foreach ($css as $key => $item) {
-      if (strpos($key, 'core/themes/stable/css/core/dialog/off-canvas') === 0) {
+      // @see 'core/misc/dialog/off-canvas
+      // @see core/themes/stable/css/core/dialog/off-canvas
+      if (strpos($key, '/off-canvas.') !== FALSE) {
         unset($css[$key]);
       }
     }
@@ -972,6 +974,10 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
       // Add #option_display to button.
       // @see \Drupal\webform_bootstrap_test_theme\Plugin\Preprocess\FormElement::preprocessElement
       $element[$key]['#option_display'] = 'button';
+
+      // Add webform element property to trigger radio/checkbox template suggestions.
+      // @see webform_theme_suggestions_form_element()
+      $element[$key]['#webform_element'] = TRUE;
     }
   }
 

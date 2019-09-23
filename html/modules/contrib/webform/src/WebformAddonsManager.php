@@ -142,6 +142,14 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'category' => 'element',
     ];
 
+    // Element: Webform Alias Container.
+    $projects['webform_alias_container'] = [
+      'title' => $this->t('Webform Alias Container'),
+      'description' => $this->t('Provides a Webform container designed to contain multiple composite elements.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/webform_alias_container'),
+      'category' => 'element',
+    ];
+
     // Element: Webform Belgian National Insurance Number.
     $projects['webform_rrn_nrn'] = [
       'title' => $this->t('Webform Belgian National Insurance Number'),
@@ -214,10 +222,18 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'category' => 'element',
     ];
 
-    // Element: Webform select collection.
+    // Element: Webform Promotion Code.
+    $projects['webform_promotion_code'] = [
+      'title' => $this->t('Webform Promotion Code'),
+      'description' => $this->t('Provides a promotion code Webform element.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/webform_promotion_code'),
+      'category' => 'element',
+    ];
+
+    // Element: Webform Select Collection.
     $projects['webform_select_collection'] = [
-      'title' => $this->t('Webform select collection'),
-      'description' => $this->t('Provides a webform element that groups multiple select elements into single collection..'),
+      'title' => $this->t('Webform Select Collection'),
+      'description' => $this->t('Provides a webform element that groups multiple select elements into single collection.'),
       'url' => Url::fromUri('https://www.drupal.org/project/webform_select_collection'),
       'category' => 'element',
     ];
@@ -306,10 +322,18 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'category' => 'enhancement',
     ];
 
+    // Enhancement: Webform Extra Field Validation.
+    $projects['webform extra field validation'] = [
+      'title' => $this->t('Webform Extra Field Validation'),
+      'description' => $this->t('Provides an extra field for placing a webform in any entity display mode.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/webform extra field validation'),
+      'category' => 'enhancement',
+    ];
+
     // Enhancement: Webform Feedback.
     $projects['webform_feedback'] = [
       'title' => $this->t('Webform Feedback'),
-      'description' => $this->t('Provides a feedback button for your website which allows you to gather customer/client feedback.'),
+      'description' => $this->t('Provides extra validation to webform, allowing you to specify validation rules for your Webform components.'),
       'url' => Url::fromUri('https://www.drupal.org/project/webform_feedback'),
       'category' => 'enhancement',
     ];
@@ -410,12 +434,19 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'category' => 'integration',
     ];
 
+    // Integrations: Ecomail webform.
+    $projects['ecomail_webform'] = [
+      'title' => $this->t('Ecomail webform'),
+      'description' => $this->t('Provides a Webform handler to add contact to the list of direct e-mailing service Ecomail.cz.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/ecomail_webform'),
+      'category' => 'integration',
+    ];
 
-    // Integrations: Webform E-petition.
-    $projects['webform_epetition'] = [
-      'title' => $this->t('Webform E-petition'),
-      'description' => $this->t('Provides a postcode lookup field to find details and emails on your local parliamentary representatives.'),
-      'url' => Url::fromUri('https://www.drupal.org/project/webform_epetition'),
+    // Integrations: Flashpoint Course Content: Webform.
+    $projects['flashpoint_course_webform'] = [
+      'title' => $this->t('Flashpoint Course Content: Webform'),
+      'description' => $this->t('Integrates Webforms into Flashpoint Courses.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/flashpoint_course_webform'),
       'category' => 'integration',
     ];
 
@@ -459,6 +490,14 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'category' => 'integration',
     ];
 
+    // Integrations: Sherpa Webform .
+    $projects['sherpa_webform'] = [
+      'title' => $this->t('Sherpa Webform '),
+      'description' => $this->t('Captures Webform submissions, convert them to JSON, and send them to Sherpa.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/sherpa_webform'),
+      'category' => 'integration',
+    ];
+
     // Integrations: Watson/Silverpop Webform Parser.
     $projects['watson_form_parser'] = [
       'title' => $this->t('Watson/Silverpop Webform Parser'),
@@ -472,6 +511,14 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'title' => $this->t('Webform AddressFinder'),
       'description' => $this->t(' Implements integration between Webform and the AddressFinder service (https://addressfinder.com.au/), providing autocompletion and validation for addresses in Australia and New Zealand.'),
       'url' => Url::fromUri('https://www.drupal.org/project/webform_location_addressfinder'),
+      'category' => 'integration',
+    ];
+
+    // Integrations: Webform E-petition.
+    $projects['webform_epetition'] = [
+      'title' => $this->t('Webform E-petition'),
+      'description' => $this->t('Provides a postcode lookup field to find details and emails on your local parliamentary representatives.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/webform_epetition'),
       'category' => 'integration',
     ];
 
@@ -507,6 +554,14 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'category' => 'integration',
     ];
 
+    // Integrations: Webform GoogleSheets.
+    $projects['webform_googlesheets'] = [
+      'title' => $this->t('Webform GoogleSheets'),
+      'description' => $this->t('Allows to append Webform submissions to Google Sheets.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/webform_googlesheets'),
+      'category' => 'integration',
+    ];
+
     // Integration: Webform HubSpot.
     $projects['hubspot'] = [
       'title' => $this->t('Webform HubSpot'),
@@ -528,6 +583,14 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'title' => $this->t('Webform MailChimp'),
       'description' => $this->t('Posts form submissions to MailChimp list.'),
       'url' => Url::fromUri('https://www.drupal.org/project/webform_mailchimp'),
+      'category' => 'integration',
+    ];
+
+    // Integrations: Webform Mautic.
+    $projects['webform_mautic'] = [
+      'title' => $this->t('Webform Mautic'),
+      'description' => $this->t('Integrates your Webform submissions with Mautic form submissions.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/webform_mautic'),
       'category' => 'integration',
     ];
 
@@ -851,6 +914,14 @@ class WebformAddonsManager implements WebformAddonsManagerInterface {
       'title' => $this->t('Webform Submission Change History'),
       'description' => $this->t('Allows administrators to track notes on webform submissions.'),
       'url' => Url::fromUri('https://www.drupal.org/project/webform_submission_change_history'),
+      'category' => 'submission',
+    ];
+
+    // Submissions: Webform Submissions Delete.
+    $projects['webform_submissions_delete'] = [
+      'title' => $this->t('Webform Submissions Delete'),
+      'description' => $this->t(' Used to delete webform submissions using start date, end date all at once.'),
+      'url' => Url::fromUri('https://www.drupal.org/project/webform_submissions_delete'),
       'category' => 'submission',
     ];
 

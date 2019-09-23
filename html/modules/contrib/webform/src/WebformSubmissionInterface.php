@@ -18,9 +18,19 @@ interface WebformSubmissionInterface extends ContentEntityInterface, EntityOwner
   const STATE_UNSAVED = 'unsaved';
 
   /**
-   * Return status for submission in draft.
+   * Return status for submission in draft created.
    */
   const STATE_DRAFT = 'draft';
+
+  /**
+   * Return status for submission in draft created.
+   */
+  const STATE_DRAFT_CREATED = 'draft_created';
+
+  /**
+   * Return status for submission in draft updated.
+   */
+  const STATE_DRAFT_UPDATED = 'draft_updated';
 
   /**
    * Return status for submission that has been completed.
@@ -263,9 +273,9 @@ interface WebformSubmissionInterface extends ContentEntityInterface, EntityOwner
    * Track the state of a submission.
    *
    * @return string
-   *   Either SSTATE_UNSAVED, STATE_DRAFT, STATE_COMPLETED, STATE_UPDATED,
-   *   STATE_LOCKED, or STATE_CONVERTED depending on the last
-   *   save operation performed.
+   *   Either STATE_UNSAVED, STATE_DRAFT_CREATED, STATE_DRAFT_UPDATED,
+   *   STATE_COMPLETED, STATE_UPDATED, STATE_LOCKED, or STATE_CONVERTED
+   *   depending on the last save operation performed.
    */
   public function getState();
 

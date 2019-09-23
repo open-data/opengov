@@ -675,21 +675,16 @@ elements: |
         '#title': 'Date (Raw value)'
         '#default_value': '1942-06-18'
         '#format': raw
-      date_html_date:
-        '#type': date
-        '#title': 'Date (HTML Date)'
-        '#default_value': '1942-06-18'
-        '#format': html_date
-      date_html_time:
-        '#type': date
-        '#title': 'Date (HTML Time)'
-        '#default_value': '1942-06-18'
-        '#format': html_time
       date_fallback:
         '#type': date
         '#title': 'Date (Fallback date format)'
         '#default_value': '1942-06-18'
         '#format': fallback
+      date_html_date:
+        '#type': date
+        '#title': 'Date (HTML Date)'
+        '#default_value': '1942-06-18'
+        '#format': html_date
       date_html_datetime:
         '#type': date
         '#title': 'Date (HTML Datetime)'
@@ -700,6 +695,11 @@ elements: |
         '#title': 'Date (HTML Month)'
         '#default_value': '1942-06-18'
         '#format': html_month
+      date_html_time:
+        '#type': date
+        '#title': 'Date (HTML Time)'
+        '#default_value': '1942-06-18'
+        '#format': html_time
       date_html_week:
         '#type': date
         '#title': 'Date (HTML Week)'
@@ -893,7 +893,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': value
       entity_autocomplete_raw:
         '#type': entity_autocomplete
@@ -902,7 +902,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': raw
       entity_autocomplete_link:
         '#type': entity_autocomplete
@@ -911,7 +911,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': link
       entity_autocomplete_id:
         '#type': entity_autocomplete
@@ -920,7 +920,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': id
       entity_autocomplete_label:
         '#type': entity_autocomplete
@@ -929,7 +929,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': label
       entity_autocomplete_text:
         '#type': entity_autocomplete
@@ -938,7 +938,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': text
       entity_autocomplete_teaser:
         '#type': entity_autocomplete
@@ -947,7 +947,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': teaser
       entity_autocomplete_default:
         '#type': entity_autocomplete
@@ -956,7 +956,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 2
+        '#default_value': 11
         '#format': default
     webform_entity_radios:
       '#type': details
@@ -1263,6 +1263,26 @@ elements: |
         '#title': 'File (File ID)'
         '#file_extensions': txt
         '#format': id
+      managed_file_mime:
+        '#type': managed_file
+        '#title': 'File (File mime type)'
+        '#file_extensions': txt
+        '#format': mime
+      managed_file_data:
+        '#type': managed_file
+        '#title': 'File (File content (Base64))'
+        '#file_extensions': txt
+        '#format': data
+      managed_file_size:
+        '#type': managed_file
+        '#title': 'File (File size (Bytes))'
+        '#file_extensions': txt
+        '#format': size
+      managed_file_extension:
+        '#type': managed_file
+        '#title': 'File (File extension)'
+        '#file_extensions': txt
+        '#format': extension
   other_elements:
     '#type': details
     '#title': 'Other elements'
@@ -1280,7 +1300,7 @@ elements: |
         '#title': 'Machine name (Raw value)'
         '#default_value': loremipsum
         '#format': raw
-  
+
 css: ''
 javascript: ''
 settings:

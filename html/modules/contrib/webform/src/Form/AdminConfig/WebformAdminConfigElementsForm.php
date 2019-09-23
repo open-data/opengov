@@ -104,6 +104,20 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
       '#open' => TRUE,
       '#tree' => TRUE,
     ];
+    $form['element']['machine_name_pattern'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Element key pattern'),
+      '#description' => $this->t('The element key pattern is used to limit the format of element keys.') . '<br/><br/>' .
+        $this->t('Please note: Automatically generated element keys are lowercased letters, numbers, and underscores'),
+      '#options' => [
+        'a-z0-9_' => $this->t('Lowercase letters, numbers, and underscores. (i.e. element_key)'),
+        'a-zA-Z0-9_' => $this->t('Letters, numbers, and underscores. (i.e. element_KEY)'),
+        'a-z0-9_-' => $this->t('Lowercase letters, numbers, and underscores. (i.e. element-key)'),
+        'a-zA-Z0-9_-' => $this->t('Letters, numbers, underscores, and dashes. (i.e. element-KEY)'),
+      ],
+      '#required' => TRUE,
+      '#default_value' => $config->get('element.machine_name_pattern'),
+    ];
     $form['element']['empty_message'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Empty element message/placeholder'),

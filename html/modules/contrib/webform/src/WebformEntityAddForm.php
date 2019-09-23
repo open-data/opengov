@@ -5,6 +5,7 @@ namespace Drupal\webform;
 use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\Form\WebformDialogFormTrait;
 
 /**
@@ -109,21 +110,32 @@ class WebformEntityAddForm extends BundleEntityFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    // Poormans duplication of translated webform configuration.
-    // This completely bypasses the config translation system and just
-    // duplicates any translated webform config stored in the database.
-    if ($this->operation == 'duplicate') {
+    if ($this->operation === 'duplicate') {
+      $original_id = \Drupal::routeMatch()->getRawParameter('webform');
+      $duplicate_id = $this->getEntity()->id();
+
+      // Poormans duplication of translated webform configuration.
+      // This completely bypasses the config translation system and just
+      // duplicates any translated webform config stored in the database.
       $result = \Drupal::database()->select('config', 'c')
         ->fields('c', ['collection', 'name', 'data'])
-        ->condition('c.name', 'webform.webform.' . \Drupal::routeMatch()->getRawParameter('webform'))
+        ->condition('c.name', 'webform.webform.' . $original_id )
         ->condition('c.collection', 'language.%', 'LIKE')
         ->execute();
       while ($record = $result->fetchAssoc()) {
-        $record['name'] = 'webform.webform.' . $this->entity->id();
+        $record['name'] = 'webform.webform.' . $duplicate_id;
         \Drupal::database()->insert('config')
           ->fields(['collection', 'name', 'data'])
           ->values($record)
           ->execute();
+      }
+
+      // Copy webform export and results from state.
+      $state = \Drupal::state()->get("webform.webform.$original_id");
+      // Remove node (source entity) keys.
+      unset($state['results.export.node'], $state['results.custom.node']);
+      if ($state) {
+        \Drupal::state()->set("webform.webform.$duplicate_id", $state);
       }
     }
 

@@ -147,7 +147,7 @@ class WebformCodeMirror extends Textarea {
     if ($errors) {
       $build = [
         'title' => [
-          '#markup' => t('%title is not valid.', ['%title' => (isset($element['#title']) ? $element['#title'] : t('YAML'))]),
+          '#markup' => t('%title is not valid.', ['%title' => static::getTitle($element)]),
         ],
         'errors' => [
           '#theme' => 'item_list',
@@ -191,6 +191,35 @@ class WebformCodeMirror extends Textarea {
 
       default:
         return NULL;
+    }
+  }
+
+  /**
+   * Get an element's title.
+   *
+   * @param array $element
+   *   An element.
+   *
+   * @return string
+   *   The element's title.
+   */
+  protected static function getTitle(array $element) {
+    if (isset($element['#title'])) {
+      return $element['#title'];
+    }
+
+    switch ($element['#mode']) {
+      case 'html':
+        return t('HTML');
+
+      case 'yaml':
+        return t('YAML');
+
+      case 'twig':
+        return t('Twig');
+
+      default:
+        return t('Code');
     }
   }
 

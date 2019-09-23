@@ -52,7 +52,7 @@ class WebformExampleComposite extends WebformCompositeBase {
       '#title' => t('Date of birth'),
       // Add .js-form-wrapper to wrapper (ie td) to prevent #states API from
       // disabling the entire table row when this element is disabled.
-      '#wrapper_attributes' => ['class' => 'js-form-wrapper'],
+      '#wrapper_attributes' => ['class' => ['js-form-wrapper']],
       '#states' => [
         'enabled' => [
           '[data-webform-composite-id="' . $html_id . '--first_name"]' => ['filled' => TRUE],
@@ -66,7 +66,7 @@ class WebformExampleComposite extends WebformCompositeBase {
       '#options' => 'gender',
       // Add .js-form-wrapper to wrapper (ie td) to prevent #states API from
       // disabling the entire table row when this element is disabled.
-      '#wrapper_attributes' => ['class' => 'js-form-wrapper'],
+      '#wrapper_attributes' => ['class' => ['js-form-wrapper']],
       '#states' => [
         'enabled' => [
           '[data-webform-composite-id="' . $html_id . '--first_name"]' => ['filled' => TRUE],

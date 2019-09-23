@@ -14,6 +14,7 @@ use Drupal\user\UserInterface;
 use Drupal\webform\Plugin\WebformElement\WebformActions;
 use Drupal\webform\Plugin\WebformElement\WebformWizardPage;
 use Drupal\webform\Plugin\WebformElementAttachmentInterface;
+use Drupal\webform\Plugin\WebformElementComputedInterface;
 use Drupal\webform\Plugin\WebformElementWizardPageInterface;
 use Drupal\webform\Plugin\WebformHandlerMessageInterface;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -362,6 +363,13 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   protected $elementsAttachments = [];
 
   /**
+   * Track computed elements.
+   *
+   * @var array
+   */
+  protected $elementsComputed = [];
+
+  /**
    * The webform pages.
    *
    * @var array
@@ -685,6 +693,15 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   public function hasAttachments() {
     $this->initElements();
     return (!empty($this->elementsAttachments)) ? TRUE : FALSE;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasComputed() {
+    $this->initElements();
+    return (!empty($this->elementsComputed)) ? TRUE : FALSE;
   }
 
   /**
@@ -1146,6 +1163,14 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getElementsComputed() {
+    $this->initElements();
+    return $this->elementsComputed;
+  }
+
+  /**
    * Check operation access for each element.
    *
    * @param string $operation
@@ -1270,6 +1295,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     $this->elementsTranslations = [];
     $this->elementsManagedFiles = [];
     $this->elementsAttachments = [];
+    $this->elementsComputed = [];
 
     try {
       $config_translation = \Drupal::moduleHandler()->moduleExists('config_translation');
@@ -1336,6 +1362,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     $this->elementsTranslations = NULL;
     $this->elementsManagedFiles = [];
     $this->elementsAttachments = [];
+    $this->elementsComputed = [];
   }
 
   /**
@@ -1470,6 +1497,11 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
         // Track attachments.
         if ($element_plugin instanceof WebformElementAttachmentInterface) {
           $this->elementsAttachments[$key] = $key;
+        }
+
+        // Track computed.
+        if ($element_plugin instanceof WebformElementComputedInterface) {
+          $this->elementsComputed[$key] = $key;
         }
 
         $element['#webform_multiple'] = $element_plugin->hasMultipleValues($element);
@@ -2243,7 +2275,10 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
           $handler->overrideSettings($settings, $webform_submission);
         }
       }
-      if ($settings != $this->settingsOriginal) {
+      // If a handler has change some settings set override.
+      // Only look for altered original settings, which prevents issues where
+      // a webform saved settings and default settings are out-of-sync.
+      if (array_intersect_key($settings, $this->settingsOriginal) != $this->settingsOriginal) {
         $this->setSettingsOverride($settings);
       }
     }

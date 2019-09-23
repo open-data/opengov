@@ -12,6 +12,9 @@ webform.settings:
         default_page_base_path:
           type: string
           label: 'Default base path'
+        default_ajax:
+          type: boolean
+          label: 'Use Ajax'
         default_ajax_progress_type:
           type: string
           label: 'Default Ajax progress type'
@@ -254,6 +257,9 @@ webform.settings:
       type: mapping
       label: 'Element default settings'
       mapping:
+        machine_name_pattern:
+          type: string
+          label: 'Element key pattern'
         empty_message:
           type: label
           label: 'Empty element message/placeholder'

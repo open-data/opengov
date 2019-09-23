@@ -1281,6 +1281,12 @@ class WebformHelpManager implements WebformHelpManagerInterface {
         'youtube_id' => '-7lxtfYgidY',
         'presentation_id' => '1agZ7Mq0UZBn746dKRbWjQCYvd8HptlejtPhUIuQ2IrE',
       ],
+      'government' => [
+        'title' => $this->t('Webforms for Government'),
+        'content' => $this->t('This screencast will explore how governments can leverage the Webform module for Drupal 8 to build accessible forms that securely collective massive amounts of data.'),
+        'youtube_id' => 'WQG6163r9Rs',
+        'presentation_id' => '1Mn7qlSR_njTZcGAM3PNQZR8Tvg7qtPhZFQja7Mj5uzI',
+      ],
     ];
 
     // WebWash (www.webwash.net/).
@@ -1403,7 +1409,18 @@ class WebformHelpManager implements WebformHelpManagerInterface {
           ],
         ],
       ],
-
+      'webwash_taxonomy_terms' => [
+        'title' => $this->t('Use Taxonomy Terms as Webform Options in Drupal 8'),
+        'owner' => $this->t('WebWash'),
+        'content' => $this->t('Learn how to create a select element which uses a taxonomy vocabulary instead of the standard options.'),
+        'youtube_id' => 'hAqbYDm5EDg',
+        'links' => [
+          [
+            'title' => $this->t('Use Taxonomy Terms as Webform Options in Drupal 8 | WebWash'),
+            'url' => 'https://www.webwash.net/taxonomy-terms-as-webform-options-in-drupal/',
+          ],
+        ],
+      ],
     ];
     foreach ($videos as $id => &$video_info) {
       $video_info['id'] = $id;

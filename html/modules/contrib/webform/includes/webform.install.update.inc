@@ -3120,8 +3120,75 @@ function webform_update_8168() {
 }
 
 /**
- * Issue #3062308: Add the ability to use admin theme for a webform's canonical route
+ * Issue #3062308: Add the ability to use admin theme for a webform's canonical route.
  */
 function webform_update_8169() {
   _webform_update_webform_settings();
+}
+
+/**
+ * Issue #3064070: Split STATE_DRAFT into STATE_DRAFT_CREATED and STATE_DRAFT_UPDATE.
+ */
+function webform_update_8170() {
+  // List of handler is that use webform submission state.
+  $states_handler_ids = ['action', 'email', 'scheduled_email', 'remote_post'];
+
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('webform.webform.') as $webform_config_name) {
+    $webform_config = $config_factory->getEditable($webform_config_name);
+    $data = $webform_config->getRawData();
+    $handler_updated = FALSE;
+    foreach ($data['handlers'] as &$handler) {
+      $settings = $handler['settings'];
+      if (!in_array($handler['id'], $states_handler_ids)) {
+        continue;
+      }
+
+      if (isset($settings['states'])
+        && is_array($settings['states'])
+        && in_array('draft', $settings['states'])) {
+        // Remove old 'draft' state.
+        WebformArrayHelper::removeValue($settings['states'], 'draft');
+        // Prepend new 'draft_created' and 'draft_updated' states.
+        $settings['states'] = array_merge([
+          'draft_created',
+          'draft_updated'
+        ], $settings['states']);
+      }
+
+      if ($handler['id'] === 'remote_post'
+        && isset($settings['draft_url'])) {
+        $settings['draft_created_url'] = $settings['draft_url'];
+        $settings['draft_created_custom_data'] = $settings['draft_custom_data'];
+        $settings['draft_updated_url'] = $settings['draft_url'];
+        $settings['draft_updated_custom_data'] = $settings['draft_custom_data'];
+        unset($settings['draft_url']);
+        unset($settings['draft_custom_data']);
+      }
+
+      if ($handler['settings'] != $settings) {
+        $handler_updated = TRUE;
+        $handler['settings'] = $settings;
+      }
+    }
+
+    if ($handler_updated) {
+      $webform_config->setData($data)->save();
+    }
+  }
+}
+
+/**
+ * Issue #3066994: Form elements keys (machine name) to be in all cases not just lowercase.
+ */
+function webform_update_8171() {
+  _webform_update_admin_settings();
+}
+
+
+/**
+ * Issue #3073995: Setting to enable ajax on all webforms.
+ */
+function webform_update_8172() {
+  _webform_update_admin_settings();
 }

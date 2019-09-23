@@ -17,7 +17,7 @@ category: 'Test: Handler'
 elements: |
   message:
     '#markup': 'Click ''Save Draft'' and ''Submit'' to send emails triggered by submissions  state.'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -188,7 +188,8 @@ handlers:
     weight: 0
     settings:
       states:
-        - draft
+        - draft_created
+        - draft_updated
       to_mail: draft@example.com
       to_options: {  }
       cc_mail: ''

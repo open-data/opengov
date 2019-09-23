@@ -3,6 +3,7 @@
 namespace Drupal\webform\EntitySettings;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -99,6 +100,21 @@ class WebformEntitySettingsConfirmationForm extends WebformEntitySettingsBaseFor
       ],
       '#default_value' => $settings['confirmation_type'],
     ];
+    // Page.
+    if ($webform->isResultsDisabled()) {
+      $form['confirmation_type']['page'] = [
+        '#type' => 'webform_message',
+        '#message_type' => 'warning',
+        '#message_close' => TRUE,
+        '#message_storage' => WebformMessage::STORAGE_SESSION,
+        '#message_message' => $this->t("Because the saving of submissions is disabled, the <code>[webform_submission:values]</code> token will not be available to the confirmation page's message."),
+        '#states' => [
+          'visible' => [
+            ':input[name="confirmation_type"]' => ['value' => WebformInterface::CONFIRMATION_PAGE],
+          ],
+        ],
+      ];
+    }
     // None.
     $form['confirmation_type']['none'] = [
       '#type' => 'webform_message',

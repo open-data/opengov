@@ -59,8 +59,14 @@
  * @see webform_preprocess_fieldset()
  */
 .form-composite.webform-fieldset--title-inline legend {
-  float: left;
-  margin: 0.4em 0.5em 0.4em 0;
+  float: left; /* LTR */
+  margin: 0.4em 0.5em 0.4em 0; /* LTR */
+}
+
+[dir=rtl] .form-composite.webform-fieldset--title-inline legend {
+  float: right; /* RTL */
+  margin-left: 0.5em; /* RTL */
+  margin-right: 0; /* RTL */
 }
 
 .form-composite.webform-fieldset--title-inline .fieldset-wrapper,

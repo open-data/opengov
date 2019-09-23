@@ -62,7 +62,9 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
    * Test single and multiple file upload.
    */
   public function testFileUpload() {
+
     /* Element rendering */
+
     $this->drupalGet('/webform/test_element_managed_file');
 
     // Check single file upload button.
@@ -78,6 +80,28 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
 
     $this->checkFileUpload('single', $this->files[0], $this->files[1]);
     $this->checkFileUpload('multiple', $this->files[2], $this->files[3]);
+
+    /* Multiple processing */
+
+    // Check file input is visible.
+    $this->drupalGet('/webform/test_element_managed_file');
+    $this->assertFieldByName('files[managed_file_multiple_two][]');
+    $this->assertFieldByName('managed_file_multiple_two_upload_button');
+
+    // Check that only two files can be uploaded.
+    $edit = [
+      'files[managed_file_multiple_two][]' => [
+        \Drupal::service('file_system')->realpath($this->files[0]->uri),
+        \Drupal::service('file_system')->realpath($this->files[1]->uri),
+        \Drupal::service('file_system')->realpath($this->files[2]->uri),
+      ],
+    ];
+    $this->drupalPostForm('/webform/test_element_managed_file', $edit, t('Upload'));
+    $this->assertRaw('<em class="placeholder">managed_file_multiple_two</em> can only hold 2 values but there were 3 uploaded. The following files have been omitted as a result: <em class="placeholder">text-2.txt</em>.');
+
+    // Check file input is removed.
+    $this->assertNoFieldByName('files[managed_file_multiple_two][]');
+    $this->assertNoFieldByName('managed_file_multiple_two_upload_button');
 
     /* File placeholder */
 

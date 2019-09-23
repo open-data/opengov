@@ -890,6 +890,23 @@ class Utility {
   }
 
   /**
+   * Returns whether the index contains any "solr_*" datasources.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return bool
+   *   TRUE if the index contains "solr_*" datasources, FALSE otherwise.
+   */
+  public static function hasIndexSolrDatasources(IndexInterface $index): bool {
+    $datasource_ids = $index->getDatasourceIds();
+    $datasource_ids = array_filter($datasource_ids, function ($datasource_id) {
+      return strpos($datasource_id, 'solr_') === 0;
+    });
+    return !empty($datasource_ids);
+  }
+
+  /**
    * Returns whether the index only contains "solr_document" datasources.
    *
    * @param \Drupal\search_api\IndexInterface $index
@@ -901,7 +918,7 @@ class Utility {
    */
   public static function hasIndexJustSolrDocumentDatasource(IndexInterface $index): bool {
     $datasource_ids = $index->getDatasourceIds();
-    return (1 == count($datasource_ids)) && in_array('solr_document', $datasource_ids);
+    return (1 === count($datasource_ids)) && in_array('solr_document', $datasource_ids);
   }
 
   /**
@@ -917,7 +934,7 @@ class Utility {
    *
    * @return string
    */
-  public static function getTimeZone(IndexInterface $index) {
+  public static function getTimeZone(IndexInterface $index): string {
     $settings = self::getIndexSolrSettings($index);
     $system_date = \Drupal::config('system.date');
     $timezone = '';
@@ -944,8 +961,8 @@ class Utility {
    * @return array
    *   An associative array of settings.
    */
-  public static function getIndexSolrSettings(IndexInterface $index) {
-    return search_api_solr_merge_default_index_third_party_settings(
+  public static function getIndexSolrSettings(IndexInterface $index): array {
+    return \search_api_solr_merge_default_index_third_party_settings(
       $index->getThirdPartySettings('search_api_solr')
     );
   }

@@ -27,7 +27,12 @@ elements: |
     '#title': entity_print_pdf_table
     '#display_on': both
     '#view_mode': table
-  
+  entity_print_pdf_custom:
+    '#type': 'webform_entity_print_attachment:pdf'
+    '#title': entity_print_pdf_custom
+    '#display_on': both
+    '#view_mode': twig
+    '#template': '{This is a custom template}'
 css: ''
 javascript: ''
 settings:

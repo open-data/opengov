@@ -261,13 +261,13 @@ function webform_access_field_widget_form_alter(&$element, FormStateInterface $f
     return;
   }
 
-  $default_value = ($entity->id()) ? \Drupal::database()->select('webform_access_group_entity', 'ge')
+  $default_value = $entity->id() ? \Drupal::database()->select('webform_access_group_entity', 'ge')
     ->fields('ge', ['group_id'])
     ->condition('entity_type', $entity->getEntityTypeId())
     ->condition('entity_id', $entity->id())
     ->condition('webform_id', $element['target_id']['#default_value'])
     ->condition('field_name', $field_definition->getName())
-    ->execute()->fetchCol() : $items->webform_access_group ?: [];
+    ->execute()->fetchCol() : ($items->webform_access_group ?: []);
 
   $element['settings']['webform_access_group'] = _webform_access_group_build_element(
     $default_value,

@@ -39,7 +39,7 @@ elements: |
       visible:
         ':input[name="send"]':
           value: other
-  
+
 css: ''
 javascript: ''
 settings:
@@ -374,7 +374,8 @@ handlers:
     weight: -45
     settings:
       states:
-        - draft
+        - draft_created
+        - draft_updated
         - completed
         - updated
       to_mail: '[webform_submission:values:send:raw]'
@@ -417,7 +418,8 @@ handlers:
     weight: -47
     settings:
       states:
-        - draft
+        - draft_created
+        - draft_updated
       to_mail: '[webform_submission:values:send:raw]'
       to_options:
         - value: draft_reminder

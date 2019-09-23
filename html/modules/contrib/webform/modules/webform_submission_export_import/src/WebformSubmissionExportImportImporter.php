@@ -2,6 +2,7 @@
 
 namespace Drupal\webform_submission_export_import;
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -407,14 +408,6 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
       if (empty($values) || $values == ['']) {
         continue;
       }
-
-      $record = array_combine($column_names, $values);
-
-      // Trim all values.
-      foreach ($record as $key => $value) {
-        $record[$key] = trim($value);
-      }
-
       $index++;
       $stats['total']++;
 
@@ -424,6 +417,28 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
       $row_warnings =& $stats['warnings'][$index];
       $row_errors =& $stats['errors'][$index];
 
+      // Make sure expected number of columns and values are equal.
+      if (count($column_names) !== count($values)) {
+        $t_args = [
+          '@expected' => count($column_names),
+          '@found' => count($values),
+        ];
+        $error = $this->t('@expected values expected and only @found found.', $t_args);
+        if (!empty($import_options['treat_warnings_as_errors'])) {
+          $row_errors[] = $error;
+        }
+        else {
+          $row_warnings[] = $error;
+        }
+        continue;
+      }
+
+      // Create record and trim all values.
+      $record = array_combine($column_names, $values);
+      foreach ($record as $key => $value) {
+        $record[$key] = trim($value);
+      }
+
       // Track original record.
       $original_record = $record;
 
@@ -432,7 +447,7 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
 
       // Token: Generate token from the original CSV record.
       if (empty($record['token'])) {
-        $record['token'] = md5(Settings::getHashSalt() . serialize($original_record));
+        $record['token'] = Crypt::hashBase64(Settings::getHashSalt() . serialize($original_record));
       }
 
       // Prepare.

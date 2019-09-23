@@ -116,9 +116,7 @@ class Telephone extends TextBase {
       '#title' => $this->t('Initial country'),
       '#type' => 'select',
       '#empty_option' => $this->t('- None -'),
-      '#options' => [
-          'auto' => $this->t('Auto detect'),
-        ] + CountryManager::getStandardList(),
+      '#options' => CountryManager::getStandardList(),
       '#states' => [
         'visible' => [':input[name="properties[international]"]' => ['checked' => TRUE]],
       ],

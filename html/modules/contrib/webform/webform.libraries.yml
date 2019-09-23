@@ -405,6 +405,14 @@ webform.element.buttons:
   dependencies:
     - core/jquery.ui.checkboxradio
 
+webform.element.checkboxes:
+  version: VERSION
+  js:
+    js/webform.element.checkboxes.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery.once
+
 webform.element.checkbox_value:
   version: VERSION
   css:
@@ -990,14 +998,14 @@ libraries.choices:
 
 libraries.codemirror.text:
   remote: https://github.com/codemirror/codemirror
-  version: &webform_codemirror_version '5.47.0'
+  version: &webform_codemirror_version '5.48.2'
   license: &webform_codemirror_license
     name: MIT
     url: http://codemirror.net/LICENSE
     gpl-compatible: true
   cdn: &webform_codemirror_cdn
-    /libraries/codemirror/lib/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.47.0/
-    /libraries/codemirror/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.47.0/
+    /libraries/codemirror/lib/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.2/
+    /libraries/codemirror/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.2/
   css:
     component:
       /libraries/codemirror/lib/codemirror.css: {}
@@ -1171,13 +1179,13 @@ libraries.jquery.inputmask:
 
 libraries.jquery.intl-tel-input:
   remote: https://github.com/jackocnr/intl-tel-input
-  version: 'v15.0.1'
+  version: 'v15.1.0'
   license:
     name: MIT
     url: https://github.com/jackocnr/intl-tel-input/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/jquery.intl-tel-input/: https://cdn.jsdelivr.net/gh/jackocnr/intl-tel-input@v15.0.1/
+    /libraries/jquery.intl-tel-input/: https://cdn.jsdelivr.net/gh/jackocnr/intl-tel-input@v15.1.0/
   css:
     component:
       /libraries/jquery.intl-tel-input/build/css/intlTelInput.min.css: { minified: true }
@@ -1207,13 +1215,13 @@ libraries.jquery.rateit:
 
 libraries.jquery.select2:
   remote: https://select2.github.io/
-  version: '4.0.7'
+  version: '4.0.8'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.select2/dist/: https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/
+    /libraries/jquery.select2/dist/: https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/
   css:
     component:
       /libraries/jquery.select2/dist/css/select2.min.css: { minified: true }

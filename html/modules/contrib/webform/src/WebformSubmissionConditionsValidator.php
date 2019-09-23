@@ -2,8 +2,10 @@
 
 namespace Drupal\webform;
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\webform\Plugin\WebformElement\TextBase;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\Plugin\WebformElement\WebformElement;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
@@ -220,7 +222,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         }
 
         $target_trigger = $condition_result ? 'value' : '!value';
-        $target_name = 'webform_states_' . md5($selector);
+        $target_name = 'webform_states_' . Crypt::hashBase64($selector);
         $target_selector = ':input[name="' . $target_name . '"]';
 
         // IMPORTANT:
@@ -326,10 +328,12 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
       else {
         $value = $element['#value'];
       }
+
       $is_empty = (empty($value) && $value !== '0');
+      $is_default_input_mask = (TextBase::isDefaultInputMask($element, $value));
 
       // If required and empty then set required error.
-      if ($is_required && $is_empty) {
+      if ($is_required && ($is_empty || $is_default_input_mask)) {
         WebformElementHelper::setRequiredError($element, $form_state);
       }
     }

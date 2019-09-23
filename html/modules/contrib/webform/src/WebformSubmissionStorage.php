@@ -213,13 +213,16 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
    * {@inheritdoc}
    */
   protected function buildPropertyQuery(QueryInterface $entity_query, array $values) {
-    // Add account query wheneven filter by uid.
+    // Add account query when ever filtered by uid.
     if (isset($values['uid'])) {
-      $account = User::load($values['uid']);
-      if ($account instanceof UserInterface) {
-        $this->addQueryConditions($entity_query, NULL, NULL, $account);
-        unset($values['uid']);
+      $uids = (array) $values['uid'];
+      $accounts = User::loadMultiple($uids);
+      $or_condition_group = $entity_query->orConditionGroup();
+      foreach ($accounts as $account) {
+        $this->_addQueryConditions($or_condition_group, NULL, NULL, $account);
       }
+      $entity_query->condition($or_condition_group);
+      unset($values['uid']);
     }
 
     parent::buildPropertyQuery($entity_query, $values);
@@ -363,6 +366,31 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
    * {@inheritdoc}
    */
   public function addQueryConditions(AlterableInterface $query, WebformInterface $webform = NULL, EntityInterface $source_entity = NULL, AccountInterface $account = NULL, array $options = []) {
+    $this->_addQueryConditions($query,$webform, $source_entity, $account, $options);
+  }
+
+  /**
+   * Add condition to submission query.
+   *
+   * @param \Drupal\Core\Database\Query\AlterableInterface|\Drupal\Core\Entity\Query\ConditionInterface $query
+   *   A SQL query or entity conditions.
+   * @param \Drupal\webform\WebformInterface $webform
+   *   (optional) A webform.
+   * @param \Drupal\Core\Entity\EntityInterface|null $source_entity
+   *   (optional) A webform submission source entity.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   (optional) The current user account.
+   * @param array $options
+   *   (optional) Additional options and query conditions.
+   *   Options/conditions include:
+   *   - in_draft (boolean): NULL will return all saved submissions and drafts.
+   *     Defaults to NULL
+   *   - check_source_entity (boolean): Check that a source entity is defined.
+   *   - interval (int): Limit total within an seconds interval.
+   *
+   * @todo Webform 8.x-6.x: Remove and move code to ::addQueryConditions.
+   */
+  private function _addQueryConditions($query, WebformInterface $webform = NULL, EntityInterface $source_entity = NULL, AccountInterface $account = NULL, array $options = []) {
     // Set default options/conditions.
     $options += [
       'check_source_entity' => FALSE,
@@ -947,7 +975,8 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
         'webform_submission' => $entity,
       ];
       switch ($entity->getState()) {
-        case WebformSubmissionInterface::STATE_DRAFT:
+        case WebformSubmissionInterface::STATE_DRAFT_UPDATED:
+        case WebformSubmissionInterface::STATE_DRAFT_CREATED:
           if ($update) {
             $message = '@title draft updated.';
             $context['operation'] = 'draft updated';
@@ -998,8 +1027,12 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
     elseif (!$webform->getSetting('results_disabled')) {
       // Log general events to the 'webform'.
       switch ($entity->getState()) {
-        case WebformSubmissionInterface::STATE_DRAFT:
-          $message = '@title draft saved.';
+        case WebformSubmissionInterface::STATE_DRAFT_CREATED:
+          $message = '@title draft created.';
+          break;
+
+        case WebformSubmissionInterface::STATE_DRAFT_UPDATED:
+          $message = '@title draft updated.';
           break;
 
         case WebformSubmissionInterface::STATE_UPDATED:
@@ -1193,10 +1226,19 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
     $sid = $webform_submission->id();
 
     $elements = $webform_submission->getWebform()->getElementsInitializedFlattenedAndHasValue();
+    $computed_elements = $webform_submission->getWebform()->getElementsComputed();
 
     $rows = [];
     foreach ($data as $name => $item) {
       $element = (isset($elements[$name])) ? $elements[$name] : ['#webform_multiple' => FALSE, '#webform_composite' => FALSE];
+
+      // Check if this is a computed element which is not
+      // stored in the database.
+      $is_computed_element = (isset($computed_elements[$name])) ? TRUE : FALSE;
+      if ($is_computed_element && empty($element['#store'])) {
+        continue;
+      }
+
       if ($element['#webform_composite']) {
         if (is_array($item)) {
           $composite_items = (empty($element['#webform_multiple'])) ? [$item] : $item;
@@ -1301,8 +1343,9 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
 
       // Set webform submission data via setData().
       foreach ($submissions_data as $sid => $submission_data) {
-        $webform_submissions[$sid]->setData($submission_data);
-        $webform_submissions[$sid]->setOriginalData($submission_data);
+        $webform_submission = $webform_submissions[$sid];
+        $webform_submission->setData($submission_data);
+        $webform_submission->setOriginalData($webform_submission->getData());
       }
     }
   }

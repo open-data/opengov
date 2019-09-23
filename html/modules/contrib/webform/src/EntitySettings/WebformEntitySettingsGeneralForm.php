@@ -263,13 +263,15 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
       '#open' => TRUE,
       '#access' => empty($elements['#method']),
     ];
-    $form['ajax_settings']['ajax'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Use Ajax'),
-      '#description' => $this->t('If checked, paging, saving of drafts, previews, submissions, and confirmations will not initiate a page refresh.'),
-      '#return_value' => TRUE,
-      '#default_value' => $settings['ajax'],
+
+    $ajax_behaviors = [
+      'ajax' => [
+        'title' => $this->t('Use Ajax'),
+        'all_description' => $this->t('Ajax is enabled for all forms.'),
+        'form_description' => $this->t('If checked, paging, saving of drafts, previews, submissions, and confirmations will not initiate a page refresh.'),
+      ],
     ];
+    $this->appendBehaviors($form['ajax_settings'], $ajax_behaviors, $settings, $default_settings);
     $form['ajax_settings']['ajax_container'] = [
       '#type' => 'container',
       '#states' => [

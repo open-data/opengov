@@ -2333,6 +2333,11 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       ],
       '#description' => $this->t('Determines the placement of the title.'),
     ];
+    // Displaying the title after the element is not supported by
+    // the composite (fieldset) wrapper.
+    if ($this->hasCompositeFormElementWrapper()) {
+      unset($form['form']['display_container']['title_display']['#options']['after']);
+    }
     $form['form']['display_container']['description_display'] = [
       '#type' => 'select',
       '#title' => $this->t('Description display'),
@@ -3516,6 +3521,23 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
     if ($property_name == 'default_value' && is_string($property_value) && $property_value && $this->hasMultipleValues($element)) {
       $properties[$property_name] = preg_split('/\s*,\s*/', $property_value);
     }
+  }
+
+  /**
+   * Determine if the element has a composite field wrapper.
+   *
+   * @return bool
+   *   TRUE if the element has a composite field wrapper.
+   */
+  protected function hasCompositeFormElementWrapper() {
+    $callbacks = $this->elementInfo->getInfoProperty($this->getPluginId(), '#pre_render') ?: [];
+    foreach ($callbacks as $callback) {
+      if (is_array($callback)
+        && in_array($callback[1], ['preRenderCompositeFormElement', 'preRenderWebformCompositeFormElement'])) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }

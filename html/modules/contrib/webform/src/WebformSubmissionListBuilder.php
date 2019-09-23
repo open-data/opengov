@@ -848,7 +848,11 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       case 'created':
       case 'completed':
       case 'changed':
-        return ($is_raw) ? $entity->{$name}->value : $entity->{$name}->value ? \Drupal::service('date.formatter')->format($entity->{$name}->value) : '';
+        /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
+        $date_formatter = \Drupal::service('date.formatter');
+        return ($is_raw ? $entity->{$name}->value :
+          ($entity->{$name}->value ? $date_formatter->format($entity->{$name}->value) : '')
+        );
 
       case 'entity':
         $source_entity = $entity->getSourceEntity();

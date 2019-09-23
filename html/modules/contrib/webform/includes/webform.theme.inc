@@ -923,7 +923,7 @@ function webform_theme_suggestions_$hook(array \$variables) {
 }
 
 /******************************************************************************/
-// Theme suggestions.
+// Webform theme suggestions.
 // Generate using _webform_devel_hook_theme_suggestions_generate();
 /******************************************************************************/
 
@@ -1051,4 +1051,73 @@ function webform_theme_suggestions_webform_progress_bar(array $variables) {
  */
 function webform_theme_suggestions_webform_progress_tracker(array $variables) {
   return _webform_theme_suggestions($variables, 'webform_progress_tracker');
+}
+
+/******************************************************************************/
+// Custom theme suggestions.
+/******************************************************************************/
+
+/**
+ * Add webform options display suggession to radios and checkboxes.
+ */
+/**
+ * @param array $variables
+ *   Template variables.
+ * @param string $type
+ *   Type of options element. (checkboxes or radios)
+ *
+ * @return array
+ *   If element include #options_display a template suggestion for
+ *   TYPE-OPTIONS-DISPLAY
+ *
+ */
+function _webform_theme_suggestions_options(array $variables, $type) {
+  if (!WebformElementHelper::isWebformElement($variables['element'])) {
+    return [];
+  }
+
+  $element = $variables['element'];
+  $suggestions = [];
+  if (!empty($element['#options_display']) && $element['#options_display'] === 'buttons') {
+    $suggestions[] = $type . '__webform_' . $element['#options_display'];
+  }
+  return $suggestions;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function webform_theme_suggestions_radios(array $variables) {
+  return _webform_theme_suggestions_options($variables, 'radios');
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function webform_theme_suggestions_checkboxes(array $variables) {
+  return _webform_theme_suggestions_options($variables, 'checkboxes');
+}
+
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function webform_theme_suggestions_form_element(array $variables) {
+  if (!WebformElementHelper::isWebformElement($variables['element'])) {
+    return [];
+  }
+  $element = $variables['element'];
+
+  $suggestions = [];
+
+  // Add webform type suggestion.
+  $suggestions[] = 'form_element__webform_' . $element['#type'];
+
+  // Add radio/checkbox displayed as a button suggestion.
+  // @sse webform_process_options()
+  if (!empty($element['#option_display']) && $element['#option_display'] === 'button') {
+    $suggestions[] = 'form_element__webform_' . $element['#type'] . '_' . $element['#option_display'];
+  }
+
+  return $suggestions;
 }

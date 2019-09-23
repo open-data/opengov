@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
+use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformYaml;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -155,6 +156,14 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
       }
 
       switch ($view_mode) {
+        case 'twig':
+          // @see \Drupal\webform_entity_print_attachment\Element\WebformEntityPrintAttachment::getFileContent
+          $build[$id]['data'] = WebformTwigExtension::buildTwigTemplate(
+            $webform_submission,
+            $webform_submission->_webform_view_mode_twig
+          );
+          break;
+
         case 'yaml':
           // Note that the YAML view ignores all access controls and excluded
           // settings.

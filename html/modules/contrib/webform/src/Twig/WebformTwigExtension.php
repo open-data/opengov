@@ -116,19 +116,21 @@ class WebformTwigExtension extends \Twig_Extension {
     }
 
     $variables = array_merge($variables, [
-      '{{ webform }}',
-      '{{ webform_submission }}',
-      '{{ elements }}',
-      '{{ elements_flattened }}',
       '{{ data.element_key }}',
       '{{ data.element_key.delta }}',
       '{{ data.composite_element_key.subelement_key }}',
       '{{ data.composite_element_key.delta.subelement_key }}',
       '{{ original_data }}',
+      '{{ elements }}',
+      '{{ elements_flattened }}',
     ]);
     foreach (array_keys($field_definitions) as $field_name) {
       $variables[] = "{{ $field_name }}";
     }
+    $variables = array_merge($variables, [
+      '{{ webform }}',
+      '{{ webform_submission }}',
+    ]);
 
     $t_args = [
       ':twig_href' => 'https://twig.sensiolabs.org/',
@@ -186,7 +188,7 @@ class WebformTwigExtension extends \Twig_Extension {
    * @return string
    *   The fully rendered Twig template.
    *
-   * @see \Drupal\webform\Element\WebformComputedTwig::processValue
+   * @see \Drupal\webform\Element\WebformComputedTwig::computeValue
    * @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::getMessage
    */
   public static function renderTwigTemplate(WebformSubmissionInterface $webform_submission, $template, array $options = [], array $context = []) {

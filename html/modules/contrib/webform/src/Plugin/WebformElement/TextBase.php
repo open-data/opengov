@@ -240,15 +240,33 @@ abstract class TextBase extends WebformElementBase {
    */
   public static function validateInputMask(&$element, FormStateInterface $form_state, &$complete_form) {
     // Set required error when input mask is submitted.
+    if (!empty($element['#required'])
+      && static::isDefaultInputMask($element, $element['#value'])) {
+      WebformElementHelper::setRequiredError($element, $form_state);
+    }
+  }
+
+  /**
+   * Check if an element's value is the input mask's default value.
+   *
+   * @param array $element
+   *   An element.
+   * @param $value
+   *   A value
+   *
+   * @return bool
+   *   TRUE if an element's value is the input mask's default value.
+   */
+  public static function isDefaultInputMask(array $element, $value) {
+    if (empty($element['#input_mask']) || $value === '') {
+      return FALSE;
+    }
+
+    $input_mask = $element['#input_mask'];
     $input_masks = [
       "'alias': 'currency'" => '$ 0.00',
     ];
-    $input_mask = $element['#input_mask'];
-    if (!empty($element['#required'])
-      && isset($input_masks[$input_mask])
-      && $input_masks[$input_mask] == $element['#value']) {
-        WebformElementHelper::setRequiredError($element, $form_state);
-    }
+    return (isset($input_masks[$input_mask]) && $input_masks[$input_mask] === $value) ? TRUE : FALSE;
   }
 
   /**

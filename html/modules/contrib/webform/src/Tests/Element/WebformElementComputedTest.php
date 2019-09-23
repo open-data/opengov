@@ -84,9 +84,13 @@ class WebformElementComputedTest extends WebformElementTestBase {
     $this->assertEqual($data['webform_computed_token_store'], "sid: $sid");
 
     // Check values not stored in the database.
-    $this->assert(!isset($data['webform_computed_token_auto']));
-    $this->assert(!isset($data['webform_computed_token_html']));
-    $this->assert(!isset($data['webform_computed_token_text']));
+    $result = \Drupal::database()->select('webform_submission_data')
+      ->fields('webform_submission_data', ['value'])
+      ->condition('webform_id', 'test_element_computed_token')
+      ->condition('name', ['webform_computed_token_auto', 'webform_computed_token_html', 'webform_computed_token_text'], 'IN')
+      ->execute()
+      ->fetchAll();
+    $this->assert(empty($result));
 
     /* Twig */
 

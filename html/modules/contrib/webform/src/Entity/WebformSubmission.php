@@ -394,6 +394,20 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
    */
   public function setData(array $data) {
     $this->data = $data;
+
+    // Set computed element values in to submission data.
+    $webform = $this->getWebform();
+    if ($webform->hasComputed()) {
+      /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
+      $element_manager = \Drupal::service('plugin.manager.webform.element');
+      $computed_elements = $webform->getElementsComputed();
+      foreach ($computed_elements as $computed_element_name) {
+        $computed_element = $webform->getElement($computed_element_name);
+        /** @var \Drupal\webform\Plugin\WebformElementComputedInterface $element_plugin */
+        $element_plugin = $element_manager->getElementInstance($computed_element);
+        $this->data[$computed_element_name] = $element_plugin->computeValue($computed_element, $this);
+      }
+    }
     return $this;
   }
 
@@ -597,12 +611,12 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
       return self::STATE_CONVERTED;
     }
     elseif ($this->isDraft()) {
-      return self::STATE_DRAFT;
+      return ($this->created->value === $this->changed->value) ? self::STATE_DRAFT_CREATED : self::STATE_DRAFT_UPDATED;
     }
     elseif ($this->isLocked()) {
       return self::STATE_LOCKED;
     }
-    elseif ($this->completed->value == $this->changed->value) {
+    elseif ($this->completed->value === $this->changed->value) {
       return self::STATE_COMPLETED;
     }
     else {
@@ -735,7 +749,7 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
     // @see \Drupal\Core\Entity\ContentEntityStorageBase::getFromPersistentCache
     if (isset($this->original)) {
       $this->original->setData($this->originalData);
-      $this->original->setOriginalData($this->originalData);
+      $this->original->setOriginalData($this->original->getData());
     }
 
     $request_time = \Drupal::time()->getRequestTime();

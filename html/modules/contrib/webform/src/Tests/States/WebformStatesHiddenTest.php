@@ -45,7 +45,7 @@ class WebformStatesHiddenTest extends WebformTestBase {
     $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-dependent-textfield form-item-dependent-textfield">');
 
     // Text field multiple.
-    $this->assertRaw('<div id="dependent_textfield_multiple_table"><div class="js-form-wrapper js-webform-states-hidden" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-states-server-hidden-add-form :input[name=\u0022trigger_checkbox\u0022]&quot;:{&quot;checked&quot;:true}}}"><div id="edit-dependent-textfield-multiple" class="js-form-item form-item js-form-type-webform-multiple form-type-webform-multiple js-form-item-dependent-textfield-multiple form-item-dependent-textfield-multiple">');
+    $this->assertRaw('<div class="js-form-wrapper js-webform-states-hidden" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-states-server-hidden-add-form :input[name=\u0022trigger_checkbox\u0022]&quot;:{&quot;checked&quot;:true}}}"><div id="dependent_textfield_multiple_table">');
 
     // Checkbox.
     $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-checkbox form-type-checkbox js-form-item-dependent-checkbox form-item-dependent-checkbox">');

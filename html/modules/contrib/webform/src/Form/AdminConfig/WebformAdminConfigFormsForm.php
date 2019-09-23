@@ -404,6 +404,13 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       '#open' => TRUE,
       '#tree' => TRUE,
     ];
+    $form['ajax_settings']['default_ajax'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use Ajax for all webforms'),
+      '#description' => $this->t('If checked, paging, saving of drafts, previews, submissions, and confirmations will not initiate a page refresh on all webforms.'),
+      '#return_value' => TRUE,
+      '#default_value' => $settings['default_ajax'],
+    ];
     $form['ajax_settings']['default_ajax_progress_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Default Ajax progress type'),

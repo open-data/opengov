@@ -85,16 +85,16 @@
         "drupal/google_analytics": "2.4.0",
         "drupal/honeypot": "1.29.0",
         "drupal/memcache": "2.0.0",
-        "drupal/menu_breadcrumb": "1.10.0",
-        "drupal/metatag": "1.9.0",
+        "drupal/menu_breadcrumb": "1.11.0",
+        "drupal/metatag": "1.10.0",
         "drupal/pathauto": "1.4.0",
         "drupal/redirect": "1.4.0",
         "drupal/search_api": "1.14.0",
-        "drupal/search_api_solr": "3.2.0",
+        "drupal/search_api_solr": "3.4.0",
         "drupal/simple_sitemap": "3.3.0",
         "drupal/token_filter": "1.1.0",
         "drupal/views_bootstrap": "4.1.0",
-        "drupal/webform": "5.3.0",
+        "drupal/webform": "5.4.0",
         "drush/drush": "^9.7",
         "fortawesome/font-awesome": "5.9.0",
         "oomphinc/composer-installers-extender": "^1.1",
@@ -154,7 +154,8 @@
                 "Undefined index: identifier in view's DisplayPluginBase->isIdentifierUnique()": "https://www.drupal.org/files/issues/2882031-10_0.patch",
                 "Error: Call to a member function getLabel() after enable layout_builder": "https://www.drupal.org/files/issues/2018-07-16/2985882-entityfield-2.patch",
                 "Performance Degradation in Layout Builder and other places likely": "https://www.drupal.org/files/issues/2019-08-21/d8_entity_validation.patch",
-                "Terrible performance when rendering multi-value fields in views": "https://www.drupal.org/files/issues/2018-04-03/views-multivalue_field_rendering_performance-2846485-23.patch"
+                "Terrible performance when rendering multi-value fields in views": "https://www.drupal.org/files/issues/2018-04-03/views-multivalue_field_rendering_performance-2846485-23.patch",
+                "Views exposed sort filters does not sort with facets": "https://www.drupal.org/files/issues/2018-10-30/views-exposed-sort-filters-2992672-10.patch"
             }
         },
        "installer-types": [

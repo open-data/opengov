@@ -64,13 +64,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/autogrow",
-                "version": "4.11.3",
+                "version": "4.11.4",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.autogrow"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/autogrow/releases/autogrow_4.11.3.zip",
+                    "url": "https://download.ckeditor.com/autogrow/releases/autogrow_4.11.4.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -100,13 +100,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/fakeobjects",
-                "version": "4.11.3",
+                "version": "4.11.4",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.fakeobjects"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/fakeobjects/releases/fakeobjects_4.11.3.zip",
+                    "url": "https://download.ckeditor.com/fakeobjects/releases/fakeobjects_4.11.4.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -118,13 +118,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/image",
-                "version": "4.11.3",
+                "version": "4.11.4",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.image"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/image/releases/image_4.11.3.zip",
+                    "url": "https://download.ckeditor.com/image/releases/image_4.11.4.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -136,13 +136,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/link",
-                "version": "4.11.3",
+                "version": "4.11.4",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.link"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/link/releases/link_4.11.3.zip",
+                    "url": "https://download.ckeditor.com/link/releases/link_4.11.4.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -154,13 +154,13 @@
             "type": "package",
             "package": {
                 "name": "codemirror/codemirror",
-                "version": "5.47.0",
+                "version": "5.48.2",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "codemirror"
                 },
                 "dist": {
-                    "url": "https://github.com/components/codemirror/archive/5.47.0.zip",
+                    "url": "https://github.com/components/codemirror/archive/5.48.2.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -179,24 +179,6 @@
                 },
                 "dist": {
                     "url": "https://github.com/harvesthq/chosen/releases/download/v1.8.7/chosen_v1.8.7.zip",
-                    "type": "zip"
-                },
-                "require": {
-                    "composer/installers": "~1.0"
-                }
-            }
-        },
-        "jquery.geocomplete": {
-            "type": "package",
-            "package": {
-                "name": "jquery/geocomplete",
-                "version": "1.7.0",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "jquery.geocomplete"
-                },
-                "dist": {
-                    "url": "https://github.com/ubilabs/geocomplete/archive/1.7.0.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -280,13 +262,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/intl-tel-input",
-                "version": "15.0.1",
+                "version": "15.1.0",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.intl-tel-input"
                 },
                 "dist": {
-                    "url": "https://github.com/jackocnr/intl-tel-input/archive/v15.0.1.zip",
+                    "url": "https://github.com/jackocnr/intl-tel-input/archive/v15.1.0.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -316,13 +298,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/select2",
-                "version": "4.0.7",
+                "version": "4.0.8",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.select2"
                 },
                 "dist": {
-                    "url": "https://github.com/select2/select2/archive/4.0.7.zip",
+                    "url": "https://github.com/select2/select2/archive/4.0.8.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -431,7 +413,6 @@
         "ckeditor/link": "*",
         "codemirror/codemirror": "*",
         "jquery/chosen": "*",
-        "jquery/geocomplete": "*",
         "jquery/hotkeys": "*",
         "jquery/icheck": "*",
         "jquery/image-picker": "*",

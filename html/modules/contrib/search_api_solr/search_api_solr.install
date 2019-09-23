@@ -1,12 +1,13 @@
 <?php
 
 use Drupal\Component\Serialization\Yaml;
-use Drupal\Core\Config\StorageInterface;
+use Drupal\Core\Config\Entity\ConfigEntityType;
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Config\InstallStorage;
+use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
-use Drupal\search_api_solr\Entity\SolrFieldType;
 
 /**
  * Implements hook_requirements().
@@ -95,6 +96,7 @@ function search_api_solr_requirements($phase) {
     }
 
     foreach ($servers as $server) {
+      /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $server->getBackend();
       $requirements['search_api_solr'][$server->id()] = [
         'title' => t('Solr Server %server_id', ['%server_id' => $server->id()]),
@@ -432,11 +434,40 @@ function search_api_solr_update_8008() {
 }
 
 /**
- * Insatll Solr Field Types.
+ * Install Solr Field Types.
  */
 function search_api_solr_update_8200() {
   // 8.x-1.x to 8.x-2.x migration path is obsolete and therefore removed. Just
   // install the latest field types.
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installEntityType(new ConfigEntityType([
+      'id' => 'solr_field_type',
+      'label' => new TranslatableMarkup('Solr Field Type'),
+      'handlers' => [
+        'list_builder' => 'Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder',
+        'form' => [
+          'add' => 'Drupal\search_api_solr\Form\SolrFieldTypeForm',
+          'edit' => 'Drupal\search_api_solr\Form\SolrFieldTypeForm',
+          'delete' => 'Drupal\search_api_solr\Form\SolrFieldTypeDeleteForm',
+        ],
+      ],
+      'config_prefix' => 'solr_field_type',
+      'admin_permission' => 'administer search_api',
+      'entity_keys' => [
+        'id' => 'id',
+        'label' => 'label',
+        'uuid' => 'uuid',
+      ],
+      'links' => [
+        'edit-form' => '/admin/config/search/search-api/solr_field_type/{solr_field_type}',
+        'delete-form' => '/admin/config/search/search-api/solr_field_type/{solr_field_type}/delete',
+        'disable-for-server' => '/admin/config/search/search-api/server/{search_api_server}/solr_field_type/{solr_field_type}/disable',
+        'enable-for-server' => '/admin/config/search/search-api/server/{search_api_server}/solr_field_type/{solr_field_type}/enable',
+        'collection' => '/admin/config/search/search-api/server/{search_api_server}/solr_field_type',
+      ],
+    ]));
+
   search_api_solr_update_helper_install_configs();
 }
 
@@ -488,12 +519,7 @@ function search_api_solr_update_8202() {
   }
 }
 
-/**
- * Install new essential Solr field types.
- */
-function search_api_solr_update_8203() {
-  // Removed.
-}
+// Removed search_api_solr_update_8203().
 
 /**
  * Enable phrase suggestions support.
@@ -578,19 +604,9 @@ function search_api_solr_update_8208() {
   $config->save(TRUE);
 }
 
-/**
- * Install missing configs for 8.x-2.0-alpha3.
- */
-function search_api_solr_update_8209() {
-  // search_api_solr_update_helper_install_configs(InstallStorage::CONFIG_INSTALL_DIRECTORY);
-}
+// Removed search_api_solr_update_8209().
 
-/**
- * Install missing configs for 8.x-2.0-beta1.
- */
-function search_api_solr_update_8210() {
-  // search_api_solr_update_helper_install_configs(InstallStorage::CONFIG_OPTIONAL_DIRECTORY);
-}
+// Removed search_api_solr_update_8210().
 
 /**
  * Add default finalize timeout settings to existing configs.
@@ -936,7 +952,9 @@ function search_api_solr_update_8308() {
 }
 
 /**
- * Solarium 5 adjustments. Warning! If you have overwritten the connection settings, don't forget to adjust the 'path'. See the release notes for details.
+ * Solarium 5 adjustments. Warning! If you have overwritten the connection
+ * settings, don't forget to adjust the 'path'. See the release notes for
+ * details.
  */
 function search_api_solr_update_8309() {
   // Remove the V1 API endpoint from the path.
@@ -1175,12 +1193,19 @@ function search_api_solr_update_8314() {
 }
 
 /**
- * Avoid Solr exceptions when multilingual spell checking by using unified analyzer.
+ * Avoid Solr exceptions when multilingual spell checking by using unified
+ * analyzer.
  */
 function search_api_solr_update_8315() {
   foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
     if (!empty($field_type_config['spellcheck_field_type'])) {
-      if (!in_array($field_type_config['field_type_language_code'], ['und', 'ja', 'th', 'zh-hans', 'zh-hant'])) {
+      if (!in_array($field_type_config['field_type_language_code'], [
+        'und',
+        'ja',
+        'th',
+        'zh-hans',
+        'zh-hant',
+      ])) {
         unset($field_type_config['spellcheck_field_type']);
       }
       if (!empty($field_type_config['solr_configs']) && !empty($field_type_config['solr_configs']['searchComponents'])) {
@@ -1511,6 +1536,73 @@ function search_api_solr_update_8322() {
       }
       if ($save) {
         search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
+      }
+    }
+  }
+}
+
+/**
+ * Fix path to ukrainian.dict for Solr 8.2.0.
+ */
+function search_api_solr_update_8323() {
+  foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
+    if (!empty($field_type_config['field_type'])) {
+      if ('uk' === $field_type_config['field_type_language_code']) {
+        $save = FALSE;
+        foreach ($field_type_config['field_type'] as &$components) {
+          if (is_array($components)) {
+            foreach ($components as &$analyzers) {
+              if (is_array($analyzers)) {
+                foreach ($analyzers['filters'] as &$filter) {
+                  if ('solr.MorfologikFilterFactory' === $filter['class']) {
+                    $filter['dictionary'] = 'ua/net/nlp/ukrainian.dict';
+                    $save = TRUE;
+                  }
+                }
+              }
+            }
+          }
+        }
+        if ($save) {
+          search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Install new Norwegian configs if required.
+ */
+function search_api_solr_update_8324() {
+  search_api_solr_update_helper_install_configs();
+}
+
+/**
+ * Fix the Polish phonetic field type.
+ */
+function search_api_solr_update_8325() {
+  foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
+    if (!empty($field_type_config['field_type'])) {
+      $save = FALSE;
+      if ('text_phonetic_pl_7_0_0' === $field_type_config['id']) {
+        foreach ($field_type_config['field_type'] as &$components) {
+          if (is_array($components)) {
+            foreach ($components as &$analyzers) {
+              if (is_array($analyzers) && 'query' === $analyzers['type']) {
+                foreach ($analyzers['filters'] as $key => &$filter) {
+                  if ('solr.WordDelimiterGraphFilterFactory' === $filter['class'] && 'protwords_de.txt' === $filter['protected']) {
+                    $filter['protected'] = 'protwords_pl.txt';
+                    $save = TRUE;
+                  }
+                }
+              }
+            }
+          }
+        }
+        if ($save) {
+          search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
+        }
       }
     }
   }

@@ -26,7 +26,7 @@ elements: |
     '#required': true
     '#multiple': true
     '#file_extensions': txt
-  
+
 css: ''
 javascript: ''
 settings:
@@ -116,7 +116,7 @@ settings:
   confirmation_title: ''
   confirmation_message: |
     <p>Your confirmation number is [webform_submission:values:confirmation_number].</p>
-    
+
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -230,8 +230,10 @@ handlers:
       updated_custom_data: ''
       deleted_url: 'http://webform-test-handler-remote-post/deleted'
       deleted_custom_data: ''
-      draft_url: 'http://webform-test-handler-remote-post/draft'
-      draft_custom_data: ''
+      draft_created_url: 'http://webform-test-handler-remote-post/draft_created'
+      draft_created_custom_data: ''
+      draft_updated_url: 'http://webform-test-handler-remote-post/draft_updated'
+      draft_updated_custom_data: ''
       converted_url: 'http://webform-test-handler-remote-post/converted'
       converted_custom_data: ''
       message: ''

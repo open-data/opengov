@@ -131,7 +131,8 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       $settings['deleted_url'] = '';
     }
     if (!$this->isDraftEnabled()) {
-      $settings['draft_url'] = '';
+      $settings['draft_created_url'] = '';
+      $settings['draft_updated_url'] = '';
     }
     if (!$this->isConvertEnabled()) {
       $settings['converted_url'] = '';
@@ -162,8 +163,10 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       'updated_custom_data' => '',
       'deleted_url' => '',
       'deleted_custom_data' => '',
-      'draft_url' => '',
-      'draft_custom_data' => '',
+      'draft_created_url' => '',
+      'draft_created_custom_data' => '',
+      'draft_updated_url' => '',
+      'draft_updated_custom_data' => '',
       'converted_url' => '',
       'converted_custom_data' => '',
       // Custom error response messages.
@@ -185,31 +188,37 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       WebformSubmissionInterface::STATE_COMPLETED => [
         'state' => $this->t('completed'),
         'label' => $this->t('Completed'),
-        'description' => $this->t('Post data when submission is <b>completed</b>.'),
+        'description' => $this->t('Post data when <b>submission is completed</b>.'),
         'access' => TRUE,
       ],
       WebformSubmissionInterface::STATE_UPDATED => [
         'state' => $this->t('updated'),
         'label' => $this->t('Updated'),
-        'description' => $this->t('Post data when submission is <b>updated</b>.'),
+        'description' => $this->t('Post data when <b>submission is updated</b>.'),
         'access' => $this->isResultsEnabled(),
       ],
       WebformSubmissionInterface::STATE_DELETED => [
         'state' => $this->t('deleted'),
         'label' => $this->t('Deleted'),
-        'description' => $this->t('Post data when submission is <b>deleted</b>.'),
+        'description' => $this->t('Post data when <b>submission is deleted</b>.'),
         'access' => $this->isResultsEnabled(),
       ],
-      WebformSubmissionInterface::STATE_DRAFT => [
-        'state' => $this->t('draft'),
-        'label' => $this->t('Draft'),
-        'description' => $this->t('Post data when <b>draft</b> is saved.'),
+      WebformSubmissionInterface::STATE_DRAFT_CREATED => [
+        'state' => $this->t('draft created'),
+        'label' => $this->t('Draft created'),
+        'description' => $this->t('Post data when <b>draft is created.</b>'),
+        'access' => $this->isDraftEnabled(),
+      ],
+      WebformSubmissionInterface::STATE_DRAFT_UPDATED => [
+        'state' => $this->t('draft updated'),
+        'label' => $this->t('Draft updated'),
+        'description' => $this->t('Post data when <b>draft is updated.</b>'),
         'access' => $this->isDraftEnabled(),
       ],
       WebformSubmissionInterface::STATE_CONVERTED => [
         'state' => $this->t('converted'),
         'label' => $this->t('Converted'),
-        'description' => $this->t('Post data when anonymous submission is <b>converted</b> to authenticated.'),
+        'description' => $this->t('Post data when anonymous <b>submission is converted</b> to authenticated.'),
         'access' => $this->isConvertEnabled(),
       ],
     ];
@@ -424,19 +433,21 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    *
    * @param string $state
    *   The state of the webform submission.
-   *   Either STATE_NEW, STATE_DRAFT, STATE_COMPLETED, STATE_UPDATED, or
-   *   STATE_CONVERTED depending on the last save operation performed.
+   *   Either STATE_NEW, STATE_DRAFT_CREATED, STATE_DRAFT_UPDATED,
+   *   STATE_COMPLETED, STATE_UPDATED, or STATE_CONVERTED
+   *   depending on the last save operation performed.
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
    *   The webform submission to be posted.
    */
   protected function remotePost($state, WebformSubmissionInterface $webform_submission) {
-    if (empty($this->configuration[$state . '_url'])) {
+    $state_url = $state . '_url';
+    if (empty($this->configuration[$state_url])) {
       return;
     }
 
     $this->messageManager->setWebformSubmission($webform_submission);
 
-    $request_url = $this->configuration[$state . '_url'];
+    $request_url = $this->configuration[$state_url];
     $request_url = $this->replaceTokens($request_url, $webform_submission);
     $request_method = (!empty($this->configuration['method'])) ? $this->configuration['method'] : 'POST';
     $request_type = ($request_method !== 'GET') ? $this->configuration['type'] : NULL;
@@ -502,8 +513,9 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    *
    * @param string $state
    *   The state of the webform submission.
-   *   Either STATE_NEW, STATE_DRAFT, STATE_COMPLETED, STATE_UPDATED, or
-   *   STATE_CONVERTED depending on the last save operation performed.
+   *   Either STATE_NEW, STATE_DRAFT_CREATED, STATE_DRAFT_UPDATED,
+   *   STATE_COMPLETED, STATE_UPDATED, or STATE_CONVERTED
+   *   depending on the last save operation performed.
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
    *   The webform submission to be posted.
    *
@@ -682,8 +694,9 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    *   Message to be displayed.
    * @param string $state
    *   The state of the webform submission.
-   *   Either STATE_NEW, STATE_DRAFT, STATE_COMPLETED, STATE_UPDATED, or
-   *   STATE_CONVERTED depending on the last save operation performed.
+   *   Either STATE_NEW, STATE_DRAFT_CREATED, STATE_DRAFT_UPDATED,
+   *   STATE_COMPLETED, STATE_UPDATED, or STATE_CONVERTED
+   *   depending on the last save operation performed.
    * @param string $request_url
    *   The remote URL the request is being posted to.
    * @param string $request_method
@@ -829,8 +842,9 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    *
    * @param string $state
    *   The state of the webform submission.
-   *   Either STATE_NEW, STATE_DRAFT, STATE_COMPLETED, STATE_UPDATED, or
-   *   STATE_CONVERTED depending on the last save operation performed.
+   *   Either STATE_NEW, STATE_DRAFT_CREATED, STATE_DRAFT_UPDATED,
+   *   STATE_COMPLETED, STATE_UPDATED, or STATE_CONVERTED
+   *   depending on the last save operation performed.
    * @param string $message
    *   Message to be displayed.
    * @param string $request_url

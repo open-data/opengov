@@ -16,7 +16,7 @@ use Drupal\webform\WebformSubmissionInterface;
 /**
  * Provides a base class for 'webform_computed' elements.
  */
-abstract class WebformComputedBase extends FormElement {
+abstract class WebformComputedBase extends FormElement implements WebformComputedInterface {
 
   /**
    * Denotes HTML.
@@ -91,7 +91,7 @@ abstract class WebformComputedBase extends FormElement {
       // @see drupal_process_states;
       $element['#type'] = 'item';
 
-      $value = static::processValue($element, $webform_submission);
+      $value = static::computeValue($element, $webform_submission);
       static::setWebformComputedElementValue($element, $value);
     }
 
@@ -160,17 +160,9 @@ abstract class WebformComputedBase extends FormElement {
   }
 
   /**
-   * Process computed value.
-   *
-   * @param array $element
-   *   The element.
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
-   *
-   * @return array|string
-   *   The string with tokens replaced.
+   * {@inheritdoc}
    */
-  public static function processValue(array $element, WebformSubmissionInterface $webform_submission) {
+  public static function computeValue(array $element, WebformSubmissionInterface $webform_submission) {
     return $element['#template'];
   }
 
@@ -183,7 +175,7 @@ abstract class WebformComputedBase extends FormElement {
     // the accurate computed value.
     $webform_submission = static::getWebformSubmission($element, $form_state, $complete_form);
     if ($webform_submission) {
-      $value = static::processValue($element, $webform_submission);
+      $value = static::computeValue($element, $webform_submission);
       $form_state->setValueForElement($element['value'], NULL);
       $form_state->setValueForElement($element['hidden'], NULL);
       $form_state->setValueForElement($element, $value);
@@ -278,7 +270,7 @@ abstract class WebformComputedBase extends FormElement {
 
     // Set element value and #markup  after the form has been validated.
     $webform_submission = static::getWebformSubmission($element, $form_state, $form);
-    $value = static::processValue($element, $webform_submission);
+    $value = static::computeValue($element, $webform_submission);
     static::setWebformComputedElementValue($element, $value);
 
     // Only return the wrapper id, this prevents the computed element from
@@ -359,7 +351,7 @@ abstract class WebformComputedBase extends FormElement {
       //
       // Therefore, we are creating a single clone of the webform submission
       // and only copying the submitted form values to the cached submission.
-      if ($form_state->isValidationComplete() && !$form_state->isRebuilding()) {
+      if ($form_state->isValidationComplete()) {
         if (!isset(static::$submissions[$webform_submission->uuid()])) {
           static::$submissions[$webform_submission->uuid()] = clone $form_object->getEntity();
         }

@@ -164,11 +164,17 @@ webform.handler.remote_post:
     deleted_custom_data:
       label: 'Deleted custom data'
       type: string
-    draft_url:
-      label: 'Draft URL'
+    draft_created_url:
+      label: 'Draft created URL'
       type: uri
-    draft_custom_data:
-      label: 'Draft custom data'
+    draft_created_custom_data:
+      label: 'Draft created custom data'
+      type: string
+    draft_updated_url:
+      label: 'Draft updated URL'
+      type: uri
+    draft_updated_custom_data:
+      label: 'Draft updated custom data'
       type: string
     converted_url:
       label: 'Converted URL'

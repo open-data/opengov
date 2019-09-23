@@ -470,9 +470,11 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
 
     $is_container = $webform_element->isContainer($element);
     $is_root = $webform_element->isRoot();
+    $is_element_disabled = $webform_element->isDisabled();
+    $is_access_disabled = (isset($element['#access']) && $element['#access'] === FALSE);
 
     // If disabled, display warning.
-    if ($webform_element->isDisabled()) {
+    if ($is_element_disabled) {
       $webform_element->displayDisabledWarning($element);
     }
 
@@ -493,6 +495,9 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     }
     else {
       $row_class[] = 'webform-ui-element-container';
+    }
+    if ($is_element_disabled || $is_access_disabled) {
+      $row_class[] = 'webform-ui-element-disabled';
     }
 
     // Add element key.

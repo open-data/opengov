@@ -73,11 +73,11 @@ class Select extends OptionsBase {
     $select2_exists = $this->librariesManager->isIncluded('jquery.select2');
     $choices_exists = $this->librariesManager->isIncluded('choices');
     $chosen_exists = $this->librariesManager->isIncluded('jquery.chosen');
-    $default_select =
-      ($select2_exists) ? '#select2' :
-        ($choices_exists) ? '#choices' :
-          ($chosen_exists) ? '#chosen' :
-            NULL;
+    $default_select = ($select2_exists ? '#select2' :
+      ($choices_exists ? '#choices' :
+        ($chosen_exists ? '#chosen' : NULL)
+      )
+    );
     if (isset($element['#select2']) && !$select2_exists) {
       $element['#' . $default_select] = TRUE;
     }

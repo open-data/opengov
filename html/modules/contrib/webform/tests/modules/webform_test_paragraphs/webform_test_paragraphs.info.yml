@@ -7,8 +7,8 @@ dependencies:
   - 'paragraphs:paragraphs'
   - 'webform:webform'
 
-# Information added by Drupal.org packaging script on 2019-07-18
-version: '8.x-5.3'
+# Information added by Drupal.org packaging script on 2019-08-19
+version: '8.x-5.4'
 core: '8.x'
 project: 'webform'
-datestamp: 1563460092
+datestamp: 1566209294

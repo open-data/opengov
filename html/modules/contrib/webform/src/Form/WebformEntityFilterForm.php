@@ -76,6 +76,9 @@ class WebformEntityFilterForm extends FormBase {
       '#empty_option' => ($category) ? $this->t('Show all webforms') : $this->t('Filter by category'),
       '#default_value' => $category,
     ];
+    if (empty($form['filter']['category']['#options'])) {
+      $form['filter']['category']['#access'] = FALSE;
+    }
     $form['filter']['state'] = [
       '#type' => 'select',
       '#title' => $this->t('State'),

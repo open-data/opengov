@@ -66,7 +66,15 @@ elements: |
         one: One
         two: Two
         three: Three
-  
+  webform_element_options_custom_type:
+    '#type': details
+    '#title': 'Webform element options custom type'
+    '#open': true
+    webform_element_options_custom_type_multiple:
+      '#type': webform_element_options
+      '#title': webform_element_options_custom_type_multiple
+      '#custom__type': webform_multiple
+      '#default_value': { }
 css: ''
 javascript: ''
 settings:

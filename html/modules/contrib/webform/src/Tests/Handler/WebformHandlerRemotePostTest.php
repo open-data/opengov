@@ -109,12 +109,12 @@ options:
     // Check 'draft' operation.
     $this->postSubmission($webform, [], t('Save Draft'));
     $this->assertRaw("form_params:
-  custom_draft: true
+  custom_draft_created: true
   custom_data: true
   response_type: '200'
   first_name: John
   last_name: Smith");
-    $this->assertRaw('Processed draft request.');
+    $this->assertRaw('Processed draft_created request.');
 
     // Login root user.
     $this->drupalLogin($this->rootUser);

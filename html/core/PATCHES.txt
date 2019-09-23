@@ -33,3 +33,7 @@ Terrible performance when rendering multi-value fields in views
 Source: https://www.drupal.org/files/issues/2018-04-03/views-multivalue_field_rendering_performance-2846485-23.patch
 
 
+Views exposed sort filters does not sort with facets
+Source: https://www.drupal.org/files/issues/2018-10-30/views-exposed-sort-filters-2992672-10.patch
+
+

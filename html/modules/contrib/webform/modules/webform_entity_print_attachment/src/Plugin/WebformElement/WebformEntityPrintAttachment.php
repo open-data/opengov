@@ -3,6 +3,7 @@
 namespace Drupal\webform_entity_print_attachment\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform_attachment\Plugin\WebformElement\WebformAttachmentBase;
@@ -26,6 +27,7 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
   public function getDefaultProperties() {
     $properties = parent::getDefaultProperties() + [
       'view_mode' => 'html',
+      'template' => '',
     ];
 
     // PDF documents should never be trimmed.
@@ -65,8 +67,29 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
       '#options' => [
         'html' => $this->t('HTML'),
         'table' => $this->t('Table'),
+        'twig' => $this->t('Twig template…'),
       ],
     ];
+    $form['attachment']['template']  = [
+      '#type' => 'webform_codemirror',
+      '#title' => $this->t('Twig template'),
+      '#title_display' => 'invisible',
+      '#mode' => 'twig',
+      '#states' => [
+        'visible' => [
+          ':input[name="properties[view_mode]"]' => ['value' => 'twig'],
+        ],
+      ],
+    ];
+    $form['attachment']['help'] = WebformTwigExtension::buildTwigHelp() + [
+      '#states' => [
+        'visible' => [
+          ':input[name="properties[view_mode]"]' => ['value' => 'twig'],
+        ],
+      ],
+    ];
+    // Set #access so that help is always visible.
+    WebformElementHelper::setPropertyRecursive($form['attachment']['help'], '#access', TRUE);
 
     return $form;
   }

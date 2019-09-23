@@ -47,7 +47,7 @@ elements: |
       '#attributes':
         readonly: readonly
         style: 'background-color: #eee'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -221,7 +221,8 @@ handlers:
     weight: -48
     settings:
       states:
-        - draft
+        - draft_created
+        - draft_updated
         - completed
         - updated
       notes: '[webform_submission:values:notes_add]'
@@ -230,7 +231,7 @@ handlers:
       data: |
         notes_add: ''
         notes_last: '[webform_submission:values:notes_add]'
-        
+
       message: 'Submission notes have been updated.'
       message_type: status
       debug: true
@@ -246,7 +247,8 @@ handlers:
     weight: -50
     settings:
       states:
-        - draft
+        - draft_created
+        - draft_updated
         - converted
         - completed
         - updated
@@ -269,7 +271,8 @@ handlers:
     weight: -49
     settings:
       states:
-        - draft
+        - draft_created
+        - draft_updated
         - converted
         - completed
         - updated
@@ -292,7 +295,8 @@ handlers:
     weight: -52
     settings:
       states:
-        - draft
+        - draft_created
+        - draft_updated
         - converted
         - completed
         - updated
