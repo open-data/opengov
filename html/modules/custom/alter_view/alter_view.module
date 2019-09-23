@@ -1,6 +1,8 @@
 <?php
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\Markup;
+use Drupal\views\Views;
 use \Drupal\views\ViewExecutable;
 
 /**
@@ -102,5 +104,30 @@ function alter_view_preprocess_views_bootstrap_table(array &$variables) {
 
       $variables['rows'][$x]['columns']['nothing']['content'][0]['field_output']['#markup']= Markup::create($vote_count);
     }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ * clear cache of views generated using Solr
+ */
+function alter_view_cron() {
+  $pd_views = [
+    'pd_core_ati',
+    'pd_core_contracts',
+    'pd_core_grants',
+    'pd_core_inventory',
+    'pd_core_hospitalityq',
+    'pd_core_reclassification',
+    'pd_core_travela',
+    'pd_core_travelq',
+    'pd_core_wrongdoing',
+  ];
+
+  foreach ($pd_views as $view_name) {
+    $view = Views::getView($view_name);
+    $tags = $view->getCacheTags();
+    Cache::invalidateTags($tags);
+    \Drupal::logger('od_solr_external')->notice('Cache cleared for ' . $view->getTitle());
   }
 }
