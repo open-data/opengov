@@ -1,6 +1,13 @@
 webform_resend.admin:
   title: 'Resend webform submission emails'
   description: 'Resend emails for previous webform submissions'
-  parent: system.admin_config_development
+  parent: system.admin_structure
   route_name: webform_resend.DefaultForm
+  weight: 100
+
+webform_resend.sendmail:
+  title: 'Send test emails'
+  description: 'Send bulk emails for testing'
+  parent: system.admin_structure
+  route_name: webform_resend.send_test_emails
   weight: 100

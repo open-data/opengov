@@ -1,7 +1,15 @@
 webform_resend.DefaultForm:
-  path: '/webform_resend/form/default'
+  path: '/admin/structure/webform_resend/form/default'
   defaults:
     _form: '\Drupal\webform_resend\Form\DefaultForm'
     _title: 'Resend Webform Submission Emails'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'view any webform submission'
+
+webform_resend.send_test_emails:
+  path: '/admin/structure/webform_resend/form/send_test_emails'
+  defaults:
+    _form: '\Drupal\webform_resend\Form\SendTestEmails'
+    _title: 'Send Test Emails'
+  requirements:
+    _permission: 'view any webform submission'
