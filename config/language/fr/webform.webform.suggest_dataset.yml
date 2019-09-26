@@ -5,4 +5,6 @@ handlers:
     label: Courriel
     settings:
       from_name: default
-      body: "&lt;p&gt;Soumis le [webform_submission:created]&lt;/p&gt;<br />\r\n&lt;p&gt;Soumis par : [webform_submission:user]&lt;/p&gt;<br />\r\n&lt;p&gt;Les valeurs soumises sont :&lt;/p&gt;<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"
+      body: "Soumis le [webform_submission:created]<br />\r\nSoumis par : [webform_submission:user]<br />\r\nLes valeurs soumises sont :<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"
+settings:
+  confirmation_message: 'Merci pour votre soumission. Votre demande sera traitée et ajoutée à la page « Proposez un jeu de données » dès que possible.'

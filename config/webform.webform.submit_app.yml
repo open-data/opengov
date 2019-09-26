@@ -106,9 +106,9 @@ settings:
   draft_loaded_message: ''
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
-  confirmation_type: page
+  confirmation_type: message
   confirmation_title: ''
-  confirmation_message: ''
+  confirmation_message: 'Thank you for your submission. Your request will be processed and added to the Apps Gallery as soon as possible.'
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -213,7 +213,7 @@ handlers:
       from_options: {  }
       from_name: _default
       subject: 'Submit Your App'
-      body: "&lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />\n&lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />\n&lt;p&gt;Submitted values are:&lt;/p&gt;<br />\n[webform_submission:values]<br />\n<br />\nThe results of this submission may be viewed at:<br />\n[webform_submission:url]"
+      body: "<p>Submitted on [webform_submission:created]</p>\r\n\r\n<p>Submitted by: [webform_submission:user]</p>\r\n\r\n<p>Submitted values are:</p>\r\n[webform_submission:values] The results of this submission may be viewed at: [webform_submission:url]"
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
