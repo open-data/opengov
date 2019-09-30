@@ -20,6 +20,8 @@ class VotingWebformController extends ControllerBase {
    */
   public function getAverageVote(Request $request, $uuid) {
     $renderHTML = '';
+    $uuid = explode('?' , $uuid);
+    $uuid = $uuid[0];
 
     // only display the results if validated
     if ($this->validate($request, $uuid, 'Vote-Rating (external)')) {
@@ -113,6 +115,8 @@ class VotingWebformController extends ControllerBase {
     $referer_url = $request->headers->get('referer');
     $url_explode = explode("/",$referer_url);
     $referer_uuid = end($url_explode);
+    $referer_uuid = explode('?' , $referer_uuid);
+    $referer_uuid = $referer_uuid[0];
 
     if ($referer_url) {
       $host_domain = $request->getHttpHost();

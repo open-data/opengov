@@ -36,6 +36,9 @@ class ExternalCommentController extends CommentController {
    */
   public function renderExternalComment(Request $request, $ext_type, $uuid) {
     $renderHTML = '';
+    // remove any characters after uuid in the request string
+    $uuid = explode('?' , $uuid);
+    $uuid = $uuid[0];
 
     // only display the form if validated
     if ($this->validate($request, $ext_type, $uuid)) {
@@ -103,6 +106,8 @@ class ExternalCommentController extends CommentController {
       $url = $request->headers->get('referer');
       $url_explode = explode("/",$url);
       $uuid = end($url_explode);
+      $uuid = explode('?' , $uuid);
+      $uuid = $uuid[0];
       $ext_type = prev($url_explode);
 
       if ($this->validate($request,$ext_type, $uuid)) {
@@ -154,6 +159,8 @@ class ExternalCommentController extends CommentController {
     $referer_url = $request->headers->get('referer');
     $url_explode = explode("/",$referer_url);
     $referer_uuid = end($url_explode);
+    $referer_uuid = explode('?' , $referer_uuid);
+    $referer_uuid = $referer_uuid[0];
     $referer_type = prev($url_explode);
 
     if ($referer_url) {
@@ -197,7 +204,7 @@ class ExternalCommentController extends CommentController {
 
     // condition 6 - invalid uuid
     elseif (($uuid != $referer_uuid) || (strlen($uuid) != 36 && strlen($uuid) != 32)) {
-      \Drupal::logger('external comment')->warning('Invalid UUID');
+      \Drupal::logger('external comment')->warning('Invalid UUID ' . $uuid);
       return false;
     }
 
