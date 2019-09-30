@@ -41,13 +41,13 @@ class DefaultForm extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Select webform to resend emails'),
       '#options' => $webforms,
-      '#attributes' => [ 'required' => 'true' ],
+      '#attributes' => [ 'type' => 'date', 'required' => 'true' ],
     ];
 
     $form['start_date'] = [
       '#type' => 'date',
       '#title' => $this->t('Enter start date'),
-      '#attributes' => [ 'required' => 'true' ],
+      '#attributes' => [ 'type' => 'date', 'required' => 'true' ],
     ];
 
     $form['end_date'] = [
