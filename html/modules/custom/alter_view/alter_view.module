@@ -128,6 +128,6 @@ function alter_view_cron() {
     $view = Views::getView($view_name);
     $tags = $view->getCacheTags();
     Cache::invalidateTags($tags);
-    \Drupal::logger('od_solr_external')->notice('Cache cleared for ' . $view->getTitle());
+    \Drupal::logger('cron')->notice('Cache cleared for ' . $view->getTitle());
   }
 }
