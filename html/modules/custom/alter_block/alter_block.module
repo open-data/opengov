@@ -34,6 +34,8 @@ function alter_block_preprocess_block(&$variables)
   // pass language variable to facet block
   if (isset($variables['content'][0]['#facet']) || isset($variables['content'][0][0]['#facet'])) {
     $variables['language'] = \Drupal::service('language_manager')->getCurrentLanguage()->getId();
+    $url = explode('/', \Drupal::request()->getRequestUri());
+    $variables['is_layout'] = end($url) == 'layout' ? TRUE : FALSE;
   }
 
   if (isset($variables['content']['#block_content']))
