@@ -28,3 +28,19 @@ external_comment.reply:
     parameters:
       entity:
         type: entity:{entity_type}
+
+external_comment.renderjson:
+  path: '/external-comment/{ext_type}/{uuid}/json'
+  defaults:
+    _controller: '\Drupal\external_comment\Controller\ExternalCommentController::renderExternalCommentJSON'
+    _title: 'Render External Comments as JSON format'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      ext_type:
+        type: string
+      uuid:
+        type: string
+  dependencies:
+    - drupal:comment

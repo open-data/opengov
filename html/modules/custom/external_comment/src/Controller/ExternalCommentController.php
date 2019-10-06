@@ -3,10 +3,13 @@
 namespace Drupal\external_comment\Controller;
 
 use Drupal\comment\Controller\CommentController;
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Drupal\node\Entity\Node;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 /**
  * Class ExternalCommentController.
@@ -153,7 +156,7 @@ class ExternalCommentController extends CommentController {
    * @param $uuid
    * @return bool
    */
-  public function validate(Request $request, $ext_type, $uuid) {
+  private function validate(Request $request, $ext_type, $uuid) {
 
     // get url, type, uuid and domain of request object
     $referer_url = $request->headers->get('referer');
@@ -209,6 +212,68 @@ class ExternalCommentController extends CommentController {
     }
 
     return true;
+  }
+
+  /**
+   * Render comments for entities external to Drupal as JSON
+   */
+  public function renderExternalCommentJSON(Request $request, $ext_type, $uuid) {
+    $comments_json = array(
+      'title' => 'Comments for ' . $ext_type,
+      'uuid' => $uuid,
+      'comments' => array()
+    );
+    // remove any characters after uuid in the request string
+    $uuid = explode('?' , $uuid);
+    $uuid = $uuid[0];
+
+    // fetch comments for uuid
+    $query = \Drupal::entityQuery('node')
+      ->condition('type', 'external')
+      ->condition('status', 1)
+      ->condition('field_type', $ext_type)
+      ->condition('field_uuid', $uuid);
+    $results = $query->execute();
+
+    if ($results) {
+      $node_id = $results[array_keys($results)[0]];
+      $node = \Drupal::entityTypeManager()->getStorage('node')->load($node_id);
+
+      // if node exist then load the node with comments
+      if ($node) {
+        $comment_ids = \Drupal::entityTypeManager()
+          ->getStorage('comment')
+          ->getQuery('AND')
+          ->condition('entity_id', $node->id())
+          ->condition('entity_type', 'node')
+          ->sort('cid')
+          ->execute();
+
+        // if comments exist
+        if ($comment_ids) {
+          $comments = \Drupal::entityTypeManager()
+            ->getStorage('comment')
+            ->loadMultiple($comment_ids);
+          foreach($comments as $comment) {
+            // Loop over and get fields for published comments
+            if ($comment->get('status') == 1) {
+              $comments_json['comments'][] = [
+                'comment_id' => $comment->id(),
+                'parent_id' => $comment->get('pid')->getValue()[0]['target_id'],
+                'subject' => $comment->get('subject')->getValue()[0]['value'],
+                'comment_body' => $comment->get('comment_body')->getValue()[0]['value'],
+                'comment_posted_by' => $comment->get('name')->getValue()[0]['value'],
+                'date_posted' => $comment->get('created')->getValue()[0]['value'],
+                'thread' => $comment->get('thread')->getValue()[0]['value'],
+              ];
+            }
+          }
+        }
+      }
+    }
+
+    // return response as JSON
+    return new JsonResponse($comments_json);
   }
 
 }
