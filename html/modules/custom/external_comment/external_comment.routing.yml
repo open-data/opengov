@@ -29,6 +29,7 @@ external_comment.reply:
       entity:
         type: entity:{entity_type}
 
+# controller to render comments as JSON
 external_comment.renderjson:
   path: '/external-comment/{ext_type}/{uuid}/json'
   defaults:
