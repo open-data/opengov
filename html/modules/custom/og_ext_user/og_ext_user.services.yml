@@ -1,9 +1,0 @@
-services:
-  og_ext_user.access_checker:
-      class: Drupal\og_ext_user\AccessChecks\UserAccessChecks
-      tags:
-        - { name: access_check }
-  og_ext_user.route_subscriber:
-    class: Drupal\og_ext_user\Routing\UserRouteSubscriber
-    tags:
-      - { name: event_subscriber }

@@ -430,3 +430,47 @@ functionCall(
 );
 
 // phpcs:set PEAR.Functions.FunctionCallSignature allowMultipleArguments true
+
+$this->foo(
+    ['a','b'],
+    true
+);
+
+$this->foo(
+    // Comment
+    ['a','b'],
+    true
+);
+
+function m()
+{
+    $t = '
+    ' . (empty(true) ? '
+    ' . f(
+        '1',
+        '2',
+    ) . '
+    ' : '');
+}
+
+class C
+{
+
+    public function m()
+    {
+        $a = [];
+        $t =
+            "SELECT * FROM t
+WHERE f IN(" . implode(
+            ",",
+            $a
+        ) . ")";
+    }
+}
+
+$notices = array(
+    'index' => sprintf(
+        translation_function('a text string with %s placeholder'),
+        'replacement'
+    ),
+);

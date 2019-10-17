@@ -1,5 +1,0 @@
-content_type_breadcrumb.admin:
-  title: 'Content type Breadcrumb'
-  description: 'Setup breadcrumbs for nodes of content types'
-  parent: system.admin_config_ui
-  route_name: content_type_breadcrumb.contentTypeBreadcrumbForm

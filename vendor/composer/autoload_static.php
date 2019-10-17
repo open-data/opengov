@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
+class ComposerStaticInitee4ff6840464df4b7fa93a47d3ffa22d
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -30,7 +30,7 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         '952683d815ff0a7bf322b93c0be7e4e4' => __DIR__ . '/..' . '/chi-teck/drupal-code-generator/src/bootstrap.php',
         '5a12a5271c58108e0aa33355e6ac54ea' => __DIR__ . '/..' . '/drupal/console-core/src/functions.php',
-        'd511210698f02d87ca48e3972f64323e' => __DIR__ . '/../..' . '/load.environment.php',
+        '5ef401f06ceb1a027b43d748cf0b8dea' => __DIR__ . '/../..' . '/load.environment.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -736,7 +736,6 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         'DivisionByZeroError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/DivisionByZeroError.php',
         'Drupal' => __DIR__ . '/../..' . '/html/core/lib/Drupal.php',
         'DrupalFinder\\DrupalFinder' => __DIR__ . '/..' . '/webflo/drupal-finder/src/DrupalFinder.php',
-        'DrupalProject\\composer\\ScriptHandler' => __DIR__ . '/../..' . '/scripts/composer/ScriptHandler.php',
         'Drupal\\Component\\Utility\\Timer' => __DIR__ . '/../..' . '/html/core/lib/Drupal/Component/Utility/Timer.php',
         'Drupal\\Component\\Utility\\Unicode' => __DIR__ . '/../..' . '/html/core/lib/Drupal/Component/Utility/Unicode.php',
         'Drupal\\Core\\Database\\Database' => __DIR__ . '/../..' . '/html/core/lib/Drupal/Core/Database/Database.php',
@@ -747,6 +746,7 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',
+        'OpenGovProject\\composer\\ScriptHandler' => __DIR__ . '/../..' . '/scripts/composer/ScriptHandler.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/AssertionFailedError.php',
@@ -1294,11 +1294,11 @@ class ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit1cd4650d8f62b3e7136a4a0cbf01e13d::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitee4ff6840464df4b7fa93a47d3ffa22d::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitee4ff6840464df4b7fa93a47d3ffa22d::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitee4ff6840464df4b7fa93a47d3ffa22d::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInitee4ff6840464df4b7fa93a47d3ffa22d::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInitee4ff6840464df4b7fa93a47d3ffa22d::$classMap;
 
         }, null, ClassLoader::class);
     }

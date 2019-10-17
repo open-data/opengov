@@ -1,9 +1,0 @@
-name: 'external_comment'
-type: module
-description: 'Enable external systems to utilize Drupal core commenting system (Comment API)'
-core: 8.x
-package: 'Open Government'
-dependencies:
-  - drupal:node
-  - drupal:comment
-  - drupal:system (>=8.2.0)

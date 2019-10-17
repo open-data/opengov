@@ -1,9 +1,0 @@
-name: 'Voting Webform'
-description: 'Webform functionality related extension for voting'
-type: module
-core: 8.x
-package: 'Open Government'
-
-# Required modules
-dependencies:
-  - drupal:webform

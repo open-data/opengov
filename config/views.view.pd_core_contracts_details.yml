@@ -1916,10 +1916,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        agreement_type_en:
-          id: agreement_type_en
+        multi_agreement_type_en:
+          id: multi_agreement_type_en
           table: search_api_index_pd_core_contracts
-          field: agreement_type_en
+          field: multi_agreement_type_en
           relationship: none
           group_type: group
           admin_label: ''
@@ -1969,10 +1969,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        agreement_type_fr:
-          id: agreement_type_fr
+        multi_agreement_type_fr:
+          id: multi_agreement_type_fr
           table: search_api_index_pd_core_contracts
-          field: agreement_type_fr
+          field: multi_agreement_type_fr
           relationship: none
           group_type: group
           admin_label: ''
