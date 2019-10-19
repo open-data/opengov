@@ -5,8 +5,10 @@ namespace Drupal\search_api_solr\Plugin\SolrConnector;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
+use Drupal\search_api_solr\Utility\Utility;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Exception\HttpException;
+use Solarium\Exception\OutOfBoundsException;
 use Solarium\QueryType\Graph\Query as GraphQuery;
 use Solarium\QueryType\Ping\Query as PingQuery;
 use Solarium\QueryType\Stream\Query as StreamQuery;
@@ -28,6 +30,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
   public function defaultConfiguration() {
     return [
       'checkpoints_collection' => '',
+      'stats_cache' => 'org.apache.solr.search.stats.LRUStatsCache',
     ] + parent::defaultConfiguration();
   }
 
@@ -57,6 +60,19 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
       '#title' => $this->t('checkpoints_collection'),
       '#description' => $this->t("The collection where topic checkpoints are stored. Not required if you don't work with topic() streaming expressions."),
       '#default_value' => isset($this->configuration['checkpoints_collection']) ? $this->configuration['checkpoints_collection'] : '',
+    ];
+
+    $form['advanced']['stats_cache'] = [
+      '#type' => 'select',
+      '#title' => $this->t('StatsCache'),
+      '#options' => [
+        'org.apache.solr.search.stats.LocalStatsCache' => 'LocalStatsCache',
+        'org.apache.solr.search.stats.ExactStatsCache' => 'ExactStatsCache',
+        'org.apache.solr.search.stats.ExactSharedStatsCache' => 'ExactSharedStatsCache',
+        'org.apache.solr.search.stats.LRUStatsCache' => 'LRUStatsCache',
+      ],
+      '#description' => $this->t('Document and term statistics are needed in order to calculate relevancy. Solr provides four implementations out of the box when it comes to document stats calculation. LocalStatsCache: This only uses local term and document statistics to compute relevance. In cases with uniform term distribution across shards, this works reasonably well. ExactStatsCache: This implementation uses global values (across the collection) for document frequency. ExactSharedStatsCache: This is exactly like the exact stats cache in its functionality but the global stats are reused for subsequent requests with the same terms. LRUStatsCache: This implementation uses an LRU cache to hold global stats, which are shared between requests. Formerly a limitation was that TF/IDF relevancy computations only used shard-local statistics. This is still the case by default or if LocalStatsCache is used. If your data isn’t randomly distributed, or if you want more exact statistics, then remember to configure the ExactStatsCache (or "better").'),
+      '#default_value' => isset($this->configuration['stats_cache']) ? $this->configuration['stats_cache'] : 'org.apache.solr.search.stats.LRUStatsCache',
     ];
 
     return $form;
@@ -117,6 +133,34 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
   /**
    * {@inheritdoc}
    */
+  public function getCheckpointsCollectionEndpoint(): ?Endpoint {
+    $checkpoints_collection = $this->getCheckpointsCollectionName();
+    if ($checkpoints_collection) {
+      try {
+        return $this->getEndpoint($checkpoints_collection);
+      } catch (OutOfBoundsException $e) {
+        $additional_config['core'] = $checkpoints_collection;
+        return $this->createEndpoint($checkpoints_collection, $additional_config);
+      }
+    }
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteCheckpoints(string $index_id, string $site_hash) {
+    if ($checkpoints_collection_endpoint = $this->getCheckpointsCollectionEndpoint()) {
+      $update_query = $this->getUpdateQuery();
+      // id:/.*-INDEX_ID-SITE_HASH/ is a regex.
+      $update_query->addDeleteQuery('id:/' . Utility::formatCheckpointId('.*', $index_id, $site_hash) . '/');
+      $this->update($update_query, $checkpoints_collection_endpoint);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getCollectionLink() {
     return $this->getCoreLink();
   }
@@ -170,6 +214,22 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function graph(GraphQuery $query, ?Endpoint $endpoint = NULL) {
     return $this->execute($query, $endpoint);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSelectQuery() {
+    $query = parent::getSelectQuery();
+    return $query->setDistrib(TRUE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMoreLikeThisQuery() {
+    $query = parent::getMoreLikeThisQuery();
+    return $query->setDistrib(TRUE);
   }
 
   /**
@@ -251,5 +311,11 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
     $files['solrconfig.xml'] = preg_replace("@<requestHandler\s+name=\"/replication\".*?</requestHandler>@ms", '', $files['solrconfig.xml']);
     $files['solrconfig.xml'] = preg_replace("@<requestHandler\s+name=\"/get\".*?</requestHandler>@ms", '', $files['solrconfig.xml']);
     $files['solrcore.properties'] = preg_replace("/solr\.replication.*\n/", '', $files['solrcore.properties']);
+
+    // Set the StatsCache.
+    // @see https://lucene.apache.org/solr/guide/8_0/distributed-requests.html#configuring-statscache-distributed-idf
+    if (!empty($this->configuration['stats_cache'])) {
+      $files['solrconfig_extra.xml'] .= '<statsCache class="' . $this->configuration['stats_cache'] . '" />' . "\n";
+    }
   }
 }

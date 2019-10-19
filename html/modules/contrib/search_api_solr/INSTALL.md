@@ -12,6 +12,14 @@ cd $DRUPAL
 composer require drupal/search_api_solr
 ```
 
+**Warning!** Unless https://www.drupal.org/project/drupal/issues/2876675 is
+committed to Drupal Core and released you need to modify the composer command:
+
+```
+cd $DRUPAL
+composer require symfony/event-dispatcher:"4.3.4 as 3.4.99" drupal/search_api_solr
+```
+
 Setting up Solr (single core)
 -----------------------------
 
@@ -90,7 +98,7 @@ configuration or through the use of a firewall.
 Other options include adding basic HTTP authentication or renaming the solr/
 directory to a random string of characters and using that as the path.
 
-For configuring indexes and searches you have to follow the documention of
+For configuring indexes and searches you have to follow the documentation of
 search_api.
 
 
