@@ -2844,17 +2844,17 @@
     },
     {
         "name": "drupal/console",
-        "version": "1.9.1",
-        "version_normalized": "1.9.1.0",
+        "version": "1.9.3",
+        "version_normalized": "1.9.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/hechoendrupal/drupal-console.git",
-            "reference": "3bcce31018ea61f6f83f090c598835669f8e7e5a"
+            "reference": "f26fd9b5fdb389719d77ff30849af714762e7d2b"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/hechoendrupal/drupal-console/zipball/3bcce31018ea61f6f83f090c598835669f8e7e5a",
-            "reference": "3bcce31018ea61f6f83f090c598835669f8e7e5a",
+            "url": "https://api.github.com/repos/hechoendrupal/drupal-console/zipball/f26fd9b5fdb389719d77ff30849af714762e7d2b",
+            "reference": "f26fd9b5fdb389719d77ff30849af714762e7d2b",
             "shasum": ""
         },
         "require": {
@@ -2862,7 +2862,7 @@
             "composer/installers": "~1.0",
             "doctrine/annotations": "^1.2",
             "doctrine/collections": "^1.3",
-            "drupal/console-core": "1.9.1",
+            "drupal/console-core": "1.9.3",
             "drupal/console-extend-plugin": "~0",
             "php": "^5.5.9 || ^7.0",
             "psy/psysh": "0.6.* || ~0.8",
@@ -2874,7 +2874,7 @@
             "symfony/thanks": "Thank your favorite PHP projects on GitHub using the CLI",
             "vlucas/phpdotenv": "Loads environment variables from .env to getenv(), $_ENV and $_SERVER automagically"
         },
-        "time": "2019-07-15T22:02:23+00:00",
+        "time": "2019-09-06T19:57:55+00:00",
         "bin": [
             "bin/drupal"
         ],
@@ -2925,22 +2925,22 @@
     },
     {
         "name": "drupal/console-core",
-        "version": "1.9.1",
-        "version_normalized": "1.9.1.0",
+        "version": "1.9.3",
+        "version_normalized": "1.9.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/hechoendrupal/drupal-console-core.git",
-            "reference": "6a196d67633d12cce4c62e4707c91c2c469af77f"
+            "reference": "1d2d579d6a6dfd4551cb8fa1427c551b0a5d5473"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/hechoendrupal/drupal-console-core/zipball/6a196d67633d12cce4c62e4707c91c2c469af77f",
-            "reference": "6a196d67633d12cce4c62e4707c91c2c469af77f",
+            "url": "https://api.github.com/repos/hechoendrupal/drupal-console-core/zipball/1d2d579d6a6dfd4551cb8fa1427c551b0a5d5473",
+            "reference": "1d2d579d6a6dfd4551cb8fa1427c551b0a5d5473",
             "shasum": ""
         },
         "require": {
             "dflydev/dot-access-configuration": "^1.0",
-            "drupal/console-en": "1.9.1",
+            "drupal/console-en": "1.9.3",
             "guzzlehttp/guzzle": "~6.1",
             "php": "^5.5.9 || ^7.0",
             "stecman/symfony-console-completion": "~0.7",
@@ -2958,7 +2958,7 @@
             "webflo/drupal-finder": "^1.0",
             "webmozart/path-util": "^2.3"
         },
-        "time": "2019-07-03T00:45:07+00:00",
+        "time": "2019-09-06T19:48:21+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -2985,10 +2985,6 @@
                 "homepage": "http://jmolivas.com"
             },
             {
-                "name": "Drupal Console Contributors",
-                "homepage": "https://github.com/hechoendrupal/DrupalConsole/graphs/contributors"
-            },
-            {
                 "name": "Eduardo Garcia",
                 "email": "enzo@enzolutions.com",
                 "homepage": "http://enzolutions.com/"
@@ -2996,6 +2992,10 @@
             {
                 "name": "Omar Aguirre",
                 "email": "omersguchigu@gmail.com"
+            },
+            {
+                "name": "Drupal Console Contributors",
+                "homepage": "https://github.com/hechoendrupal/DrupalConsole/graphs/contributors"
             }
         ],
         "description": "Drupal Console Core",
@@ -3009,21 +3009,21 @@
     },
     {
         "name": "drupal/console-en",
-        "version": "1.9.1",
-        "version_normalized": "1.9.1.0",
+        "version": "1.9.3",
+        "version_normalized": "1.9.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/hechoendrupal/drupal-console-en.git",
-            "reference": "167660cde15de0be6c98af20556beff2c23bc498"
+            "reference": "8b0299cf2033f0ddf27dc1f000f393c8f34d423d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/hechoendrupal/drupal-console-en/zipball/167660cde15de0be6c98af20556beff2c23bc498",
-            "reference": "167660cde15de0be6c98af20556beff2c23bc498",
+            "url": "https://api.github.com/repos/hechoendrupal/drupal-console-en/zipball/8b0299cf2033f0ddf27dc1f000f393c8f34d423d",
+            "reference": "8b0299cf2033f0ddf27dc1f000f393c8f34d423d",
             "shasum": ""
         },
-        "time": "2019-07-15T21:59:24+00:00",
-        "type": "drupal-console-language",
+        "time": "2019-09-06T19:42:02+00:00",
+        "type": "library",
         "installation-source": "dist",
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -3041,10 +3041,6 @@
                 "homepage": "http://jmolivas.com"
             },
             {
-                "name": "Drupal Console Contributors",
-                "homepage": "https://github.com/hechoendrupal/DrupalConsole/graphs/contributors"
-            },
-            {
                 "name": "Eduardo Garcia",
                 "email": "enzo@enzolutions.com",
                 "homepage": "http://enzolutions.com/"
@@ -3052,6 +3048,10 @@
             {
                 "name": "Omar Aguirre",
                 "email": "omersguchigu@gmail.com"
+            },
+            {
+                "name": "Drupal Console Contributors",
+                "homepage": "https://github.com/hechoendrupal/DrupalConsole/graphs/contributors"
             }
         ],
         "description": "Drupal Console English Language",
@@ -3108,17 +3108,17 @@
     },
     {
         "name": "drupal/core",
-        "version": "8.7.7",
-        "version_normalized": "8.7.7.0",
+        "version": "8.7.8",
+        "version_normalized": "8.7.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/drupal/core.git",
-            "reference": "32e1d7a67bbc28f07dc43d9ff692c0e90a4aeb92"
+            "reference": "476f491b85306c09101106d9b66a5dbe73c21bf0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/drupal/core/zipball/32e1d7a67bbc28f07dc43d9ff692c0e90a4aeb92",
-            "reference": "32e1d7a67bbc28f07dc43d9ff692c0e90a4aeb92",
+            "url": "https://api.github.com/repos/drupal/core/zipball/476f491b85306c09101106d9b66a5dbe73c21bf0",
+            "reference": "476f491b85306c09101106d9b66a5dbe73c21bf0",
             "shasum": ""
         },
         "require": {
@@ -3156,7 +3156,7 @@
             "symfony/http-kernel": "~3.4.14",
             "symfony/polyfill-iconv": "^1.0",
             "symfony/process": "~3.4.0",
-            "symfony/psr-http-message-bridge": "^1.0",
+            "symfony/psr-http-message-bridge": "^1.1.2",
             "symfony/routing": "~3.4.0",
             "symfony/serializer": "~3.4.0",
             "symfony/translation": "~3.4.0",
@@ -3296,7 +3296,7 @@
             "symfony/debug": "^3.4.0",
             "symfony/phpunit-bridge": "^3.4.3"
         },
-        "time": "2019-09-04T10:26:35+00:00",
+        "time": "2019-10-02T18:41:30+00:00",
         "type": "drupal-core",
         "extra": {
             "merge-plugin": {
@@ -6257,12 +6257,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/RabiaSajjad/og.git",
-            "reference": "91eed43376af79a0aa601da1988d7e92af6f4c89"
+            "reference": "d05c0493f08ec81e44a2d8e17e58361ac955e001"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/RabiaSajjad/og/zipball/91eed43376af79a0aa601da1988d7e92af6f4c89",
-            "reference": "91eed43376af79a0aa601da1988d7e92af6f4c89",
+            "url": "https://api.github.com/repos/RabiaSajjad/og/zipball/d05c0493f08ec81e44a2d8e17e58361ac955e001",
+            "reference": "d05c0493f08ec81e44a2d8e17e58361ac955e001",
             "shasum": ""
         },
         "require": {
@@ -6273,8 +6273,8 @@
             "drupal/autologout": "1.0.0",
             "drupal/bootstrap_layouts": "5.1.0",
             "drupal/ckeditor_codemirror": "2.2.0",
-            "drupal/console": "1.9.1",
-            "drupal/core": "8.7.7",
+            "drupal/console": "1.9.3",
+            "drupal/core": "8.7.8",
             "drupal/csv_serialization": "1.4.0",
             "drupal/facets": "1.4.0",
             "drupal/fontawesome": "2.14.0",
@@ -6310,7 +6310,7 @@
         "require-dev": {
             "webflo/drupal-core-require-dev": "^8.6.0"
         },
-        "time": "2019-10-17T18:17:29+00:00",
+        "time": "2019-10-18T11:03:22+00:00",
         "type": "drupal-profile",
         "extra": {
             "enable-patching": true,
@@ -10682,17 +10682,17 @@
     },
     {
         "name": "typo3/phar-stream-wrapper",
-        "version": "v2.1.2",
-        "version_normalized": "2.1.2.0",
+        "version": "v2.1.3",
+        "version_normalized": "2.1.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/TYPO3/phar-stream-wrapper.git",
-            "reference": "057622f5a3b92a5ffbea0fbaadce573500a62870"
+            "reference": "e8a656d72028b97ab9f61ed993734f3cded02eeb"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/TYPO3/phar-stream-wrapper/zipball/057622f5a3b92a5ffbea0fbaadce573500a62870",
-            "reference": "057622f5a3b92a5ffbea0fbaadce573500a62870",
+            "url": "https://api.github.com/repos/TYPO3/phar-stream-wrapper/zipball/e8a656d72028b97ab9f61ed993734f3cded02eeb",
+            "reference": "e8a656d72028b97ab9f61ed993734f3cded02eeb",
             "shasum": ""
         },
         "require": {
@@ -10707,7 +10707,7 @@
         "suggest": {
             "ext-fileinfo": "For PHP builtin file type guessing, otherwise uses internal processing"
         },
-        "time": "2019-05-14T13:14:31+00:00",
+        "time": "2019-10-18T11:59:10+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -10800,17 +10800,17 @@
     },
     {
         "name": "webflo/drupal-core-require-dev",
-        "version": "8.7.7",
-        "version_normalized": "8.7.7.0",
+        "version": "8.7.8",
+        "version_normalized": "8.7.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/webflo/drupal-core-require-dev.git",
-            "reference": "f535c939fee065b202ed5a84b15aa5385ba49d5e"
+            "reference": "593123300b3cf9974fa0742282af90fa72ac06fc"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/webflo/drupal-core-require-dev/zipball/f535c939fee065b202ed5a84b15aa5385ba49d5e",
-            "reference": "f535c939fee065b202ed5a84b15aa5385ba49d5e",
+            "url": "https://api.github.com/repos/webflo/drupal-core-require-dev/zipball/593123300b3cf9974fa0742282af90fa72ac06fc",
+            "reference": "593123300b3cf9974fa0742282af90fa72ac06fc",
             "shasum": ""
         },
         "require": {
@@ -10818,7 +10818,7 @@
             "behat/mink-goutte-driver": "^1.2",
             "behat/mink-selenium2-driver": "1.3.x-dev",
             "drupal/coder": "^8.3.1",
-            "drupal/core": "8.7.7",
+            "drupal/core": "8.7.8",
             "jcalderonzumba/gastonjs": "^1.0.2",
             "jcalderonzumba/mink-phantomjs-driver": "^0.3.1",
             "justinrainbow/json-schema": "^5.2",
@@ -10829,7 +10829,7 @@
             "symfony/debug": "^3.4.0",
             "symfony/phpunit-bridge": "^3.4.3"
         },
-        "time": "2019-09-04T10:31:38+00:00",
+        "time": "2019-10-02T19:31:42+00:00",
         "type": "metapackage",
         "notification-url": "https://packagist.org/downloads/",
         "license": [
