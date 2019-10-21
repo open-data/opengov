@@ -1,21 +1,21 @@
 # Composer files
-# /composer.lock
-# /html/**/.git
-# /html/**/.gitignore
-# /vendor/**/.git
-# /vendor/**/.gitignore
-#
-# # Sites folder
-# /html/sites/default/*
-# /html/sites/default/settings.php
-# /html/sites/default/settings.local.php
-# /html/sites/default/services.yml
-# /html/sites/default/files
-# /html/sites.php
-# /html/sites/tbsblog.ca/*
-#
-# # Project workspace
-# /.idea/*
-#
-# # Content files
-# /content/*
+/composer.lock
+/html/**/.git
+/html/**/.gitignore
+/vendor/**/.git
+/vendor/**/.gitignore
+
+# Sites folder
+/html/sites/default/*
+/html/sites/default/settings.php
+/html/sites/default/settings.local.php
+/html/sites/default/services.yml
+/html/sites/default/files
+/html/sites/sites.php
+/html/sites/tbsblog.ca/*
+
+# Project workspace
+/.idea/*
+
+# Content files
+/content/*
