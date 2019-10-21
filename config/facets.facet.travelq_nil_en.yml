@@ -1,25 +1,25 @@
-uuid: 43cc6402-35f4-4960-8fc6-973597543cab
+uuid: 9dfacb0b-73c0-4200-84d9-1ecc53e8e5bf
 langcode: en
 status: true
 dependencies:
   config:
-    - search_api.index.pd_core_ati
-    - views.view.pd_core_ati
+    - search_api.index.pd_core_travelq
+    - views.view.pd_core_travelq
   module:
     - search_api
-id: ati_organization_en
-name: 'PD ATI - Organization'
-url_alias: ati_organization_en
-weight: -5
+id: travelq_nil_en
+name: ' PD Travel (Q) - Nil Report'
+url_alias: travelq_nil_en
+weight: 0
 min_count: 1
 show_only_one_result: false
-field_identifier: organization_en
-facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
+field_identifier: nothing_to_report_en
+facet_source_id: 'search_api:views_block__pd_core_travelq__block_1'
 widget:
   type: checkbox
   config:
     show_numbers: true
-    soft_limit: 10
+    soft_limit: 0
     soft_limit_settings:
       show_less_label: 'Show less'
       show_more_label: 'Show more'
@@ -39,7 +39,13 @@ processor_configs:
     weights:
       sort: 20
     settings:
-      sort: ASC
+      sort: DESC
+  count_widget_order:
+    processor_id: count_widget_order
+    weights:
+      sort: 30
+    settings:
+      sort: DESC
   display_value_widget_order:
     processor_id: display_value_widget_order
     weights:

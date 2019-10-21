@@ -14,37 +14,49 @@ facets:
     checked: true
     label: Organization
     separator: ', '
-    weight: -10
+    weight: 0
     show_count: false
   ati_organization_fr:
     checked: true
     label: Organisation
     separator: ', '
-    weight: -9
+    weight: 0
     show_count: false
   ati_year_en:
     checked: true
     label: Year
     separator: ', '
-    weight: -8
+    weight: 0
     show_count: false
   ati_year_fr:
     checked: true
     label: Année
     separator: ', '
-    weight: -7
+    weight: 0
     show_count: false
   ati_month_en:
     checked: true
     label: Month
     separator: ', '
-    weight: -6
+    weight: 0
     show_count: false
   ati_month_fr:
     checked: true
     label: Mois
     separator: ', '
-    weight: -5
+    weight: 0
+    show_count: false
+  ati_nil_en:
+    checked: true
+    label: 'Nothing to report'
+    separator: ', '
+    weight: 0
+    show_count: false
+  ati_nil_fr:
+    checked: true
+    label: 'Rien à signaler'
+    separator: ', '
+    weight: 0
     show_count: false
 facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
 processor_configs:
