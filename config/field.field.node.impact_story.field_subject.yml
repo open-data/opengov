@@ -1,0 +1,29 @@
+uuid: 97ba0803-7416-40dc-9227-a4ac00027219
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_subject
+    - node.type.impact_story
+    - taxonomy.vocabulary.app_categories
+id: node.impact_story.field_subject
+field_name: field_subject
+entity_type: node
+bundle: impact_story
+label: Subject
+description: 'Subject (or sector) for the Open Data Impact Stories'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      app_categories: app_categories
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

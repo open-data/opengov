@@ -1,0 +1,22 @@
+uuid: be8a7dfb-f011-460d-9f5c-2d024259a16c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.impact_story
+  module:
+    - text
+id: node.impact_story.body
+field_name: body
+entity_type: node
+bundle: impact_story
+label: Summary
+description: 'Summary for the Open Data Impact Story'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+field_type: text_with_summary

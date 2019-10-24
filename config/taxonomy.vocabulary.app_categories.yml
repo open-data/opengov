@@ -2,7 +2,7 @@ uuid: 5bcdb414-f416-400e-8212-1c2ba145c1b9
 langcode: en
 status: true
 dependencies: {  }
-name: 'App Categories'
+name: 'Dataset subjects'
 vid: app_categories
-description: 'App categories for help with organizing content.'
+description: 'Dataset subjects for help with organizing content as they appear on https://open.canada.ca/data/en/dataset'
 weight: 0

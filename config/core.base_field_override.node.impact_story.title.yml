@@ -1,0 +1,18 @@
+uuid: d8e14321-3a2d-4baf-86db-a40ab7727ae5
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.impact_story
+id: node.impact_story.title
+field_name: title
+entity_type: node
+bundle: impact_story
+label: 'Story Title'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
