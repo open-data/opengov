@@ -13,7 +13,7 @@ url_alias: ati_nil_en
 weight: 1
 min_count: 1
 show_only_one_result: false
-field_identifier: nothing_to_report_en
+field_identifier: report_type_en
 facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
 widget:
   type: checkbox

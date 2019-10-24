@@ -13,7 +13,7 @@ url_alias: hospitalityq_nil_fr
 weight: 0
 min_count: 1
 show_only_one_result: false
-field_identifier: nothing_to_report_fr
+field_identifier: report_type_fr
 facet_source_id: 'search_api:views_block__pd_core_hospitalityq__block_1'
 widget:
   type: checkbox
