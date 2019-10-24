@@ -1,4 +1,4 @@
-uuid: 566ebb4e-7d31-42ec-824a-70036b794d1b
+uuid: 467d2531-ccd9-4824-9bbc-267664e9f710
 langcode: en
 status: true
 dependencies:
@@ -7,19 +7,19 @@ dependencies:
     - views.view.pd_core_ati
   module:
     - search_api
-id: nothing_to_report_en
-name: 'Nothing to report en'
-url_alias: nothing_to_report_en
-weight: 0
+id: ati_nil_fr
+name: 'PD ATI - Rapport nul'
+url_alias: ati_nil_fr
+weight: 2
 min_count: 1
 show_only_one_result: false
-field_identifier: nothing_to_report_en
+field_identifier: report_type_fr
 facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
 widget:
   type: checkbox
   config:
     show_numbers: true
-    soft_limit: 10
+    soft_limit: 0
     soft_limit_settings:
       show_less_label: 'Show less'
       show_more_label: 'Show more'
