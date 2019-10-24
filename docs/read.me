@@ -13,10 +13,13 @@ This will grant read and write permissions for every file and folder in your dru
 when your site is done installing.
 
 2. Security-Enhance Linux(SELinux) is a Linux kernel security module that may interfere with your PostgreSQL server
-and can be disabled by modifying /etc/selinux/config. Specifically, change the line SELINUX=enabled to SELINUX=disabled.
+and can be disabled by modifying /etc/selinux/config. Specifically, change the line SELINUX=enforcing to SELINUX=disabled.
 
 3. Once the site is installed, the GCWeb theme may not display correctly(the page only contains links and no CSS). To fix this,
 navigate Configuration->Development->Performance and uncheck the options enabling aggregation of css and javascript files.
+
+
+INSTRUCTIONS
 
 Step 1 - Install and configure PHP7.2 
 
@@ -33,12 +36,6 @@ Step 1 - Install and configure PHP7.2
 	$ sudo yum install php
 
 	$ sudo yum install php-gd php-json php-mbstring php-xml php-xmlrpc php-opcache php-pgsql php-pdo
-
-Once these modules are done installing, navigate to your php.ini file(normally located at /etc/php.ini) and add these lines if they don't already
-exist:
-
-	extension=pdo.so
-	extension=pgsql.so
 
 Step 2 - Installing Composer
 
@@ -123,7 +120,7 @@ a password. Finally, log in to the postgresql server with
 
 	$ psql postgres
 
-and give your new user permission to create database\q
+and give your new user permission to create database
 
 
 	postgres=> ALTER USER your_username CREATEDB;
@@ -186,11 +183,13 @@ the solr service using
 
 	$ sudo systemctl restart solr.service
 
-Step  - Creating a Drupal project using composer
+Step 8 - Creating a Drupal project using composer
 
 Navigate to a directory where you would like to create your Drupal project and run
 
 	$ composer create-project opengov/opengov-project:dev-master MYPROJECT --no-interaction
+
+Where MYPROJECT is the name of your project.
 
 It is also useful to install Drush, which allows you to access Drupal functionality from the command line. To install Drush
 navigate to your newly created project directory and run,
@@ -199,9 +198,9 @@ navigate to your newly created project directory and run,
 
 This will install drush in your drupal project directory in ./vendor/bin/drush 
 
-Where MYPROJECT is the name of your project.
 
-Step  - Configuring NGINX
+
+Step 9 - Configuring NGINX
 
 The NGINX webserver configuration file can be found in /etc/nginx/nginx.conf. For help writing the config
 file, refer to https://www.linode.com/docs/web-servers/nginx/serve-php-php-fpm-and-nginx/#install-and-configure-php-fpm
@@ -253,7 +252,7 @@ server {
 
     client_max_body_size 400M;
 
-    root /var/www/opengovtbs/html;
+    root /var/www/YOURPROJECTDIRECTORY/html;
 
     index index.php index.html index.htm;
 
@@ -297,16 +296,24 @@ server {
         fastcgi_pass 127.0.0.1:9000;
     } 
 
+Restart the web server with the new configuration,
 
-Step  - Install the OpenGov drupal profile
+	$ sudo systemctl restart nginx.service
+
+	
+
+
+Step 10 - Install the OpenGov drupal profile
+
+The opengov profile can be installed via the interactive installer. Open up a web browser and navigate to localhost/,
+follow the steps in the interactive installer, entering your credentials for the PostgreSQL server you created and
+started in step 3 when prompted.
+
+	
+ALTERNATIVE INSTALL:
 
 	$ sudo ./vendor/bin/drush site:install og
 
-ALTERNATIVE INSTALL:
-
-The site can also be installed via the interactive installer. Open up a web browser and navigate to localhost/,
-follow the steps in the interactive installer, entering your credentials for the PostgreSQL server you created and
-started in step 3 when prompted.
 
 ********At the time of this writing, drupal must be installed using the interactive installer********
 	
