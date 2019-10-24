@@ -1,0 +1,242 @@
+uuid: 6bc079a0-0cc7-47d4-93e6-1a33c0df2ebd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.impact_story.body
+    - field.field.node.impact_story.field_dataset_used
+    - field.field.node.impact_story.field_media
+    - field.field.node.impact_story.field_story_impact
+    - field.field.node.impact_story.field_story_testimonial
+    - field.field.node.impact_story.field_subject
+    - field.field.node.impact_story.field_submitter_name
+    - node.type.impact_story
+  content:
+    - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
+  module:
+    - block_content
+    - layout_builder
+    - layout_discovery
+    - link
+    - text
+    - user
+third_party_settings:
+  layout_builder:
+    allow_custom: false
+    enabled: true
+    sections:
+      -
+        layout_id: layout_onecol
+        layout_settings: {  }
+        components:
+          2944426d-88ec-41a8-bd7d-3933a335c41b:
+            uuid: 2944426d-88ec-41a8-bd7d-3933a335c41b
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'extra_field_block:node:impact_story:content_moderation_control'
+            additional: {  }
+            weight: -10
+          29901378-f0e8-434d-bedd-54089b4420ed:
+            uuid: 29901378-f0e8-434d-bedd-54089b4420ed
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:field_media'
+              formatter:
+                label: hidden
+                settings:
+                  view_mode: full
+                  link: false
+                third_party_settings: {  }
+                type: entity_reference_entity_view
+            additional: {  }
+            weight: -8
+          0513f6c5-33c8-4975-8e79-91ca12cd8acc:
+            uuid: 0513f6c5-33c8-4975-8e79-91ca12cd8acc
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:field_submitter_name'
+              formatter:
+                label: above
+                settings:
+                  link_to_entity: false
+                third_party_settings: {  }
+                type: string
+            additional: {  }
+            weight: -7
+          8e2d0a1f-dee4-4720-89ed-97375a62793c:
+            uuid: 8e2d0a1f-dee4-4720-89ed-97375a62793c
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:field_subject'
+              formatter:
+                label: above
+                settings:
+                  link: true
+                third_party_settings: {  }
+                type: entity_reference_label
+            additional: {  }
+            weight: -6
+          749c0ee9-b04d-48c3-9a7f-b808c59302a6:
+            uuid: 749c0ee9-b04d-48c3-9a7f-b808c59302a6
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:body'
+              formatter:
+                label: above
+                type: text_default
+                settings: {  }
+                third_party_settings: {  }
+            additional: {  }
+            weight: -5
+          150bdea4-ccae-4eb1-82af-73fa1d593818:
+            uuid: 150bdea4-ccae-4eb1-82af-73fa1d593818
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:field_story_impact'
+              formatter:
+                label: above
+                settings: {  }
+                third_party_settings: {  }
+                type: text_default
+            additional: {  }
+            weight: -4
+          3fb70768-2bbf-490a-a41b-9e74ba5ee98c:
+            uuid: 3fb70768-2bbf-490a-a41b-9e74ba5ee98c
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:field_story_testimonial'
+              formatter:
+                label: above
+                settings: {  }
+                third_party_settings: {  }
+                type: text_default
+            additional: {  }
+            weight: -3
+          42b84380-4672-47b1-bc01-1ae1f8485f49:
+            uuid: 42b84380-4672-47b1-bc01-1ae1f8485f49
+            region: content
+            configuration:
+              id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
+              label: 'Pillars - social media'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: -9
+          102fd45a-2926-46af-8335-31e445aa73ed:
+            uuid: 102fd45a-2926-46af-8335-31e445aa73ed
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:field_dataset_used'
+              formatter:
+                label: above
+                settings:
+                  trim_length: 80
+                  url_only: false
+                  url_plain: false
+                  rel: ''
+                  target: ''
+                third_party_settings: {  }
+                type: link
+            additional: {  }
+            weight: -2
+        third_party_settings: {  }
+id: node.impact_story.default
+targetEntityType: node
+bundle: impact_story
+mode: default
+content:
+  body:
+    label: above
+    type: text_default
+    weight: 4
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  content_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_dataset_used:
+    weight: 7
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_media:
+    weight: 1
+    label: hidden
+    settings:
+      view_mode: full
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_story_impact:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_story_testimonial:
+    weight: 6
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_subject:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_submitter_name:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  langcode: true
+  links: true
+  search_api_excerpt: true

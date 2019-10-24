@@ -1,0 +1,19 @@
+uuid: fa42287a-ce3b-45a8-8d5e-3ffc8800c871
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_submitter_name
+    - node.type.impact_story
+id: node.impact_story.field_submitter_name
+field_name: field_submitter_name
+entity_type: node
+bundle: impact_story
+label: 'Submitter Name'
+description: 'Name of organisation or individual who submitted the Open Data Impact Story'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
