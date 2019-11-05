@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.node.impact_story.body
+    - field.field.node.impact_story.comment
     - field.field.node.impact_story.field_dataset_used
     - field.field.node.impact_story.field_media
+    - field.field.node.impact_story.field_ribbon
     - field.field.node.impact_story.field_story_impact
     - field.field.node.impact_story.field_story_testimonial
     - field.field.node.impact_story.field_subject
@@ -53,6 +55,15 @@ content:
     third_party_settings: {  }
     type: media_library_widget
     region: content
+  field_ribbon:
+    type: entity_reference_autocomplete
+    weight: 13
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_story_impact:
     weight: 4
     settings:
@@ -121,6 +132,7 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  comment: true
   langcode: true
   promote: true
   status: true

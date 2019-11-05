@@ -1,0 +1,33 @@
+uuid: 94730fe6-d65c-440d-a27f-f61140256aec
+langcode: en
+status: true
+dependencies:
+  module:
+    - language
+    - node
+id: histoire_d_impact_utilisateur
+label: 'Histoire d''impact utilisateur'
+type: 'canonical_entities:node'
+pattern: 'récit/[node:title]'
+selection_criteria:
+  dcb8cb9b-f857-46ef-88a7-8e41c3d6658f:
+    id: node_type
+    bundles:
+      impact_story: impact_story
+    negate: false
+    context_mapping:
+      node: node
+    uuid: dcb8cb9b-f857-46ef-88a7-8e41c3d6658f
+  9189f3ba-7505-4487-a900-5a6745a2d829:
+    id: language
+    langcodes:
+      fr: fr
+    negate: false
+    context_mapping:
+      language: 'node:langcode:language'
+    uuid: 9189f3ba-7505-4487-a900-5a6745a2d829
+selection_logic: and
+weight: 8
+relationships:
+  'node:langcode:language':
+    label: Language
