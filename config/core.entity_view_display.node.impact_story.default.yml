@@ -3,23 +3,29 @@ langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_view_display.comment.comment.default
     - field.field.node.impact_story.body
+    - field.field.node.impact_story.comment
     - field.field.node.impact_story.field_dataset_used
     - field.field.node.impact_story.field_media
+    - field.field.node.impact_story.field_ribbon
     - field.field.node.impact_story.field_story_impact
     - field.field.node.impact_story.field_story_testimonial
     - field.field.node.impact_story.field_subject
     - field.field.node.impact_story.field_submitter_name
     - node.type.impact_story
+    - views.view.user_impact_stories
   content:
     - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
   module:
     - block_content
+    - comment
     - layout_builder
     - layout_discovery
     - link
     - text
     - user
+    - views
 third_party_settings:
   layout_builder:
     allow_custom: false
@@ -167,6 +173,36 @@ third_party_settings:
                 type: link
             additional: {  }
             weight: -2
+          3f1f9ba3-e0f4-42bb-8f01-b2a146906de3:
+            uuid: 3f1f9ba3-e0f4-42bb-8f01-b2a146906de3
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:comment'
+              formatter:
+                label: above
+                settings:
+                  view_mode: default
+                  pager_id: 0
+                third_party_settings: {  }
+                type: comment_default
+            additional: {  }
+            weight: 0
+          1aeb1916-57b9-4ae2-acd4-2a9f17420c56:
+            uuid: 1aeb1916-57b9-4ae2-acd4-2a9f17420c56
+            region: content
+            configuration:
+              id: 'views_block:user_impact_stories-recent'
+              label: ''
+              provider: views
+              label_display: visible
+              views_label: ''
+              items_per_page: none
+              context_mapping: {  }
+            additional: {  }
+            weight: -1
         third_party_settings: {  }
 id: node.impact_story.default
 targetEntityType: node
@@ -179,6 +215,15 @@ content:
     weight: 4
     settings: {  }
     third_party_settings: {  }
+    region: content
+  comment:
+    weight: 8
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
     region: content
   content_moderation_control:
     weight: 0
@@ -205,6 +250,14 @@ content:
       link: false
     third_party_settings: {  }
     type: entity_reference_entity_view
+    region: content
+  field_ribbon:
+    weight: 9
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
     region: content
   field_story_impact:
     weight: 5
