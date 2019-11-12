@@ -1,13 +1,8 @@
 # Composer Project for open.canada.ca
 
-[![Build Status](https://travis-ci.org/RabiaSajjad/og.svg?branch=master)](https://travis-ci.org/RabiaSajjad/og)
+[![Build Status](https://travis-ci.org/open-data/opengov.svg?branch=master)](https://travis-ci.org/open-data/opengov)
 
 Drupal codebase for [open.canada.ca](https://open.canada.ca)
-
-## Requirements
-
-* [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)
-
 
 ## Installation
 
@@ -23,6 +18,9 @@ you can also use drush for installation
 ```
 drush site:install og
 ```
+
+For detailed step-by-step instructions on installing Open Government Profile on Linux CentOS, please read our [Installation Guide](https://github.com/open-data/opengov/blob/master/docs/installation.md)
+
 
 ## Updating core and/or contributed modules
 
@@ -42,4 +40,4 @@ drush cr
 If you want to know all packages that will be updated by the composer update command, 
 use the `--dry-run` option first.
 
-For more detailed information on updating Drupal, check [Drupal Documentation](https://www.drupal.org/docs/8/update).
+For more detailed information on updating Drupal, please review [Drupal Documentation](https://www.drupal.org/docs/8/update).
