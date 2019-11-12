@@ -1,12 +1,12 @@
-#Installation Guide
+# Installation Guide
 
 This guide will allow you to setup your development environment for the OpenGov project. It is assumed that you already have CentOS 7
 installed in either a virtual machine or a bootable partition. The Centos 7 ISO can be found here: https://wiki.centos.org/Download
 
 
-##Pre-requisites
+## Pre-requisites
 
-###1. PHP
+### 1. PHP
 Install and configure PHP7.2 
 
 ```
@@ -19,7 +19,7 @@ Install and configure PHP7.2
 	$ sudo yum install php-gd php-json php-mbstring php-xml php-xmlrpc php-opcache php-pgsql php-pdo
 ```
 
-###2. PHP-FPM
+### 2. PHP-FPM
 PHP-FPM allows our webserver to execute and serve php files. To install php-fpm, run the following in a terminal
 ```
 	$ sudo yum install php-fpm
@@ -29,7 +29,7 @@ To start the php-fpm service, run
 	$ sudo systemctl start php-fpm
 ```
 
-###3. Composer
+### 3. Composer
 Composer is a tool used to manage dependencies in your Drupal project. To install, run the following commands from your terminal:
 
 ```
@@ -51,7 +51,7 @@ To install composer globally, execute
 This will allow you to simply use `composer [commands]` instead of `php composer.phar [commands]`
 
 
-###4. PostgreSQL
+### 4. PostgreSQL
 PostgreSql is the RDMS used in our stack. To install and start the Postgresql server:
 ```
 	$ sudo yum install postgresql-server postgresql-contrib
@@ -127,7 +127,7 @@ To log out of the postgres Linux user. For good measure, restart the postgresql 
 	$ sudo systemctl restart postgresql.service
 ```
 
-###5. Memcached
+### 5. Memcached
 Memcached is a php extension required by our Drupal project. To install:
 ```
 	$ sudo yum install memcached
@@ -137,14 +137,14 @@ Start the service with
 	$ sudo systemctl start memcached
 ```
 
-###6. NGINX
+### 6. NGINX
 NGINX is the webserver we will be using. To install and run nginx
 ```
 	$ sudo yum install nginx
 	$ sudo systemctl start nginx
 ```
 
-###7. Solr
+### 7. Solr
 ```
 	$ wget http://apache.org/dist/lucene/solr/8.2.0/solr-8.2.0.tgz
 	$ tar xzf solr-8.2.0.tgz solr-8.2.0/bin/install_solr_service.sh --strip-components=2
@@ -158,7 +158,7 @@ the solr service using
 	$ sudo systemctl restart solr.service
 ```
 
-##Installation
+## Installation
 To create a Drupal project using composer, navigate to a directory where you would like to create your Drupal project and run
 ```
 	$ composer create-project opengov/opengov-project:dev-master MYPROJECT --no-interaction
@@ -166,7 +166,7 @@ To create a Drupal project using composer, navigate to a directory where you wou
 Where MYPROJECT is the name of your project.
 
 
-###Configuring NGINX
+### Configuring NGINX
 
 The NGINX webserver configuration file can be found in `/etc/nginx/nginx.conf`. For help writing the config
 file, refer to https://www.linode.com/docs/web-servers/nginx/serve-php-php-fpm-and-nginx/#install-and-configure-php-fpm
@@ -268,7 +268,7 @@ Restart the web server with the new configuration,
 	$ sudo systemctl restart nginx.service
 ```
 	
-###Install the OpenGov Drupal profile
+### Install the OpenGov Drupal profile
 
 The opengov profile can be installed via the interactive installer. Open up a web browser and navigate to localhost/,
 follow the steps in the interactive installer, entering your credentials for the PostgreSQL server you created and
@@ -280,7 +280,7 @@ ALTERNATIVE INSTALL:
 ```
 
 
-##Possible Issues
+## Possible Issues
 
 1. Composer, as well as the interactive installer, will want to create files but will not have the required permission
 to do so. To fix this, navigate to your drupal project directory and run
@@ -300,4 +300,3 @@ Alternatively, you can disable css and js aggregation using:
     $ drush -y config-set system.performance css.preprocess 0
     $ drush -y config-set system.performance js.preprocess 0
 ```
-
