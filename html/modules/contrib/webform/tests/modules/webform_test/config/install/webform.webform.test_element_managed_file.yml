@@ -64,7 +64,7 @@ elements: |
     '#file_extensions': txt
     '#file_placeholder': 'This is the multiple file upload placeholder'
     '#multiple': true
-
+  
 css: ''
 javascript: ''
 settings:
@@ -130,6 +130,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

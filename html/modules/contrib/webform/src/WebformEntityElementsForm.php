@@ -108,6 +108,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
       '#default_value' => $this->getElementsWithoutWebformTypePrefix($webform->get('elements')),
       '#required' => TRUE,
       '#element_validate' => ['::validateElementsYaml'],
+      '#attributes' => ['style' => 'min-height: 300px'],
     ];
 
     $form['token_tree_link'] = $this->tokenManager->buildTreeElement();

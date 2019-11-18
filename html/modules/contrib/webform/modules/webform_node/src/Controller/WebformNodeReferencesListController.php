@@ -163,28 +163,6 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
   /**
    * {@inheritdoc}
    */
-  protected function getEntityIds() {
-    $query = $this->getStorage()->getQuery()
-      ->sort($this->entityType->getKey('id'));
-
-    // Add field names.
-    $or = $query->orConditionGroup();
-    foreach ($this->fieldNames as $field_name) {
-      $or->condition($field_name . '.target_id', $this->webform->id());
-    }
-    $query->condition($or);
-
-    // Only add the pager if a limit is specified.
-    if ($this->limit) {
-      $query->pager($this->limit);
-    }
-
-    return $query->execute();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function buildHeader() {
     $header = [];
     $header['title'] = $this->t('Title');
@@ -356,7 +334,11 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
    * {@inheritdoc}
    */
   public function render() {
-    $build = parent::render();
+    $build = [];
+
+    $build['info'] = $this->buildInfo();
+
+    $build += parent::render();
 
     $build['table']['#sticky'] = TRUE;
 
@@ -388,6 +370,63 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
 
     $build['#attached']['library'][] = 'webform_node/webform_node.references';
     return $build;
+  }
+
+  /**
+   * Build information summary.
+   *
+   * @return array
+   *   A render array representing the information summary.
+   */
+  protected function buildInfo() {
+    $total = $this->getTotal();
+    return [
+      '#markup' => $this->formatPlural($total, '@count reference', '@count references'),
+      '#prefix' => '<div>',
+      '#suffix' => '</div>',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEntityIds() {
+    $query = $this->getStorage()->getQuery()
+      ->sort($this->entityType->getKey('id'));
+
+    // Add field names.
+    $or = $query->orConditionGroup();
+    foreach ($this->fieldNames as $field_name) {
+      $or->condition($field_name . '.target_id', $this->webform->id());
+    }
+    $query->condition($or);
+
+    // Only add the pager if a limit is specified.
+    if ($this->limit) {
+      $query->pager($this->limit);
+    }
+
+    return $query->execute();
+  }
+
+  /**
+   * Get the total number of references.
+   *
+   * @return int
+   *   The total number of references.
+   */
+  protected function getTotal() {
+    $query = $this->getStorage()->getQuery()
+      ->sort($this->entityType->getKey('id'));
+
+    // Add field names.
+    $or = $query->orConditionGroup();
+    foreach ($this->fieldNames as $field_name) {
+      $or->condition($field_name . '.target_id', $this->webform->id());
+    }
+    $query->condition($or);
+
+    return count($query->execute());
   }
 
 }

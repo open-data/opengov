@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url as UrlGenerator;
 use Drupal\webform\Element\WebformEntityTrait;
+use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 
@@ -349,6 +350,16 @@ trait WebformEntityReferenceTrait {
    *   An array of settings used to limit and randomize options.
    */
   protected function setOptions(array &$element, array $settings = []) {
+    // Add the webform submission to entity reference selection settings.
+    if (!isset($settings['webform_submission']) && !empty($element['#webform_submission'])) {
+      $settings['webform_submission'] = WebformSubmission::load($element['#webform_submission']);
+    }
+
+    // Replace tokens element just in case entity selection settings use tokens.
+    if (isset($settings['webform_submission'])) {
+      $this->replaceTokens($element, $settings['webform_submission']);
+    }
+
     WebformEntityTrait::setOptions($element, $settings);
   }
 
@@ -597,6 +608,11 @@ trait WebformEntityReferenceTrait {
           ':input[name="properties[multiple][container][cardinality_number]"]' => ['value' => 1],
         ],
       ];
+    }
+    // Disable tags in multiple is disabled.
+    if (!empty($form['element']['multiple']['#disabled'])) {
+      $form['element']['tags']['#disabled'] = $form['element']['multiple']['#disabled'];
+      $form['element']['tags']['#description'] = $form['element']['multiple']['#description'];
     }
 
     return $form;

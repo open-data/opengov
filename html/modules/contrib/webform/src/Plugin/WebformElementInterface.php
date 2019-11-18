@@ -873,7 +873,7 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    *
    * @return array
    *   An associative array contain the element's configuration webform without
-   *   any default values..
+   *   any default values.
    */
   public function form(array $form, FormStateInterface $form_state);
 

@@ -1,4 +1,4 @@
-langugage: php
+language: php
 
 php:
   - 7.2
@@ -10,7 +10,6 @@ env:
     - COMPOSER_MEMORY_LIMIT=-1
   matrix:
     - RELEASE=stable COMPOSER_CHANNEL=stable
-    - RELEASE=dev COMPOSER_CHANNEL=stable
     - RELEASE=stable COMPOSER_CHANNEL=snapshot
 
 services:
@@ -25,31 +24,47 @@ before_install:
   - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   # disable xdebug
   - phpenv config-rm xdebug.ini
+  # update and upgrade apt-get
+  - sudo apt purge "mysql-server-*"
+  - sudo apt-get update
+  - npm update
+  - npm install -g n
+  - sudo -E env "PATH=$PATH" n stable
+  #- sudo n stable
+
   # update composer
   - composer clear-cache
   - composer --verbose self-update --$COMPOSER_CHANNEL
   - composer --version
 
 install:
+  # remove duplicates
+  - if [ -d "vendor" ]; then rm -Rf vendor; fi
+  - if [ -d "html" ]; then rm -Rf html; fi
+  - if [ -d "scripts" ]; then rm -Rf scripts; fi
+  # composer create project
   - composer --verbose validate
   - composer --verbose create-project opengov/opengov-project:dev-master opengov-project --prefer-dist --no-interaction
+  # install site
+  - cd $TRAVIS_BUILD_DIR/opengov-project/html
+  - ./../vendor/bin/drush site-install og --verbose --yes --db-url=sqlite://tmp/site.sqlite --site-name 'Open Government' --account-name test --account-pass test
 
 script:
-  # execute scripts
-  - if [[ $RELEASE = dev ]]; then composer --verbose remove --no-update drupal/console; fi;
-  - if [[ $RELEASE = dev ]]; then composer --verbose require --no-update drupal/core:8.8.x-dev webflo/drupal-core-require-dev:8.8.x-dev; fi;
-  - if [[ $RELEASE = dev ]]; then composer --verbose update; fi;
-
-  - cd $TRAVIS_BUILD_DIR/opengov-project/html
-  # install site
-  # https://www.drupal.org/project/redirect/issues/3082734
-  # - ./../vendor/bin/drush site-install og --verbose --yes --db-url=sqlite://tmp/site.sqlite
-  
+  # clear cache
+  - ./../vendor/bin/drush cr
   # check response
-  # - ./../vendor/bin/drush runserver $SIMPLETEST_BASE_URL &
-  # - until curl -s $SIMPLETEST_BASE_URL; do true; done > /dev/null
+  - ./../vendor/bin/drush runserver $SIMPLETEST_BASE_URL &
+  - until curl -s $SIMPLETEST_BASE_URL; do true; done > /dev/null
  
-  # list drush commands
-  - ./../vendor/bin/drush
-
-  - if [[ $RELEASE = stable ]]; then ./../vendor/bin/drupal; fi;
+  # setup nightwatch to execute tests
+  - npm install -g nightwatch
+  - npm update -g nightwatch
+  - cd $TRAVIS_BUILD_DIR/tests/bin
+  - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  - sudo dpkg -i google-chrome*.deb
+  - google-chrome --version
+  - cd $TRAVIS_BUILD_DIR/tests
+  - sudo chmod -R 777 bin
+  - sudo /home/travis/.nvm/versions/node/v8.12.0/lib/node_modules/nightwatch/bin/nightwatch tests/basic/homepageTest.js
+  - sudo /home/travis/.nvm/versions/node/v8.12.0/lib/node_modules/nightwatch/bin/nightwatch tests/Functional/basicPageTest.js
+  - sudo /home/travis/.nvm/versions/node/v8.12.0/lib/node_modules/nightwatch/bin/nightwatch tests/Functional/blockTest.js

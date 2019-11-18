@@ -57,7 +57,7 @@ Enable and download all libraries
 
     cd /var/www/sites/d8_webform
     drush php-eval "\Drupal::configFactory()->getEditable('webform.settings')->set('libraries.excluded_libraries', [])->save();"
-    drush en -y webform_image_select
+    drush en -y webform_image_select webform_options_custom
     drush webform:libraries:download
 
 Update libraries.zip

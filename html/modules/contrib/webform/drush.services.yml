@@ -4,3 +4,8 @@ services:
     arguments: ['@webform.cli_service']
     tags:
       - { name: drush.command }
+  webform.sanitize.submissions.commands:
+    class: \Drupal\webform\Commands\WebformSanitizeSubmissionsCommands
+    arguments: ['@database', '@module_handler', '@entity_type.manager']
+    tags:
+      - { name: drush.command }

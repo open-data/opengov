@@ -36,7 +36,7 @@ class FileHeaderSniff implements Sniff
      * @param int                         $stackPtr  The position of the current
      *                                               token in the stack.
      *
-     * @return void
+     * @return int|null
      */
     public function process(File $phpcsFile, $stackPtr)
     {
@@ -173,7 +173,7 @@ class FileHeaderSniff implements Sniff
                 // this block.
                 $next = $phpcsFile->findNext(T_WHITESPACE, ($line['end'] + 1), null, true);
                 if ($next !== false && $tokens[$next]['line'] !== ($tokens[$line['end']]['line'] + 2)) {
-                    $error = 'Header blocks must be followed by a single blank line';
+                    $error = 'Header blocks must be separated by a single blank line';
                     $fix   = $phpcsFile->addFixableError($error, $line['end'], 'SpacingAfterBlock');
                     if ($fix === true) {
                         if ($tokens[$next]['line'] === $tokens[$line['end']]['line']) {

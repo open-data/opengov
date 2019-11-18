@@ -131,6 +131,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
       'source_for_filename' => $source_for_filename,
       'files[file_single]' => \Drupal::service('file_system')->realpath($this->files[0]->uri),
       'files[file_multiple][]' => \Drupal::service('file_system')->realpath($this->files[0]->uri),
+      'files[file_truncate]' => \Drupal::service('file_system')->realpath($this->files[0]->uri),
     ]);
 
     $this->drupalLogin($this->adminSubmissionUser);
@@ -157,6 +158,11 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
       $this->assertEqual('file_multiple_' . $source_for_filename . $suffix . '.txt', $file->getFilename());
       $i++;
     }
+
+    /** @var \Drupal\file\FileInterface $truncate_file */
+    $truncate_file = File::load($submission->getElementData('file_truncate'));
+    $this->assertEqual(strlen($truncate_file->getFileUri()), 250);
+    $this->assertEqual('file_truncate_1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901.txt', $truncate_file->getFilename());
   }
 
   /**

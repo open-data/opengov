@@ -66,6 +66,11 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
       $form_state->setError($element, t('The URL %url is not valid.', ['%url' => $value]));
     }
 
+    // Skip validating [webform_submission] tokens which can't be replaced.
+    if (strpos($value, '[webform_submission:') !== FALSE) {
+      return;
+    }
+
     // Validate URL access.
     try {
       \Drupal::httpClient()->head($value);

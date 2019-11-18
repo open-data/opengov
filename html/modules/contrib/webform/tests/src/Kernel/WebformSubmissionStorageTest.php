@@ -26,7 +26,10 @@ class WebformSubmissionStorageTest extends KernelTestBase {
    */
   public function setUp() {
     parent::setUp();
-
+    // @todo Remove once Drupal 8.8.x is only supported.
+    if (floatval(\Drupal::VERSION) >= 8.8) {
+      $this->installEntitySchema('path_alias');
+    }
     $this->installSchema('webform', ['webform']);
     $this->installConfig('webform');
     $this->installEntitySchema('webform_submission');

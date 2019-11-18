@@ -35,10 +35,10 @@ elements: |
       '#type': checkbox
       '#title': 'Checkbox (inline)'
       '#title_display': inline
-    checkbox_invisible:
+    checkbox_none:
       '#type': checkbox
-      '#title': 'Checkbox (invisible)'
-      '#title_display': invisible
+      '#title': 'Checkbox (none)'
+      '#title_display': none
     checkbox_hr:
       '#type': webform_horizontal_rule
     password_title:
@@ -57,10 +57,10 @@ elements: |
       '#type': password
       '#title': 'Password (inline)'
       '#title_display': inline
-    password_invisible:
+    password_none:
       '#type': password
-      '#title': 'Password (invisible)'
-      '#title_display': invisible
+      '#title': 'Password (none)'
+      '#title_display': none
     password_hr:
       '#type': webform_horizontal_rule
     textarea_title:
@@ -82,11 +82,11 @@ elements: |
       '#title': 'Textarea (inline)'
       '#rows': 2
       '#title_display': inline
-    textarea_invisible:
+    textarea_none:
       '#type': textarea
-      '#title': 'Textarea (invisible)'
+      '#title': 'Textarea (none)'
       '#rows': 2
-      '#title_display': invisible
+      '#title_display': none
     textarea_hr:
       '#type': webform_horizontal_rule
     textfield_title:
@@ -105,10 +105,10 @@ elements: |
       '#type': textfield
       '#title': 'Text field (inline)'
       '#title_display': inline
-    textfield_invisible:
+    textfield_none:
       '#type': textfield
-      '#title': 'Text field (invisible)'
-      '#title_display': invisible
+      '#title': 'Text field (none)'
+      '#title_display': none
     textfield_hr:
       '#type': webform_horizontal_rule
   advanced_elements:
@@ -131,10 +131,10 @@ elements: |
       '#type': webform_autocomplete
       '#title': 'Autocomplete (inline)'
       '#title_display': inline
-    webform_autocomplete_invisible:
+    webform_autocomplete_none:
       '#type': webform_autocomplete
-      '#title': 'Autocomplete (invisible)'
-      '#title_display': invisible
+      '#title': 'Autocomplete (none)'
+      '#title_display': none
     webform_autocomplete_hr:
       '#type': webform_horizontal_rule
     webform_codemirror_title:
@@ -151,16 +151,11 @@ elements: |
       '#title': 'CodeMirror (after)'
       '#mode': yaml
       '#title_display': after
-    webform_codemirror_inline:
+    webform_codemirror_none:
       '#type': webform_codemirror
-      '#title': 'CodeMirror (inline)'
+      '#title': 'CodeMirror (none)'
       '#mode': yaml
-      '#title_display': inline
-    webform_codemirror_invisible:
-      '#type': webform_codemirror
-      '#title': 'CodeMirror (invisible)'
-      '#mode': yaml
-      '#title_display': invisible
+      '#title_display': none
     webform_codemirror_hr:
       '#type': webform_horizontal_rule
     color_title:
@@ -179,10 +174,10 @@ elements: |
       '#type': color
       '#title': 'Color (inline)'
       '#title_display': inline
-    color_invisible:
+    color_none:
       '#type': color
-      '#title': 'Color (invisible)'
-      '#title_display': invisible
+      '#title': 'Color (none)'
+      '#title_display': none
     color_hr:
       '#type': webform_horizontal_rule
     email_title:
@@ -201,10 +196,10 @@ elements: |
       '#type': email
       '#title': 'Email (inline)'
       '#title_display': inline
-    email_invisible:
+    email_none:
       '#type': email
-      '#title': 'Email (invisible)'
-      '#title_display': invisible
+      '#title': 'Email (none)'
+      '#title_display': none
     email_hr:
       '#type': webform_horizontal_rule
     webform_email_confirm_title:
@@ -219,14 +214,10 @@ elements: |
       '#type': webform_email_confirm
       '#title': 'Email confirm (after)'
       '#title_display': after
-    webform_email_confirm_inline:
+    webform_email_confirm_none:
       '#type': webform_email_confirm
-      '#title': 'Email confirm (inline)'
-      '#title_display': inline
-    webform_email_confirm_invisible:
-      '#type': webform_email_confirm
-      '#title': 'Email confirm (invisible)'
-      '#title_display': invisible
+      '#title': 'Email confirm (none)'
+      '#title_display': none
     webform_email_confirm_hr:
       '#type': webform_horizontal_rule
     webform_email_multiple_title:
@@ -245,10 +236,10 @@ elements: |
       '#type': webform_email_multiple
       '#title': 'Email multiple (inline)'
       '#title_display': inline
-    webform_email_multiple_invisible:
+    webform_email_multiple_none:
       '#type': webform_email_multiple
-      '#title': 'Email multiple (invisible)'
-      '#title_display': invisible
+      '#title': 'Email multiple (none)'
+      '#title_display': none
     webform_email_multiple_hr:
       '#type': webform_horizontal_rule
     webform_mapping_title:
@@ -279,9 +270,9 @@ elements: |
         five: Five
         six: Six
       '#title_display': after
-    webform_mapping_inline:
+    webform_mapping_none:
       '#type': webform_mapping
-      '#title': 'Mapping (inline)'
+      '#title': 'Mapping (none)'
       '#source':
         one: One
         two: Two
@@ -290,19 +281,7 @@ elements: |
         four: Four
         five: Five
         six: Six
-      '#title_display': inline
-    webform_mapping_invisible:
-      '#type': webform_mapping
-      '#title': 'Mapping (invisible)'
-      '#source':
-        one: One
-        two: Two
-        three: Three
-      '#destination':
-        four: Four
-        five: Five
-        six: Six
-      '#title_display': invisible
+      '#title_display': none
     webform_mapping_hr:
       '#type': webform_horizontal_rule
     number_title:
@@ -330,13 +309,13 @@ elements: |
       '#max': 10
       '#step': 1
       '#title_display': inline
-    number_invisible:
+    number_none:
       '#type': number
-      '#title': 'Number (invisible)'
+      '#title': 'Number (none)'
       '#min': 0
       '#max': 10
       '#step': 1
-      '#title_display': invisible
+      '#title_display': none
     number_hr:
       '#type': webform_horizontal_rule
     password_confirm_title:
@@ -358,11 +337,11 @@ elements: |
       '#title': 'Password confirm (inline)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1427838">Issue #1427838: password and password_confirm children do not pick up #states or #attributes</a>'
       '#title_display': inline
-    password_confirm_invisible:
+    password_confirm_none:
       '#type': password_confirm
-      '#title': 'Password confirm (invisible)'
+      '#title': 'Password confirm (none)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1427838">Issue #1427838: password and password_confirm children do not pick up #states or #attributes</a>'
-      '#title_display': invisible
+      '#title_display': none
     password_confirm_hr:
       '#type': webform_horizontal_rule
     range_title:
@@ -399,16 +378,16 @@ elements: |
       '#output__field_prefix': $
       '#output__field_suffix': '.00'
       '#title_display': inline
-    range_invisible:
+    range_none:
       '#type': range
-      '#title': 'Range (invisible)'
+      '#title': 'Range (none)'
       '#min': 0
       '#max': 100
       '#step': 1
       '#output': below
       '#output__field_prefix': $
       '#output__field_suffix': '.00'
-      '#title_display': invisible
+      '#title_display': none
     range_hr:
       '#type': webform_horizontal_rule
     webform_rating_title:
@@ -427,11 +406,33 @@ elements: |
       '#type': webform_rating
       '#title': 'Rating (inline)'
       '#title_display': inline
-    webform_rating_invisible:
+    webform_rating_none:
       '#type': webform_rating
-      '#title': 'Rating (invisible)'
-      '#title_display': invisible
+      '#title': 'Rating (none)'
+      '#title_display': none
     webform_rating_hr:
+      '#type': webform_horizontal_rule
+    webform_same_title:
+      '#markup': 'Billing address is the same as the shipping address (webform_same)'
+      '#prefix': '<h3>'
+      '#suffix': '</h3>'
+    webform_same_before:
+      '#type': webform_same
+      '#title': 'Billing address is the same as the shipping address (before)'
+      '#title_display': before
+    webform_same_after:
+      '#type': webform_same
+      '#title': 'Billing address is the same as the shipping address (after)'
+      '#title_display': after
+    webform_same_inline:
+      '#type': webform_same
+      '#title': 'Billing address is the same as the shipping address (inline)'
+      '#title_display': inline
+    webform_same_none:
+      '#type': webform_same
+      '#title': 'Billing address is the same as the shipping address (none)'
+      '#title_display': none
+    webform_same_hr:
       '#type': webform_horizontal_rule
     search_title:
       '#markup': 'Search (search)'
@@ -449,10 +450,10 @@ elements: |
       '#type': search
       '#title': 'Search (inline)'
       '#title_display': inline
-    search_invisible:
+    search_none:
       '#type': search
-      '#title': 'Search (invisible)'
-      '#title_display': invisible
+      '#title': 'Search (none)'
+      '#title_display': none
     search_hr:
       '#type': webform_horizontal_rule
     webform_signature_title:
@@ -467,14 +468,10 @@ elements: |
       '#type': webform_signature
       '#title': 'Signature (after)'
       '#title_display': after
-    webform_signature_inline:
+    webform_signature_none:
       '#type': webform_signature
-      '#title': 'Signature (inline)'
-      '#title_display': inline
-    webform_signature_invisible:
-      '#type': webform_signature
-      '#title': 'Signature (invisible)'
-      '#title_display': invisible
+      '#title': 'Signature (none)'
+      '#title_display': none
     webform_signature_hr:
       '#type': webform_horizontal_rule
     tel_title:
@@ -496,11 +493,11 @@ elements: |
       '#title': 'Telephone (inline)'
       '#international': true
       '#title_display': inline
-    tel_invisible:
+    tel_none:
       '#type': tel
-      '#title': 'Telephone (invisible)'
+      '#title': 'Telephone (none)'
       '#international': true
-      '#title_display': invisible
+      '#title_display': none
     tel_hr:
       '#type': webform_horizontal_rule
     webform_toggle_title:
@@ -519,10 +516,10 @@ elements: |
       '#type': webform_toggle
       '#title': 'Toggle (inline)'
       '#title_display': inline
-    webform_toggle_invisible:
+    webform_toggle_none:
       '#type': webform_toggle
-      '#title': 'Toggle (invisible)'
-      '#title_display': invisible
+      '#title': 'Toggle (none)'
+      '#title_display': none
     webform_toggle_hr:
       '#type': webform_horizontal_rule
     url_title:
@@ -541,10 +538,10 @@ elements: |
       '#type': url
       '#title': 'URL (inline)'
       '#title_display': inline
-    url_invisible:
+    url_none:
       '#type': url
-      '#title': 'URL (invisible)'
-      '#title_display': invisible
+      '#title': 'URL (none)'
+      '#title_display': none
     url_hr:
       '#type': webform_horizontal_rule
   file_upload_elements:
@@ -563,14 +560,10 @@ elements: |
       '#type': webform_audio_file
       '#title': 'Audio file (after)'
       '#title_display': after
-    webform_audio_file_inline:
+    webform_audio_file_none:
       '#type': webform_audio_file
-      '#title': 'Audio file (inline)'
-      '#title_display': inline
-    webform_audio_file_invisible:
-      '#type': webform_audio_file
-      '#title': 'Audio file (invisible)'
-      '#title_display': invisible
+      '#title': 'Audio file (none)'
+      '#title_display': none
     webform_audio_file_hr:
       '#type': webform_horizontal_rule
     webform_document_file_title:
@@ -585,14 +578,10 @@ elements: |
       '#type': webform_document_file
       '#title': 'Document file (after)'
       '#title_display': after
-    webform_document_file_inline:
+    webform_document_file_none:
       '#type': webform_document_file
-      '#title': 'Document file (inline)'
-      '#title_display': inline
-    webform_document_file_invisible:
-      '#type': webform_document_file
-      '#title': 'Document file (invisible)'
-      '#title_display': invisible
+      '#title': 'Document file (none)'
+      '#title_display': none
     webform_document_file_hr:
       '#type': webform_horizontal_rule
     managed_file_title:
@@ -609,16 +598,11 @@ elements: |
       '#title': 'File (after)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2705471">Issue #2705471: Webform states managed file fields</a><br /><a href="https://www.drupal.org/node/2113931">Issue #2113931: File Field design update</a><br /><a href="https://www.drupal.org/node/2346893">Issue #2346893: Duplicate Ajax wrapper around a file field</a><br /><a href="https://www.drupal.org/node/2482783">Issue #2482783: File upload errors not set or shown correctly</a>'
       '#title_display': after
-    managed_file_inline:
+    managed_file_none:
       '#type': managed_file
-      '#title': 'File (inline)'
+      '#title': 'File (none)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2705471">Issue #2705471: Webform states managed file fields</a><br /><a href="https://www.drupal.org/node/2113931">Issue #2113931: File Field design update</a><br /><a href="https://www.drupal.org/node/2346893">Issue #2346893: Duplicate Ajax wrapper around a file field</a><br /><a href="https://www.drupal.org/node/2482783">Issue #2482783: File upload errors not set or shown correctly</a>'
-      '#title_display': inline
-    managed_file_invisible:
-      '#type': managed_file
-      '#title': 'File (invisible)'
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2705471">Issue #2705471: Webform states managed file fields</a><br /><a href="https://www.drupal.org/node/2113931">Issue #2113931: File Field design update</a><br /><a href="https://www.drupal.org/node/2346893">Issue #2346893: Duplicate Ajax wrapper around a file field</a><br /><a href="https://www.drupal.org/node/2482783">Issue #2482783: File upload errors not set or shown correctly</a>'
-      '#title_display': invisible
+      '#title_display': none
     managed_file_hr:
       '#type': webform_horizontal_rule
     webform_image_file_title:
@@ -633,14 +617,10 @@ elements: |
       '#type': webform_image_file
       '#title': 'Image file (after)'
       '#title_display': after
-    webform_image_file_inline:
+    webform_image_file_none:
       '#type': webform_image_file
-      '#title': 'Image file (inline)'
-      '#title_display': inline
-    webform_image_file_invisible:
-      '#type': webform_image_file
-      '#title': 'Image file (invisible)'
-      '#title_display': invisible
+      '#title': 'Image file (none)'
+      '#title_display': none
     webform_image_file_hr:
       '#type': webform_horizontal_rule
     webform_video_file_title:
@@ -655,14 +635,10 @@ elements: |
       '#type': webform_video_file
       '#title': 'Video file (after)'
       '#title_display': after
-    webform_video_file_inline:
+    webform_video_file_none:
       '#type': webform_video_file
-      '#title': 'Video file (inline)'
-      '#title_display': inline
-    webform_video_file_invisible:
-      '#type': webform_video_file
-      '#title': 'Video file (invisible)'
-      '#title_display': invisible
+      '#title': 'Video file (none)'
+      '#title_display': none
     webform_video_file_hr:
       '#type': webform_horizontal_rule
   options_elements:
@@ -697,14 +673,14 @@ elements: |
         two: Two
         three: Three
       '#title_display': inline
-    webform_buttons_invisible:
+    webform_buttons_none:
       '#type': webform_buttons
-      '#title': 'Buttons (invisible)'
+      '#title': 'Buttons (none)'
       '#options':
         one: One
         two: Two
         three: Three
-      '#title_display': invisible
+      '#title_display': none
     webform_buttons_hr:
       '#type': webform_horizontal_rule
     webform_buttons_other_title:
@@ -735,14 +711,14 @@ elements: |
         two: Two
         three: Three
       '#title_display': inline
-    webform_buttons_other_invisible:
+    webform_buttons_other_none:
       '#type': webform_buttons_other
-      '#title': 'Buttons other (invisible)'
+      '#title': 'Buttons other (none)'
       '#options':
         one: One
         two: Two
         three: Three
-      '#title_display': invisible
+      '#title_display': none
     webform_buttons_other_hr:
       '#type': webform_horizontal_rule
     checkboxes_title:
@@ -779,16 +755,16 @@ elements: |
       '#options_display': side_by_side
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
       '#title_display': inline
-    checkboxes_invisible:
+    checkboxes_none:
       '#type': checkboxes
-      '#title': 'Checkboxes (invisible)'
+      '#title': 'Checkboxes (none)'
       '#options':
         one: One
         two: Two
         three: Three
       '#options_display': side_by_side
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
-      '#title_display': invisible
+      '#title_display': none
     checkboxes_hr:
       '#type': webform_horizontal_rule
     webform_checkboxes_other_title:
@@ -822,15 +798,15 @@ elements: |
         three: Three
       '#options_display': side_by_side
       '#title_display': inline
-    webform_checkboxes_other_invisible:
+    webform_checkboxes_other_none:
       '#type': webform_checkboxes_other
-      '#title': 'Checkboxes other (invisible)'
+      '#title': 'Checkboxes other (none)'
       '#options':
         one: One
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#title_display': invisible
+      '#title_display': none
     webform_checkboxes_other_hr:
       '#type': webform_horizontal_rule
     webform_image_select_title:
@@ -867,9 +843,9 @@ elements: |
           text: 'Bear 3'
           src: 'https://www.placebear.com/120/100'
       '#title_display': after
-    webform_image_select_inline:
+    webform_image_select_none:
       '#type': webform_image_select
-      '#title': 'Image select (inline)'
+      '#title': 'Image select (none)'
       '#show_label': true
       '#images':
         bear_1:
@@ -881,22 +857,7 @@ elements: |
         bear_3:
           text: 'Bear 3'
           src: 'https://www.placebear.com/120/100'
-      '#title_display': inline
-    webform_image_select_invisible:
-      '#type': webform_image_select
-      '#title': 'Image select (invisible)'
-      '#show_label': true
-      '#images':
-        bear_1:
-          text: 'Bear 1'
-          src: 'https://www.placebear.com/80/100'
-        bear_2:
-          text: 'Bear 2'
-          src: 'https://www.placebear.com/100/100'
-        bear_3:
-          text: 'Bear 3'
-          src: 'https://www.placebear.com/120/100'
-      '#title_display': invisible
+      '#title_display': none
     webform_image_select_hr:
       '#type': webform_horizontal_rule
     webform_likert_title:
@@ -927,9 +888,9 @@ elements: |
         2: '2'
         3: '3'
       '#title_display': after
-    webform_likert_inline:
+    webform_likert_none:
       '#type': webform_likert
-      '#title': 'Likert (inline)'
+      '#title': 'Likert (none)'
       '#questions':
         q1: 'Please answer question 1?'
         q2: 'How about now answering question 2?'
@@ -938,19 +899,7 @@ elements: |
         1: '1'
         2: '2'
         3: '3'
-      '#title_display': inline
-    webform_likert_invisible:
-      '#type': webform_likert
-      '#title': 'Likert (invisible)'
-      '#questions':
-        q1: 'Please answer question 1?'
-        q2: 'How about now answering question 2?'
-        q3: 'Finally, here is question 3?'
-      '#answers':
-        1: '1'
-        2: '2'
-        3: '3'
-      '#title_display': invisible
+      '#title_display': none
     webform_likert_hr:
       '#type': webform_horizontal_rule
     radios_title:
@@ -987,16 +936,16 @@ elements: |
       '#options_display': side_by_side
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2731991">Issue #2731991: Setting required on radios marks all options required</a><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
       '#title_display': inline
-    radios_invisible:
+    radios_none:
       '#type': radios
-      '#title': 'Radios (invisible)'
+      '#title': 'Radios (none)'
       '#options':
         one: One
         two: Two
         three: Three
       '#options_display': side_by_side
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2731991">Issue #2731991: Setting required on radios marks all options required</a><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
-      '#title_display': invisible
+      '#title_display': none
     radios_hr:
       '#type': webform_horizontal_rule
     webform_radios_other_title:
@@ -1030,15 +979,15 @@ elements: |
         three: Three
       '#options_display': side_by_side
       '#title_display': inline
-    webform_radios_other_invisible:
+    webform_radios_other_none:
       '#type': webform_radios_other
-      '#title': 'Radios other (invisible)'
+      '#title': 'Radios other (none)'
       '#options':
         one: One
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#title_display': invisible
+      '#title_display': none
     webform_radios_other_hr:
       '#type': webform_horizontal_rule
     select_title:
@@ -1072,15 +1021,15 @@ elements: |
         three: Three
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1426646">Issue #1426646: "-Select-" option is lost when webform elements uses ''#states''</a><br /><a href="https://www.drupal.org/node/1149078">Issue #1149078: States API doesn''t work with multiple select fields</a><br /><a href="https://www.drupal.org/node/2791741">Issue #2791741: FAPI states: fields aren''t hidden initially when depending on multi-value selection</a>'
       '#title_display': inline
-    select_invisible:
+    select_none:
       '#type': select
-      '#title': 'Select (invisible)'
+      '#title': 'Select (none)'
       '#options':
         one: One
         two: Two
         three: Three
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1426646">Issue #1426646: "-Select-" option is lost when webform elements uses ''#states''</a><br /><a href="https://www.drupal.org/node/1149078">Issue #1149078: States API doesn''t work with multiple select fields</a><br /><a href="https://www.drupal.org/node/2791741">Issue #2791741: FAPI states: fields aren''t hidden initially when depending on multi-value selection</a>'
-      '#title_display': invisible
+      '#title_display': none
     select_hr:
       '#type': webform_horizontal_rule
     webform_select_other_title:
@@ -1111,14 +1060,14 @@ elements: |
         two: Two
         three: Three
       '#title_display': inline
-    webform_select_other_invisible:
+    webform_select_other_none:
       '#type': webform_select_other
-      '#title': 'Select other (invisible)'
+      '#title': 'Select other (none)'
       '#options':
         one: One
         two: Two
         three: Three
-      '#title_display': invisible
+      '#title_display': none
     webform_select_other_hr:
       '#type': webform_horizontal_rule
     webform_toggles_title:
@@ -1149,14 +1098,14 @@ elements: |
         two: Two
         three: Three
       '#title_display': inline
-    webform_toggles_invisible:
+    webform_toggles_none:
       '#type': webform_toggles
-      '#title': 'Toggles (invisible)'
+      '#title': 'Toggles (none)'
       '#options':
         one: One
         two: Two
         three: Three
-      '#title_display': invisible
+      '#title_display': none
     webform_toggles_hr:
       '#type': webform_horizontal_rule
   computed_elements:
@@ -1182,11 +1131,11 @@ elements: |
       '#title': 'Computed token (inline)'
       '#template': 'This is a Computed token value.'
       '#title_display': inline
-    webform_computed_token_invisible:
+    webform_computed_token_none:
       '#type': webform_computed_token
-      '#title': 'Computed token (invisible)'
+      '#title': 'Computed token (none)'
       '#template': 'This is a Computed token value.'
-      '#title_display': invisible
+      '#title_display': none
     webform_computed_token_hr:
       '#type': webform_horizontal_rule
     webform_computed_twig_title:
@@ -1208,11 +1157,11 @@ elements: |
       '#title': 'Computed Twig (inline)'
       '#template': 'This is a Computed Twig value.'
       '#title_display': inline
-    webform_computed_twig_invisible:
+    webform_computed_twig_none:
       '#type': webform_computed_twig
-      '#title': 'Computed Twig (invisible)'
+      '#title': 'Computed Twig (none)'
       '#template': 'This is a Computed Twig value.'
-      '#title_display': invisible
+      '#title_display': none
     webform_computed_twig_hr:
       '#type': webform_horizontal_rule
   date_time_elements:
@@ -1235,10 +1184,10 @@ elements: |
       '#type': date
       '#title': 'Date (inline)'
       '#title_display': inline
-    date_invisible:
+    date_none:
       '#type': date
-      '#title': 'Date (invisible)'
-      '#title_display': invisible
+      '#title': 'Date (none)'
+      '#title_display': none
     date_hr:
       '#type': webform_horizontal_rule
     datetime_title:
@@ -1260,11 +1209,11 @@ elements: |
       '#title': 'Date/time (inline)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2419131">Issue #2419131: #states attribute does not work on #type datetime</a>'
       '#title_display': inline
-    datetime_invisible:
+    datetime_none:
       '#type': datetime
-      '#title': 'Date/time (invisible)'
+      '#title': 'Date/time (none)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2419131">Issue #2419131: #states attribute does not work on #type datetime</a>'
-      '#title_display': invisible
+      '#title_display': none
     datetime_hr:
       '#type': webform_horizontal_rule
     datelist_title:
@@ -1283,10 +1232,10 @@ elements: |
       '#type': datelist
       '#title': 'Date list (inline)'
       '#title_display': inline
-    datelist_invisible:
+    datelist_none:
       '#type': datelist
-      '#title': 'Date list (invisible)'
-      '#title_display': invisible
+      '#title': 'Date list (none)'
+      '#title_display': none
     datelist_hr:
       '#type': webform_horizontal_rule
     webform_time_title:
@@ -1308,11 +1257,11 @@ elements: |
       '#title': 'Time (inline)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1838234">Issue #1838234: Add jQuery Timepicker for the Time element of the datetime field</a>'
       '#title_display': inline
-    webform_time_invisible:
+    webform_time_none:
       '#type': webform_time
-      '#title': 'Time (invisible)'
+      '#title': 'Time (none)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1838234">Issue #1838234: Add jQuery Timepicker for the Time element of the datetime field</a>'
-      '#title_display': invisible
+      '#title_display': none
     webform_time_hr:
       '#type': webform_horizontal_rule
   containers:
@@ -1333,16 +1282,11 @@ elements: |
       '#title': 'Details (after)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2348851">Issue #2348851: Regression: Allow HTML tags inside detail summary</a>'
       '#title_display': after
-    details_inline:
+    details_none:
       '#type': details
-      '#title': 'Details (inline)'
+      '#title': 'Details (none)'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2348851">Issue #2348851: Regression: Allow HTML tags inside detail summary</a>'
-      '#title_display': inline
-    details_invisible:
-      '#type': details
-      '#title': 'Details (invisible)'
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2348851">Issue #2348851: Regression: Allow HTML tags inside detail summary</a>'
-      '#title_display': invisible
+      '#title_display': none
     details_hr:
       '#type': webform_horizontal_rule
     fieldset_title:
@@ -1357,14 +1301,10 @@ elements: |
       '#type': fieldset
       '#title': 'Fieldset (after)'
       '#title_display': after
-    fieldset_inline:
+    fieldset_none:
       '#type': fieldset
-      '#title': 'Fieldset (inline)'
-      '#title_display': inline
-    fieldset_invisible:
-      '#type': fieldset
-      '#title': 'Fieldset (invisible)'
-      '#title_display': invisible
+      '#title': 'Fieldset (none)'
+      '#title_display': none
     fieldset_hr:
       '#type': webform_horizontal_rule
     item_title:
@@ -1395,37 +1335,15 @@ elements: |
       '#field_suffix': '{field_suffix}'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/783438">Issue #783438: #states doesn''t work for #type item</a>'
       '#title_display': inline
-    item_invisible:
+    item_none:
       '#type': item
-      '#title': 'Item (invisible)'
+      '#title': 'Item (none)'
       '#markup': '{markup}'
       '#field_prefix': '{field_prefix}'
       '#field_suffix': '{field_suffix}'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/783438">Issue #783438: #states doesn''t work for #type item</a>'
-      '#title_display': invisible
+      '#title_display': none
     item_hr:
-      '#type': webform_horizontal_rule
-    webform_section_title:
-      '#markup': 'Section (webform_section)'
-      '#prefix': '<h3>'
-      '#suffix': '</h3>'
-    webform_section_before:
-      '#type': webform_section
-      '#title': 'Section (before)'
-      '#title_display': before
-    webform_section_after:
-      '#type': webform_section
-      '#title': 'Section (after)'
-      '#title_display': after
-    webform_section_inline:
-      '#type': webform_section
-      '#title': 'Section (inline)'
-      '#title_display': inline
-    webform_section_invisible:
-      '#type': webform_section
-      '#title': 'Section (invisible)'
-      '#title_display': invisible
-    webform_section_hr:
       '#type': webform_horizontal_rule
   entity_reference_elements:
     '#type': details
@@ -1462,15 +1380,15 @@ elements: |
         include_anonymous: true
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2826451">Issue #2826451: TermSelection returning HTML characters in select list</a>'
       '#title_display': inline
-    entity_autocomplete_invisible:
+    entity_autocomplete_none:
       '#type': entity_autocomplete
-      '#title': 'Entity autocomplete (invisible)'
+      '#title': 'Entity autocomplete (none)'
       '#target_type': user
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2826451">Issue #2826451: TermSelection returning HTML characters in select list</a>'
-      '#title_display': invisible
+      '#title_display': none
     entity_autocomplete_hr:
       '#type': webform_horizontal_rule
     webform_entity_checkboxes_title:
@@ -1513,9 +1431,9 @@ elements: |
         1: Administrator
         0: Anonymous
       '#title_display': inline
-    webform_entity_checkboxes_invisible:
+    webform_entity_checkboxes_none:
       '#type': webform_entity_checkboxes
-      '#title': 'Entity checkboxes (invisible)'
+      '#title': 'Entity checkboxes (none)'
       '#options_display': side_by_side
       '#target_type': user
       '#selection_handler': 'default:user'
@@ -1524,7 +1442,7 @@ elements: |
       '#options':
         1: Administrator
         0: Anonymous
-      '#title_display': invisible
+      '#title_display': none
     webform_entity_checkboxes_hr:
       '#type': webform_horizontal_rule
     webform_entity_radios_title:
@@ -1567,9 +1485,9 @@ elements: |
         1: Administrator
         0: Anonymous
       '#title_display': inline
-    webform_entity_radios_invisible:
+    webform_entity_radios_none:
       '#type': webform_entity_radios
-      '#title': 'Entity radios (invisible)'
+      '#title': 'Entity radios (none)'
       '#options_display': side_by_side
       '#target_type': user
       '#selection_handler': 'default:user'
@@ -1578,7 +1496,7 @@ elements: |
       '#options':
         1: Administrator
         0: Anonymous
-      '#title_display': invisible
+      '#title_display': none
     webform_entity_radios_hr:
       '#type': webform_horizontal_rule
     webform_entity_select_title:
@@ -1618,9 +1536,9 @@ elements: |
         1: Administrator
         0: Anonymous
       '#title_display': inline
-    webform_entity_select_invisible:
+    webform_entity_select_none:
       '#type': webform_entity_select
-      '#title': 'Entity select (invisible)'
+      '#title': 'Entity select (none)'
       '#target_type': user
       '#selection_handler': 'default:user'
       '#selection_settings':
@@ -1628,7 +1546,7 @@ elements: |
       '#options':
         1: Administrator
         0: Anonymous
-      '#title_display': invisible
+      '#title_display': none
     webform_entity_select_hr:
       '#type': webform_horizontal_rule
     webform_term_checkboxes_title:
@@ -1650,11 +1568,11 @@ elements: |
       '#title': 'Term checkboxes (inline)'
       '#vocabulary': tags
       '#title_display': inline
-    webform_term_checkboxes_invisible:
+    webform_term_checkboxes_none:
       '#type': webform_term_checkboxes
-      '#title': 'Term checkboxes (invisible)'
+      '#title': 'Term checkboxes (none)'
       '#vocabulary': tags
-      '#title_display': invisible
+      '#title_display': none
     webform_term_checkboxes_hr:
       '#type': webform_horizontal_rule
     webform_term_select_title:
@@ -1676,11 +1594,11 @@ elements: |
       '#title': 'Term select (inline)'
       '#vocabulary': tags
       '#title_display': inline
-    webform_term_select_invisible:
+    webform_term_select_none:
       '#type': webform_term_select
-      '#title': 'Term select (invisible)'
+      '#title': 'Term select (none)'
       '#vocabulary': tags
-      '#title_display': invisible
+      '#title_display': none
     webform_term_select_hr:
       '#type': webform_horizontal_rule
   other_elements:
@@ -1703,10 +1621,10 @@ elements: |
       '#type': machine_name
       '#title': 'Machine name (inline)'
       '#title_display': inline
-    machine_name_invisible:
+    machine_name_none:
       '#type': machine_name
-      '#title': 'Machine name (invisible)'
-      '#title_display': invisible
+      '#title': 'Machine name (none)'
+      '#title_display': none
     machine_name_hr:
       '#type': webform_horizontal_rule
   
@@ -1775,6 +1693,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

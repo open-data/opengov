@@ -91,6 +91,7 @@ class WebformImageSelectImagesForm extends EntityForm {
         '#type' => 'webform_codemirror',
         '#mode' => 'yaml',
         '#title' => $this->t('Images (YAML)'),
+        '#attributes' => ['style' => 'min-height: 200px'],
         '#default_value' => $this->getImages(),
       ];
     }

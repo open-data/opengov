@@ -333,7 +333,7 @@ elements: |
         visible:
           ':input[name="currency_trigger"]':
             checked: true
-
+  
   address_trigger_details:
     '#type': details
     '#title': address_trigger
@@ -447,7 +447,7 @@ elements: |
         required:
           ':input[name="composite_sub_elements_required_trigger"]':
             value: b
-
+  
 css: ''
 javascript: ''
 settings:
@@ -513,6 +513,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

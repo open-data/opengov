@@ -1270,6 +1270,8 @@ function $command_hook() {
  * @see \Drupal\webform\Commands\DrushCliServiceBase::generate_commands_drush8
  */
 
+require_once __DIR__ . '/webform.drush.hooks.inc';
+
 /**
  * Implements hook_drush_command().
  */

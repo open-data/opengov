@@ -80,6 +80,7 @@ function webform_test_test_element_title_display() {
       'before' => 'before',
       'after' => 'after',
       'inline' => 'inline',
+      'none' => 'none',
     ];
     if ($webform_element->isComposite() || $webform_element instanceof WebformManagedFileBase) {
       unset($title_displays['inline']);

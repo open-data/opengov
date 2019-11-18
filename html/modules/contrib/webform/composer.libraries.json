@@ -186,6 +186,24 @@
                 }
             }
         },
+        "jquery.geocomplete": {
+            "type": "package",
+            "package": {
+                "name": "jquery/geocomplete",
+                "version": "1.7.0",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "jquery.geocomplete"
+                },
+                "dist": {
+                    "url": "https://github.com/ubilabs/geocomplete/archive/1.7.0.zip",
+                    "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
+                }
+            }
+        },
         "jquery.hotkeys": {
             "type": "package",
             "package": {
@@ -401,6 +419,24 @@
                     "composer/installers": "~1.0"
                 }
             }
+        },
+        "svg-pan-zoom": {
+            "type": "package",
+            "package": {
+                "name": "svg-pan-zoom/svg-pan-zoom",
+                "version": "3.6.1",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "svg-pan-zoom"
+                },
+                "dist": {
+                    "url": "https://github.com/ariutta/svg-pan-zoom/archive/3.6.1.zip",
+                    "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
+                }
+            }
         }
     },
     "require": {
@@ -413,6 +449,7 @@
         "ckeditor/link": "*",
         "codemirror/codemirror": "*",
         "jquery/chosen": "*",
+        "jquery/geocomplete": "*",
         "jquery/hotkeys": "*",
         "jquery/icheck": "*",
         "jquery/image-picker": "*",
@@ -424,6 +461,7 @@
         "jquery/timepicker": "*",
         "jquery/toggles": "*",
         "progress-tracker/progress-tracker": "*",
-        "signature_pad/signature_pad": "*"
+        "signature_pad/signature_pad": "*",
+        "svg-pan-zoom/svg-pan-zoom": "*"
     }
 }

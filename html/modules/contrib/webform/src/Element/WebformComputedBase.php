@@ -223,7 +223,16 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
    * Determine if the current request is using Ajax.
    */
   protected static function isAjax() {
-    return (\Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT) === 'drupal_ajax');
+    // return (\Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT) === 'drupal_ajax');
+    //
+    // ISSUE:
+    // For nodes with computed elements there is a duplicate
+    // _wrapper_format parameter.
+    // (i.e ?_wrapper_format=html&_wrapper_format=drupal_ajax)
+    // WORKAROUND:
+    // See if _wrapper_format=drupal_ajax is being appended to the query string.
+    $querystring = \Drupal::request()->getQueryString();
+    return (strpos($querystring, MainContentViewSubscriber::WRAPPER_FORMAT . '=drupal_ajax') !== FALSE);
   }
 
   /**
@@ -351,7 +360,7 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
       //
       // Therefore, we are creating a single clone of the webform submission
       // and only copying the submitted form values to the cached submission.
-      if ($form_state->isValidationComplete()) {
+      if ($form_state->isValidationComplete() && !$form_state->isRebuilding()) {
         if (!isset(static::$submissions[$webform_submission->uuid()])) {
           static::$submissions[$webform_submission->uuid()] = clone $form_object->getEntity();
         }

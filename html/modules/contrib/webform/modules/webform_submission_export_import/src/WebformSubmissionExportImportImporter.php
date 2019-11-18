@@ -877,7 +877,7 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
    * Import multiple element.
    *
    * @param array $element
-   *   An element with multiple values..
+   *   An element with multiple values.
    * @param mixed $value
    *   File URI(s) from CSV record.
    * @param \Drupal\webform\WebformSubmissionInterface|null $webform_submission

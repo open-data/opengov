@@ -354,7 +354,7 @@
    * @param {object} response
    *   Ajax response.
    * @param {string} response.message
-   *   A message to be displayed in the confirm dialog..
+   *   A message to be displayed in the confirm dialog.
    */
   Drupal.AjaxCommands.prototype.webformConfirmReload = function (ajax, response) {
     if (window.confirm(response.message)) {

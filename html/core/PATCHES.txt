@@ -21,10 +21,6 @@ Error: Call to a member function getLabel() after enable layout_builder
 Source: https://www.drupal.org/files/issues/2018-07-16/2985882-entityfield-2.patch
 
 
-Performance Degradation in Layout Builder and other places likely
-Source: https://www.drupal.org/files/issues/2019-08-21/d8_entity_validation.patch
-
-
 Terrible performance when rendering multi-value fields in views
 Source: https://www.drupal.org/files/issues/2018-04-03/views-multivalue_field_rendering_performance-2846485-23.patch
 

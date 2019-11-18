@@ -14,37 +14,49 @@ facets:
     checked: true
     label: Organization
     separator: ', '
-    weight: -10
+    weight: 0
     show_count: false
   travelq_organization_fr:
     checked: true
     label: Organisation
     separator: ', '
-    weight: -9
+    weight: 0
     show_count: false
   travelq_year_en:
     checked: true
     label: Year
     separator: ', '
-    weight: -8
+    weight: 0
     show_count: false
   travelq_year_fr:
     checked: true
     label: Année
     separator: ', '
-    weight: -7
+    weight: 0
     show_count: false
   travelq_total_en:
     checked: true
     label: Total
     separator: ', '
-    weight: -6
+    weight: 0
     show_count: false
   travelq_total_fr:
     checked: true
-    label: 'Total FR'
+    label: Total
     separator: ', '
-    weight: -5
+    weight: 0
+    show_count: false
+  travelq_nil_en:
+    checked: true
+    label: 'Nothing to Report'
+    separator: ', '
+    weight: 0
+    show_count: false
+  travelq_nil_fr:
+    checked: true
+    label: 'Rien à signaler'
+    separator: ', '
+    weight: 0
     show_count: false
 facet_source_id: 'search_api:views_block__pd_core_travelq__block_1'
 processor_configs:

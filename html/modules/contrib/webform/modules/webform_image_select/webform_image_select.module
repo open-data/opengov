@@ -11,6 +11,23 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
+ * Implements hook_webform_help_info().
+ */
+function webform_image_select_webform_help_info() {
+  $help = [];
+  $help['config_image_select_images'] = [
+    'group' => 'configuration',
+    'title' => t('Configuration: Images'),
+    'content' => t('The <strong>Images configuration</strong> page lists reusable images for the image select element.'),
+    'routes' => [
+      // @see /admin/structure/webform/config/images
+      'entity.webform_image_select_images.collection',
+    ],
+  ];
+  return $help;
+}
+
+/**
  * Implements hook_webform_libraries_info().
  */
 function webform_image_select_webform_libraries_info() {

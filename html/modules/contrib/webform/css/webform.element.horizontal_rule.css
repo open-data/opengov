@@ -46,6 +46,7 @@ hr.webform-horizontal-rule--dotted.webform-horizontal-rule--thick {
 hr.webform-horizontal-rule--flaired {
   overflow: visible; /* For IE */
   height: 30px;
+  background-color: transparent;
   border-style: solid;
   border-color: #666;
   border-width: 1px 0 0 0;

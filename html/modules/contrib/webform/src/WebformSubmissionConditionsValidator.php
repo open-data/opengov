@@ -61,6 +61,32 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
   }
 
   /****************************************************************************/
+  // Build pages methods.
+  /****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildPages(array $pages, WebformSubmissionInterface $webform_submission) {
+    foreach ($pages as $page_key => $page) {
+      // Check #access which can be set via form alter.
+      if ($page['#access'] === FALSE) {
+        unset($pages[$page_key]);
+      }
+      // Check #states (visible/hidden).
+      if (!empty($page['#states'])) {
+        $state = key($page['#states']);
+        $conditions = $page['#states'][$state];
+        $result = $this->validateState($state, $conditions, $webform_submission);
+        if ($result !== NULL && !$result) {
+          unset($pages[$page_key]);
+        }
+      }
+    }
+    return $pages;
+  }
+
+  /****************************************************************************/
   // Build form methods.
   /****************************************************************************/
 

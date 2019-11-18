@@ -4,8 +4,10 @@ namespace Drupal\webform\Twig;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\webform\Element\WebformMessage;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformHtmlHelper;
 use Drupal\webform\Utility\WebformLogicHelper;
+use Drupal\webform\Utility\WebformYaml;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
@@ -23,6 +25,7 @@ class WebformTwigExtension extends \Twig_Extension {
    */
   public function getFunctions() {
     return [
+      new \Twig_SimpleFunction('webform_debug', [$this, 'webformDebug']),
       new \Twig_SimpleFunction('webform_token', [$this, 'webformToken']),
     ];
   }
@@ -32,6 +35,30 @@ class WebformTwigExtension extends \Twig_Extension {
    */
   public function getName() {
     return 'webform';
+  }
+
+  /**
+   * Debug data by outputting YAML.
+   *
+   * @param mixed $data
+   *   Data to be outputted.
+   *
+   * @return string
+   *   Data serialized to YAML.
+   */
+  public function webformDebug($data) {
+    try {
+      if (is_array($data)) {
+        WebformElementHelper::convertRenderMarkupToStrings($data);
+        return WebformYaml::encode($data);
+      }
+      else {
+        return $data;
+      }
+    }
+    catch (\Exception $exception) {
+      return $exception->getMessage();
+    }
   }
 
   /**
@@ -152,6 +179,12 @@ class WebformTwigExtension extends \Twig_Extension {
     ];
     $output[] = [
       '#markup' => "<pre>{{ webform_token('[webform_submission:values:element_value]', webform_submission, [], options) }}</pre>",
+    ];
+    $output[] = [
+      '#markup' => '<p>' . t("You can debug data using the <code>webform_debug()</code> function.") . '</p>',
+    ];
+    $output[] = [
+      '#markup' => "<pre>{{ webform_debug(data) }}</pre>",
     ];
     if (\Drupal::currentUser()->hasPermission('administer modules') && !\Drupal::moduleHandler()->moduleExists('twig_tweak')) {
       $t_args = [

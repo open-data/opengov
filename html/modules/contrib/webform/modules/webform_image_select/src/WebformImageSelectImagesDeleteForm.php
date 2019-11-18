@@ -31,8 +31,8 @@ class WebformImageSelectImagesDeleteForm extends WebformConfigEntityDeleteFormBa
    * {@inheritdoc}
    */
   public function getDetails() {
-    /** @var \Drupal\webform\WebformOptionsInterface $webform_options */
-    $webform_options = $this->entity;
+    /** @var \Drupal\webform_image_select\WebformImageSelectImagesInterface $webform_images */
+    $webform_images = $this->entity;
 
     /** @var \Drupal\webform_image_select\WebformImageSelectImagesStorageInterface $webform_images_storage */
     $webform_images_storage = $this->entityTypeManager->getStorage('webform_image_select_images');
@@ -43,7 +43,7 @@ class WebformImageSelectImagesDeleteForm extends WebformConfigEntityDeleteFormBa
     ];
 
     $details = [];
-    if ($used_by_webforms = $webform_images_storage->getUsedByWebforms($webform_options)) {
+    if ($used_by_webforms = $webform_images_storage->getUsedByWebforms($webform_images)) {
       $details['used_by_composite_elements'] = [
         'title' => [
           '#markup' => $this->t('%label is used by the below webform(s).', $t_args),

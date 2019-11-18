@@ -395,8 +395,8 @@ function hook_webform_access_rules() {
     // The below 2 operations can be queried together as following:
     //
     // \Drupal::entityTypeManager()
-    //   ->getAccessControlHandler('webform_submission')
-    //   ->access($webform_submission, 'some_operation', $account);
+    //  ->getAccessControlHandler('webform_submission')
+    //  ->access($webform_submission, 'some_operation', $account);
     //
     // This will return TRUE as long as the $account is has either
     // 'some_operation_any' or has 'some_operation_own' and is author of

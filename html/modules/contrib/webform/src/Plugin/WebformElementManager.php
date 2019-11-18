@@ -163,8 +163,9 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
   public function buildElement(array &$element, array $form, FormStateInterface $form_state) {
     // Get the webform submission.
     $form_object = $form_state->getFormObject();
+    /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
     $webform_submission = ($form_object instanceof WebformSubmissionForm) ? $form_object->getEntity() : NULL;
-
+    $webform = ($webform_submission) ? $webform_submission->getWebform() : NULL;
     $element_plugin = $this->getElementInstance($element);
     $element_plugin->prepare($element, $webform_submission);
     $element_plugin->finalize($element, $webform_submission);
@@ -178,6 +179,11 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
     }
     $context = ['form' => $form];
     $this->moduleHandler->alter($hooks, $element, $form_state, $context);
+
+    // Allow handlers to alter the webform element.
+    if ($webform_submission) {
+      $webform->invokeHandlers('alterElement', $element, $form_state, $context);
+    }
   }
 
   /**

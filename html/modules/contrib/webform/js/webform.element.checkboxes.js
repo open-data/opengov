@@ -24,6 +24,11 @@
             .find('input[type="checkbox"]')
             .first();
 
+          // Copy clientside_validation.module's message to the checkboxes.
+          if ($element.attr('data-msg-required')) {
+            $firstCheckbox.attr('data-msg-required', $element.attr('data-msg-required'));
+          }
+
           $element.find('input[type="checkbox"]').on('click', required);
           required();
 

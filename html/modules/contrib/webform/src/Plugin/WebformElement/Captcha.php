@@ -94,10 +94,15 @@ class Captcha extends WebformElementBase {
   public function preview() {
     $element = parent::preview() + [
       '#captcha_admin_mode' => TRUE,
+      // Define empty form id to prevent fatal error when preview is
+      // rendered via Ajax.
+      // @see \Drupal\captcha\Element\Captcha::processCaptchaElement
+      '#captcha_info' => ['form_id' => ''],
     ];
     if (\Drupal::moduleHandler()->moduleExists('image_captcha')) {
       $element['#captcha_type'] = 'image_captcha/Image';
     }
+
     return $element;
   }
 

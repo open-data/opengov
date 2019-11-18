@@ -34,11 +34,6 @@ details details details {
   background-color: #fff;
 }
 
-/* Reduce the width of number inputs */
-input.form-number {
-  width: 6em;
-}
-
 code {
   font-weight: bold;
   border: 1px solid #333;

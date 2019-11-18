@@ -762,6 +762,14 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
   public function getElementsPrepopulate();
 
   /**
+   * Get webform elements default data.
+   *
+   * @return array
+   *   Webform elements default data.
+   */
+  public function getElementsDefaultData();
+
+  /**
    * Sets elements (YAML) value.
    *
    * @param array $elements
@@ -801,13 +809,17 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    * @param string $operation
    *   The webform submission operation.
    *   Usually 'default', 'add', 'edit', 'edit_all', 'api', or 'test'.
+   * @param \Drupal\webform\WebformSubmissionInterface|null $webform_submission
+   *   (Optional) A webform submission. If a webform submission is defined and
+   *   the 'wizard_progress_states' is TRUE, wizard page conditional logic
+   *   will be evaluated.
    *
    * @return array
    *   An associative array of webform wizard pages.
    *
    * @see \Drupal\webform\Entity\WebformSubmission
    */
-  public function getPages($operation = '');
+  public function getPages($operation = '', WebformSubmissionInterface $webform_submission = NULL);
 
   /**
    * Get webform wizard page.

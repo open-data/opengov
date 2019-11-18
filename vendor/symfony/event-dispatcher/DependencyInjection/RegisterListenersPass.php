@@ -27,20 +27,17 @@ class RegisterListenersPass implements CompilerPassInterface
     protected $dispatcherService;
     protected $listenerTag;
     protected $subscriberTag;
+    protected $eventAliasesParameter;
 
     private $hotPathEvents = [];
     private $hotPathTagName;
 
-    /**
-     * @param string $dispatcherService Service name of the event dispatcher in processed container
-     * @param string $listenerTag       Tag name used for listener
-     * @param string $subscriberTag     Tag name used for subscribers
-     */
-    public function __construct($dispatcherService = 'event_dispatcher', $listenerTag = 'kernel.event_listener', $subscriberTag = 'kernel.event_subscriber')
+    public function __construct(string $dispatcherService = 'event_dispatcher', string $listenerTag = 'kernel.event_listener', string $subscriberTag = 'kernel.event_subscriber', string $eventAliasesParameter = 'event_dispatcher.event_aliases')
     {
         $this->dispatcherService = $dispatcherService;
         $this->listenerTag = $listenerTag;
         $this->subscriberTag = $subscriberTag;
+        $this->eventAliasesParameter = $eventAliasesParameter;
     }
 
     public function setHotPathEvents(array $hotPathEvents, $tagName = 'container.hot_path')
@@ -57,6 +54,12 @@ class RegisterListenersPass implements CompilerPassInterface
             return;
         }
 
+        if ($container->hasParameter($this->eventAliasesParameter)) {
+            $aliases = $container->getParameter($this->eventAliasesParameter);
+            $container->getParameterBag()->remove($this->eventAliasesParameter);
+        } else {
+            $aliases = [];
+        }
         $definition = $container->findDefinition($this->dispatcherService);
 
         foreach ($container->findTaggedServiceIds($this->listenerTag, true) as $id => $events) {
@@ -66,6 +69,7 @@ class RegisterListenersPass implements CompilerPassInterface
                 if (!isset($event['event'])) {
                     throw new InvalidArgumentException(sprintf('Service "%s" must define the "event" attribute on "%s" tags.', $id, $this->listenerTag));
                 }
+                $event['event'] = $aliases[$event['event']] ?? $event['event'];
 
                 if (!isset($event['method'])) {
                     $event['method'] = 'on'.preg_replace_callback([
@@ -73,6 +77,10 @@ class RegisterListenersPass implements CompilerPassInterface
                         '/[^a-z0-9]/i',
                     ], function ($matches) { return strtoupper($matches[0]); }, $event['event']);
                     $event['method'] = preg_replace('/[^a-z0-9]/i', '', $event['method']);
+
+                    if (null !== ($class = $container->getDefinition($id)->getClass()) && ($r = $container->getReflectionClass($class, false)) && !$r->hasMethod($event['method']) && $r->hasMethod('__invoke')) {
+                        $event['method'] = '__invoke';
+                    }
                 }
 
                 $definition->addMethodCall('addListener', [$event['event'], [new ServiceClosureArgument(new Reference($id)), $event['method']], $priority]);
@@ -99,6 +107,7 @@ class RegisterListenersPass implements CompilerPassInterface
             }
             $class = $r->name;
 
+            ExtractingEventDispatcher::$aliases = $aliases;
             ExtractingEventDispatcher::$subscriber = $class;
             $extractingDispatcher->addSubscriber($extractingDispatcher);
             foreach ($extractingDispatcher->listeners as $args) {
@@ -110,6 +119,7 @@ class RegisterListenersPass implements CompilerPassInterface
                 }
             }
             $extractingDispatcher->listeners = [];
+            ExtractingEventDispatcher::$aliases = [];
         }
     }
 }
@@ -121,6 +131,7 @@ class ExtractingEventDispatcher extends EventDispatcher implements EventSubscrib
 {
     public $listeners = [];
 
+    public static $aliases = [];
     public static $subscriber;
 
     public function addListener($eventName, $listener, $priority = 0)
@@ -130,8 +141,12 @@ class ExtractingEventDispatcher extends EventDispatcher implements EventSubscrib
 
     public static function getSubscribedEvents()
     {
-        $callback = [self::$subscriber, 'getSubscribedEvents'];
+        $events = [];
 
-        return $callback();
+        foreach ([self::$subscriber, 'getSubscribedEvents']() as $eventName => $params) {
+            $events[self::$aliases[$eventName] ?? $eventName] = $params;
+        }
+
+        return $events;
     }
 }

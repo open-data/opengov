@@ -165,6 +165,13 @@ class WebformSettingsConfirmationTest extends WebformTestBase {
     $this->assertNoRaw('<h2 class="visually-hidden">Status message</h2>');
     $this->assertUrl('<front>');
 
+    // Check confirmation URL using an internal: URI.
+    $webform_confirmation_url
+      ->setSetting('confirmation_url', 'internal:/some-internal-path')
+      ->save();
+    $this->postSubmission($webform_confirmation_url);
+    $this->assertUrl('/some-internal-path');
+
     /* Test confirmation URL (confirmation_type=url_message) */
 
     $webform_confirmation_url_message = Webform::load('test_confirmation_url_message');

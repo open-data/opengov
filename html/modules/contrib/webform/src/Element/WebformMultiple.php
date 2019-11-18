@@ -45,6 +45,7 @@ class WebformMultiple extends FormElement {
       '#add_more' => TRUE,
       '#add_more_items' => 1,
       '#add_more_button_label' => $this->t('Add'),
+      '#add_more_input' => TRUE,
       '#add_more_input_label' => $this->t('more items'),
       '#sorting' => TRUE,
       '#operations' => TRUE,
@@ -279,6 +280,7 @@ class WebformMultiple extends FormElement {
         '#default_value' => $element['#add_more_items'],
         '#field_suffix' => $element['#add_more_input_label'],
         '#error_no_message' => TRUE,
+        '#access' => $element['#add_more_input'],
       ];
     }
 
@@ -473,7 +475,7 @@ class WebformMultiple extends FormElement {
           $title['title'] = [
             '#markup' => $child_title,
           ];
-          if (!empty($child_element ['#required']) || !empty($child_element ['#_required'])) {
+          if (!empty($child_element['#required']) || !empty($child_element['#_required'])) {
             $title['title'] += [
               '#prefix' => '<span class="form-required">',
               '#suffix' => '</span>',

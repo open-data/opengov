@@ -507,6 +507,10 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           $replacements[$original] = \Drupal::languageManager()->getLanguage($webform_submission->langcode->value)->getName();
           break;
 
+        case 'source-title':
+          $replacements[$original] = ($source_entity) ? $source_entity->label() : $webform->label();
+          break;
+
         case 'source-url':
           $replacements[$original] = $webform_submission->getSourceUrl()->toString();
           break;

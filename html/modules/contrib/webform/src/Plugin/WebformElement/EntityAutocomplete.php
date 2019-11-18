@@ -39,6 +39,11 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
    * {@inheritdoc}
    */
   public function setDefaultValue(array &$element) {
+    // Make sure tags or multiple is used.
+    if (!empty($element['#tags']) && isset($element['#multiple'])) {
+      unset($element['#multiple']);
+    }
+
     if (isset($element['#multiple'])) {
       $element['#default_value'] = (isset($element['#default_value'])) ? (array) $element['#default_value'] : NULL;
       return;

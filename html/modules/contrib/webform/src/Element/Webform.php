@@ -145,7 +145,6 @@ class Webform extends RenderElement {
    *   A render array with webform.settings and webform as cache dependencies.
    */
   public static function addCacheableDependency(array &$elements, WebformInterface $webform) {
-    // .
     /** @var \Drupal\Core\Render\RendererInterface $renderer */
     $renderer = \Drupal::service('renderer');
 

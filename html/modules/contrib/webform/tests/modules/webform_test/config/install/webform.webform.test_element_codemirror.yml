@@ -26,6 +26,19 @@ elements: |
     '#title': text_basic_no_wrap
     '#wrap': false
     '#default_value': 'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus,'
+  text_basic_min_max_height:
+    '#type': webform_codemirror
+    '#title': text_basic_min_max_height
+    '#wrap': false
+    '#default_value': |
+        Pellentesque habitant morbi tristique senectus
+        et netus et malesuada fames ac turpis egestas.
+        Vestibulum tortor quam, feugiat vitae, ultricies
+        eget, tempor sit amet, ante.
+        Donec eu libero sit amet quam egestas semper. Aenean
+        ultricies mi vitae est. Mauris placerat eleifend leo.
+    '#attributes':
+      style: 'min-height:100px; max-height:200px'
   yaml_basic:
     '#type': webform_codemirror
     '#mode': yaml
@@ -72,13 +85,13 @@ elements: |
           </script>
         </body>
       </html>
-      
+  
   twig_basic:
     '#type': webform_codemirror
     '#mode': twig
     '#title': twig_basic
     '#default_value': |
-      
+  
       {% set value = "Hello" %}
       {{ value }}
   
@@ -147,6 +160,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

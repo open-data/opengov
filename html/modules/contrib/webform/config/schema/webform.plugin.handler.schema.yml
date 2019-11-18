@@ -118,6 +118,9 @@ webform.handler.email:
     theme_name:
       type: string
       label: 'Theme name'
+    parameters:
+      label: 'Parameters'
+      type: ignore
     debug:
       type: boolean
       label: 'Enable debugging'

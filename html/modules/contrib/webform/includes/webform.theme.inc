@@ -163,6 +163,7 @@ function webform_theme() {
     'webform_progress' => [
       'variables' => [
         'webform' => NULL,
+        'webform_submission' => NULL,
         'current_page' => NULL,
         'operation' => NULL,
       ],
@@ -171,6 +172,7 @@ function webform_theme() {
     'webform_progress_bar' => [
       'variables' => [
         'webform' => NULL,
+        'webform_submission' => NULL,
         'current_page' => NULL,
         'operation' => NULL,
         'max_pages' => 10,
@@ -180,6 +182,7 @@ function webform_theme() {
     'webform_progress_tracker' => [
       'variables' => [
         'webform' => NULL,
+        'webform_submission' => NULL,
         'current_page' => NULL,
         'operation' => NULL,
         'max_pages' => 10,
@@ -272,6 +275,15 @@ function webform_preprocess_radios(&$variables) {
   _webform_preprocess_options($variables);
 }
 
+/**
+ * Prepares variable for status_messages.
+ */
+function webform_preprocess_status_messages(&$variables) {
+  if (!isset($variables['status_headings']['info'])) {
+    $variables['status_headings']['info'] = t('Information message');
+  }
+}
+
 /******************************************************************************/
 // Preprocess tables.
 /******************************************************************************/
@@ -306,7 +318,7 @@ function webform_preprocess_table(&$variables) {
       $langcode = (isset($route_parameters['langcode'])) ? $route_parameters['langcode'] : NULL;
       $language = \Drupal::languageManager()->getLanguage($langcode);
 
-      // Convert first to link.
+      // Convert the first cell in the row to a link.
       $row['cells'][0]['content'] = [
         '#type' => 'link',
         '#url' => $webform->toUrl('canonical', ['language' => $language]),
@@ -400,6 +412,12 @@ function webform_preprocess_fieldset(&$variables) {
     $variables['attributes']['class'][] = 'webform-fieldset--title-inline';
   }
 
+  // If the title display is none remove the legend.title and set
+  // display to none.
+  if (isset($element['#title_display']) && $element['#title_display'] === 'none') {
+    $variables['legend'] = ['attributes' => new Attribute(['style' => 'display:none'])];
+  }
+
   // Add .js-webform-form-type-* class to be used JavaScript and #states API.
   // @see js/webform.element.location.geocomplete.js
   // @see js/webform.states.js
@@ -431,6 +449,28 @@ function webform_preprocess_form_element(&$variables) {
 
   // Setup description, help, and more.
   _webform_preprocess_element($variables, ['label', '#title']);
+
+  // Add missing classes to the Claro theme's form elements.
+  // @see core/modules/system/templates/form-element.html.twig
+  // @see claro/templates/form-element.html.twig
+  // @todo Once Claro is stable determine if this code should removed.
+  static $is_claro_active_theme;
+  if (!isset($is_claro_active_theme)) {
+    /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
+    $theme_manager = \Drupal::service('webform.theme_manager');
+    $is_claro_active_theme = $theme_manager->isActiveTheme('claro');
+  }
+  if ($is_claro_active_theme) {
+    // Add system .form-type-TYPE class.
+    if (!empty($variables['type'])) {
+      $variables['attributes']['class'][] = 'form-type-' . Html::getClass($variables['type']);
+    }
+
+    // Add system .description class.
+    if (isset($variables['description'])) {
+      $variables['description']['attributes']->addClass('description');
+    }
+  }
 }
 
 /**
@@ -1058,9 +1098,8 @@ function webform_theme_suggestions_webform_progress_tracker(array $variables) {
 /******************************************************************************/
 
 /**
- * Add webform options display suggession to radios and checkboxes.
- */
-/**
+ * Add webform options display suggestions to radios and checkboxes.
+ *
  * @param array $variables
  *   Template variables.
  * @param string $type
@@ -1069,7 +1108,6 @@ function webform_theme_suggestions_webform_progress_tracker(array $variables) {
  * @return array
  *   If element include #options_display a template suggestion for
  *   TYPE-OPTIONS-DISPLAY
- *
  */
 function _webform_theme_suggestions_options(array $variables, $type) {
   if (!WebformElementHelper::isWebformElement($variables['element'])) {
@@ -1097,7 +1135,6 @@ function webform_theme_suggestions_radios(array $variables) {
 function webform_theme_suggestions_checkboxes(array $variables) {
   return _webform_theme_suggestions_options($variables, 'checkboxes');
 }
-
 
 /**
  * Implements hook_theme_suggestions_HOOK().
