@@ -220,6 +220,7 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
           '#title' => $this->t('Cancel'),
           '#url' => new Url('entity.webform_ui.element.edit_form', $route_parameters),
           '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(WebformDialogHelper::DIALOG_NORMAL, ['button', 'button--small']),
+          '#prefix' => ' ',
         ];
         $form['properties']['element']['type']['#description'] = '(' . $this->t('Changing from %type', ['%type' => $original_webform_element->getPluginLabel()]) . ')';
       }
@@ -229,6 +230,7 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
           '#title' => $this->t('Change'),
           '#url' => new Url('entity.webform_ui.change_element', $route_parameters),
           '#attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NORMAL, ['button', 'button--small']),
+          '#prefix' => ' ',
         ];
       }
     }

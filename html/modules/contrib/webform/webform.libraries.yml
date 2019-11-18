@@ -293,6 +293,12 @@ webform.tooltip:
 
 # Theme
 
+webform.theme.claro:
+  version: VERSION
+  css:
+    theme:
+      css/webform.theme.claro.css: {}
+
 webform.theme.classy:
   version: VERSION
   css:
@@ -397,11 +403,6 @@ webform.element.buttons:
     /core/assets/vendor/jquery.ui/ui/escape-selector-min.js: { minified: true }
     /core/assets/vendor/jquery.ui/ui/widgets/checkboxradio-min.js: { minified: true }
     js/webform.element.buttons.js: {}
-  # Issue #2933980: JQuery UI CSS dependencies are not met in core.
-  # @see https://www.drupal.org/node/2933980
-  css:
-    component:
-      /core/assets/vendor/jquery.ui/themes/base/button.css: {}
   dependencies:
     - core/jquery.ui.checkboxradio
 
@@ -828,6 +829,14 @@ webform.element.roles:
   version: VERSION
   js:
     js/webform.element.roles.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery.once
+
+webform.element.select:
+  version: VERSION
+  js:
+    js/webform.element.select.js: {}
   dependencies:
     - core/drupal
     - core/jquery.once

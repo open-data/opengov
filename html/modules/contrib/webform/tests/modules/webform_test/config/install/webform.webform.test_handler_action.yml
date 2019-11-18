@@ -47,7 +47,7 @@ elements: |
       '#attributes':
         readonly: readonly
         style: 'background-color: #eee'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -113,6 +113,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -231,7 +232,7 @@ handlers:
       data: |
         notes_add: ''
         notes_last: '[webform_submission:values:notes_add]'
-
+        
       message: 'Submission notes have been updated.'
       message_type: status
       debug: true

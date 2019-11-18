@@ -25,10 +25,14 @@ class WebformImageFile extends WebformManagedFileBase {
    * {@inheritdoc}
    */
   public function getDefaultProperties() {
-    return parent::getDefaultProperties() + [
+    $properties = parent::getDefaultProperties() + [
       'max_resolution' => '',
       'min_resolution' => '',
     ];
+    if (\Drupal::moduleHandler()->moduleExists('image')) {
+      $properties['attachment_image_style'] = '';
+    }
+    return $properties;
   }
 
   /**
@@ -117,26 +121,70 @@ class WebformImageFile extends WebformManagedFileBase {
       '#type' => 'fieldset',
       '#title' => $this->t('Image settings'),
     ];
-    $form['image'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Image settings'),
-    ];
     $form['image']['max_resolution'] = [
       '#type' => 'webform_image_resolution',
-      '#title' => t('Maximum image resolution'),
-      '#description' => t('The maximum allowed image size expressed as WIDTH×HEIGHT (e.g. 640×480). Leave blank for no restriction. If a larger image is uploaded, it will be resized to reflect the given width and height. Resizing images on upload will cause the loss of <a href="http://wikipedia.org/wiki/Exchangeable_image_file_format">EXIF data</a> in the image.'),
-      '#width_title' => t('Maximum width'),
-      '#height_title' => t('Maximum height'),
+      '#title' => $this->t('Maximum image resolution'),
+      '#description' => $this->t('The maximum allowed image size expressed as WIDTH×HEIGHT (e.g. 640×480). Leave blank for no restriction. If a larger image is uploaded, it will be resized to reflect the given width and height. Resizing images on upload will cause the loss of <a href="http://wikipedia.org/wiki/Exchangeable_image_file_format">EXIF data</a> in the image.'),
+      '#width_title' => $this->t('Maximum width'),
+      '#height_title' => $this->t('Maximum height'),
     ];
     $form['image']['min_resolution'] = [
       '#type' => 'webform_image_resolution',
-      '#title' => t('Minimum image resolution'),
-      '#description' => t('The minimum allowed image size expressed as WIDTH×HEIGHT (e.g. 640×480). Leave blank for no restriction. If a smaller image is uploaded, it will be rejected.'),
-      '#width_title' => t('Minimum width'),
-      '#height_title' => t('Minimum height'),
+      '#title' => $this->t('Minimum image resolution'),
+      '#description' => $this->t('The minimum allowed image size expressed as WIDTH×HEIGHT (e.g. 640×480). Leave blank for no restriction. If a smaller image is uploaded, it will be rejected.'),
+      '#width_title' => $this->t('Minimum width'),
+      '#height_title' => $this->t('Minimum height'),
     ];
-
+    if (\Drupal::moduleHandler()->moduleExists('image')) {
+      $form['image']['attachment_image_style'] = [
+        '#type' => 'select',
+        '#options' => image_style_options(),
+        '#title' => $this->t('Attachment image style'),
+        '#description' => $this->t('Use this to send image with image style when sending files as attachment in an email handler.'),
+      ];
+    }
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAttachments(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    $attachments = [];
+
+    /** @var \Drupal\image\ImageStyleInterface $image_style */
+    $image_style = NULL;
+    $attachment_image_style = $this->getElementProperty($element, 'attachment_image_style');
+    if ($attachment_image_style && \Drupal::moduleHandler()->moduleExists('image')) {
+      $image_style = $this->entityTypeManager
+        ->getStorage('image_style')
+        ->load($attachment_image_style);
+    }
+
+    $files = $this->getTargetEntities($element, $webform_submission, $options) ?: [];
+    foreach ($files as $file) {
+      if ($image_style) {
+        $file_uri = $image_style->buildUri($file->getFileUri());
+        if (!file_exists($file_uri)) {
+          $image_style->createDerivative($file->getFileUri(), $file_uri);
+        }
+        $file_url = $image_style->buildUrl($file->getFileUri());
+      }
+      else {
+        $file_uri = $file->getFileUri();
+        $file_url = file_create_url($file->getFileUri());
+      }
+      $attachments[] = [
+        'filecontent' => file_get_contents($file_uri),
+        'filename' => $file->getFilename(),
+        'filemime' => $file->getMimeType(),
+        'filepath' => \Drupal::service('file_system')->realpath($file_uri),
+        // URL is used when debugging or resending messages.
+        // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::buildAttachments
+        '_fileurl' => $file_url,
+      ];
+    }
+    return $attachments;
   }
 
 }

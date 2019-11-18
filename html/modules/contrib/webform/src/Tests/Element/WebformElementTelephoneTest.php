@@ -63,7 +63,7 @@ class WebformElementTelephoneTest extends WebformElementTestBase {
       'tel_validation_national' => '+74956970349',
     ];
     $this->drupalPostForm('webform/test_element_telephone', $edit, t('Submit'));
-    $this->assertNoRaw('The phone number <em class="placeholder">+74956970349</em> is not valid.');
+    $this->assertRaw('The phone number <em class="placeholder">+74956970349</em> is not valid.');
   }
 
 }

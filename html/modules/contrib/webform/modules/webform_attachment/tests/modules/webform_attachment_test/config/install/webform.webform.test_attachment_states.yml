@@ -1,12 +1,9 @@
-uuid: 08971b54-57be-4bc9-956a-8cfa57c7cadd
 langcode: en
 status: open
 dependencies:
   enforced:
     module:
       - webform_attachment_test
-_core:
-  default_config_hash: XUf67HS7kvhJPn6INGzCeH3OdEnQNm9Kb_H5o-HfYlQ
 open: null
 close: null
 weight: 0
@@ -30,7 +27,7 @@ elements: |
       'enabled':
         ':input[name="attach"]':
           checked: true
-
+  
 css: ''
 javascript: ''
 settings:
@@ -96,6 +93,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -226,3 +224,7 @@ handlers:
       sender_mail: ''
       sender_name: ''
       theme_name: ''
+      parameters: {  }
+uuid: 08971b54-57be-4bc9-956a-8cfa57c7cadd
+_core:
+  default_config_hash: XUf67HS7kvhJPn6INGzCeH3OdEnQNm9Kb_H5o-HfYlQ

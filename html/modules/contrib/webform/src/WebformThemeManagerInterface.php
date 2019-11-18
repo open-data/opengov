@@ -32,6 +32,14 @@ interface WebformThemeManagerInterface {
   public function getActiveThemeNames();
 
   /**
+   * Determine if the current request has an active theme.
+   *
+   * @return bool
+   *   TRUE if the current request has an active theme.
+   */
+  public function hasActiveTheme();
+
+  /**
    * Determine if a theme name is being used the active or base theme.
    *
    * @param string $theme_name

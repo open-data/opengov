@@ -38,6 +38,11 @@ elements: |
     '#required': true
     '#required_error': 'Email address is required'
     '#default_value': 'example@example.com'
+  email_confirm_flexbox:
+    '#type': webform_email_confirm
+    '#title': email_confirm_flexbox
+    '#flexbox': 1
+  
 css: ''
 javascript: ''
 settings:
@@ -103,6 +108,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

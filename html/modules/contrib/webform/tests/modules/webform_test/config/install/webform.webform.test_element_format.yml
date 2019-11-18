@@ -32,6 +32,18 @@ elements: |
         '#title': 'Checkbox (Raw value)'
         '#default_value': true
         '#format': raw
+    radios:
+      '#type': details
+      '#title': Radios
+      radios_description:
+        '#type': radios
+        '#title': 'Radios (Description)'
+        '#default_value': one
+        '#format': description
+        '#options':
+          one: 'One -- This is the <strong>first</strong> description'
+          two: 'Two -- This is the <strong>second</strong> description'
+          three: 'Three -- This is <strong>third</strong> description'
     password:
       '#type': details
       '#title': Password
@@ -1258,6 +1270,11 @@ elements: |
         '#title': 'File (File name)'
         '#file_extensions': txt
         '#format': name
+      managed_file_basename:
+        '#type': managed_file
+        '#title': 'File (File base name (no extension))'
+        '#file_extensions': txt
+        '#format': basename
       managed_file_id:
         '#type': managed_file
         '#title': 'File (File ID)'
@@ -1300,7 +1317,7 @@ elements: |
         '#title': 'Machine name (Raw value)'
         '#default_value': loremipsum
         '#format': raw
-
+  
 css: ''
 javascript: ''
 settings:
@@ -1366,6 +1383,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -1491,6 +1509,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      parameters: {  }
       debug: true
       reply_to: ''
       return_path: ''
@@ -1525,6 +1544,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      parameters: {  }
       debug: true
       reply_to: ''
       return_path: ''

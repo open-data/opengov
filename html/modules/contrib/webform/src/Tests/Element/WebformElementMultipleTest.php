@@ -47,6 +47,10 @@ webform_multiple_no_add_more:
   - One
   - Two
   - Three
+webform_multiple_no_add_more_input:
+  - One
+  - Two
+  - Three
 webform_multiple_custom_label:
   - One
   - Two
@@ -134,8 +138,12 @@ webform_multiple_custom_attributes: {  }");
 
     // Check that add more is removed.
     $this->assertFieldByName('webform_multiple_no_operations[add][more_items]', '1');
+    $this->assertNoFieldByName('webform_multiple_no_add_more_table_add', 'Add');
     $this->assertNoFieldByName('webform_multiple_no_add_more[add][more_items]', '1');
 
+    // Check that add more input is removed.
+    $this->assertFieldByName('webform_multiple_no_add_more_input_table_add', 'Add');
+    $this->assertNoFieldByName('webform_multiple_no_add_more_input[add][more_items]', '1');
 
     // Check custom labels.
     $this->assertRaw('<input data-drupal-selector="edit-webform-multiple-custom-label-add-submit" formnovalidate="formnovalidate" type="submit" id="edit-webform-multiple-custom-label-add-submit" name="webform_multiple_custom_label_table_add" value="{add_more_button_label}" class="button js-form-submit form-submit" />');

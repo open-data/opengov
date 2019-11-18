@@ -53,7 +53,7 @@ class WebformHandlerEmailRolesTest extends WebformTestBase {
 
     // Check email all authenticated users.
     $this->postSubmission($webform, ['role' => 'authenticated']);
-    $this->assertRaw('<em class="placeholder">Webform submission from: </em> sent to <em class="placeholder">admin@example.com,administrator@example.com,authenticated@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
+    $this->assertRaw('<em class="placeholder">Webform submission from: Test: Handler: Email roles</em> sent to <em class="placeholder">admin@example.com,administrator@example.com,authenticated@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
 
     // Check that blocked user is never emailed.
     $this->assertNoRaw('blocked@example.com');
@@ -65,7 +65,7 @@ class WebformHandlerEmailRolesTest extends WebformTestBase {
 
     // Check email administrator user.
     $this->postSubmission($webform, ['role' => 'administrator']);
-    $this->assertRaw('<em class="placeholder">Webform submission from: </em> sent to <em class="placeholder">administrator@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
+    $this->assertRaw('<em class="placeholder">Webform submission from: Test: Handler: Email roles</em> sent to <em class="placeholder">administrator@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
 
     // Check that missing 'other' role does not send any emails.
     $this->postSubmission($webform, ['role' => 'other']);

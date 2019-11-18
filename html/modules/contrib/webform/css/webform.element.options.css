@@ -94,6 +94,14 @@
   font-weight: normal;
 }
 
+.webform-options-display-buttons input:disabled + label.webform-options-display-buttons-label,
+.webform-options-display-buttons input:disabled:hover + label.webform-options-display-buttons-label,
+.webform-options-display-buttons input:disabled:focus + label.webform-options-display-buttons-label {
+  cursor: not-allowed;
+  border-color: #ccc;
+  color: #999;
+}
+
 /**
  * Mobile support to webform options buttons on mobile devices.
  */

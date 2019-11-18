@@ -2,15 +2,14 @@ name: 'Webform module Views tests'
 type: module
 description: 'Support module for Webform that provides working examples for Views integration.'
 package: Testing
-# core: 8.x
+core: 8.x
 dependencies:
   - 'drupal:node'
   - 'drupal:user'
   - 'drupal:views'
   - 'webform:webform'
 
-# Information added by Drupal.org packaging script on 2019-08-19
-version: '8.x-5.4'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2019-10-29
+version: '8.x-5.5'
 project: 'webform'
-datestamp: 1566209294
+datestamp: 1572377290

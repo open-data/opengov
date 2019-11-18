@@ -3,7 +3,6 @@
 namespace Drupal\webform_entity_print_attachment\Element;
 
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\WebformSubmissionViewBuilderInterface;
 use Drupal\webform_attachment\Element\WebformAttachmentBase;
 
 /**

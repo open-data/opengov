@@ -162,6 +162,11 @@ actions:
   &#039;#submit__label&#039;: &#039;Send message&#039;</textarea>
 </div>');
 
+    // Check customized maxlengths.
+    $this->assertCssSelect('input[name$="[title]"][maxlength=255]');
+    $this->assertCssSelect('input[name$="[submission_label]"]');
+    $this->assertNoCssSelect('input[name$="[submission_label]"][maxlength]');
+
     // Create French translation.
     $translation_elements = [
       'textfield' => [

@@ -34,6 +34,18 @@ class WebformElementCheckboxesTest extends WebformElementTestBase {
     // Check checkboxes displayed as buttons with description.
     $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-checkboxes-buttons-description-one"><div class="webform-options-display-buttons-title">One</div><div class="webform-options-display-buttons-description description">This is a description</div></label>');
 
+    // Check options (custom) properties wrapper attributes.
+    $this->assertRaw('<div data-custom="custom wrapper data" style="border: red 1px solid" class="one-custom-wrapper-class js-form-item form-item js-form-type-checkbox form-type-checkbox js-form-item-checkboxes-options-properties-two form-item-checkboxes-options-properties-two">');
+
+    // Check options (custom) properties label attributes.
+    $this->assertRaw('<label data-custom="custom label data" style="border: blue 1px solid" class="one-custom-label-class option" for="edit-checkboxes-options-properties-two">Two</label>');
+
+    // Check options (custom) properties attributes.
+    $this->assertRaw('<input data-drupal-selector="edit-checkboxes-options-properties-two" data-custom="custom input data" style="border: yellow 1px solid" class="one-custom-class form-checkbox" aria-describedby="edit-checkboxes-options-properties-two--description" type="checkbox" id="edit-checkboxes-options-properties-two" name="checkboxes_options_properties[two]" value="two" />');
+
+    // Check other options (custom) properties attributes.
+    $this->assertRaw('<input data-drupal-selector="edit-checkboxes-other-options-properties-checkboxes-one" disabled="disabled" type="checkbox" id="edit-checkboxes-other-options-properties-checkboxes-one" name="checkboxes_other_options_properties[checkboxes][one]" value="one" class="form-checkbox" />');
+
     // Check exclude empty is not visible.
     $edit = [
       'checkboxes_required_conditions[Yes]' => TRUE,

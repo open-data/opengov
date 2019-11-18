@@ -131,6 +131,69 @@ elements: |
         five: Five
         six: 'Six Six Six Six Six Six'
       '#options_display': buttons
+  checkboxes_options_properties_example:
+    '#type': details
+    '#title': 'checkboxes custom options properties'
+    '#open': true
+    checkboxes_options_properties:
+      '#type': checkboxes
+      '#title': checkboxes_options_properties
+      '#options_description_display': description
+      '#options':
+        one: 'One -- This is a description'
+        two: 'Two -- This is a description'
+        three: 'Three -- This is a description'
+      '#options__properties':
+        two:
+          '#wrapper_attributes':
+            'data-custom': 'custom wrapper data'
+            style: 'border: red 1px solid'
+            class:
+              - one-custom-wrapper-class
+          '#label_attributes':
+            'data-custom': 'custom label data'
+            style: 'border: blue 1px solid'
+            class:
+              - one-custom-label-class
+          '#attributes':
+            'data-custom': 'custom input data'
+            style: 'border: yellow 1px solid'
+            class:
+              - one-custom-class
+        three:
+          '#disabled': true
+    checkboxes_buttons_options_properties:
+      '#type': checkboxes
+      '#title': checkboxes_buttons_options_properties
+      '#options_display': buttons
+      '#options_description_display': description
+      '#options':
+        one: 'One -- This is a description'
+        two: 'Two -- This is a description'
+        three: 'Three -- This is a description'
+      '#options__properties':
+        one:
+          '#label_attributes':
+            style: 'background-color: #ffcccb; color: darkred'
+        two:
+          '#label_attributes':
+            style: 'background-color: lightblue; color: darkblue'
+        three:
+          '#disabled': true
+    checkboxes_other_options_properties:
+      '#type': webform_checkboxes_other
+      '#title':   checkboxes_other_options_properties
+      '#options':
+        one: 'One'
+        two: 'Two'
+        three: 'Three'
+      '#options__properties':
+        one:
+          '#disabled': true
+        two:
+          '#disabled': true
+        three:
+          '#disabled': true
   
 css: ''
 javascript: ''
@@ -197,6 +260,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

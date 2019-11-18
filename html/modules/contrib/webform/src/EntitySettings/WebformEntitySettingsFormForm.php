@@ -349,6 +349,13 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
         ],
       ],
     ];
+    $form['wizard_settings']['wizard_progress_states'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t("Update wizard progress bar's pages based on conditions"),
+      '#description' => $this->t("If checked, the wizard's progress bar's pages will be hidden on shown based on each pages conditional logic."),
+      '#return_value' => TRUE,
+      '#default_value' => $settings['wizard_progress_states'],
+    ];
     $form['wizard_settings']['wizard_confirmation'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Include confirmation page in progress'),
@@ -515,7 +522,7 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
       '#type' => 'select',
       '#title' => $this->t('Form method'),
       '#description' => $this->t('The HTTP method with which the form will be submitted.') . '<br /><br />' .
-        '<em>' . $this->t('Selecting a custom POST or GET method will automatically disable wizards, previews, drafts, submissions, limits, purging, confirmations, emails, and handlers.') . '</em>',
+        '<em>' . $this->t('Selecting a custom POST or GET method will automatically disable wizards, previews, drafts, submissions, limits, purging, confirmations, emails, computed elements, and handlers.') . '</em>',
       '#options' => [
         '' => $this->t('POST (Default)'),
         'post' => $this->t('POST (Custom)'),
@@ -615,20 +622,37 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
     // Set custom properties, class, and style.
     $elements = $webform->getElementsDecoded();
     $elements = WebformElementHelper::removeProperties($elements);
+
     $properties = [];
+
+    // Unset custom method and action.
+    unset(
+      $properties['#method'],
+      $properties['#action']
+    );
+
+    // Set custom method and action.
     if (!empty($values['method'])) {
       $properties['#method'] = $values['method'];
+      if (!empty($values['action'])) {
+        $properties['#action'] = $values['action'];
+      }
     }
-    if (!empty($values['action'])) {
-      $properties['#action'] = $values['action'];
-    }
+
+    // Set custom properties.
     if (!empty($values['custom'])) {
       $properties += WebformArrayHelper::addPrefix($values['custom']);
     }
+
+    // Set custom attributions.
     if (!empty($values['attributes'])) {
       $properties['#attributes'] = $values['attributes'];
     }
+
+    // Prepend form properties to elements.
     $elements = $properties + $elements;
+
+    // Save elements.
     $webform->setElements($elements);
 
     // Remove custom properties and attributes.

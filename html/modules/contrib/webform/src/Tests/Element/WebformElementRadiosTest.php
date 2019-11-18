@@ -41,6 +41,18 @@ class WebformElementRadiosTest extends WebformElementTestBase {
     // Check radios displayed as buttons with description.
     $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-radios-buttons-description-one"><div class="webform-options-display-buttons-title">One</div><div class="webform-options-display-buttons-description description">This is a description</div></label>');
 
+    // Check options (custom) properties wrapper attributes.
+    $this->assertRaw('<div data-custom="custom wrapper data" style="border: red 1px solid" class="one-custom-wrapper-class js-form-item form-item js-form-type-radio form-type-radio js-form-item-radios-options-properties form-item-radios-options-properties">');
+
+    // Check options (custom) properties label attributes.
+    $this->assertRaw('<label data-custom="custom label data" style="border: blue 1px solid" class="one-custom-label-class option" for="edit-radios-options-properties-two">Two</label>');
+
+    // Check options (custom) properties attributes.
+    $this->assertRaw('<input data-drupal-selector="edit-radios-options-properties-two" data-custom="custom input data" style="border: yellow 1px solid" class="one-custom-class form-radio" aria-describedby="edit-radios-options-properties-two--description" type="radio" id="edit-radios-options-properties-two" name="radios_options_properties" value="two" />');
+
+    // Check other options (custom) properties attributes.
+    $this->assertRaw('<input data-drupal-selector="edit-radios-other-options-properties-radios-one" disabled="disabled" type="radio" id="edit-radios-other-options-properties-radios-one" name="radios_other_options_properties[radios]" value="one" class="form-radio" />');
+
     // Check radios results does not include description.
     $edit = [
       'radios_required' => 'Yes',

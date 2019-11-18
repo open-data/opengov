@@ -5,6 +5,7 @@ dependencies:
     module:
       - webform_demo_event_registration
   module:
+    - webform_options_limit
     - webform_scheduled_email
 open: null
 close: null
@@ -43,6 +44,18 @@ elements: |
       '#type': email
       '#title': Email
       '#required': true
+  other:
+    '#title': 'Other Information'
+    '#type': fieldset
+    teeshirt:
+      '#type': select
+      '#title': 'Tee shirt size'
+      '#options':
+        XS: 'XS - Extra Small'
+        S: 'S - Small'
+        M: 'M - Medium'
+        L: 'L - Large'
+        XL: 'XL - Extra Large'
   actions:
     '#type': webform_actions
     '#title': 'Submit button(s)'
@@ -113,6 +126,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -230,6 +244,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      parameters: {  }
       debug: false
       reply_to: ''
       return_path: ''
@@ -264,6 +279,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      parameters: {  }
       debug: false
       reply_to: ''
       return_path: ''
@@ -272,6 +288,8 @@ handlers:
       send: '[webform_submission:node:field_webform_demo_event_date:value]'
       days: -1
       unschedule: false
+      ignore_past: false
+      test_send: false
   submission_limit:
     id: settings
     label: 'Submission limit'
@@ -287,3 +305,27 @@ handlers:
       confirmation_message: ''
       debug: ''
       entity_limit_total: '[webform_submission:node:field_webform_entity_limit_total]'
+  teeshirt_options_limits:
+    id: options_limit
+    label: 'Tee shirt limits'
+    handler_id: teeshirt_options_limits
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      element_key: teeshirt
+      limits:
+        XS: 2
+        S: 4
+        M: 6
+        L: 8
+        XL: 6
+      limit_reached_message: 'No more tee shirts are available.'
+      limit_source_entity: true
+      option_none_action: disable
+      option_message_display: label
+      option_multiple_message: '[@remaining shirts remaining]'
+      option_single_message: '[@remaining shirt remaining]'
+      option_unlimited_message: '[Unlimited]'
+      option_none_message: ''
+      option_error_message: 'Tee shirts in @label are no longer available.'

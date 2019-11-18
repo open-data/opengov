@@ -366,7 +366,7 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
    * {@inheritdoc}
    */
   public function addQueryConditions(AlterableInterface $query, WebformInterface $webform = NULL, EntityInterface $source_entity = NULL, AccountInterface $account = NULL, array $options = []) {
-    $this->_addQueryConditions($query,$webform, $source_entity, $account, $options);
+    $this->_addQueryConditions($query, $webform, $source_entity, $account, $options);
   }
 
   /**
@@ -396,6 +396,7 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
       'check_source_entity' => FALSE,
       'in_draft' => NULL,
       'interval' => NULL,
+      'access_check' => TRUE,
     ];
 
     if ($webform) {
@@ -433,6 +434,9 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
 
     if ($options['interval']) {
       $query->condition('completed', \Drupal::time()->getRequestTime() - $options['interval'], '>');
+    }
+    if ($options['access_check'] === FALSE) {
+      $query->accessCheck(FALSE);
     }
   }
 
@@ -906,7 +910,7 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
       $this->invokeWebformElements('postLoad', $entity);
       $this->invokeWebformHandlers('postLoad', $entity);
 
-      // If this is an anonymous draft..
+      // If this is an anonymous draft.
       // We must add $SESSION to the submission's cache context.
       // @see \Drupal\webform\WebformSubmissionStorage::loadDraft
       // @todo Add support for 'view own submission' permission.

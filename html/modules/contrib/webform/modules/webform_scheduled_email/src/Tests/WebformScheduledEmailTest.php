@@ -340,7 +340,7 @@ class WebformScheduledEmailTest extends WebformNodeTestBase {
     // Check 'Other' email is sent immediately via testing.
     $this->drupalPostForm('webform/test_handler_scheduled_email/test', ['send' => 'other', 'date[date]' => '2101-01-01'], t('Submit'));
     $this->assertEqual($scheduled_manager->total(), 0);
-    $this->assertRaw('Webform submission from: </em> sent to <em class="placeholder">simpletest@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>');
+    $this->assertRaw('Webform submission from: Test: Handler: Test scheduled email</em> sent to <em class="placeholder">simpletest@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>');
     $this->assertRaw('Debug: Email: Other');
   }
 

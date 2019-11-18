@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\webform\Element\WebformMessage as WebformMessageElement;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Locale\CountryManager;
@@ -31,6 +32,7 @@ class Telephone extends TextBase {
         'multiple' => FALSE,
         'international' => FALSE,
         'international_initial_country' => '',
+        'international_preferred_countries' => '',
       ] + parent::getDefaultProperties();
 
     // Add support for telephone_validation.module.
@@ -54,10 +56,15 @@ class Telephone extends TextBase {
     // Add international library and classes.
     if (!empty($element['#international']) && $this->librariesManager->isIncluded('jquery.intl-tel-input')) {
       $element['#attached']['library'][] = 'webform/webform.element.telephone';
+
       $element['#attributes']['class'][] = 'js-webform-telephone-international';
       $element['#attributes']['class'][] = 'webform-webform-telephone-international';
+
       if (!empty($element['#international_initial_country'])) {
         $element['#attributes']['data-webform-telephone-international-initial-country'] = $element['#international_initial_country'];
+      }
+      if (!empty($element['#international_preferred_countries'])) {
+        $element['#attributes']['data-webform-telephone-international-preferred-countries'] = Json::encode($element['#international_preferred_countries']);
       }
 
       // The utilsScript is fetched when the page has finished loading to
@@ -78,7 +85,7 @@ class Telephone extends TextBase {
     // Add support for telephone_validation.module.
     if (\Drupal::moduleHandler()->moduleExists('telephone_validation')) {
       $format = $this->getElementProperty($element, 'telephone_validation_format');
-      if ($format === \libphonenumber\PhoneNumberFormat::NATIONAL) {
+      if ($format == \libphonenumber\PhoneNumberFormat::NATIONAL) {
         $country = (array) $this->getElementProperty($element, 'telephone_validation_country');
       }
       else {
@@ -121,10 +128,24 @@ class Telephone extends TextBase {
         'visible' => [':input[name="properties[international]"]' => ['checked' => TRUE]],
       ],
     ];
+    $form['telephone']['international_preferred_countries'] = [
+      '#title' => $this->t('Preferred countries'),
+      '#type' => 'select',
+      '#options' => CountryManager::getStandardList(),
+      '#description' => t('Specify the countries to appear at the top of the list.'),
+      '#select2' => TRUE,
+      '#multiple' => TRUE,
+      '#states' => [
+        'visible' => [':input[name="properties[international]"]' => ['checked' => TRUE]],
+      ],
+    ];
+    $this->elementManager->processElement($form['telephone']['international_preferred_countries']);
+
     if ($this->librariesManager->isExcluded('jquery.intl-tel-input')) {
       $form['telephone']['#access'] = FALSE;
       $form['telephone']['international']['#access'] = FALSE;
       $form['telephone']['international_initial_country']['#access'] = FALSE;
+      $form['telephone']['international_preferred_countries']['#access'] = FALSE;
     }
 
     // Add support for telephone_validation.module.

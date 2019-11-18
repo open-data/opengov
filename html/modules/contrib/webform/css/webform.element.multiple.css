@@ -96,6 +96,10 @@
   padding: 2px;
 }
 
+.webform-multiple-table td input[type="image"] + input[type="image"] {
+  margin-left: 2px;
+}
+
 .webform-multiple-table .container-inline input[type="submit"] {
   width: inherit;
 }

@@ -89,7 +89,7 @@ services:
 
   webform.theme_manager:
     class: Drupal\webform\WebformThemeManager
-    arguments: ['@config.factory', '@renderer', '@theme.manager', '@theme_handler', '@theme.initialization']
+    arguments: ['@config.factory', '@renderer', '@theme.manager', '@theme_handler', '@theme.initialization', '@current_route_match']
 
   webform.access_rules_manager:
     class: Drupal\webform\WebformAccessRulesManager

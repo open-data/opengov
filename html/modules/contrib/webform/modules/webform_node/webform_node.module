@@ -86,7 +86,7 @@ function webform_node_node_prepare_form(NodeInterface $node, $operation, FormSta
     return;
   }
 
-  // Populate the node's title, webform field id and default data..
+  // Populate the node's title, webform field id and default data.
   $webform_id = \Drupal::request()->query->get('webform_id');
   if ($webform_id && ($webform = Webform::load($webform_id))) {
     $node->title->value = $webform->label();

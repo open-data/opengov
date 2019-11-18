@@ -28,12 +28,12 @@ Results for URL: http://localhost/wf/webform/example_accessibility_advanced
  • Error: Duplicate id attribute value "iti-item-gb" found on the web page.
    ├── WCAG2AA.Principle4.Guideline4_1.4_1_1.F77
    ├── #iti-item-gb
-   └── <li class="country standard" id="iti-item-gb" role="option" data-dial-code="44" data-country-code="gb"><div class="flag-box"><div clas...</li>
+   └── <li class="country standard" tabindex="-1" id="iti-item-gb" role="option" data-dial-code="44" data-country-code="gb"><div class="flag-box"><div clas...</li>
 
  • Error: Duplicate id attribute value "iti-item-us" found on the web page.
    ├── WCAG2AA.Principle4.Guideline4_1.4_1_1.F77
    ├── #iti-item-us
-   └── <li class="country standard" id="iti-item-us" role="option" data-dial-code="1" data-country-code="us"><div class="flag-box"><div clas...</li>
+   └── <li class="country standard" tabindex="-1" id="iti-item-us" role="option" data-dial-code="1" data-country-code="us"><div class="flag-box"><div clas...</li>
 
  • Error: This link points to a named anchor "terms" within the document, but no anchor exists with that name.
    ├── WCAG2AA.Principle2.Guideline2_4.2_4_1.G1,G123,G124.NoSuchID

@@ -45,6 +45,8 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
       'trigger_none' => TRUE,
     ];
     $this->drupalPostForm('webform/test_form_wizard_conditional', $edit, 'Next Page >');
+    $this->assertRaw('<div class="webform-progress">');
+    $this->assertRaw('New submission added to Test: Webform: Wizard conditional.');
     $this->assertCurrentPage('Complete', 'webform_confirmation');
     $sid = $this->getLastSubmissionId($webform);
     $this->assert(!empty($sid));
@@ -59,6 +61,38 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
     ];
     $this->drupalPostForm('webform/test_form_wizard_conditional', $edit, 'Next Page >');
     $this->assertCurrentPage('Preview', 'webform_preview');
+
+    // Disable preview and include confirmation in progress page.
+    $webform->setSettings(['preview' => 0, 'wizard_confirmation' => FALSE]);
+    $webform->save();
+
+    // Check hiding all page with no preview or confirmation page included
+    // in the progress bar still submits the form and then skips
+    // to the confirmation page.
+    $edit = [
+      'trigger_none' => TRUE,
+    ];
+    $this->drupalPostForm('webform/test_form_wizard_conditional', $edit, 'Next Page >');
+    $this->assertNoRaw('<div class="webform-progress">');
+    $this->assertRaw('New submission added to Test: Webform: Wizard conditional.');
+    $last_sid = $this->getLastSubmissionId($webform);
+    $this->assertNotEqual($sid, $last_sid);
+
+    // Enable wizard progress states.
+    $webform->setSetting('wizard_progress_states', 1);
+    $webform->save();
+
+    $this->drupalGet('/webform/test_form_wizard_conditional');
+
+    // Check hiding page 3, and 5.
+    $edit = [
+      'trigger_pages[page_3]' => FALSE,
+      'trigger_pages[page_5]' => FALSE,
+    ];
+    $this->drupalPostForm('webform/test_form_wizard_conditional', $edit, 'Next Page >');
+
+    // Assert the progress bar no longer includes page 5.
+    $this->assertNoPattern('|<li data-webform-page="5" class="webform-progress-bar__page">\s+<b>Page 5</b>|');
   }
 
 }

@@ -408,9 +408,6 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     if ($this->configuration['method'] === 'GET') {
       $this->configuration['type'] = '';
     }
-
-    // Cast debug.
-    $this->configuration['debug'] = (bool) $this->configuration['debug'];
   }
 
   /**
@@ -704,7 +701,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    * @param string $request_type
    *   The type of remote post.
    * @param string $request_options
-   *   The requests options including the submission data..
+   *   The requests options including the submission data.
    * @param \Psr\Http\Message\ResponseInterface|null $response
    *   The response returned by the remote server.
    * @param string $type
@@ -854,7 +851,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    * @param string $request_type
    *   The type of remote post.
    * @param string $request_options
-   *   The requests options including the submission data..
+   *   The requests options including the submission data.
    * @param \Psr\Http\Message\ResponseInterface|null $response
    *   The response returned by the remote server.
    */

@@ -49,10 +49,13 @@ tr.webform-states-table--state td select {
   width: 20px;
   min-width: initial;
   max-width: initial;
-  margin: 0;
   border: 2px solid #333;
   border-radius: 50%;
   padding: 2px;
+}
+
+.webform-states-table td.webform-states-table--operations input[type="image"] + input[type="image"] {
+  margin-left: 2px;
 }
 
 .webform-states-table td.webform-states-table--operations input[type="image"]:hover,

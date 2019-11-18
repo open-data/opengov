@@ -151,7 +151,7 @@
             this.setCustomValidity($(this).attr('data-webform-required-error'));
           }
         })
-        .on('input, change', function () {
+        .on('input change', function () {
           // Find all related elements by name and reset custom validity.
           // This specifically applies to required radios and checkboxes.
           var name = $(this).attr('name');
@@ -168,12 +168,5 @@
     $(e.target).filter('[data-webform-required-error]')
       .each(function () {this.setCustomValidity('');});
   });
-
-  if (window.imceInput) {
-    window.imceInput.processUrlInput = function (i, el) {
-      var button = imceInput.createUrlButton(el.id, el.getAttribute('data-imce-type'));
-      el.parentNode.insertAfter(button, el);
-    };
-  }
 
 })(jQuery, Drupal);

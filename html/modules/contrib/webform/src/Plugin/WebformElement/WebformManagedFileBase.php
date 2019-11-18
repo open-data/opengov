@@ -294,6 +294,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     // Upload validators.
     $element['#upload_validators']['file_validate_size'] = [$this->getMaxFileSize($element)];
     $element['#upload_validators']['file_validate_extensions'] = [$this->getFileExtensions($element)];
+    $element['#upload_validators']['webform_file_validate_name_length'] = [];
 
     // Add file upload help to the element as #description, #help, or #more.
     // Copy upload validator so that we can add webform's file limit to
@@ -371,6 +372,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
     $format = $this->getItemFormat($element);
     switch ($format) {
+      case 'basename':
       case 'extension':
       case 'data':
       case 'id':
@@ -428,6 +430,11 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       case 'name':
         return $file->getFilename();
 
+      case 'basename':
+        $filename = $file->getFilename();
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        return substr(pathinfo($filename, PATHINFO_BASENAME), 0, -strlen(".$extension"));
+
       case 'size':
         return $file->getSize();
 
@@ -458,6 +465,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       'link' => $this->t('Link'),
       'url' => $this->t('URL'),
       'name' => $this->t('File name'),
+      'basename' => $this->t('File base name (no extension)'),
       'id' => $this->t('File ID'),
       'mime' => $this->t('File mime type'),
       'size' => $this->t('File size (Bytes)'),
@@ -768,7 +776,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       $message = t('%title can only hold @max values but there were @count uploaded. The following files have been omitted as a result: %list.', $args);
       \Drupal::messenger()->addWarning($message);
     }
-    if (!empty($element['#multiple'] && !empty($element['#files']))
+    if (!empty($element['#multiple']) && !empty($element['#files'])
       && (count($element['#files']) === $element['#multiple'])) {
       $element['upload']['#access'] = FALSE;
       $element['upload_button']['#access'] = FALSE;
@@ -1067,6 +1075,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       '#element' => [
         '#type' => 'textfield',
         '#title' => $this->t('File name pattern'),
+        '#description' => $this->t('File names combined with their full URI can not exceed 255 characters. File names that exceed this limit will be truncated.'),
         '#maxlength' => NULL,
       ],
     ];
@@ -1254,6 +1263,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     $destination_folder = $this->fileSystem->dirname($file->getFileUri());
     $destination_filename = $file->getFilename();
     $destination_extension = pathinfo($destination_filename, PATHINFO_EXTENSION);
+    $destination_basename = substr(pathinfo($destination_filename, PATHINFO_BASENAME), 0, -strlen(".$destination_extension"));
 
     // Replace /_sid_/ token with the submission id.
     if (strpos($destination_folder, '/_sid_')) {
@@ -1261,9 +1271,9 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       file_prepare_directory($destination_folder, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
     }
 
-    // Replace tokens in filename if we are instructed so.
+    // Replace tokens in file name.
     if (isset($element['#file_name']) && $element['#file_name']) {
-      $destination_filename = $this->tokenManager->replace($element['#file_name'], $webform_submission) . '.' . $destination_extension;
+      $destination_basename = $this->tokenManager->replace($element['#file_name'], $webform_submission);
     }
 
     // Sanitize filename.
@@ -1272,7 +1282,6 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     if (!empty($element['#sanitize'])) {
       $destination_extension = mb_strtolower($destination_extension);
 
-      $destination_basename = substr(pathinfo($destination_filename, PATHINFO_BASENAME), 0, -strlen(".$destination_extension"));
       $destination_basename = mb_strtolower($destination_basename);
       $destination_basename = $this->transliteration->transliterate($destination_basename, $this->languageManager->getCurrentLanguage()->getId(), '-');
       $destination_basename = preg_replace('([^\w\s\d\-_~,;:\[\]\(\].]|[\.]{2,})', '', $destination_basename);
@@ -1291,11 +1300,23 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
           $destination_basename = $element['#type'];
         }
       }
-
-      $destination_filename = $destination_basename . '.' . $destination_extension;
     }
 
-    return $destination_folder . '/' . $destination_filename;
+    // Make sure $destination_uri does not exceed 250 + _01 character limit for
+    // the 'file_managed' table uri column.
+    // @see file_validate_name_length()
+    // @see https://drupal.stackexchange.com/questions/36760/overcoming-255-character-uri-limit-for-files-managed
+    $filename_maxlength = 250;
+    // Subtract the destination's folder length.
+    $filename_maxlength -= mb_strlen($destination_folder);
+    // Subtract the destination's extension length.
+    $filename_maxlength -= mb_strlen($destination_extension);
+    // Subtract the directory's forward slash and the extension's period.
+    $filename_maxlength -= 2;
+    // Truncate the base name.
+    $destination_basename = mb_strimwidth($destination_basename, 0, $filename_maxlength);
+
+    return $destination_folder . '/' . $destination_basename . '.' . $destination_extension;
   }
 
   /**
@@ -1428,10 +1449,12 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
         'filecontent' => file_get_contents($file->getFileUri()),
         'filename' => $file->getFilename(),
         'filemime' => $file->getMimeType(),
-        'filepath' => \Drupal::service('file_system')->realpath($file->getFileUri()),
+        // File URIs that are not supportted return FALSE, when this happens
+        // still use the file's URI as the file's path.
+        'filepath' => \Drupal::service('file_system')->realpath($file->getFileUri()) ?: $file->getFileUri(),
         // URI is used when debugging or resending messages.
         // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::buildAttachments
-        '_uri' => file_create_url($file->getFileUri()),
+        '_fileurl' => file_create_url($file->getFileUri()),
       ];
     }
     return $attachments;

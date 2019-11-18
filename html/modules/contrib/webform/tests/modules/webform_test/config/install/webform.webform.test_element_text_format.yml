@@ -30,6 +30,7 @@ elements: |
     '#title': text_format_description_more
     '#description': 'This is a description'
     '#more': 'This is more'
+  
 css: ''
 javascript: ''
 settings:
@@ -95,6 +96,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

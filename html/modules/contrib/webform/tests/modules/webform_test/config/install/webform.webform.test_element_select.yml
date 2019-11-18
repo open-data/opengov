@@ -57,6 +57,19 @@ elements: |
         three: Three
         four: Four
         five: Five
+    select_disabled:
+      '#type': select
+      '#title': select_disabled
+      '#multiple': true
+      '#options':
+        one: One
+        two: Two
+        three: Three
+        four: Four
+        five: Five
+      '#attributes':
+        'data-webform-select-options-disabled': 'one,two,four,five'
+  
   select_select2_examples:
     '#type': details
     '#title': 'Select select2'
@@ -425,6 +438,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

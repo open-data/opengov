@@ -33,7 +33,7 @@ elements: |
     '#default_value': |
       <p>This is a <strong>text format</strong> string.</p>
       <p>It contains &quot;double&quot; and 'single' quotes with special characters like &lt;, &gt;, &lt;&gt;, and &gt;&lt;.</p>
-      
+  
   xss:
     '#type': textfield
     '#title': xss
@@ -41,49 +41,45 @@ elements: |
   webform_computed_twig_auto:
     '#type': webform_computed_twig
     '#title': webform_computed_twig_auto
-    '#display_on': view
     '#template': |
       <b class="webform_computed_twig_auto">number:</b> {{ (webform_token('[webform_submission:values:number:clear]', webform_submission) ?: 0) }} * 2 = {{ (webform_token('[webform_submission:values:number:clear]', webform_submission) ?: 0) * 2 }}<br />
       <b class="webform_computed_twig_auto">simple string:</b> {{ webform_token('[webform_submission:values:simple_string]', webform_submission) }}<br />
       <b class="webform_computed_twig_auto">complex string:</b> {{ webform_token('[webform_submission:values:complex_string]', webform_submission) }}<br />
       <b class="webform_computed_twig_auto">text_format:</b> {{ webform_token('[webform_submission:values:text_format]', webform_submission) }}<br />
       <b class="webform_computed_twig_auto">xss:</b> {{ webform_token('[webform_submission:values:xss]', webform_submission) }}<br />
-      
+  
   webform_computed_twig_html:
     '#type': webform_computed_twig
     '#title': webform_computed_twig_html
     '#mode': html
-    '#display_on': view
     '#template': |
       <b class="webform_computed_twig_html">number:</b> {{ (webform_token('[webform_submission:values:number:clear]', webform_submission) ?: 0) }} * 2 = {{ (webform_token('[webform_submission:values:number:clear]', webform_submission) ?: 0) * 2 }}<br />
       <b class="webform_computed_twig_html">simple string:</b> {{ webform_token('[webform_submission:values:simple_string]', webform_submission) }}<br />
       <b class="webform_computed_twig_html">complex string:</b> {{ webform_token('[webform_submission:values:complex_string]', webform_submission) }}<br />
       <b class="webform_computed_twig_html">text_format:</b> {{ webform_token('[webform_submission:values:text_format]', webform_submission) }}<br />
       <b class="webform_computed_twig_html">xss:</b> {{ webform_token('[webform_submission:values:xss]', webform_submission) }}<br />
-      
+  
   webform_computed_twig_text:
     '#type': webform_computed_twig
     '#title': webform_computed_twig_text
     '#mode': text
-    '#display_on': view
     '#template': |
       number: {{ (webform_token('[webform_submission:values:number:clear]', webform_submission) ?: 0) }} * 2 = {{ (webform_token('[webform_submission:values:number:clear]', webform_submission) ?: 0) * 2 }}
       simple string: {{ webform_token('[webform_submission:values:simple_string]', webform_submission) }}
       complex string: {{ webform_token('[webform_submission:values:complex_string]', webform_submission) }}
       text_format: {{ webform_token('[webform_submission:values:text_format]', webform_submission) }}
       xss: {{ webform_token('[webform_submission:values:xss]', webform_submission) }}
-      
+  
   webform_computed_twig_data:
     '#type': webform_computed_twig
     '#title': webform_computed_twig_data
-    '#display_on': view
     '#template': |
       <b class="webform_computed_twig_data">number:</b> {{ data.number }} * 2 = {{ data.number * 2 }}<br />
       <b class="webform_computed_twig_data">simple string:</b> {{ data.simple_string }}<br />
       <b class="webform_computed_twig_data">complex string:</b> {{ data.complex_string }}<br />
       <b class="webform_computed_twig_data">text_format:</b> {{ data.text_format.value }}<br />
       <b class="webform_computed_twig_data">xss:</b> {{ data.xss }}<br />
-      
+  
   webform_computed_twig_store:
     '#type': webform_computed_twig
     '#title': webform_computed_twig_store
@@ -167,6 +163,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

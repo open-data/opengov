@@ -50,6 +50,7 @@ class WebformElementFormatTest extends WebformElementTestBase {
     $body = $this->getMessageBody($submission, 'email_html');
     $elements = [
       'Checkbox (Value)' => 'Yes',
+      'Radios (Description)' => 'This is the <strong>first</strong> description',
       'Color (Color swatch)' => '<font color="#ffffcc">█</font> #ffffcc',
       'Email (Link)' => '<a href="mailto:example@example.com">example@example.com</a>',
       'Email confirm (Link)' => '<a href="mailto:example@example.com">example@example.com</a>',
@@ -89,6 +90,7 @@ class WebformElementFormatTest extends WebformElementTestBase {
     $body = $this->getMessageBody($submission, 'email_text');
     $elements = [
       'Checkbox (Value): Yes',
+      'Radios (Description)' => 'This is the *first* description',
       'Color (Color swatch): #ffffcc',
       'Email (Link): example@example.com',
       'Email multiple (Link): example@example.com, test@test.com, random@random.com',
@@ -133,6 +135,7 @@ class WebformElementFormatTest extends WebformElementTestBase {
 <span class="file file--mime-text-plain file--text"> <a href="' . $this->getSubmissionFileUrl($submission, 'managed_file_link') . '" type="text/plain; length=43">managed_file_link.txt</a></span>',
       'File (File ID)' => $submission->getElementData('managed_file_id'),
       'File (File name)' => 'managed_file_name.txt',
+      'File (File base name (no extension))' => 'managed_file_basename',
       'File (File extension)' => 'txt',
       'File (URL)' => $this->getSubmissionFileUrl($submission, 'managed_file_url'),
     ];

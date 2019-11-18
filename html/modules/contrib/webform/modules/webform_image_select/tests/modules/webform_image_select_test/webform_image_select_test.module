@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Support module for webform that provides image select element working examples..
+ * Support module for webform that provides image select element working examples.
  */
 
 use Drupal\webform_image_select\Entity\WebformImageSelectImages;

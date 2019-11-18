@@ -5,6 +5,44 @@
  * Webform libraries.
  */
 
+use Drupal\Core\Asset\AttachedAssetsInterface;
+use Drupal\webform\Entity\Webform;
+use Drupal\webform\Utility\WebformDialogHelper;
+
+/**
+ * Implements hook_library_info_build().
+ */
+function webform_library_info_build() {
+  $base_path = base_path();
+  $default_query_string = \Drupal::state()->get('system.css_js_query_string') ?: '0';
+
+  /** @var \Drupal\webform\WebformInterface[] $webforms */
+  $webforms = Webform::loadMultiple();
+  $libraries = [];
+  foreach ($webforms as $webform_id => $webform) {
+    $assets = array_filter($webform->getAssets());
+    foreach ($assets as $type => $value) {
+      // Note:
+      // Set 'type' to 'external' and manually build the CSS/JS file path
+      // to prevent JS from being parsed by locale_js_alter()
+      // @see locale_js_alter()
+      // @see https://www.drupal.org/node/1803330
+      $settings = ['type' => 'external', 'preprocess' => FALSE, 'minified' => FALSE];
+      if ($type === 'css') {
+        $libraries["webform.css.$webform_id"] = [
+          'css' => ['theme' => ["{$base_path}webform/css/{$webform_id}?{$default_query_string}" => $settings]],
+        ];
+      }
+      else {
+        $libraries["webform.javascript.$webform_id"] = [
+          'js' => ["{$base_path}webform/javascript/{$webform_id}?{$default_query_string}" => $settings],
+        ];
+      }
+    }
+  }
+  return $libraries;
+}
+
 /**
  * Implements hook_library_info_alter().
  */
@@ -42,6 +80,19 @@ function webform_library_info_alter(&$libraries, $extension) {
         }
       }
     }
+  }
+
+  // Remove dependency issue fixed in Drupal 8.8.x for webform.element.buttons.
+  //
+  // @see https://www.drupal.org/project/drupal/issues/2933980
+  // @see https://www.drupal.org/project/drupal/issues/2926155
+  if (isset($libraries['webform.element.buttons'])
+    && (floatval(\Drupal::VERSION) >= 8.8)) {
+    unset(
+      $libraries['webform.element.buttons']['js']['/core/assets/vendor/jquery.ui/ui/form-reset-mixin-min.js'],
+      $libraries['webform.element.buttons']['js']['/core/assets/vendor/jquery.ui/ui/escape-selector-min.js'],
+      $libraries['webform.element.buttons']['js']['/core/assets/vendor/jquery.ui/ui/widgets/checkboxradio-min.js']
+    );
   }
 
   /** @var \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager */
@@ -120,5 +171,73 @@ function _webform_library_info_alter_recursive(array &$library, array $cdn) {
 
     // Recurse downward to find nested libraries.
     _webform_library_info_alter_recursive($value, $cdn);
+  }
+}
+
+/**
+ * Implements hook_css_alter().
+ */
+function webform_css_alter(&$css, AttachedAssetsInterface $assets) {
+  // Remove the stable.theme's off-canvas CSS reset for webform admin routes.
+  // @see https://www.drupal.org/project/drupal/issues/2826722
+  //
+  // NOTE: Most admin themes correctly style jQuery UI dialogs because Drupal's
+  // admin UI, especially Views, relies on them.
+  $use_off_canvas = WebformDialogHelper::useOffCanvas();
+  // @todo Remove once Claro theme support offcanvas tray.
+  $is_claro_theme = (\Drupal::theme()->getActiveTheme()->getName() === 'claro');
+  $is_admin_route = \Drupal::service('router.admin_context')->isAdminRoute();
+  $is_webform_route = preg_match('/(^webform|^entity\.webform|^entity\.node\.webform)/', \Drupal::routeMatch()->getRouteName());
+  if ($is_claro_theme || ($use_off_canvas && $is_admin_route && $is_webform_route)) {
+    foreach ($css as $key => $item) {
+      // @see 'core/misc/dialog/off-canvas
+      // @see core/themes/stable/css/core/dialog/off-canvas
+      if (strpos($key, '/off-canvas.') !== FALSE) {
+        unset($css[$key]);
+      }
+    }
+  }
+
+  _webform_asset_alter($css, 'css');
+}
+
+/**
+ * Implements hook_js_alter().
+ */
+function webform_js_alter(&$javascript, AttachedAssetsInterface $assets) {
+  // Add Google API key required by webform/libraries.jquery.geocomplete
+  // which is dependency for webform/webform.element.location.geocomplete.
+  //
+  // @see \Drupal\webform\Element\WebformLocationGeocomplete::processWebformComposite
+  // @see webform.libraries.yml
+  // @see webform/webform.element.location.geocomplete
+  // @see webform/libraries.jquery.geocomplete
+  $settings = $assets->getSettings();
+  if (!empty($settings['webform']['location']['geocomplete']['api_key']) && isset($javascript['https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places'])) {
+    $api_key = $settings['webform']['location']['geocomplete']['api_key'];
+    $javascript['https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places']['data'] = "https://maps.googleapis.com/maps/api/js?key=$api_key&libraries=places";
+    unset($settings['webform']['location']['geocomplete']['api_key']);
+    $assets->setSettings($settings);
+  }
+
+  _webform_asset_alter($javascript, 'javascript');
+}
+
+/**
+ * Alter Webform CSS or JavaScript assets and make sure they appear last.
+ *
+ * @param array $items
+ *   An array of all CSS or JavaScript being presented on the page.
+ * @param string $type
+ *   The type of asset being attached.
+ *
+ * @see hook_library_info_build()
+ */
+function _webform_asset_alter(array &$items, $type) {
+  foreach ($items as $key => &$item) {
+    if (strpos($key, "webform/$type/") === 0) {
+      $item['weight'] = 1000;
+      $item['group'] = 1000;
+    }
   }
 }

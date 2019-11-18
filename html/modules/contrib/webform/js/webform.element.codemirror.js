@@ -70,6 +70,22 @@
         // Now, close details.
         $details.removeAttr('open');
 
+        // Apply the textarea's min/max-height to the CodeMirror editor.
+        if ($input.css('min-height')) {
+          var minHeight = $input.css('min-height');
+          $(editor.getWrapperElement())
+            .css('min-height', minHeight)
+            .find('.CodeMirror-scroll')
+            .css('min-height', minHeight);
+        }
+        if ($input.css('max-height')) {
+          var maxHeight = $input.css('max-height');
+          $(editor.getWrapperElement())
+            .css('max-height', maxHeight)
+            .find('.CodeMirror-scroll')
+            .css('max-height', maxHeight);
+        }
+
         // Issue #2764443: CodeMirror is not setting submitted value when
         // rendered within a webform UI dialog.
         editor.on('blur', function (event) {
