@@ -10,8 +10,8 @@ field_name: field_suggested_dataset_dept
 entity_type: node
 bundle: suggested_dataset
 label: Organization
-description: ''
-required: false
+description: '[DEPRECATED] - Organization for Suggested Dataset'
+required: true
 translatable: true
 default_value: {  }
 default_value_callback: ''
