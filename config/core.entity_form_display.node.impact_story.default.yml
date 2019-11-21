@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.impact_story.field_story_testimonial
     - field.field.node.impact_story.field_subject
     - field.field.node.impact_story.field_submitter_name
+    - field.field.node.impact_story.field_vote_up_down
     - node.type.impact_story
     - workflows.workflow.editorial
   module:
@@ -133,6 +134,7 @@ content:
     third_party_settings: {  }
 hidden:
   comment: true
+  field_vote_up_down: true
   langcode: true
   promote: true
   status: true

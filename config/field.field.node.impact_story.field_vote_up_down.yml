@@ -1,0 +1,25 @@
+uuid: c7608064-7998-4e4b-97b4-16019745907f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vote_up_down
+    - node.type.impact_story
+id: node.impact_story.field_vote_up_down
+field_name: field_vote_up_down
+entity_type: node
+bundle: impact_story
+label: Votes
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

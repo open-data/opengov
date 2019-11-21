@@ -13,8 +13,10 @@ dependencies:
     - field.field.node.impact_story.field_story_testimonial
     - field.field.node.impact_story.field_subject
     - field.field.node.impact_story.field_submitter_name
+    - field.field.node.impact_story.field_vote_up_down
     - node.type.impact_story
     - views.view.user_impact_stories
+    - webform.webform.vote_up_down
   content:
     - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
   module:
@@ -26,6 +28,7 @@ dependencies:
     - text
     - user
     - views
+    - webform
 third_party_settings:
   layout_builder:
     allow_custom: false
@@ -189,7 +192,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: comment_default
             additional: {  }
-            weight: 0
+            weight: 1
           1aeb1916-57b9-4ae2-acd4-2a9f17420c56:
             uuid: 1aeb1916-57b9-4ae2-acd4-2a9f17420c56
             region: content
@@ -200,6 +203,20 @@ third_party_settings:
               label_display: visible
               views_label: ''
               items_per_page: none
+              context_mapping: {  }
+            additional: {  }
+            weight: 0
+          65d69b71-e9f6-4e3b-9418-a3f4d88f82b4:
+            uuid: 65d69b71-e9f6-4e3b-9418-a3f4d88f82b4
+            region: content
+            configuration:
+              id: webform_block
+              label: Webform
+              provider: webform
+              label_display: '0'
+              webform_id: vote_up_down
+              default_data: ''
+              redirect: false
               context_mapping: {  }
             additional: {  }
             weight: -1
@@ -288,6 +305,15 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     type: string
+    region: content
+  field_vote_up_down:
+    weight: 10
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
     region: content
 hidden:
   langcode: true
