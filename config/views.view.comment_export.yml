@@ -1,0 +1,1009 @@
+uuid: 4b6cec2c-6eed-4f24-ad3e-8987c628069b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.comment.comment_body
+    - system.menu.admin
+  module:
+    - comment
+    - csv_serialization
+    - node
+    - rest
+    - serialization
+    - text
+    - user
+_core:
+  default_config_hash: g3bkuKUy8iLVBDAgyJdtjkTC69svfY4tvB7zJtdW1FE
+id: comment_export
+label: 'Comment Export'
+module: views
+description: ''
+tag: ''
+base_table: comment_field_data
+base_field: cid
+core: 8.x
+display:
+  default:
+    display_plugin: default
+    id: default
+    display_title: Master
+    position: 0
+    display_options:
+      access:
+        type: perm
+        options:
+          perm: 'access comments'
+      cache:
+        type: tag
+        options: {  }
+      query:
+        type: views_query
+        options:
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_comment: ''
+          query_tags: {  }
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      pager:
+        type: mini
+        options:
+          items_per_page: 10
+          offset: 0
+          id: 0
+          total_pages: null
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          tags:
+            previous: ‹‹
+            next: ››
+      style:
+        type: table
+      row:
+        type: fields
+      relationships:
+        node:
+          id: node
+          table: comment_field_data
+          field: node
+          entity_type: comment_field_data
+          required: true
+          plugin_id: standard
+          relationship: none
+          group_type: group
+          admin_label: Content
+      fields:
+        cid:
+          id: cid
+          table: comment_field_data
+          field: cid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Comment ID'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: number_integer
+          settings:
+            thousand_separator: ''
+            prefix_suffix: true
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: comment
+          entity_field: cid
+          plugin_id: field
+        subject:
+          id: subject
+          table: comment_field_data
+          field: subject
+          entity_type: comment
+          entity_field: subject
+          alter:
+            alter_text: false
+            make_link: false
+            absolute: false
+            trim: false
+            word_boundary: false
+            ellipsis: false
+            strip_tags: false
+            html: false
+          hide_empty: false
+          empty_zero: false
+          plugin_id: field
+          type: string
+          settings:
+            link_to_entity: true
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Title
+          exclude: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_alter_empty: true
+          click_sort_column: value
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        comment_body:
+          id: comment_body
+          table: comment__comment_body
+          field: comment_body
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Comment
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: text_default
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
+        pid:
+          id: pid
+          table: comment_field_data
+          field: pid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Parent CID'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: true
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: comment
+          entity_field: pid
+          plugin_id: field
+        created:
+          id: created
+          table: comment_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Post date'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: custom
+            custom_date_format: M/d/Y
+            timezone: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: comment
+          entity_field: created
+          plugin_id: field
+        thread:
+          id: thread
+          table: comment_field_data
+          field: thread
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Depth
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: 0
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: 0
+          entity_type: comment
+          entity_field: thread
+          plugin_id: comment_depth
+        nid:
+          id: nid
+          table: node_field_data
+          field: nid
+          relationship: node
+          group_type: group
+          admin_label: ''
+          label: ID
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: number_integer
+          settings:
+            thousand_separator: ''
+            prefix_suffix: true
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: node
+          entity_field: nid
+          plugin_id: field
+        entity_id:
+          id: entity_id
+          table: comment_field_data
+          field: entity_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Entity ID'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: true
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: comment
+          entity_field: entity_id
+          plugin_id: commented_entity
+      filters:
+        status:
+          value: '1'
+          table: comment_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: comment
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        status_node:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          relationship: node
+          entity_type: node
+          entity_field: status
+          id: status_node
+          expose:
+            operator: ''
+          group: 1
+        created:
+          id: created
+          table: comment_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '<='
+          value:
+            min: ''
+            max: ''
+            value: '1 year'
+            type: offset
+          group: 1
+          exposed: true
+          expose:
+            operator_id: created_op
+            label: 'Post date'
+            description: ''
+            use_operator: true
+            operator: created_op
+            identifier: created
+            required: true
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              editor: '0'
+              comment_moderator: '0'
+              reviewer: '0'
+              business_owner: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: comment
+          entity_field: created
+          plugin_id: date
+        field_spam_value:
+          id: field_spam_value
+          table: comment__field_spam
+          field: field_spam_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '0'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: boolean
+      sorts:
+        created:
+          id: created
+          table: comment_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: true
+          expose:
+            label: 'Post date'
+          granularity: second
+          entity_type: comment
+          entity_field: created
+          plugin_id: date
+      title: 'Comment Export'
+      header: {  }
+      footer: {  }
+      empty: {  }
+      arguments: {  }
+      display_extenders: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
+        - user.permissions
+      tags:
+        - 'config:field.storage.comment.comment_body'
+  page_1:
+    display_plugin: page
+    id: page_1
+    display_title: Page
+    position: 1
+    display_options:
+      display_extenders: {  }
+      path: comment-export
+      footer:
+        display_link:
+          id: display_link
+          table: views
+          field: display_link
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          display_id: rest_export_1
+          label: 'Export to CSV'
+          plugin_id: display_link
+      defaults:
+        footer: false
+        header: false
+        filters: false
+        filter_groups: false
+        sorts: false
+      header:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          content: '@total Comments Found <br><br>'
+          plugin_id: result
+        display_link:
+          id: display_link
+          table: views
+          field: display_link
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          display_id: rest_export_1
+          label: 'Export comments to CSV'
+          plugin_id: display_link
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content:
+            value: "<br><br>Select \"Less than or equal to 1 year\" to export all comments up until 1 year ago.\r\n"
+            format: rich_text
+          plugin_id: text
+      filters:
+        status:
+          value: '1'
+          table: comment_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: comment
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        status_node:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          relationship: node
+          entity_type: node
+          entity_field: status
+          id: status_node
+          expose:
+            operator: ''
+          group: 1
+        created:
+          id: created
+          table: comment_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '<='
+          value:
+            min: ''
+            max: ''
+            value: '1 year'
+            type: offset
+          group: 1
+          exposed: true
+          expose:
+            operator_id: created_op
+            label: 'Post date'
+            description: 'Example: "Is less than or equal to 1 year" will return comments of past 1 year'
+            use_operator: true
+            operator: created_op
+            identifier: created
+            required: true
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              editor: '0'
+              comment_moderator: '0'
+              reviewer: '0'
+              business_owner: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: comment
+          entity_field: created
+          plugin_id: date
+        field_spam_value:
+          id: field_spam_value
+          table: comment__field_spam
+          field: field_spam_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '0'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: boolean
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      sorts:
+        created:
+          id: created
+          table: comment_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: 'Post date'
+          granularity: second
+          entity_type: comment
+          entity_field: created
+          plugin_id: date
+      menu:
+        type: normal
+        title: 'Export Comments CSV'
+        description: ''
+        expanded: false
+        parent: system.admin_config_ui
+        weight: 100
+        context: '1'
+        menu_name: admin
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - user.permissions
+      tags:
+        - 'config:field.storage.comment.comment_body'
+  rest_export_1:
+    display_plugin: rest_export
+    id: rest_export_1
+    display_title: 'REST export'
+    position: 2
+    display_options:
+      display_extenders: {  }
+      style:
+        type: serializer
+        options:
+          uses_fields: false
+          formats:
+            csv: csv
+      row:
+        type: data_field
+        options:
+          field_options:
+            cid:
+              alias: ''
+              raw_output: false
+            subject:
+              alias: ''
+              raw_output: false
+            comment_body:
+              alias: ''
+              raw_output: false
+            pid:
+              alias: ''
+              raw_output: false
+            created:
+              alias: ''
+              raw_output: false
+            thread:
+              alias: ''
+              raw_output: false
+            nid:
+              alias: ''
+              raw_output: false
+            entity_id:
+              alias: ''
+              raw_output: false
+      path: comment-export/export/comments-export.csv
+      pager:
+        type: some
+        options:
+          items_per_page: 0
+          offset: 0
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - request_format
+        - url
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
+        - user.permissions
+      tags:
+        - 'config:field.storage.comment.comment_body'
