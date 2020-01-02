@@ -1,14 +1,9 @@
-uuid: 1fb057a4-9ab3-498e-97be-dd1ee2ed070a
 langcode: en
 status: open
 dependencies:
   module:
     - honeypot
     - og_ext_webform
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
 open: null
 close: null
 weight: 0
@@ -85,6 +80,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -223,6 +219,7 @@ handlers:
         ati_email: ati_email
       ignore_access: false
       exclude_empty: true
+      exclude_empty_checkbox: false
       html: false
       attachments: false
       twig: false
@@ -231,8 +228,8 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
-      exclude_empty_checkbox: false
       theme_name: ''
+      parameters: {  }
   confirmation:
     id: email
     label: Confirmation
@@ -262,6 +259,7 @@ handlers:
         ati_email: ati_email
       ignore_access: false
       exclude_empty: true
+      exclude_empty_checkbox: false
       html: false
       attachments: false
       twig: false
@@ -270,5 +268,10 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
-      exclude_empty_checkbox: false
       theme_name: ''
+      parameters: {  }
+uuid: 1fb057a4-9ab3-498e-97be-dd1ee2ed070a
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
