@@ -1,0 +1,13 @@
+third_party_settings:
+  layout_builder:
+    sections:
+      -
+        components:
+          f3b99357-2d6a-4eb7-9960-9b6dd1e5f682:
+            configuration:
+              label: 'Écrit le'
+      -
+        components:
+          414b1588-f28a-465d-a97a-f2fb6103c6e9:
+            configuration:
+              label: Corps

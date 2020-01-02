@@ -6,7 +6,7 @@ display:
     display_options:
       exposed_form:
         options:
-          submit_button: Appliquer
+          submit_button: Rechercher
           reset_button_label: Réinitialiser
           exposed_sorts_label: 'Trier par'
           sort_asc_label: Asc
@@ -36,6 +36,9 @@ display:
         entity_id:
           label: 'Posté sur'
           separator: ', '
+        created:
+          label: 'Date de publication'
+          separator: ', '
         operations:
           label: Actions
         name_1:
@@ -59,6 +62,30 @@ display:
         title: Commentaires
         description: 'Commentaires publiés'
       display_description: 'La liste des commentaires approuvés.'
+      fields:
+        comment_bulk_form:
+          action_title: Action
+        subject:
+          label: Objet
+          separator: ', '
+        comment_body:
+          label: Commentaire
+          separator: ', '
+        uid:
+          separator: ', '
+        name:
+          label: Auteur
+          separator: ', '
+        entity_id:
+          label: 'Posté sur'
+          separator: ', '
+        created:
+          label: 'Date de publication'
+          separator: ', '
+        operations:
+          label: Actions
+        name_1:
+          separator: ', '
   page_unapproved:
     display_title: 'Commentaires non aprouvés'
     display_options:
@@ -79,6 +106,9 @@ display:
         subject:
           label: Objet
           separator: ', '
+        comment_body:
+          label: Commentaire
+          separator: ', '
         uid:
           separator: ', '
         name:
@@ -87,7 +117,38 @@ display:
         entity_id:
           label: 'Posté sur'
           separator: ', '
+        created:
+          label: 'Date de publication'
+          separator: ', '
         operations:
           label: Actions
         name_1:
+          separator: ', '
+  rest_export_1:
+    display_title: 'Export REST'
+    display_options:
+      display_description: 'La liste des commentaires non-approuvés.'
+      fields:
+        type:
+          label: Type
+          separator: ', '
+        entity_id:
+          label: 'Posté sur'
+          separator: ', '
+        view_node:
+          label: Lien
+          text: voir
+        field_url:
+          separator: ', '
+        created:
+          label: 'Posté le'
+          separator: ', '
+        name:
+          label: Auteur
+          separator: ', '
+        subject:
+          label: Objet
+          separator: ', '
+        comment_body:
+          label: Commentaire
           separator: ', '

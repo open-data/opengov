@@ -1,4 +1,3 @@
-label: Contenu
 description: 'Trouver et gérer le contenu.'
 display:
   default:
@@ -45,7 +44,6 @@ display:
         title:
           expose:
             label: Titre
-      title: Contenu
       empty:
         area_text_custom:
           content: 'Aucun contenu disponible.'
