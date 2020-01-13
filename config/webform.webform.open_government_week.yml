@@ -1,13 +1,8 @@
-uuid: 280c9cdd-ca41-40f5-99a0-f10512a60c22
 langcode: en
 status: open
 dependencies:
   module:
     - honeypot
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
 open: null
 close: null
 weight: 0
@@ -84,6 +79,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -208,6 +204,7 @@ handlers:
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
+      exclude_empty_checkbox: false
       html: true
       attachments: false
       twig: false
@@ -216,5 +213,10 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
-      exclude_empty_checkbox: false
       theme_name: ''
+      parameters: {  }
+uuid: 280c9cdd-ca41-40f5-99a0-f10512a60c22
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true

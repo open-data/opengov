@@ -97,16 +97,6 @@ field_settings:
     datasource_id: solr_document
     property_path: organization_fr
     type: string
-  report_type_en:
-    label: 'Report type en'
-    datasource_id: solr_document
-    property_path: report_type_en
-    type: string
-  report_type_fr:
-    label: 'Report type fr'
-    datasource_id: solr_document
-    property_path: report_type_fr
-    type: string
   request_number:
     label: 'Request number'
     datasource_id: solr_document

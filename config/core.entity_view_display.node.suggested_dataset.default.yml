@@ -6,8 +6,11 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.suggested_dataset.body
     - field.field.node.suggested_dataset.comment
+    - field.field.node.suggested_dataset.field_date_published
     - field.field.node.suggested_dataset.field_meta_tags
+    - field.field.node.suggested_dataset.field_organization
     - field.field.node.suggested_dataset.field_previousnodeid
+    - field.field.node.suggested_dataset.field_sd_status
     - field.field.node.suggested_dataset.field_status
     - field.field.node.suggested_dataset.field_status_link
     - field.field.node.suggested_dataset.field_suggested_dataset_dept
@@ -20,9 +23,10 @@ dependencies:
     - block_content
     - bootstrap_layouts
     - comment
+    - datetime
     - layout_builder
-    - layout_discovery
     - link
+    - options
     - text
     - user
     - webform
@@ -31,11 +35,6 @@ third_party_settings:
     allow_custom: false
     enabled: true
     sections:
-      -
-        layout_id: layout_onecol
-        layout_settings: {  }
-        components: {  }
-        third_party_settings: {  }
       -
         layout_id: bs_2col
         layout_settings:
@@ -107,22 +106,6 @@ third_party_settings:
               add_region_classes: 1
               attributes: class|well
         components:
-          a949ae57-1898-483b-96de-fb09ae012469:
-            uuid: a949ae57-1898-483b-96de-fb09ae012469
-            region: right
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_suggested_dataset_dept'
-              formatter:
-                label: above
-                settings:
-                  link_to_entity: false
-                third_party_settings: {  }
-                type: string
-            additional: {  }
-            weight: 2
           ac997583-4154-43ac-b024-b9e45babf456:
             uuid: ac997583-4154-43ac-b024-b9e45babf456
             region: right
@@ -137,25 +120,7 @@ third_party_settings:
                 settings: {  }
                 third_party_settings: {  }
             additional: {  }
-            weight: 3
-          32eb149f-1a75-4d7b-8a2c-3dbc41ddd2d9:
-            uuid: 32eb149f-1a75-4d7b-8a2c-3dbc41ddd2d9
-            region: left
-            configuration:
-              id: 'field_block:node:suggested_dataset:field_status'
-              label: Status
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: above
-                type: string
-                settings:
-                  link_to_entity: false
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: 4
+            weight: -8
           99eae66a-01db-4041-8dde-bd2517e3c1b3:
             uuid: 99eae66a-01db-4041-8dde-bd2517e3c1b3
             region: left
@@ -177,9 +142,58 @@ third_party_settings:
               context_mapping:
                 entity: layout_builder.entity
             additional: {  }
-            weight: 5
-          33d570cd-4026-4d93-955d-0ab86b8ce522:
-            uuid: 33d570cd-4026-4d93-955d-0ab86b8ce522
+            weight: -8
+          013afe8d-8ea6-44a7-bd40-7a684d347a0b:
+            uuid: 013afe8d-8ea6-44a7-bd40-7a684d347a0b
+            region: left
+            configuration:
+              id: 'field_block:node:suggested_dataset:field_date_published'
+              label: 'Dataset released date'
+              provider: layout_builder
+              label_display: '0'
+              formatter:
+                label: above
+                type: datetime_default
+                settings:
+                  timezone_override: ''
+                  format_type: html_date
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+            additional: {  }
+            weight: -7
+          de281d45-231b-425d-831b-7e3ee54072a6:
+            uuid: de281d45-231b-425d-831b-7e3ee54072a6
+            region: right
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:suggested_dataset:field_organization'
+              formatter:
+                label: above
+                settings: {  }
+                third_party_settings: {  }
+                type: list_default
+            additional: {  }
+            weight: -9
+          f100db74-faa0-41ff-ad29-0bda2dd46907:
+            uuid: f100db74-faa0-41ff-ad29-0bda2dd46907
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:suggested_dataset:field_sd_status'
+              formatter:
+                label: above
+                settings: {  }
+                third_party_settings: {  }
+                type: list_default
+            additional: {  }
+            weight: -9
+          1c2b0b7d-a613-433d-addb-0bb5783f9ee7:
+            uuid: 1c2b0b7d-a613-433d-addb-0bb5783f9ee7
             region: left
             configuration:
               id: webform_block
@@ -191,7 +205,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: 6
+            weight: -6
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -254,6 +268,22 @@ content:
     settings: {  }
     third_party_settings: {  }
     region: content
+  field_date_published:
+    weight: 9
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_organization:
+    weight: 12
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: left
   field_previousnodeid:
     type: number_integer
     weight: 6
@@ -263,6 +293,13 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
+  field_sd_status:
+    weight: 13
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: left
   field_status:
     weight: 4
     label: above

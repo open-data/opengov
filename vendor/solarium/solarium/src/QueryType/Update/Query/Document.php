@@ -166,8 +166,8 @@ class Document extends AbstractDocument
      * If you supply an array a multivalue field will be created.
      * In all cases any existing (multi)value will be overwritten.
      *
-     * @param string      $name
-     * @param string|null $value
+     * @param string $name
+     * @param mixed  $value
      *
      * @return self
      */
@@ -432,9 +432,7 @@ class Document extends AbstractDocument
     public function getFields(): array
     {
         if ((null === $this->key || !isset($this->fields[$this->key])) && count($this->modifiers) > 0) {
-            throw new RuntimeException(
-                'A document that uses modifiers (atomic updates) must have a key defined before it is used'
-            );
+            throw new RuntimeException('A document that uses modifiers (atomic updates) must have a key defined before it is used');
         }
 
         return parent::getFields();
