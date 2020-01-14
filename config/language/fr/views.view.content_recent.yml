@@ -12,7 +12,17 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       fields:
+        title:
+          label: Title
+          separator: ', '
+        type:
+          label: 'Content type'
+          separator: ', '
         changed:
+          label: Changed
+          separator: ', '
+        moderation_state:
+          label: Status
           separator: ', '
       title: 'Contenu récent'
       empty:

@@ -47,7 +47,7 @@ display:
         type: basic
         options:
           submit_button: Search
-          reset_button: true
+          reset_button: false
           reset_button_label: Reset
           exposed_sorts_label: Sort
           expose_sort_order: true

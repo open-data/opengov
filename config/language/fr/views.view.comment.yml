@@ -26,7 +26,7 @@ display:
         comment_bulk_form:
           action_title: Action
         subject:
-          label: Objet
+          label: Subject
           separator: ', '
         uid:
           separator: ', '
@@ -34,7 +34,10 @@ display:
           label: Auteur
           separator: ', '
         entity_id:
-          label: 'Posté sur'
+          label: 'Posted in'
+          separator: ', '
+        created:
+          label: 'Post date'
           separator: ', '
         operations:
           label: Actions
@@ -43,7 +46,7 @@ display:
       filters:
         subject:
           expose:
-            label: Objet
+            label: Subject
         combine:
           expose:
             label: 'Nom de l''auteur'
@@ -59,25 +62,14 @@ display:
         title: Commentaires
         description: 'Commentaires publiés'
       display_description: 'La liste des commentaires approuvés.'
-  page_unapproved:
-    display_title: 'Commentaires non aprouvés'
-    display_options:
-      menu:
-        title: 'Commentaires non aprouvés'
-        description: 'Commentaires non-approuvés'
-      display_description: 'La liste des commentaires non-approuvés.'
-      filters:
-        subject:
-          expose:
-            label: Objet
-        combine:
-          expose:
-            label: 'Nom de l''auteur'
       fields:
         comment_bulk_form:
           action_title: Action
         subject:
-          label: Objet
+          label: Subject
+          separator: ', '
+        comment_body:
+          label: Comment
           separator: ', '
         uid:
           separator: ', '
@@ -85,9 +77,78 @@ display:
           label: Auteur
           separator: ', '
         entity_id:
-          label: 'Posté sur'
+          label: 'Posted in'
+          separator: ', '
+        created:
+          label: 'Post date'
           separator: ', '
         operations:
           label: Actions
         name_1:
+          separator: ', '
+  page_unapproved:
+    display_title: 'Commentaires non aprouvés'
+    display_options:
+      menu:
+        title: 'Commentaires non aprouvés'
+        description: 'Commentaires non-approuvés'
+      display_description: 'The unapproved comments listing.'
+      filters:
+        subject:
+          expose:
+            label: Subject
+        combine:
+          expose:
+            label: 'Nom de l''auteur'
+      fields:
+        comment_bulk_form:
+          action_title: Action
+        subject:
+          label: Subject
+          separator: ', '
+        comment_body:
+          label: Comment
+          separator: ', '
+        uid:
+          separator: ', '
+        name:
+          label: Auteur
+          separator: ', '
+        entity_id:
+          label: 'Posted in'
+          separator: ', '
+        created:
+          label: 'Post date'
+          separator: ', '
+        operations:
+          label: Actions
+        name_1:
+          separator: ', '
+  rest_export_1:
+    display_title: 'REST export'
+    display_options:
+      display_description: 'The unapproved comments listing.'
+      fields:
+        type:
+          label: Type
+          separator: ', '
+        entity_id:
+          label: 'Posted in'
+          separator: ', '
+        view_node:
+          label: Link
+          text: view
+        field_url:
+          separator: ', '
+        created:
+          label: 'Posted on'
+          separator: ', '
+        name:
+          label: Auteur
+          separator: ', '
+        subject:
+          label: Subject
+          separator: ', '
+        comment_body:
+          label: Comment
           separator: ', '

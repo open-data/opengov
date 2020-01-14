@@ -16,3 +16,11 @@ display:
         field_status_link:
           alter:
             text: "<span class=\"glyphicon glyphicon-cog\" aria-hidden=\"true\"></span> <a href={{ field_status_link__uri }}>Obtenir le jeu de données</a>\r\n"
+      filters:
+        search_api_fulltext:
+          expose:
+            label: Recherche
+      sorts:
+        title:
+          expose:
+            label: Titre
