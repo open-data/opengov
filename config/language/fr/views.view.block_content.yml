@@ -38,7 +38,13 @@ display:
         type:
           expose:
             label: 'Type de bloc'
+        langcode:
+          expose:
+            label: Langue
       title: 'Bibliothèque de blocs personnalisés'
+      header:
+        result:
+          content: 'Displaying @start - @end of @total'
       empty:
         area_text_custom:
           content: 'Il n''y a pas de bloc personnalisé disponible.'

@@ -1,12 +1,9 @@
-uuid: 28d4e7be-efdb-4a88-bc0d-16ed5e8a1767
 langcode: en
 status: open
 dependencies:
   enforced:
     module:
       - webform_test
-_core:
-  default_config_hash: n-o0dubYyFAYHV9OGOrntyVrFt0L6owQM3jhd_cjuIc
 open: null
 close: null
 weight: 0
@@ -1954,7 +1951,7 @@ elements: |
       '#help_display': element_after
     machine_name_hr:
       '#type': webform_horizontal_rule
-
+  
 css: ''
 javascript: ''
 settings:
@@ -2020,6 +2017,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -2116,3 +2114,6 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+uuid: 28d4e7be-efdb-4a88-bc0d-16ed5e8a1767
+_core:
+  default_config_hash: n-o0dubYyFAYHV9OGOrntyVrFt0L6owQM3jhd_cjuIc

@@ -29,10 +29,10 @@ trait WebformCompositeFormElementTrait {
    */
   public static function preRenderWebformCompositeFormElement($element) {
     $has_content = (isset($element['#title']) || isset($element['#description']));
+
     if (!$has_content) {
       return $element;
     }
-
     // Set attributes.
     if (!isset($element['#attributes'])) {
       $element['#attributes'] = [];

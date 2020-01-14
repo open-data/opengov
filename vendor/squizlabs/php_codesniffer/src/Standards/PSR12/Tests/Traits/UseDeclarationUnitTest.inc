@@ -131,3 +131,42 @@ class Foo implements Bar
 
     use Baz;
 }
+
+class ClassName
+{
+    /**
+     * DocBlockContent
+     */
+    use FirstTrait;
+
+    /**
+     * DocBlockContent
+     */
+    use SecondTrait;
+
+    /**
+     * DocBlockContent
+     */
+    use ThirdTrait;
+}
+
+class MyExample
+{
+    use Trait1;
+    protected $a = 1;
+    use Trait2;
+    public function foo {
+        $shortArgs_longVars = function ($arg) use (
+            $longVar1,
+        ): string {
+           // body
+        };
+    }
+    use A, B, C {
+        B::smallTalk insteadof A;
+    }
+
+    // comment here
+    use Trait3;
+
+}

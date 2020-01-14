@@ -48,7 +48,11 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
    */
   public static function getFileName(array $element, WebformSubmissionInterface $webform_submission) {
     if (!isset($element['#filename']) && !empty($element['#url'])) {
-      return basename($element['#url']);
+      $filename = basename($element['#url']);
+      /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
+      $token_manager = \Drupal::service('webform.token_manager');
+      $filename = $token_manager->replace($filename, $webform_submission);
+      return $filename;
     }
     else {
       return parent::getFileName($element, $webform_submission);

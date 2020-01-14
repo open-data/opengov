@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\PSR12\Sniffs\Files;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 class ImportStatementSniff implements Sniff
@@ -45,6 +45,11 @@ class ImportStatementSniff implements Sniff
         // Make sure this is not a closure USE group.
         $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
         if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS) {
+            return;
+        }
+
+        if ($phpcsFile->hasCondition($stackPtr, Tokens::$ooScopeTokens) === true) {
+            // This rule only applies to import statements.
             return;
         }
 

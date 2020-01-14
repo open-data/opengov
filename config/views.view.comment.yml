@@ -864,6 +864,7 @@ display:
       defaults:
         sorts: false
         fields: false
+        header: false
       fields:
         comment_bulk_form:
           id: comment_bulk_form
@@ -1425,6 +1426,17 @@ display:
           entity_type: user
           entity_field: name
           plugin_id: field
+      header:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          content: 'Displaying @start - @end of @total'
+          plugin_id: result
     cache_metadata:
       contexts:
         - 'languages:language_content'

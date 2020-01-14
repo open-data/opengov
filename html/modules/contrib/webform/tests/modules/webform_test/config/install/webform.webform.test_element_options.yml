@@ -75,6 +75,7 @@ elements: |
       '#title': webform_element_options_custom_type_multiple
       '#custom__type': webform_multiple
       '#default_value': { }
+  
 css: ''
 javascript: ''
 settings:
@@ -140,6 +141,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

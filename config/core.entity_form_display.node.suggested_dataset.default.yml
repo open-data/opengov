@@ -5,8 +5,11 @@ dependencies:
   config:
     - field.field.node.suggested_dataset.body
     - field.field.node.suggested_dataset.comment
+    - field.field.node.suggested_dataset.field_date_published
     - field.field.node.suggested_dataset.field_meta_tags
+    - field.field.node.suggested_dataset.field_organization
     - field.field.node.suggested_dataset.field_previousnodeid
+    - field.field.node.suggested_dataset.field_sd_status
     - field.field.node.suggested_dataset.field_status
     - field.field.node.suggested_dataset.field_status_link
     - field.field.node.suggested_dataset.field_suggested_dataset_dept
@@ -15,6 +18,7 @@ dependencies:
     - workflows.workflow.editorial
   module:
     - content_moderation
+    - datetime
     - link
     - metatag
     - path
@@ -26,7 +30,7 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 8
+    weight: 2
     settings:
       rows: 9
       summary_rows: 3
@@ -35,47 +39,42 @@ content:
     region: content
   created:
     type: datetime_timestamp
-    weight: 3
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_date_published:
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
   field_meta_tags:
     weight: 12
     settings: {  }
     third_party_settings: {  }
     type: metatag_firehose
     region: content
-  field_status:
-    weight: 10
-    settings:
-      size: 60
-      placeholder: ''
+  field_organization:
+    weight: 1
+    settings: {  }
     third_party_settings: {  }
-    type: string_textfield
+    type: options_select
+    region: content
+  field_sd_status:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
     region: content
   field_status_link:
-    weight: 11
+    weight: 4
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
     region: content
-  field_suggested_dataset_dept:
-    weight: 9
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
-  langcode:
-    type: language_select
-    weight: 1
-    region: content
-    settings:
-      include_locked: true
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 13
@@ -84,7 +83,7 @@ content:
     third_party_settings: {  }
   path:
     type: path
-    weight: 7
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -92,14 +91,14 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 5
+    weight: 9
     region: content
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 6
+    weight: 10
     region: content
     third_party_settings: {  }
   title:
@@ -111,13 +110,13 @@ content:
       placeholder: ''
     third_party_settings: {  }
   translation:
-    weight: 4
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 2
+    weight: 6
     settings:
       match_operator: CONTAINS
       size: 60
@@ -132,5 +131,8 @@ content:
 hidden:
   comment: true
   field_previousnodeid: true
+  field_status: true
+  field_suggested_dataset_dept: true
   field_vote_up_down: true
+  langcode: true
   status: true

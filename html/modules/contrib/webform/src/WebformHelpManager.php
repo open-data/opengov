@@ -5,6 +5,7 @@ namespace Drupal\webform;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\State\StateInterface;
@@ -493,8 +494,8 @@ class WebformHelpManager implements WebformHelpManagerInterface {
     switch ($video_display) {
       case 'dialog':
         $route_name = 'webform.help.video';
-        $route_parameters  = ['id' => str_replace('_', '-', $video_info['id'])];
-        $route_options  = ($options['more']) ? ['query' => ['more' => 1]] : [];
+        $route_parameters = ['id' => str_replace('_', '-', $video_info['id'])];
+        $route_options = ($options['more']) ? ['query' => ['more' => 1]] : [];
         return [
           '#url' => Url::fromRoute($route_name, $route_parameters, $route_options),
           '#attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_WIDE, $options['class']),
@@ -553,7 +554,8 @@ class WebformHelpManager implements WebformHelpManagerInterface {
         $build['content'][$category_name]['projects'][$project_name] = [
           'title' => [
             '#type' => 'link',
-            '#title' => $project['title'],
+            '#title' => Markup::create($project['title']
+              . (!empty($project['experimental']) ? ' [' . $this->t('EXPERIMENTAL') . ']' : '')),
             '#url' => $project['url'],
             '#prefix' => '<dt>',
             '#suffix' => ((isset($project['recommended'])) ? ' ★' : '') . '</dt>',
@@ -1176,6 +1178,30 @@ class WebformHelpManager implements WebformHelpManagerInterface {
           [
             'title' => $this->t('Webform Attachment sub-module | Drupal.org'),
             'url' => 'https://www.drupal.org/node/3021481',
+          ],
+        ],
+      ],
+      'limits' => [
+        'title' => $this->t('Submission limits and options limits'),
+        'content' => $this->t("This screencast shows how to set submission limits and options limits."),
+        'youtube_id' => 'fdkv10v3AX4',
+        'presentation_id' => '1owgZ4ueFagynwnzvBsH6krpvLqMXunMJXD32BqMCC-E',
+        'links' => [
+          [
+            'title' => $this->t('Webform now supports option limits as well as submission limits'),
+            'url' => 'https://www.drupal.org/node/3080869',
+          ],
+        ],
+      ],
+      'custom_options' => [
+        'title' => $this->t('Webform custom options elenents'),
+        'content' => $this->t("The screencast walks through creating custom webform options elements."),
+        'youtube_id' => '08Ze1eACM48',
+        'presentation_id' => '1MZQ0we3qG9G3eFLtnHXiQ5c_uDfn1jjiBHciAeW311g',
+        'links' => [
+          [
+            'title' => $this->t('Webform module supports creating custom elements using HTML and SVG markup'),
+            'url' => 'https://www.drupal.org/node/3089024',
           ],
         ],
       ],

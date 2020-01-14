@@ -27,6 +27,10 @@ elements: |
     '#title': 'File multiple'
     '#multiple': true
     '#file_name': 'file_multiple_[webform_submission:values:source_for_filename]'
+  file_truncate:
+    '#type': managed_file
+    '#title': 'File truncate (255)'
+    '#file_name': 'file_truncate_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
   
 css: ''
 javascript: ''
@@ -93,6 +97,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

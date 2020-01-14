@@ -318,6 +318,22 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function alterElements(array &$elements, WebformInterface $webform);
 
+  /**
+   * Alter webform element.
+   *
+   * @param array $element
+   *   The webform element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param array $context
+   *   An associative array containing the following key-value pairs:
+   *   - form: The form structure to which elements is being attached.
+   *
+   * @see \Drupal\webform\WebformSubmissionForm::prepareElements()
+   * @see hook_webform_element_alter()
+   */
+  public function alterElement(array &$element, FormStateInterface $form_state, array $context);
+
   /****************************************************************************/
   // Webform submission methods.
   /****************************************************************************/

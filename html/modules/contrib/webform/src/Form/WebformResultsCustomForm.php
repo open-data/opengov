@@ -118,7 +118,7 @@ class WebformResultsCustomForm extends FormBase {
 
     // Sort and direction.
     // Display available columns sorted alphabetically.
-    $sort = $this->webform->getState($this->getStateKey('sort'), 'serial');
+    $sort = $this->webform->getState($this->getStateKey('sort'), 'created');
     $direction = $this->webform->getState($this->getStateKey('direction'), 'desc');
     $form['sort'] = [
       '#prefix' => '<div class="container-inline">',

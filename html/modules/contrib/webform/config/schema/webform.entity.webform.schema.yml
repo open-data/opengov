@@ -284,6 +284,9 @@
         wizard_progress_link:
           type: boolean
           label: 'Link to previous pages in progress bar'
+        wizard_progress_states:
+          type: boolean
+          label: 'Update wizard progress bar''s pages based on conditions'
         wizard_start_label:
           type: label
           label: 'Wizard start label'

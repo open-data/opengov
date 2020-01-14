@@ -259,6 +259,7 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
       'sender_mail' => '',
       'sender_name' => '',
       'theme_name' => '',
+      'parameters' => [],
     ];
   }
 
@@ -379,9 +380,17 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
         }
       }
 
-      // Allow 'webform_name' composite to be used a value token.
-      if ($element['#type'] === 'webform_name') {
-        $name_element_options["[webform_submission:values:$element_key:value]"] = $element_title;
+      // Element type specific tokens.
+      switch ($element['#type']) {
+        case 'webform_name':
+          // Allow 'webform_name' composite to be used a value token.
+          $name_element_options["[webform_submission:values:$element_key:value]"] = $element_title;
+          break;
+
+        case 'text_format':
+          // Allow 'text_format' composite to be used a value token.
+          $text_element_options_value["[webform_submission:values:$element_key]"] = $element_title;
+          break;
       }
 
       // Handle composite sub elements.
@@ -763,6 +772,14 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
       '#description' => $this->t('Select the theme that will be used to render this email.'),
       '#options' => $this->themeManager->getThemeNames(),
       '#default_value' => $this->configuration['theme_name'],
+    ];
+
+    $form['additional']['parameters'] = [
+      '#type' => 'webform_codemirror',
+      '#mode' => 'yaml',
+      '#title' => $this->t('Custom parameters'),
+      '#description' => $this->t('Enter additional custom parameters to be appended to the email message\'s parameters. Custom parameters are used by <a href=":href">email related add-on modules</a>.', [':href' => 'https://www.drupal.org/docs/8/modules/webform/webform-add-ons#mail']),
+      '#default_value' => $this->configuration['parameters'],
     ];
 
     // Development.
@@ -1148,6 +1165,13 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
     if (drupal_valid_test_ua()) {
       unset($message['webform_submission'], $message['handler']);
     }
+
+    // Append additional custom parameters.
+    if (!empty($this->configuration['parameters'])) {
+      $message += $this->replaceTokens($this->configuration['parameters'], $webform_submission);
+    }
+    // Remove parameters.
+    unset($message['parameters']);
 
     $result = $this->mailManager->mail('webform', $key, $to, $current_langcode, $message, $from);
 
@@ -1627,8 +1651,8 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
         '@filemime' => $attachment['filemime'],
         '@filesize' => format_size(mb_strlen($attachment['filecontent'])),
       ];
-      if (!empty($attachment['_uri'])) {
-        $t_args[':href'] = $attachment['_uri'];
+      if (!empty($attachment['_fileurl'])) {
+        $t_args[':href'] = $attachment['_fileurl'];
         $build[] = ['#markup' => $this->t('<strong><a href=":href">@filename</a></strong> (@filemime) - @filesize ', $t_args)];
       }
       else {

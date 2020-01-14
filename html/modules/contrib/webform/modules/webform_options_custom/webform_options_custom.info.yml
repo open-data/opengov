@@ -1,0 +1,13 @@
+name: 'Webform Custom Options [EXPERIMENTAL]'
+type: module
+description: 'Provides a webform element for converting HTML or SVG markup into a selectable single or multiple options input.'
+experimental: true
+package: Webform
+core: 8.x
+dependencies:
+  - 'webform:webform'
+
+# Information added by Drupal.org packaging script on 2019-10-29
+version: '8.x-5.5'
+project: 'webform'
+datestamp: 1572377290

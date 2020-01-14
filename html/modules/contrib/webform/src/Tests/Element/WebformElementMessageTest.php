@@ -35,12 +35,12 @@ class WebformElementMessageTest extends WebformElementTestBase {
 
     // Check basic message.
     $this->assertRaw('<div data-drupal-selector="edit-message-info" class="webform-message js-webform-message js-form-wrapper form-wrapper" id="edit-message-info">');
-    $this->assertRaw('<div role="contentinfo" aria-label="" class="messages messages--info">');
+    $this->assertRaw('<div role="contentinfo" aria-label="Information message" class="messages messages--info">');
     $this->assertRaw('This is an <strong>info</strong> message.');
 
     // Check close message with slide effect.
     $this->assertRaw('<div data-drupal-selector="edit-message-close-slide" class="webform-message js-webform-message webform-message--close js-webform-message--close js-form-wrapper form-wrapper" data-message-close-effect="slide" id="edit-message-close-slide">');
-    $this->assertRaw('<div role="contentinfo" aria-label="" class="messages messages--info">');
+    $this->assertRaw('<div role="contentinfo" aria-label="Information message" class="messages messages--info">');
     $this->assertRaw('<a href="#close" aria-label="close" class="js-webform-message__link webform-message__link">×</a>This is message that can be <b>closed using slide effect</b>.');
 
     // Set user and state storage.

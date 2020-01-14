@@ -91,6 +91,12 @@ echo 'true' > modules/webform_node/webform_node.features.yml
 echo 'true' > modules/webform_node/tests/modules/webform_node_test_multiple/webform_node_test_multiple.features.yml
 echo 'true' > modules/webform_node/tests/modules/webform_node_test_translation/webform_node_test_translation.features.yml
 
+echo 'true' > modules/webform_options_custom/tests/modules/webform_options_custom/webform_options_custom.features.yml
+echo 'true' > modules/webform_options_custom/tests/modules/webform_options_custom_test/webform_options_custom_test.features.yml
+echo 'true' > modules/webform_options_custom/tests/modules/webform_options_custom_entity_test/webform_options_custom_entity_test.features.yml
+
+echo 'true' > modules/webform_options_limit/tests/modules/webform_options_limit_test/webform_options_limit_test.features.yml
+
 echo 'true' > modules/webform_scheduled_email/tests/modules/webform_scheduled_email_test/webform_scheduled_email_test.features.yml
 
 echo 'true' > modules/webform_submission_export_import/tests/modules/webform_submission_export_import_test/webform_submission_export_import_test.features.yml
@@ -156,6 +162,10 @@ drush en -y webform\
   webform_image_select_test\
   webform_node_test_multiple\
   webform_node_test_translation\
+  webform_options_custom\
+  webform_options_custom_test\
+  webform_options_custom_entity_test\
+  webform_options_limit_test\
   webform_scheduled_email_test\
   webform_submission_export_import_test;
 
@@ -199,6 +209,10 @@ drush features-export -y webform_entity_print_attachment_test
 drush features-export -y webform_image_select_test
 drush features-export -y webform_node_test_multiple
 drush features-export -y webform_node_test_translation
+drush features-export -y webform_options_custom
+drush features-export -y webform_options_custom_test
+drush features-export -y webform_options_custom_entity_test
+drush features-export -y webform_options_limit_test
 drush features-export -y webform_scheduled_email_test
 drush features-export -y webform_submission_export_import_test
 
@@ -241,6 +255,10 @@ drush webform:tidy -y --dependencies webform_entity_print_attachment_test
 drush webform:tidy -y --dependencies webform_image_select_test
 drush webform:tidy -y --dependencies webform_node_test_multiple
 drush webform:tidy -y --dependencies webform_node_test_translation
+drush webform:tidy -y --dependencies webform_options_custom
+drush webform:tidy -y --dependencies webform_options_custom_test
+drush webform:tidy -y --dependencies webform_options_custom_entity_test
+drush webform:tidy -y --dependencies webform_options_limit_test
 drush webform:tidy -y --dependencies webform_scheduled_email_test
 drush webform:tidy -y --dependencies webform_submission_export_import_test
 
@@ -281,7 +299,10 @@ drush features-import -y webform_entity_print_attachment_test
 drush features-import -y webform_image_select_test
 drush features-import -y webform_node_test_multiple
 drush features-import -y webform_node_test_translation
+drush features-import -y webform_options_custom
+drush features-import -y webform_options_custom_test
+drush features-import -y webform_options_custom_entity_test
+drush features-import -y webform_options_limit_test
 drush features-import -y webform_scheduled_email_test
 drush features-import -y webform_submission_export_import_test
-
 ```

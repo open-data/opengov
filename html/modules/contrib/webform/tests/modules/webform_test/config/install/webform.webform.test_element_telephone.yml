@@ -32,6 +32,18 @@ elements: |
     '#description': 'United States - +1'
     '#telephone_validation_format': '2'
     '#telephone_validation_country': US
+  tel_initial_country:
+    '#type': tel
+    '#title': tel_initial_country
+    '#international': true
+    '#international_initial_country': ZM
+    '#international_preferred_countries': {  }
+  tel_preferred_country:
+    '#type': tel
+    '#title': tel_preferred_country
+    '#international': true
+    '#international_preferred_countries':
+      - ZW
   
 css: ''
 javascript: ''
@@ -98,6 +110,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

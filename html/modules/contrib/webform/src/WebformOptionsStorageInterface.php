@@ -27,7 +27,7 @@ interface WebformOptionsStorageInterface extends ConfigEntityStorageInterface, I
   public function getOptions();
 
   /**
-   * Get all likert options with 'Likert:' prefix removed..
+   * Get all likert options with 'Likert:' prefix removed.
    *
    * @return string[]
    *   An array of likert options.

@@ -1,0 +1,14 @@
+name: 'Webform Custom Options Entity Reference Test'
+type: module
+description: 'Support module for webform that provides custom options entity reference element working examples.'
+package: Testing
+core: 8.x
+dependencies:
+  - 'drupal:node'
+  - 'webform:webform_options_limit'
+  - 'webform:webform_options_custom'
+
+# Information added by Drupal.org packaging script on 2019-10-29
+version: '8.x-5.5'
+project: 'webform'
+datestamp: 1572377290

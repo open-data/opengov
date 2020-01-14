@@ -24,8 +24,8 @@ display:
           tags:
             previous: '‹ Précédent'
             next: 'Suivant ›'
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '« First'
+            last: 'Last »'
     display_title: Maître
   feed_1:
     display_title: Flux

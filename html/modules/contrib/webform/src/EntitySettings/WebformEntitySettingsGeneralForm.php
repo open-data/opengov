@@ -330,7 +330,7 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
       ],
       '#states' => [
         'visible' => [
-          ':input[name="ajax_effect]"]' => ['!value' => 'none']
+          ':input[name="ajax_effect]"]' => ['!value' => 'none'],
         ],
       ],
       '#default_value' => $settings['ajax_speed'],

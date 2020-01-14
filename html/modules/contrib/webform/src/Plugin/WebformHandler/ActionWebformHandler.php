@@ -264,9 +264,6 @@ class ActionWebformHandler extends WebformHandlerBase {
 
     // Cleanup locked.
     $this->configuration['locked'] = ($this->configuration['locked'] === '') ? NULL : (bool) $this->configuration['locked'];
-
-    // Cast debug.
-    $this->configuration['debug'] = (bool) $this->configuration['debug'];
   }
 
   /**

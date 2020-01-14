@@ -23,7 +23,7 @@ elements: |
       <li>Providing more information gives a better picture to employers</li>
       <li>Salary requirements, location preferences and skill level are all important factors in the hiring decision</li>
       </ul>
-      
+  
   information:
     '#title': 'Job Seeker Information'
     '#type': webform_section
@@ -149,6 +149,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -274,6 +275,7 @@ handlers:
       attachments: false
       twig: false
       theme_name: ''
+      parameters: {  }
       debug: false
       reply_to: ''
       return_path: ''

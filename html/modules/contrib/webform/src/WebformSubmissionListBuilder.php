@@ -1294,8 +1294,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       return $result;
     }
     else {
-      $order = $this->request->query->get('order', $order);
-      if ($order) {
+      if ($order && $order['sql']) {
         $query->tableSort($header);
       }
       else {

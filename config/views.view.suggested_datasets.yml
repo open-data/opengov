@@ -1,6 +1,6 @@
 uuid: 50c30b85-cf94-492c-b3e2-76367a6f0f6a
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - field.storage.node.body
@@ -21,7 +21,7 @@ dependencies:
 id: suggested_datasets
 label: 'Suggested Datasets'
 module: views
-description: 'List of suggested datasets'
+description: 'DEPRECATED - List of suggested datasets'
 tag: ''
 base_table: node_field_data
 base_field: nid

@@ -5,7 +5,6 @@ namespace Drupal\webform;
 use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\webform\Entity\Webform;
 use Drupal\webform\Form\WebformDialogFormTrait;
 
 /**
@@ -57,6 +56,7 @@ class WebformEntityAddForm extends BundleEntityFormBase {
         'exists' => '\Drupal\webform\Entity\Webform::load',
         'source' => ['title'],
         'label' => '<br/>' . $this->t('Machine name'),
+
       ],
       '#maxlength' => 32,
       '#field_suffix' => ' (' . $this->t('Maximum @max characters', ['@max' => 32]) . ')',
@@ -119,7 +119,7 @@ class WebformEntityAddForm extends BundleEntityFormBase {
       // duplicates any translated webform config stored in the database.
       $result = \Drupal::database()->select('config', 'c')
         ->fields('c', ['collection', 'name', 'data'])
-        ->condition('c.name', 'webform.webform.' . $original_id )
+        ->condition('c.name', 'webform.webform.' . $original_id)
         ->condition('c.collection', 'language.%', 'LIKE')
         ->execute();
       while ($record = $result->fetchAssoc()) {

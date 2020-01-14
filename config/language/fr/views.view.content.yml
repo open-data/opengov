@@ -15,34 +15,43 @@ display:
           tags:
             previous: '‹ Précédent'
             next: 'Suivant ›'
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '« First'
+            last: 'Last »'
       fields:
         title:
-          label: Titre
+          label: Title
         type:
-          label: 'Type de contenu'
+          label: 'Content type'
           separator: ', '
         name:
           label: Auteur
         changed:
           label: 'Mis à jour'
+        moderation_state:
+          label: 'Moderation state'
+          separator: ', '
         operations:
           label: Actions
       filters:
-        title:
-          expose:
-            label: Titre
         type:
           expose:
-            label: 'Type de contenu'
+            label: 'Content type'
+        moderation_state:
+          expose:
+            label: 'Moderation state'
         langcode:
           expose:
             label: Langue
+        title:
+          expose:
+            label: Title
       title: Contenu
       empty:
         area_text_custom:
           content: 'Aucun contenu disponible.'
+      header:
+        result:
+          content: 'Displaying @start - @end of @total'
     display_title: Maître
   page_1:
     display_options:

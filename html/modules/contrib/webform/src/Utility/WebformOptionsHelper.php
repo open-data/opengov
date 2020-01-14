@@ -38,7 +38,7 @@ class WebformOptionsHelper {
   }
 
   /**
-   * Determine if the options has a specified value..
+   * Determine if the options has a specified value.
    *
    * @param string $value
    *   An value to look for in the options.
@@ -96,8 +96,8 @@ class WebformOptionsHelper {
   public static function getOptionText($value, array $options, $options_description = FALSE) {
     foreach ($options as $option_value => $option_text) {
       if (is_array($option_text)) {
-        if ($text = self::getOptionText($value, $option_text, $options_description)) {
-          return $text;
+        if ($option_text = self::getOptionText($value, $option_text, $options_description)) {
+          return $option_text;
         }
       }
       elseif ($value !== NULL && (string) $value === (string) $option_value) {
@@ -111,6 +111,39 @@ class WebformOptionsHelper {
       }
     }
     return $value;
+  }
+
+  /**
+   * Get the description string for an option value.
+   *
+   * @param string $value
+   *   The option value.
+   * @param array $options
+   *   An associative array of options.
+   * @param bool $options_description
+   *   Remove description which is delimited using ' -- '.
+   *
+   * @return string
+   *   The option description if found or an empty string.
+   */
+  public static function getOptionDescription($value, array $options, $options_description = FALSE) {
+    foreach ($options as $option_value => $option_text) {
+      if (is_array($option_text)) {
+        if ($option_description = self::getOptionDescription($value, $option_text, $options_description)) {
+          return $option_description;
+        }
+      }
+      elseif ($value !== NULL && (string) $value === (string) $option_value) {
+        if ($options_description && strpos($option_text, static::DESCRIPTION_DELIMITER) !== FALSE) {
+          list($option_text, $option_description) = explode(static::DESCRIPTION_DELIMITER, $option_text);
+          return $option_description;
+        }
+        else {
+          return '';
+        }
+      }
+    }
+    return '';
   }
 
   /**

@@ -7,11 +7,6 @@ handlers:
   email_confirmation:
     label: 'Email confirmation'
     settings:
-      subject: '[webform_submission:values:subject:value]'
-      body: '[webform_submission:values]'
+      from_name: default
   email_notification:
     label: 'Email notification'
-    settings:
-      from_name: '[webform_submission:values:subject:value]'
-      subject: '[webform_submission:values:subject:value]'
-      body: '[webform_submission:values]'

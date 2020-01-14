@@ -33,6 +33,7 @@ elements: |
     '#display_on': both
     '#view_mode': twig
     '#template': '{This is a custom template}'
+  
 css: ''
 javascript: ''
 settings:
@@ -98,6 +99,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
@@ -228,3 +230,4 @@ handlers:
       sender_mail: ''
       sender_name: ''
       theme_name: ''
+      parameters: {  }

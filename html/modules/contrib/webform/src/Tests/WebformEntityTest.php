@@ -46,37 +46,44 @@ class WebformEntityTest extends WebformTestBase {
    * Tests webform entity.
    */
   public function testWebform() {
-    /** @var \Drupal\webform\WebformInterface $webform */
-    $webform = Webform::load('test_submissions');
+    /** @var \Drupal\webform\WebformInterface $webform_contact */
+    $webform_contact = Webform::load('contact');
+    $this->assertEqual($webform_contact->getElementsDefaultData(), [
+      'name' => '[current-user:display-name]',
+      'email' => '[current-user:mail]',
+    ]);
+
+    /** @var \Drupal\webform\WebformInterface $webform_test_submissions */
+    $webform_test_submissions = Webform::load('test_submissions');
 
     // Check get elements.
-    $elements = $webform->getElementsInitialized();
+    $elements = $webform_test_submissions->getElementsInitialized();
     $this->assert(is_array($elements));
 
     // Check getElements.
-    $columns = $webform->getElementsInitializedFlattenedAndHasValue();
+    $columns = $webform_test_submissions->getElementsInitializedFlattenedAndHasValue();
     $this->assertEqual(array_keys($columns), ['first_name', 'last_name', 'sex', 'dob', 'node', 'colors', 'likert', 'address']);
 
     // Set invalid elements.
-    $webform->set('elements', "not\nvalid\nyaml")->save();
+    $webform_test_submissions->set('elements', "not\nvalid\nyaml")->save();
 
     // Check invalid elements.
-    $this->assertFalse($webform->getElementsInitialized());
+    $this->assertFalse($webform_test_submissions->getElementsInitialized());
 
     // Check invalid element columns.
-    $this->assertEqual($webform->getElementsInitializedFlattenedAndHasValue(), []);
+    $this->assertEqual($webform_test_submissions->getElementsInitializedFlattenedAndHasValue(), []);
 
-    // Check for 3 submissions..
-    $this->assertEqual($this->submissionStorage->getTotal($webform), 4);
+    // Check for 3 submissions.
+    $this->assertEqual($this->submissionStorage->getTotal($webform_test_submissions), 4);
 
     // Check delete.
-    $webform->delete();
+    $webform_test_submissions->delete();
 
     // Check all 3 submissions deleted.
-    $this->assertEqual($this->submissionStorage->getTotal($webform), 0);
+    $this->assertEqual($this->submissionStorage->getTotal($webform_test_submissions), 0);
 
     // Check that 'test' state was deleted with the webform.
-    $this->assertEqual(\Drupal::state()->get('webform.webform.' . $webform->id()), NULL);
+    $this->assertEqual(\Drupal::state()->get('webform.webform.' . $webform_test_submissions->id()), NULL);
   }
 
 }

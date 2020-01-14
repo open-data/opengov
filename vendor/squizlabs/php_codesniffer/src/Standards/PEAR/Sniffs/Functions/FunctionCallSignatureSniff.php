@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionCallSignatureSniff implements Sniff
@@ -339,11 +339,16 @@ class FunctionCallSignatureSniff implements Sniff
         // call itself is, so we can work out how far to
         // indent the arguments.
         $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
-        if ($tokens[$first]['code'] !== T_OBJECT_OPERATOR) {
-            // This is not a chained method, so go back and look for the
-            // start of the statement and take our indent from there.
-            $start = $phpcsFile->findStartOfStatement($stackPtr, true);
-            $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $start, true);
+        if ($tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
+            && $tokens[($first - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
+        ) {
+            // We are in a multi-line string, so find the start and use
+            // the indent from there.
+            $prev  = $phpcsFile->findPrevious(T_CONSTANT_ENCAPSED_STRING, ($first - 2), null, true);
+            $first = $phpcsFile->findFirstOnLine(Tokens::$emptyTokens, $prev, true);
+            if ($first === false) {
+                $first = ($prev + 1);
+            }
         }
 
         $foundFunctionIndent = 0;
@@ -444,6 +449,8 @@ class FunctionCallSignatureSniff implements Sniff
             }
         }//end if
 
+        $i = $phpcsFile->findNext(Tokens::$emptyTokens, ($openBracket + 1), null, true);
+
         if ($tokens[($i - 1)]['code'] === T_WHITESPACE
             && $tokens[($i - 1)]['line'] === $tokens[$i]['line']
         ) {
@@ -543,9 +550,14 @@ class FunctionCallSignatureSniff implements Sniff
 
                         $fix = $phpcsFile->addFixableError($error, $i, 'Indent', $data);
                         if ($fix === true) {
+                            $phpcsFile->fixer->beginChangeset();
+
                             $padding = str_repeat(' ', $expectedIndent);
                             if ($foundIndent === 0) {
                                 $phpcsFile->fixer->addContentBefore($i, $padding);
+                                if (isset($tokens[$i]['scope_opener']) === true) {
+                                    $phpcsFile->fixer->changeCodeBlockIndent($i, $tokens[$i]['scope_closer'], $expectedIndent);
+                                }
                             } else {
                                 if ($tokens[$i]['code'] === T_COMMENT) {
                                     $comment = $padding.ltrim($tokens[$i]['content']);
@@ -553,8 +565,14 @@ class FunctionCallSignatureSniff implements Sniff
                                 } else {
                                     $phpcsFile->fixer->replaceToken($i, $padding);
                                 }
+
+                                if (isset($tokens[($i + 1)]['scope_opener']) === true) {
+                                    $phpcsFile->fixer->changeCodeBlockIndent(($i + 1), $tokens[($i + 1)]['scope_closer'], ($expectedIndent - $foundIndent));
+                                }
                             }
-                        }
+
+                            $phpcsFile->fixer->endChangeset();
+                        }//end if
                     }//end if
                 } else {
                     $nextCode = $i;

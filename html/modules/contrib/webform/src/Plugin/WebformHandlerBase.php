@@ -475,7 +475,12 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
     $values = $form_state->getValues();
     foreach ($values as $key => $value) {
       if (array_key_exists($key, $this->configuration)) {
-        $this->configuration[$key] = $value;
+        if (is_bool($this->configuration[$key])) {
+          $this->configuration[$key] = (int) $value;
+        }
+        else {
+          $this->configuration[$key] = $value;
+        }
       }
     }
   }
@@ -488,6 +493,11 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
    * {@inheritdoc}
    */
   public function alterElements(array &$elements, WebformInterface $webform) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public function alterElement(array &$element, FormStateInterface $form_state, array $context) {}
 
   /****************************************************************************/
   // Webform submission methods.

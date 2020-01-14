@@ -176,7 +176,7 @@ class WebformSettingsPathTest extends WebformTestBase {
     ]);
     $webform->save();
 
-    // Check that admin theme is not applied
+    // Check that admin theme is not applied.
     $this->drupalGet('/webform/test_admin_theme');
     $this->assertNoRaw('seven');
 
@@ -190,7 +190,7 @@ class WebformSettingsPathTest extends WebformTestBase {
     $this->drupalPostForm('admin/appearance', $edit, t('Save configuration'));
     $webform->setSetting('page_admin_theme', TRUE)->save();
 
-    // Check that admin theme is applied
+    // Check that admin theme is applied.
     $this->drupalGet('/webform/test_admin_theme');
     $this->assertRaw('seven');
   }

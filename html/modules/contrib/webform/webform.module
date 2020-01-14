@@ -8,10 +8,8 @@
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Entity\EntityInterface;
@@ -22,22 +20,21 @@ use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
-use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\ManagedFile;
 use Drupal\webform\Utility\Mail;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformSubmissionForm;
 
 require_once __DIR__ . '/includes/webform.date.inc';
+require_once __DIR__ . '/includes/webform.editor.inc';
+require_once __DIR__ . '/includes/webform.form_alter.inc';
 require_once __DIR__ . '/includes/webform.libraries.inc';
 require_once __DIR__ . '/includes/webform.options.inc';
 require_once __DIR__ . '/includes/webform.theme.inc';
 require_once __DIR__ . '/includes/webform.translation.inc';
-require_once __DIR__ . '/includes/webform.editor.inc';
+require_once __DIR__ . '/includes/webform.query.inc';
 
 /**
  * Implements hook_help().
@@ -143,6 +140,15 @@ function webform_cron() {
 }
 
 /**
+ * Implements hook_rebuild().
+ */
+function webform_rebuild() {
+  /** @var \Drupal\webform\WebformEmailProviderInterface $email_provider */
+  $email_provider = \Drupal::service('webform.email_provider');
+  $email_provider->check();
+}
+
+/**
  * Implements hook_local_tasks_alter().
  */
 function webform_local_tasks_alter(&$local_tasks) {
@@ -237,154 +243,6 @@ function webform_module_implements_alter(&$implementations, $hook) {
     $implementation = $implementations['webform'];
     unset($implementations['webform']);
     $implementations['webform'] = $implementation;
-  }
-}
-
-/**
- * Implements hook_form_alter().
- */
-function webform_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (strpos($form_id, 'webform_') === FALSE || strpos($form_id, 'node_') === 0) {
-    return;
-  }
-
-  // Get form object.
-  $form_object = $form_state->getFormObject();
-
-  // Alter the webform submission form.
-  if (strpos($form_id, 'webform_submission') === 0
-    && $form_object instanceof WebformSubmissionForm) {
-    // Make sure webform libraries are always attached to submission form.
-    _webform_page_attachments($form);
-
-    // After build.
-    $form['#after_build'][] = '_webform_form_webform_submission_form_after_build';
-  }
-
-  // Display editing original language warning.
-  if (\Drupal::moduleHandler()->moduleExists('config_translation') && preg_match('/^entity.webform.(?:edit|settings|assets|access|handlers|third_party_settings)_form$/', \Drupal::routeMatch()->getRouteName())) {
-    /** @var \Drupal\webform\WebformInterface $webform */
-    $webform = \Drupal::routeMatch()->getParameter('webform');
-    /** @var \Drupal\Core\Language\LanguageManagerInterface $language_manager */
-    $language_manager = \Drupal::service('language_manager');
-
-    // If current webform is translated, load the base (default) webform and apply
-    // the translation to the elements.
-    if ($webform->getLangcode() != $language_manager->getCurrentLanguage()->getId()) {
-      $original_language = $language_manager->getLanguage($webform->getLangcode());
-      $form['langcode_message'] = [
-        '#type' => 'webform_message',
-        '#message_type' => 'warning',
-        '#message_message' => t('You are editing the original %language language for this webform.', ['%language' => $original_language->getName()]),
-        '#message_close' => TRUE,
-        '#message_storage' => WebformMessage::STORAGE_LOCAL,
-        '#message_id' => $webform->id() . '.original_language',
-        '#weight' => -100,
-      ];
-    }
-  }
-
-  // Add details 'toggle all' to all webforms (except submission forms).
-  if (!($form_object instanceof WebformSubmissionForm)) {
-    $form['#attributes']['class'][] = 'js-webform-details-toggle';
-    $form['#attributes']['class'][] = 'webform-details-toggle';
-    $form['#attached']['library'][] = 'webform/webform.element.details.toggle';
-    return;
-  }
-}
-
-/**
- * Alter webform after build.
- */
-function _webform_form_webform_submission_form_after_build($form, FormStateInterface $form_state) {
-  $form_object = $form_state->getFormObject();
-
-  /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
-  $webform_submission = $form_object->getEntity();
-  $webform = $webform_submission->getWebform();
-
-  // Add contextual links and change theme wrapper to webform.html.twig
-  // which includes 'title_prefix' and 'title_suffix' variables needed for
-  // contextual links to appear.
-  $form['#contextual_links']['webform'] = [
-    'route_parameters' => ['webform' => $webform->id()],
-  ];
-  $form['#theme_wrappers'] = ['webform'];
-  return $form;
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function webform_form_smtp_admin_settings_alter(&$form, FormStateInterface $form_state) {
-  $form['#submit'][] = '_webform_form_smtp_admin_settings_submit';
-}
-
-/**
- * Submit callback for SMTP admin settings.
- */
-function _webform_form_smtp_admin_settings_submit(&$form, FormStateInterface $form_state) {
-  // Since the SMTP module can enabled or disabled, check HTML email provider.
-  /** @var \Drupal\webform\WebformEmailProviderInterface $email_provider */
-  $email_provider = \Drupal::service('webform.email_provider');
-  $email_provider->check();
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * Add warnings when attempting to update the Webform module using
- * the 'Update manager'.
- *
- * @see https://www.drupal.org/project/webform/issues/2930116
- * @see https://www.drupal.org/project/webform/issues/2920095
- */
-function webform_form_update_manager_update_form_alter(&$form, FormStateInterface $form_state) {
-  if (!isset($form['projects']) || !isset($form['projects']['#options']['webform'])) {
-    return;
-  }
-
-  // Display dismissible warning at the top of the page.
-  $t_args = [
-    ':href_manual' => 'https://www.drupal.org/docs/user_guide/en/extend-manual-install.html',
-    ':href_drush' => 'https://www.drupal.org/docs/user_guide/en/security-update-module.html',
-  ];
-  $form['webform_update_manager_warning'] = [
-    '#type' => 'webform_message',
-    '#message_type' => 'warning',
-    '#message_message' => t('The Webform module may not update properly using this administrative interface. It is strongly recommended that you update the Webform module <a href=":href_manual">manually</a> or by using <a href=":href_drush">Drush</a>.', $t_args),
-    '#message_close' => TRUE,
-    '#message_storage' => WebformMessage::STORAGE_SESSION,
-    '#weight' => -10,
-  ];
-
-  // Display warning to backup site when webform is checked.
-  $form['projects']['#options']['webform']['title']['data'] = [
-    'title' => $form['projects']['#options']['webform']['title']['data'],
-    'container' => [
-      '#type' => 'container',
-      '#states' => ['visible' => [':input[name="projects[webform]"]' => ['checked' => TRUE]]],
-      '#attributes' => ['class' => ['js-form-wrapper'], 'style' => 'display:none'],
-      'message' => [
-        '#type' => 'webform_message',
-        '#message_type' => 'warning',
-        '#message_message' => t('Please make sure to backup your website before updating the Webform module.'),
-      ],
-    ],
-  ];
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function webform_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  /** @var \Drupal\views\ViewExecutable $view */
-  $view = $form_state->get('view');
-
-  // Check if this a is webform submission view.
-  // @see \Drupal\webform\WebformSubmissionListBuilder::buildSubmissionViews
-  if (isset($view->webform_submission_view)) {
-    $form['#action'] = Url::fromRoute(\Drupal::routeMatch()->getRouteName(), \Drupal::routeMatch()->getRawParameters()->all())->toString();
   }
 }
 
@@ -503,7 +361,6 @@ function _webform_clear_webform_submission_list_cache_tag(EntityInterface $entit
   elseif ($entity->getEntityTypeId() === 'user_role') {
     Cache::invalidateTags(['webform_submission_list']);
   }
-
 }
 
 /**
@@ -595,8 +452,9 @@ function webform_mail_alter(&$message) {
 function webform_page_attachments(array &$attachments) {
   $route_name = \Drupal::routeMatch()->getRouteName();
 
-  // Attach global libraries only to webform specific pages.
-  if (preg_match('/^(webform\.|^entity\.([^.]+\.)?webform)/', $route_name)) {
+  // Attach global libraries only to webform specific pages and module list.
+  if (preg_match('/^(webform\.|^entity\.([^.]+\.)?webform)/', $route_name)
+    || $route_name === 'system.modules_list') {
     _webform_page_attachments($attachments);
   }
 
@@ -672,106 +530,6 @@ function _webform_page_attachments(array &$attachments) {
 }
 
 /**
- * Implements hook_library_info_build().
- */
-function webform_library_info_build() {
-  $base_path = base_path();
-  $default_query_string = \Drupal::state()->get('system.css_js_query_string') ?: '0';
-
-  /** @var \Drupal\webform\WebformInterface[] $webforms */
-  $webforms = Webform::loadMultiple();
-  $libraries = [];
-  foreach ($webforms as $webform_id => $webform) {
-    $assets = array_filter($webform->getAssets());
-    foreach ($assets as $type => $value) {
-      // Note:
-      // Set 'type' to 'external' and manually build the CSS/JS file path
-      // to prevent JS from being parsed by locale_js_alter()
-      // @see locale_js_alter()
-      // @see https://www.drupal.org/node/1803330
-      $settings = ['type' => 'external', 'preprocess' => FALSE, 'minified' => FALSE];
-      if ($type === 'css') {
-        $libraries["webform.css.$webform_id"] = [
-          'css' => ['theme' => ["{$base_path}webform/css/{$webform_id}?{$default_query_string}" => $settings]],
-        ];
-      }
-      else {
-        $libraries["webform.javascript.$webform_id"] = [
-          'js' => ["{$base_path}webform/javascript/{$webform_id}?{$default_query_string}" => $settings],
-        ];
-      }
-    }
-  }
-  return $libraries;
-}
-
-/**
- * Implements hook_css_alter().
- */
-function webform_css_alter(&$css, AttachedAssetsInterface $assets) {
-  // Remove the stable.theme's off-canvas CSS reset for webform admin routes.
-  // @see https://www.drupal.org/project/drupal/issues/2826722
-  //
-  // NOTE: Most admin themes correctly style jQuery UI dialogs because Drupal's
-  // admin UI, especially Views, relies on them.
-  $use_off_canvas = WebformDialogHelper::useOffCanvas();
-  $is_admin_route = \Drupal::service('router.admin_context')->isAdminRoute();
-  $is_webform_route = preg_match('/(^webform|^entity\.webform|^entity\.node\.webform)/', \Drupal::routeMatch()->getRouteName());
-  if ($use_off_canvas && $is_admin_route && $is_webform_route) {
-    foreach ($css as $key => $item) {
-      // @see 'core/misc/dialog/off-canvas
-      // @see core/themes/stable/css/core/dialog/off-canvas
-      if (strpos($key, '/off-canvas.') !== FALSE) {
-        unset($css[$key]);
-      }
-    }
-  }
-
-  _webform_asset_alter($css, 'css');
-}
-
-/**
- * Implements hook_js_alter().
- */
-function webform_js_alter(&$javascript, AttachedAssetsInterface $assets) {
-  // Add Google API key required by webform/libraries.jquery.geocomplete
-  // which is dependency for webform/webform.element.location.geocomplete.
-  //
-  // @see \Drupal\webform\Element\WebformLocationGeocomplete::processWebformComposite
-  // @see webform.libraries.yml
-  // @see webform/webform.element.location.geocomplete
-  // @see webform/libraries.jquery.geocomplete
-  $settings = $assets->getSettings();
-  if (!empty($settings['webform']['location']['geocomplete']['api_key']) && isset($javascript['https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places'])) {
-    $api_key = $settings['webform']['location']['geocomplete']['api_key'];
-    $javascript['https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places']['data'] = "https://maps.googleapis.com/maps/api/js?key=$api_key&libraries=places";
-    unset($settings['webform']['location']['geocomplete']['api_key']);
-    $assets->setSettings($settings);
-  }
-
-  _webform_asset_alter($javascript, 'javascript');
-}
-
-/**
- * Alter Webform CSS or JavaScript assets and make sure they appear last.
- *
- * @param array $items
- *   An array of all CSS or JavaScript being presented on the page.
- * @param string $type
- *   The type of asset being attached.
- *
- * @see hook_library_info_build()
- */
-function _webform_asset_alter(array &$items, $type) {
-  foreach ($items as $key => &$item) {
-    if (strpos($key, "webform/$type/") === 0) {
-      $item['weight'] = 1000;
-      $item['group'] = 1000;
-    }
-  }
-}
-
-/**
  * Implements hook_file_access().
  *
  * @see file_file_download()
@@ -790,6 +548,31 @@ function webform_file_access(FileInterface $file, $operation, AccountInterface $
  */
 function webform_file_download($uri) {
   return ManagedFile::accessFileDownload($uri);
+}
+
+/**
+ * Checks for files with names longer than can be stored in the database.
+ *
+ * @param \Drupal\file\FileInterface $file
+ *   A file entity.
+ *
+ * @return array
+ *   An empty array if the file name length is smaller than the limit or an
+ *   array containing an error message if it's not or is empty.
+ *
+ * @see file_validate_name_length()
+ */
+function webform_file_validate_name_length(FileInterface $file) {
+  $errors = [];
+  // Don't display error is the file_validate_name_length() has already
+  // displayed a warning because the files length is over 240.
+  if (strlen($file->getFilename()) > 240) {
+    return $errors;
+  }
+  if (strlen($file->getFilename()) > 150) {
+    $errors[] = t("The file's name exceeds the Webform module's 150 characters limit. Please rename the file and try again.");
+  }
+  return $errors;
 }
 
 /**
@@ -902,6 +685,8 @@ function webform_process_states(array &$elements, $key = '#attributes') {
 function webform_element_info_alter(array &$info) {
   $info['checkboxes']['#process'][] = 'webform_process_options';
   $info['radios']['#process'][] = 'webform_process_options';
+  $info['webform_entity_checkboxes']['#process'][] = 'webform_process_options';
+  $info['webform_entity_radios']['#process'][] = 'webform_process_options';
 }
 
 /**
@@ -1049,292 +834,4 @@ function _webform_entity_element_validate_rendering_error_handler($error_level, 
  */
 function _webform_entity_element_validate_rendering_exception_handler($exception) {
   throw $exception;
-}
-
-/******************************************************************************/
-// Query alter functions.
-/******************************************************************************/
-
-/**
- * Implements hook_query_TAG_alter().
- *
- * Append EAV sort to webform_submission entity query.
- *
- * @see http://stackoverflow.com/questions/12893314/sorting-eav-database
- * @see \Drupal\webform\WebformSubmissionListBuilder::getEntityIds
- */
-function webform_query_webform_submission_list_builder_alter(AlterableInterface $query) {
-  /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-  $name = $query->getMetaData('webform_submission_element_name');
-  $direction = $query->getMetaData('webform_submission_element_direction');
-  $property_name = $query->getMetaData('webform_submission_element_property_name');
-
-  $query->distinct();
-  $query->addJoin('INNER', 'webform_submission_data', NULL, 'base_table.sid = webform_submission_data.sid');
-  $query->addField('webform_submission_data', 'value', 'value');
-  $query->condition('name', $name);
-  if ($property_name) {
-    $query->condition('property', $property_name);
-  }
-  $query->orderBy('value', $direction);
-}
-
-/**
- * Implements hook_query_TAG_alter().
- */
-function webform_query_entity_reference_alter(AlterableInterface $query) {
-  /** @var \Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection $handler */
-  $handler = $query->getMetaData('entity_reference_selection_handler');
-
-  // Get webform settings used to limit and randomize results.
-  // @see \Drupal\webform\Plugin\WebformElement\WebformEntityReferenceTrait::getTestValues
-  // @see \Drupal\webform\Plugin\WebformElement\WebformEntityReferenceTrait::setOptions
-  // @see \Drupal\webform\Element\WebformEntityTrait::setOptions
-  $configuration = $handler->getConfiguration() + ['_webform_settings' => []];
-  $settings = $configuration['_webform_settings'];
-  if (!empty($settings['random'])) {
-    $query->orderRandom();
-  }
-  if (!empty($settings['limit'])) {
-    $query->range(0, $settings['limit']);
-  }
-}
-
-/**
- * Implements hook_query_TAG_alter().
- *
- * This hook implementation adds webform submission access checks for the
- * account stored in the 'account' meta-data (or current user if not provided),
- * for an operation stored in the 'op' meta-data (or 'view' if not provided).
- */
-function webform_query_webform_submission_access_alter(AlterableInterface $query) {
-  /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-  $op = $query->getMetaData('op') ?: 'view';
-  $account = $query->getMetaData('account') ?: \Drupal::currentUser();
-
-  $entity_type = \Drupal::entityTypeManager()->getDefinition('webform_submission');
-
-  // Get webform submission tables which are used to build the alter query.
-  $webform_submission_tables = [];
-  foreach ($query->getTables() as $table) {
-    if (is_string($table['table']) && $table['table'] === $entity_type->getBaseTable()) {
-      $webform_submission_tables[] = [
-        'alias' => $table['alias'],
-        'condition' => $query->orConditionGroup(),
-      ];
-    }
-  }
-
-  // If there are no webform submission tables then nothing needs to be altered.
-  if (empty($webform_submission_tables)) {
-    return;
-  }
-
-  // If the user has administer access then exit.
-  if ($account->hasPermission('administer webform submission')
-    || $account->hasPermission('administer webform')) {
-    return;
-  }
-
-  // Apply operation specific any and own permissions.
-  if (in_array($op, ['view', 'edit', 'delete'])) {
-    $permission_any = "$op any webform submission";
-    $permission_own = "$op own webform submission";
-
-    // If the user has any permission the query does not have to be altered.
-    if ($account->hasPermission($permission_any)) {
-      return;
-    }
-
-    // If the user has own permission, then add the account id to all
-    // webform submission tables conditions.
-    if ($account->hasPermission($permission_own)) {
-      foreach ($webform_submission_tables as $table) {
-        $table['condition']->condition($table['alias'] . '.uid', $account->id());
-      }
-    }
-  }
-
-  // Alter query based on update access to all webforms.
-  /** @var \Drupal\webform\WebformInterface[] $webforms */
-  if ($account->isAuthenticated()) {
-    // Get cached list of webforms that the user can update so that we don't
-    // have to continually load every webform.
-    $cached = \Drupal::cache()->get('webform_submission_access__account_update__' . $account->id());
-    if ($cached) {
-      $webform_account_access_update = $cached->data;
-    }
-    else {
-      $webform_account_access_update = [];
-      /** @var \Drupal\webform\WebformInterface[] $webforms */
-      $webforms = Webform::loadMultiple();
-      foreach ($webforms as $webform) {
-        if ($webform->access('update', $account)) {
-          $webform_account_access_update[] = $webform->id();
-        }
-      }
-      \Drupal::cache()->set(
-        'webform_submission_access__account_update__' . $account->id(),
-        $webform_account_access_update,
-        Cache::PERMANENT,
-        ['config:webform_list', 'user:' . $account->id()]
-      );
-    }
-    foreach ($webform_account_access_update as $webform_id) {
-      foreach ($webform_submission_tables as $table) {
-        $table['condition']->condition($table['alias'] . '.webform_id', $webform_id);
-      }
-    }
-  }
-  else {
-    /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
-    $submission_storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
-    $sids = $submission_storage->getAnonymousSubmissionIds($account);
-    if ($sids) {
-      foreach ($webform_submission_tables as $table) {
-        $table['condition']->condition($table['alias'] . '.sid', $sids, 'IN');
-      }
-    }
-  }
-
-  // Alter query based on access rules.
-  /** @var \Drupal\webform\WebformAccessRulesManagerInterface $access_rules_manager */
-  $access_rules_manager = \Drupal::service('webform.access_rules_manager');
-
-  // Get cached webform access rules and cache tags so that we don't have
-  // to continually load every webform.
-  $cached = \Drupal::cache()->get('webform_submission_access__webform_access_rules');
-  if ($cached) {
-    $webform_access_rules = $cached->data;
-  }
-  else {
-    /** @var \Drupal\webform\WebformInterface[] $webforms */
-    $webforms = Webform::loadMultiple();
-    $webform_access_rules = [];
-    foreach ($webforms as $webform_id => $webform) {
-      $webform_access_rules[$webform_id] = $access_rules_manager->getAccessRules($webform) ?: [];
-    }
-    \Drupal::cache()->set(
-      'webform_submission_access__webform_access_rules',
-      $webform_access_rules,
-      Cache::PERMANENT,
-      ['config:webform_list']
-    );
-  }
-
-  foreach ($webform_access_rules as $webform_id => $access_rules) {
-    // Check basic and any access rules and add webform id to all
-    // webform submission tables conditions.
-    if ($access_rules_manager->checkAccessRules($op, $account, $access_rules)
-      || $access_rules_manager->checkAccessRules($op . '_any', $account, $access_rules)) {
-      foreach ($webform_submission_tables as $table) {
-        $table['condition']->condition($table['alias'] . '.webform_id', $webform_id);
-      }
-    }
-    // If the user has own access rules, then add the account id to all
-    // webform submission tables conditions.
-    elseif ($access_rules_manager->checkAccessRules($op . '_own', $account, $access_rules)) {
-      foreach ($webform_submission_tables as $table) {
-        /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-        $condition = $query->andConditionGroup();
-        $condition->condition($table['alias'] . '.uid', $account->id());
-        $condition->condition($table['alias'] . '.webform_id', $webform_id);
-        $table['condition']->condition($condition);
-      }
-    }
-  }
-
-  // Alter query based on webform node access permissions.
-  // @see webform_node_node_access()
-  // @todo Figure out how to move the below code to the webform_node.module.
-  if (\Drupal::moduleHandler()->moduleExists('webform_node')) {
-    $route_name = \Drupal::routeMatch()->getRouteName();
-    if (preg_match('/entity\.([^.]+)\.webform\.results_submissions/', $route_name, $match)) {
-      $entity_type = $match[1];
-      if ($account->hasPermission('view webform submissions any node')) {
-        foreach ($webform_submission_tables as $table) {
-          $table['condition']->condition($table['alias'] . '.entity_type', $entity_type);
-        }
-      }
-      elseif ($account->hasPermission('view webform submissions own node')) {
-        $entity_id = \Drupal::routeMatch()->getRawParameter($entity_type);
-        foreach ($webform_submission_tables as $table) {
-          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-          $condition = $query->andConditionGroup();
-          $condition->condition($table['alias'] . '.entity_type', $entity_type);
-          $condition->condition($table['alias'] . '.entity_id', $entity_id);
-          $table['condition']->condition($condition);
-        }
-      }
-    }
-  }
-
-  // Alter query based on webform access group.
-  // @todo Figure out how to move the below code to the webform_access.module.
-  if (\Drupal::moduleHandler()->moduleExists('webform_access')) {
-    // Collect access group ids with 'view_any' or 'administer' permissions.
-    /** @var \Drupal\webform_access\WebformAccessGroupStorageInterface $access_group_storage */
-    $access_group_storage = \Drupal::entityTypeManager()->getStorage('webform_access_group');
-    /** @var \Drupal\webform_access\WebformAccessGroupInterface $access_group */
-    $access_groups = $access_group_storage->loadByEntities(NULL, NULL, $account);
-    $access_any_group_ids = [];
-    $access_own_group_ids = [];
-    foreach ($access_groups as $access_group) {
-      $access_group_permissions = $access_group->get('permissions');
-      $access_group_permissions = array_combine($access_group_permissions, $access_group_permissions);
-      if (isset($access_group_permissions['view_any']) || isset($access_group_permissions['administer'])) {
-        $access_any_group_ids[] = $access_group->id();
-      }
-      elseif (isset($access_group_permissions['view_own'])) {
-        $access_own_group_ids[] = $access_group->id();
-      }
-    }
-    if ($access_any_group_ids) {
-      // Add access group entity type, entity id, and webform id to the query.
-      $result = \Drupal::database()->select('webform_access_group_entity', 'ge')
-        ->fields('ge', ['entity_type', 'entity_id', 'webform_id'])
-        ->condition('group_id', $access_any_group_ids, 'IN')
-        ->execute();
-      while ($record = $result->fetchAssoc()) {
-        foreach ($webform_submission_tables as $table) {
-          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-          $condition = $query->andConditionGroup();
-          $condition->condition($table['alias'] . '.entity_type', $record['entity_type']);
-          $condition->condition($table['alias'] . '.entity_id', (string) $record['entity_id']);
-          $condition->condition($table['alias'] . '.webform_id', $record['webform_id']);
-          $table['condition']->condition($condition);
-        }
-      }
-    }
-    if ($access_own_group_ids) {
-      // Add access group entity type, entity id, and webform id to the query.
-      $result = \Drupal::database()->select('webform_access_group_entity', 'ge')
-        ->fields('ge', ['entity_type', 'entity_id', 'webform_id'])
-        ->condition('group_id', $access_own_group_ids, 'IN')
-        ->execute();
-      while ($record = $result->fetchAssoc()) {
-        foreach ($webform_submission_tables as $table) {
-          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-          $condition = $query->andConditionGroup();
-          $condition->condition($table['alias'] . '.uid', $account->id());
-          $condition->condition($table['alias'] . '.entity_type', $record['entity_type']);
-          $condition->condition($table['alias'] . '.entity_id', (string) $record['entity_id']);
-          $condition->condition($table['alias'] . '.webform_id', $record['webform_id']);
-          $table['condition']->condition($condition);
-        }
-      }
-    }
-
-  }
-
-  // Apply webform submission table conditions to query.
-  foreach ($webform_submission_tables as $table) {
-    // If a webform submission table does not have any conditions,
-    // we have to block access to the table.
-    if (count($table['condition']->conditions()) === 1) {
-      $table['condition']->where('1 = 0');
-    }
-
-    $query->condition($table['condition']);
-  }
 }

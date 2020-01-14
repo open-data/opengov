@@ -64,7 +64,7 @@ elements: |
     '#more': '{This is an example of more}'
     '#description': '{This is a description}'
     '#description_display': tooltip
-
+  
 css: ''
 javascript: ''
 settings:
@@ -130,6 +130,7 @@ settings:
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
+  wizard_progress_states: false
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true

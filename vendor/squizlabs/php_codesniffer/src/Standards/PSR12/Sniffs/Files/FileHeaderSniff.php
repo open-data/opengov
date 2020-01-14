@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\PSR12\Sniffs\Files;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 class FileHeaderSniff implements Sniff
@@ -36,7 +36,7 @@ class FileHeaderSniff implements Sniff
      * @param int                         $stackPtr  The position of the current
      *                                               token in the stack.
      *
-     * @return void
+     * @return int|null
      */
     public function process(File $phpcsFile, $stackPtr)
     {
@@ -139,6 +139,11 @@ class FileHeaderSniff implements Sniff
                 // Skip comments as PSR-12 doesn't say if these are allowed or not.
                 if (isset(Tokens::$commentTokens[$tokens[$next]['code']]) === true) {
                     $next = $phpcsFile->findNext(Tokens::$commentTokens, ($next + 1), null, true);
+                    if ($next === false) {
+                        // We reached the end of the file.
+                        break(2);
+                    }
+
                     $next--;
                     break;
                 }
@@ -148,7 +153,7 @@ class FileHeaderSniff implements Sniff
             }//end switch
 
             $next = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
-        } while ($next !== false && ($next !== $phpcsFile->numTokens - 1));
+        } while ($next !== false);
 
         if (count($headerLines) === 1) {
             // This is only an open tag and doesn't contain the file header.
@@ -173,7 +178,7 @@ class FileHeaderSniff implements Sniff
                 // this block.
                 $next = $phpcsFile->findNext(T_WHITESPACE, ($line['end'] + 1), null, true);
                 if ($next !== false && $tokens[$next]['line'] !== ($tokens[$line['end']]['line'] + 2)) {
-                    $error = 'Header blocks must be followed by a single blank line';
+                    $error = 'Header blocks must be separated by a single blank line';
                     $fix   = $phpcsFile->addFixableError($error, $line['end'], 'SpacingAfterBlock');
                     if ($fix === true) {
                         if ($tokens[$next]['line'] === $tokens[$line['end']]['line']) {

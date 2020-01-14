@@ -13,8 +13,8 @@ display:
       pager:
         options:
           tags:
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page_label: 'Éléments par page'
             items_per_page_options_all_label: '- Tout -'
@@ -34,10 +34,10 @@ display:
           separator: ', '
         view_webform_submission:
           label: Actions
-          text: voir
+          text: view
       header:
         result:
-          content: 'Affichage de @start à @end sur @total'
+          content: 'Displaying @start - @end of @total'
       empty:
         area_text_custom:
           content: 'Aucune soumission n''est disponible.'
@@ -117,7 +117,7 @@ display:
           separator: ', '
         view_webform_submission:
           label: Actions
-          text: voir
+          text: view
         edit_webform_submission:
           label: Actions
           text: modifier
@@ -157,7 +157,7 @@ display:
           separator: ', '
         view_webform_submission:
           label: Actions
-          text: voir
+          text: view
       filters:
         in_draft:
           expose:

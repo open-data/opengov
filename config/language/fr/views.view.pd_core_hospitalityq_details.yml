@@ -8,7 +8,7 @@ display:
           label: Nom
         total:
           alter:
-            text: '{{ total }} $'
+            text: '{{ total|trim|number_format(2, '','', '' '') }} $'
         start_date:
           label: 'Date de début'
         end_date:

@@ -70,7 +70,7 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
         'twig' => $this->t('Twig template…'),
       ],
     ];
-    $form['attachment']['template']  = [
+    $form['attachment']['template'] = [
       '#type' => 'webform_codemirror',
       '#title' => $this->t('Twig template'),
       '#title_display' => 'invisible',

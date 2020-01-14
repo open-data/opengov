@@ -651,7 +651,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: '$ {{ total }}'
+            text: '${{ total }}'
             make_link: false
             path: ''
             absolute: false

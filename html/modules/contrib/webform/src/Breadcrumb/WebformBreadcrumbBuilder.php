@@ -182,6 +182,9 @@ class WebformBreadcrumbBuilder implements BreadcrumbBuilderInterface {
           if (strpos($route_name, 'config_translation.item.') === 0 && $route_name != 'config_translation.item.overview.webform.config') {
             $breadcrumb->addLink(Link::createFromRoute($this->t('Translate'), 'config_translation.item.overview.webform.config'));
           }
+          elseif (strpos($route_name, 'entity.webform_options_custom') === 0 && $route_name !== 'entity.webform_options_custom.collection') {
+            $breadcrumb->addLink(Link::createFromRoute($this->t('Custom options'), 'entity.webform_options_custom.collection'));
+          }
           elseif (strpos($route_name, 'entity.webform_options') === 0 && $route_name !== 'entity.webform_options.collection') {
             $breadcrumb->addLink(Link::createFromRoute($this->t('Options'), 'entity.webform_options.collection'));
           }

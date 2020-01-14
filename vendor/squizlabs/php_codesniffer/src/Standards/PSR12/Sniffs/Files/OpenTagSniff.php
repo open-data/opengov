@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\PSR12\Sniffs\Files;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 class OpenTagSniff implements Sniff
 {
@@ -35,7 +35,7 @@ class OpenTagSniff implements Sniff
      * @param int                         $stackPtr  The position of the current
      *                                               token in the stack.
      *
-     * @return void
+     * @return int
      */
     public function process(File $phpcsFile, $stackPtr)
     {
@@ -52,6 +52,11 @@ class OpenTagSniff implements Sniff
 
         $tokens = $phpcsFile->getTokens();
         $next   = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
+        if ($next === false) {
+            // Empty file.
+            return;
+        }
+
         if ($tokens[$next]['line'] === $tokens[$stackPtr]['line']) {
             $error = 'Opening PHP tag must be on a line by itself';
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'NotAlone');

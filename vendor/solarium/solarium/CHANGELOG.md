@@ -4,6 +4,68 @@ All notable changes to the solarium library will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.1.5]
+### Security
+- Remove explicit requirements for symfony/cache because of CVE-2019-18889
+
+### Added
+- Symfony 5 support
+
+### Fixed
+- PHP 7.4 compatibility issue: deprecated parameter order of implode()
+- PHP 7.4 test coverage
+- Solarium\Component\Result\Stats\Result getters might return null
+
+
+## [5.1.4]
+### Added
+- Solarium\Component\Facet\Pivot::setLimit()
+- Solarium\Component\Facet\Pivot::getLimit()
+
+### Fixed
+-  Client::checkExact() checks against wrong version number
+
+
+## [5.1.3]
+### Fixed
+- Solarium\Component\ResponseParser\Debug fails on Solr Cloud 6.x during extracting timing phases
+
+
+## [5.1.2]
+### Fixed
+- BufferedAdd does not support Symfony event dispatcher
+- An empty array as value in combination with the `set` modifier should remove a field when performing Atomic Updates
+
+
+## [5.1.1]
+### Fixed
+- PHP 7.1 compatibility issue: date constants are not available as part of DateTimeInterface before PHP 7.2.0
+- Use Symfony\Contracts\EventDispatcher\Event instead of deprecated Symfony\Component\EventDispatcher\Event
+
+
+## [5.1.0]
+### Fixed
+- BufferedAdd::commit() type hints
+- Symfony >=4.3 event dispatcher deprecation warnings
+
+
+## [5.1.0-rc.1]
+### Added
+- Solarium\Core\Query\Helper::formatDate() now handles DateTimeImmutable
+
+### Changed
+- Try to capture complete response body as error message when using guzzle instead of using guzzle's truncated message
+- Adapted to Symfony >=4.3 event dispatching, backward compatible to >=3.4, <=4.2
+
+### Fixed
+- Complex ReRank queries should not cause Solr parse errors
+- Update request builders format \DateTimeImmutable correctly
+- Symfony >=4.3 event dispatcher deprecation warnings
+
+### Removed
+- Symfony <3.4 support
+
+
 ## [5.0.3]
 ### Fixed
 - Solarium\QueryType\MoreLikeThis\Query::setBoost()
