@@ -1,0 +1,9 @@
+uuid: 6b3ad293-4015-4837-8bb7-35a64dca99a0
+langcode: en
+status: true
+dependencies: {  }
+id: organization
+label: Organization
+category: 'Open Government'
+likert: false
+options: ''
