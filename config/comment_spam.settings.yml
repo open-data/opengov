@@ -1,6 +1,43 @@
-default_list: ["Chnlovecomplaints","Russiangirldating","Russianwomendate","Trustedmedications","Thornhilljewellery",
-               "Tuvanbenhtri","Hideuri","Girlgirlxvideo","Bacsilevanminh","Cort.as","Mewkid.net","Bitchute","Charmdate","Datereviews",
-               "Oddsexch","Porn.cartoons","Ukrainianwomen","Remmont","Verbum","Hec.su","Femdomspanking"]
-custom_list: []
-include_default_list: 0
-webform_list: []
+default_list:
+  - Chnlovecomplaints
+  - Russiangirldating
+  - Russianwomendate
+  - Trustedmedications
+  - Thornhilljewellery
+  - Tuvanbenhtri
+  - Hideuri
+  - Girlgirlxvideo
+  - Bacsilevanminh
+  - Cort.as
+  - Mewkid.net
+  - Bitchute
+  - Charmdate
+  - Datereviews
+  - Oddsexch
+  - Porn.cartoons
+  - Ukrainianwomen
+  - Remmont
+  - Verbum
+  - Hec.su
+  - Femdomspanking
+custom_list: {  }
+include_default_list: '1'
+webform_list:
+  '': 0
+  app_ideas: 0
+  app_vote: 0
+  ati_records: 0
+  contact: 0
+  informal_request_for_travel_or_h: 0
+  open_government_week: 0
+  receive_email: 0
+  submit_app: 0
+  submit_event: 0
+  suggest_an_idea_for_canada_s_4th: 0
+  suggest_dataset: 0
+  suggest_idea: 0
+  suggest_idea_action_plan: 0
+  suggest_open_information: 0
+  vote: 0
+  vote_up_down: 0
+  vote_up_down_external: 0
