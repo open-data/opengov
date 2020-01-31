@@ -130,7 +130,7 @@ third_party_settings:
               provider: layout_builder
               label_display: '0'
               formatter:
-                label: above
+                label: hidden
                 type: link
                 settings:
                   trim_length: 80
@@ -192,8 +192,8 @@ third_party_settings:
                 type: list_default
             additional: {  }
             weight: -9
-          1c2b0b7d-a613-433d-addb-0bb5783f9ee7:
-            uuid: 1c2b0b7d-a613-433d-addb-0bb5783f9ee7
+          42cf29be-9231-437c-b821-3455a2db75f0:
+            uuid: 42cf29be-9231-437c-b821-3455a2db75f0
             region: left
             configuration:
               id: webform_block

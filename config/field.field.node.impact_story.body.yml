@@ -12,11 +12,11 @@ field_name: body
 entity_type: node
 bundle: impact_story
 label: Summary
-description: 'Summary for the Open Data Impact Story'
-required: false
+description: ''
+required: true
 translatable: true
 default_value: {  }
 default_value_callback: ''
 settings:
-  display_summary: false
+  display_summary: true
 field_type: text_with_summary
