@@ -1,18 +1,18 @@
-uuid: e549a556-2f42-45a6-aadb-e4aa5aa9f62e
+uuid: 7974daa8-ef74-462b-9a3f-fe0f7a37992d
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_dataset_used
+    - field.storage.node.field_url
     - node.type.impact_story
   module:
     - link
-id: node.impact_story.field_dataset_used
-field_name: field_dataset_used
+id: node.impact_story.field_url
+field_name: field_url
 entity_type: node
 bundle: impact_story
-label: 'Dataset(s) used'
-description: 'Dataset used for the Open Data Impact Story'
+label: Website
+description: ''
 required: false
 translatable: true
 default_value: {  }

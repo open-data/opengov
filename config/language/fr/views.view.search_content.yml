@@ -1,0 +1,24 @@
+display:
+  default:
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Recherche
+          reset_button_label: Effacer
+      pager:
+        options:
+          tags:
+            first: '« première'
+            last: 'dernière »'
+      filters:
+        search_api_fulltext:
+          expose:
+            label: Recherche
+      title: Recherche
+      header:
+        result:
+          content: '<p><strong>@total résultats trouvé(s)</strong></p>'
+  page_1:
+    display_options:
+      menu:
+        title: Recherche

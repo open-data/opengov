@@ -11,7 +11,7 @@ id: node.impact_story.field_story_testimonial
 field_name: field_story_testimonial
 entity_type: node
 bundle: impact_story
-label: Testimonial
+label: Testimonial(s)
 description: 'Testimonial for the Open Data Impact Story'
 required: false
 translatable: true
