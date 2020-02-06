@@ -1,17 +1,17 @@
-uuid: 60b9c0ce-4291-423c-9e49-baba46d10269
+uuid: 2250602d-0a1c-4376-ad53-da2f9aaf4134
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_media
+    - field.storage.node.field_thumbnail
     - media.type.image
     - node.type.impact_story
-id: node.impact_story.field_media
-field_name: field_media
+id: node.impact_story.field_thumbnail
+field_name: field_thumbnail
 entity_type: node
 bundle: impact_story
-label: Banner
-description: 'Banner for the Open Data Impact Story'
+label: Thumbnail
+description: ''
 required: true
 translatable: true
 default_value: {  }

@@ -13,16 +13,16 @@ display:
           sort_desc_label: Desc
       fields:
         title:
-          label: Titre
+          label: Title
           separator: ', '
         type:
-          label: 'Type de contenu'
+          label: 'Content type'
           separator: ', '
         changed:
-          label: Modifié
+          label: Changed
           separator: ', '
         moderation_state:
-          label: État
+          label: Status
           separator: ', '
       title: 'Contenu récent'
       empty:

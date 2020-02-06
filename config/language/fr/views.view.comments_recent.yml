@@ -9,8 +9,8 @@ display:
           tags:
             previous: '‹ Précédent'
             next: 'Suivant ›'
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page_label: 'Éléments par page'
             items_per_page_options_all_label: '- Tout -'
@@ -34,7 +34,7 @@ display:
       block_category: 'Listes (Views)'
       fields:
         subject:
-          label: Titre
+          label: Title
           separator: ', '
         name:
           separator: ', '

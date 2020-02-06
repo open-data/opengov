@@ -44,7 +44,7 @@ display:
       title: 'Bibliothèque de blocs personnalisés'
       header:
         result:
-          content: 'Affichage de @start à @end sur @total'
+          content: 'Displaying @start - @end of @total'
       empty:
         area_text_custom:
           content: 'Il n''y a pas de bloc personnalisé disponible.'

@@ -171,31 +171,9 @@ third_party_settings:
                 third_party_settings: {  }
                 type: list_default
             additional: {  }
-            weight: -10
-          99eae66a-01db-4041-8dde-bd2517e3c1b3:
-            uuid: 99eae66a-01db-4041-8dde-bd2517e3c1b3
-            region: left
-            configuration:
-              id: 'field_block:node:suggested_dataset:field_status_link'
-              label: 'Status Link'
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: hidden
-                type: link
-                settings:
-                  trim_length: 80
-                  url_only: false
-                  url_plain: false
-                  rel: '0'
-                  target: '0'
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: -7
-          6c2fd704-9bc9-41e6-b49c-9345b05f2a96:
-            uuid: 6c2fd704-9bc9-41e6-b49c-9345b05f2a96
+            weight: -9
+          42cf29be-9231-437c-b821-3455a2db75f0:
+            uuid: 42cf29be-9231-437c-b821-3455a2db75f0
             region: left
             configuration:
               id: webform_block

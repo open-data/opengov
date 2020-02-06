@@ -16,24 +16,24 @@ display:
           tags:
             previous: '‹ Précédent'
             next: 'Suivant ›'
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page_label: 'Éléments par page'
             items_per_page_options_all_label: '- Tout -'
             offset_label: Décalage
       fields:
         title:
-          label: Titre
+          label: Title
           separator: ', '
         type:
-          label: 'Type de contenu'
+          label: 'Content type'
           separator: ', '
         name:
           label: Auteur
           separator: ', '
         moderation_state:
-          label: 'État de modération'
+          label: 'Moderation state'
           separator: ', '
         changed:
           label: 'Mis à jour'
@@ -43,13 +43,13 @@ display:
       filters:
         title:
           expose:
-            label: Titre
+            label: Title
         type:
           expose:
-            label: 'Type de contenu'
+            label: 'Content type'
         moderation_state:
           expose:
-            label: 'État de modération'
+            label: 'Moderation state'
         langcode:
           expose:
             label: Langue

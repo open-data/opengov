@@ -5,7 +5,7 @@ display:
     display_options:
       exposed_form:
         options:
-          submit_button: 'Appliquer les filtres'
+          submit_button: 'Apply Filters'
           reset_button_label: Réinitialiser
           exposed_sorts_label: 'Trier par'
           sort_asc_label: Asc
@@ -13,8 +13,8 @@ display:
       pager:
         options:
           tags:
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page_label: 'Éléments par page'
             items_per_page_options_all_label: '- Tout -'
@@ -63,7 +63,7 @@ display:
         description: 'Permet aux utilisateurs de parcourir et d''administrer des éléments média'
       header:
         result:
-          content: 'Affichage de @start à @end sur @total'
+          content: 'Displaying @start - @end of @total'
   widget:
     display_title: Widget
     display_options:

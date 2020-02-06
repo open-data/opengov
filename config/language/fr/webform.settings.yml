@@ -34,4 +34,3 @@ file:
 mail:
   default_from_name: '[site:name]'
   default_body_html: "<p>Envoyé le [webform_submission:created]</p>\r\n<p>Envoyé par : [webform_submission:user]</p>\r\n<p>Les valeurs soumises sont :</p>\r\n[webform_submission:values]\n"
-  default_subject: ''
