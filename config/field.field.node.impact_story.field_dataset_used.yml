@@ -11,7 +11,7 @@ id: node.impact_story.field_dataset_used
 field_name: field_dataset_used
 entity_type: node
 bundle: impact_story
-label: 'Datasets used'
+label: 'Dataset(s) used'
 description: 'Dataset used for the Open Data Impact Story'
 required: false
 translatable: true

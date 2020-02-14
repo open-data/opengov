@@ -12,6 +12,8 @@ dependencies:
     - field.field.node.impact_story.field_story_testimonial
     - field.field.node.impact_story.field_subject
     - field.field.node.impact_story.field_submitter_name
+    - field.field.node.impact_story.field_thumbnail
+    - field.field.node.impact_story.field_url
     - field.field.node.impact_story.field_vote_up_down
     - node.type.impact_story
     - workflows.workflow.editorial
@@ -28,7 +30,7 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 3
+    weight: 4
     settings:
       rows: 9
       summary_rows: 3
@@ -37,12 +39,12 @@ content:
     region: content
   created:
     type: datetime_timestamp
-    weight: 10
+    weight: 12
     region: content
     settings: {  }
     third_party_settings: {  }
   field_dataset_used:
-    weight: 6
+    weight: 7
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -50,7 +52,7 @@ content:
     type: link_default
     region: content
   field_media:
-    weight: 7
+    weight: 8
     settings:
       media_types: {  }
     third_party_settings: {  }
@@ -58,7 +60,7 @@ content:
     region: content
   field_ribbon:
     type: entity_reference_autocomplete
-    weight: 13
+    weight: 15
     region: content
     settings:
       match_operator: CONTAINS
@@ -66,7 +68,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_story_impact:
-    weight: 4
+    weight: 5
     settings:
       rows: 5
       placeholder: ''
@@ -74,7 +76,7 @@ content:
     type: text_textarea
     region: content
   field_story_testimonial:
-    weight: 5
+    weight: 6
     settings:
       rows: 5
       placeholder: ''
@@ -98,15 +100,30 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
+  field_thumbnail:
+    type: media_library_widget
+    weight: 9
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+    region: content
+  field_url:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
   moderation_state:
     type: moderation_state_default
-    weight: 12
+    weight: 14
     settings: {  }
     region: content
     third_party_settings: {  }
   path:
     type: path
-    weight: 9
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -120,7 +137,7 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 11
+    weight: 13
     settings:
       match_operator: CONTAINS
       size: 60
@@ -128,7 +145,7 @@ content:
     region: content
     third_party_settings: {  }
   url_redirects:
-    weight: 8
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }

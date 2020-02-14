@@ -13,6 +13,8 @@ dependencies:
     - field.field.node.impact_story.field_story_testimonial
     - field.field.node.impact_story.field_subject
     - field.field.node.impact_story.field_submitter_name
+    - field.field.node.impact_story.field_thumbnail
+    - field.field.node.impact_story.field_url
     - field.field.node.impact_story.field_vote_up_down
     - node.type.impact_story
     - views.view.user_impact_stories
@@ -96,7 +98,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: entity_reference_label
             additional: {  }
-            weight: -6
+            weight: -5
           749c0ee9-b04d-48c3-9a7f-b808c59302a6:
             uuid: 749c0ee9-b04d-48c3-9a7f-b808c59302a6
             region: content
@@ -111,7 +113,7 @@ third_party_settings:
                 settings: {  }
                 third_party_settings: {  }
             additional: {  }
-            weight: -5
+            weight: -4
           150bdea4-ccae-4eb1-82af-73fa1d593818:
             uuid: 150bdea4-ccae-4eb1-82af-73fa1d593818
             region: content
@@ -126,7 +128,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: text_default
             additional: {  }
-            weight: -4
+            weight: -3
           3fb70768-2bbf-490a-a41b-9e74ba5ee98c:
             uuid: 3fb70768-2bbf-490a-a41b-9e74ba5ee98c
             region: content
@@ -141,7 +143,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: text_default
             additional: {  }
-            weight: -3
+            weight: -2
           42b84380-4672-47b1-bc01-1ae1f8485f49:
             uuid: 42b84380-4672-47b1-bc01-1ae1f8485f49
             region: content
@@ -175,7 +177,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: link
             additional: {  }
-            weight: -2
+            weight: -1
           3f1f9ba3-e0f4-42bb-8f01-b2a146906de3:
             uuid: 3f1f9ba3-e0f4-42bb-8f01-b2a146906de3
             region: content
@@ -192,7 +194,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: comment_default
             additional: {  }
-            weight: 1
+            weight: 2
           1aeb1916-57b9-4ae2-acd4-2a9f17420c56:
             uuid: 1aeb1916-57b9-4ae2-acd4-2a9f17420c56
             region: content
@@ -205,9 +207,29 @@ third_party_settings:
               items_per_page: none
               context_mapping: {  }
             additional: {  }
-            weight: 0
-          65d69b71-e9f6-4e3b-9418-a3f4d88f82b4:
-            uuid: 65d69b71-e9f6-4e3b-9418-a3f4d88f82b4
+            weight: 1
+          24f9b593-ae1a-4238-b3b3-00c09f2c5718:
+            uuid: 24f9b593-ae1a-4238-b3b3-00c09f2c5718
+            region: content
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:impact_story:field_url'
+              formatter:
+                label: above
+                settings:
+                  trim_length: 80
+                  url_only: false
+                  url_plain: false
+                  rel: ''
+                  target: ''
+                third_party_settings: {  }
+                type: link
+            additional: {  }
+            weight: -6
+          ac9e4270-67f9-487c-85cb-83b56265a5a5:
+            uuid: ac9e4270-67f9-487c-85cb-83b56265a5a5
             region: content
             configuration:
               id: webform_block
@@ -219,7 +241,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: -1
+            weight: 0
         third_party_settings: {  }
 id: node.impact_story.default
 targetEntityType: node
@@ -305,6 +327,27 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     type: string
+    region: content
+  field_thumbnail:
+    type: entity_reference_entity_view
+    weight: 12
+    label: above
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    region: content
+  field_url:
+    weight: 11
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
     region: content
   field_vote_up_down:
     weight: 10

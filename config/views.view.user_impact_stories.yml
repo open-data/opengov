@@ -5,22 +5,17 @@ dependencies:
   config:
     - field.storage.node.body
     - field.storage.node.field_dataset_used
-    - field.storage.node.field_media
     - field.storage.node.field_story_impact
     - field.storage.node.field_story_testimonial
     - field.storage.node.field_subject
     - field.storage.node.field_submitter_name
-    - image.style.large
-    - image.style.medium
+    - field.storage.node.field_thumbnail
     - node.type.impact_story
     - node.type.map
-    - taxonomy.vocabulary.app_categories
-    - taxonomy.vocabulary.app_ribbon
   module:
     - link
     - media
     - node
-    - taxonomy
     - text
     - user
     - views_bootstrap
@@ -315,7 +310,7 @@ display:
   block_1:
     display_plugin: block
     id: block_1
-    display_title: 'User Impact Stories List'
+    display_title: 'Open Data User Impact Stories List'
     position: 1
     display_options:
       display_extenders:
@@ -388,10 +383,10 @@ display:
           entity_type: node
           entity_field: nid
           plugin_id: field
-        field_media:
-          id: field_media
-          table: node__field_media
-          field: field_media
+        field_thumbnail:
+          id: field_thumbnail
+          table: node__field_thumbnail
+          field: field_thumbnail
           relationship: none
           group_type: group
           admin_label: ''
@@ -439,7 +434,7 @@ display:
           click_sort_column: target_id
           type: media_thumbnail
           settings:
-            image_style: large
+            image_style: ''
             image_link: content
           group_column: target_id
           group_columns: {  }
@@ -550,7 +545,7 @@ display:
             more_link_text: more
             more_link_path: 'node/{{ nid }}'
             strip_tags: false
-            trim: true
+            trim: false
             preserve_tags: ''
             html: false
           element_type: ''
@@ -562,12 +557,13 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: false
+          hide_empty: true
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
-          type: text_default
-          settings: {  }
+          click_sort_column: summary
+          type: text_summary_or_trimmed
+          settings:
+            trim_length: 2000
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -1011,171 +1007,27 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
-        combine:
-          id: combine
-          table: views
-          field: combine
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: allwords
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: combine_op
-            label: Search
-            description: ''
-            use_operator: false
-            operator: combine_op
-            identifier: combine
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          fields: {  }
-          plugin_id: combine
-        field_ribbon_target_id:
-          id: field_ribbon_target_id
-          table: node__field_ribbon
-          field: field_ribbon_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: or
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_ribbon_target_id_op
-            label: Publishers
-            description: ''
-            use_operator: false
-            operator: field_ribbon_target_id_op
-            identifier: field_ribbon_target_id
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          type: select
-          limit: true
-          vid: app_ribbon
-          hierarchy: false
-          error_message: true
-          plugin_id: taxonomy_index_tid
-        field_subject_target_id:
-          id: field_subject_target_id
-          table: node__field_subject
-          field: field_subject_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: or
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_subject_target_id_op
-            label: Subject
-            description: ''
-            use_operator: false
-            operator: field_subject_target_id_op
-            identifier: field_subject_target_id
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              editor: '0'
-              comment_moderator: '0'
-              reviewer: '0'
-              business_owner: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          type: select
-          limit: true
-          vid: app_categories
-          hierarchy: false
-          error_message: true
-          plugin_id: taxonomy_index_tid
       filter_groups:
         operator: AND
         groups:
           1: AND
       title: 'User Stories'
-      css_class: 'mrgn-tp-lg mrgn-bttm-xl'
+      css_class: mrgn-bttm-xl
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:field.storage.node.body'
         - 'config:field.storage.node.field_dataset_used'
-        - 'config:field.storage.node.field_media'
         - 'config:field.storage.node.field_story_impact'
         - 'config:field.storage.node.field_story_testimonial'
         - 'config:field.storage.node.field_subject'
         - 'config:field.storage.node.field_submitter_name'
+        - 'config:field.storage.node.field_thumbnail'
   recent:
     display_plugin: block
     id: recent
@@ -1185,10 +1037,10 @@ display:
       display_extenders: {  }
       display_description: ''
       fields:
-        field_media:
-          id: field_media
-          table: node__field_media
-          field: field_media
+        field_thumbnail:
+          id: field_thumbnail
+          table: node__field_thumbnail
+          field: field_thumbnail
           relationship: none
           group_type: group
           admin_label: ''
@@ -1221,22 +1073,22 @@ display:
             trim: false
             preserve_tags: ''
             html: false
-          element_type: figure
+          element_type: ''
           element_class: ''
           element_label_type: ''
           element_label_class: ''
           element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
-          element_default_classes: false
+          element_default_classes: true
           empty: ''
-          hide_empty: true
+          hide_empty: false
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: target_id
           type: media_thumbnail
           settings:
-            image_style: medium
+            image_style: ''
             image_link: content
           group_column: target_id
           group_columns: {  }
@@ -1326,7 +1178,7 @@ display:
         css_class: false
         footer: false
         empty: false
-      title: 'Read more user impact stories'
+      title: 'Read more user stories'
       filters:
         status:
           value: '1'
@@ -1427,7 +1279,7 @@ display:
         type: html_list
         options:
           grouping: {  }
-          row_class: col-md-3
+          row_class: 'col-md-3 mrgn-bttm-md'
           default_row_class: false
           type: ul
           wrapper_class: ''
@@ -1470,4 +1322,4 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
-        - 'config:field.storage.node.field_media'
+        - 'config:field.storage.node.field_thumbnail'

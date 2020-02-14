@@ -22,11 +22,25 @@ content:
       trim_length: 600
     third_party_settings: {  }
     region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     weight: 100
     settings: {  }
     third_party_settings: {  }
     region: content
 hidden:
+  comment: true
+  field_dataset_used: true
+  field_media: true
+  field_ribbon: true
+  field_story_impact: true
+  field_story_testimonial: true
+  field_subject: true
+  field_submitter_name: true
+  field_vote_up_down: true
   langcode: true
   search_api_excerpt: true

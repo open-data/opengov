@@ -10,9 +10,9 @@ id: node.impact_story.field_media
 field_name: field_media
 entity_type: node
 bundle: impact_story
-label: Screenshots
-description: 'Screenshots for the Open Data Impact Story'
-required: false
+label: Banner
+description: 'Banner for the Open Data Impact Story'
+required: true
 translatable: true
 default_value: {  }
 default_value_callback: ''

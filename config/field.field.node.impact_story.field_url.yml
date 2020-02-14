@@ -1,0 +1,23 @@
+uuid: 7974daa8-ef74-462b-9a3f-fe0f7a37992d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_url
+    - node.type.impact_story
+  module:
+    - link
+id: node.impact_story.field_url
+field_name: field_url
+entity_type: node
+bundle: impact_story
+label: Website
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+field_type: link

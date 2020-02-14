@@ -192,8 +192,8 @@ third_party_settings:
                 type: list_default
             additional: {  }
             weight: -9
-          c2779428-ffff-4ed9-823b-2ba564e663e2:
-            uuid: c2779428-ffff-4ed9-823b-2ba564e663e2
+          42cf29be-9231-437c-b821-3455a2db75f0:
+            uuid: 42cf29be-9231-437c-b821-3455a2db75f0
             region: left
             configuration:
               id: webform_block
