@@ -8,6 +8,9 @@ handlers:
     settings:
       from_name: default
       body: "Soumis le [webform_submission:created]<br />\r\nSoumis par : [webform_submission:user]<br />\r\nLes valeurs soumises sont :<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"
+      subject: 'Proposez un jeu de données'
   email_1:
     settings:
       body: "<p>Merci pour votre soumission. Votre demande sera traitée et ajoutée à la page « Proposez un jeu de données » dès que possible.</p>\r\n[webform_submission:values]"
+      subject: 'Proposez un jeu de données'
+description: 'Formulaire de proposition d’un jeu de données '
