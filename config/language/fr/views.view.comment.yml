@@ -39,9 +39,6 @@ display:
         created:
           label: 'Post date'
           separator: ', '
-        created:
-          label: 'Date de publication'
-          separator: ', '
         operations:
           label: Actions
         name_1:
@@ -112,9 +109,6 @@ display:
         comment_body:
           label: Comment
           separator: ', '
-        comment_body:
-          label: Commentaire
-          separator: ', '
         uid:
           separator: ', '
         name:
@@ -125,9 +119,6 @@ display:
           separator: ', '
         created:
           label: 'Post date'
-          separator: ', '
-        created:
-          label: 'Date de publication'
           separator: ', '
         operations:
           label: Actions

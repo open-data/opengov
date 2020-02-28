@@ -41,6 +41,8 @@ hidden:
   field_story_testimonial: true
   field_subject: true
   field_submitter_name: true
+  field_thumbnail: true
+  field_url: true
   field_vote_up_down: true
   langcode: true
   search_api_excerpt: true
