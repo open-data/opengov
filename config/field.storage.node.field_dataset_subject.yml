@@ -1,0 +1,21 @@
+uuid: 28df8cb5-3709-4f48-ab10-cc4350beabf0
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_dataset_subject
+field_name: field_dataset_subject
+entity_type: node
+type: list_string
+settings:
+  allowed_values: {  }
+  allowed_values_function: get_dataset_subject
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

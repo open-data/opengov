@@ -4,8 +4,9 @@ status: false
 dependencies:
   config:
     - field.storage.node.body
-    - field.storage.node.field_status
-    - field.storage.node.field_suggested_dataset_dept
+    - field.storage.node.field_organization
+    - field.storage.node.field_sd_status
+    - field.storage.node.field_status_link
     - field.storage.node.field_vote_up_down
     - node.type.suggested_dataset
     - user.role.administrator
@@ -13,7 +14,9 @@ dependencies:
     - user.role.comment_moderator
   module:
     - csv_serialization
+    - link
     - node
+    - options
     - rest
     - serialization
     - text
@@ -253,10 +256,10 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
-        field_suggested_dataset_dept:
-          id: field_suggested_dataset_dept
-          table: node__field_suggested_dataset_dept
-          field: field_suggested_dataset_dept
+        field_organization:
+          id: field_organization
+          table: node__field_organization
+          field: field_organization
           relationship: none
           group_type: group
           admin_label: ''
@@ -293,7 +296,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: false
+          element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -302,9 +305,8 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: false
+          type: list_default
+          settings: {  }
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -316,10 +318,10 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
-        field_status:
-          id: field_status
-          table: node__field_status
-          field: field_status
+        field_sd_status:
+          id: field_sd_status
+          table: node__field_sd_status
+          field: field_sd_status
           relationship: none
           group_type: group
           admin_label: ''
@@ -356,7 +358,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: false
+          element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -365,10 +367,76 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: false
+          type: list_default
+          settings: {  }
           group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
+        field_status_link:
+          id: field_status_link
+          table: node__field_status_link
+          field: field_status_link
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Status Link'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: uri
+          type: link
+          settings:
+            trim_length: 80
+            url_only: false
+            url_plain: false
+            rel: '0'
+            target: '0'
+          group_column: ''
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -550,8 +618,9 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.body'
-        - 'config:field.storage.node.field_status'
-        - 'config:field.storage.node.field_suggested_dataset_dept'
+        - 'config:field.storage.node.field_organization'
+        - 'config:field.storage.node.field_sd_status'
+        - 'config:field.storage.node.field_status_link'
         - 'config:field.storage.node.field_vote_up_down'
   block_1:
     display_plugin: block
@@ -571,8 +640,9 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.body'
-        - 'config:field.storage.node.field_status'
-        - 'config:field.storage.node.field_suggested_dataset_dept'
+        - 'config:field.storage.node.field_organization'
+        - 'config:field.storage.node.field_sd_status'
+        - 'config:field.storage.node.field_status_link'
         - 'config:field.storage.node.field_vote_up_down'
   rest_export_1:
     display_plugin: rest_export
@@ -939,14 +1009,14 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
-        field_suggested_dataset_dept:
-          id: field_suggested_dataset_dept
-          table: node__field_suggested_dataset_dept
-          field: field_suggested_dataset_dept
+        field_organization:
+          id: field_organization
+          table: node__field_organization
+          field: field_organization
           relationship: none
           group_type: group
           admin_label: ''
-          label: Organization
+          label: ''
           exclude: false
           alter:
             alter_text: false
@@ -988,9 +1058,8 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: false
+          type: list_default
+          settings: {  }
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -1002,14 +1071,14 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
-        field_status:
-          id: field_status
-          table: node__field_status
-          field: field_status
+        field_sd_status:
+          id: field_sd_status
+          table: node__field_sd_status
+          field: field_sd_status
           relationship: none
           group_type: group
           admin_label: ''
-          label: Status
+          label: ''
           exclude: false
           alter:
             alter_text: false
@@ -1051,10 +1120,76 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: false
+          type: list_default
+          settings: {  }
           group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
+        field_status_link:
+          id: field_status_link
+          table: node__field_status_link
+          field: field_status_link
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: uri
+          type: link
+          settings:
+            trim_length: 80
+            url_only: false
+            url_plain: false
+            rel: '0'
+            target: '0'
+          group_column: ''
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -1139,6 +1274,7 @@ display:
         - user.roles
       tags:
         - 'config:field.storage.node.body'
-        - 'config:field.storage.node.field_status'
-        - 'config:field.storage.node.field_suggested_dataset_dept'
+        - 'config:field.storage.node.field_organization'
+        - 'config:field.storage.node.field_sd_status'
+        - 'config:field.storage.node.field_status_link'
         - 'config:field.storage.node.field_vote_up_down'

@@ -11,11 +11,13 @@ id: node.suggested_dataset.field_organization
 field_name: field_organization
 entity_type: node
 bundle: suggested_dataset
-label: Organization
+label: 'Government institution'
 description: 'Organization for Suggested Dataset (synced with CKAN)'
-required: false
-translatable: true
-default_value: {  }
+required: true
+translatable: false
+default_value:
+  -
+    value: external-externe
 default_value_callback: ''
 settings: {  }
 field_type: list_string

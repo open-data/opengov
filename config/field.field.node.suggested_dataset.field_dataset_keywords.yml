@@ -1,16 +1,17 @@
-uuid: 466c8661-26d7-4b7f-ae58-d7f1cf60f131
+uuid: 64ab1d13-50ee-4030-bf1b-5b5a53ed9610
 langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.node.field_dataset_keywords
     - node.type.suggested_dataset
-id: node.suggested_dataset.title
-field_name: title
+id: node.suggested_dataset.field_dataset_keywords
+field_name: field_dataset_keywords
 entity_type: node
 bundle: suggested_dataset
-label: 'Suggested title of dataset(s)'
+label: Keywords
 description: ''
-required: true
+required: false
 translatable: true
 default_value: {  }
 default_value_callback: ''

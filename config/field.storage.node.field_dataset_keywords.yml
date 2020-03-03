@@ -1,11 +1,11 @@
-uuid: cb774ac4-e6f6-4364-b312-a78c5d08db18
+uuid: 089830df-f771-48f3-affd-921933176961
 langcode: en
 status: true
 dependencies:
   module:
     - node
-id: node.field_suggested_dataset_dept
-field_name: field_suggested_dataset_dept
+id: node.field_dataset_keywords
+field_name: field_dataset_keywords
 entity_type: node
 type: string
 settings:

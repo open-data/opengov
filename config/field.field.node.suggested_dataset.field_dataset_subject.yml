@@ -1,0 +1,21 @@
+uuid: 96e8ee85-da0d-4891-8505-b75d316b415a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_dataset_subject
+    - node.type.suggested_dataset
+  module:
+    - options
+id: node.suggested_dataset.field_dataset_subject
+field_name: field_dataset_subject
+entity_type: node
+bundle: suggested_dataset
+label: Subject
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string
