@@ -1,0 +1,9 @@
+uuid: b62086d8-59f1-42cb-8262-7f5515228a89
+langcode: en
+status: true
+dependencies: {  }
+id: character_set
+label: 'Character Set'
+category: 'Open Government'
+likert: false
+options: ''

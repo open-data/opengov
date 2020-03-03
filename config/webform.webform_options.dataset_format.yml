@@ -1,0 +1,9 @@
+uuid: 003e9d8e-9f5b-4ccb-bd27-55d41dc9fb5c
+langcode: en
+status: true
+dependencies: {  }
+id: dataset_format
+label: 'Dataset Format'
+category: 'Open Government'
+likert: false
+options: ''

@@ -1,0 +1,217 @@
+uuid: 05cdd381-3d36-4de2-86b5-846bbf099e8e
+langcode: en
+status: open
+dependencies:
+  module:
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+open: null
+close: null
+weight: 0
+uid: 283
+template: false
+archive: false
+id: user_contributed_content
+title: 'User Contributed Content'
+description: 'Webform for submitting user contributed content'
+category: ''
+elements: "page_1:\n  '#type': webform_wizard_page\n  '#title': 'Add Dataset Metadata'\n  title:\n    '#type': textfield\n    '#title': Title\n    '#description': '<p class=\"text-info\">The English name by which the dataset is known. Example: University Student Dropout Rate</p>'\n    '#required': true\n  creator:\n    '#type': textfield\n    '#title': Creator\n    '#description': '<p class=\"text-info\">Individual entities (persons) primarily responsible for making the asset (separate multiple entities by commas). Example: John Smith</p>'\n  contact_email:\n    '#type': email\n    '#title': 'Contact Email'\n    '#description': '<p class=\"text-info\">The contact person&#39;s email for the dataset. Example: user@email.com</p>'\n    '#required': true\n  description:\n    '#type': textarea\n    '#title': Description\n    '#description': '<p class=\"text-info\">An account of the asset, in English. A description may include but is not limited to: an abstract, a table of contents, or a free-text account of the resource. Example: Annual Student Dropout rate for universities containing the following demographic …</p>'\n    '#required': true\n  keywords:\n    '#type': textfield\n    '#title': Keywords\n    '#description': '<p class=\"text-info\">Commonly used words or phrases which describe the asset. (Separate multiple entries by commas). Example: University, student dropout</p>'\n    '#required': true\n  subject:\n    '#type': webform_term_select\n    '#title': Subject\n    '#multiple': true\n    '#description': '<p class=\"text-info\">The topic of the content of the information asset. You may select or deselect multiple subjects (Ctrl+Click).</p>'\n    '#required': true\n    '#vocabulary': app_categories\n    '#breadcrumb_delimiter': ''\n  maintenance_and_update_frequency:\n    '#type': select\n    '#title': 'Maintenance and Update Frequency'\n    '#description': '<p class=\"text-info\">The frequency with which changes and additions are made to the information asset after the initial resource is completed.</p>'\n    '#options': maintenance_update_frequency\n    '#required': true\n  date_published:\n    '#type': date\n    '#title': 'Date Published'\n    '#description': '<p class=\"text-info\">The date of issuance (e.g., publication) of the information asset (YYYY-MM-DD).</p>'\n    '#required': true\n    '#datepicker': true\n    '#datepicker_button': true\npage_2:\n  '#type': webform_wizard_page\n  '#title': 'Additional Dataset Metadata (Optional)'\n  audience:\n    '#type': select\n    '#title': Audience\n    '#multiple': true\n    '#description': '<p class=\"text-info\">A description of the audience or group of people for whom the described dataset is intended or useful. You may select or deselect multiple options (Ctrl+Click)</p>'\n    '#options': dataset_audience\n  time_period_coverage_start:\n    '#type': date\n    '#title': 'Time Period Coverage Start'\n    '#description': '<p class=\"text-info\">The start date of the period covered by the asset (YYYY-MM-DD).</p>'\n    '#datepicker': true\n    '#datepicker_button': true\n  time_period_coverage_end:\n    '#type': date\n    '#title': 'Time Period Coverage End'\n    '#description': '<p class=\"text-info\">The end date of the period covered by the asset (YYYY-MM-DD).</p>'\n    '#datepicker': true\n    '#datepicker_button': true\n  date_modified:\n    '#type': date\n    '#title': 'Date Modified'\n    '#description': '<p class=\"text-info\">The date on which the information asset was updated (YYYY-MM-DD).</p>'\n    '#datepicker': true\n    '#datepicker_button': true\n  homepage_url:\n    '#type': textfield\n    '#title': 'Homepage URL'\n    '#description': '<p class=\"text-info\">A program or homepage that can be navigated to gain additional or contextual information about the asset. Example: www.example.ca</p>'\n  digital_object_identifier:\n    '#type': textfield\n    '#title': 'Digital Object Identifier (DOI)'\n    '#description': '<p class=\"text-info mrgn-bttm-lg\">The Digital Object Identifier assigned to the asset. For more information visit: <a href=\"http://cisti-icist.nrc-cnrc.gc.ca/eng/services/cisti/datacite-canada/index.html\">http://cisti-icist.nrc-cnrc.gc.ca/eng/services/cisti/datacite-canada/index.html</a>.</p>'\npage_3:\n  '#type': webform_wizard_page\n  '#title': 'Add Resource'\n  resource_title:\n    '#type': textfield\n    '#title': 'Resource Title'\n    '#description': '<p class=\"text-info\">Name given to the resource.</p>'\n    '#required': true\n  language:\n    '#type': select\n    '#title': Language\n    '#multiple': true\n    '#description': '<p class=\"text-info\">The language of the resource. You may select or deselect multiple languages (Ctrl+Click).</p>'\n    '#options': dataset_language\n    '#required': true\n  download_url:\n    '#type': textfield\n    '#title': 'Download URL'\n    '#description': '<p class=\"text-info\">The location for online access to the distribution of the resource. Example: www.example.ca</p>'\n    '#required': true\n  unique_identifier:\n    '#type': textfield\n    '#title': 'Unique Identifier'\n    '#description': '<p class=\"text-info\">A unique phrase or string which identifies the resource.</p>'\n  resource_date_published:\n    '#type': date\n    '#title': 'Date Published'\n    '#description': '<p class=\"text-info\">Date of issuance of the resource (e.g. publication).</p>'\n    '#datepicker': true\n    '#datepicker_button': true\n  resource_type:\n    '#type': select\n    '#title': 'Resource Type'\n    '#description': '<p class=\"text-info\">The nature or genre of the content of the resource.</p>'\n    '#options': resource_type\n    '#required': true\n  size:\n    '#type': textfield\n    '#title': Size\n    '#description': '<p class=\"text-info\">The [estimated] size of a distribution in bytes. Example: 8 MB</p>'\n  character_set:\n    '#type': select\n    '#title': 'Character Set'\n    '#description': '<p class=\"text-info\">This is the character set of the resource.</p>'\n    '#options': character_set\n  format:\n    '#type': select\n    '#title': Format\n    '#description': '<p class=\"text-info\">The file format, physical medium, or dimensions of the resource.</p>'\n    '#options': dataset_format\n    '#required': true\n  licence:\n    '#type': textfield\n    '#title': Licence\n    '#description': '<p class=\"text-info\">The licence applied to the resource asset.</p>'\n    '#required': true"
+css: ''
+javascript: ''
+settings:
+  ajax: true
+  ajax_scroll_top: form
+  ajax_progress_type: ''
+  ajax_effect: ''
+  ajax_speed: 1500
+  page: false
+  page_submit_path: ''
+  page_confirm_path: ''
+  page_admin_theme: false
+  form_title: both
+  form_submit_once: false
+  form_exception_message: ''
+  form_open_message: ''
+  form_close_message: ''
+  form_previous_submissions: true
+  form_confidential: false
+  form_confidential_message: ''
+  form_remote_addr: true
+  form_convert_anonymous: false
+  form_prepopulate: false
+  form_prepopulate_source_entity: false
+  form_prepopulate_source_entity_required: false
+  form_prepopulate_source_entity_type: ''
+  form_reset: false
+  form_disable_autocomplete: false
+  form_novalidate: false
+  form_disable_inline_errors: false
+  form_required: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
+  form_autofocus: false
+  form_details_toggle: false
+  form_access_denied: default
+  form_access_denied_title: ''
+  form_access_denied_message: ''
+  form_access_denied_attributes: {  }
+  form_file_limit: ''
+  submission_label: ''
+  submission_log: false
+  submission_views: {  }
+  submission_views_replace: {  }
+  submission_user_columns: {  }
+  submission_user_duplicate: false
+  submission_access_denied: default
+  submission_access_denied_title: ''
+  submission_access_denied_message: ''
+  submission_access_denied_attributes: {  }
+  submission_exception_message: ''
+  submission_locked_message: ''
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
+  previous_submission_message: ''
+  previous_submissions_message: ''
+  autofill: false
+  autofill_message: ''
+  autofill_excluded_elements: {  }
+  wizard_progress_bar: true
+  wizard_progress_pages: false
+  wizard_progress_percentage: false
+  wizard_progress_link: false
+  wizard_progress_states: false
+  wizard_start_label: ''
+  wizard_preview_link: false
+  wizard_confirmation: true
+  wizard_confirmation_label: ''
+  wizard_track: ''
+  preview: 0
+  preview_label: ''
+  preview_title: ''
+  preview_message: ''
+  preview_attributes: {  }
+  preview_excluded_elements: {  }
+  preview_exclude_empty: true
+  preview_exclude_empty_checkbox: false
+  draft: none
+  draft_multiple: false
+  draft_auto_save: false
+  draft_saved_message: ''
+  draft_loaded_message: ''
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
+  confirmation_type: inline
+  confirmation_title: ''
+  confirmation_message: "<p>Thank you for contributing to the Open Government Portal. Your submission is now in review.</p>\r\n\r\n<p>Browse the collection of more than 80,000 <a href=\"https://search.open.canada.ca/en/od/\">open data and information assets</a>.</p>"
+  confirmation_url: ''
+  confirmation_attributes: {  }
+  confirmation_back: true
+  confirmation_back_label: ''
+  confirmation_back_attributes: {  }
+  confirmation_exclude_query: false
+  confirmation_exclude_token: false
+  confirmation_update: false
+  limit_total: null
+  limit_total_interval: null
+  limit_total_message: ''
+  limit_total_unique: false
+  limit_user: null
+  limit_user_interval: null
+  limit_user_message: ''
+  limit_user_unique: false
+  entity_limit_total: null
+  entity_limit_total_interval: null
+  entity_limit_user: null
+  entity_limit_user_interval: null
+  purge: none
+  purge_days: null
+  results_disabled: false
+  results_disabled_ignore: false
+  token_update: false
+access:
+  create:
+    roles:
+      - anonymous
+      - authenticated
+    users: {  }
+    permissions: {  }
+  view_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  purge_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  view_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  administer:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  test:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  configuration:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+handlers:
+  email:
+    id: email
+    label: 'Confirmation Email'
+    handler_id: email
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: '[webform_submission:values:contact_email:raw]'
+      to_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      bcc_mail: open-ouvert@tbs-sct.gc.ca
+      bcc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      subject: '[webform:title]: submission confirmation'
+      body: "<p>We have received your submission to the Open Government Portal. Thank you for contributing. Your submission is now in review.</p>\r\n\r\n<p>Submitted on [webform_submission:created]</p>\r\n\r\n<p>Submitted values are:</p>\r\n[webform_submission:values]"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      html: true
+      attachments: false
+      twig: false
+      debug: false
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      theme_name: ''
+      parameters: {  }

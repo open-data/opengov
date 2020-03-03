@@ -6,15 +6,16 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.suggested_dataset.body
     - field.field.node.suggested_dataset.comment
+    - field.field.node.suggested_dataset.field_dataset_keywords
+    - field.field.node.suggested_dataset.field_dataset_subject
     - field.field.node.suggested_dataset.field_date_published
     - field.field.node.suggested_dataset.field_meta_tags
     - field.field.node.suggested_dataset.field_organization
     - field.field.node.suggested_dataset.field_previousnodeid
     - field.field.node.suggested_dataset.field_sd_status
-    - field.field.node.suggested_dataset.field_status
     - field.field.node.suggested_dataset.field_status_link
-    - field.field.node.suggested_dataset.field_suggested_dataset_dept
     - field.field.node.suggested_dataset.field_vote_up_down
+    - field.field.node.suggested_dataset.field_webform_submission_id
     - node.type.suggested_dataset
     - webform.webform.vote_up_down
   content:
@@ -192,8 +193,39 @@ third_party_settings:
                 type: list_default
             additional: {  }
             weight: -9
-          42cf29be-9231-437c-b821-3455a2db75f0:
-            uuid: 42cf29be-9231-437c-b821-3455a2db75f0
+          6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0:
+            uuid: 6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:suggested_dataset:field_dataset_subject'
+              formatter:
+                label: above
+                settings: {  }
+                third_party_settings: {  }
+                type: list_default
+            additional: {  }
+            weight: 1
+          8f818792-ff06-4bf4-bfd9-1b1c0fa18444:
+            uuid: 8f818792-ff06-4bf4-bfd9-1b1c0fa18444
+            region: left
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:suggested_dataset:field_dataset_keywords'
+              formatter:
+                label: above
+                settings:
+                  link_to_entity: false
+                third_party_settings: {  }
+                type: string
+            additional: {  }
+            weight: 2
+          14b01322-5d36-411b-ab02-5f12cfbff225:
+            uuid: 14b01322-5d36-411b-ab02-5f12cfbff225
             region: left
             configuration:
               id: webform_block
@@ -205,7 +237,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: -6
+            weight: 3
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -268,6 +300,21 @@ content:
     settings: {  }
     third_party_settings: {  }
     region: content
+  field_dataset_keywords:
+    weight: 15
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: left
+  field_dataset_subject:
+    weight: 14
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: left
   field_date_published:
     weight: 9
     label: above
@@ -300,14 +347,6 @@ content:
     third_party_settings: {  }
     type: list_default
     region: left
-  field_status:
-    weight: 4
-    label: above
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-    type: string
-    region: content
   field_status_link:
     weight: 5
     label: above
@@ -320,14 +359,6 @@ content:
     third_party_settings: {  }
     type: link
     region: content
-  field_suggested_dataset_dept:
-    weight: 2
-    label: above
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-    type: string
-    region: content
   field_vote_up_down:
     weight: 8
     label: above
@@ -337,6 +368,15 @@ content:
     third_party_settings: {  }
     type: number_integer
     region: content
+  field_webform_submission_id:
+    weight: 18
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: left
   links:
     weight: 0
     region: content
