@@ -12,7 +12,7 @@ id: user_stories
 title: 'User Stories'
 description: ''
 category: ''
-elements: "add_you_story:\n  '#type': webform_wizard_page\n  '#title': 'Add you story'\n  title:\n    '#type': textfield\n    '#title': Title\n    '#required': true\n  language:\n    '#type': select\n    '#title': Language\n    '#multiple': true\n    '#options':\n      English: English\n      French: French\n    '#required': true\n  tell_us_about_your_product:\n    '#type': textarea\n    '#title': 'Tell us about your product'\n    '#maxlength': '10'\n    '#required': true\n  why_did_you_develop_this_product_:\n    '#type': textarea\n    '#title': 'Why did you develop this product?'\n    '#maxlength': '300'\n    '#required': true\n  urls_of_datasets_used:\n    '#type': textarea\n    '#title': 'URLs of datasets used'\n    '#required': true\n  how_did_you_use_open_data_to_create_your_product_methodology_:\n    '#type': textarea\n    '#title': 'How did you use open data to create your product? (methodology)'\n    '#maxlength': '600'\n    '#required': true\n  what_is_the_impact_of_your_product_:\n    '#type': textarea\n    '#title': 'What is the impact of your product?'\n    '#maxlength': '500'\n    '#required': true\n  testimonials:\n    '#type': textarea\n    '#title': Testimonials\n  themes:\n    '#type': select\n    '#title': Themes\n    '#multiple': true\n    '#options':\n      'Nature and Environment': 'Nature and Environment'\n      Agriculture: Agriculture\n      'History and Archeology': 'History and Archeology'\n      'Information and Communication': 'Information and Communication'\n      Transport: Transport\n      'Science and Technology': 'Science and Technology'\n      Law: Law\n      'Arts, Music, and Literature': 'Arts, Music, and Literature'\n      'Economics and Industry': 'Economics and Industry'\n      'Education and Training': 'Education and Training'\n      'Government and Politics': 'Government and Politics'\n      'Health and Safety': 'Health and Safety'\n      Labour: Labour\n      'Language and Linguistics': 'Language and Linguistics'\n      Military: Military\n      'Society and Culture': 'Society and Culture'\n      Other: Other\n    '#required': true\n  are_you_:\n    '#type': select\n    '#title': 'Are you:'\n    '#options':\n      Academia: Academia\n      Government: Government\n      'Member of the Public': 'Member of the Public'\ncontact_information:\n  '#type': webform_wizard_page\n  '#title': 'Contact Information'\n  first_name:\n    '#type': textfield\n    '#title': 'First name'\n    '#required': true\n  last_name:\n    '#type': textfield\n    '#title': 'Last name'\n    '#required': true\n  e_mail_address:\n    '#type': email\n    '#title': 'E-mail address'\n    '#required': true\n  telephone_number:\n    '#type': tel\n    '#title': 'Telephone number'\n    '#international_preferred_countries': {  }"
+elements: "add_you_story:\n  '#type': webform_wizard_page\n  '#title': 'Add your story'\n  title:\n    '#type': textfield\n    '#title': Title\n    '#description': '<p class=\"text-info\">The name by which the asset is known. Example: Forget the Snowy Winters of Your childhood</p>'\n    '#required': true\n  language:\n    '#type': select\n    '#title': Language\n    '#description': '<p class=\"text-info\">The language of the resource.</p>'\n    '#options':\n      English: English\n      French: French\n      Bilingual: Bilingual\n    '#required': true\n  website:\n    '#type': textfield\n    '#title': Website\n    '#description': '<p class=\"text-info\">Any website you would like to share.</p>'\n  tell_us_about_your_product:\n    '#type': textarea\n    '#title': 'Tell us about your product'\n    '#description': '<p class=\"text-info\">The summary and the description of the product. Example: In countries with harsh winters like Canada,&nbsp;it&#39;s sometimes hard for the public to see the effects of the Earth warming...</p>'\n    '#maxlength': '10'\n    '#required': true\n  why_did_you_develop_this_product_:\n    '#type': textarea\n    '#title': 'Why did you develop this product?'\n    '#description': '<p class=\"text-info\">The contributor&rsquo;s purpose for developing the product. Example:&nbsp;That&#39;s why Mr. Shiab, a data journalist from CBC/Radio Canada, wrote a story on how the coldest season is warming up too.</p>'\n    '#maxlength': '300'\n    '#required': true\n  urls_of_datasets_used:\n    '#type': textarea\n    '#title': 'URLs of datasets used'\n    '#description': '<p class=\"text-info\">A list of datasets used to develop the product.</p>'\n    '#required': true\n  how_did_you_use_open_data_to_create_your_product_methodology_:\n    '#type': textarea\n    '#title': 'How did you use open data to create your product? (methodology)'\n    '#description': '<p class=\"text-info\">The methodology of how the data was used in creation of the product. Example:&nbsp;Through data visualization, Mr. Shiab enables others to easily see winter trends in major cities&hellip;</p>'\n    '#maxlength': '600'\n    '#required': true\n  what_is_the_impact_of_your_product_:\n    '#type': textarea\n    '#title': 'What is the impact of your product?'\n    '#description': '<p class=\"text-info\">The intended impact of the product. Example:&nbsp;Mr. Shiab used open data to inform Canadians on winter warming and build awareness around its repercussions &ndash; social, economic and environmental.</p>'\n    '#maxlength': '500'\n    '#required': true\n  testimonials:\n    '#type': textarea\n    '#title': Testimonials\n    '#description': '<p class=\"text-info\">Any testimonials that the product owner would like to share. Example:&nbsp;Why is @townfolio Townfolio amazing? For starters, they were chosen in 2018 to TechStars Accelerator (only 1% of tech startups get in). - Venbridge</p>'\n  themes:\n    '#type': select\n    '#title': 'Suggest subjects for this user story'\n    '#multiple': true\n    '#description': '<p class=\"text-info\">A list multiple subjects to help categorize the submission.&nbsp;Ctrl+Click to select multiple options.</p>'\n    '#options':\n      'Nature and Environment': 'Nature and Environment'\n      Agriculture: Agriculture\n      'History and Archeology': 'History and Archeology'\n      'Information and Communication': 'Information and Communication'\n      Transport: Transport\n      'Science and Technology': 'Science and Technology'\n      Law: Law\n      'Arts, Music, and Literature': 'Arts, Music, and Literature'\n      'Economics and Industry': 'Economics and Industry'\n      'Education and Training': 'Education and Training'\n      'Government and Politics': 'Government and Politics'\n      'Health and Safety': 'Health and Safety'\n      Labour: Labour\n      'Language and Linguistics': 'Language and Linguistics'\n      Military: Military\n      'Society and Culture': 'Society and Culture'\n      Other: Other\n    '#required': true\n  are_you_:\n    '#type': select\n    '#title': 'Are you:'\n    '#options':\n      Academia: Academia\n      Government: Government\n      'Member of the Public': 'Member of the Public'\n      Other: Other\ncontact_information:\n  '#type': webform_wizard_page\n  '#title': 'Contact Information'\n  first_name:\n    '#type': textfield\n    '#title': 'First name'\n    '#required': true\n  last_name:\n    '#type': textfield\n    '#title': 'Last name'\n    '#required': true\n  organization_name:\n    '#type': textfield\n    '#title': 'Organization name'\n    '#description': '<p class=\"text-info\">The organization you belong to, if any. Example: The Treasury Board Secretariat</p>'\n  e_mail_address:\n    '#type': email\n    '#title': 'E-mail address'\n    '#required': true\n  telephone_number:\n    '#type': tel\n    '#title': 'Telephone number'\n    '#international_preferred_countries': {  }\nif_other_please_specify_:\n  '#type': textfield\n  '#title': 'Please specify:'\n  '#states':\n    visible:\n      ':input[name=\"are_you_\"]':\n        value: Other"
 css: ''
 javascript: ''
 settings:
@@ -99,10 +99,10 @@ settings:
   draft_loaded_message: ''
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
-  confirmation_type: page
+  confirmation_type: url_message
   confirmation_title: ''
-  confirmation_message: ''
-  confirmation_url: ''
+  confirmation_message: 'Thank you for your submission. Your request will be processed and added to the Open Data User Stories as soon as possible.'
+  confirmation_url: '[site:url]/stories'
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -174,4 +174,39 @@ access:
     roles: {  }
     users: {  }
     permissions: {  }
-handlers: {  }
+handlers:
+  email:
+    id: email
+    label: 'Notification Email'
+    handler_id: email
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: houssamb16@gmail.com
+      to_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      subject: 'New user Story submission'
+      body: "<p>Submitted on [webform_submission:created]</p>\r\n\r\n<p>Submitted by: [webform_submission:user]</p>\r\n\r\n<p>Submitted values are:</p>\r\n[webform_submission:values] The results of this submission may be viewed at: [webform_submission:url]"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      html: true
+      attachments: false
+      twig: false
+      debug: false
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      theme_name: ''
+      parameters: {  }
