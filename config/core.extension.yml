@@ -54,6 +54,7 @@ module:
   metatag_twitter_cards: 0
   node: 0
   og: 0
+  og_ext_cron: 0
   og_ext_webform: 0
   options: 0
   page_cache: 0

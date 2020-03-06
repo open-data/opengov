@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.suggested_dataset.field_dataset_keywords
     - field.field.node.suggested_dataset.field_dataset_subject
     - field.field.node.suggested_dataset.field_date_published
+    - field.field.node.suggested_dataset.field_feedback
     - field.field.node.suggested_dataset.field_meta_tags
     - field.field.node.suggested_dataset.field_organization
     - field.field.node.suggested_dataset.field_previousnodeid
@@ -143,7 +144,7 @@ third_party_settings:
               context_mapping:
                 entity: layout_builder.entity
             additional: {  }
-            weight: -8
+            weight: -6
           013afe8d-8ea6-44a7-bd40-7a684d347a0b:
             uuid: 013afe8d-8ea6-44a7-bd40-7a684d347a0b
             region: left
@@ -162,7 +163,7 @@ third_party_settings:
               context_mapping:
                 entity: layout_builder.entity
             additional: {  }
-            weight: -7
+            weight: -5
           de281d45-231b-425d-831b-7e3ee54072a6:
             uuid: de281d45-231b-425d-831b-7e3ee54072a6
             region: right
@@ -192,7 +193,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: list_default
             additional: {  }
-            weight: -9
+            weight: -7
           6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0:
             uuid: 6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0
             region: left
@@ -207,7 +208,7 @@ third_party_settings:
                 third_party_settings: {  }
                 type: list_default
             additional: {  }
-            weight: 1
+            weight: -4
           8f818792-ff06-4bf4-bfd9-1b1c0fa18444:
             uuid: 8f818792-ff06-4bf4-bfd9-1b1c0fa18444
             region: left
@@ -223,9 +224,24 @@ third_party_settings:
                 third_party_settings: {  }
                 type: string
             additional: {  }
-            weight: 2
-          14b01322-5d36-411b-ab02-5f12cfbff225:
-            uuid: 14b01322-5d36-411b-ab02-5f12cfbff225
+            weight: -3
+          f103b731-a779-445b-b1db-4c4f796112f2:
+            uuid: f103b731-a779-445b-b1db-4c4f796112f2
+            region: right
+            configuration:
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              id: 'field_block:node:suggested_dataset:field_feedback'
+              formatter:
+                label: above
+                settings: {  }
+                third_party_settings: {  }
+                type: basic_string
+            additional: {  }
+            weight: 1
+          96c2bf7e-8722-4564-8bf2-7b75518a2e15:
+            uuid: 96c2bf7e-8722-4564-8bf2-7b75518a2e15
             region: left
             configuration:
               id: webform_block
@@ -237,7 +253,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: 3
+            weight: -2
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -324,6 +340,13 @@ content:
     third_party_settings: {  }
     type: datetime_default
     region: content
+  field_feedback:
+    weight: 19
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: left
   field_organization:
     weight: 12
     label: above
