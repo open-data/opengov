@@ -11,7 +11,7 @@ entity_type: node
 type: list_string
 settings:
   allowed_values: {  }
-  allowed_values_function: fetch_orgs_from_ckan
+  allowed_values_function: read_options_from_json
 module: options
 locked: false
 cardinality: 1
