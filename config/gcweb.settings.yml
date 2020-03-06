@@ -4,7 +4,7 @@ schemas:
 favicon:
   mimetype: image/vnd.microsoft.icon
   path: 'public://favicon.ico'
-  url: 'https://open.canada.ca/sites/default/files/favicon.ico'
+  url: 'https://staging.open.canada.ca/sites/default/files/favicon.ico'
   use_default: 0
 features:
   comment_user_picture: 0

@@ -1,0 +1,4 @@
+elements: ''
+settings:
+  confirmation_message: "<div class=\"alert alert-success\">\r\n<p>Vous avez voté</p>\r\n</div>"
+  limit_user_message: 'Vous avez voté.'

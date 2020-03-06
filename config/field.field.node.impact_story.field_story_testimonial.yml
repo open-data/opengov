@@ -1,0 +1,21 @@
+uuid: 7dbe98e5-ed2f-4023-bf83-dfb9306529e7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_story_testimonial
+    - node.type.impact_story
+  module:
+    - text
+id: node.impact_story.field_story_testimonial
+field_name: field_story_testimonial
+entity_type: node
+bundle: impact_story
+label: Testimonial(s)
+description: 'Testimonial for the Open Data Impact Story'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

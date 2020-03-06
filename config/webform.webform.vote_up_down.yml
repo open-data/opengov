@@ -1,3 +1,4 @@
+uuid: f7e1ac41-a81b-44fd-b028-a50d6cc1f1b6
 langcode: en
 status: open
 dependencies:
@@ -31,7 +32,7 @@ settings:
   form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
-  form_previous_submissions: true
+  form_previous_submissions: false
   form_confidential: false
   form_confidential_message: ''
   form_remote_addr: true
@@ -77,7 +78,7 @@ settings:
   autofill: false
   autofill_message: ''
   autofill_excluded_elements: {  }
-  wizard_progress_bar: true
+  wizard_progress_bar: false
   wizard_progress_pages: false
   wizard_progress_percentage: false
   wizard_progress_link: false
@@ -102,7 +103,7 @@ settings:
   draft_loaded_message: ''
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
-  confirmation_type: inline
+  confirmation_type: none
   confirmation_title: ''
   confirmation_message: "<div class=\"alert alert-success\">\r\n<p>Thank you for submitting your vote.</p>\r\n</div>"
   confirmation_url: ''
@@ -119,7 +120,7 @@ settings:
   limit_total_unique: false
   limit_user: null
   limit_user_interval: 14515200
-  limit_user_message: 'You have already submitted your vote.'
+  limit_user_message: 'You have voted.'
   limit_user_unique: false
   entity_limit_total: null
   entity_limit_total_interval: null
@@ -186,4 +187,3 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
-uuid: f7e1ac41-a81b-44fd-b028-a50d6cc1f1b6

@@ -19,8 +19,8 @@ display:
           tags:
             previous: '‹ Précédent'
             next: 'Suivant ›'
-            first: '« Premier'
-            last: 'Dernier »'
+            first: '« First'
+            last: 'Last »'
       fields:
         media_bulk_form:
           action_title: Action
@@ -37,7 +37,7 @@ display:
           label: Auteur
           separator: ', '
         status:
-          label: État
+          label: Status
           settings:
             format_custom_true: Publié
             format_custom_false: 'Non publié'

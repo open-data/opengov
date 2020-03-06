@@ -8,7 +8,7 @@ id: node.suggested_dataset.title
 field_name: title
 entity_type: node
 bundle: suggested_dataset
-label: 'Name of dataset'
+label: 'Suggested title of dataset(s)'
 description: ''
 required: true
 translatable: true

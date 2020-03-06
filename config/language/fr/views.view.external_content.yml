@@ -1,0 +1,61 @@
+description: 'Trouver et gérer le contenu.'
+display:
+  default:
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Filtrer
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: 'Trier par'
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      pager:
+        options:
+          tags:
+            previous: '‹ Précédent'
+            next: 'Suivant ›'
+            first: '« First'
+            last: 'Last »'
+      fields:
+        title:
+          label: Title
+        type:
+          label: 'Content type'
+          separator: ', '
+        name:
+          label: Auteur
+        changed:
+          label: 'Mis à jour'
+        moderation_state:
+          label: 'Moderation state'
+          separator: ', '
+        operations:
+          label: Actions
+      filters:
+        type:
+          expose:
+            label: 'Content type'
+        moderation_state:
+          expose:
+            label: 'Moderation state'
+        langcode:
+          expose:
+            label: Langue
+        title:
+          expose:
+            label: Title
+      empty:
+        area_text_custom:
+          content: 'Aucun contenu disponible.'
+      header:
+        result:
+          content: 'Displaying @start - @end of @total'
+    display_title: Maître
+  page_1:
+    display_options:
+      menu:
+        title: Contenu
+      tab_options:
+        title: Contenu
+        description: 'Trouver et gérer le contenu'
+    display_title: Page

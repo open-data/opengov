@@ -8,12 +8,12 @@ dependencies:
   module:
     - search_api
 id: ati_nil_fr
-name: 'PD ATI - Rapport nul'
+name: 'Report type fr'
 url_alias: ati_nil_fr
 weight: 2
 min_count: 1
 show_only_one_result: false
-field_identifier: report_type_fr
+field_identifier: nothing_to_report_fr
 facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
 widget:
   type: checkbox

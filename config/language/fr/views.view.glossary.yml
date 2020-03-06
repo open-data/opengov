@@ -19,7 +19,7 @@ display:
             offset_label: Décalage
       fields:
         title:
-          label: Titre
+          label: Title
         name:
           label: Auteur
         changed:

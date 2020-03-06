@@ -1,17 +1,16 @@
-uuid: cb774ac4-e6f6-4364-b312-a78c5d08db18
+uuid: 9eafd5cf-c734-40a5-a521-16287a010aa6
 langcode: en
 status: true
 dependencies:
   module:
     - node
-id: node.field_suggested_dataset_dept
-field_name: field_suggested_dataset_dept
+id: node.field_webform_submission_id
+field_name: field_webform_submission_id
 entity_type: node
-type: string
+type: integer
 settings:
-  max_length: 255
-  is_ascii: false
-  case_sensitive: false
+  unsigned: false
+  size: normal
 module: core
 locked: false
 cardinality: 1

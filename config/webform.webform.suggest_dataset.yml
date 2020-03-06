@@ -1,17 +1,24 @@
+uuid: 6c31fdf2-ad56-4884-a024-504ab0a6aa94
 langcode: en
-status: open
+status: closed
 dependencies:
   module:
     - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
+_core:
+  default_config_hash: XMXyI2hAGIOAFbxkyKuNuVPqPlXX_LzNOmyXJ7IWfco
 open: null
 close: null
 weight: 0
 uid: 1
 template: false
-archive: false
+archive: true
 id: suggest_dataset
 title: 'Suggest a Dataset'
-description: '&quot;Suggest a Dataset&quot; webform.'
+description: 'DEPRECATED - &quot;Suggest a Dataset&quot; webform.'
 category: ''
 elements: "name_of_dataset:\n  '#type': textfield\n  '#title': 'Name of Dataset'\n  '#required': true\nfederal_government_institution:\n  '#type': textfield\n  '#title': 'Federal government institution that publishes the dataset'\n  '#required': true\ndescription_dataset:\n  '#type': textarea\n  '#title': 'Description of the dataset you would like to make available'\n  '#required': true\nadditional_comments_and_feedback:\n  '#type': textarea\n  '#title': 'Additional Comments and Feedback'\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'E-mail Address'\ntelephone:\n  '#type': tel\n  '#title': Telephone\nconsent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#options': yes_no\n  '#required': true\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)"
 css: ''
@@ -26,7 +33,7 @@ settings:
   page_submit_path: ''
   page_confirm_path: ''
   page_admin_theme: false
-  form_title: both
+  form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
   form_open_message: ''
@@ -222,10 +229,3 @@ handlers:
       sender_name: ''
       theme_name: ''
       parameters: {  }
-uuid: 6c31fdf2-ad56-4884-a024-504ab0a6aa94
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
-_core:
-  default_config_hash: XMXyI2hAGIOAFbxkyKuNuVPqPlXX_LzNOmyXJ7IWfco

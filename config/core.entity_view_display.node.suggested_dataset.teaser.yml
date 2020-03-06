@@ -6,11 +6,12 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.field.node.suggested_dataset.body
     - field.field.node.suggested_dataset.comment
+    - field.field.node.suggested_dataset.field_date_published
     - field.field.node.suggested_dataset.field_meta_tags
+    - field.field.node.suggested_dataset.field_organization
     - field.field.node.suggested_dataset.field_previousnodeid
-    - field.field.node.suggested_dataset.field_status
+    - field.field.node.suggested_dataset.field_sd_status
     - field.field.node.suggested_dataset.field_status_link
-    - field.field.node.suggested_dataset.field_suggested_dataset_dept
     - field.field.node.suggested_dataset.field_vote_up_down
     - node.type.suggested_dataset
   module:
@@ -41,11 +42,15 @@ content:
     region: content
 hidden:
   comment: true
+  field_dataset_keywords: true
+  field_dataset_subject: true
+  field_date_published: true
   field_meta_tags: true
+  field_organization: true
   field_previousnodeid: true
-  field_status: true
+  field_sd_status: true
   field_status_link: true
-  field_suggested_dataset_dept: true
   field_vote_up_down: true
+  field_webform_submission_id: true
   langcode: true
   search_api_excerpt: true

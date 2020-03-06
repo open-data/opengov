@@ -1,0 +1,48 @@
+uuid: 91cfa516-481d-4036-a7b7-71c2c207c92e
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.impact_story.body
+    - node.type.impact_story
+  module:
+    - text
+    - user
+id: node.impact_story.teaser
+targetEntityType: node
+bundle: impact_story
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  comment: true
+  field_dataset_used: true
+  field_media: true
+  field_ribbon: true
+  field_story_impact: true
+  field_story_testimonial: true
+  field_subject: true
+  field_submitter_name: true
+  field_thumbnail: true
+  field_url: true
+  field_vote_up_down: true
+  langcode: true
+  search_api_excerpt: true

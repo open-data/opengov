@@ -1,0 +1,9 @@
+uuid: 1dc615a1-8b4a-4c06-b305-0d43b83598be
+langcode: en
+status: true
+dependencies: {  }
+id: dataset_subject
+label: 'Dataset Subject'
+category: 'Open Government'
+likert: false
+options: '{  }'

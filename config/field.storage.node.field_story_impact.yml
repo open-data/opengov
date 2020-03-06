@@ -1,18 +1,16 @@
-uuid: 50c2bf87-910d-428a-9791-a2cd97a7a437
+uuid: c12f3653-8c4f-434a-bdeb-3876add0d44d
 langcode: en
 status: true
 dependencies:
   module:
     - node
-id: node.field_status
-field_name: field_status
+    - text
+id: node.field_story_impact
+field_name: field_story_impact
 entity_type: node
-type: string
-settings:
-  max_length: 255
-  is_ascii: false
-  case_sensitive: false
-module: core
+type: text_long
+settings: {  }
+module: text
 locked: false
 cardinality: 1
 translatable: true

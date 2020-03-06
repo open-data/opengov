@@ -1,0 +1,18 @@
+uuid: e3ab796a-7d8a-4d2c-b703-f8f6c50c8626
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: 'Open Data Impact Story'
+type: impact_story
+description: 'Open Data Impact Stories'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

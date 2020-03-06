@@ -9,6 +9,7 @@ dependencies:
     - node.type.consultation
     - node.type.external
     - node.type.idea
+    - node.type.impact_story
     - node.type.landing_page
     - node.type.map
     - node.type.page
@@ -94,6 +95,7 @@ type_settings:
       - consultation
       - external
       - idea
+      - impact_story
       - landing_page
       - map
       - page
