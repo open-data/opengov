@@ -1,4 +1,5 @@
 title: 'Proposez un jeu de données'
+description: 'DEPRECATED - &quot;Suggest a Dataset&quot; webform.'
 elements: "name_of_dataset:\n  '#title': 'Nom du jeu de données'\nfederal_government_institution:\n  '#title': 'Institution du gouvernement fédérale qui publie le jeu de données'\ndescription_dataset:\n  '#title': 'Description du jeu de données que vous aimeriez rendre public'\nadditional_comments_and_feedback:\n  '#title': 'Rétroaction et commentaires supplémentaires'\nfirst_name:\n  '#title': Prénom\nlast_name:\n  '#title': 'Nom de famille'\ntitle:\n  '#title': Titre\norganization:\n  '#title': Organisation\ne_mail_address:\n  '#title': 'Adresse électronique'\ntelephone:\n  '#title': Téléphone\nconsent:\n  '#title': Consens\n  '#description': 'Je consens à la communication de mes renseignements personnels entre les ministères du gouvernement du Canada dans le but de répondre à ma demande de renseignements.'\nactions:\n  '#title': 'Bouton(s) de soumission'\n"
 settings:
   confirmation_message: 'Merci pour votre soumission. Votre demande sera traitée et ajoutée à la page « Proposez un jeu de données » dès que possible.'
@@ -6,5 +7,5 @@ handlers:
   email:
     label: Courriel
     settings:
-      from_name: default
+      from_name: _default
       body: "Soumis le [webform_submission:created]<br />\r\nSoumis par : [webform_submission:user]<br />\r\nLes valeurs soumises sont :<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"

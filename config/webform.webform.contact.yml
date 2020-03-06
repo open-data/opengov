@@ -69,11 +69,26 @@ settings:
   submission_label: ''
   submission_log: false
   submission_views:
-    spam_comments:
+    default_webform:
+      view: 'webform_submissions:embed_review'
+      title: Default
+      webform_routes:
+        - entity.webform.results_submissions
+        - entity.webform.user.drafts
+        - entity.webform.user.submissions
+    spam_webform:
       view: 'webform_spam:embed_1'
       title: Spam
       webform_routes:
         - entity.webform.results_submissions
+        - entity.webform.user.drafts
+        - entity.webform.user.submissions
+    validated_webform:
+      view: 'webform_validated:embed_1'
+      title: Validated
+      webform_routes:
+        - entity.webform.results_submissions
+        - entity.webform.user.drafts
         - entity.webform.user.submissions
   submission_views_replace:
     webform_routes: {  }

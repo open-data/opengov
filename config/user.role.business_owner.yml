@@ -8,6 +8,8 @@ weight: 6
 is_admin: null
 permissions:
   - 'access webform overview'
+  - 'comment_spam admin_settings'
+  - 'comment_spam set spam'
   - 'create content translations'
   - 'delete any suggested_dataset content'
   - 'delete content translations'

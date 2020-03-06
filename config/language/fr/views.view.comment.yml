@@ -69,7 +69,7 @@ display:
           label: Subject
           separator: ', '
         comment_body:
-          label: Comment
+          label: Commentaire
           separator: ', '
         uid:
           separator: ', '
@@ -107,7 +107,7 @@ display:
           label: Subject
           separator: ', '
         comment_body:
-          label: Comment
+          label: Commentaire
           separator: ', '
         uid:
           separator: ', '
@@ -150,5 +150,5 @@ display:
           label: Subject
           separator: ', '
         comment_body:
-          label: Comment
+          label: Commentaire
           separator: ', '
