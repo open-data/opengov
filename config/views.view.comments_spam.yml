@@ -10,7 +10,7 @@ dependencies:
     - text
     - user
 _core:
-  default_config_hash: uoc7O2eS5j7-I1sjuHjdkbwDbSebIBJSfrH-2_lxJUw
+  default_config_hash: 3Isqz7JtJImNi7r9YSbOlcH0GxygJr0nz5HcUMpuyQo
 id: comments_spam
 label: 'Spam Comments'
 module: views
@@ -37,7 +37,7 @@ display:
         type: views_query
         options:
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
           replica: false
           query_comment: ''
           query_tags: {  }

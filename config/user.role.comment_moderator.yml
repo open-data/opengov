@@ -1,7 +1,9 @@
-uuid: 340005d3-f197-4c31-9c41-16914a205bc4
+uuid: bb87bcad-39e3-46cf-b54b-a831fee3799f
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: frLAW3TS85g_NN2Db8Jl4xNDLORi8wcA8prHMtBMczU
 id: comment_moderator
 label: 'Comment Moderator'
 weight: 4
@@ -12,6 +14,8 @@ permissions:
   - 'access contextual links'
   - 'access toolbar'
   - 'administer comments'
+  - 'comment_spam admin_settings'
+  - 'comment_spam set spam'
   - 'edit own comments'
   - 'skip comment approval'
   - 'use text format rich_text'
