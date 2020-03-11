@@ -12,6 +12,8 @@ permissions:
   - 'access contextual links'
   - 'access toolbar'
   - 'administer comments'
+  - 'comment_spam admin_settings'
+  - 'comment_spam set spam'
   - 'edit own comments'
   - 'skip comment approval'
   - 'use text format rich_text'

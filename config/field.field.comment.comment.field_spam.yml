@@ -1,0 +1,23 @@
+uuid: 0adb6d29-f9a6-4510-aa61-a83a5f69f044
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.comment
+    - field.storage.comment.field_spam
+id: comment.comment.field_spam
+field_name: field_spam
+entity_type: comment
+bundle: comment
+label: Spam
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: Spam
+  off_label: 'Not Spam'
+field_type: boolean
