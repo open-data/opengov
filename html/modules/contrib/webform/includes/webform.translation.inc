@@ -14,6 +14,7 @@ use Drupal\webform\Entity\Webform;
 use Drupal\webform\Utility\WebformYaml;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\field\Entity\FieldConfig;
 
 /**
  * Implements hook_form_FORM_ID_alter() for language_content_settings_form().
@@ -64,6 +65,21 @@ function webform_form_config_translation_add_form_alter(&$form, FormStateInterfa
     if ($config_name == 'webform.settings') {
       _webform_form_config_translate_add_form_alter_yaml_element($config_element['test']['types']);
       _webform_form_config_translate_add_form_alter_yaml_element($config_element['test']['names']);
+    }
+    elseif ($config_name == 'block.block.webform') {
+      _webform_form_config_translate_add_form_alter_yaml_element($config_element['settings']['default_data']);;
+    }
+    elseif (strpos($config_name, 'field.field.') === 0
+      && preg_match('/^field\.field\.([_a-z0-9]+)\.([_a-z0-9]+)\.([_a-z0-9]+)$/', $config_name, $match)
+      && isset($config_element['default_value'])) {
+      $field = FieldConfig::loadByName($match[1], $match[2], $match[3]);
+      if ($field->getType() === 'webform') {
+        foreach (Element::children($config_element['default_value']) as $key) {
+          if (isset($config_element['default_value'][$key]['default_data'])) {
+            _webform_form_config_translate_add_form_alter_yaml_element($config_element['default_value'][$key]['default_data']);
+          }
+        }
+      }
     }
     elseif (strpos($config_name, 'webform.webform_options.') === 0
       || strpos($config_name, 'webform_options_custom.webform_options_custom.') === 0) {

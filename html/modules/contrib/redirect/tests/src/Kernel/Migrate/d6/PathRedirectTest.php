@@ -23,7 +23,6 @@ class PathRedirectTest extends MigrateDrupalTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->installSchema('system', ['router']);
     $this->installEntitySchema('redirect');
     $this->loadFixture( __DIR__ . '/../../../../../tests/fixtures/drupal6.php');
 
@@ -39,7 +38,7 @@ class PathRedirectTest extends MigrateDrupalTestBase {
     $redirect = Redirect::load(5);
     $this->assertSame($this->getMigration('d6_path_redirect')
       ->getIdMap()
-      ->lookupDestinationID([5]), [$redirect->id()]);
+      ->lookupDestinationIds([5]), [[$redirect->id()]]);
     $this->assertSame("/test/source/url", $redirect->getSourceUrl());
     $this->assertSame("base:test/redirect/url", $redirect->getRedirectUrl()->toUriString());
 

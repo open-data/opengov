@@ -5,7 +5,6 @@
  * @see /webform/test_element_codemirror/test
  */
 
-
 /* Clean up CodeMirror editor */
 form .CodeMirror {
   border: 1px solid #ccc;
@@ -27,6 +26,6 @@ pre.webform-codemirror-runmode {
   border: 1px solid #ccc;
   font-size: 13px;
   overflow: auto;
-  padding: .5em 1em;
+  padding: 0.5em 1em;
   margin: 0;
 }

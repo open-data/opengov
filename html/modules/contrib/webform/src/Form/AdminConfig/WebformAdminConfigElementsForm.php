@@ -3,6 +3,7 @@
 namespace Drupal\webform\Form\AdminConfig;
 
 use Drupal\Component\Utility\Bytes;
+use Drupal\Component\Utility\Environment;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -197,60 +198,6 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
       '#default_value' => $config->get('element.default_section_title_tag'),
     ];
 
-    // Element: Checkbox/Radio.
-    $form['checkbox'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Checkbox/radio settings'),
-      '#open' => TRUE,
-      '#tree' => TRUE,
-      '#access' => $this->librariesManager->isIncluded('jquery.icheck'),
-    ];
-    $form['checkbox']['default_icheck'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Enhance checkboxes/radio buttons using iCheck'),
-      '#description' => $this->t('If set, all checkboxes/radio buttons with be enhanced using jQuery <a href=":href">iCheck</a> boxes.', [':href' => 'http://icheck.fronteed.com/']),
-      '#empty_option' => $this->t('- Default -'),
-      '#options' => [
-        (string) $this->t('Minimal') => [
-          'minimal' => $this->t('Minimal: Black'),
-          'minimal-grey' => $this->t('Minimal: Grey'),
-          'minimal-yellow' => $this->t('Minimal: Yellow'),
-          'minimal-orange' => $this->t('Minimal: Orange'),
-          'minimal-red' => $this->t('Minimal: Red'),
-          'minimal-pink' => $this->t('Minimal: Pink'),
-          'minimal-purple' => $this->t('Minimal: Purple'),
-          'minimal-blue' => $this->t('Minimal: Blue'),
-          'minimal-green' => $this->t('Minimal: Green'),
-          'minimal-aero' => $this->t('Minimal: Aero'),
-        ],
-        (string) $this->t('Square') => [
-          'square' => $this->t('Square: Black'),
-          'square-grey' => $this->t('Square: Grey'),
-          'square-yellow' => $this->t('Square: Yellow'),
-          'square-orange' => $this->t('Square: Orange'),
-          'square-red' => $this->t('Square: Red'),
-          'square-pink' => $this->t('Square: Pink'),
-          'square-purple' => $this->t('Square: Purple'),
-          'square-blue' => $this->t('Square: Blue'),
-          'square-green' => $this->t('Square: Green'),
-          'square-aero' => $this->t('Square: Aero'),
-        ],
-        (string) $this->t('Line') => [
-          'line' => $this->t('Line: Black'),
-          'line-grey' => $this->t('Line: Grey'),
-          'line-yellow' => $this->t('Line: Yellow'),
-          'line-orange' => $this->t('Line: Orange'),
-          'line-red' => $this->t('Line: Red'),
-          'line-pink' => $this->t('Line: Pink'),
-          'line-purple' => $this->t('Line: Purple'),
-          'line-blue' => $this->t('Line: Blue'),
-          'line-green' => $this->t('Line: Green'),
-          'line-aero' => $this->t('Line: Aero'),
-        ],
-      ],
-      '#default_value' => $config->get('element.default_icheck'),
-      '#access' => $this->librariesManager->isIncluded('jquery.icheck'),
-    ];
     // Element: HTML Editor.
     $form['html_editor'] = [
       '#type' => 'details',
@@ -365,13 +312,6 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
       '#tree' => TRUE,
       '#access' => $this->librariesManager->isIncluded('jquery.geocomplete') || $this->librariesManager->isIncluded('algolia.places'),
     ];
-    $form['location']['default_google_maps_api_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Google Maps API key'),
-      '#description' => $this->t('Google requires users to use a valid API key. Using the <a href="https://console.developers.google.com/apis">Google API Manager</a>, you can enable the <em>Google Maps JavaScript API</em>. That will create (or reuse) a <em>Browser key</em> which you can paste here.'),
-      '#default_value' => $config->get('element.default_google_maps_api_key'),
-      '#access' => $this->librariesManager->isIncluded('jquery.geocomplete'),
-    ];
     $form['location']['default_algolia_places_app_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Algolia application id'),
@@ -467,7 +407,7 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
       '#title' => $this->t('Default maximum file upload size'),
       '#description' => $this->t('Enter a value like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes) in order to restrict the allowed file size. If left empty the file sizes will be limited only by PHP\'s maximum post and file upload sizes.')
         . '<br /><br />'
-        . $this->t('Current limit: %limit', ['%limit' => function_exists('file_upload_max_size') ? format_size(file_upload_max_size()) : $this->t('N/A')]),
+        . $this->t('Current limit: %limit', ['%limit' => format_size(Environment::getUploadMaxSize())]),
       '#element_validate' => [[get_class($this), 'validateMaxFilesize']],
       '#size' => 10,
       '#default_value' => $config->get('file.default_max_filesize'),
@@ -633,7 +573,6 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
     $config = $this->config('webform.settings');
 
     $config->set('element', $form_state->getValue('element') +
-      $form_state->getValue('checkbox') +
       $form_state->getValue('location') +
       $form_state->getValue('select') +
       ['excluded_elements' => $excluded_elements]

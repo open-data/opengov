@@ -65,8 +65,6 @@ class WebformLikert extends WebformElementBase {
       // Attributes.
       'wrapper_attributes' => [],
       'label_attributes' => [],
-      // iCheck settings.
-      'icheck' => '',
     ] + $this->getDefaultBaseProperties();
   }
 

@@ -14,6 +14,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Utility\TableSort;
 use Drupal\views\Views;
 use Drupal\webform\Controller\WebformSubmissionController;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
@@ -1027,7 +1028,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         ];
       }
 
-      if ($entity->access('create') && $webform->getSetting('submission_user_duplicate')) {
+      if ($entity->access('duplicate') && $webform->getSetting('submission_user_duplicate')) {
         $operations['duplicate'] = [
           'title' => $this->t('Duplicate'),
           'weight' => 23,
@@ -1069,14 +1070,14 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         ];
       }
 
-      if ($webform->access('submission_update_any') && $webform->hasMessageHandler()) {
+      if ($entity->access('resend') && $webform->hasMessageHandler()) {
         $operations['resend'] = [
           'title' => $this->t('Resend'),
           'weight' => 22,
           'url' => $this->requestHandler->getUrl($entity, $this->sourceEntity, 'webform_submission.resend_form'),
         ];
       }
-      if ($webform->access('submission_update_any')) {
+      if ($entity->access('duplicate')) {
         $operations['duplicate'] = [
           'title' => $this->t('Duplicate'),
           'weight' => 23,
@@ -1273,8 +1274,8 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     $query->pager($this->limit);
 
     $header = $this->buildHeader();
-    $order = tablesort_get_order($header);
-    $direction = tablesort_get_sort($header);
+    $order = TableSort::getOrder($header, $this->request);
+    $direction = TableSort::getSort($header, $this->request);
 
     // If query is order(ed) by 'element__*' we need to build a custom table
     // sort using hook_query_TAG_alter().

@@ -7,6 +7,7 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\WebformAddonsManagerInterface;
+use Drupal\webform\WebformThemeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -23,6 +24,13 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
   protected $request;
 
   /**
+   * The webform theme manager.
+   *
+   * @var \Drupal\webform\WebformThemeManagerInterface
+   */
+  protected $themeManager;
+
+  /**
    * The webform add-ons manager.
    *
    * @var \Drupal\webform\WebformAddonsManagerInterface
@@ -34,11 +42,14 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
    *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
+   * @param \Drupal\webform\WebformThemeManagerInterface $theme_manager
+   *   The webform theme manager.
    * @param \Drupal\webform\WebformAddonsManagerInterface $addons
    *   The webform add-ons manager.
    */
-  public function __construct(RequestStack $request_stack, WebformAddonsManagerInterface $addons) {
+  public function __construct(RequestStack $request_stack, WebformThemeManagerInterface $theme_manager, WebformAddonsManagerInterface $addons) {
     $this->request = $request_stack->getCurrentRequest();
+    $this->themeManager = $theme_manager;
     $this->addons = $addons;
   }
 
@@ -48,6 +59,7 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('request_stack'),
+      $container->get('webform.theme_manager'),
       $container->get('webform.addons_manager')
     );
   }
@@ -67,8 +79,8 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
     ];
 
     // Filter.
-    $is_claro_theme = (\Drupal::theme()->getActiveTheme()->getName() === 'claro');
-    $data_source = $is_claro_theme ? '.admin-item__title, .admin-item__description' : 'li';
+    $is_claro_theme = $this->themeManager->isActiveTheme('claro');
+    $data_source = $is_claro_theme ? '.admin-item' : 'li';
     $data_parent = $is_claro_theme ? '.admin-item' : 'li';
 
     $build['filter'] = [
@@ -78,6 +90,7 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
       '#size' => 30,
       '#placeholder' => $this->t('Filter by keyword'),
       '#attributes' => [
+        'name' => 'text',
         'class' => ['webform-form-filter-text'],
         'data-summary' => '.webform-addons-summary',
         'data-item-singlular' => $this->t('add-on'),

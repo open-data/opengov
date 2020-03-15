@@ -201,6 +201,11 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
         'title' => $this->t('Show the notification about previous submissions'),
         'form_description' => $this->t('Show the previous submissions notification that appears when users have previously submitted this form.'),
       ],
+      'token_view' => [
+        'title' => $this->t('Allow users to view a submission using a secure token'),
+        'form_description' => $this->t("If checked users will be able to view a submission using the webform submission's URL appended with the submission's (secure) token.") . ' ' .
+          $this->t("The 'tokenized' URL to view a submission will be available when viewing a submission's information and can be inserted into an email using the [webform_submission:view-url] token."),
+      ],
       'token_update' => [
         'title' => $this->t('Allow users to update a submission using a secure token'),
         'form_description' => $this->t("If checked users will be able to update a submission using the webform's URL appended with the submission's (secure) token.") . ' ' .
@@ -222,7 +227,9 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
       '#message_message' => $this->t("Submissions accessed using the (secure) token will by-pass all webform submission access rules."),
       '#states' => [
         'visible' => [
-          ':input[name="token_update"]' => ['checked' => TRUE],
+          [':input[name="token_view"]' => ['checked' => TRUE]],
+          'or',
+          [':input[name="token_update"]' => ['checked' => TRUE]],
         ],
       ],
       '#weight' => $form['submission_behaviors']['token_update']['#weight'] + 1,

@@ -61,8 +61,9 @@ class WebformEmailMultiple extends FormElement {
       $values = preg_split('/\s*,\s*/', $value);
       // Validate email.
       foreach ($values as $value) {
-        // Allow tokens to be be include in multiple email list.
-        if (!empty($element['#allow_tokens'] && preg_match('/^\[.*\]$/', $value))) {
+        // Allow tokens to be be included in multiple email list by skipping
+        // validation if a token is present.
+        if (!empty($element['#allow_tokens'] && preg_match('/\[.+\]/', $value))) {
           continue;
         }
 

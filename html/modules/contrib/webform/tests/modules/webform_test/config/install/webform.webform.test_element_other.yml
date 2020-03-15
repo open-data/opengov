@@ -12,7 +12,7 @@ template: false
 archive: false
 id: test_element_other
 title: 'Test: Element: Other'
-description: 'Test the webform other elements, includes select_other, checkboxes_other, radios_other, and buttons_other.'
+description: 'Test the webform other elements, includes select_other, checkboxes_other and radios_other.'
 category: 'Test: Element'
 elements: |
   select_other:
@@ -119,30 +119,6 @@ elements: |
       '#other__option_label': 'Is there another option you wish to enter?'
       '#other__placeholder': 'What is this other option'
       '#other__description': 'Other radio description'
-  buttons_other:
-    '#type': details
-    '#title': 'Buttons other (buttons_other)'
-    '#open': true
-    buttons_other_basic:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other basic'
-      '#options':
-        One: One
-        Two: Two
-        Three: Three
-      '#default_value': Four
-    buttons_other_advanced:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other advanced'
-      '#options':
-        One: One
-        Two: Two
-        Three: Three
-      '#default_value': Four
-      '#required': true
-      '#other__option_label': Other
-      '#other__placeholder': 'What is this other option'
-      '#other__description': 'Other button description'
   wrapper_other:
     '#type': details
     '#title': 'Wrapper other (#wrapper_type)'
@@ -171,7 +147,7 @@ elements: |
         Two: Two
         Three: Three
       '#wrapper_type': container
-  
+
 css: ''
 javascript: ''
 settings:
@@ -285,6 +261,7 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

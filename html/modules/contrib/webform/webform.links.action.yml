@@ -27,3 +27,11 @@ entity.webform.handler:
   class: '\Drupal\webform\Plugin\Menu\LocalAction\WebformDialogLocalAction'
   appears_on:
     - entity.webform.handlers
+
+entity.webform.variant:
+  route_name: entity.webform.variant
+  title: 'Add variant'
+  dialog: normal
+  class: '\Drupal\webform\Plugin\Menu\LocalAction\WebformDialogLocalAction'
+  appears_on:
+    - entity.webform.variants

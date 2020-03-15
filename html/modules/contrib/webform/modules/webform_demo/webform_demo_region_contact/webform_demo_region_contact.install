@@ -89,10 +89,10 @@ function webform_demo_region_contact_install() {
     $webform_access_group_admin_id = 'demo_region_' . $region_name . '_admin';
     $admin = User::create([
       'name' => $webform_access_group_admin_id,
-      'password' => $webform_access_group_admin_id,
       'mail' => "$webform_access_group_admin_id@test.com",
       'status' => 1,
     ]);
+    $admin->setPassword($webform_access_group_admin_id);
     $admin->addRole('demo_region_admin');
     $admin->save();
 
@@ -116,10 +116,10 @@ function webform_demo_region_contact_install() {
       // Create region type user.
       $user = User::create([
         'name' => $webform_access_group_id,
-        'password' => $webform_access_group_id,
         'mail' => "$webform_access_group_id@test.com",
         'status' => 1,
       ]);
+      $user->setPassword($webform_access_group_id);
       $user->addRole('demo_region_user');
       $user->save();
 

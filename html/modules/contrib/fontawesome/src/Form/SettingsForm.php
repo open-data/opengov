@@ -126,6 +126,21 @@ class SettingsForm extends ConfigFormBase {
           ],
         ],
       ],
+      'external_svg_integrity' => [
+        '#type' => 'textfield',
+        '#title' => $this->t('External File Integrity Value'),
+        '#default_value' => $fontawesome_config->get('external_svg_integrity'),
+        '#size' => 80,
+        '#description' => $this->t('Enter an (optional) integrity value for checking the CDN. This value should be provided by Font Awesome alongside the CDN source. This will force the browser to confirm the integrity of the CDN to prevent unexpected content from being loaded.'),
+        '#states' => [
+          'disabled' => [
+            ':input[name="use_cdn"]' => ['checked' => FALSE],
+          ],
+          'visible' => [
+            ':input[name="use_cdn"]' => ['checked' => TRUE],
+          ],
+        ],
+      ],
     ];
 
     $form['partial'] = [
@@ -243,6 +258,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('method', $values['method'])
       ->set('use_cdn', $values['use_cdn'])
       ->set('external_svg_location', (string) $values['external_svg_location'])
+      ->set('external_svg_integrity', (string) $values['external_svg_integrity'])
       ->set('use_shim', $values['use_shim'])
       ->set('external_shim_location', (string) $values['external_shim_location'])
       ->set('allow_pseudo_elements', $values['allow_pseudo_elements'])

@@ -201,13 +201,6 @@ elements: |
     '#type': webform_location_places
     '#title': 'Location (Algolia Places)'
     '#disabled': true
-  webform_location_geocomplete:
-    '#type': webform_location_geocomplete
-    '#title': 'Location (Geocomplete)'
-    '#map': true
-    '#geolocation': true
-    '#format': map
-    '#disabled': true
   machine_name:
     '#type': machine_name
     '#title': 'Machine name'
@@ -362,18 +355,6 @@ elements: |
     '#title': Time
     '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1838234">Issue #1838234: Add jQuery Timepicker for the Time element of the datetime field</a>'
     '#disabled': true
-  webform_toggle:
-    '#type': webform_toggle
-    '#title': Toggle
-    '#disabled': true
-  webform_toggles:
-    '#type': webform_toggles
-    '#title': Toggles
-    '#options':
-      one: One
-      two: Two
-      three: Three
-    '#disabled': true
   url:
     '#type': url
     '#title': URL
@@ -382,7 +363,7 @@ elements: |
     '#type': webform_video_file
     '#title': 'Video file'
     '#disabled': true
-  
+
 css: ''
 javascript: ''
 settings:
@@ -496,6 +477,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

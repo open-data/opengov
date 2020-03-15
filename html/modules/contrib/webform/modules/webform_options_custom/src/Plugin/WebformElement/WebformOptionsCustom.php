@@ -131,12 +131,12 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
       ];
     }
 
-    // If the custom options element defined #options, then #options is
-    // not #required.
+    // If the custom options are defined, then the options element
+    // is not required.
     if ($this->hasProperty('options')) {
       $form['options']['options']['#options_description'] = TRUE;
 
-      if ($this->getEntity()->getOptions()) {
+      if ($this->getEntity()->getOptions() || $this->getEntity()->getTemplateOptions()) {
         $form['options']['options']['#type'] = 'webform_options';
         $form['options']['options']['#required'] = FALSE;
         $form['options']['options_message'] = [

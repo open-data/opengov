@@ -79,7 +79,7 @@ class WebformAttachmentController extends ControllerBase implements ContainerInj
 
     // Get the webform element and plugin.
     $element = $webform_submission->getWebform()->getElement($element) ?: [];
-    $element_plugin = $this->elementManager->getElementInstance($element);
+    $element_plugin = $this->elementManager->getElementInstance($element, $webform_submission);
 
     // Make sure the element is a webform attachment.
     if (!$element_plugin instanceof WebformAttachmentBase) {

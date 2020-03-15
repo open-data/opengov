@@ -1,23 +1,28 @@
 language: php
 
+# Solr 6.x doesn't work with the Java versions included in "xenial" or "bionic".
 dist: trusty
 
 php:
   - 7.1
   - 7.3
+  - 7.4
 
 env:
-  - SOLR_VERSION=8.2.0 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=true
-  - SOLR_VERSION=8.2.0 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
-  - SOLR_VERSION=8.2.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=true
-  - SOLR_VERSION=8.2.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
-  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=true
-  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
-  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=true
-  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
-  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
-  - SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=true
-  - SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
+  - SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+  - SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+  - SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+  - SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+  - SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
 
 git:
   # The depth needs to be increased. The default of 50 leads to fatal: reference
@@ -58,9 +63,13 @@ install:
   - cd $TRAVIS_BUILD_DIR/../drupal
   - composer install
   - composer config repositories.search_api_solr vcs $TRAVIS_BUILD_DIR
-  - composer require --no-suggest symfony/event-dispatcher:"4.3.4 as 3.4.99"  solarium/solarium:"dev-master as 5.1.99" drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:3.99 drupal/search_api_location:1.x-dev drupal/facets:1.x-dev drupal/geofield:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev drupal/devel monolog/monolog
   - |
-    if [ ${DRUPAL_BRANCH} != "8.8.x" ]; then
+    if [ ${DRUPAL_BRANCH} != "9.0.x" ]; then
+      composer require --no-suggest symfony/event-dispatcher:"4.3.4 as 3.4.99"
+    fi
+  - composer require solarium/solarium:"dev-master as 5.1.99" drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:3.99 drupal/search_api_location:1.x-dev drupal/facets:1.x-dev drupal/geofield:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev drupal/devel monolog/monolog
+  - |
+    if [ ${DRUPAL_BRANCH} == "8.7.x" ]; then
       composer run-script drupal-phpunit-upgrade
     fi
   # Patch template.
@@ -69,6 +78,7 @@ install:
   #- cd modules/contrib/search_api
   #- curl https://www.drupal.org/files/issues/2018-12-20/3021717.patch | patch -p1
   #- cd $TRAVIS_BUILD_DIR/../drupal
+  #########################################
   - cp $TRAVIS_BUILD_DIR/tests/travis.phpunit.xml $TRAVIS_BUILD_DIR/../drupal/core/phpunit.xml.dist
 
 before_script:
@@ -92,6 +102,7 @@ before_script:
   - ./vendor/bin/drush language-add fa
   - ./vendor/bin/drush language-add fi
   - ./vendor/bin/drush language-add fr
+  - ./vendor/bin/drush language-add ga
   - ./vendor/bin/drush language-add hi
   - ./vendor/bin/drush language-add hr
   - ./vendor/bin/drush language-add id
@@ -103,7 +114,8 @@ before_script:
   - ./vendor/bin/drush language-add nn
   - ./vendor/bin/drush language-add no
   - ./vendor/bin/drush language-add pl
-  - ./vendor/bin/drush language-add pt
+  - ./vendor/bin/drush language-add pt-pt
+  - ./vendor/bin/drush language-add pt-br
   - ./vendor/bin/drush language-add ro
   - ./vendor/bin/drush language-add ru
   - ./vendor/bin/drush language-add sk
@@ -124,15 +136,14 @@ before_script:
   - ./vendor/bin/drush en --yes search_api_solr_test
   - |
       if [ ${SOLR_CLOUD} == "true" ]; then
-        ./vendor/bin/drush solr-gsc solr_search_server_cloud conf.zip $SOLR_VERSION
+        ./vendor/bin/drush -v solr-gsc solr_search_server_cloud conf.zip $SOLR_VERSION
       else
-        ./vendor/bin/drush solr-gsc solr_search_server conf.zip $SOLR_VERSION
+        ./vendor/bin/drush -v solr-gsc solr_search_server conf.zip $SOLR_VERSION
       fi
   - rm -rf core/modules/system/entity_test modules/contrib/search_api/search_api_test_example_content modules/contrib/search_api_solr/search_api_solr_test
   - mkdir $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8
   - mkdir $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
   - unzip -o conf.zip -d $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
-  - echo "solr.install.dir=$TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}" >> $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf/solrcore.properties
   # - ls -lh $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
   # - cat $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf/solrconfig_extra.xml
   - |
@@ -162,10 +173,49 @@ after_script:
 matrix:
   exclude:
     - php: 7.1
-      env: SOLR_VERSION=8.2.0 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=true
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
     - php: 7.1
-      env: SOLR_VERSION=8.2.0 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
     - php: 7.1
-      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=true
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
     - php: 7.1
-      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.7.0 SOLR_CLOUD=false
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.1
+      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.1
+      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.4
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.4
+      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.4
+      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=7.7.2 DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.4
+      env: SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.4
+      env: SOLR_VERSION=6.6.6 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+  allow_failures:
+    - php: 7.3
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.3
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.4
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false
+    - php: 7.4
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+    - php: 7.4
+      env: SOLR_VERSION=8.4.1 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=false

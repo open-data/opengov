@@ -524,28 +524,42 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
   /**
    * {@inheritdoc}
    */
-  public function getTokenUrl() {
-    $uri = $this->getSourceUrl();
-    $options = $uri->getOptions();
+  public function getTokenUrl($operation = 'update') {
+    switch ($operation) {
+      case 'view':
+        /** @var \Drupal\webform\WebformRequestInterface $request_handler */
+        $request_handler = \Drupal::service('webform.request');
+        $url = $request_handler->getUrl($this, $this->getSourceEntity(), 'webform.user.submission');
+        break;
+
+      case 'update':
+        $url = $this->getSourceUrl();
+        break;
+
+      default:
+        throw new \Exception("Token URL operation $operation is not supported");
+    }
+
+    $options = $url->setAbsolute()->getOptions();
     $options['query']['token'] = $this->getToken();
-    return $uri->setOptions($options);
+    return $url->setOptions($options);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function invokeWebformHandlers($method, &$context1 = NULL, &$context2 = NULL) {
+  public function invokeWebformHandlers($method, &$context1 = NULL, &$context2 = NULL, &$context3 = NULL) {
     if ($webform = $this->getWebform()) {
-      $webform->invokeHandlers($method, $this, $context1, $context2);
+      return $webform->invokeHandlers($method, $this, $context1, $context2, $context3);
     }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function invokeWebformElements($method, &$context1 = NULL, &$context2 = NULL) {
+  public function invokeWebformElements($method, &$context1 = NULL, &$context2 = NULL, &$context3 = NULL) {
     if ($webform = $this->getWebform()) {
-      $webform->invokeElements($method, $this, $context1, $context2);
+      $webform->invokeElements($method, $this, $context1, $context2, $context3);
     }
   }
 
@@ -834,6 +848,15 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
    */
   public function resave() {
     return $this->entityTypeManager()->getStorage($this->entityTypeId)->resave($this);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access($operation, AccountInterface $account = NULL, $return_as_object = FALSE) {
+    $access = parent::access($operation, $account, TRUE)
+      ->orIf($this->invokeWebformHandlers('access', $operation, $account));
+    return $return_as_object ? $access : $access->isAllowed();
   }
 
   /**

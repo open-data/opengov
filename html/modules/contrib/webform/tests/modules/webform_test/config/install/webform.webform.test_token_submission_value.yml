@@ -15,6 +15,16 @@ title: 'Test: Token submission value'
 description: 'Test Webform submission values tokens'
 category: 'Test: Token'
 elements: |
+  checkboxes:
+    '#type': checkboxes
+    '#title': checkboxes
+    '#options':
+      one: One
+      two: Two
+      three: Three
+    '#default_value':
+      - one
+      - three
   email:
     '#type': email
     '#title': email
@@ -227,6 +237,14 @@ settings:
     <tr><th width="50%">webform:element:email:not_property</th><td width="50%">[webform:element:email:not_property]</td></tr>
     </table>
     
+    <h3>checkboxes</h3>
+    <table class="table">
+    <tr><th width="50%">webform:element:checkboxes</th><td width="50%">[webform_submission:values:checkboxes]</td></tr>
+    <tr><th width="50%">webform:element:checkboxes:checked:one</th><td width="50%">[webform_submission:values:checkboxes:checked:one]</td></tr>
+    <tr><th width="50%">webform:element:checkboxes:selected:two</th><td width="50%">[webform_submission:values:checkboxes:selected:two]</td></tr>
+    <tr><th width="50%">webform:element:checkboxes:selected:three</th><td width="50%">[webform_submission:values:checkboxes:selected:three]</td></tr>
+    </table>
+    
     <h3>emails</h3>
     <table class="table">
     <tr><th width="50%">webform_submission:values:email</th><td width="50%">[webform_submission:values:email]</td></tr>
@@ -355,6 +373,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: true
 access:
   create:

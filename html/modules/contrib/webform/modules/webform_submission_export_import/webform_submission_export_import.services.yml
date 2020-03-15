@@ -1,7 +1,7 @@
 services:
   webform_submission_export_import.importer:
     class: Drupal\webform_submission_export_import\WebformSubmissionExportImportImporter
-    arguments: ['@config.factory', '@logger.factory', '@entity_type.manager', '@plugin.manager.webform.element']
+    arguments: ['@config.factory', '@logger.factory', '@entity_type.manager', '@plugin.manager.webform.element', '@file_system']
 
   webform_submission_export_import.route_subscriber:
     class: Drupal\webform_submission_export_import\Routing\WebformSubmissionExportImportRouteSubscriber

@@ -3,7 +3,6 @@
 namespace Drupal\search_api_solr\Entity;
 
 use Drupal\Component\Serialization\Json;
-use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility as SearchApiSolrUtility;
@@ -28,7 +27,22 @@ use Drupal\search_api_solr\SolrFieldTypeInterface;
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
- *     "uuid" = "uuid"
+ *     "uuid" = "uuid",
+ *     "disabled" = "disabled_field_types"
+ *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "minimum_solr_version",
+ *     "custom_code",
+ *     "field_type_language_code",
+ *     "domains",
+ *     "field_type",
+ *     "unstemmed_field_type",
+ *     "spellcheck_field_type",
+ *     "collated_field_type",
+ *     "solr_configs",
+ *     "text_files"
  *   },
  *   links = {
  *     "edit-form" = "/admin/config/search/search-api/solr_field_type/{solr_field_type}",
@@ -39,28 +53,7 @@ use Drupal\search_api_solr\SolrFieldTypeInterface;
  *   }
  * )
  */
-class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
-
-  /**
-   * The SolrFieldType ID.
-   *
-   * @var string
-   */
-  protected $id;
-
-  /**
-   * The SolrFieldType label.
-   *
-   * @var string
-   */
-  protected $label;
-
-  /**
-   * Minimum Solr version required by this field type.
-   *
-   * @var string
-   */
-  protected $minimum_solr_version;
+class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface {
 
   /**
    * Solr Field Type definition.
@@ -112,20 +105,6 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   protected $domains;
 
   /**
-   * Solr Field Type specific additions to solrconfig.xml.
-   *
-   * @var array
-   */
-  protected $solr_configs;
-
-  /**
-   * Array of various text files required by the Solr Field Type definition.
-   *
-   * @var array
-   */
-  protected $text_files;
-
-  /**
    * {@inheritdoc}
    */
   public function getFieldType() {
@@ -138,6 +117,13 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   public function setFieldType(array $field_type) {
     $this->field_type = $field_type;
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getName(): string {
+    return $this->field_type['name'];
   }
 
   /**
@@ -207,21 +193,20 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getOptions() {
+    return $this->getDomains();
+  }
+
+  /**
    * Get all available domains form solr filed type configs.
    *
    * @return string[]
    *   An array of domains as strings.
    */
   public static function getAvailableDomains() {
-    $domains = [['generic']];
-    $config_factory = \Drupal::configFactory();
-    foreach ($config_factory->listAll('search_api_solr.solr_field_type.') as $field_type_name) {
-      $config = $config_factory->get($field_type_name);
-      $domains[] = $config->get('domains');
-    }
-    $domains = array_unique(array_merge(...$domains));
-    sort($domains);
-    return $domains;
+    return parent::getAvailableOptions('domains', 'generic', 'search_api_solr.solr_field_type.');
   }
 
   /**
@@ -374,7 +359,7 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getFieldTypeAsXml($add_comment = TRUE) {
+  public function getAsXml(bool $add_comment = TRUE): string {
     return $this->getSubFieldTypeAsXml($this->field_type);
   }
 
@@ -424,101 +409,11 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
     return $comment . $formatted_xml_string;
   }
 
-
-  /**
-   * Formats a given array to an XML string.
-   */
-  protected function buildXmlFromArray($root_element_name, array $attributes) {
-    /** @noinspection PhpComposerExtensionStubsInspection */
-    $root = new \SimpleXMLElement('<' . $root_element_name . '/>');
-    self::buildXmlFromArrayRecursive($root, $attributes);
-
-    // Create formatted string.
-    /** @noinspection PhpComposerExtensionStubsInspection */
-    $dom = dom_import_simplexml($root)->ownerDocument;
-    $dom->formatOutput = TRUE;
-    $formatted_xml_string = $dom->saveXML();
-
-    // Remove the XML declaration before returning the XML fragment.
-    return preg_replace('/<\?.*?\?>\s*\n?/', '', $formatted_xml_string);
-  }
-
-  /**
-   * Builds a SimpleXMLElement recursively from an array of attributes.
-   *
-   * @param \SimpleXMLElement $element
-   *   The root SimpleXMLElement.
-   * @param array $attributes
-   *   An associative array of key/value attributes. Can be multi-level.
-   */
-  protected static function buildXmlFromArrayRecursive(\SimpleXMLElement $element, array $attributes) {
-    foreach ($attributes as $key => $value) {
-      if (is_scalar($value)) {
-        if (is_bool($value) === TRUE) {
-          // SimpleXMLElement::addAtribute() converts booleans to integers 0
-          // and 1. But Solr requires the strings 'false' and 'true'.
-          $value = $value ? 'true' : 'false';
-        }
-
-        switch ($key) {
-          case 'VALUE':
-            // @see https://stackoverflow.com/questions/3153477
-            $element[0] = $value;
-            break;
-
-          case 'CDATA':
-            $element[0] = '<![CDATA[' . $value . ']]>';
-            break;
-
-          default:
-            $element->addAttribute($key, $value);
-        }
-      }
-      elseif (is_array($value)) {
-        if (array_key_exists(0, $value)) {
-          $key = rtrim($key, 's');
-          foreach ($value as $inner_attributes) {
-            $child = $element->addChild($key);
-            self::buildXmlFromArrayRecursive($child, $inner_attributes);
-          }
-        }
-        else {
-          $child = $element->addChild($key);
-          self::buildXmlFromArrayRecursive($child, $value);
-        }
-      }
-    }
-  }
-
   /**
    * {@inheritdoc}
    */
   public function getSolrConfigs() {
     return $this->solr_configs;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setSolrConfigs(array $solr_configs) {
-    return $this->solr_configs = $solr_configs;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getSolrConfigsAsXml($add_comment = TRUE) {
-    $formatted_xml_string = $this->buildXmlFromArray('solrconfigs', $this->solr_configs);
-
-    $comment = '';
-    if ($add_comment) {
-      $comment = "<!--\n  Special configs for " . $this->label() . "\n  " .
-        $this->getMinimumSolrVersion() .
-        "\n-->\n";
-    }
-
-    // Remove the fake root element the XML fragment.
-    return $comment . preg_replace('@</?solrconfigs/?>@', '', $formatted_xml_string);
   }
 
   /**
@@ -657,32 +552,6 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getTextFiles() {
-    return $this->text_files;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addTextFile($name, $content) {
-    $this->text_files[$name] = preg_replace('/\R/u', "\n", $content);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setTextFiles(array $text_files) {
-    $this->text_files = [];
-    foreach ($text_files as $name => $content) {
-      $this->addTextFile($name, $content);
-    }
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function requiresManagedSchema() {
     if (isset($this->field_type['analyzers'])) {
       foreach ($this->field_type['analyzers'] as $analyzer) {
@@ -696,40 +565,6 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
       }
     }
     return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMinimumSolrVersion() {
-    return $this->minimum_solr_version;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setMinimumSolrVersion($minimum_solr_version) {
-    $this->minimum_solr_version = $minimum_solr_version;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function urlRouteParameters($rel) {
-    $uri_route_parameters = parent::urlRouteParameters($rel);
-
-    if (
-      'collection' === $rel ||
-      'disable-for-server' === $rel ||
-      'enable-for-server' === $rel
-    ) {
-      $uri_route_parameters['search_api_server'] = \Drupal::routeMatch()->getRawParameter('search_api_server')
-        // To be removed when https://www.drupal.org/node/2919648 is fixed.
-        ?: 'core_issue_2919648_workaround';
-    }
-
-    return $uri_route_parameters;
   }
 
 }

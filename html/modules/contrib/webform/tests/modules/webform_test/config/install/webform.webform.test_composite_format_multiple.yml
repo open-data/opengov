@@ -549,57 +549,6 @@ elements: |
             suburb: ''
             postcode: '20020'
         '#format_items': table
-    webform_location_geocomplete:
-      '#type': details
-      '#title': 'Location (Geocomplete)'
-      webform_location_geocomplete_ol:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (Ordered list)'
-        '#map': true
-        '#geolocation': true
-        '#format': map
-        '#multiple': true
-        '#default_value':
-          - value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
-          - value: 'London SW1A 1AA, United Kingdom'
-          - value: 'Moscow, Russia, 10307'
-        '#format_items': ol
-      webform_location_geocomplete_ul:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (Unordered list)'
-        '#map': true
-        '#geolocation': true
-        '#format': map
-        '#multiple': true
-        '#default_value':
-          - value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
-          - value: 'London SW1A 1AA, United Kingdom'
-          - value: 'Moscow, Russia, 10307'
-        '#format_items': ul
-      webform_location_geocomplete_hr:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (Horizontal rule)'
-        '#map': true
-        '#geolocation': true
-        '#format': map
-        '#multiple': true
-        '#default_value':
-          - value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
-          - value: 'London SW1A 1AA, United Kingdom'
-          - value: 'Moscow, Russia, 10307'
-        '#format_items': hr
-      webform_location_geocomplete_table:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (Table)'
-        '#map': true
-        '#geolocation': true
-        '#format': map
-        '#multiple': true
-        '#default_value':
-          - value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
-          - value: 'London SW1A 1AA, United Kingdom'
-          - value: 'Moscow, Russia, 10307'
-        '#format_items': table
     webform_name:
       '#type': details
       '#title': Name
@@ -762,7 +711,7 @@ elements: |
             phone: '+1 212-333-4444'
             ext: 0
         '#format_items': table
-  
+
 css: ''
 javascript: ''
 settings:
@@ -876,6 +825,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -950,6 +900,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: false
       attachments: false
       twig: false
@@ -985,6 +936,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false

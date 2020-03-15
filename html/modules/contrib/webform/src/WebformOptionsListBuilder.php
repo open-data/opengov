@@ -237,9 +237,9 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
    */
   public function buildOperations(EntityInterface $entity) {
     return parent::buildOperations($entity) + [
-        '#prefix' => '<div class="webform-dropbutton">',
-        '#suffix' => '</div>',
-      ];
+      '#prefix' => '<div class="webform-dropbutton">',
+      '#suffix' => '</div>',
+    ];
   }
 
   /**

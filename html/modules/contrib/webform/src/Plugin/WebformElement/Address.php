@@ -364,9 +364,9 @@ class Address extends WebformCompositeBase {
           '#type' => 'select',
           '#default_value' => $override,
           '#options' => [
-            FieldOverride::HIDDEN => t('Hidden'),
-            FieldOverride::OPTIONAL => t('Optional'),
-            FieldOverride::REQUIRED => t('Required'),
+            FieldOverride::HIDDEN => $this->t('Hidden'),
+            FieldOverride::OPTIONAL => $this->t('Optional'),
+            FieldOverride::REQUIRED => $this->t('Required'),
           ],
           '#empty_option' => $this->t('- No override -'),
           '#parents' => ['properties', 'field_overrides', $field_name],

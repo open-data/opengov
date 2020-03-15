@@ -138,7 +138,8 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
     if ($checkpoints_collection) {
       try {
         return $this->getEndpoint($checkpoints_collection);
-      } catch (OutOfBoundsException $e) {
+      }
+      catch (OutOfBoundsException $e) {
         $additional_config['core'] = $checkpoints_collection;
         return $this->createEndpoint($checkpoints_collection, $additional_config);
       }
@@ -274,7 +275,8 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
   /**
    * Reloads collection.
    *
-   * @param string $collection
+   * @param string|null $collection
+   *   Collection.
    *
    * @return bool
    *   TRUE if successful, FALSE otherwise.
@@ -308,8 +310,14 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
     // Leverage the implicit Solr request handlers with default settings for
     // Solr Cloud.
     // @see https://lucene.apache.org/solr/guide/8_0/implicit-requesthandlers.html
-    $files['solrconfig.xml'] = preg_replace("@<requestHandler\s+name=\"/replication\".*?</requestHandler>@ms", '', $files['solrconfig.xml']);
-    $files['solrconfig.xml'] = preg_replace("@<requestHandler\s+name=\"/get\".*?</requestHandler>@ms", '', $files['solrconfig.xml']);
+    if (6 !== $this->getSolrMajorVersion()) {
+      $files['solrconfig_extra.xml'] = preg_replace("@<requestHandler\s+name=\"/replication\".*?</requestHandler>@ms", '', $files['solrconfig_extra.xml']);
+      $files['solrconfig_extra.xml'] = preg_replace("@<requestHandler\s+name=\"/get\".*?</requestHandler>@ms", '', $files['solrconfig_extra.xml']);
+    }
+    else {
+      $files['solrconfig.xml'] = preg_replace("@<requestHandler\s+name=\"/replication\".*?</requestHandler>@ms", '', $files['solrconfig.xml']);
+      $files['solrconfig.xml'] = preg_replace("@<requestHandler\s+name=\"/get\".*?</requestHandler>@ms", '', $files['solrconfig.xml']);
+    }
     $files['solrcore.properties'] = preg_replace("/solr\.replication.*\n/", '', $files['solrcore.properties']);
 
     // Set the StatsCache.
@@ -318,4 +326,5 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
       $files['solrconfig_extra.xml'] .= '<statsCache class="' . $this->configuration['stats_cache'] . '" />' . "\n";
     }
   }
+
 }

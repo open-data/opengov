@@ -20,8 +20,6 @@ abstract class NumericBase extends WebformElementBase {
       // Form validation.
       'readonly' => FALSE,
       'size' => '',
-      'minlength' => '',
-      'maxlength' => '',
       'placeholder' => '',
       'autocomplete' => 'on',
     ] + parent::getDefaultProperties();

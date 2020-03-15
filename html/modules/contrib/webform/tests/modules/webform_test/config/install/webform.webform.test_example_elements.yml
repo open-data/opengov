@@ -127,9 +127,6 @@ elements: |
       '#required': true
       '#terms_type': slideout
       '#terms_content': '<em>These are the terms of service.</em>'
-    webform_toggle:
-      '#type': webform_toggle
-      '#title': Toggle
     url:
       '#type': url
       '#title': URL
@@ -227,20 +224,6 @@ elements: |
     '#type': details
     '#title': 'Options elements'
     '#open': true
-    webform_buttons:
-      '#type': webform_buttons
-      '#title': Buttons
-      '#options':
-        one: One
-        two: Two
-        three: Three
-    webform_buttons_other:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other'
-      '#options':
-        one: One
-        two: Two
-        three: Three
     checkboxes:
       '#type': checkboxes
       '#title': Checkboxes
@@ -249,7 +232,7 @@ elements: |
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
+      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios and checkboxess.</a>'
     webform_checkboxes_other:
       '#type': webform_checkboxes_other
       '#title': 'Checkboxes other'
@@ -295,7 +278,7 @@ elements: |
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2731991">Issue #2731991: Setting required on radios marks all options required</a><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
+      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2731991">Issue #2731991: Setting required on radios marks all options required</a><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios and checkboxes.</a>'
     webform_radios_other:
       '#type': webform_radios_other
       '#title': 'Radios other'
@@ -354,13 +337,6 @@ elements: |
     webform_table_sort:
       '#type': webform_table_sort
       '#title': 'Table sort'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-    webform_toggles:
-      '#type': webform_toggles
-      '#title': Toggles
       '#options':
         one: One
         two: Two
@@ -534,7 +510,7 @@ elements: |
     table:
       '#type': table
       '#title': Table
-  
+
 css: ''
 javascript: ''
 settings:
@@ -648,6 +624,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

@@ -12,7 +12,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\webform\Element\WebformAjaxElementTrait;
 use Drupal\webform\Element\WebformEntityTrait;
+use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
@@ -37,6 +39,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOptionsLimitHandlerInterface {
+
+  use WebformAjaxElementTrait;
 
   /**
    * Default option value.
@@ -164,6 +168,13 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
   /**
    * {@inheritdoc}
    */
+  public function hasAnonymousSubmissionTracking() {
+    return $this->configuration['limit_user'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setSourceEntity(EntityInterface $source_entity = NULL) {
     $this->sourceEntity = $source_entity;
     return $this;
@@ -193,6 +204,7 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       'limits' => [],
       'limit_reached_message' => '@name is not available',
       'limit_source_entity' => TRUE,
+      'limit_user' => FALSE,
       'option_none_action' => 'disable',
       'option_message_display' => 'label',
       'option_multiple_message' => '[@remaining remaining]',
@@ -271,10 +283,6 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       return $form;
     }
 
-    // Attached webform.form library for Ajax submit trigger behavior.
-    $form['#attached']['library'][] = 'webform/webform.form';
-    $ajax_wrapper = 'webform-options-limit-ajax-wrapper';
-
     // Element settings.
     $form['element_settings'] = [
       '#type' => 'details',
@@ -288,33 +296,8 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       '#default_value' => $this->configuration['element_key'],
       '#required' => TRUE,
       '#empty_option' => (empty($this->configuration['element_key'])) ? $this->t('- Select -') : NULL,
-      '#attributes' => [
-        'data-webform-trigger-submit' => ".js-$ajax_wrapper-submit",
-      ],
     ];
-    $form['element_settings']['update'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Update'),
-      '#validate' => [],
-      '#submit' => [[get_called_class(), 'rebuildCallback']],
-      '#ajax' => [
-        'callback' => [get_called_class(), 'ajaxCallback'],
-        'wrapper' => $ajax_wrapper,
-        'progress' => ['type' => 'fullscreen'],
-      ],
-      // Disable validation, hide button, add submit button trigger class.
-      '#attributes' => [
-        'formnovalidate' => 'formnovalidate',
-        'class' => [
-          'js-hide',
-          "js-$ajax_wrapper-submit",
-        ],
-      ],
-    ];
-    $form['element_settings']['options_container'] = [
-      '#type' => 'container',
-      '#attributes' => ['id' => $ajax_wrapper],
-    ];
+    $form['element_settings']['options_container'] = [];
     $element = $this->getElement();
     if ($element) {
       $webform_element = $this->getWebformElement();
@@ -344,6 +327,11 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
         '#value' => [],
       ];
     }
+    $this->buildAjaxElement(
+      'webform-options-limit',
+      $form['element_settings']['options_container'],
+      $form['element_settings']['element_key']
+    );
 
     // Limit settings.
     $form['limit_settings'] = [
@@ -365,7 +353,25 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       '#return_value' => TRUE,
       '#default_value' => $this->configuration['limit_source_entity'],
     ];
-
+    $form['limit_settings']['limit_user'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Apply options limit to per user'),
+      '#description' => $this->t("If checked, options limit will be applied per submission for authenticated and anonymous users. Anonymous user options limits are only tracked by the user's browser sessions. Per user limits work best for authenticated users."),
+      '#return_value' => TRUE,
+      '#default_value' => $this->configuration['limit_user'],
+    ];
+    $form['limit_settings']['limit_user_message'] = [
+      '#type' => 'webform_message',
+      '#message_type' => 'warning',
+      '#message_message' => $this->t('Anonymous user options limits are only tracked by the user\'s browser session. It is recommended that options limit to per user only be used on forms restricted to authenticated users.'),
+      '#message_close' => TRUE,
+      '#message_storage' => WebformMessage::STORAGE_SESSION,
+      '#states' => [
+        'visible' => [
+          ':input[name="settings[limit_user]"]' => ['checked' => TRUE],
+        ]
+      ]
+    ];
     // Option settings.
     $form['option_settings'] = [
       '#type' => 'details',
@@ -475,37 +481,6 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
     // Clear cached element label.
     // @see \Drupal\webform_options_limit\Plugin\WebformHandler\OptionsLimitWebformHandler::getElementLabel
     $this->elementLabel = NULL;
-  }
-
-  /**
-   * Rebuild callback.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   */
-  public static function rebuildCallback(array $form, FormStateInterface $form_state) {
-    $form_state->setRebuild();
-  }
-
-  /**
-   * Ajax callback.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return array
-   *   An associative array containing options element.
-   */
-  public function ajaxCallback(array $form, FormStateInterface $form_state) {
-    return NestedArray::getValue($form, [
-      'settings',
-      'element_settings',
-      'options_container',
-    ]);
   }
 
   /****************************************************************************/
@@ -730,6 +705,10 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
   public function buildSummaryTable() {
     $element = $this->getElement();
     if (!$element) {
+      return [];
+    }
+
+    if ($this->configuration['limit_user']) {
       return [];
     }
 
@@ -1070,6 +1049,24 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       else {
         $query->isNull('s.entity_type');
         $query->isNull('s.entity_id');
+      }
+    }
+
+    // Limit by authenticated or anonymous user.
+    if ($this->configuration['limit_user']) {
+      $account = \Drupal::currentUser();
+      if ($account->isAuthenticated()) {
+        $query->condition('s.uid', $account->id());
+      }
+      else {
+        $sids = $this->submissionStorage->getAnonymousSubmissionIds($account);
+        if ($sids) {
+          $query->condition('s.sid', $sids, 'IN');
+          $query->condition('s.uid', 0);
+        }
+        else {
+          return [];
+        }
       }
     }
 

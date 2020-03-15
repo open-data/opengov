@@ -133,11 +133,6 @@ elements: |
       '#international': true
       '#description': 'This is a description for the ''tel'' element.'
       '#description_display': tooltip
-    webform_toggle:
-      '#type': webform_toggle
-      '#title': Toggle
-      '#description': 'This is a description for the ''webform_toggle'' element.'
-      '#description_display': tooltip
     url:
       '#type': url
       '#title': URL
@@ -188,14 +183,6 @@ elements: |
       '#type': webform_location_places
       '#title': 'Location (Algolia Places)'
       '#description': 'This is a description for the ''webform_location_places'' element.'
-      '#description_display': tooltip
-    webform_location_geocomplete:
-      '#type': webform_location_geocomplete
-      '#title': 'Location (Geocomplete)'
-      '#map': true
-      '#geolocation': true
-      '#format': map
-      '#description': 'This is a description for the ''webform_location_geocomplete'' element.'
       '#description_display': tooltip
     webform_name:
       '#type': webform_name
@@ -345,15 +332,6 @@ elements: |
         three: Three
       '#description': 'This is a description for the ''webform_select_other'' element.'
       '#description_display': tooltip
-    webform_toggles:
-      '#type': webform_toggles
-      '#title': Toggles
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#description': 'This is a description for the ''webform_toggles'' element.'
-      '#description_display': tooltip
   computed_elements:
     '#type': details
     '#title': 'Computed Elements'
@@ -488,7 +466,7 @@ elements: |
       '#title': 'Machine name'
       '#description': 'This is a description for the ''machine_name'' element.'
       '#description_display': tooltip
-  
+
 css: ''
 javascript: ''
 settings:
@@ -602,6 +580,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

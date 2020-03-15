@@ -89,10 +89,6 @@ class Form extends Link implements \ArrayAccess
     {
         $values = [];
         foreach ($this->fields->all() as $name => $field) {
-            if ($field->isDisabled()) {
-                continue;
-            }
-
             if (!$field instanceof Field\FileFormField && $field->hasValue()) {
                 $values[$name] = $field->getValue();
             }
@@ -115,10 +111,6 @@ class Form extends Link implements \ArrayAccess
         $files = [];
 
         foreach ($this->fields->all() as $name => $field) {
-            if ($field->isDisabled()) {
-                continue;
-            }
-
             if ($field instanceof Field\FileFormField) {
                 $files[$name] = $field->getValue();
             }
@@ -277,7 +269,7 @@ class Form extends Link implements \ArrayAccess
      *
      * @param string $name The field name
      *
-     * @return FormField The field instance
+     * @return FormField|FormField[]|FormField[][] The value of the field
      *
      * @throws \InvalidArgumentException When field is not present in this form
      */
@@ -321,7 +313,7 @@ class Form extends Link implements \ArrayAccess
      *
      * @param string $name The field name
      *
-     * @return FormField The associated Field instance
+     * @return FormField|FormField[]|FormField[][] The value of the field
      *
      * @throws \InvalidArgumentException if the field does not exist
      */
@@ -463,7 +455,7 @@ class Form extends Link implements \ArrayAccess
 
     private function addField(\DOMElement $node)
     {
-        if (!$node->hasAttribute('name') || !$node->getAttribute('name')) {
+        if (!$node->hasAttribute('name') || !$node->getAttribute('name') || $node->hasAttribute('disabled')) {
             return;
         }
 

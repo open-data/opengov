@@ -7,14 +7,14 @@
 .webform-managed-file-preview-wrapper + button,
 .webform-managed-file-preview + input[type="submit"],
 .webform-managed-file-preview + button {
-  margin: .5em 0;
+  margin: 0.5em 0;
 }
 
 .webform-managed-file-preview-wrapper,
 .webform-managed-file-preview-wrapper.form-item {
   display: table;
   border: 1px solid #ccc;
-  padding: .5em;
+  padding: 0.5em;
 }
 
 .webform-managed-file-preview,
@@ -26,5 +26,5 @@ label.option.webform-managed-file-preview {
 .webform-managed-file-placeholder,
 .webform-managed-file-preview,
 .webform-file-button {
-  margin: .5em 0;
+  margin: 0.5em 0;
 }

@@ -30,6 +30,13 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
   /**
    * {@inheritdoc}
    */
+  public function getTranslatableProperties() {
+    return array_merge(parent::getTranslatableProperties(), ['url']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     $form['attachment']['url'] = [

@@ -4,7 +4,7 @@ namespace Drupal\redirect;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\redirect\Exception\RedirectLoopException;
@@ -12,7 +12,7 @@ use Drupal\redirect\Exception\RedirectLoopException;
 class RedirectRepository {
 
   /**
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $manager;
 
@@ -36,12 +36,12 @@ class RedirectRepository {
   /**
    * Constructs a \Drupal\redirect\EventSubscriber\RedirectRequestSubscriber object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $manager
-   *   The entity manager service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $manager
+   *   The entity type manager.
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection.
    */
-  public function __construct(EntityManagerInterface $manager, Connection $connection, ConfigFactoryInterface $config_factory) {
+  public function __construct(EntityTypeManagerInterface $manager, Connection $connection, ConfigFactoryInterface $config_factory) {
     $this->manager = $manager;
     $this->connection = $connection;
     $this->config = $config_factory->get('redirect.settings');

@@ -130,6 +130,12 @@ class WebformActions extends ContainerBase {
         'label' => $this->t('draft'),
         'access' => $draft_enabled,
       ],
+      'update' => [
+        'title' => $this->t('Update'),
+        'label' => $this->t('Update'),
+        'description' => $this->t('This is used after a submission has been saved and finalized to the database.'),
+        'access' => !$webform->isResultsDisabled(),
+      ],
       'wizard_prev' => [
         'title' => $this->t('Wizard previous'),
         'label' => $this->t('wizard previous'),

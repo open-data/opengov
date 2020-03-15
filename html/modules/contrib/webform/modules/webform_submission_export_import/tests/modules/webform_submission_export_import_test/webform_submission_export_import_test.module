@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\user\Entity\User;
 
 /**
@@ -18,6 +19,9 @@ function webform_submission_export_import_test_form_webform_submission_export_im
   $webform_id = \Drupal::routeMatch()->getRawParameter('webform');
   if ($webform_id === 'test_submission_export_import' && isset($form['import']['import_url'])) {
     global $base_url;
+
+    /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+    $file_system = \Drupal::service('file_system');
 
     $webform_path = drupal_get_path('module', 'webform');
     $files_path = drupal_get_path('module', 'webform_submission_export_import_test') . '/files';
@@ -43,7 +47,8 @@ function webform_submission_export_import_test_form_webform_submission_export_im
 
       // Copy CSV file from module to public:// uri.
       $csv_file_path = "$files_path/test_submission_export_import-$file_name.csv";
-      file_unmanaged_copy($csv_file_path, NULL, FILE_EXISTS_REPLACE);
+      $destination = file_build_uri($file_system->basename($csv_file_path));
+      $file_system->copy($csv_file_path, $destination, FileSystemInterface::EXISTS_REPLACE);
 
       $contents = file_get_contents($csv_uri);
 

@@ -5,6 +5,13 @@
  * @see /admin/structure/webform/templates
  */
 
+/**
+ * Server-side filter.
+ *
+ * @see \Drupal\webform\Form\WebformEntityFilterForm
+ * @see \Drupal\webform\Form\WebformOptionsFilterForm
+ * @see \Drupal\webform\Form\WebformSubmissionFilterForm
+ */
 .webform-filter-form .form-submit {
   margin-left: 0;
   margin-right: 5px;
@@ -31,4 +38,28 @@
   .webform-filter-form .form-item select {
     max-width: initial;
   }
+}
+
+/**
+ * Client-side filter.
+ *
+ * @see webform.filter.js
+ */
+.webform-form-filter {
+  display: inline-block;
+  position: relative;
+}
+
+.webform-form-filter input.webform-form-filter-reset {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5em;
+  background-color: transparent;
+  border: none;
+  line-height: 1;
+}
+
+.webform-form-filter input.webform-form-filter-text {
+  padding-right: 1.5em;
 }

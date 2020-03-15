@@ -352,13 +352,6 @@ elements: |
         '#title': 'Second address'
         '#flexbox': false
         '#title_display': above
-    webform_location_geocomplete:
-      '#type': webform_location_places
-      '#title': Location
-      '#map': true
-      '#geolocation': true
-      '#format': map
-      '#title_display': above
     webform_link_multiple:
       '#type': webform_link
       '#title': 'Link multiple'
@@ -574,7 +567,7 @@ elements: |
       '#type': address
       '#title': Address
       '#description': '@see <a href="https://www.drupal.org/project/address">https://www.drupal.org/project/address</a>'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -688,6 +681,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

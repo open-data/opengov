@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\webform\Plugin\WebformElementAttachmentInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -101,6 +102,12 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
       $view_mode = $webform_submissions_view_mode;
     }
 
+    // Apply variants.
+    /** @var \Drupal\webform\WebformSubmissionInterface $entity */
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = $entity->getWebform();
+    $webform->applyVariants($entity);
+
     return parent::view($entity, $view_mode, $langcode);
   }
 
@@ -168,6 +175,9 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
           // Note that the YAML view ignores all access controls and excluded
           // settings.
           $data = $webform_submission->toArray(TRUE, TRUE);
+          // Covert computed element value markup to strings to
+          // 'Object support when dumping a YAML file has been disabled' errors.
+          WebformElementHelper::convertRenderMarkupToStrings($data);
           $build[$id]['data'] = [
             '#theme' => 'webform_codemirror',
             '#code' => WebformYaml::encode($data),
@@ -293,6 +303,15 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
       return FALSE;
     }
 
+    // Checked excluded attachments.
+    if (!empty($options['exclude_attachments'])) {
+      /** @var \Drupal\webform\Plugin\WebformElementInterface $webform_element */
+      $webform_element = $this->elementManager->getElementInstance($element, $webform_submission);
+      if ($webform_element instanceof WebformElementAttachmentInterface) {
+        return FALSE;
+      }
+    }
+
     // Check if the element is conditionally hidden.
     if (!$this->conditionsValidator->isElementVisible($element, $webform_submission)) {
       return FALSE;
@@ -311,7 +330,7 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
 
     // Finally, check the element's 'view' access.
     /** @var \Drupal\webform\Plugin\WebformElementInterface $webform_element */
-    $webform_element = $this->elementManager->getElementInstance($element);
+    $webform_element = $this->elementManager->getElementInstance($element, $webform_submission);
     return $webform_element->checkAccessRules('view', $element) ? TRUE : FALSE;
   }
 

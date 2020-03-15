@@ -199,6 +199,16 @@ class WebformEntityAccessControlHandler extends EntityAccessControlHandler imple
         return WebformAccessResult::allowed();
       }
 
+      // Allow users with 'edit any webform submission' to update any submissions.
+      if ($operation === 'submission_update_any' && $account->hasPermission('edit any webform submission')) {
+        return WebformAccessResult::allowed();
+      }
+
+      // Allow users with 'edit own webform submission' to update own submissions.
+      if ($operation === 'submission_update_own' && $account->hasPermission('edit own webform submission')) {
+        return WebformAccessResult::allowed();
+      }
+
       if (in_array($operation, ['submission_page', 'submission_create'])) {
         /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
         $submission_storage = $this->entityTypeManager->getStorage('webform_submission');

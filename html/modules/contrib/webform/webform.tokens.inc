@@ -62,13 +62,24 @@ function webform_token_info() {
     'name' => t('IP address'),
     'description' => t('The IP address that was used when submitting the webform submission.'),
   ];
+  $webform_submission['source-title'] = [
+    'name' => t('Source URL'),
+    'description' => t('The Title of the source entity or webform.'),
+  ];
   $webform_submission['source-url'] = [
     'name' => t('Source URL'),
     'description' => t('The URL the user submitted the webform submission.'),
+    'type' => 'url',
+  ];
+  $webform_submission['view-url'] = [
+    'name' => t('View (token) URL'),
+    'description' => t('The URL that can used to view the webform submission. The webform must be configured to allow users to view a submission using a secure token.'),
+    'type' => 'url',
   ];
   $webform_submission['update-url'] = [
-    'name' => t('Update URL'),
+    'name' => t('Update (token) URL'),
     'description' => t('The URL that can used to update the webform submission. The webform must be configured to allow users to update a submission using a secure token.'),
+    'type' => 'url',
   ];
   $webform_submission['langcode'] = [
     'name' => t('Langcode'),
@@ -80,11 +91,11 @@ function webform_token_info() {
   ];
   $webform_submission['current-page'] = [
     'name' => t('Current page'),
-    'description' => t('The current (wizard) page of the webform submission.'),
+    'description' => t('The current (last submitted) wizard page of the webform submission.'),
   ];
   $webform_submission['current-page:title'] = [
     'name' => t('Current page title'),
-    'description' => t('The current (wizard) page title of the webform submission.'),
+    'description' => t('The current (last submitted) wizard page title of the webform submission.'),
   ];
   $webform_submission['in-draft'] = [
     'name' => t('In draft'),
@@ -197,7 +208,7 @@ function webform_token_info() {
     'name' => t('Submission values'),
     'description' => Markup::create(t('Webform tokens from submitted data.') .
       _webform_token_render_more(t('Learn about submission value tokens'),
-        t("Omit the '?' to output all values. Output all values as HTML using [webform_submissions:values:html].") . '<br />' .
+        t("Omit the '?' to output all values. Output all values as HTML using [webform_submission:values:html].") . '<br />' .
         t("To output individual elements, replace the '?' with…") . '<br />' .
         '<ul>' .
         '<li>element_key</li>' .
@@ -217,10 +228,14 @@ function webform_token_info() {
         '<li>element_key:sub_element_key:entity:*</li>' .
         '<li>element_key:sub_element_key:entity:field_name:*</li>' .
         '<li>element_key:delta:sub_element_key:entity:*</li>' .
+        '<li>element_key:checked:option_value</li>' .
+        '<li>element_key:selected:option_value</li>' .
         '</ul>' .
         t("All items after the 'element_key' are optional.") . '<br />' .
         t("The 'delta' is the numeric index for specific value") . '<br />' .
         t("The 'sub_element_key' is a composite element's sub element key.") . '<br />' .
+        t("The 'checked'  or 'selected' looks to see if an 'option_value' is checked or selected for an options element (select, checkboxes, or radios)") . '<br />' .
+        t("The 'option_value' is options value for an options element (select, checkboxes, or radios).") . '<br />' .
         t("The 'format' can be 'value', 'raw', or custom format specifically associated with the element") . '<br />' .
         t("The 'items' can be 'comma', 'semicolon', 'and', 'ol', 'ul', or custom delimiter") . '<br />' .
         t("The 'entity:*' applies to the referenced entity") . '<br />' .
@@ -259,6 +274,12 @@ function webform_token_info() {
   $webform_submission['source-entity'] = [
     'name' => t('Source entity'),
     'description' => t('The source entity that the webform submission was submitted from.'),
+    'type' => 'entity',
+    'dynamic' => TRUE,
+  ];
+  $webform_submission['source-title'] = [
+    'name' => t('Source title'),
+    'description' => t('The source entity title that the webform submission was submitted from, defaults to the webform title when there is no source entity.'),
     'type' => 'entity',
     'dynamic' => TRUE,
   ];
@@ -515,8 +536,12 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           $replacements[$original] = $webform_submission->getSourceUrl()->toString();
           break;
 
+        case 'view-url':
+          $replacements[$original] = $webform_submission->getTokenUrl('view')->toString();
+          break;
+
         case 'update-url':
-          $replacements[$original] = $webform_submission->getTokenUrl()->toString();
+          $replacements[$original] = $webform_submission->getTokenUrl('update')->toString();
           break;
 
         case 'token':
@@ -688,7 +713,6 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
     }
 
     /* Chained token relationships. */
-
     if (($user_tokens = $token_service->findWithPrefix($tokens, 'user')) && ($user = $webform_submission->getOwner())) {
       $replacements += $token_service->generate('user', $user_tokens, ['user' => $user], $options, $bubbleable_metadata);
     }
@@ -709,6 +733,27 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
     }
     if (($submitted_to_tokens = $token_service->findWithPrefix($tokens, 'submitted-to')) && ($submitted_to = $webform_submission->getSourceEntity(TRUE) ?: $webform_submission->getWebform())) {
       $replacements += $token_service->generate($submitted_to->getEntityTypeId(), $submitted_to_tokens, [$submitted_to->getEntityTypeId() => $submitted_to], $options, $bubbleable_metadata);
+    }
+    foreach (['view-url', 'update-url', 'source-url'] as $token) {
+      if ($url_tokens = $token_service->findWithPrefix($tokens, $token)) {
+        $url = NULL;
+        switch ($token) {
+          case 'view-url':
+            $url = $webform_submission->getTokenUrl('view');
+            break;
+
+          case 'update-url':
+            $url = $webform_submission->getTokenUrl('update');
+            break;
+
+          case 'source-url':
+            $url = $webform_submission->getSourceUrl();
+            break;
+        }
+        if ($url) {
+          $replacements += $token_service->generate('url', $url_tokens, ['url' => $url], $options, $bubbleable_metadata);
+        }
+      }
     }
 
   }
@@ -941,6 +986,12 @@ function _webform_token_get_submission_value($value_token, array $options, Webfo
     }
   }
 
+  // Set checked/selected for an options elements.
+  if ($keys && in_array($keys[0], ['checked', 'selected']) && $element_plugin->hasProperty('options')) {
+    $token_values = (array) $element_plugin->getValue($element, $webform_submission);
+    return ($token_values && in_array($keys[1], $token_values)) ? '1' : '0';
+  }
+
   // Set format and items format.
   if ($keys) {
     if ($composite_key) {
@@ -1039,6 +1090,17 @@ function _webform_token_render_more($more_title, $more) {
     '#more' => $more,
     '#more_title' => $more_title,
   ];
+
+  // Token info might be called via CLI and not all modules are loaded and
+  // this would throw 'The theme implementations may not be rendered until all
+  // modules are loaded.' exception.
+  // @see \Drupal\Core\Theme\ThemeManager::render
+  /** @var \Drupal\Core\Extension\ModuleHandlerInterface $module_handler */
+  $module_handler = \Drupal::service('module_handler');
+  if (!$module_handler->isLoaded()) {
+    $module_handler->loadAll();
+  }
+
   return (string) \Drupal::service('renderer')->renderPlain($build);
 }
 

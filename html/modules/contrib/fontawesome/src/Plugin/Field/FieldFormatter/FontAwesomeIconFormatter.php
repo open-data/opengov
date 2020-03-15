@@ -186,6 +186,11 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
         unset($iconSettings['duotone']);
       }
 
+      // Add additional CSS styles if needed.
+      if (isset($iconSettings['additional_classes'])) {
+        $cssStyles[] = $iconSettings['additional_classes'];
+      }
+
       $icons[] = [
         '#theme' => 'fontawesomeicon',
         '#tag' => $configurationSettings->get('tag'),

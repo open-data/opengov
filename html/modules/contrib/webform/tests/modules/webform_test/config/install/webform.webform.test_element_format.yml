@@ -344,19 +344,6 @@ elements: |
         '#terms_content': '<em>These are the terms of service.</em>'
         '#default_value': true
         '#format': raw
-    webform_toggle:
-      '#type': details
-      '#title': Toggle
-      webform_toggle_value:
-        '#type': webform_toggle
-        '#title': 'Toggle (Value)'
-        '#default_value': true
-        '#format': value
-      webform_toggle_raw:
-        '#type': webform_toggle
-        '#title': 'Toggle (Raw value)'
-        '#default_value': true
-        '#format': raw
     url:
       '#type': details
       '#title': URL
@@ -1317,7 +1304,7 @@ elements: |
         '#title': 'Machine name (Raw value)'
         '#default_value': loremipsum
         '#format': raw
-  
+
 css: ''
 javascript: ''
 settings:
@@ -1431,6 +1418,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -1505,6 +1493,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: false
       attachments: false
       twig: false
@@ -1540,6 +1529,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false

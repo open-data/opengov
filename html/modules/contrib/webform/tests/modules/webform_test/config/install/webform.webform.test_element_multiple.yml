@@ -255,6 +255,15 @@ elements: |
   webform_multiple_custom_attributes:
     '#type': webform_multiple
     '#title': webform_multiple_custom_attributes
+    '#ajax_attributes':
+      class:
+        - custom-ajax
+    '#table_wrapper_attributes':
+      class:
+        - custom-table-wrapper
+    '#table_attributes':
+      class:
+        - custom-table
     '#header': true
     '#element':
       textfield:
@@ -383,6 +392,7 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

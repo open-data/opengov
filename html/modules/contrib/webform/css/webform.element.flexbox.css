@@ -11,7 +11,7 @@
   .webform-flexbox {
     display: -webkit-flex;
     display: flex;
-    margin: 1em -.5em;
+    margin: 1em -0.5em;
   }
 
   .webform-flexbox .webform-flexbox {
@@ -38,7 +38,7 @@
   }
 
   .webform-flex--container {
-    margin: 0 .5em;
+    margin: 0 0.5em;
   }
 
   .webform-flex--container > .form-item {
@@ -154,7 +154,7 @@
   }
 
   .webform-flex--container > .form-type-webform-select-other .form-item + .form-item {
-    margin-top: .5em;
+    margin-top: 0.5em;
   }
 
   /**
@@ -168,7 +168,7 @@
    * Composite.
    */
   .form-composite > .webform-flexbox {
-    margin: 1em -.5em;
+    margin: 1em -0.5em;
   }
 
   /**
@@ -178,5 +178,4 @@
   .webform-flex--container .form-type-radio {
     white-space: nowrap;
   }
-
 }

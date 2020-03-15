@@ -39,6 +39,14 @@ Steps for creating a new release
     core/node_modules/.bin/eslint --no-eslintrc -c=core/.eslintrc.legacy.json --ext=.js modules/sandbox/webform > ~/webform-javascript-coding-standards.txt
     cat ~/webform-javascript-coding-standards.txt
           
+[CSS](https://www.drupal.org/node/3041002)
+
+    # Install Eslint. (One-time)
+    cd /var/www/sites/d8_webform/web/core
+    yarn install
+
+    cd /var/www/sites/d8_webform/web/core
+    yarn run lint:css ../modules/sandbox/webform/css --fix
 
 [File Permissions](https://www.drupal.org/comment/reply/2690335#comment-form)
 

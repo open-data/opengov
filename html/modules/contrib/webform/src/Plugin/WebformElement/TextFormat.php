@@ -267,8 +267,8 @@ class TextFormat extends WebformElementBase {
   protected function getElementSelectorInputsOptions(array $element) {
     $title = $this->getAdminLabel($element);
     return [
-      'value' => $title . ' [' . t('Textarea') . ']',
-      'format' => $title . ' [' . t('Select') . ']',
+      'value' => $title . ' [' . $this->t('Textarea') . ']',
+      'format' => $title . ' [' . $this->t('Select') . ']',
     ];
   }
 

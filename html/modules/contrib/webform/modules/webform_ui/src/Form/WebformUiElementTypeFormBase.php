@@ -433,10 +433,6 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
         ];
         break;
 
-      case 'webform_location_geocomplete':
-        unset($element['#map'], $element['#geolocation']);
-        break;
-
       case 'webform_toggles':
         $element['#options_display'] = 'side_by_side';
         break;

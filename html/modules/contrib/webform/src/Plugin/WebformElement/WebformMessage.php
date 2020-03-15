@@ -89,10 +89,10 @@ class WebformMessage extends WebformMarkupBase {
       '#type' => 'select',
       '#title' => $this->t('Message type'),
       '#options' => [
-        'status' => t('Status'),
-        'error' => t('Error'),
-        'warning' => t('Warning'),
-        'info' => t('Info'),
+        'status' => $this->t('Status'),
+        'error' => $this->t('Error'),
+        'warning' => $this->t('Warning'),
+        'info' => $this->t('Info'),
       ],
       '#required' => TRUE,
     ];

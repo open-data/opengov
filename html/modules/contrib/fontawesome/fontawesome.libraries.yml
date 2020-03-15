@@ -1,20 +1,20 @@
 fontawesome.svg:
-  remote: &fontawesome_remote https://use.fontawesome.com/releases/v5.10.0/fontawesome-free-5.10.0-web.zip
+  remote: &fontawesome_remote https://use.fontawesome.com/releases/v5.12.0/fontawesome-free-5.12.0-web.zip
   license: &fontawesome_svg_license
     name: CC BY 4.0
     url: https://fontawesome.com/license
     gpl-compatible: true
-  version: &fontawesome_version "5.10.0"
+  version: &fontawesome_version "5.12.0"
   header: true
   js:
-    /libraries/fontawesome/js/all.js: { minified: true, attributes: { defer: true } }
+    /libraries/fontawesome/js/all.min.js: { minified: true, attributes: { defer: true } }
 
 fontawesome.svg.shim:
   version: *fontawesome_version
   license: *fontawesome_svg_license
   header: true
   js:
-    /libraries/fontawesome/js/v4-shims.js: { minified: true, attributes: { defer: true } }
+    /libraries/fontawesome/js/v4-shims.min.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg
 
@@ -23,14 +23,14 @@ fontawesome.svg.base:
   license: *fontawesome_svg_license
   header: true
   js:
-    /libraries/fontawesome/js/fontawesome.js: { minified: true, attributes: { defer: true } }
+    /libraries/fontawesome/js/fontawesome.min.js: { minified: true, attributes: { defer: true } }
 
 fontawesome.svg.solid:
   version: *fontawesome_version
   license: *fontawesome_svg_license
   header: true
   js:
-    /libraries/fontawesome/js/solid.js: { minified: true, attributes: { defer: true } }
+    /libraries/fontawesome/js/solid.min.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
@@ -39,7 +39,7 @@ fontawesome.svg.regular:
   license: *fontawesome_svg_license
   header: true
   js:
-    /libraries/fontawesome/js/regular.js: { minified: true, attributes: { defer: true } }
+    /libraries/fontawesome/js/regular.min.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
@@ -48,7 +48,7 @@ fontawesome.svg.light:
   license: *fontawesome_svg_license
   header: true
   js:
-    /libraries/fontawesome/js/light.js: { minified: true, attributes: { defer: true } }
+    /libraries/fontawesome/js/light.min.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
@@ -57,7 +57,7 @@ fontawesome.svg.brands:
   license: *fontawesome_svg_license
   header: true
   js:
-    /libraries/fontawesome/js/brands.js: { minified: true, attributes: { defer: true } }
+    /libraries/fontawesome/js/brands.min.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
@@ -70,21 +70,21 @@ fontawesome.webfonts:
   version: *fontawesome_version
   css:
     theme:
-      /libraries/fontawesome/css/all.css: { minified: true }
+      /libraries/fontawesome/css/all.min.css: { minified: true }
 
 fontawesome.webfonts.base:
   version: *fontawesome_version
   license: *fontawesome_webfonts_license
   css:
     theme:
-      /libraries/fontawesome/css/fontawesome.css: { minified: true }
+      /libraries/fontawesome/css/fontawesome.min.css: { minified: true }
 
 fontawesome.webfonts.solid:
   version: *fontawesome_version
   license: *fontawesome_webfonts_license
   css:
     theme:
-      /libraries/fontawesome/css/solid.css: { minified: true }
+      /libraries/fontawesome/css/solid.min.css: { minified: true }
   dependencies:
     - fontawesome/fontawesome.webfonts.base
 
@@ -93,7 +93,7 @@ fontawesome.webfonts.regular:
   license: *fontawesome_webfonts_license
   css:
     theme:
-      /libraries/fontawesome/css/regular.css: { minified: true }
+      /libraries/fontawesome/css/regular.min.css: { minified: true }
   dependencies:
     - fontawesome/fontawesome.webfonts.base
 
@@ -102,7 +102,7 @@ fontawesome.webfonts.light:
   license: *fontawesome_webfonts_license
   css:
     theme:
-      /libraries/fontawesome/css/light.css: { minified: true }
+      /libraries/fontawesome/css/light.min.css: { minified: true }
   dependencies:
     - fontawesome/fontawesome.webfonts.base
 
@@ -111,7 +111,7 @@ fontawesome.webfonts.brands:
   license: *fontawesome_webfonts_license
   css:
     theme:
-      /libraries/fontawesome/css/brands.css: { minified: true }
+      /libraries/fontawesome/css/brands.min.css: { minified: true }
   dependencies:
     - fontawesome/fontawesome.webfonts.base
 
@@ -120,6 +120,6 @@ fontawesome.webfonts.shim:
   license: *fontawesome_webfonts_license
   css:
     theme:
-      /libraries/fontawesome/css/v4-shims.css: { minified: true }
+      /libraries/fontawesome/css/v4-shims.min.css: { minified: true }
   dependencies:
     - fontawesome/fontawesome.webfonts

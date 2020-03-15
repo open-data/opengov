@@ -5,6 +5,7 @@ namespace Drupal\webform\Plugin;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -21,7 +22,6 @@ use Drupal\Core\Url;
 use Drupal\webform\Element\WebformCompositeFormElementTrait;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Element\WebformMessage;
-use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformOptions;
 use Drupal\webform\Plugin\WebformElement\Checkbox;
 use Drupal\webform\Plugin\WebformElement\Checkboxes;
@@ -56,6 +56,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
   use StringTranslationTrait;
   use MessengerTrait;
   use WebformCompositeFormElementTrait;
+  use WebformEntityInjectionTrait;
 
   /**
    * A logger instance.
@@ -395,14 +396,9 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
   /****************************************************************************/
 
   /**
-   * Get the Webform element's form element class definition.
-   *
-   * We use the plugin's base id here to support plugin derivatives.
-   *
-   * @return string
-   *   A form element class definition.
+   * {@inheritdoc}
    */
-  protected function getFormElementClassDefinition() {
+  public function getFormElementClassDefinition() {
     $definition = $this->elementInfo->getDefinition($this->getBaseId());
     return $definition['class'];
   }
@@ -683,6 +679,9 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
 
       // Apply element specific access rules.
       $operation = ($webform_submission->isCompleted()) ? 'update' : 'create';
+      // Make sure the webform and submission is set before
+      // checking access rules.
+      $this->setEntities($webform_submission);
       $element['#access'] = $this->checkAccessRules($operation, $element);
     }
 
@@ -746,27 +745,6 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       $element[$attributes_property]['class'][] = 'js-webform-tooltip-element';
       $element[$attributes_property]['class'][] = 'webform-tooltip-element';
       $element['#attached']['library'][] = 'webform/webform.tooltip';
-    }
-
-    // Add iCheck support.
-    if ($this->hasProperty('icheck') && $this->librariesManager->isIncluded('jquery.icheck')) {
-      $icheck = NULL;
-      $icheck_skin = NULL;
-      if (isset($element['#icheck'])) {
-        if ($element['#icheck'] != 'none') {
-          $icheck = $element['#icheck'];
-          $icheck_skin = strtok($element['#icheck'], '-');
-        }
-      }
-      elseif ($default_icheck = $this->configFactory->get('webform.settings')->get('element.default_icheck')) {
-        $icheck = $default_icheck;
-        $icheck_skin = strtok($default_icheck, '-');
-      }
-      if ($icheck) {
-        $element['#attributes']['data-webform-icheck'] = $icheck;
-        $element['#attached']['library'][] = 'webform/webform.element.icheck';
-        $element['#attached']['library'][] = 'webform/libraries.jquery.icheck.' . $icheck_skin;
-      }
     }
 
     // Add .webform-has-field-prefix and .webform-has-field-suffix class.
@@ -866,23 +844,48 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       return FALSE;
     }
 
-    // Get the current user.
+    // Get the current user, webform, and webform submission.
     $account = $account ?: $this->currentUser;
+    $webform = $this->getWebform();
+    $webform_submission = $this->getWebformSubmission();
 
-    // If #private, check that the current user can 'view any submission'.
-    if (!empty($element['#private'])) {
-      // If #webform is missing, block access to the element.
-      if (empty($element['#webform'])) {
-        return FALSE;
-      }
-      // Check 'submission_view_any' access to the element's associated webform.
-      $webform = Webform::load($element['#webform']);
-      if (!$webform->access('submission_view_any', $account)) {
-        return FALSE;
-      }
+    // If webform is missing, throw an exception.
+    if (!$webform) {
+      throw new \Exception("Webform entity is required to check and element's access (rules).");
     }
 
-    return $this->checkAccessRule($element, $operation, $account);
+    // If #private, check that the current user can 'view any submission'.
+    if (!empty($element['#private']) && !$webform->access('submission_view_any', $account)) {
+      return FALSE;
+    }
+
+    // Check webform and other modules access results.
+    $access_result = $this->checkAccessRule($element, $operation, $account)
+      ? AccessResult::allowed()
+      : AccessResult::neutral();
+
+
+    // Allow webform handlers to adjust the access and/or directly set an
+    // element's #access to FALSE.
+    $handler_result = $webform->invokeHandlers('accessElement', $element, $operation, $account, $webform_submission);
+    $access_result = $access_result->orIf($handler_result);
+
+    // Allow modules to adjust the element's access.
+    $context = [
+      'webform' => $webform,
+      'webform_submission' => $webform_submission,
+    ];
+    $modules = \Drupal::moduleHandler()
+      ->getImplementations('webform_element_access');
+    foreach ($modules as $module) {
+      $hook = $module . '_webform_element_access';
+      $hook_result = $hook($operation, $element, $account, $context);
+      $access_result = $access_result->orIf($hook_result);
+    }
+
+    // Grant access as provided by webform, webform handler(s) and/or
+    // hook_webform_element_access() implementation.
+    return $access_result->isAllowed();
   }
 
   /**
@@ -901,7 +904,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
    * @see \Drupal\webform\Entity\Webform::checkAccessRule
    */
   protected function checkAccessRule(array $element, $operation, AccountInterface $account) {
-    // If no access rules are set return TRUE.
+    // If no access rules are set return NULL (no opinion).
     // @see \Drupal\webform\Plugin\WebformElementBase::getDefaultBaseProperties
     if (!isset($element['#access_' . $operation . '_roles'])
       && !isset($element['#access_' . $operation . '_users'])
@@ -2319,7 +2322,6 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
     ];
 
     /* Form display */
-
     $form['form'] = [
       '#type' => 'details',
       '#title' => $this->t('Form display'),
@@ -2488,7 +2490,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
     $form['form']['prepopulate'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Prepopulate'),
-      '#description' => $this->t('Allow element to be populated using query string parameters'),
+      '#description' => $this->t('Allow element to be populated using query string parameters.'),
       '#return_value' => TRUE,
       '#weight' => 50,
     ];
@@ -2510,72 +2512,6 @@ class WebformElementBase extends PluginBase implements WebformElementInterface {
       '#return_value' => TRUE,
       '#weight' => 50,
     ];
-    $default_icheck = $this->configFactory->get('webform.settings')->get('element.default_icheck');
-    $form['form']['icheck'] = [
-      '#type' => 'select',
-      '#title' => 'Enhance using iCheck',
-      '#description' => $this->t('Replaces @type element with jQuery <a href=":href">iCheck</a> boxes.', ['@type' => mb_strtolower($this->getPluginLabel()), ':href' => 'http://icheck.fronteed.com/']),
-      '#empty_option' => $this->t('- Default -'),
-      '#options' => [
-        (string) $this->t('Minimal') => [
-          'minimal' => $this->t('Minimal: Black'),
-          'minimal-grey' => $this->t('Minimal: Grey'),
-          'minimal-yellow' => $this->t('Minimal: Yellow'),
-          'minimal-orange' => $this->t('Minimal: Orange'),
-          'minimal-red' => $this->t('Minimal: Red'),
-          'minimal-pink' => $this->t('Minimal: Pink'),
-          'minimal-purple' => $this->t('Minimal: Purple'),
-          'minimal-blue' => $this->t('Minimal: Blue'),
-          'minimal-green' => $this->t('Minimal: Green'),
-          'minimal-aero' => $this->t('Minimal: Aero'),
-        ],
-        (string) $this->t('Square') => [
-          'square' => $this->t('Square: Black'),
-          'square-grey' => $this->t('Square: Grey'),
-          'square-yellow' => $this->t('Square: Yellow'),
-          'square-orange' => $this->t('Square: Orange'),
-          'square-red' => $this->t('Square: Red'),
-          'square-pink' => $this->t('Square: Pink'),
-          'square-purple' => $this->t('Square: Purple'),
-          'square-blue' => $this->t('Square: Blue'),
-          'square-green' => $this->t('Square: Green'),
-          'square-aero' => $this->t('Square: Aero'),
-        ],
-        (string) $this->t('Flat') => [
-          'flat' => $this->t('Flat: Black'),
-          'flat-grey' => $this->t('Flat: Grey'),
-          'flat-yellow' => $this->t('Flat: Yellow'),
-          'flat-orange' => $this->t('Flat: Orange'),
-          'flat-red' => $this->t('Flat: Red'),
-          'flat-pink' => $this->t('Flat: Pink'),
-          'flat-purple' => $this->t('Flat: Purple'),
-          'flat-blue' => $this->t('Flat: Blue'),
-          'flat-green' => $this->t('Flat: Green'),
-          'flat-aero' => $this->t('Flat: Aero'),
-        ],
-        (string) $this->t('Line') => [
-          'line' => $this->t('Line: Black'),
-          'line-grey' => $this->t('Line: Grey'),
-          'line-yellow' => $this->t('Line: Yellow'),
-          'line-orange' => $this->t('Line: Orange'),
-          'line-red' => $this->t('Line: Red'),
-          'line-pink' => $this->t('Line: Pink'),
-          'line-purple' => $this->t('Line: Purple'),
-          'line-blue' => $this->t('Line: Blue'),
-          'line-green' => $this->t('Line: Green'),
-          'line-aero' => $this->t('Line: Aero'),
-        ],
-      ],
-    ];
-    if ($this->librariesManager->isExcluded('jquery.icheck')) {
-      $form['form']['icheck']['#access'] = FALSE;
-    }
-    if ($default_icheck) {
-      $icheck_options = OptGroup::flattenOptions($form['form']['icheck']['#options']);
-      $form['form']['icheck']['#description'] .= '<br /><br />' . $this->t("Leave blank to use the default iCheck style. Select 'None' to display the default HTML element.");
-      $form['form']['icheck']['#description'] .= '<br /><br />' . $this->t('Defaults to: %value', ['%value' => $icheck_options[$default_icheck]]);
-      $form['form']['icheck']['#options']['none'] = $this->t('None');
-    }
 
     /* Validation */
 

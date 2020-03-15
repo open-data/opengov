@@ -34,6 +34,10 @@ elements: |
       class:
         - form_submit_attributes
       style: 'color: green'
+    '#update__attributes':
+      class:
+        - form_update_attributes
+      style: 'color: purple'
     '#draft__attributes':
       class:
         - draft_button_attributes
@@ -54,7 +58,7 @@ elements: |
       class:
         - preview_next_button_attributes
       style: 'color: orange'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -168,6 +172,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

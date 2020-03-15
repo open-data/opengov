@@ -27,6 +27,7 @@ abstract class WebformExcludedBase extends FormElement {
       ],
       '#webform_id' => NULL,
       '#theme_wrappers' => ['form_element'],
+      '#default_value' => [],
     ];
   }
 
@@ -37,7 +38,6 @@ abstract class WebformExcludedBase extends FormElement {
     $options = static::getWebformExcludedOptions($element);
 
     $default_value = array_diff(array_keys($options), array_keys($element['#default_value'] ?: []));
-
     $element['#tree'] = TRUE;
 
     // Add validate callback.

@@ -189,10 +189,10 @@ class Range extends NumericBase {
       '#title' => $this->t("Output the range's value"),
       '#empty_option' => $this->t('- None -'),
       '#options' => [
-        'right' => t('Right'),
-        'left' => t('Left'),
-        'above' => t('Above (Floating)'),
-        'below' => t('Below (Floating)'),
+        'right' => $this->t('Right'),
+        'left' => $this->t('Left'),
+        'above' => $this->t('Above (Floating)'),
+        'below' => $this->t('Below (Floating)'),
       ],
     ];
 
