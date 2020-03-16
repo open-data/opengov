@@ -124,6 +124,45 @@ function webform_modules_uninstalled($modules) {
 }
 
 /**
+ * Implements hook_config_schema_info_alter().
+ */
+function webform_config_schema_info_alter(&$definitions) {
+  $mapping = $definitions['webform.webform.*']['mapping'];
+
+  // Copy setting, elements, and handlers to variant override schema.
+  $definitions['webform.variant.override']['mapping'] += [
+    'settings' => $mapping['settings'],
+    'elements' => $mapping['elements'],
+    'handlers' => $mapping['handlers'],
+  ];
+
+  // Append settings handler settings schema.
+  $definitions['webform.handler.settings']['mapping'] += _webform_config_schema_info_alter_settings_recursive($mapping['settings']['mapping']);
+}
+
+/**
+ * Convert most data types to 'string' to support tokens.
+ *
+ * @param array $settings
+ *   An associative array of schema settings.
+ *
+ * @return array
+ *   An associative array of schema settings with most data types to 'string'
+ *   to support tokens
+ */
+function _webform_config_schema_info_alter_settings_recursive(array $settings) {
+  foreach ($settings as $name => $setting) {
+    if (is_array($setting)) {
+      $settings[$name] = _webform_config_schema_info_alter_settings_recursive($setting);
+    }
+    elseif ($name === 'type' && in_array($setting, ['boolean', 'integer', 'float', 'uri', 'email'])) {
+      $settings[$name] = 'string';
+    }
+  }
+  return $settings;
+}
+
+/**
  * Implements hook_user_login().
  */
 function webform_user_login($account) {
@@ -250,6 +289,12 @@ function webform_module_implements_alter(&$implementations, $hook) {
  * Implements hook_system_breadcrumb_alter().
  */
 function webform_system_breadcrumb_alter(Breadcrumb &$breadcrumb, RouteMatchInterface $route_match, array $context) {
+  // Prevent 'Route required in Drupal\Core\Url::fromRouteMatch()' errors.
+  // @see \Drupal\Core\Url::fromRouteMatch
+  if (!$route_match->getRouteObject()) {
+    return;
+  }
+
   // Remove 'Webforms' prefix from breadcrumb links generated path breadcrumbs.
   // @see \Drupal\system\PathBasedBreadcrumbBuilder
   $path = Url::fromRouteMatch($route_match)->toString();
@@ -468,7 +513,6 @@ function webform_page_attachments(array &$attachments) {
   if (\Drupal::config('webform.settings')->get('settings.dialog')) {
     $attachments['#attached']['library'][] = 'webform/webform.dialog';
     $attachments['#attached']['drupalSettings']['webform']['dialog']['options'] = \Drupal::config('webform.settings')->get('settings.dialog_options');
-
     /** @var \Drupal\webform\WebformRequestInterface $request_handler */
     $request_handler = \Drupal::service('webform.request');
     if ($source_entity = $request_handler->getCurrentSourceEntity()) {
@@ -491,6 +535,7 @@ function webform_page_attachments(array &$attachments) {
  *   An array of page attachments.
  */
 function _webform_page_attachments(array &$attachments) {
+  // Attach webform theme specific libraries.
   /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
   $theme_manager = \Drupal::service('webform.theme_manager');
   $active_theme_names = $theme_manager->getActiveThemeNames();
@@ -515,16 +560,68 @@ function _webform_page_attachments(array &$attachments) {
   // Add 'info' message style to all webform pages.
   $attachments['#attached']['library'][] = 'webform/webform.element.message';
 
-  // Assets: Add custom shared and webform specific CSS and JS.
-  // @see webform_library_info_build()
+  // Get current webform, if it does not exist exit.
   /** @var \Drupal\webform\WebformRequestInterface $request_handler */
   $request_handler = \Drupal::service('webform.request');
-  if ($webform = $request_handler->getCurrentWebform()) {
-    $assets = $webform->getAssets();
-    foreach ($assets as $type => $value) {
-      if ($value) {
-        $attachments['#attached']['library'][] = 'webform/webform.' . $type . '.' . $webform->id();
+  $webform = $request_handler->getCurrentWebform();
+  if (!$webform) {
+    return;
+  }
+
+  // Assets: Add custom shared and webform specific CSS and JS.
+  // @see webform_library_info_build()
+  $assets = $webform->getAssets();
+  foreach ($assets as $type => $value) {
+    if ($value) {
+      $attachments['#attached']['library'][] = 'webform/webform.' . $type . '.' . $webform->id();
+    }
+  }
+
+  // Attach variant randomization JavaScript.
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if (in_array($route_name, ['entity.webform.canonical', 'entity.webform.test_form', 'entity.node.canonical', 'entity.node.webform.test_form'])) {
+    $variants = [];
+    $element_keys = $webform->getElementsVariant();
+    foreach ($element_keys as $element_key) {
+      $element = $webform->getElement($element_key);
+      if (!empty($element['#prepopulate']) && !empty($element['#randomize'])) {
+        $variant_plugins = $webform->getVariants(NULL, TRUE, $element_key);
+        if ($variant_plugins->count()) {
+          $variants[$element_key] = array_values($variant_plugins->getInstanceIds());
+        }
       }
+    }
+
+    if ($variants) {
+      // Using JavaScript for redirection allows pages to be cached
+      // by URL with querystring parameters.
+      $json_variants = Json::encode($variants);
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#value' => Markup::create("
+(function(){
+  var variants = $json_variants;
+  var search = location.search;
+  var element_key, variant_ids, variant_id;
+  for (element_key in variants) {
+    if (variants.hasOwnProperty(element_key)
+      && !search.match(new RegExp('[?&]' + element_key + '='))) {
+        variant_ids = variants[element_key];
+        variant_id = variant_ids[Math.floor(Math.random() * variant_ids.length)];
+        search += (search ? '&' : '?') + element_key + '=' + variant_id;
+    }
+  }
+  if (search !== location.search) {
+    location.replace(location.pathname + search);
+  } 
+})();
+"),
+          '#weight' => 1000,
+        ],
+        'webform_variant_randomize',
+      ];
     }
   }
 }

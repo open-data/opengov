@@ -6,6 +6,14 @@ entity.webform.references:
   requirements:
     _entity_access: 'webform.update'
 
+entity.webform.references.add_form:
+  path: '/admin/structure/webform/manage/{webform}/references/add'
+  defaults:
+    _form: '\Drupal\webform_node\Form\WebformNodeReferencesAddForm'
+    _title: 'Add reference'
+  requirements:
+    _entity_access: 'webform.update'
+
 entity.node.webform.confirmation:
   path: '/node/{node}/webform/confirmation'
   defaults:
@@ -308,7 +316,7 @@ entity.node.webform_submission.resend_form:
     _form: 'Drupal\webform\Form\WebformSubmissionResendForm'
     _title_callback: '\Drupal\webform\Controller\WebformSubmissionViewController::title'
     operation: webform_submission_resend
-    entity_access: 'webform_submission.update_any'
+    entity_access: 'webform_submission.resend'
   options:
     _admin_route: TRUE
     parameters:
@@ -323,7 +331,7 @@ entity.node.webform_submission.duplicate_form:
     _entity_form: 'webform_submission.duplicate'
     _title_callback: '\Drupal\webform\Controller\WebformSubmissionViewController::title'
     operation: webform_submission_duplicate
-    entity_access: 'webform_submission.update_any'
+    entity_access: 'webform_submission.duplicate'
     duplicate: TRUE
   options:
     _admin_route: TRUE

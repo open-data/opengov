@@ -35,3 +35,6 @@ fontawesome.settings:
     use_brands_File:
       type: boolean
       label: 'Use the Font Awesome brands icons file'
+    external_svg_integrity:
+      type: string
+      label: 'Integrity value of the external CDN for Font Awesome'

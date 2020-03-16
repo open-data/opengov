@@ -186,13 +186,6 @@ abstract class WebformExporterBase extends PluginBase implements WebformExporter
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    return [];
-  }
-
-  /**
    * Get the webform whose submissions are being exported.
    *
    * @return \Drupal\webform\WebformInterface

@@ -14,6 +14,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Element\WebformElementStates;
 use Drupal\webform\Form\WebformEntityAjaxFormTrait;
+use Drupal\webform\Plugin\WebformElement\WebformElement;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\WebformEntityElementsValidatorInterface;
@@ -545,9 +546,16 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
       '#markup' => $element['#webform_key'],
     ];
 
-    $row['type'] = [
-      '#markup' => $webform_element->getPluginLabel(),
-    ];
+    $type = $webform_element->getPluginLabel();
+    if ($webform_element instanceof WebformElement) {
+      if (isset($element['#type'])) {
+        $type = '[' . $element['#type'] . ']';
+      }
+      elseif (isset($element['#theme'])) {
+        $type = '[' . $element['#theme'] . ']';
+      }
+    }
+    $row['type'] = ['#markup' => $type];
 
     if ($webform->hasFlexboxLayout()) {
       $row['flex'] = [
@@ -727,16 +735,21 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     $row['required'] = ['#markup' => ''];
     $row['weight'] = ['#markup' => '', '#wrapper_attributes' => ['class' => ['webform-tabledrag-hide']]];
     $row['parent'] = ['#markup' => '', '#wrapper_attributes' => ['class' => ['webform-tabledrag-hide']]];
-    $row['operations'] = [
-      '#type' => 'operations',
-      '#prefix' => '<div class="webform-dropbutton">',
-      '#suffix' => '</div>',
-    ];
-    $row['operations']['#links']['customize'] = [
-      'title' => $this->t('Customize'),
-      'url' => new Url('entity.webform_ui.element.add_form', ['webform' => $webform->id(), 'type' => 'webform_actions']),
-      'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
-    ];
+    if ($this->elementManager->isExcluded('webform_actions')) {
+      $row['operations'] = ['#markup' => ''];
+    }
+    else {
+      $row['operations'] = [
+        '#type' => 'operations',
+        '#prefix' => '<div class="webform-dropbutton">',
+        '#suffix' => '</div>',
+      ];
+      $row['operations']['#links']['customize'] = [
+        'title' => $this->t('Customize'),
+        'url' => new Url('entity.webform_ui.element.add_form', ['webform' => $webform->id(), 'type' => 'webform_actions']),
+        'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+      ];
+    }
     return $row;
   }
 

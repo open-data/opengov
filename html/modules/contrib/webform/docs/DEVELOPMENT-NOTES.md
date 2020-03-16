@@ -79,6 +79,13 @@ git reset HEAD <file>…
 git checkout -- filename
 ```
 
+**Pruning branches**
+
+```bash
+# Update the local list of remote branches
+git remote update origin --prune
+```
+
 **Delete issue branch**
 
 ```bash

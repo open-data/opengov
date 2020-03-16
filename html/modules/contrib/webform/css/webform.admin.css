@@ -27,7 +27,7 @@
 }
 
 .button.button-webform-table-setting:before {
-  content: '☷';
+  content: "☷";
   font-size: 1.2em;
 }
 
@@ -171,7 +171,7 @@ a:focus .webform-icon-locked--off {
 }
 
 .webform-horizontal-rule {
-  margin: .5em 0;
+  margin: 0.5em 0;
 }
 
 /**
@@ -192,6 +192,34 @@ a:focus .webform-icon-locked--off {
   .js-off-canvas-dialog-open .webform-handlers-table th:last-child,
   .js-off-canvas-dialog-open .webform-handlers-table td:first-child,
   .js-off-canvas-dialog-open .webform-handlers-table td:last-child {
+    display: table-cell;
+  }
+}
+
+/**
+ * Variants table.
+ * @see /admin/structure/webform/manage/{webform_id}/variants
+ */
+.webform-variants-table .ajax-progress-throbber {
+  display: none;
+}
+
+.webform-variants-table .webform-variant-table-test-multiple td {
+  border-top: 1px solid #a6a6a6;
+  border-bottom: 1px solid #a6a6a6;
+  background-color: #f5f5f2;
+}
+
+@media screen and (max-width: 1280px) {
+  .js-off-canvas-dialog-open .webform-variants-table th,
+  .js-off-canvas-dialog-open .webform-variants-table td {
+    display: none;
+  }
+
+  .js-off-canvas-dialog-open .webform-variants-table th:first-child,
+  .js-off-canvas-dialog-open .webform-variants-table th:last-child,
+  .js-off-canvas-dialog-open .webform-variants-table td:first-child,
+  .js-off-canvas-dialog-open .webform-variants-table td:last-child {
     display: table-cell;
   }
 }

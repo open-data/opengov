@@ -3,9 +3,9 @@
  * Claro theme styles.
  */
 
-/******************************************************************************/
+/*****************************************************************************   */
 /* Form */
-/******************************************************************************/
+/*****************************************************************************   */
 
 /**
  * Only add margin to bottom of the form item.
@@ -20,9 +20,9 @@
   margin-bottom: 1.5rem;
 }
 
-/******************************************************************************/
+/*****************************************************************************   */
 /* Fields */
-/******************************************************************************/
+/*****************************************************************************   */
 
 /**
  * Capitalize fieldset to match details.
@@ -31,9 +31,9 @@
   text-transform: capitalize;
 }
 
-/******************************************************************************/
+/*****************************************************************************   */
 /* Messages */
-/******************************************************************************/
+/*****************************************************************************   */
 
 .messages.messages--webform a.button {
   margin: 0;
@@ -106,18 +106,27 @@ html.js .webform-message--close .webform-message__link:active {
   background-size: 19px 19px;
 }
 
-/******************************************************************************/
+/*****************************************************************************   */
 /* Tables */
-/******************************************************************************/
+/*****************************************************************************   */
+
+table th {
+  height: auto;
+}
 
 /**
  * Align all tables cells need to align top, so we are removing the cell height
  * and adding more padding around the cells.
  */
-table td {
+table td,
+table td.tabledrag-cell {
   vertical-align: top;
   height: auto;
   padding: 1em 1rem;
+}
+
+table td.tabledrag-cell .tabledrag-handle::after {
+  padding: 0 1rem;
 }
 
 /**
@@ -125,6 +134,9 @@ table td {
  */
 table .button {
   margin: 0 0.75rem 0 0;
+  padding: -webkit-calc(0.5rem - 1px) -webkit-calc(1rem - 1px);
+  padding: calc(0.5rem - 1px) calc(1rem - 1px);
+  font-size: 0.79rem;
 }
 [dir="rtl"] table .button {
   margin: 0 0 0 0.75rem;
@@ -138,7 +150,6 @@ table td > .button:only-child {
   margin-top: 0;
   margin-bottom: 0;
 }
-
 /**
  * Results table.
  */
@@ -154,9 +165,9 @@ th.webform-results-table__icon.sortable-heading {
   display: inline;
 }
 
-/******************************************************************************/
+/*****************************************************************************   */
 /* States and Multiple */
-/******************************************************************************/
+/*****************************************************************************   */
 
 .webform-multiple-table td input[type="image"] + input[type="image"],
 .webform-states-table td.webform-states-table--operations input[type="image"] + input[type="image"] {
@@ -164,12 +175,16 @@ th.webform-results-table__icon.sortable-heading {
 }
 
 table.webform-states-table td {
-  padding: 1em .25rem;
+  padding: 1em 0.25rem;
 }
 
-/******************************************************************************/
+table.webform-states-table td.webform-states-table--operator > .form-item > .form-element {
+  width: auto;
+}
+
+/*****************************************************************************   */
 /* Form */
-/******************************************************************************/
+/*****************************************************************************   */
 
 /**
  * Remove margin around checkboxes buttons.
@@ -183,9 +198,21 @@ table.webform-states-table td {
   margin-right: 0;
 }
 
-/******************************************************************************/
+/*****************************************************************************   */
+/* Filter */
+/*****************************************************************************   */
+
+div.webform-form-filter input.webform-form-filter-reset {
+  padding: 1em;
+}
+
+div.webform-form-filter input.webform-form-filter-text {
+  padding-right: 2em;
+}
+
+/*****************************************************************************   */
 /* Webform */
-/******************************************************************************/
+/*****************************************************************************   */
 
 /**
  * Element types
@@ -194,7 +221,7 @@ table.webform-states-table td {
  */
 .webform-ui-element-type-select-form > details > .claro-details__wrapper.details-wrapper {
   padding: 0;
-  margin: .5em 1em 0 1em;
+  margin: 0.5em 1em 0 1em;
 }
 
 .webform-details-toggle-state {
@@ -211,9 +238,9 @@ table.webform-states-table td {
   font-size: 14px;
 }
 
-/******************************************************************************/
+/*****************************************************************************   */
 /* Claro */
-/******************************************************************************/
+/*****************************************************************************   */
 
 /**
  * Hide 'loading...' message when displayed in an inline container.
@@ -246,9 +273,9 @@ table.webform-states-table td {
   margin-bottom: 0;
 }
 
-/******************************************************************************/
+/*****************************************************************************   */
 /* jQuery UI */
-/******************************************************************************/
+/*****************************************************************************   */
 
 /**
  * jQuery UI tooltip.
@@ -258,14 +285,14 @@ table.webform-states-table td {
  * @see core/assets/vendor/jquery.ui/themes/base/tabs.css
  */
 .ui-tooltip.ui-widget {
-  background: #fe6;;
+  background: #fe6;
   border: 1px solid #ed5;
   border-radius: 2px;
 }
 
 .ui-tooltip hr {
   background: #666;
-  margin: .3em 0;
+  margin: 0.3em 0;
   height: 1px;
 }
 
@@ -273,8 +300,8 @@ table.webform-states-table td {
   font-weight: bold;
   white-space: nowrap;
   background-color: #f5f5f2;
-  font-size: .9em;
-  padding: .2em;
+  font-size: 0.9em;
+  padding: 0.2em;
 }
 
 /**

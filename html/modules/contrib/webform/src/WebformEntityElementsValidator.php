@@ -146,6 +146,7 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
       'names' => TRUE,
       'properties' => TRUE,
       'submissions' => TRUE,
+      'variants' => TRUE,
       'hierarchy' => TRUE,
       'rendering' => TRUE,
     ];
@@ -195,6 +196,11 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
 
     // Validate submission data.
     if ($options['submissions'] && ($messages = $this->validateSubmissions())) {
+      return $messages;
+    }
+
+    // Validate variants data.
+    if ($options['variants'] && ($messages = $this->validateVariants())) {
       return $messages;
     }
 
@@ -430,6 +436,43 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
           ],
         ];
         $messages[] = $this->renderer->renderPlain($build);
+      }
+      return $messages;
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Validate that element are not deleted when the webform has related variants.
+   *
+   * @return array|null
+   *   If not valid, an array of error messages.
+   */
+  protected function validateVariants() {
+    if (!$this->webform->hasVariant()) {
+      return NULL;
+    }
+
+    $element_keys = [];
+    if ($this->elements) {
+      $this->getElementKeysRecursive($this->elements, $element_keys);
+    }
+    $original_element_keys = [];
+    if ($this->originalElements) {
+      $this->getElementKeysRecursive($this->originalElements, $original_element_keys);
+    }
+    if ($missing_element_keys = array_diff_key($original_element_keys, $element_keys)) {
+      $messages = [];
+      foreach ($missing_element_keys as $missing_element_key) {
+        if ($this->webform->getVariants(NULL, NULL, $missing_element_key)->count()) {
+          $t_args = [
+            '%title' => $this->webform->label(),
+            '%key' => $missing_element_key,
+            ':href' => $this->webform->toUrl('variants')->toString(),
+          ];
+          $messages[] = $this->t('The %key element can not be removed because the %title webform has related <a href=":href">variants</a>.', $t_args);
+        }
       }
       return $messages;
     }

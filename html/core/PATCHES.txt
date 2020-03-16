@@ -6,15 +6,11 @@ Source: https://www.drupal.org/files/issues/2019-05-08/2751269-redirect_to_curre
 
 
 Comments created in translation are displayed only for admin role
-Source: https://www.drupal.org/files/issues/2018-04-13/drupal-comment_translation_displayed_only_admin-2958935-9-D8.patch
+Source: https://www.drupal.org/files/issues/2019-05-15/comment-translation-display-2958935-20.patch
 
 
 Allow exposed form for non-ajax block displays
 Source: https://www.drupal.org/files/issues/2692297-8.patch
-
-
-Undefined index: identifier in view's DisplayPluginBase->isIdentifierUnique()
-Source: https://www.drupal.org/files/issues/2882031-10_0.patch
 
 
 Error: Call to a member function getLabel() after enable layout_builder

@@ -32,6 +32,14 @@ webform.config.handlers:
   requirements:
     _permission: 'administer webform'
 
+webform.config.variants:
+  path: '/admin/structure/webform/config/variants'
+  defaults:
+    _form: '\Drupal\webform\Form\AdminConfig\WebformAdminConfigVariantsForm'
+    _title: 'Webforms: Variants configuration'
+  requirements:
+    _permission: 'administer webform'
+
 webform.config.exporters:
   path: '/admin/structure/webform/config/exporters'
   defaults:
@@ -214,7 +222,7 @@ entity.webform.user.submission.duplicate:
       webform:
         type: 'entity:webform'
   requirements:
-    _entity_access: 'webform_submission.update'
+    _entity_access: 'webform_submission.duplicate'
     _custom_access: '\Drupal\webform\Access\WebformEntityAccess::checkWebformSettingValue'
 
 entity.webform.test_form:
@@ -309,8 +317,8 @@ entity.webform.settings_assets:
     _entity_form: 'webform.settings_assets'
     _title_callback: '\Drupal\webform\Controller\WebformEntityController::title'
   requirements:
-    _entity_access: 'webform.update'
     _permission: 'edit webform assets'
+    _entity_access: 'webform.update'
 
 entity.webform.settings_access:
   path: '/admin/structure/webform/manage/{webform}/access'
@@ -562,7 +570,7 @@ entity.webform_submission.resend_form:
     _form: 'Drupal\webform\Form\WebformSubmissionResendForm'
     _title_callback: '\Drupal\webform\Controller\WebformSubmissionViewController::title'
   requirements:
-    _entity_access: 'webform_submission.update_any'
+    _entity_access: 'webform_submission.resend'
     _custom_access: '\Drupal\webform\Access\WebformSubmissionAccess::checkResendAccess'
 
 entity.webform_submission.duplicate_form:
@@ -671,7 +679,7 @@ entity.webform.handler.enable:
   path: '/admin/structure/webform/manage/{webform}/handlers/{webform_handler}/enable'
   defaults:
     _controller: '\Drupal\webform\WebformEntityHandlersForm::ajaxOperation'
-    op: enable
+    operation: enable
   requirements:
     _entity_access: 'webform.update'
     _csrf_token: 'TRUE'
@@ -680,10 +688,126 @@ entity.webform.handler.disable:
   path: '/admin/structure/webform/manage/{webform}/handlers/{webform_handler}/disable'
   defaults:
     _controller: '\Drupal\webform\WebformEntityHandlersForm::ajaxOperation'
-    op: disable
+    operation: disable
   requirements:
     _entity_access: 'webform.update'
     _csrf_token: 'TRUE'
+
+# Variants.
+
+entity.webform.variants:
+  path: '/admin/structure/webform/manage/{webform}/variants'
+  defaults:
+    _entity_form: 'webform.variants'
+    _title_callback: '\Drupal\webform\Controller\WebformEntityController::title'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant:
+  path: '/admin/structure/webform/manage/{webform}/variants/add'
+  defaults:
+    _controller: '\Drupal\webform\Controller\WebformPluginVariantController::listVariants'
+    _title: 'Select a variant'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant.add_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/add/{webform_variant}'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantAddForm'
+    _title: 'Add webform variant'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantCreateAccess'
+
+entity.webform.variant.edit_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/{webform_variant}/edit'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantEditForm'
+    _title: 'Edit webform variant'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant.duplicate_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/{webform_variant}/duplicate'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantDuplicateForm'
+    _title: 'Duplicate webform variant'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant.delete_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/{webform_variant}/delete'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantDeleteForm'
+    _title: 'Delete webform variant'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant.enable:
+  path: '/admin/structure/webform/manage/{webform}/variants/{webform_variant}/enable'
+  defaults:
+    _controller: '\Drupal\webform\WebformEntityVariantsForm::ajaxOperation'
+    operation: enable
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+    _csrf_token: 'TRUE'
+
+entity.webform.variant.disable:
+  path: '/admin/structure/webform/manage/{webform}/variants/{webform_variant}/disable'
+  defaults:
+    _controller: '\Drupal\webform\WebformEntityVariantsForm::ajaxOperation'
+    operation: disable
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+    _csrf_token: 'TRUE'
+
+entity.webform.variant.apply_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/apply'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantApplyForm'
+    _title: 'Apply webform variant'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant.view_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/view'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantViewForm'
+    _title: 'View webform variants'
+    operation: 'view'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant.test_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/test'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantViewForm'
+    _title: 'Test webform variants'
+    operation: 'test'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
 
 # Plugins.
 
@@ -700,6 +824,14 @@ webform.reports_plugins.handlers:
   defaults:
     _controller: '\Drupal\webform\Controller\WebformPluginHandlerController::index'
     _title: 'Webform plugins: Handlers'
+  requirements:
+    _permission: 'administer webform'
+
+webform.reports_plugins.variants:
+  path: '/admin/reports/webform-plugins/variants'
+  defaults:
+    _controller: '\Drupal\webform\Controller\WebformPluginVariantController::index'
+    _title: 'Webform plugins: Variants'
   requirements:
     _permission: 'administer webform'
 

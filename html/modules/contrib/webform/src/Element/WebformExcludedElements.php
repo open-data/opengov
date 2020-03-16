@@ -14,6 +14,15 @@ use Drupal\webform\Utility\WebformArrayHelper;
 class WebformExcludedElements extends WebformExcludedBase {
 
   /**
+   * {@inheritdoc}
+   */
+  public function getInfo() {
+    return parent::getInfo() + [
+      '#exclude_markup' => TRUE,
+    ];
+  }
+
+  /**
    * Get header for the excluded tableselect element.
    *
    * @return array
@@ -53,30 +62,45 @@ class WebformExcludedElements extends WebformExcludedBase {
    *   tableselect element.
    */
   public static function getWebformExcludedOptions(array $element) {
+    /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
+    $element_manager = \Drupal::service('plugin.manager.webform.element');
 
     /** @var \Drupal\webform\WebformInterface $webform */
-    $webform = WebformEntity::load($element['#webform_id']);
+    $webform = WebformEntity::load($element['#webform_id'])
+      ?: \Drupal::service('webform.request')->getCurrentWebform();
 
     $options = [];
-    $elements = $webform->getElementsInitializedFlattenedAndHasValue();
-    foreach ($elements as $key => $element) {
-      if (!empty($element['#access_view_roles'])) {
+    if ($element['#exclude_markup']) {
+      $form_elements = $webform->getElementsInitializedFlattenedAndHasValue();
+    }
+    else {
+      $form_elements = $webform->getElementsInitializedAndFlattened();
+    }
+    foreach ($form_elements as $key => $form_element) {
+      $form_element_plugin = $element_manager->getElementInstance($form_element);
+      // Skip markup elements that are containers.
+      if (!$element['#exclude_markup']
+        && $form_element_plugin->isContainer($form_element)) {
+        continue;
+      }
+
+      if (!empty($form_element['#access_view_roles'])) {
         $roles = array_map(function ($item) {
           return $item->label();
-        }, Role::loadMultiple($element['#access_view_roles']));
+        }, Role::loadMultiple($form_element['#access_view_roles']));
       }
       else {
         $roles = [];
       }
 
       $options[$key] = [
-        'title' => $element['#admin_title'] ?:$element['#title'] ?: $key,
+        'title' => $form_element['#admin_title'] ?:$form_element['#title'] ?: $key,
         'key' => $key,
-        'type' => isset($element['#type']) ? $element['#type'] : '',
-        'private' => empty($element['#private']) ? t('No') : t('Yes'),
+        'type' => isset($form_element['#type']) ? $form_element['#type'] : '',
+        'private' => empty($form_element['#private']) ? t('No') : t('Yes'),
         'access' => $roles ? WebformArrayHelper::toString($roles) : t('All roles'),
       ];
-      if (!empty($element['#private']) || $roles) {
+      if (!empty($form_element['#private']) || $roles) {
         $options[$key]['#attributes']['class'][] = 'color-warning';
       }
     }

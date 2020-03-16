@@ -90,7 +90,7 @@ class WebformOptionsLimitTest extends WebformBrowserTestBase {
     // Login as an admin.
     $this->drupalLogin($this->rootUser);
 
-    // Check that random test values are only available options.
+    // Check that random test values are the only available options.
     $this->drupalGet('/webform/test_handler_options_limit/test');
     $this->assertRaw('<option value="J" selected="selected">J [Unlimited]</option>');
     $this->drupalGet('/webform/test_handler_options_limit/test');
@@ -107,6 +107,11 @@ class WebformOptionsLimitTest extends WebformBrowserTestBase {
     $this->assertRaw('<option value="H" selected="selected">H [0 remaining]</option>');
     $this->assertRaw('<option value="K" selected="selected">K [0 remaining]</option>');
     $this->assertRaw('<option value="O" selected="selected">O [0 remaining]</option>');
+
+    // Check that Options limit report is available.
+    $this->drupalLogin($this->rootUser);
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_options_limit/results/options-limit');
+    $this->assertResponse(200);
 
     // Check handler element error messages.
     $webform->deleteElement('options_limit_default');

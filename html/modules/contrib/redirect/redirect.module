@@ -23,6 +23,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Site\Settings;
 use Drupal\redirect\Entity\Redirect;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Drupal\Core\Database\Query\Condition;
 
 /**
  * Implements hook_hook_info().
@@ -173,11 +174,11 @@ function redirect_page_build(&$page) {
     // that value overrides whatever is in $_GET['q']. The
     // drupal_deliver_html_page() function thankfully puts the original current
     // path into $_GET['destination'].
-    $destination = drupal_get_destination();
+    $destination = \Drupal::destination()->getAsArray();
     $page['content']['system_main']['actions']['#links']['add_redirect'] = [
       'title' => t('Add URL redirect from this page to another location'),
       'href' => 'admin/config/search/redirect/add',
-      'query' => ['source' => $destination['destination']] + drupal_get_destination(),
+      'query' => ['source' => $destination['destination']] + \Drupal::destination()->getAsArray(),
     ];
   }
 }
@@ -214,7 +215,7 @@ function redirect_delete_by_path($path, $langcode = NULL, $match_subpaths_and_re
   $database = \Drupal::database();
   $query = $database->select('redirect');
   $query->addField('redirect', 'rid');
-  $query_or = db_or();
+  $query_or = new Condition('OR');
   $query_or->condition('redirect_source__path', $database->escapeLike($path), 'LIKE');
   if ($match_subpaths_and_redirect) {
     $query_or->condition('redirect_source__path', $database->escapeLike($path . '/') . '%', 'LIKE');
@@ -450,7 +451,7 @@ function redirect_form_node_form_alter(&$form, FormStateInterface $form_state, $
     // Assemble the rows for the table.
     $rows = [];
     /** @var \Drupal\Core\Entity\EntityListBuilder $list_builder */
-    $list_builder = \Drupal::service('entity.manager')->getListBuilder('redirect');
+    $list_builder = \Drupal::service('entity_type.manager')->getListBuilder('redirect');
     /** @var \Drupal\redirect\Entity\Redirect[] $redirects */
     foreach ($redirects as $redirect) {
       $row = [];

@@ -29,6 +29,11 @@ class WebformWizardPage extends Details implements WebformElementWizardPageInter
       'open' => FALSE,
       'prev_button_label' => '',
       'next_button_label' => '',
+      // Submission display.
+      'format' => $this->getItemDefaultFormat(),
+      'format_html' => '',
+      'format_text' => '',
+      'format_attributes' => [],
     ] + $this->getDefaultBaseProperties();
     unset($properties['flex']);
     return $properties;

@@ -86,7 +86,6 @@ class WebformEntitySettingsAccessForm extends WebformEntitySettingsBaseForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $access = $form_state->getValue('access');
-
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = $this->getEntity();
 

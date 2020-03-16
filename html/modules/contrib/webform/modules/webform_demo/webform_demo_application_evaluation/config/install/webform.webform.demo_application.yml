@@ -15,19 +15,62 @@ title: 'Demo: Application'
 description: 'A demonstration of a very basic application form.'
 category: Demo
 elements: |
-  contact:
-    '#type': webform_contact
-    '#title': Contact
-    '#name__required': true
-    '#company__required': true
-    '#email__required': true
-    '#phone__required': true
-    '#address__required': true
-    '#address_2__required': true
-    '#city__required': true
-    '#state_province__required': true
-    '#postal_code__required': true
-    '#country__required': true
+  contact_information:
+    '#title': 'Contact Information'
+    '#type': webform_section
+    contact:
+      '#type': webform_contact
+      '#title': Contact
+      '#name__required': true
+      '#company__access': false
+      '#email__required': true
+      '#phone__required': true
+      '#address__required': true
+      '#address_2__required': true
+      '#city__required': true
+      '#state_province__required': true
+      '#postal_code__required': true
+      '#country__required': true
+  resume:
+    '#title': 'Your Resume'
+    '#type': webform_section
+    resume_method:
+      '#type': radios
+      '#options':
+        attach: 'Attach resume file'
+        paste: 'Paste your resume'
+      '#prefix': '<div class="container-inline">'
+      '#suffix': '</div>'
+      '#default_value': attach
+    resume_file:
+      '#type': webform_document_file
+      '#title': Resume
+      '#title_display': invisible
+      '#states':
+        visible:
+          ':input[name="resume_method"]':
+            value: attach
+        required:
+          ':input[name="resume_method"]':
+            value: attach
+        enabled:
+          ':input[name="resume_method"]':
+            value: attach
+      '#file_extensions': 'rtf pdf doc docx'
+    resume_text:
+      '#type': textarea
+      '#title': Resume
+      '#title_display': invisible
+      '#states':
+        visible:
+          ':input[name="resume_method"]':
+            value: paste
+        required:
+          ':input[name="resume_method"]':
+            value: paste
+        enabled:
+          ':input[name="resume_method"]':
+            value: paste
   application_status:
     '#type': details
     '#title': 'Application Status'
@@ -71,7 +114,49 @@ elements: |
       '#access_update_roles': {  }
       '#access_view_roles':
         - authenticated
-  
+  evaluation_summary:
+    '#type': fieldset
+    '#title': 'Evaluation Summary'
+    '#title_display': invisible
+    '#access_create_roles': {  }
+    '#access_update_roles': {  }
+    '#access_view_roles':
+      - authenticated
+    evaluation_rating:
+      '#type': webform_rating
+      '#title': 'Average Rating'
+      '#test': '0'
+      '#access_create_roles': {  }
+      '#access_update_roles': {  }
+      '#access_view_roles':
+        - authenticated
+      '#step': '.1'
+    evaluation_count:
+      '#type': number
+      '#title': 'Number of Evaluations'
+      '#test': '0'
+      '#access_create_roles': {  }
+      '#access_update_roles': {  }
+      '#access_view_roles':
+        - authenticated
+  evaluation_details:
+    '#type': details
+    '#title': 'Evaluation Details'
+    '#access_create_roles': {  }
+    '#access_update_roles': {  }
+    '#access_view_roles':
+      - authenticated
+    evaluation_submissions:
+      '#type': view
+      '#display_on': view
+      '#name': webform_demo_application_evaluations
+      '#display_id': embed
+      '#arguments':
+        - '[webform_submission:sid]'
+      '#access_create_roles': {  }
+      '#access_update_roles': {  }
+      '#access_view_roles':
+        - authenticated
 css: ''
 javascript: ''
 settings:
@@ -185,6 +270,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

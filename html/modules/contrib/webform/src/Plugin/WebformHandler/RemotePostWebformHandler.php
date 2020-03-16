@@ -339,7 +339,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
             '504' => $this->t('504 Gateway Timeout'),
           ],
           '#other__type' => 'number',
-          '#other__description' => t('<a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">List of HTTP status codes</a>.'),
+          '#other__description' => $this->t('<a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">List of HTTP status codes</a>.'),
         ],
         'message' => [
           '#type' => 'webform_html_editor',
@@ -816,7 +816,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     }
     else {
       $build['response_code'] = [
-        '#markup' => t('No response. Please see the recent log messages.'),
+        '#markup' => $this->t('No response. Please see the recent log messages.'),
         '#prefix' => '<p>',
         '#suffix' => '</p>',
       ];

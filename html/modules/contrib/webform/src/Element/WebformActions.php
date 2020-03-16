@@ -79,34 +79,37 @@ class WebformActions extends Container {
         continue;
       }
 
+      // Get settings name.
+      // The 'submit' button is used for creating and updating submissions.
+      $is_update_button = ($button_name === 'submit' && !($webform_submission->isNew() || $webform_submission->isDraft()));
+      $settings_name = ($is_update_button) ? 'update' : $button_name;
+
       // Set unique id for each button.
       if ($prefix) {
         $element[$button_name]['#id'] = Html::getUniqueId("$prefix$button_name");
       }
 
       // Hide buttons using #access.
-      if (!empty($element['#' . $button_name . '_hide'])) {
+      if (!empty($element['#' . $settings_name . '_hide'])) {
         $element[$button_name]['#access'] = FALSE;
       }
 
-      // Apply custom label except to update button (aka Save).
-      if (!empty($element['#' . $button_name . '__label']) && empty($element[$button_name]['#webform_actions_button_custom'])) {
-        $is_update_button = ($button_name === 'submit' && !($webform_submission->isNew() || $webform_submission->isDraft()));
-        if (!$is_update_button) {
-          $element[$button_name]['#value'] = $element['#' . $button_name . '__label'];
-        }
+      // Apply custom label.
+      $has_custom_label = !empty($element[$button_name]['#webform_actions_button_custom']);
+      if (!empty($element['#' . $settings_name . '__label']) && !$has_custom_label) {
+        $element[$button_name]['#value'] = $element['#' . $settings_name . '__label'];
       }
 
       // Apply custom name when needed for multiple submit buttons with
       // the same label.
       // @see https://www.drupal.org/project/webform/issues/3069240
-      if (!empty($element['#' . $button_name . '__name'])) {
-        $element[$button_name]['#name'] = $element['#' . $button_name . '__name'];
+      if (!empty($element['#' . $settings_name . '__name'])) {
+        $element[$button_name]['#name'] = $element['#' . $settings_name . '__name'];
       }
 
       // Apply attributes (class, style, properties).
-      if (!empty($element['#' . $button_name . '__attributes'])) {
-        foreach ($element['#' . $button_name . '__attributes'] as $attribute_name => $attribute_value) {
+      if (!empty($element['#' . $settings_name . '__attributes'])) {
+        foreach ($element['#' . $settings_name . '__attributes'] as $attribute_name => $attribute_value) {
           if ($attribute_name == 'class') {
             // Merge class names.
             $element[$button_name]['#attributes']['class'] = array_merge($element[$button_name]['#attributes']['class'], $attribute_value);

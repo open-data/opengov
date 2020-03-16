@@ -93,6 +93,10 @@ class RedirectForm extends ContentEntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
     $source = $form_state->getValue(['redirect_source', 0]);
+    // Trim any trailing spaces from source url, leaving leading space as is.
+    // leading space is still a valid candidate to add for 301 source url.
+    $source['path'] = rtrim($source['path']);
+    $form_state->setValue('redirect_source', [$source]);
     $redirect = $form_state->getValue(['redirect_redirect', 0]);
 
     if ($source['path'] == '<front>') {
@@ -126,7 +130,7 @@ class RedirectForm extends ContentEntityForm {
     $hash = Redirect::generateHash($path, $query, $form_state->getValue('language')[0]['value']);
 
     // Search for duplicate.
-    $redirects = \Drupal::entityManager()
+    $redirects = \Drupal::entityTypeManager()
       ->getStorage('redirect')
       ->loadByProperties(['hash' => $hash]);
 
@@ -136,7 +140,7 @@ class RedirectForm extends ContentEntityForm {
         $form_state->setErrorByName('redirect_source', $this->t('The source path %source is already being redirected. Do you want to <a href="@edit-page">edit the existing redirect</a>?',
           [
             '%source' => $source['path'],
-            '@edit-page' => $redirect->url('edit-form')]));
+            '@edit-page' => $redirect->toUrl('edit-form')->toString()]));
       }
     }
   }

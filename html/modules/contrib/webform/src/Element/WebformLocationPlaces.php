@@ -58,6 +58,9 @@ class WebformLocationPlaces extends WebformLocationBase {
       'api_key' => $api_key,
     ];
 
+    // Attach library.
+    $element['#attached']['library'][] = 'webform/webform.element.location.places';
+
     return $element;
   }
 

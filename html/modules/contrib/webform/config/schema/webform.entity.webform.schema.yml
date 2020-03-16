@@ -434,9 +434,12 @@
         results_disabled_ignore:
           type: boolean
           label: 'Ignore disabled results warning'
+        token_view:
+          type: boolean
+          label: 'Allow viewing a submission using token'
         token_update:
           type: boolean
-          label: 'Allow updates using token'
+          label: 'Allow updating a submission using token'
     access:
       type: sequence
       label: 'Access Rules'
@@ -488,6 +491,35 @@
             label: Weight
           settings:
             type: 'webform.handler.[%parent.id]'
+    variants:
+      type: sequence
+      label: 'Webform variants'
+      sequence:
+        type: mapping
+        mapping:
+          id:
+            type: string
+            label: 'Variant plugin ID'
+          variant_id:
+            type: string
+            label: 'Variant instance ID'
+          element_key:
+            type: string
+            label: 'Variant element key'
+          label:
+            type: label
+            label: Label
+          notes:
+            type: text
+            label: Notes
+          status:
+            type: boolean
+            label: Status
+          weight:
+            type: integer
+            label: Weight
+          settings:
+            type: 'webform.variant.[%parent.id]'
     third_party_settings:
       type: sequence
       label: 'Third party settings'

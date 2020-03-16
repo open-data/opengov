@@ -1,8 +1,8 @@
 webform.config.webform_options_custom:
   title: 'Custom'
   route_name: entity.webform_options_custom.collection
-  parent_id: webform.config
-  weight: 30
+  parent_id: webform.options
+  weight: 20
 
 entity.webform_options_custom:
   title: 'Edit'

@@ -44,7 +44,7 @@ use Drupal\webform_options_custom\WebformOptionsCustomInterface;
  *     "label" = "label",
  *   },
  *   links = {
- *     "add-form" = "/admin/structure/webform/config/options_custom/add",
+ *     "add-form" = "/admin/structure/webform/config/options_custom/manage/add",
  *     "edit-form" = "/admin/structure/webform/config/options_custom/manage/{webform_options_custom}/edit",
  *     "source-form" = "/admin/structure/webform/config/options_custom/manage/{webform_options_custom}/source",
  *     "duplicate-form" = "/admin/structure/webform/config/options_custom/manage/{webform_options_custom}/duplicate",

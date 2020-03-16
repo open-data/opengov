@@ -55,7 +55,7 @@ elements: |
     '#title': Notes
     '#private': true
     '#default_value': 'These notes are private.'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -169,6 +169,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -245,11 +246,12 @@ handlers:
         [webform_submission:values]
         <hr />
         <p style="color:yellow"><em>Custom styled HTML markup</em></p>
-        
+
       excluded_elements: {  }
       ignore_access: true
       exclude_empty: true
       exclude_empty_checkbox: true
+      exclude_attachments: false
       html: true
       attachments: true
       twig: false

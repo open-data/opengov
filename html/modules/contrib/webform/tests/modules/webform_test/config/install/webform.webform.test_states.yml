@@ -151,36 +151,6 @@ elements: |
         required:
           ':input[name="visible_trigger"]':
             checked: true
-    visible_webform_buttons:
-      '#type': webform_buttons
-      '#title': Buttons
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#default_value': one
-      '#states':
-        visible:
-          ':input[name="visible_trigger"]':
-            checked: true
-        required:
-          ':input[name="visible_trigger"]':
-            checked: true
-    visible_webform_buttons_other:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#default_value': one
-      '#states':
-        visible:
-          ':input[name="visible_trigger"]':
-            checked: true
-        required:
-          ':input[name="visible_trigger"]':
-            checked: true
     visible_captcha:
       '#type': captcha
       '#title': CAPTCHA
@@ -1008,35 +978,6 @@ elements: |
         required:
           ':input[name="visible_trigger"]':
             checked: true
-    visible_webform_toggle:
-      '#type': webform_toggle
-      '#title': Toggle
-      '#default_value': true
-      '#states':
-        visible:
-          ':input[name="visible_trigger"]':
-            checked: true
-        required:
-          ':input[name="visible_trigger"]':
-            checked: true
-    visible_webform_toggles:
-      '#type': webform_toggles
-      '#title': Toggles
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#default_value':
-        - one
-        - two
-        - three
-      '#states':
-        visible:
-          ':input[name="visible_trigger"]':
-            checked: true
-        required:
-          ':input[name="visible_trigger"]':
-            checked: true
     visible_url:
       '#type': url
       '#title': URL
@@ -1838,29 +1779,6 @@ elements: |
         invisible:
           ':input[name="invisible_trigger"]':
             checked: true
-    invisible_webform_toggle:
-      '#type': webform_toggle
-      '#title': Toggle
-      '#default_value': true
-      '#states':
-        invisible:
-          ':input[name="invisible_trigger"]':
-            checked: true
-    invisible_webform_toggles:
-      '#type': webform_toggles
-      '#title': Toggles
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#default_value':
-        - one
-        - two
-        - three
-      '#states':
-        invisible:
-          ':input[name="invisible_trigger"]':
-            checked: true
     invisible_url:
       '#type': url
       '#title': URL
@@ -2620,29 +2538,6 @@ elements: |
         disabled:
           ':input[name="disabled_trigger"]':
             checked: true
-    disabled_webform_toggle:
-      '#type': webform_toggle
-      '#title': Toggle
-      '#default_value': true
-      '#states':
-        disabled:
-          ':input[name="disabled_trigger"]':
-            checked: true
-    disabled_webform_toggles:
-      '#type': webform_toggles
-      '#title': Toggles
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#default_value':
-        - one
-        - two
-        - three
-      '#states':
-        disabled:
-          ':input[name="disabled_trigger"]':
-            checked: true
     disabled_url:
       '#type': url
       '#title': URL
@@ -2658,7 +2553,7 @@ elements: |
         disabled:
           ':input[name="disabled_trigger"]':
             checked: true
-  
+
 css: ''
 javascript: ''
 settings:
@@ -2772,6 +2667,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

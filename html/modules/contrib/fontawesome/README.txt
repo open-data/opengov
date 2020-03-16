@@ -58,8 +58,8 @@ INSTALLATION
          (http://fontawesome.com) and place inside
          "/libraries/fontawesome" directory. The JS file should
          be at /libraries/fontawesome/js/all.js
-         Direct link for downloading latest version (current is v5.10.0) is:
-         https://use.fontawesome.com/releases/v5.10.0/fontawesome-free-5.10.0-web.zip
+         Direct link for downloading latest version (current is v5.12.0) is:
+         https://use.fontawesome.com/releases/v5.12.0/fontawesome-free-5.12.0-web.zip
     b. Enable the module at Administer >> Site building >> Modules.
 
 

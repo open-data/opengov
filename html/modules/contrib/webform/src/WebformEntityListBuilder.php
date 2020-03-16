@@ -2,6 +2,7 @@
 
 namespace Drupal\webform;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -91,18 +92,24 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
    *   The current user.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration factory.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, RequestStack $request_stack, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, RequestStack $request_stack, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory = NULL) {
     parent::__construct($entity_type, $storage);
     $this->request = $request_stack->getCurrentRequest();
     $this->currentUser = $current_user;
 
-    $this->keys = $this->request->query->get('search');
-    $this->category = $this->request->query->get('category');
-    $this->state = $this->request->query->get('state');
+    $query = $this->request->query;
+    $config = $config_factory->get('webform.settings');
+    $this->keys = ($query->has('search')) ? $query->get('search') : '';
+    $this->category = ($query->has('category')) ? $query->get('category') : $config->get('form.filter_category');
+    $this->state = ($query->has('state')) ? $query->get('state') : $config->get('form.filter_state');
+
     $this->submissionStorage = $entity_type_manager->getStorage('webform_submission');
     $this->userStorage = $entity_type_manager->getStorage('user');
     $this->roleStorage = $entity_type_manager->getStorage('user_role');
+
   }
 
   /**
@@ -114,7 +121,8 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
       $container->get('entity_type.manager')->getStorage($entity_type->id()),
       $container->get('request_stack'),
       $container->get('current_user'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('config.factory')
     );
   }
 
@@ -145,6 +153,8 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
     // Attachments.
     // Must preload libraries required by (modal) dialogs.
     WebformDialogHelper::attachLibraries($build);
+
+    $build['#attached']['library'][] = 'webform/webform.admin';
 
     return $build;
   }

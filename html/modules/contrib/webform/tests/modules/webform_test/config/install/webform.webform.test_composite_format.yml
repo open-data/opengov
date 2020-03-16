@@ -321,41 +321,6 @@ elements: |
           suburb: ''
           postcode: '20020'
         '#format': list
-    webform_location_geocomplete:
-      '#type': details
-      '#title': 'Location (Geocomplete)'
-      webform_location_geocomplete_value:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (Value)'
-        '#map': true
-        '#geolocation': true
-        '#format': value
-        '#default_value':
-          value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
-      webform_location_geocomplete_raw:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (Raw value)'
-        '#map': true
-        '#geolocation': true
-        '#format': raw
-        '#default_value':
-          value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
-      webform_location_geocomplete_list:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (List)'
-        '#map': true
-        '#geolocation': true
-        '#format': list
-        '#default_value':
-          value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
-      webform_location_geocomplete_map:
-        '#type': webform_location_geocomplete
-        '#title': 'Location (Geocomplete) (Map)'
-        '#map': true
-        '#geolocation': true
-        '#format': map
-        '#default_value':
-          value: 'The White House, 1600 Pennsylvania Ave NW, Washington, DC 20500, USA'
     webform_name:
       '#type': details
       '#title': Name
@@ -490,7 +455,7 @@ elements: |
           q2: 1
           q3: 1
         '#format': table
-  
+
 css: ''
 javascript: ''
 settings:
@@ -604,6 +569,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -678,6 +644,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: false
       attachments: false
       twig: false
@@ -713,6 +680,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false

@@ -91,7 +91,7 @@ elements: |
       - R
       - S
       - T
-  
+
 css: ''
 javascript: ''
 settings:
@@ -205,6 +205,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -269,6 +270,7 @@ handlers:
         _default_: 3
       limit_reached_message: '@name is not available.'
       limit_source_entity: true
+      limit_user: false
       option_none_action: disable
       option_message_display: label
       option_multiple_message: '[@remaining remaining]'
@@ -290,6 +292,7 @@ handlers:
         E: 2
       limit_reached_message: '@name is not available.'
       limit_source_entity: true
+      limit_user: false
       option_none_action: disable
       option_message_display: description
       option_multiple_message: '@remaining options remaining / @limit limit / @total total'
@@ -311,6 +314,7 @@ handlers:
         I: 2
       limit_reached_message: '@name is not available.'
       limit_source_entity: true
+      limit_user: false
       option_none_action: disable
       option_message_display: label
       option_multiple_message: '[@remaining remaining]'
@@ -332,6 +336,7 @@ handlers:
         L: 2
       limit_reached_message: '@name is not available.'
       limit_source_entity: true
+      limit_user: false
       option_none_action: remove
       option_message_display: label
       option_multiple_message: '[@remaining remaining]'
@@ -353,6 +358,7 @@ handlers:
         P: 2
       limit_reached_message: '@name is not available.'
       limit_source_entity: true
+      limit_user: false
       option_none_action: none
       option_message_display: label
       option_multiple_message: '[@remaining remaining]'
@@ -374,6 +380,7 @@ handlers:
         S: 2
       limit_reached_message: '@name is not available.'
       limit_source_entity: true
+      limit_user: false
       option_none_action: disable
       option_message_display: label
       option_multiple_message: '[@remaining remaining]'

@@ -1,8 +1,8 @@
 webform.config.webform_image_select_images:
   title: 'Images'
   route_name: entity.webform_image_select_images.collection
-  parent_id: webform.config
-  weight: 30
+  parent_id: webform.options
+  weight: 10
 
 entity.webform_image_select_images:
   title: 'Edit'

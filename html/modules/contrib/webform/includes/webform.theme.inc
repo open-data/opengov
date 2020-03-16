@@ -34,6 +34,7 @@ function webform_theme() {
     'webform_actions' => [
       'render element' => 'element',
     ],
+
     'webform_handler_action_summary' => [
       'variables' => ['settings' => NULL, 'handler' => NULL],
     ],
@@ -48,6 +49,10 @@ function webform_theme() {
     ],
     'webform_handler_settings_summary' => [
       'variables' => ['settings' => NULL, 'handler' => NULL],
+    ],
+
+    'webform_variant_override_summary' => [
+      'variables' => ['settings' => NULL, 'variant' => NULL],
     ],
 
     'webform_confirmation' => [
@@ -454,13 +459,13 @@ function webform_preprocess_form_element(&$variables) {
   // @see core/modules/system/templates/form-element.html.twig
   // @see claro/templates/form-element.html.twig
   // @todo Once Claro is stable determine if this code should removed.
-  static $is_claro_active_theme;
-  if (!isset($is_claro_active_theme)) {
+  static $is_claro_theme;
+  if (!isset($is_claro_theme)) {
     /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
     $theme_manager = \Drupal::service('webform.theme_manager');
-    $is_claro_active_theme = $theme_manager->isActiveTheme('claro');
+    $is_claro_theme = $theme_manager->isActiveTheme('claro');
   }
-  if ($is_claro_active_theme) {
+  if ($is_claro_theme) {
     // Add system .form-type-TYPE class.
     if (!empty($variables['type'])) {
       $variables['attributes']['class'][] = 'form-type-' . Html::getClass($variables['type']);
@@ -491,6 +496,7 @@ function webform_preprocess_form_element_label(&$variables) {
 
   // Remove label 'for' attribute.
   if (!empty($element['#attributes']['webform-remove-for-attribute'])) {
+    unset($element['#attributes']['webform-remove-for-attribute']);
     unset($variables['attributes']['webform-remove-for-attribute']);
     unset($variables['attributes']['for']);
   }
@@ -578,8 +584,13 @@ function webform_preprocess_file_link(&$variables) {
   $file = ($file instanceof File) ? $file : File::load($file->fid);
 
   // Remove link to temporary anonymous private file uploads.
-  if ($file->isTemporary() && $file->getOwner()->isAnonymous() && strpos($file->getFileUri(), 'private://webform/') === 0) {
+  if ($file->isTemporary() && $file->getOwner() && $file->getOwner()->isAnonymous() && strpos($file->getFileUri(), 'private://webform/') === 0) {
     $variables['link'] = $file->getFilename();
+  }
+
+  // Add file size variable to Claro theme.
+  if (empty($variables['file_size']) && \Drupal::service('webform.theme_manager')->isActiveTheme('claro')) {
+    $variables['file_size'] = format_size($file->getSize(), \Drupal::languageManager()->getCurrentLanguage()->getId());
   }
 }
 
@@ -707,6 +718,11 @@ function _webform_preprocess_element(array &$variables, $title_parents = ['title
 
   // Add help to title (aka label).
   _webform_preprocess_help($variables, $title_parents);
+
+  // Hide 'item' label[for].
+  if ($type === 'item') {
+    $variables['label']['#attributes']['webform-remove-for-attribute'] = TRUE;
+  }
 }
 
 /**

@@ -6,6 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\webform\Plugin\WebformHandlerInterface;
+use Drupal\webform\Plugin\WebformVariantInterface;
 
 /**
  * Provides an interface defining a webform entity.
@@ -182,6 +183,14 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    *   TRUE if the webform's elements include computed values.
    */
   public function hasComputed();
+
+  /**
+   * Determine if the webform's elements include variants.
+   *
+   * @return bool
+   *   TRUE if the webform's elements include variants.
+   */
+  public function hasVariant();
 
   /**
    * Determine if the webform is using a Flexbox layout.
@@ -735,6 +744,14 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
   public function getElementsComputed();
 
   /**
+   * Get webform variant elements.
+   *
+   * @return array
+   *   Webform variant elements.
+   */
+  public function getElementsVariant();
+
+  /**
    * Get webform element's selectors as options.
    *
    * @param array $options
@@ -844,6 +861,10 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function deletePaths();
 
+  /****************************************************************************/
+  // Handler plugins.
+  /****************************************************************************/
+
   /**
    * Determine if the webform has any message handlers.
    *
@@ -851,6 +872,16 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    *   TRUE if the webform has any message handlers.
    */
   public function hasMessageHandler();
+
+  /**
+   * Determine if a webform handler requires anonymous submission tracking.
+   *
+   * @return bool
+   *   TRUE if a webform handler requires anonymous submission tracking.
+   *
+   * @see \Drupal\webform_options_limit\Plugin\WebformHandler\OptionsLimitWebformHandler
+   */
+  public function hasAnonymousSubmissionTrackingHandler();
 
   /**
    * Returns a specific webform handler.
@@ -926,8 +957,17 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    *   (optional) An additional variable that is passed by reference.
    * @param mixed $context2
    *   (optional) An additional variable that is passed by reference.
+   * @param mixed $context3
+   *   (optional) An additional variable that is passed by reference.
+   *
+   * @return \Drupal\Core\Access\AccessResult|null
+   *   If 'access' method is invoked an AccessResult is returned.
    */
-  public function invokeHandlers($method, &$data, &$context1 = NULL, &$context2 = NULL);
+  public function invokeHandlers($method, &$data, &$context1 = NULL, &$context2 = NULL, &$context3 = NULL);
+
+  /****************************************************************************/
+  // Element plugins.
+  /****************************************************************************/
 
   /**
    * Invoke elements method.
@@ -942,6 +982,97 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    *   (optional) An additional variable that is passed by reference.
    */
   public function invokeElements($method, &$data, &$context1 = NULL, &$context2 = NULL);
+
+  /****************************************************************************/
+  // Variant plugins.
+  /****************************************************************************/
+
+  /**
+   * Returns a specific webform variant.
+   *
+   * @param string $variant_id
+   *   The webform variant ID.
+   *
+   * @return \Drupal\webform\Plugin\WebformVariantInterface
+   *   The webform variant object.
+   */
+  public function getVariant($variant_id);
+
+  /**
+   * Returns the webform variants for this webform.
+   *
+   * @param string $plugin_id
+   *   (optional) Plugin id used to return specific plugin instances
+   *   (i.e. variants).
+   * @param bool $status
+   *   (optional) Status used to return enabled or disabled plugin instances
+   *   (i.e. variants).
+   * @param bool $element_key
+   *   (optional) Element key used to return enabled or disabled plugin instances
+   *   (i.e. variants).
+   *
+   * @return \Drupal\webform\Plugin\WebformVariantPluginCollection|\Drupal\webform\Plugin\WebformVariantInterface[]
+   *   The webform variant plugin collection.
+   */
+  public function getVariants($plugin_id = NULL, $status = NULL, $element_key = NULL);
+
+  /**
+   * Saves a webform variant for this webform.
+   *
+   * @param \Drupal\webform\Plugin\WebformVariantInterface $variant
+   *   The webform variant object.
+   *
+   * @return string
+   *   The webform variant ID.
+   */
+  public function addWebformVariant(WebformVariantInterface $variant);
+
+  /**
+   * Update a webform variant for this webform.
+   *
+   * @param \Drupal\webform\Plugin\WebformVariantInterface $variant
+   *   The webform variant object.
+   *
+   * @return $this
+   */
+  public function updateWebformVariant(WebformVariantInterface $variant);
+
+  /**
+   * Deletes a webform variant from this webform.
+   *
+   * @param \Drupal\webform\Plugin\WebformVariantInterface $variant
+   *   The webform variant object.
+   *
+   * @return $this
+   */
+  public function deleteWebformVariant(WebformVariantInterface $variant);
+
+  /**
+   * Apply webform variants based on a webform submission or parameter.
+   *
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   * @param array $variants
+   *   An associative array of variant element keys and variant ids.
+   * @param bool $force
+   *   Apply disabled variants. Defaults to FALSE.
+   *
+   * @throws \Exception
+   *   Throws exception if submission was not created using this webform.
+   */
+  public function applyVariants(WebformSubmissionInterface $webform_submission = NULL, $variants = [], $force = FALSE);
+
+  /**
+   * Get variants data from a webform submission.
+   *
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   *
+   * @return array
+   *   A associative array containing the variant element keys
+   *   and variant value.
+   */
+  public function getVariantsData(WebformSubmissionInterface $webform_submission);
 
   /**
    * Required to allow webform which are config entities to have an EntityViewBuilder.

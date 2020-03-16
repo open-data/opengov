@@ -112,11 +112,6 @@ abstract class WebformOtherBase extends FormElement {
     }
     $element[$type]['#error_no_message'] = TRUE;
 
-    // Prevent nested fieldset by removing fieldset theme wrapper around
-    // radios and checkboxes.
-    // @see \Drupal\Core\Render\Element\CompositeFormElementTrait
-    $element[$type]['#pre_render'] = [];
-
     // Build other textfield.
     $element += ['other' => []];
     foreach ($element as $key => $value) {
@@ -160,6 +155,11 @@ abstract class WebformOtherBase extends FormElement {
     $element_manager->buildElement($element[$type], $complete_form, $form_state);
     $element_manager->buildElement($element['other'], $complete_form, $form_state);
 
+    // Prevent nested fieldset by removing fieldset theme wrapper around
+    // radios and checkboxes.
+    // @see \Drupal\Core\Render\Element\CompositeFormElementTrait
+    $element[$type]['#pre_render'] = [];
+
     // Add js trigger attributes to the composite wrapper.
     // @see \Drupal\webform\Element\WebformCompositeFormElementTrait
     $is_form_element_wrapper = (isset($element['#wrapper_type']) && $element['#wrapper_type'] === 'form_element');
@@ -170,6 +170,9 @@ abstract class WebformOtherBase extends FormElement {
     // Apply the element id to the wrapper so that inline form errors point
     // to the correct element.
     $element['#attributes']['id'] = $element['#id'];
+
+    // Make sure form element label has no 'for' attribute.
+    $element['#label_attributes']['webform-remove-for-attribute'] = TRUE;
 
     // Remove options.
     unset($element['#options']);

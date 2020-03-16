@@ -114,7 +114,7 @@ class WebformOptionsCustom extends FormElement implements WebformOptionsCustomIn
       if (strpos($option_text, WebformOptionsHelper::DESCRIPTION_DELIMITER) !== FALSE) {
         list($option_text, $option_description) = explode(WebformOptionsHelper::DESCRIPTION_DELIMITER, $option_text);
         $element['#options'][$option_value] = $option_text;
-        $descriptions[$option_value] = Xss::filter($option_description);
+        $descriptions[$option_value] = Xss::filterAdmin($option_description);
       }
     }
 

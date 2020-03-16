@@ -1329,48 +1329,6 @@ elements: |
       '#help_display': element_after
     webform_select_other_hr:
       '#type': webform_horizontal_rule
-    webform_toggles_help:
-      '#markup': 'Toggles (webform_toggles)'
-      '#prefix': '<h3>'
-      '#suffix': '</h3>'
-    webform_toggles_title_before:
-      '#type': webform_toggles
-      '#title': 'Toggles (title_before)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#help': 'This is help.'
-      '#help_display': title_before
-    webform_toggles_title_after:
-      '#type': webform_toggles
-      '#title': 'Toggles (title_after)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#help': 'This is help.'
-      '#help_display': title_after
-    webform_toggles_element_before:
-      '#type': webform_toggles
-      '#title': 'Toggles (element_before)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#help': 'This is help.'
-      '#help_display': element_before
-    webform_toggles_element_after:
-      '#type': webform_toggles
-      '#title': 'Toggles (element_after)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#help': 'This is help.'
-      '#help_display': element_after
-    webform_toggles_hr:
-      '#type': webform_horizontal_rule
   date_time_elements:
     '#type': details
     '#title': 'Date/time elements'
@@ -1951,7 +1909,7 @@ elements: |
       '#help_display': element_after
     machine_name_hr:
       '#type': webform_horizontal_rule
-  
+
 css: ''
 javascript: ''
 settings:
@@ -2065,6 +2023,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

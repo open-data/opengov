@@ -13,7 +13,10 @@ webform.handler.options_limit:
       label: 'Limit reached message'
     limit_source_entity:
       type: boolean
-      label: 'Limit source entity'
+      label: 'Limit per source entity'
+    limit_user:
+      type: boolean
+      label: 'Limit per user'
     option_none_action:
       type: string
       label: 'Limit reached behavior'

@@ -11,6 +11,16 @@ use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
+ * Implements hook_config_schema_info_alter().
+ */
+function webform_scheduled_email_config_schema_info_alter(&$definitions) {
+  $mapping = $definitions['webform.handler.email']['mapping'];
+
+  // Append email handler to scheduled email handler settings.
+  $definitions['webform.handler.scheduled_email']['mapping'] += $mapping;
+}
+
+/**
  * Implements hook_entity_update().
  */
 function webform_scheduled_email_entity_update(EntityInterface $entity) {

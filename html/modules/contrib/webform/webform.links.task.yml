@@ -26,7 +26,21 @@ entity.webform_submission.collection_purge:
   parent_id: entity.webform_submission.collection
   weight: 10
 
-# Settings.
+# Options.
+
+webform.options:
+  title: 'Options'
+  route_name: entity.webform_options.collection
+  base_route: entity.webform.collection
+  weight: 25
+
+webform.config.options:
+  title: 'Options'
+  route_name: entity.webform_options.collection
+  parent_id: webform.options
+  weight: 0
+
+# Configuration.
 
 webform.config:
   title: 'Configuration'
@@ -46,11 +60,6 @@ webform.config.elements:
   parent_id: webform.config
   weight: 20
 
-webform.config.options:
-  title: 'Options'
-  route_name: entity.webform_options.collection
-  parent_id: webform.config
-  weight: 30
 
 webform.config.submissions:
   title: 'Submissions'
@@ -63,6 +72,12 @@ webform.config.handlers:
   route_name: webform.config.handlers
   parent_id: webform.config
   weight: 50
+
+webform.config.variants:
+  title: 'Variants'
+  route_name: webform.config.variants
+  parent_id: webform.config
+  weight: 55
 
 webform.config.exporters:
   title: 'Exporters'
@@ -188,6 +203,7 @@ entity.webform.settings_handlers:
   parent_id: entity.webform.settings
   weight: 40
 
+
 entity.webform.settings_assets:
   title: 'CSS / JS'
   route_name: entity.webform.settings_assets
@@ -199,6 +215,13 @@ entity.webform.settings_access:
   route_name: entity.webform.settings_access
   parent_id: entity.webform.settings
   weight: 60
+
+# Webform variants.
+entity.webform.variants:
+  title: 'Variants'
+  route_name: entity.webform.variants
+  base_route: entity.webform.canonical
+  weight: 45
 
 # Export
 
@@ -303,6 +326,12 @@ webform.reports_plugins.handlers:
   route_name: webform.reports_plugins.handlers
   base_route: webform.reports_plugins.elements
   weight: 10
+
+webform.reports_plugins.variants:
+  title: 'Variants'
+  route_name: webform.reports_plugins.variants
+  base_route: webform.reports_plugins.elements
+  weight: 15
 
 webform.reports_plugins.exporters:
   title: 'Exporters'

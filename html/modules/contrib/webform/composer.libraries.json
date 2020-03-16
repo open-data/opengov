@@ -28,13 +28,13 @@
             "type": "package",
             "package": {
                 "name": "algolia/places",
-                "version": "1.16.4",
+                "version": "1.17.0",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "algolia.places"
                 },
                 "dist": {
-                    "url": "https://registry.npmjs.org/places.js/-/places.js-1.16.4.tgz",
+                    "url": "https://registry.npmjs.org/places.js/-/places.js-1.17.0.tgz",
                     "type": "tar"
                 },
                 "require": {
@@ -46,13 +46,13 @@
             "type": "package",
             "package": {
                 "name": "choices/choices",
-                "version": "7.0.0",
+                "version": "9.0.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "choices"
                 },
                 "dist": {
-                    "url": "https://github.com/jshjohnson/Choices/archive/v7.0.0.zip",
+                    "url": "https://github.com/jshjohnson/Choices/archive/v9.0.1.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -186,24 +186,6 @@
                 }
             }
         },
-        "jquery.geocomplete": {
-            "type": "package",
-            "package": {
-                "name": "jquery/geocomplete",
-                "version": "1.7.0",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "jquery.geocomplete"
-                },
-                "dist": {
-                    "url": "https://github.com/ubilabs/geocomplete/archive/1.7.0.zip",
-                    "type": "zip"
-                },
-                "require": {
-                    "composer/installers": "~1.0"
-                }
-            }
-        },
         "jquery.hotkeys": {
             "type": "package",
             "package": {
@@ -262,13 +244,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/inputmask",
-                "version": "4.0.8",
+                "version": "4.0.9",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.inputmask"
                 },
                 "dist": {
-                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/4.0.8.zip",
+                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/4.0.9.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -280,13 +262,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/intl-tel-input",
-                "version": "15.1.0",
+                "version": "16.0.0",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.intl-tel-input"
                 },
                 "dist": {
-                    "url": "https://github.com/jackocnr/intl-tel-input/archive/v15.1.0.zip",
+                    "url": "https://github.com/jackocnr/intl-tel-input/archive/v16.0.0.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -316,13 +298,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/select2",
-                "version": "4.0.8",
+                "version": "4.0.12",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.select2"
                 },
                 "dist": {
-                    "url": "https://github.com/select2/select2/archive/4.0.8.zip",
+                    "url": "https://github.com/select2/select2/archive/4.0.12.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -449,7 +431,6 @@
         "ckeditor/link": "*",
         "codemirror/codemirror": "*",
         "jquery/chosen": "*",
-        "jquery/geocomplete": "*",
         "jquery/hotkeys": "*",
         "jquery/icheck": "*",
         "jquery/image-picker": "*",

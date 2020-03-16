@@ -83,7 +83,7 @@
 }
 
 [dir="rtl"] .progress-step:not(:first-child)::after {
-  content: '';
+  content: "";
   display: block;
   position: absolute;
   z-index: -10;

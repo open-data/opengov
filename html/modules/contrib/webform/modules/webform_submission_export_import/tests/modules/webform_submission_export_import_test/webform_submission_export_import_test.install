@@ -17,7 +17,7 @@ function webform_submission_export_import_test_uninstall() {
   ];
   foreach ($file_names as $file_name) {
     if (file_exists("$files_path/$file_name")) {
-      file_unmanaged_delete("$files_path/$file_name");
+      \Drupal::service('file_system')->delete("$files_path/$file_name");
     }
   }
 

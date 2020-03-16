@@ -64,6 +64,12 @@
           signaturePad.fromDataURL(value);
         }
 
+        // Disable the signature pad when input is disabled or readonly.
+        if ($input.is(':disabled') || $input.is('[readonly]')) {
+          signaturePad.off();
+          $button.hide();
+        }
+
         // Set reset handler.
         $button.on('click', function () {
           signaturePad.clear();
@@ -86,17 +92,19 @@
           }, 1);
         });
 
-        // Turn signature pad off/on when the input is disabled/enabled.
+        // Turn signature pad off/on when the input
+        // is disabled/readonly/enabled.
         // @see webform.states.js
-        $input.on('webform:disabled', function () {
-          if ($input.is(':disabled')) {
+        $input.on('webform:disabled webform:readonly', function () {
+          if ($input.is(':disabled') || $input.is('[readonly]')) {
             signaturePad.off();
+            $button.hide();
           }
           else {
             signaturePad.on();
+            $button.show();
           }
         });
-
       });
     }
   };

@@ -54,6 +54,13 @@ abstract class WebformAttachmentBase extends WebformElementBase implements Webfo
   /**
    * {@inheritdoc}
    */
+  public function getTranslatableProperties() {
+    return array_merge(parent::getTranslatableProperties(), ['filename', 'link_title']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function formatHtmlItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     /** @var \Drupal\webform_attachment\Element\WebformAttachmentInterface $attachment_element */
     $attachment_element = $this->getFormElementClassDefinition();

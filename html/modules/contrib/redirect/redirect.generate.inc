@@ -7,7 +7,9 @@
 
 use Drupal\Component\Utility\Random;
 use Drupal\devel_generate\DevelGenerateBase;
+use Drupal\node\NodeInterface;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\Core\Database\Database;
 
 /**
  * @file
@@ -59,11 +61,11 @@ function redirect_generate_batch_delete(array &$context) {
     $context['sandbox'] = [];
     $context['sandbox']['progress'] = 0;
     $context['sandbox']['current_rid'] = 0;
-    $context['sandbox']['max'] = db_query('SELECT COUNT(DISTINCT rid) FROM {redirect}')->fetchField();
+    $context['sandbox']['max'] = Database::getConnection()->query('SELECT COUNT(DISTINCT rid) FROM {redirect}')->fetchField();
   }
 
   $limit = 20;
-  $rids = db_query_range("SELECT rid FROM {redirect} WHERE rid > :rid ORDER BY rid", 0, $limit, [':rid' => $context['sandbox']['current_rid']])->fetchCol();
+  $rids = Database::getConnection()->queryRange("SELECT rid FROM {redirect} WHERE rid > :rid ORDER BY rid", 0, $limit, [':rid' => $context['sandbox']['current_rid']])->fetchCol();
   foreach (redirect_repository()->loadMultiple($rids) as $redirect) {
     $redirect->delete();
   }
@@ -87,7 +89,7 @@ function redirect_generate_batch_generate($num, array &$context) {
     $context['sandbox']['max'] = $num;
     $query = \Drupal::database()->select('node', 'n');
     $query->addField('n', 'nid');
-    $query->condition('n.status', NODE_PUBLISHED);
+    $query->condition('n.status', NodeInterface::PUBLISHED);
     $query->addTag('node_access');
     $context['sandbox']['nids'] = $query->execute()->fetchAllKeyed(0, 0);
   }
@@ -143,7 +145,7 @@ function redirect_generate_batch_generate($num, array &$context) {
     $query->update('redirect')
       ->fields([
         'count' => mt_rand(1, 500),
-        'access' => mt_rand(REQUEST_TIME - 31536000, REQUEST_TIME),
+        'access' => mt_rand(Drupal::time()->getRequestTime() - 31536000, Drupal::time()->getRequestTime()),
       ])
       ->condition('rid', $redirect->id())
       ->execute();

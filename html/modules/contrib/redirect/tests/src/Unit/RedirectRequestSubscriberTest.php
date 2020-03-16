@@ -136,7 +136,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
       ->method('canRedirect')
       ->will($this->returnValue(TRUE));
 
-    $context = $this->getMock('Symfony\Component\Routing\RequestContext');
+    $context = $this->createMock('Symfony\Component\Routing\RequestContext');
 
     $inbound_path_processor = $this->getMockBuilder('Drupal\Core\PathProcessor\InboundPathProcessorInterface')
       ->disableOriginalConstructor()

@@ -3,9 +3,9 @@
 namespace Drupal\webform_options_custom\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\webform_options_custom\WebformOptionsCustomStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -25,17 +25,17 @@ abstract class WebformOptionsCustomDeriverBase extends DeriverBase implements Co
   /**
    * The custom options storage.
    *
-   * @var \Drupal\webform_options_custom\WebformOptionsCustomStorageInterface
+   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
    */
   protected $optionsCustomStorage;
 
   /**
    * Constructs new WebformReusableCompositeDeriver.
    *
-   * @param \Drupal\webform_options_custom\WebformOptionsCustomStorageInterface $webform_options_custom_storage
+   * @param \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $webform_options_custom_storage
    *   The Dynamic Composite storage.
    */
-  public function __construct(WebformOptionsCustomStorageInterface $webform_options_custom_storage) {
+  public function __construct(ConfigEntityStorageInterface $webform_options_custom_storage) {
     $this->optionsCustomStorage = $webform_options_custom_storage;
   }
 

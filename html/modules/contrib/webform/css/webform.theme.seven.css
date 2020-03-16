@@ -22,7 +22,7 @@ tr.even .form-item:last-of-type {
 
 /* Add margin around HR tags */
 table hr {
-  margin: .5em 0;
+  margin: 0.5em 0;
 }
 
 /* Add background to nested details */
@@ -45,7 +45,7 @@ code {
 /* Add yellow background to tooltips and tabs */
 /* @see core/assets/vendor/jquery.ui/themes/base/tabs.css */
 .ui-tooltip.ui-widget {
-  background: #fe6;;
+  background: #fe6;
   border: 1px solid #ed5;
   border-radius: 2px;
 }
@@ -77,7 +77,7 @@ code {
     padding: 0;
   }
   .webform-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
-    padding: .5em .7em;
+    padding: 0.5em 0.7em;
   }
 }
 
@@ -88,7 +88,7 @@ code {
 
 /* CodeMirror viewer */
 pre.webform-codemirror-runmode {
-  padding: .5em 1.5em;
+  padding: 0.5em 1.5em;
 }
 
 /* Hide tabs and elements from printing. */
@@ -183,7 +183,7 @@ pre.webform-codemirror-runmode {
 /* jQuery UI tooltip */
 .ui-tooltip hr {
   background: #666;
-  margin: .3em 0;
+  margin: 0.3em 0;
   height: 1px;
 }
 
@@ -191,8 +191,8 @@ pre.webform-codemirror-runmode {
   font-weight: bold;
   white-space: nowrap;
   background-color: #f5f5f2;
-  font-size: .9em;
-  padding: .2em;
+  font-size: 0.9em;
+  padding: 0.2em;
 }
 
 /* jQuery UI tabs */

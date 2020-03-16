@@ -268,6 +268,13 @@
     // @see https://stackoverflow.com/questions/6944744/javascript-get-portion-of-url-path
     var a = document.createElement('a');
     a.href = response.url;
+    var forceReload = (response.url.match(/\?reload=([^&]+)($|&)/)) ? RegExp.$1 : null;
+    if (forceReload) {
+      response.url = response.url.replace(/\?reload=([^&]+)($|&)/, '');
+      this.redirect(ajax, response, status);
+      return;
+    }
+
     if (a.pathname === window.location.pathname && $('.webform-ajax-refresh').length) {
       updateKey = (response.url.match(/[?|&]update=([^&]+)($|&)/)) ? RegExp.$1 : null;
       addElement = (response.url.match(/[?|&]add_element=([^&]+)($|&)/)) ? RegExp.$1 : null;
@@ -280,7 +287,6 @@
       if (Drupal.behaviors.webformUnsaved) {
         Drupal.behaviors.webformUnsaved.clear();
       }
-
 
       this.redirect(ajax, response, status);
     }
@@ -324,26 +330,6 @@
     if ($(response.selector).hasClass('ui-dialog-content')) {
       this.closeDialog(ajax, response, status);
     }
-  };
-
-  /**
-   * Triggers audio UAs to read the supplied text.
-   *
-   * @param {Drupal.Ajax} [ajax]
-   *   A {@link Drupal.ajax} object.
-   * @param {object} response
-   *   Ajax response.
-   * @param {string} response.text
-   *   A string to be read by the UA.
-   * @param {string} [response.priority='polite']
-   *   A string to indicate the priority of the message. Can be either
-   *   'polite' or 'assertive'.
-   *
-   * @see Drupal.announce
-   */
-  Drupal.AjaxCommands.prototype.webformAnnounce = function (ajax, response) {
-    // Delay the announcement.
-    setTimeout(function () {Drupal.announce(response.text, response.priority);}, 200);
   };
 
   /**

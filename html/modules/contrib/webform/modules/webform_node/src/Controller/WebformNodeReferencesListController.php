@@ -2,6 +2,7 @@
 
 namespace Drupal\webform_node\Controller;
 
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -10,6 +11,8 @@ use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Url;
+use Drupal\webform\Utility\WebformDialogHelper;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformEntityReferenceManagerInterface;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionStorageInterface;
@@ -164,12 +167,23 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
    * {@inheritdoc}
    */
   public function buildHeader() {
+    $webform = $this->webform;
     $header = [];
     $header['title'] = $this->t('Title');
     $header['type'] = [
       'data' => $this->t('Type'),
       'class' => [RESPONSIVE_PRIORITY_MEDIUM],
     ];
+    if ($webform->hasVariant()) {
+      $element_keys = $webform->getElementsVariant();
+      foreach ($element_keys as $element_key) {
+        $element = $webform->getElement($element_key);
+        $header['element__' . $element_key] = [
+          'data' => WebformElementHelper::getAdminTitle($element),
+          'class' => [RESPONSIVE_PRIORITY_LOW],
+        ];
+      }
+    }
     $header['author'] = [
       'data' => $this->t('Author'),
       'class' => [RESPONSIVE_PRIORITY_LOW],
@@ -197,6 +211,8 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+    $webform = $this->webform;
+
     /** @var \Drupal\node\NodeInterface $entity */
     $row['title']['data'] = [
       '#type' => 'link',
@@ -204,6 +220,30 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
       '#url' => $entity->toUrl(),
     ];
     $row['type'] = node_get_type_label($entity);
+    if ($webform->hasVariant()) {
+      $variant_element_keys = $webform->getElementsVariant();
+      foreach ($variant_element_keys as $variant_element_key) {
+        $variants = [];
+        foreach ($this->fieldNames as $field_name) {
+          if (!$entity->hasField($field_name)) {
+            continue;
+          }
+          $default_data = Yaml::decode($entity->$field_name->default_data);
+          if (empty($default_data[$variant_element_key])) {
+            continue;
+          }
+          $variant_instance_id = $default_data[$variant_element_key];
+          if ($webform->getVariants()->has($variant_instance_id)) {
+            $variant_plugin = $webform->getVariant($variant_instance_id);
+            $variants[$default_data[$variant_element_key]] = $variant_plugin->label();
+          }
+        }
+        $row['element__' . $variant_element_key] = [
+          'data' => implode('; ', $variants),
+          'class' => [RESPONSIVE_PRIORITY_LOW],
+        ];
+      }
+    }
     $row['author']['data'] = [
       '#theme' => 'username',
       '#account' => $entity->getOwner(),
@@ -349,15 +389,33 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
     // add query string parameter.
     // @see https://www.drupal.org/node/2585169
     $local_actions = [];
-    foreach ($this->nodeTypes as $bundle => $node_type) {
-      if ($node_type->access('create')) {
-        $local_actions['webform_node.references.add_' . $bundle] = [
-          '#theme' => 'menu_local_action',
-          '#link' => [
-            'title' => $this->t('Add @title', ['@title' => $node_type->label()]),
-            'url' => Url::fromRoute('node.add', ['node_type' => $bundle], ['query' => ['webform_id' => $this->webform->id()]]),
-          ],
-        ];
+
+    if ($this->webform->hasVariant()) {
+      foreach ($this->nodeTypes as $bundle => $node_type) {
+        if ($node_type->access('create')) {
+          $local_actions['webform_node.references.add_form'] = [
+            '#theme' => 'menu_local_action',
+            '#link' => [
+              'title' => $this->t('Add reference'),
+              'url' => Url::fromRoute('entity.webform.references.add_form', ['webform' => $this->webform->id()]),
+              'attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NARROW),
+            ],
+          ];
+          WebformDialogHelper::attachLibraries($local_actions['webform_node.references.add_form']);
+        }
+      }
+    }
+    else {
+      foreach ($this->nodeTypes as $bundle => $node_type) {
+        if ($node_type->access('create')) {
+          $local_actions['webform_node.references.add_' . $bundle] = [
+            '#theme' => 'menu_local_action',
+            '#link' => [
+              'title' => $this->t('Add @title', ['@title' => $node_type->label()]),
+              'url' => Url::fromRoute('node.add', ['node_type' => $bundle], ['query' => ['webform_id' => $this->webform->id()]]),
+            ],
+          ];
+        }
       }
     }
     if ($local_actions) {

@@ -55,7 +55,7 @@ trait WebformTermReferenceTrait {
 
     $form['term_reference'] = [
       '#type' => 'fieldset',
-      '#title' => t('Term reference settings'),
+      '#title' => $this->t('Term reference settings'),
       '#weight' => -40,
     ];
     $form['term_reference']['vocabulary'] = [

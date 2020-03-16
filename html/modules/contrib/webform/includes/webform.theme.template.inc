@@ -326,9 +326,14 @@ function template_preprocess_webform_submission_information(array &$variables) {
     $variables['uri'] = Link::fromTextAndUrl($source_url->setAbsolute(FALSE)->toString(), $source_url);
   }
 
+  if ($webform->getSetting('token_view')) {
+    $token_view_url = $webform_submission->getTokenUrl('view');
+    $variables['token_view'] = Link::fromTextAndUrl($token_view_url->setAbsolute(FALSE)->toString(), $token_view_url);
+  }
+
   if ($webform->getSetting('token_update')) {
-    $token_url = $webform_submission->getTokenUrl();
-    $variables['token_update'] = Link::fromTextAndUrl($token_url->setAbsolute(FALSE)->toString(), $token_url);
+    $token_update_url = $webform_submission->getTokenUrl('update');
+    $variables['token_update'] = Link::fromTextAndUrl($token_update_url->setAbsolute(FALSE)->toString(), $token_update_url);
   }
 
   if (($source_entity = $webform_submission->getSourceEntity()) && $source_entity->hasLinkTemplate('canonical')) {

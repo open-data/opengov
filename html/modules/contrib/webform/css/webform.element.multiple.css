@@ -108,7 +108,7 @@
  * Add margin between stacked form items.
  */
 .webform-multiple-table .form-item + .form-item {
-  margin-top: .2em;
+  margin-top: 0.2em;
 }
 
 /**
@@ -167,7 +167,7 @@
 
   .webform-multiple-table-responsive tr {
     display: block;
-    padding: .5em 0;
+    padding: 0.5em 0;
   }
 
   .webform-multiple-table-responsive td {
@@ -176,7 +176,7 @@
     background: transparent;
     text-align: inherit;
     width: inherit;
-    padding: .5em 1em;
+    padding: 0.5em 1em;
   }
 
   .webform-multiple-table-responsive td:after {
@@ -201,7 +201,6 @@
     overflow: inherit;
     height: inherit;
     width: inherit;
-    margin: .2em 0;
+    margin: 0.2em 0;
   }
-
 }

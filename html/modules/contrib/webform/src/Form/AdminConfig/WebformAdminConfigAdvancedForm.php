@@ -302,7 +302,9 @@ class WebformAdminConfigAdvancedForm extends WebformAdminConfigBaseForm {
       '#type' => 'submit',
       '#value' => $this->t('Repair configuration'),
       '#attributes' => [
-        'onclick' => 'return confirm("' . $this->t('Are you sure you want to repair and remove older webform configuration?') . '\n' . $this->t('This cannot be undone!!!') . '");',
+        'onclick' => 'return confirm("' . $this->t('Are you sure you want to repair and remove older webform configuration?')
+          . PHP_EOL
+          . $this->t('This cannot be undone!!!') . '");',
       ],
     ];
 

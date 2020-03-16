@@ -14,6 +14,11 @@ use Drupal\file\Entity\File;
 class FileManagedFileElementTest extends FileFieldTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Tests the managed_file element type.
    */
   public function testManagedFile() {
@@ -144,7 +149,7 @@ class FileManagedFileElementTest extends FileFieldTestBase {
     $this->drupalPostForm(NULL, $edit, t('Upload'));
 
     $fid = $this->getLastFileId();
-    $file = \Drupal::entityManager()->getStorage('file')->load($fid);
+    $file = \Drupal::entityTypeManager()->getStorage('file')->load($fid);
     $file->delete();
 
     $this->drupalPostForm(NULL, $edit, t('Upload'));

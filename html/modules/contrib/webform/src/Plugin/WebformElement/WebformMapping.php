@@ -129,8 +129,8 @@ class WebformMapping extends WebformElementBase {
       case 'table':
 
         $element += [
-          '#source__title' => t('Source'),
-          '#destination__title' => t('Destination'),
+          '#source__title' => $this->t('Source'),
+          '#destination__title' => $this->t('Destination'),
         ];
 
         $header = [

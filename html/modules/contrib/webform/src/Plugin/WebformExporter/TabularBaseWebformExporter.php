@@ -183,12 +183,12 @@ abstract class TabularBaseWebformExporter extends WebformExporterBase {
     if (isset($this->fieldDefinitions['entity_type']) && isset($this->fieldDefinitions['entity_id'])) {
       $this->fieldDefinitions['entity_title'] = [
         'name' => 'entity_title',
-        'title' => t('Submitted to: Entity title'),
+        'title' => $this->t('Submitted to: Entity title'),
         'type' => 'entity_title',
       ];
       $this->fieldDefinitions['entity_url'] = [
         'name' => 'entity_url',
-        'title' => t('Submitted to: Entity URL'),
+        'title' => $this->t('Submitted to: Entity URL'),
         'type' => 'entity_url',
       ];
     }

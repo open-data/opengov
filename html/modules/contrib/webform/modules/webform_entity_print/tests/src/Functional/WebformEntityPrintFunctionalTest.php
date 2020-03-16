@@ -99,7 +99,7 @@ body {
     $edit = [
       'exporter' => 'webform_entity_print:pdf',
     ];
-    $this->drupalPostForm('admin/structure/webform/manage/test_entity_print/results/download', $edit, t('Download'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_entity_print/results/download', $edit, t('Download'));
 
     // Load the tar and get a list of files.
     $tar = new ArchiveTar($submission_exporter->getArchiveFilePath(), 'gz');

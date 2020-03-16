@@ -154,7 +154,7 @@ class DateTime extends DateBase {
 
     $form['date']['date_date_element'] = [
       '#type' => 'select',
-      '#title' => t('Date element'),
+      '#title' => $this->t('Date element'),
       '#options' => [
         'datetime' => $this->t('HTML datetime - Use the HTML5 datetime element type.'),
         'datetime-local' => $this->t('HTML datetime input (localized) - Use the HTML5 datetime-local element type.'),
@@ -243,7 +243,7 @@ class DateTime extends DateBase {
     ];
     $form['time']['date_time_element'] = [
       '#type' => 'select',
-      '#title' => t('Time element'),
+      '#title' => $this->t('Time element'),
       '#options' => [
         'time' => $this->t('HTML time input - Use a HTML5 time element type.'),
         'text' => $this->t('Text input - No HTML5 element, use a normal text field.'),

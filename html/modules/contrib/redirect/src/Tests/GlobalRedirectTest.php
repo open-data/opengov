@@ -2,7 +2,7 @@
 
 namespace Drupal\redirect\Tests;
 
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Language\Language;
 use Drupal\simpletest\WebTestBase;
 use Drupal\language\Entity\ConfigurableLanguage;
@@ -254,7 +254,7 @@ class GlobalRedirectTest extends WebTestBase {
     $headers = $this->drupalGetHeaders(TRUE);
 
     $ending_url = isset($headers[0]['location']) ? $headers[0]['location'] : NULL;
-    $message = SafeMarkup::format('Testing redirect from %from to %to. Ending url: %url', [
+    $message = new FormattableMarkup('Testing redirect from %from to %to. Ending url: %url', [
       '%from' => $path,
       '%to' => $expected_ending_url,
       '%url' => $ending_url,

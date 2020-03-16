@@ -354,12 +354,19 @@ class WebformMessageManager implements WebformMessageManagerInterface {
    *   The name of webform settings message to be displayed.
    *
    * @return string|bool
-   *   A message or FALSE if no message is found.
+   *   A message or FALSE when no message is found or the message
+   *   is set to [none].
    */
   protected function getSetting($key) {
     $webform_settings = ($this->webform) ? $this->webform->getSettings() : [];
     if (!empty($webform_settings[$key])) {
-      return $webform_settings[$key];
+      $value = $webform_settings[$key];
+      if ($value === '[none]' || $value === (string) $this->t('[none]')) {
+        return FALSE;
+      }
+      else {
+        return $value;
+      }
     }
 
     $default_settings = $this->configFactory->get('webform.settings')->get('settings');
