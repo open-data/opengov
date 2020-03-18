@@ -1,0 +1,12 @@
+name: 'Webform iCheck Test'
+type: module
+description: 'Support module for webform that provides iCheck element working examples.'
+package: Testing
+core: 8.x
+dependencies:
+  - 'webform:webform_icheck'
+
+# Information added by Drupal.org packaging script on 2020-01-21
+version: '8.x-5.8'
+project: 'webform'
+datestamp: 1579637592

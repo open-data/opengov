@@ -26,7 +26,7 @@ elements: |
       - 1
       - 2
       - 3
-  
+
 css: ''
 javascript: ''
 settings:
@@ -140,6 +140,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -217,11 +218,12 @@ handlers:
         <h3>ul:</h3>[webform_submission:values:checkboxes:value:ul]<hr />
         <h3>ol:</h3>[webform_submission:values:checkboxes:value:ol]<hr />
         <h3>raw:</h3>[webform_submission:values:checkboxes:raw]<hr />
-        
+
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false
@@ -255,29 +257,30 @@ handlers:
       body: |
         default:
         [webform_submission:values:checkboxes]
-        
+
         comma:
         [webform_submission:values:checkboxes:value:comma]
-        
+
         semicolon:
         [webform_submission:values:checkboxes:value:semicolon]
-        
+
         and:
         [webform_submission:values:checkboxes:value:and]
-        
+
         ul:
         [webform_submission:values:checkboxes:value:ul]
-        
+
         ol:
         [webform_submission:values:checkboxes:value:ol]
-        
+
         raw:
         [webform_submission:values:checkboxes:raw]
-        
+
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: false
       attachments: false
       twig: false

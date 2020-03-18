@@ -5,6 +5,8 @@
  * Provides the ability to export and import submissions.
  */
 
+use Drupal\Component\Utility\Environment;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
 
 /**
@@ -73,7 +75,7 @@ function webform_submission_export_import_local_tasks_alter(&$local_tasks) {
  * @see file_save_upload()
  * @see file_save_upload_single()
  */
-function _webform_submission_export_import_file_save_upload_single(\SplFileInfo $file_info, $form_field_name, array $validators = [], $destination = FALSE, $replace = FILE_EXISTS_RENAME) {
+function _webform_submission_export_import_file_save_upload_single(\SplFileInfo $file_info, $form_field_name, array $validators = [], $destination = FALSE, $replace = FileSystemInterface::EXISTS_RENAME) {
   /** @var \Drupal\Core\File\FileSystemInterface $file_system */
   $file_system = \Drupal::service('file_system');
   $current_user = \Drupal::currentUser();
@@ -84,7 +86,7 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   switch ($file_info->getError()) {
     case UPLOAD_ERR_INI_SIZE:
     case UPLOAD_ERR_FORM_SIZE:
-      \Drupal::messenger()->addError(t('The file %file could not be saved because it exceeds %maxsize, the maximum allowed size for uploads.', ['%file' => $file_info->getFilename(), '%maxsize' => format_size(file_upload_max_size())]));
+      \Drupal::messenger()->addError(t('The file %file could not be saved because it exceeds %maxsize, the maximum allowed size for uploads.', ['%file' => $file_info->getFilename(), '%maxsize' => format_size(Environment::getUploadMaxSize())]));
       return FALSE;
 
     case UPLOAD_ERR_PARTIAL:
@@ -183,8 +185,8 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   if (substr($destination, -1) != '/') {
     $destination .= '/';
   }
-  $file->destination = file_destination($destination . $file->getFilename(), $replace);
-  // If file_destination() returns FALSE then $replace === FILE_EXISTS_ERROR and
+  $file->destination = \Drupal::service('file_system')->getDestinationFilename($destination . $file->getFilename(), $replace);
+  // If \Drupal::service('file_system')->getDestinationFilename() returns FALSE then $replace === FileSystemInterface::EXISTS_ERROR and
   // there's an existing file so we need to bail.
   if ($file->destination === FALSE) {
     \Drupal::messenger()->addError(t('The file %source could not be uploaded because a file by that name already exists in the destination %directory.', ['%source' => $form_field_name, '%directory' => $destination]));
@@ -221,7 +223,7 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   // DO NOT USE MOVE UPLOADED FILE.
   /************************************************************************/
   // if (!drupal_move_uploaded_file($file_info->getRealPath(), $file->getFileUri())) {
-  if (!file_unmanaged_move($file_info->getRealPath(), $file->getFileUri(), $replace)) {
+  if (!\Drupal::service('file_system')->move($file_info->getRealPath(), $file->getFileUri(), $replace)) {
     \Drupal::messenger()->addError(t('File upload error. Could not move uploaded file.'));
     \Drupal::logger('file')->notice('Upload error. Could not move uploaded file %file to destination %destination.', ['%file' => $file->getFilename(), '%destination' => $file->getFileUri()]);
     return FALSE;
@@ -233,8 +235,10 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   // If we are replacing an existing file re-use its database record.
   // @todo Do not create a new entity in order to update it. See
   //   https://www.drupal.org/node/2241865.
-  if ($replace == FILE_EXISTS_REPLACE) {
-    $existing_files = entity_load_multiple_by_properties('file', ['uri' => $file->getFileUri()]);
+  if ($replace == FileSystemInterface::EXISTS_REPLACE) {
+    $existing_files = \Drupal::entityTypeManager()
+      ->getStorage('file')
+      ->loadByProperties(['uri' => $file->getFileUri()]);
     if (count($existing_files)) {
       $existing = reset($existing_files);
       $file->fid = $existing->id();

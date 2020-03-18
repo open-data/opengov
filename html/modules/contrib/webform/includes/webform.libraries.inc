@@ -185,7 +185,7 @@ function webform_css_alter(&$css, AttachedAssetsInterface $assets) {
   // admin UI, especially Views, relies on them.
   $use_off_canvas = WebformDialogHelper::useOffCanvas();
   // @todo Remove once Claro theme support offcanvas tray.
-  $is_claro_theme = (\Drupal::theme()->getActiveTheme()->getName() === 'claro');
+  $is_claro_theme = \Drupal::service('webform.theme_manager')->isActiveTheme('claro');
   $is_admin_route = \Drupal::service('router.admin_context')->isAdminRoute();
   $is_webform_route = preg_match('/(^webform|^entity\.webform|^entity\.node\.webform)/', \Drupal::routeMatch()->getRouteName());
   if ($is_claro_theme || ($use_off_canvas && $is_admin_route && $is_webform_route)) {
@@ -205,21 +205,6 @@ function webform_css_alter(&$css, AttachedAssetsInterface $assets) {
  * Implements hook_js_alter().
  */
 function webform_js_alter(&$javascript, AttachedAssetsInterface $assets) {
-  // Add Google API key required by webform/libraries.jquery.geocomplete
-  // which is dependency for webform/webform.element.location.geocomplete.
-  //
-  // @see \Drupal\webform\Element\WebformLocationGeocomplete::processWebformComposite
-  // @see webform.libraries.yml
-  // @see webform/webform.element.location.geocomplete
-  // @see webform/libraries.jquery.geocomplete
-  $settings = $assets->getSettings();
-  if (!empty($settings['webform']['location']['geocomplete']['api_key']) && isset($javascript['https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places'])) {
-    $api_key = $settings['webform']['location']['geocomplete']['api_key'];
-    $javascript['https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places']['data'] = "https://maps.googleapis.com/maps/api/js?key=$api_key&libraries=places";
-    unset($settings['webform']['location']['geocomplete']['api_key']);
-    $assets->setSettings($settings);
-  }
-
   _webform_asset_alter($javascript, 'javascript');
 }
 

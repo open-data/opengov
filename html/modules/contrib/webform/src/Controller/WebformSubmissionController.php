@@ -4,10 +4,10 @@ namespace Drupal\webform\Controller;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\AnnounceCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\webform\Ajax\WebformAnnounceCommand;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
@@ -92,7 +92,7 @@ class WebformSubmissionController extends ControllerBase {
     // Announce sticky status.
     $t_args = ['@label' => $webform_submission->label()];
     $text = $webform_submission->isSticky() ? $this->t('@label flagged/starred.', $t_args) : $this->t('@label unflagged/unstarred.', $t_args);
-    $response->addCommand(new WebformAnnounceCommand($text));
+    $response->addCommand(new AnnounceCommand($text));
 
     return $response;
   }
@@ -121,7 +121,7 @@ class WebformSubmissionController extends ControllerBase {
     // Announce lock status.
     $t_args = ['@label' => $webform_submission->label()];
     $text = $webform_submission->isLocked() ? $this->t('@label locked.', $t_args) : $this->t('@label unlocked.', $t_args);
-    $response->addCommand(new WebformAnnounceCommand($text));
+    $response->addCommand(new AnnounceCommand($text));
     return $response;
   }
 

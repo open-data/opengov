@@ -2,11 +2,13 @@
 
 namespace Drupal\redirect\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
@@ -70,6 +72,9 @@ class RedirectSourceWidget extends WidgetBase {
         catch (ResourceNotFoundException $e) {
           // Do nothing, expected behaviour.
         }
+        catch (AccessDeniedHttpException $e) {
+          // @todo Source lookup results in an access denied, deny access?
+        }
 
         // Warning about the path being already redirected.
         $parsed_url = UrlHelper::parse($source_path);
@@ -80,7 +85,7 @@ class RedirectSourceWidget extends WidgetBase {
           $redirects = $repository->findBySourcePath($path);
           if (!empty($redirects)) {
             $redirect = array_shift($redirects);
-            $element['status_box'][]['#markup'] = '<div class="messages messages--warning">' . $this->t('The base source path %source is already being redirected. Do you want to <a href="@edit-page">edit the existing redirect</a>?', ['%source' => $source_path, '@edit-page' => $redirect->url('edit-form')]) . '</div>';
+            $element['status_box'][]['#markup'] = '<div class="messages messages--warning">' . $this->t('The base source path %source is already being redirected. Do you want to <a href="@edit-page">edit the existing redirect</a>?', ['%source' => $source_path, '@edit-page' => $redirect->toUrl('edit-form')->toString()]) . '</div>';
           }
         }
       }

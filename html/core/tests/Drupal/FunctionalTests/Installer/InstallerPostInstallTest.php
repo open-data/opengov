@@ -15,6 +15,11 @@ class InstallerPostInstallTest extends InstallerTestBase {
   protected $profile = 'minimal';
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Confirms that visiting the installer does not break things post-install.
    */
   public function testVisitInstallerPostInstall() {

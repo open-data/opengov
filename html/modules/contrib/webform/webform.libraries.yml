@@ -394,17 +394,13 @@ webform.wizard.track:
 
 # Element.
 
-webform.element.buttons:
+webform.element.ajax:
   version: VERSION
   js:
-    # Issue #2906737: With the new jquery 3 checkboxradio and selectmenu error.
-    # @see https://www.drupal.org/node/2906737
-    /core/assets/vendor/jquery.ui/ui/form-reset-mixin-min.js: { minified: true }
-    /core/assets/vendor/jquery.ui/ui/escape-selector-min.js: { minified: true }
-    /core/assets/vendor/jquery.ui/ui/widgets/checkboxradio-min.js: { minified: true }
-    js/webform.element.buttons.js: {}
+    js/webform.element.ajax.js: {}
   dependencies:
-    - core/jquery.ui.checkboxradio
+    - core/drupal
+    - core/jquery.once
 
 webform.element.checkboxes:
   version: VERSION
@@ -654,18 +650,6 @@ webform.element.horizontal_rule:
     component:
       css/webform.element.horizontal_rule.css: {}
 
-webform.element.icheck:
-  version: VERSION
-  css:
-    component:
-      css/webform.element.icheck.css: {}
-  js:
-    js/webform.element.icheck.js: { weight: -10 } # iCheck library must be executed before #states.
-  dependencies:
-    - core/drupal
-    - core/jquery.once
-    - webform/libraries.jquery.icheck
-
 webform.element.image_file:
   version: VERSION
   css:
@@ -702,21 +686,11 @@ webform.element.inputhide:
 
 webform.element.likert:
   version: VERSION
+  js:
+    js/webform.element.likert.js: {}
   css:
     component:
       css/webform.element.likert.css: {}
-
-webform.element.location.geocomplete:
-  version: VERSION
-  css:
-    component:
-      css/webform.element.location.geocomplete.css: {}
-  js:
-    js/webform.element.location.geocomplete.js: {}
-  dependencies:
-    - core/drupal
-    - core/jquery.once
-    - webform/libraries.jquery.geocomplete
 
 webform.element.location.places:
   version: VERSION
@@ -934,18 +908,6 @@ webform.element.time:
     - core/drupal
     - webform/libraries.jquery.timepicker
 
-webform.element.toggle:
-  version: VERSION
-  css:
-    component:
-      css/webform.element.toggle.css: {}
-  js:
-    js/webform.element.toggle.js: {}
-  dependencies:
-    - core/drupal
-    - webform/libraries.jquery.toggles
-    - core/jquery.once
-
 webform.element.video_file:
   version: VERSION
   css:
@@ -991,13 +953,13 @@ imce.input:
 
 libraries.choices:
   remote: https://github.com/jshjohnson/Choices
-  version: '7.0.0'
+  version: '9.0.1'
   license:
     name: MIT
     url: https://github.com/jshjohnson/Choices/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/choices/: https://cdn.jsdelivr.net/gh/jshjohnson/Choices@v7.0.0/
+    /libraries/choices/: https://cdn.jsdelivr.net/gh/jshjohnson/Choices@v9.0.1/
   css:
     component:
       css/webform.choices.base.css: {  }
@@ -1093,94 +1055,25 @@ libraries.codemirror.twig:
 
 libraries.algolia.places:
   remote: https://github.com/algolia/places
-  version: '1.16.4'
+  version: '1.17.0'
   license:
     name: MIT
     url: https://github.com/algolia/places/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/algolia.places/dist/cdn/: https://cdn.jsdelivr.net/npm/places.js@1.16.4/dist/cdn/
+    /libraries/algolia.places/dist/cdn/: https://cdn.jsdelivr.net/npm/places.js@1.17.0/dist/cdn/
   js:
     /libraries/algolia.places/dist/cdn/places.js: {}
 
-libraries.jquery.geocomplete:
-  remote: http://ubilabs.github.io/geocomplete/
-  version: '1.7.0'
-  license:
-    name: MIT
-    url: https://github.com/ubilabs/geocomplete/blob/master/MIT-LICENSE.txt
-    gpl-compatible: true
-  cdn:
-    /libraries/geocomplete/: https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/
-  js:
-    https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places: {}
-    /libraries/geocomplete/jquery.geocomplete.min.js: { minified: true }
-  dependencies:
-    - core/jquery
-
-libraries.jquery.icheck:
-  remote: http://icheck.fronteed.com/
-  version: &webform_icheck_version '1.0.2'
-  license: &webform_icheck_license
-    name: MIT
-    url: https://en.wikipedia.org/wiki/MIT_License
-    gpl-compatible: true
-  cdn: &webform_icheck_cdn
-    /libraries/jquery.icheck/: https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/
-  js:
-    /libraries/jquery.icheck/icheck.js: {}
-  dependencies:
-    - core/jquery
-
-libraries.jquery.icheck.flat:
-  version: *webform_icheck_version
-  license: *webform_icheck_license
-  cdn: *webform_icheck_cdn
-  css:
-    component:
-      /libraries/jquery.icheck/skins/flat/_all.css: {}
-  dependencies:
-    - webform/libraries.jquery.icheck
-
-libraries.jquery.icheck.line:
-  version: *webform_icheck_version
-  license: *webform_icheck_license
-  cdn: *webform_icheck_cdn
-  css:
-    component:
-      /libraries/jquery.icheck/skins/line/_all.css: {}
-  dependencies:
-    - webform/libraries.jquery.icheck
-
-libraries.jquery.icheck.minimal:
-  version: *webform_icheck_version
-  license: *webform_icheck_license
-  cdn: *webform_icheck_cdn
-  css:
-    component:
-      /libraries/jquery.icheck/skins/minimal/_all.css: {}
-  dependencies:
-    - webform/libraries.jquery.icheck
-
-libraries.jquery.icheck.square:
-  version: *webform_icheck_version
-  license: *webform_icheck_license
-  cdn: *webform_icheck_cdn
-  css:
-    component:
-      /libraries/jquery.icheck/skins/square/_all.css: {}
-  dependencies:
-    - webform/libraries.jquery.icheck
-
 libraries.jquery.inputmask:
   remote: https://github.com/RobinHerbots/jquery.inputmask
-  version: '4.0.8'
+  version: '4.0.9'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.inputmask/: https://cdn.jsdelivr.net/gh/RobinHerbots/Inputmask@4.0.8/
+    /libraries/jquery.inputmask/: https://cdn.jsdelivr.net/gh/RobinHerbots/Inputmask@4.0.9/
   js:
     /libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js: { minified: true }
   dependencies:
@@ -1188,13 +1081,13 @@ libraries.jquery.inputmask:
 
 libraries.jquery.intl-tel-input:
   remote: https://github.com/jackocnr/intl-tel-input
-  version: 'v15.1.0'
+  version: 'v16.0.0'
   license:
     name: MIT
     url: https://github.com/jackocnr/intl-tel-input/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/jquery.intl-tel-input/: https://cdn.jsdelivr.net/gh/jackocnr/intl-tel-input@v15.1.0/
+    /libraries/jquery.intl-tel-input/: https://cdn.jsdelivr.net/gh/jackocnr/intl-tel-input@v16.0.0/
   css:
     component:
       /libraries/jquery.intl-tel-input/build/css/intlTelInput.min.css: { minified: true }
@@ -1224,13 +1117,13 @@ libraries.jquery.rateit:
 
 libraries.jquery.select2:
   remote: https://select2.github.io/
-  version: '4.0.8'
+  version: '4.0.12'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.select2/dist/: https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/
+    /libraries/jquery.select2/dist/: https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/
   css:
     component:
       /libraries/jquery.select2/dist/css/select2.min.css: { minified: true }
@@ -1284,23 +1177,6 @@ libraries.jquery.timepicker:
       /libraries/jquery.timepicker/jquery.timepicker.min.css: { minified: true }
   js:
     /libraries/jquery.timepicker/jquery.timepicker.min.js: { minified: true }
-  dependencies:
-    - core/jquery
-
-libraries.jquery.toggles:
-  remote: https://github.com/simontabor/jquery-toggles/
-  version: '4.0.0'
-  license:
-    name: MIT
-    url: http://opensource.org/licenses/mit-license.php
-    gpl-compatible: true
-  cdn:
-    /libraries/jquery.toggles/: https://cdn.jsdelivr.net/gh/simontabor/jquery-toggles@v4.0.0/
-  css:
-    component:
-      /libraries/jquery.toggles/css/toggles-full.css: {}
-  js:
-    /libraries/jquery.toggles/toggles.min.js: { minified: true }
   dependencies:
     - core/jquery
 

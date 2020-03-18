@@ -6,10 +6,11 @@ use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
 use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\search_api\ConsoleException;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
-use Drupal\search_api_solr\Utility\CommandHelper;
+use Drupal\search_api_solr\Utility\SolrCommandHelper;
 use Drush\Commands\DrushCommands;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -24,7 +25,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   /**
    * The command helper.
    *
-   * @var \Drupal\search_api_solr\Utility\CommandHelper
+   * @var \Drupal\search_api_solr\Utility\SolrCommandHelper
    */
   protected $commandHelper;
 
@@ -36,13 +37,14 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+   *   The event dispatcher.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function __construct(EntityTypeManagerInterface $entityTypeManager, ModuleHandlerInterface $moduleHandler, EventDispatcherInterface $eventDispatcher) {
     parent::__construct();
-    $this->commandHelper = new CommandHelper($entityTypeManager, $moduleHandler, $eventDispatcher, 'dt');
+    $this->commandHelper = new SolrCommandHelper($entityTypeManager, $moduleHandler, $eventDispatcher, 'dt');
   }
 
   /**
@@ -95,22 +97,25 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @param string $solr_version
    *   The targeted Solr version.
    *
+   * @throws \Drupal\search_api\ConsoleException
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \ZipStream\Exception\FileNotFoundException
+   * @throws \ZipStream\Exception\FileNotReadableException
+   * @throws \ZipStream\Exception\OverflowException
+   *
    * @command search-api-solr:get-server-config
    *
    * @usage drush search-api-solr:get-server-config server_id file_name
    *   Get the config files for a solr server and save it as zip file.
    *
    * @aliases solr-gsc,sasm-gsc,search-api-solr-get-server-config,search-api-solr-multilingual-get-server-config
-   *
-   * @throws \Drupal\search_api\ConsoleException
-   * @throws \Drupal\search_api\SearchApiException
-   * @throws \ZipStream\Exception\FileNotFoundException
-   * @throws \ZipStream\Exception\FileNotReadableException
    */
-  public function getServerConfig($server_id, $file_name, $solr_version = NULL) {
+  public function getServerConfig($server_id, $file_name = NULL, $solr_version = NULL, array $options = []) {
+    if (!$options['pipe'] && ($file_name === NULL)) {
+      throw new ConsoleException('Required argument missing ("file_name"), and no --pipe option specified.');
+    }
     $this->commandHelper->getServerConfigCommand($server_id, $file_name, $solr_version);
   }
-
 
   /**
    * Indexes items for one or all enabled search indexes.
@@ -132,6 +137,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @usage drush search-api-solr:finalize-index node_index --force
    *   Index a maximum number of 100 items for the index with the ID node_index.
    *
+   * @option force Start the finalization even if the internal tracker indicates that no finalization is required.
+   *
    * @aliases solr-finalize
    *
    * @throws \Exception
@@ -145,12 +152,13 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   /**
    * Executes a streaming expression from STDIN.
    *
-   * @command search-api-solr:execute-raw-streaming-expression
-   *
    * @param string $indexId
    *   A search index ID.
    * @param mixed $expression
    *   The streaming expression. Use '-' to read from STDIN.
+   *
+   * @command search-api-solr:execute-raw-streaming-expression
+   *
    * @usage drush search-api-solr:execute-streaming-expression node_index - < streaming_expression.txt
    *  Execute the raw streaming expression in streaming_expression.txt
    *
@@ -162,8 +170,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function executeRawStreamingExpression($indexId, $expression)
-  {
+  public function executeRawStreamingExpression($indexId, $expression) {
     // Special flag indicating that the value has been passed via STDIN.
     if ($expression === '-') {
       $expression = $this->stdin()->contents();
@@ -206,4 +213,5 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
 
     throw new SearchApiSolrException('Server could not be loaded.');
   }
+
 }

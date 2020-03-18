@@ -5,6 +5,7 @@ namespace Drupal\webform\Plugin;
 use Drupal\Component\Plugin\FallbackPluginManagerInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -166,7 +167,8 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
     $webform_submission = ($form_object instanceof WebformSubmissionForm) ? $form_object->getEntity() : NULL;
     $webform = ($webform_submission) ? $webform_submission->getWebform() : NULL;
-    $element_plugin = $this->getElementInstance($element);
+
+    $element_plugin = $this->getElementInstance($element, $webform_submission ?: $webform);
     $element_plugin->prepare($element, $webform_submission);
     $element_plugin->finalize($element, $webform_submission);
     $element_plugin->setDefaultValue($element);
@@ -231,9 +233,20 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
   /**
    * {@inheritdoc}
    */
-  public function getElementInstance(array $element) {
+  public function getElementInstance(array $element, EntityInterface $entity = NULL) {
     $plugin_id = $this->getElementPluginId($element);
-    return $this->createInstance($plugin_id, $element);
+
+    /** @var \Drupal\webform\Plugin\WebformElementInterface $element_plugin */
+    $element_plugin = $this->createInstance($plugin_id, $element);
+
+    if ($entity) {
+      $element_plugin->setEntities($entity);
+    }
+    else {
+      $element_plugin->resetEntities();
+    }
+
+    return $element_plugin;
   }
 
   /**

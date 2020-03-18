@@ -1,0 +1,12 @@
+name: 'Webform iCheck'
+type: module
+description: 'Provides support for highly customizable checkboxes and radio buttons.'
+package: 'Webform [DEPRECATED]'
+core: 8.x
+dependencies:
+  - 'webform:webform'
+
+# Information added by Drupal.org packaging script on 2020-01-21
+version: '8.x-5.8'
+project: 'webform'
+datestamp: 1579637592

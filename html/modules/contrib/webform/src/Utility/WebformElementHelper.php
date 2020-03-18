@@ -152,6 +152,30 @@ class WebformElementHelper {
   }
 
   /**
+   * Get a webform element's admin title.
+   *
+   * @param array $element
+   *   A webform element.
+   *
+   * @return string
+   *   A webform element's admin title.
+   */
+  public static function getAdminTitle(array $element) {
+    if (!empty($element['#admin_title'])) {
+      return $element['#admin_title'];
+    }
+    elseif (!empty($element['#title'])) {
+      return $element['#title'];
+    }
+    elseif (!empty($element['#webform_key'])) {
+      return $element['#webform_key'];
+    }
+    else {
+      return '';
+    }
+  }
+
+  /**
    * Determine if a webform element's title is displayed.
    *
    * @param array $element

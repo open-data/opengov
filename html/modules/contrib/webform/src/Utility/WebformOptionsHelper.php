@@ -3,6 +3,7 @@
 namespace Drupal\webform\Utility;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\OptGroup;
 
 /**
  * Helper class webform options based methods.
@@ -26,12 +27,12 @@ class WebformOptionsHelper {
    *   An associative array of options.
    */
   public static function appendValueToText(array $options) {
-    foreach ($options as $value => $text) {
-      if (is_array($text)) {
-        $options[$value] = self::appendValueToText($text);
+    foreach ($options as $option_value => $option_text) {
+      if (is_array($option_text)) {
+        $options[$option_value] = self::appendValueToText($option_text);
       }
       else {
-        $options[$value] = $text . ' (' . $value . ')';
+        $options[$option_value] = $option_text . ' (' . $option_value . ')';
       }
     }
     return $options;
@@ -169,6 +170,27 @@ class WebformOptionsHelper {
   }
 
   /**
+   * Strip tags from options.
+   *
+   * @param array $options
+   *   An associative array of options.
+   *
+   * @return array
+   *   Options with HTML tags removed
+   */
+  public static function stripTagsOptions(array $options) {
+    foreach ($options as $option_value => $option_text) {
+      if (is_array($option_text)) {
+        $options[$option_value] = self::stripTagsOptions($option_text);
+      }
+      else {
+        $options[$option_value] = strip_tags((string) $option_text);
+      }
+    }
+    return $options;
+  }
+
+  /**
    * Decode HTML entities in options.
    *
    * Issue #2826451: TermSelection returning HTML characters in select list.
@@ -189,6 +211,27 @@ class WebformOptionsHelper {
       }
     }
     return $options;
+  }
+
+  /**
+   * Validate options values by removing invalid option values.
+   *
+   * @param array $options
+   *   An associative array of options.
+   * @param array $values
+   *   An indexed array of options values.
+   *
+   * @return array
+   *   An indexed array of options values with invalid options removed.
+   */
+  public static function validateOptionValues(array $options, array $values) {
+    $flattened_options = OptGroup::flattenOptions($options) ?: [];
+    foreach ($values as $index => $item) {
+      if (!isset($flattened_options[$item])) {
+        unset($values[$index]);
+      }
+    }
+    return array_values($values);
   }
 
   /**
@@ -234,10 +277,10 @@ class WebformOptionsHelper {
    */
   public static function encodeConfig(array $options) {
     $config = [];
-    foreach ($options as $value => $text) {
+    foreach ($options as $option_value => $option_text) {
       $config[] = [
-        'value' => $value,
-        'text' => $text,
+        'value' => $option_value,
+        'text' => $option_text,
       ];
     }
     return $config;

@@ -4,6 +4,22 @@ All notable changes to the solarium library will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.1.6]
+### Added
+- Range facet pivot support
+- Support for useConfiguredElevatedOrder
+- FilterQuery::setCache and FilterQuery::setCost()
+
+### Fixed
+- Setting limit for pivot facets
+
+### Changed
+- Internal handling of Solr local parameters
+
+### Deprecated
+- Helper::cacheControl(). Use FilterQuery::setCache() and FilterQuery::setCost() instead.
+
+
 ## [5.1.5]
 ### Security
 - Remove explicit requirements for symfony/cache because of CVE-2019-18889

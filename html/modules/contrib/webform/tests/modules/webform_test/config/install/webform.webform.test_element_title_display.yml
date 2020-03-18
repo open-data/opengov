@@ -645,82 +645,6 @@ elements: |
     '#type': details
     '#title': 'Options elements'
     '#open': true
-    webform_buttons_title:
-      '#markup': 'Buttons (webform_buttons)'
-      '#prefix': '<h3>'
-      '#suffix': '</h3>'
-    webform_buttons_before:
-      '#type': webform_buttons
-      '#title': 'Buttons (before)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': before
-    webform_buttons_after:
-      '#type': webform_buttons
-      '#title': 'Buttons (after)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': after
-    webform_buttons_inline:
-      '#type': webform_buttons
-      '#title': 'Buttons (inline)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': inline
-    webform_buttons_none:
-      '#type': webform_buttons
-      '#title': 'Buttons (none)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': none
-    webform_buttons_hr:
-      '#type': webform_horizontal_rule
-    webform_buttons_other_title:
-      '#markup': 'Buttons other (webform_buttons_other)'
-      '#prefix': '<h3>'
-      '#suffix': '</h3>'
-    webform_buttons_other_before:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other (before)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': before
-    webform_buttons_other_after:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other (after)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': after
-    webform_buttons_other_inline:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other (inline)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': inline
-    webform_buttons_other_none:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other (none)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': none
-    webform_buttons_other_hr:
-      '#type': webform_horizontal_rule
     checkboxes_title:
       '#markup': 'Checkboxes (checkboxes)'
       '#prefix': '<h3>'
@@ -743,7 +667,7 @@ elements: |
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
+      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios and checkboxes</a>'
       '#title_display': after
     checkboxes_inline:
       '#type': checkboxes
@@ -753,7 +677,7 @@ elements: |
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
+      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios and checkboxes.</a>'
       '#title_display': inline
     checkboxes_none:
       '#type': checkboxes
@@ -763,7 +687,7 @@ elements: |
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
+      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios and checkboxes.</a>'
       '#title_display': none
     checkboxes_hr:
       '#type': webform_horizontal_rule
@@ -1069,44 +993,6 @@ elements: |
         three: Three
       '#title_display': none
     webform_select_other_hr:
-      '#type': webform_horizontal_rule
-    webform_toggles_title:
-      '#markup': 'Toggles (webform_toggles)'
-      '#prefix': '<h3>'
-      '#suffix': '</h3>'
-    webform_toggles_before:
-      '#type': webform_toggles
-      '#title': 'Toggles (before)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': before
-    webform_toggles_after:
-      '#type': webform_toggles
-      '#title': 'Toggles (after)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': after
-    webform_toggles_inline:
-      '#type': webform_toggles
-      '#title': 'Toggles (inline)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': inline
-    webform_toggles_none:
-      '#type': webform_toggles
-      '#title': 'Toggles (none)'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#title_display': none
-    webform_toggles_hr:
       '#type': webform_horizontal_rule
   computed_elements:
     '#type': details
@@ -1627,7 +1513,7 @@ elements: |
       '#title_display': none
     machine_name_hr:
       '#type': webform_horizontal_rule
-  
+
 css: ''
 javascript: ''
 settings:
@@ -1741,6 +1627,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

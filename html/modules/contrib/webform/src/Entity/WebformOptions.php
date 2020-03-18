@@ -40,7 +40,7 @@ use Drupal\webform\WebformOptionsInterface;
  *     "label" = "label",
  *   },
  *   links = {
- *     "add-form" = "/admin/structure/webform/config/options/add",
+ *     "add-form" = "/admin/structure/webform/config/options/manage/add",
  *     "edit-form" = "/admin/structure/webform/config/options/manage/{webform_options}/edit",
  *     "duplicate-form" = "/admin/structure/webform/config/options/manage/{webform_options}/duplicate",
  *     "delete-form" = "/admin/structure/webform/config/options/manage/{webform_options}/delete",

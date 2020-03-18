@@ -20,6 +20,9 @@ plugin.plugin_configuration.search_api_backend.search_api_solr:
     domain:
       type: string
       label: 'The targeted content domain'
+    environment:
+      type: string
+      label: 'The targeted environment'
     connector:
       type: string
       label: 'The connector plugin ID'
@@ -31,6 +34,21 @@ plugin.plugin_configuration.search_api_backend.search_api_solr:
     disabled_field_types:
       type: sequence
       label: 'Disabled Solr Field Types'
+      sequence:
+        type: string
+    disabled_caches:
+      type: sequence
+      label: 'Disabled Solr Caches'
+      sequence:
+        type: string
+    disabled_request_handlers:
+      type: sequence
+      label: 'Disabled Solr Request Handlers'
+      sequence:
+        type: string
+    disabled_request_dispatchers:
+      type: sequence
+      label: 'Disabled Solr Request Dispatchers'
       sequence:
         type: string
     rows:

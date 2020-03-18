@@ -555,20 +555,6 @@ elements: |
     flex_webform_location_places_right:
       '#type': webform_location_places
       '#title': 'Location (Algolia Places) 02'
-  flexbox_webform_location_geocomplete:
-    '#type': webform_flexbox
-    flex_webform_location_geocomplete_left:
-      '#type': webform_location_geocomplete
-      '#title': 'Location (Geocomplete) 01'
-      '#map': true
-      '#geolocation': true
-      '#format': map
-    flex_webform_location_geocomplete_right:
-      '#type': webform_location_geocomplete
-      '#title': 'Location (Geocomplete) 02'
-      '#map': true
-      '#geolocation': true
-      '#format': map
   flexbox_machine_name:
     '#type': webform_flexbox
     flex_machine_name_left:
@@ -909,30 +895,6 @@ elements: |
       '#type': webform_time
       '#title': 'Time 02'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/1838234">Issue #1838234: Add jQuery Timepicker for the Time element of the datetime field</a>'
-  flexbox_webform_toggle:
-    '#type': webform_flexbox
-    flex_webform_toggle_left:
-      '#type': webform_toggle
-      '#title': 'Toggle 01'
-    flex_webform_toggle_right:
-      '#type': webform_toggle
-      '#title': 'Toggle 02'
-  flexbox_webform_toggles:
-    '#type': webform_flexbox
-    flex_webform_toggles_left:
-      '#type': webform_toggles
-      '#title': 'Toggles 01'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-    flex_webform_toggles_right:
-      '#type': webform_toggles
-      '#title': 'Toggles 02'
-      '#options':
-        one: One
-        two: Two
-        three: Three
   flexbox_url:
     '#type': webform_flexbox
     flex_url_left:
@@ -974,7 +936,7 @@ elements: |
     toggle_rating:
       '#type': rating
       '#title': rating
-  
+
 css: ''
 javascript: ''
 settings:
@@ -1088,6 +1050,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

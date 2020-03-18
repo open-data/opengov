@@ -10,6 +10,10 @@ services:
     class: Drupal\webform\Plugin\WebformHandlerManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@config.factory']
 
+  plugin.manager.webform.variant:
+    class: Drupal\webform\Plugin\WebformVariantManager
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@config.factory']
+
   plugin.manager.webform.exporter:
     class: Drupal\webform\Plugin\WebformExporterManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@config.factory']

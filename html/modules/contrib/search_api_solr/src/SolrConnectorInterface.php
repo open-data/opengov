@@ -2,12 +2,11 @@
 
 namespace Drupal\search_api_solr;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\ConfigurableInterface;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
-use Solarium\Exception\OutOfBoundsException;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
@@ -15,7 +14,7 @@ use Solarium\QueryType\Select\Query\Query;
 /**
  * The Solr connector interface.
  */
-interface SolrConnectorInterface extends ConfigurablePluginInterface {
+interface SolrConnectorInterface extends ConfigurableInterface {
 
   /**
    * Returns TRUE for Cloud.
@@ -61,7 +60,7 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
    * @return int
    *   The Solr major version.
    */
-  public function getSolrMajorVersion($version = '');
+  public function getSolrMajorVersion($version = ''): int;
 
   /**
    * Gets the current Solr branch name.
@@ -433,7 +432,7 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
    * @return \Solarium\Core\Client\Endpoint
    *   The Solarium endpoint object.
    *
-   * @throws OutOfBoundsException
+   * @throws \Solarium\Exception\OutOfBoundsException
    */
   public function getEndpoint($key = 'search_api_solr');
 

@@ -7,10 +7,14 @@ use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api_solr\Entity\SolrCache;
+use Drupal\search_api_solr\Entity\SolrRequestDispatcher;
+use Drupal\search_api_solr\Entity\SolrRequestHandler;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Solarium\Core\Client\Request;
+use Drupal\Component\Utility\Crypt;
 
 /**
  * Provides various helper functions for Solr backends.
@@ -131,7 +135,7 @@ class Utility {
     // Copied from apachesolr_site_hash().
     if (!($hash = \Drupal::state()->get('search_api_solr.site_hash', FALSE))) {
       global $base_url;
-      $hash = substr(base_convert(sha1(uniqid($base_url, TRUE)), 16, 36), 0, 6);
+      $hash = substr(base_convert(Crypt::hashBase64(uniqid($base_url, TRUE)), 16, 36), 0, 6);
       \Drupal::state()->set('search_api_solr.site_hash', $hash);
     }
     return $hash;
@@ -582,8 +586,10 @@ class Utility {
    * the available memory is 2147483629. So we use this a cut-off.
    *
    * @param int $rows
+   *   The number of rows.
    *
    * @return int
+   *   Normalized number of rows.
    */
   public static function normalizeMaxRows(int $rows) {
     $i = 2;
@@ -601,6 +607,9 @@ class Utility {
    * decisions because different interpretations are possible and we have to
    * ensure that stop words in boolean combinations don't lead to zero results.
    * Therefore this function will produce these queries:
+   *
+   * Careful interpreting this, phrase  and sloppy phrase queries will represent
+   * different phrases as A & B. To be very clear, A could equal multiple words.
    *
    * @code
    * #conjunction | #negation | fields | parse mode     | return value
@@ -621,6 +630,14 @@ class Utility {
    * OR           | FALSE     | [x,y]  | phrase         | +(x:(A B)^1 y:(A B)^1)
    * OR           | TRUE      | [x,y]  | terms          | -(((x:A^1 y:A^1) (x:B^1 y:B^1)) x:(A B)^1 y:(A B)^1)
    * OR           | TRUE      | [x,y]  | phrase         | -(x:(A B)^1 y:(A B)^1)
+   * AND          | FALSE     | [x,y]  | sloppy_terms   | +(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * AND          | TRUE      | [x,y]  | sloppy_terms   | -(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * OR           | FALSE     | [x,y]  | sloppy_terms   | +(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
+   * OR           | TRUE      | [x,y]  | sloppy_terms   | -(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
+   * AND          | FALSE     | [x,y]  | sloppy_phrase  | +(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * AND          | TRUE      | [x,y]  | sloppy_phrase  | -(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * OR           | FALSE     | [x,y]  | sloppy_phrase  | +(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
+   * OR           | TRUE      | [x,y]  | sloppy_phrase  | -(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
    * AND          | FALSE     | [x,y]  | edismax        | +({!edismax qf=x^1,y^1}+A +B)
    * AND          | TRUE      | [x,y]  | edismax        | -({!edismax qf=x^1,y^1}+A +B)
    * OR           | FALSE     | [x,y]  | edismax        | +({!edismax qf=x^1,y^1}A B)
@@ -668,6 +685,7 @@ class Utility {
     $pre = '+';
     $neg = '';
     $query_parts = [];
+    $sloppiness = '';
 
     if (is_array($keys)) {
       $queryHelper = \Drupal::service('solarium.query_helper');
@@ -701,16 +719,20 @@ class Utility {
         }
         else {
           switch ($parse_mode_id) {
-            // Using the 'phrase' parse mode, Search API provides one big phrase
-            // as keys. Using the 'terms' parse mode, Search API provides chunks
-            // of single terms as keys. But these chunks might contain not just
-            // real terms but again a phrase if you enter something like this in
-            // the search box: term1 "term2 as phrase" term3. This will be
-            // converted in this keys array: ['term1', 'term2 as phrase',
-            // 'term3']. To have Solr behave like the database backend, these
-            // three "terms" should be handled like three phrases.
+            // Using the 'phrase' or 'sloppy_phrase' parse mode, Search API
+            // provides one big phrase as keys. Using the 'terms' parse mode,
+            // Search API provides chunks of single terms as keys. But these
+            // chunks might contain not just real terms but again a phrase if
+            // you enter something like this in the search box:
+            // term1 "term2 as phrase" term3.
+            // This will be converted in this keys array:
+            // ['term1', 'term2 as phrase', 'term3'].
+            // To have Solr behave like the database backend, these three
+            // "terms" should be handled like three phrases.
             case 'terms':
+            case 'sloppy_terms':
             case 'phrase':
+            case 'sloppy_phrase':
             case 'edismax':
             case 'keys':
               $k[] = $queryHelper->escapePhrase(trim($key));
@@ -744,40 +766,58 @@ class Utility {
           $query_parts[] = $pre . implode(' ' . $pre, $k);
           break;
 
-        case "terms":
+        case 'sloppy_terms':
+        case 'sloppy_phrase':
+          // @todo Factor should be configurable.
+          $sloppiness = '~10000000';
+          // No break! Execute 'default', too. 'terms' will be skipped when $k
+          // just contains one element.
+        case 'terms':
           if (count($k) > 1 && count($fields) > 0) {
             $key_parts = [];
             foreach ($k as $l) {
               $field_parts = [];
               foreach ($fields as $f) {
                 $field = $f;
-                $boost_or_fuzzy = '';
+                $boost = '';
                 // Split on operators:
-                // - boost (^),
-                // - fixed score (^=),
-                // - fuzzy/term proximity (~).
-                if ($split = preg_split('/([\^~])/', $f, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
+                // - boost (^)
+                // - fixed score (^=)
+                if ($split = preg_split('/([\^])/', $f, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
                   $field = array_shift($split);
-                  $boost_or_fuzzy = implode('', $split);
+                  $boost = implode('', $split);
                 }
-                $field_parts[] = $field . ':' . $l . $boost_or_fuzzy;
+                $field_parts[] = $field . ':' . $l . $boost;
               }
               $key_parts[] = $pre . '(' . implode(' ', $field_parts) . ')';
             }
             $query_parts[] = '(' . implode(' ', $key_parts) . ')';
           }
-        // No break! Execute 'default', too.
+          // No break! Execute 'default', too.
         default:
+          if ($sloppiness) {
+            foreach ($k as &$term_or_phrase) {
+              // Just add sloppiness when if we really have a phrase, indicated
+              // by double quotes and terms separated by blanks.
+              if (strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') === 0) {
+                $term_or_phrase .= $sloppiness;
+              }
+            }
+            unset($term_or_phrase);
+          }
+
           if (count($fields) > 0) {
             foreach ($fields as $f) {
               $field = $f;
-              $boost_or_fuzzy = '';
-              // Split on operators for boost (^), fixed score (^=), fuzzy/term proximity (~).
-              if ($split = preg_split('/([\^~])/', $f, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
+              $boost = '';
+              // Split on operators:
+              // - boost (^)
+              // - fixed score (^=)
+              if ($split = preg_split('/([\^])/', $f, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
                 $field = array_shift($split);
-                $boost_or_fuzzy = implode('', $split);
+                $boost = implode('', $split);
               }
-              $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k) . ')' . $boost_or_fuzzy;
+              $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k) . ')' . $boost;
             }
           }
           else {
@@ -835,7 +875,9 @@ class Utility {
         else {
           switch ($parse_mode_id) {
             case 'terms':
+            case "sloppy_terms":
             case 'phrase':
+            case "sloppy_phrase":
             case 'edismax':
               $k[] = $queryHelper->escapePhrase(trim($key));
               break;
@@ -931,8 +973,10 @@ class Utility {
    * 4. storage time zone (UTC)
    *
    * @param \Drupal\search_api\IndexInterface $index
+   *   The Solr index.
    *
    * @return string
+   *   The timezone.
    */
   public static function getTimeZone(IndexInterface $index): string {
     $settings = self::getIndexSolrSettings($index);
@@ -978,9 +1022,61 @@ class Utility {
    * @param string $site_hash
    *
    * @return string
+   *   The formatted checkpoint ID.
    */
   public static function formatCheckpointId(string $checkpoint, string $index_id, string $site_hash): string {
     return $checkpoint . '-' . $index_id . '-' . $site_hash;
+  }
+
+  /**
+   * Get all available environments.
+   *
+   * @return string[]
+   *   An array of environments as strings.
+   */
+  public static function getAvailableEnvironments() {
+    $options = array_unique(array_merge(
+      SolrCache::getAvailableEnvironments(),
+      SolrRequestHandler::getAvailableEnvironments(),
+      SolrRequestDispatcher::getAvailableEnvironments()
+    ));
+    sort($options);
+    return $options;
+  }
+
+  /**
+   * Normalize a XML file.
+   *
+   * Removes comments from an xml file and removes the 'name' attribute of the
+   * root node.
+   *
+   * @param string $xml
+   *   The XML file to normalize.
+   *
+   * @return array
+   *   An array with the version number and the normalized XML.
+   */
+  public static function normalizeXml($xml): array {
+    $document = new \DOMDocument();
+    if (@$document->loadXML($xml) === FALSE) {
+      $document->loadXML("<root>$xml</root>");
+    }
+    $version_number = '';
+    $root = $document->documentElement;
+    if (isset($root) && $root->hasAttribute('name')) {
+      $version_number = $root->getAttribute('name');
+      $root->removeAttribute('name');
+    }
+    $xpath = new \DOMXPath($document);
+    // Remove all comments.
+    foreach ($xpath->query("//comment()") as $comment) {
+      $comment->parentNode->removeChild($comment);
+    }
+    // Trim all whitespaces.
+    foreach ($xpath->query('//text()') as $whitespace) {
+      $whitespace->data = trim($whitespace->nodeValue);
+    }
+    return [$version_number, $document->saveXML()];
   }
 
 }

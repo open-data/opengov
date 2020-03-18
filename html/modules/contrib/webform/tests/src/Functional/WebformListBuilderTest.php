@@ -19,9 +19,37 @@ class WebformListBuilderTest extends BrowserTestBase {
   public static $modules = ['node', 'webform', 'webform_test_submissions'];
 
   /**
-   * Tests the webform overview page.
+   * Tests the webform overview filter.
    */
-  public function testWebformOverview() {
+  public function testFilter() {
+    $this->drupalLogin($this->rootUser);
+
+    // Check filter default category and state.
+    $this->drupalGet('/admin/structure/webform');
+    $this->assertOptionSelected('edit-category', '');
+    $this->assertOptionSelected('edit-state', '');
+
+    // Set filter category and state.
+    \Drupal::configFactory()->getEditable('webform.settings')
+      ->set('form.filter_category', 'Test: Submissions')
+      ->set('form.filter_state', 'open')
+      ->save();
+
+    // Check filter customized category and state.
+    $this->drupalGet('/admin/structure/webform');
+    $this->assertOptionSelected('edit-category', 'Test: Submissions');
+    $this->assertOptionSelected('edit-state', 'open');
+
+    // Check customized filter can still be cleared.
+    $this->drupalGet('/admin/structure/webform', ['query' => ['category' => '', 'state' => '']]);
+    $this->assertOptionSelected('edit-category', '');
+    $this->assertOptionSelected('edit-state', '');
+  }
+
+  /**
+   * Tests the webform overview access.
+   */
+  public function testAccess() {
     $assert_session = $this->assertSession();
 
     // Test with a superuser.

@@ -2,46 +2,15 @@
 
 namespace Drupal\search_api_solr\Controller;
 
-use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
-use Drupal\search_api_solr\SolrBackendInterface;
-use Drupal\search_api_solr\Utility\Utility;
-use ZipStream\Option\Archive;
-use ZipStream\ZipStream;
+use Drupal\search_api_solr\SolrFieldTypeInterface;
 
 /**
  * Provides a listing of SolrFieldType.
  */
-class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
-
-  /**
-   * The Search API server backend.
-   *
-   * @var \Drupal\search_api_solr\SolrBackendInterface
-   */
-  protected $backend;
-
-  /**
-   * The Search API server ID.
-   *
-   * @var string
-   */
-  protected $serverId = '';
-
-  /**
-   * The Solr minimum version string.
-   *
-   * @var string
-   */
-  protected $assumed_minimum_version = '';
-
-  /**
-   * @var bool
-   */
-  protected $reset = FALSE;
+class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
 
   /**
    * {@inheritdoc}
@@ -110,7 +79,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
     // returns as we provide language fallbacks. For example, 'de' should be
     // used for 'de-at' if there's no dedicated 'de-at' field type.
     array_walk($active_languages, function (&$value) {
-      list($value, ) = explode('-', $value);
+      list($value,) = explode('-', $value);
     });
     $active_languages[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
 
@@ -123,7 +92,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
       try {
         /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
         $backend = $this->getBackend();
-        $disabled_field_types = $backend->getDisabledFieldTypes();
+        $disabled_field_types = $this->getDisabledEntities();
         $domain = $backend->getDomain();
         $solr_version = $backend->getSolrConnector()->getSolrVersion();
         if (version_compare($solr_version, '0.0.0', '==')) {
@@ -153,7 +122,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
         /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
         $version = $solr_field_type->getMinimumSolrVersion();
         $domains = $solr_field_type->getDomains();
-        list($language, ) = explode('-', $solr_field_type->getFieldTypeLanguageCode());
+        list($language,) = explode('-', $solr_field_type->getFieldTypeLanguageCode());
         if (
           $solr_field_type->requiresManagedSchema() != $this->getBackend()->isManagedSchema() ||
           version_compare($version, $solr_version, '>') ||
@@ -197,7 +166,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
       }
 
       if ($warning) {
-        $this->assumed_minimum_version = array_reduce($selection, function ($version, $item) {
+        $this->assumedMinimumVersion = array_reduce($selection, function ($version, $item) {
           if (version_compare($item['version'], $version, '<')) {
             return $item['version'];
           }
@@ -207,7 +176,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
         \Drupal::messenger()->addWarning(
           $this->t(
             'Unable to reach the Solr server (yet). Therefore the lowest supported Solr version %version is assumed. Once the connection works and the real Solr version could be detected it might be necessary to deploy an adjusted config to the server to get the best search results. If the server does not start using the downloadable config, you should edit the server and manually set the Solr version override temporarily that fits your server best and download the config again. But it is recommended to remove this override once the server is running.',
-            ['%version' => $this->assumed_minimum_version])
+            ['%version' => $this->assumedMinimumVersion])
         );
       }
 
@@ -221,26 +190,28 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
   }
 
   /**
-   * Returns a list of all enabled field types for current server.
+   * Returns a list of all disabled request handlers for current server.
    *
    * @return array
+   *   A list of all disabled request handlers for current server.
+   *
    * @throws \Drupal\search_api\SearchApiException
    */
-  protected function getEnabledSolrFieldTypes(): array {
-    $solr_field_types = [];
-    foreach ($this->load() as $solr_field_type) {
-      if (!$solr_field_type->disabledOnServer) {
-        $solr_field_types[] = $solr_field_type;
-      }
-    }
-    return $solr_field_types;
+  protected function getDisabledEntities(): array {
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    $backend = $this->getBackend();
+    return $backend->getDisabledFieldTypes();
   }
 
   /**
+   * Merge two Solr field type entities.
+   *
    * @param \Drupal\search_api_solr\SolrFieldTypeInterface $target
+   *   The target Solr field type entity.
    * @param \Drupal\search_api_solr\SolrFieldTypeInterface $source
+   *   The source Solr field type entity.
    */
-  protected function mergeFieldTypes($target, $source) {
+  protected function mergeFieldTypes(SolrFieldTypeInterface $target, SolrFieldTypeInterface $source) {
     if (empty($target->getCollatedFieldType()) && !empty($source->getCollatedFieldType())) {
       $target->setCollatedFieldType($source->getCollatedFieldType());
     }
@@ -259,37 +230,6 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
   }
 
   /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Core\Entity\EntityMalformedException
-   */
-  public function getDefaultOperations(EntityInterface $solr_field_type) {
-    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
-    $operations = parent::getDefaultOperations($solr_field_type);
-    unset($operations['delete']);
-
-    if (strpos($solr_field_type->id(), 'text_und') !== 0) {
-      if (!$solr_field_type->disabledOnServer && $solr_field_type->access('view') && $solr_field_type->hasLinkTemplate('disable-for-server')) {
-        $operations['disable_for_server'] = [
-          'title' => $this->t('Disable'),
-          'weight' => 10,
-          'url' => $solr_field_type->toUrl('disable-for-server'),
-        ];
-      }
-
-      if ($solr_field_type->disabledOnServer && $solr_field_type->access('view') && $solr_field_type->hasLinkTemplate('enable-for-server')) {
-        $operations['enable_for_server'] = [
-          'title' => $this->t('Enable'),
-          'weight' => 10,
-          'url' => $solr_field_type->toUrl('enable-for-server'),
-        ];
-      }
-    }
-
-    return $operations;
-  }
-
-  /**
    * Returns the formatted XML for schema_extra_types.xml.
    *
    * @throws \Drupal\search_api\SearchApiException
@@ -297,8 +237,8 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
   public function getSchemaExtraTypesXml() {
     $xml = '';
     /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
-    foreach ($this->getEnabledSolrFieldTypes() as $solr_field_type) {
-      $xml .= $solr_field_type->getFieldTypeAsXml();
+    foreach ($this->getEnabledEntities() as $solr_field_type) {
+      $xml .= $solr_field_type->getAsXml();
       $xml .= $solr_field_type->getSpellcheckFieldTypeAsXml();
       $xml .= $solr_field_type->getCollatedFieldTypeAsXml();
       $xml .= $solr_field_type->getUnstemmedFieldTypeAsXml();
@@ -313,12 +253,12 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
    */
   public function getSchemaExtraFieldsXml() {
     $xml = '';
-    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
-    foreach ($this->getEnabledSolrFieldTypes() as $solr_field_type) {
+    /* @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
+    foreach ($this->getEnabledEntities() as $solr_field_type) {
       foreach ($solr_field_type->getStaticFields() as $static_field) {
         $xml .= '<field ';
         foreach ($static_field as $attribute => $value) {
-          /** @noinspection NestedTernaryOperatorInspection */
+          /* @noinspection NestedTernaryOperatorInspection */
           $xml .= $attribute . '="' . (is_bool($value) ? ($value ? 'true' : 'false') : $value) . '" ';
         }
         $xml .= "/>\n";
@@ -326,7 +266,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
       foreach ($solr_field_type->getDynamicFields() as $dynamic_field) {
         $xml .= '<dynamicField ';
         foreach ($dynamic_field as $attribute => $value) {
-          /** @noinspection NestedTernaryOperatorInspection */
+          /* @noinspection NestedTernaryOperatorInspection */
           $xml .= $attribute . '="' . (is_bool($value) ? ($value ? 'true' : 'false') : $value) . '" ';
         }
         $xml .= "/>\n";
@@ -335,7 +275,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
       foreach ($solr_field_type->getCopyFields() as $copy_field) {
         $xml .= '<copyField ';
         foreach ($copy_field as $attribute => $value) {
-          /** @noinspection NestedTernaryOperatorInspection */
+          /* @noinspection NestedTernaryOperatorInspection */
           $xml .= $attribute . '="' . (is_bool($value) ? ($value ? 'true' : 'false') : $value) . '" ';
         }
         $xml .= "/>\n";
@@ -345,14 +285,14 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
   }
 
   /**
-   * Returns the formatted XML for schema_extra_fields.xml.
+   * Returns the formatted XML for solrconfig_extra.xml.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
   public function getSolrconfigExtraXml() {
     $search_components = [];
     /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
-    foreach ($this->getEnabledSolrFieldTypes() as $solr_field_type) {
+    foreach ($this->getEnabledEntities() as $solr_field_type) {
       $xml = $solr_field_type->getSolrConfigsAsXml();
       if (preg_match_all('@(<searchComponent name="[^"]+"[^>]*?>)(.*?)</searchComponent>@sm', $xml, $matches)) {
         foreach ($matches[1] as $key => $search_component) {
@@ -369,144 +309,8 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
       }
       $xml .= "</searchComponent>\n";
     }
+
     return $xml;
-  }
-
-  /**
-   * Returns the configuration files names and content.
-   *
-   * @return array
-   *   An associative array of files names and content.
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   */
-  public function getConfigFiles() {
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
-    $backend = $this->getBackend();
-    $connector = $backend->getSolrConnector();
-    $solr_branch = $real_solr_branch = $connector->getSolrBranch($this->assumed_minimum_version);
-
-    // Solr 8.x uses the same schema and solrconf as 7.x. So we can use the same
-    // templates and only adjust luceneMatchVersion to 8.
-    if ('8.x' === $solr_branch) {
-      $solr_branch = '7.x';
-    }
-
-    $search_api_solr_conf_path = drupal_get_path('module', 'search_api_solr') . '/solr-conf-templates/' . $solr_branch;
-    $solrcore_properties = parse_ini_file($search_api_solr_conf_path . '/solrcore.properties', FALSE, INI_SCANNER_RAW);
-
-    $files = [
-      'schema_extra_types.xml' => $this->getSchemaExtraTypesXml(),
-      'schema_extra_fields.xml' => $this->getSchemaExtraFieldsXml(),
-      'solrconfig_extra.xml' => $this->getSolrconfigExtraXml(),
-    ];
-
-    // Add language specific text files.
-    $solr_field_types = $this->getEnabledSolrFieldTypes();
-    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
-    foreach ($solr_field_types as $solr_field_type) {
-      $text_files = $solr_field_type->getTextFiles();
-      foreach ($text_files as $text_file_name => $text_file) {
-        $text_file_name = Utility::completeTextFileName($text_file_name, $solr_field_type);
-        $files[$text_file_name] = $text_file;
-        $solrcore_properties['solr.replication.confFiles'] .= ',' . $text_file_name;
-      }
-    }
-
-    $solrcore_properties['solr.luceneMatchVersion'] = $connector->getLuceneMatchVersion($this->assumed_minimum_version ?: '');
-    // @todo
-    // $solrcore_properties['solr.replication.masterUrl']
-    $solrcore_properties_string = '';
-    foreach ($solrcore_properties as $property => $value) {
-      $solrcore_properties_string .= $property . '=' . $value . "\n";
-    }
-    $files['solrcore.properties'] = $solrcore_properties_string;
-
-    // Now add all remaining static files from the conf dir that have not been
-    // generated dynamically above.
-    foreach (scandir($search_api_solr_conf_path) as $file) {
-      if (strpos($file, '.') !== 0) {
-        foreach (array_keys($files) as $existing_file) {
-          if ($file == $existing_file) {
-            continue 2;
-          }
-        }
-        $files[$file] = str_replace(
-          ['SEARCH_API_SOLR_MIN_SCHEMA_VERSION', 'SEARCH_API_SOLR_BRANCH'],
-          [SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION, $real_solr_branch],
-          file_get_contents($search_api_solr_conf_path . '/' . $file)
-        );
-      }
-    }
-
-    $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
-    $this->moduleHandler->alter('search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
-    return $files;
-  }
-
-  /**
-   * Returns a ZipStream of all configuration files.
-   *
-   * @param \ZipStream\Option\Archive $archive_options
-   *
-   * @return \ZipStream\ZipStream
-   *   The ZipStream that contains all configuration files.
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   * @throws \ZipStream\Exception\FileNotFoundException
-   * @throws \ZipStream\Exception\FileNotReadableException
-   */
-  public function getConfigZip(Archive $archive_options): ZipStream {
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
-    $backend = $this->getBackend();
-    $connector = $backend->getSolrConnector();
-    $solr_branch = $connector->getSolrBranch($this->assumed_minimum_version);
-
-    $zip = new ZipStream('solr_' . $solr_branch . '_config.zip', $archive_options);
-
-    $files = $this->getConfigFiles();
-
-    foreach ($files as $name => $content) {
-      $zip->addFile($name, $content);
-    }
-
-    return $zip;
-  }
-
-  /**
-   * Sets the Search API server and calls setBackend() afterwards.
-   *
-   * @param \Drupal\search_api\ServerInterface $server
-   *   The Search API server entity.
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   */
-  public function setServer(ServerInterface $server) {
-    /** @var SolrBackendInterface $backend */
-    $backend = $server->getBackend();
-    $this->setBackend($backend);
-    $this->serverId = $server->id();
-  }
-
-  /**
-   * Sets the Search API server backend.
-   *
-   * @param \Drupal\search_api_solr\SolrBackendInterface $backend
-   *   The Search API server backend.
-   */
-  public function setBackend(SolrBackendInterface $backend) {
-    $this->backend = $backend;
-    $this->reset = TRUE;
-  }
-
-  /**
-   * Returns the Search API server backend.
-   *
-   * @return \Drupal\search_api_solr\SolrBackendInterface
-   *   The Search API server backend.
-   */
-  protected function getBackend() {
-    return $this->backend;
   }
 
 }

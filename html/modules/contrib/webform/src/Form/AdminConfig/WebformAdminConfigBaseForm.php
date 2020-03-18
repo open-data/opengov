@@ -3,7 +3,6 @@
 namespace Drupal\webform\Form\AdminConfig;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Core\Config\Config;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElement\TableSelect;
@@ -132,7 +131,7 @@ abstract class WebformAdminConfigBaseForm extends ConfigFormBase {
     if ($plugin_manager instanceof WebformElementManagerInterface) {
       unset($plugins['webform_element']);
     }
-    elseif ($plugin_manager instanceof WebformHandlerManager) {
+    elseif ($plugin_manager instanceof WebformHandlerManager || $plugin_manager instanceof WebformVariantManager) {
       unset($plugins['broken']);
     }
     return $plugins;

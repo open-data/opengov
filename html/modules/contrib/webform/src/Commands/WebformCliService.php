@@ -4,6 +4,7 @@ namespace Drupal\webform\Commands;
 
 use Drupal\Component\Utility\Variable;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Controller\WebformResultsExportController;
@@ -361,7 +362,7 @@ class WebformCliService implements WebformCliServiceInterface {
     $file_path = ($submission_exporter->isArchive()) ? $submission_exporter->getArchiveFilePath() : $submission_exporter->getExportFilePath();
     if (isset($export_options['destination'])) {
       $this->drush_print($this->dt('Created @destination', ['@destination' => $export_options['destination']]));
-      file_unmanaged_copy($file_path, $export_options['destination'], FILE_EXISTS_REPLACE);
+      \Drupal::service('file_system')->copy($file_path, $export_options['destination'], FileSystemInterface::EXISTS_REPLACE);
     }
     else {
       $this->drush_print(file_get_contents($file_path));

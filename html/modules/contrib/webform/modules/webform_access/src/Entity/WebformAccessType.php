@@ -35,7 +35,7 @@ use Drupal\webform_access\WebformAccessTypeInterface;
  *     "label" = "label",
  *   },
  *   links = {
- *     "add-form" = "/admin/structure/webform/config/access/type/add",
+ *     "add-form" = "/admin/structure/webform/config/access/type/manage/add",
  *     "edit-form" = "/admin/structure/webform/config/access/type/manage/{webform_access_type}",
  *     "delete-form" = "/admin/structure/webform/config/access/type/manage/{webform_access_type}/delete",
  *     "collection" = "/admin/structure/webform/config/access/type/manage",

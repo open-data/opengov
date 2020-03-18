@@ -20,6 +20,17 @@ elements: |
     '#title': 'Application evaluation'
     '#attributes':
       style: 'background-color: #f5f5f2'
+    '#format': custom
+    '#format_html': |
+      {{ children }}
+      <div>{{ 'Submitted by'|t }}: <em>[webform_submission:user]</em></div>
+      <hr/>
+
+    '#format_text': |
+      {{ children }}
+      {{ 'Submitted by'|t }} [webform_submission:user]
+      ------------------------------------------------------------
+
     rating:
       '#type': webform_rating
       '#title': Rating
@@ -27,7 +38,6 @@ elements: |
     comments:
       '#type': textarea
       '#title': Comments
-  
 css: ''
 javascript: ''
 settings:
@@ -141,6 +151,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:

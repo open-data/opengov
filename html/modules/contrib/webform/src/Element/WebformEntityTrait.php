@@ -75,8 +75,13 @@ trait WebformEntityTrait {
       $options = self::translateOptions($options, $element);
     }
 
-    // Only select menu can support optgroups.
-    if ($element['#type'] !== 'webform_entity_select') {
+    if ($element['#type'] === 'webform_entity_select') {
+      // Strip tags from options since <option> element does
+      // not support HTML tags.
+      $options = WebformOptionsHelper::stripTagsOptions($options);
+    }
+    else {
+      // Only select menu can support optgroups.
       $options = OptGroup::flattenOptions($options);
     }
 

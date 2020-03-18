@@ -5,13 +5,13 @@ namespace Drupal\webform\Form;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\AnnounceCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
-use Drupal\webform\Ajax\WebformAnnounceCommand;
 use Drupal\webform\Ajax\WebformCloseDialogCommand;
 use Drupal\webform\Ajax\WebformConfirmReloadCommand;
 use Drupal\webform\Ajax\WebformRefreshCommand;
@@ -221,7 +221,7 @@ trait WebformAjaxFormTrait {
     // @see \Drupal\webform\Form\WebformAjaxFormTrait::announce
     $announcements = $this->getAnnouncements();
     foreach ($announcements as $announcement) {
-      $response->addCommand(new WebformAnnounceCommand($announcement['text'], $announcement['priority']));
+      $response->addCommand(new AnnounceCommand($announcement['text'], $announcement['priority']));
     }
     $this->resetAnnouncements();
 
@@ -398,7 +398,7 @@ trait WebformAjaxFormTrait {
    *   A string to indicate the priority of the message. Can be either
    *   'polite' or 'assertive'.
    *
-   * @see \Drupal\webform\Ajax\WebformAnnounceCommand
+   * @see \Drupal\Core\Ajax\AnnounceCommand
    * @see \Drupal\webform\Form\WebformAjaxFormTrait::submitAjaxForm
    */
   protected function announce($text, $priority = 'polite') {

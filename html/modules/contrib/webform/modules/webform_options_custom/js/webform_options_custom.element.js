@@ -7,11 +7,11 @@
 
   'use strict';
 
-  Drupal.webform = Drupal.webform || {};
+  Drupal.webformOptionsCustom = Drupal.webformOptionsCustom || {};
 
   // @see http://api.jqueryui.com/tooltip/
-  Drupal.webform.webformOptionsCustomTooltip = Drupal.webform.webformOptionsCustomTooltip || {};
-  Drupal.webform.webformOptionsCustomTooltip.options = Drupal.webform.webformOptionsCustomTooltip.options || {
+  Drupal.webformOptionsCustom.jQueryUiTooltip = Drupal.webformOptionsCustom.jQueryUiTooltip || {};
+  Drupal.webformOptionsCustom.jQueryUiTooltip.options = Drupal.webformOptionsCustom.jQueryUiTooltip.options || {
     tooltipClass: 'webform-options-custom-tooltip',
     track: true,
     // @see
@@ -30,9 +30,15 @@
     }
   };
 
+  // @see http://bootstrapdocs.com/v3.0.3/docs/javascript/#tooltips-usage
+  Drupal.webformOptionsCustom.bootstrapTooltip = Drupal.webformOptionsCustom.bootstrapTooltip || {};
+  Drupal.webformOptionsCustom.bootstrapTooltip.options = Drupal.webformOptionsCustom.bootstrapTooltip.options || {
+    delay: 200
+  };
+
   // @see https://github.com/ariutta/svg-pan-zoom
-  Drupal.webform.webformOptionsCustomPanAndZoom = Drupal.webform.webformOptionsCustomPanAndZoom || {};
-  Drupal.webform.webformOptionsCustomPanAndZoom.options = Drupal.webform.webformOptionsCustomPanAndZoom.options || {
+  Drupal.webformOptionsCustom.panAndZoom = Drupal.webformOptionsCustom.panAndZoom || {};
+  Drupal.webformOptionsCustom.panAndZoom.options = Drupal.webformOptionsCustom.panAndZoom.options || {
     controlIconsEnabled: true,
     // Mouse event must be enable to allow keyboard accessibility to
     // continue to work.
@@ -329,19 +335,37 @@
           if (option.description) {
             content += '<div class="webform-options-custom-tooltip--description">' + option.description + '</div>';
           }
-          var tooltipOptions = $.extend({
-            content: content,
-            items: '[data-option-value]',
-            open: function (event, ui) {
-              $(ui.tooltip).on('click', function () {
-                var value = $(this)
-                  .find('[data-tooltip-value]')
-                  .attr('data-tooltip-value');
-                setValue(value);
+
+          if (typeof $.ui.tooltip != 'undefined') {
+            // jQuery UI tooltip support.
+            var tooltipOptions = $.extend({
+              content: content,
+              items: '[data-option-value]',
+              open: function (event, ui) {
+                $(ui.tooltip).on('click', function () {
+                  var value = $(this)
+                    .find('[data-tooltip-value]')
+                    .attr('data-tooltip-value');
+                  setValue(value);
+                });
+              }
+            }, Drupal.webformOptionsCustom.jQueryUiTooltip.options);
+
+            $templateOption.tooltip(tooltipOptions);
+          }
+          else if ((typeof $.fn.tooltip) != 'undefined') {
+            // Bootstrap tooltip support.
+            var options = $.extend({
+              html: true,
+              title: content
+            }, Drupal.webformOptionsCustom.bootstrapTooltip.options);
+
+            $templateOption
+              .tooltip(options)
+              .on('show.bs.tooltip', function (event) {
+                $templateOptions.not($templateOption).tooltip('hide');
               });
-            }
-          }, Drupal.webform.webformOptionsCustomTooltip.options);
-          $templateOption.tooltip(tooltipOptions);
+          }
         }
 
         /**
@@ -352,7 +376,7 @@
             return;
           }
           var options = $.extend({
-          }, Drupal.webform.webformOptionsCustomPanAndZoom.options);
+          }, Drupal.webformOptionsCustom.panAndZoom.options);
           var panZoom = window.svgPanZoom($svg[0], options);
           $(window).resize(function () {
             panZoom.resize();

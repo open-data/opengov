@@ -3,6 +3,7 @@
 namespace Drupal\webform\Form\AdminConfig;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
@@ -37,6 +38,13 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
   protected $tokenManager;
 
   /**
+   * The webform storage.
+   *
+   * @var \Drupal\webform\WebformEntityStorageInterface
+   */
+  protected $webformStorage;
+
+  /**
    * The webform third party settings manager.
    *
    * @var \Drupal\webform\WebformThirdPartySettingsManagerInterface
@@ -64,6 +72,8 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
    *   The factory for configuration objects.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
    *   The webform token manager.
    * @param \Drupal\webform\WebformThirdPartySettingsManagerInterface $third_party_settings_manager
@@ -71,8 +81,9 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
    * @param \Drupal\webform\WebformAddonsManagerInterface $addons_manager
    *   The webform add-ons manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, WebformTokenManagerInterface $token_manager, WebformThirdPartySettingsManagerInterface $third_party_settings_manager, WebformAddonsManagerInterface $addons_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, WebformTokenManagerInterface $token_manager, WebformThirdPartySettingsManagerInterface $third_party_settings_manager, WebformAddonsManagerInterface $addons_manager) {
     parent::__construct($config_factory);
+    $this->webformStorage = $entity_type_manager->getStorage('webform');
     $this->moduleHandler = $module_handler;
     $this->tokenManager = $token_manager;
     $this->thirdPartySettingsManager = $third_party_settings_manager;
@@ -86,6 +97,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
     return new static(
       $container->get('config.factory'),
       $container->get('module_handler'),
+      $container->get('entity_type.manager'),
       $container->get('webform.token_manager'),
       $container->get('webform.third_party_settings_manager'),
       $container->get('webform.addons_manager')
@@ -99,10 +111,44 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
     $config = $this->config('webform.settings');
     $settings = $config->get('settings');
 
+    // Forms overview settings.
+    $t_args = [
+      ':href' => Url::fromRoute('entity.webform.collection')->toString(),
+    ];
+    $form['filter_settings'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Form overview settings'),
+      '#open' => TRUE,
+      '#tree' => TRUE,
+    ];
+    $form['filter_settings']['filter_category'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Filter webforms default category'),
+      '#description' => $this->t('Select the filter webforms default category selected on the <a href=":href">webform overview page</a>.', $t_args),
+      '#options' => $this->webformStorage->getCategories(FALSE),
+      '#empty_option' => $this->t('Show all webforms'),
+      '#parents' => ['form', 'filter_category'],
+      '#default_value' => $config->get('form.filter_category'),
+    ];
+    $form['filter_settings']['filter_state'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Filter webforms default state'),
+      '#description' => $this->t('Select the filter webforms default state selected on the <a href=":href">webform overview page</a>.', $t_args),
+      '#options' => [
+        WebformInterface::STATUS_OPEN => $this->t('Open'),
+        WebformInterface::STATUS_CLOSED => $this->t('Closed'),
+        WebformInterface::STATUS_SCHEDULED => $this->t('Scheduled'),
+        WebformInterface::STATUS_ARCHIVED => $this->t('Archived'),
+      ],
+      '#empty_option' => $this->t('All'),
+      '#parents' => ['form', 'filter_state'],
+      '#default_value' => $config->get('form.filter_state'),
+    ];
+
     // Page settings.
     $form['page_settings'] = [
       '#type' => 'details',
-      '#title' => $this->t('URL path settings'),
+      '#title' => $this->t('Form URL path settings'),
       '#open' => TRUE,
       '#tree' => TRUE,
     ];
@@ -400,7 +446,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
     // Ajax settings.
     $form['ajax_settings'] = [
       '#type' => 'details',
-      '#title' => $this->t('Ajax settings'),
+      '#title' => $this->t('Form Ajax settings'),
       '#open' => TRUE,
       '#tree' => TRUE,
     ];
@@ -635,6 +681,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
     // Update config and submit form.
     $config = $this->config('webform.settings');
     $config->set('settings', $settings + $config->get('settings'));
+    $config->set('form', $form_state->getValue('form') ?: []);
     $config->set('third_party_settings', $form_state->getValue('third_party_settings') ?: []);
     parent::submitForm($form, $form_state);
 

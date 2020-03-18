@@ -253,6 +253,16 @@ webform.settings:
         javascript:
           type: string
           label: JavaScript
+    form:
+      type: mapping
+      label: 'Form default settings'
+      mapping:
+        filter_category:
+          type: label
+          label: 'Filter category'
+        filter_state:
+          type: string
+          label: 'Filter state'
     element:
       type: mapping
       label: 'Element default settings'
@@ -275,9 +285,6 @@ webform.settings:
         horizontal_rule_classes:
           type: string
           label: 'Horizontal rule CSS classes'
-        default_icheck:
-          type: string
-          label: 'Default iCheck style'
         default_description_display:
           type: string
           label: 'Default title display'
@@ -296,9 +303,6 @@ webform.settings:
         default_empty_option_optional:
           type: label
           label: 'Default empty option optional label'
-        default_google_maps_api_key:
-          type: string
-          label: 'Default Google Maps API key'
         default_algolia_places_app_id:
           type: string
           label: 'Default Algolia application id'
@@ -475,6 +479,13 @@ webform.settings:
         excluded_handlers:
           type: ignore
           label: 'Excluded submission handlers'
+    variant:
+      type: mapping
+      label: 'Variant settings'
+      mapping:
+        excluded_variants:
+          type: ignore
+          label: 'Excluded webform variants'
     batch:
       type: mapping
       label: 'Batch settings'

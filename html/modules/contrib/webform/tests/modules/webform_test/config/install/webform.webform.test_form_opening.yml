@@ -4,7 +4,7 @@ dependencies:
   enforced:
     module:
       - webform_test
-open: '2020-01-01T00:00:00-05:00'
+open: '2040-01-01T00:00:00-05:00'
 close: null
 weight: 0
 uid: null
@@ -17,7 +17,7 @@ category: 'Test: Webform'
 elements: |
   description:
     '#markup': 'This message should not be displayed'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -131,6 +131,7 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: true
+  token_view: false
   token_update: false
 access:
   create:

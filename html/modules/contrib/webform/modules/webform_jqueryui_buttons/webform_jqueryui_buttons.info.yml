@@ -1,0 +1,12 @@
+name: 'Webform jQueryUI Buttons'
+type: module
+description: 'Provides a group of multiple buttons used for selecting a value. jQueryUI is no longer maintained.'
+package: 'Webform [DEPRECATED]'
+core: 8.x
+dependencies:
+  - 'webform:webform'
+
+# Information added by Drupal.org packaging script on 2020-01-21
+version: '8.x-5.8'
+project: 'webform'
+datestamp: 1579637592

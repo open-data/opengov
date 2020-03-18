@@ -33,6 +33,11 @@
   description: 'Allows administrators to attach custom CSS and JavaScript to a webform.'
   restrict access: true
 
+'edit webform variants':
+  title: 'Edit webform variants'
+  description: 'Allows administrators to create variations of a webform.'
+  restrict access: true
+
 'create webform':
   title: 'Create webforms'
 'edit any webform':

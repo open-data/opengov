@@ -7,7 +7,9 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Url;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformReflectionHelper;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -205,20 +207,18 @@ class WebformPluginElementController extends ControllerBase implements Container
 
         // Properties.
         $properties = [];
-        $element_default_properties = array_keys($webform_element->getDefaultProperties());
-        foreach ($element_default_properties as $key => $value) {
-          if (!isset($default_properties[$value])) {
-            $properties[$key] = '<b>#' . $value . '</b>';
+        $element_default_properties = $webform_element->getDefaultProperties();
+        foreach ($element_default_properties as $key => $default_value) {
+          $default_value = ($default_value ? ' ⇒ ' . json_encode($default_value): '');
+          if (!isset($default_properties[$key])) {
+            $properties[$key] = '<b>#' . $key . '</b>' . $default_value;
             unset($element_default_properties[$key]);
           }
           else {
-            $element_default_properties[$key] = '#' . $value;
+            $element_default_properties[$key] = '#' . $key . $default_value;
           }
         }
         $properties += $element_default_properties;
-        if (count($properties) >= 20) {
-          $properties = array_slice($properties, 0, 20) + ['…' => '…'];
-        }
 
         // Operations.
         $operations = [];
@@ -242,7 +242,7 @@ class WebformPluginElementController extends ControllerBase implements Container
             ['data' => ['#markup' => implode('<br /> → ', $parent_classes)], 'nowrap' => 'nowrap'],
             ['data' => ['#markup' => implode('<br />', $webform_info)], 'nowrap' => 'nowrap'],
             ['data' => ['#markup' => implode('<br />', $element_info)], 'nowrap' => 'nowrap'],
-            ['data' => ['#markup' => implode('<br />', $properties)]],
+            ['data' => ['#markup' => implode('<br />' . PHP_EOL, $properties)], 'nowrap' => 'nowrap'],
             $formats ? ['data' => ['#markup' => '• ' . implode('<br />• ', $formats)], 'nowrap' => 'nowrap'] : '',
             $related_types ? ['data' => ['#markup' => '• ' . implode('<br />• ', $related_types)], 'nowrap' => 'nowrap'] : '<' . $this->t('none') . '>',
             $dependencies ? ['data' => ['#markup' => '• ' . implode('<br />• ', $dependencies)], 'nowrap' => 'nowrap'] : '',

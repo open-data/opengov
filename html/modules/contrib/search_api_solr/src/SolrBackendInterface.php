@@ -19,7 +19,7 @@ interface SolrBackendInterface extends BackendInterface {
   /**
    * The minimum required Solr schema version.
    */
-  const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '8.3.7';
+  const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '8.3.8';
 
   /**
    * The separator to indicate the start of a language ID.
@@ -149,6 +149,14 @@ interface SolrBackendInterface extends BackendInterface {
    *   The content domain.
    */
   public function getDomain();
+
+  /**
+   * Returns the targeted environment of the server.
+   *
+   * @return string
+   *   The environment.
+   */
+  public function getEnvironment();
 
   /**
    * Indicates if the Solr server uses a managed schema.
@@ -340,5 +348,33 @@ interface SolrBackendInterface extends BackendInterface {
    * @return String[]
    */
   public function getDisabledFieldTypes(): array;
+
+  /**
+   * Gets a list of Solr Caches that are disabled for this backend.
+   *
+   * @return String[]
+   */
+  public function getDisabledCaches(): array;
+
+  /**
+   * Gets a list of Solr Request Handlers that are disabled for this backend.
+   *
+   * @return String[]
+   */
+  public function getDisabledRequestHandlers(): array;
+
+  /**
+   * Gets a list of Solr Request Dispatchers that are disabled for this backend.
+   *
+   * @return String[]
+   */
+  public function getDisabledRequestDispatchers(): array;
+
+  /**
+   * Indicates if the the current Solr config should not be verified.
+   *
+   * @return bool
+   */
+  public function isNonDrupalOrOutdatedConfigSetAllowed(): bool;
 
 }

@@ -14,6 +14,7 @@ use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Element\WebformAjaxElementTrait;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformExporterManagerInterface;
 
@@ -23,6 +24,7 @@ use Drupal\webform\Plugin\WebformExporterManagerInterface;
 class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
 
   use StringTranslationTrait;
+  use WebformAjaxElementTrait;
 
   /**
    * The configuration object factory.
@@ -512,7 +514,6 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
       '#access' => $webform->hasManagedFile(),
       '#states' => $states_files,
     ];
-
     $source_entity = $this->getSourceEntity();
     if (!$source_entity) {
       $entity_types = $this->entityStorage->getSourceEntityTypes($webform);
@@ -532,19 +533,39 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
           '#options' => ['' => $this->t('All')] + $entity_types,
           '#default_value' => $export_options['entity_type'],
         ];
-        $form['export']['download']['submitted']['entity_id'] = [
-          '#type' => 'number',
-          '#title' => $this->t('Entity id'),
-          '#title_display' => 'invisible',
-          '#min' => 1,
-          '#size' => 10,
-          '#default_value' => $export_options['entity_id'],
-          '#states' => [
-            'invisible' => [
-              ':input[name="entity_type"]' => ['value' => ''],
-            ],
-          ],
-        ];
+        if ($export_options['entity_type']) {
+          $source_entity_options = $this->entityStorage->getSourceEntityAsOptions($webform, $export_options['entity_type']);
+          if ($source_entity_options) {
+            $form['export']['download']['submitted']['entity_id'] = [
+              '#type' => 'select',
+              '#title' => $this->t('Entity id'),
+              '#title_display' => 'invisible',
+              '#default_value' => $export_options['entity_id'],
+              '#options' => $source_entity_options,
+            ];
+          }
+          else {
+            $form['export']['download']['submitted']['entity_id'] = [
+              '#type' => 'number',
+              '#title' => $this->t('Entity id'),
+              '#title_display' => 'invisible',
+              '#min' => 1,
+              '#size' => 10,
+              '#default_value' => $export_options['entity_id'],
+            ];
+          }
+        }
+        else {
+          $form['export']['download']['submitted']['entity_id'] = [
+            '#type' => 'value',
+            '#value' => '',
+          ];
+        }
+        $this->buildAjaxElement(
+          'webform-submission-export-download-submitted',
+          $form['export']['download']['submitted'],
+          $form['export']['download']['submitted']['entity_type']
+        );
       }
     }
 

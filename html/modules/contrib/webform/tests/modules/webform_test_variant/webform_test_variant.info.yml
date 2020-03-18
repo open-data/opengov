@@ -1,0 +1,12 @@
+name: 'Webform module variant tests'
+type: module
+description: 'Support module for webform that provides variant plugin tests.'
+package: Testing
+core: 8.x
+dependencies:
+  - 'webform:webform'
+
+# Information added by Drupal.org packaging script on 2020-01-21
+version: '8.x-5.8'
+project: 'webform'
+datestamp: 1579637592

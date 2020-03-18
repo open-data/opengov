@@ -198,88 +198,12 @@ function webform_query_webform_submission_access_alter(AlterableInterface $query
     }
   }
 
-  // Alter query based on webform node access permissions.
-  // @see webform_node_node_access()
-  // @todo Figure out how to move the below code to the webform_node.module.
-  if (\Drupal::moduleHandler()->moduleExists('webform_node')) {
-    $route_name = \Drupal::routeMatch()->getRouteName();
-    if (preg_match('/entity\.([^.]+)\.webform\.results_submissions/', $route_name, $match)) {
-      $entity_type = $match[1];
-      if ($account->hasPermission('view webform submissions any node')) {
-        foreach ($webform_submission_tables as $table) {
-          $table['condition']->condition($table['alias'] . '.entity_type', $entity_type);
-        }
-      }
-      elseif ($account->hasPermission('view webform submissions own node')) {
-        $entity_id = \Drupal::routeMatch()->getRawParameter($entity_type);
-        foreach ($webform_submission_tables as $table) {
-          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-          $condition = $query->andConditionGroup();
-          $condition->condition($table['alias'] . '.entity_type', $entity_type);
-          $condition->condition($table['alias'] . '.entity_id', $entity_id);
-          $table['condition']->condition($condition);
-        }
-      }
-    }
-  }
-
-  // Alter query based on webform access group.
-  // @todo Figure out how to move the below code to the webform_access.module.
-  if (\Drupal::moduleHandler()->moduleExists('webform_access')) {
-    // Collect access group ids with 'view_any' or 'administer' permissions.
-    /** @var \Drupal\webform_access\WebformAccessGroupStorageInterface $access_group_storage */
-    $access_group_storage = \Drupal::entityTypeManager()->getStorage('webform_access_group');
-    /** @var \Drupal\webform_access\WebformAccessGroupInterface $access_group */
-    $access_groups = $access_group_storage->loadByEntities(NULL, NULL, $account);
-    $access_any_group_ids = [];
-    $access_own_group_ids = [];
-    foreach ($access_groups as $access_group) {
-      $access_group_permissions = $access_group->get('permissions');
-      $access_group_permissions = array_combine($access_group_permissions, $access_group_permissions);
-      if (isset($access_group_permissions['view_any']) || isset($access_group_permissions['administer'])) {
-        $access_any_group_ids[] = $access_group->id();
-      }
-      elseif (isset($access_group_permissions['view_own'])) {
-        $access_own_group_ids[] = $access_group->id();
-      }
-    }
-    if ($access_any_group_ids) {
-      // Add access group entity type, entity id, and webform id to the query.
-      $result = \Drupal::database()->select('webform_access_group_entity', 'ge')
-        ->fields('ge', ['entity_type', 'entity_id', 'webform_id'])
-        ->condition('group_id', $access_any_group_ids, 'IN')
-        ->execute();
-      while ($record = $result->fetchAssoc()) {
-        foreach ($webform_submission_tables as $table) {
-          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-          $condition = $query->andConditionGroup();
-          $condition->condition($table['alias'] . '.entity_type', $record['entity_type']);
-          $condition->condition($table['alias'] . '.entity_id', (string) $record['entity_id']);
-          $condition->condition($table['alias'] . '.webform_id', $record['webform_id']);
-          $table['condition']->condition($condition);
-        }
-      }
-    }
-    if ($access_own_group_ids) {
-      // Add access group entity type, entity id, and webform id to the query.
-      $result = \Drupal::database()->select('webform_access_group_entity', 'ge')
-        ->fields('ge', ['entity_type', 'entity_id', 'webform_id'])
-        ->condition('group_id', $access_own_group_ids, 'IN')
-        ->execute();
-      while ($record = $result->fetchAssoc()) {
-        foreach ($webform_submission_tables as $table) {
-          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
-          $condition = $query->andConditionGroup();
-          $condition->condition($table['alias'] . '.uid', $account->id());
-          $condition->condition($table['alias'] . '.entity_type', $record['entity_type']);
-          $condition->condition($table['alias'] . '.entity_id', (string) $record['entity_id']);
-          $condition->condition($table['alias'] . '.webform_id', $record['webform_id']);
-          $table['condition']->condition($condition);
-        }
-      }
-    }
-
-  }
+  // Allow modules to alter and add their query access rules.
+  \Drupal::moduleHandler()->alter(
+    'webform_submission_query_access',
+    $query,
+    $webform_submission_tables
+  );
 
   // Apply webform submission table conditions to query.
   foreach ($webform_submission_tables as $table) {

@@ -23,7 +23,7 @@ function redirect_update_8100(&$sandbox) {
     $sandbox['progress'] = 0;
     $sandbox['current_rid'] = 0;
     // Note, because MySQL can treat `foo = LOWER(foo)`, all records must be checked.
-    $sandbox['max'] = db_query('SELECT COUNT(1) FROM {redirect}')->fetchField();
+    $sandbox['max'] = Database::getConnection()->query('SELECT COUNT(1) FROM {redirect}')->fetchField();
   }
 
   $result = \Drupal::database()->select('redirect', 'r')
@@ -68,10 +68,10 @@ function redirect_update_8101() {
 
   // Update the last installed field definition and field schema.
   /** @var \Drupal\Core\KeyValueStore\KeyValueStoreInterface $key_value_store */
-  \Drupal::entityManager()->clearCachedFieldDefinitions();
+  \Drupal::service('entity_field.manager')->clearCachedFieldDefinitions();
   $key_value_store_definition = \Drupal::keyValue('entity.definitions.installed');
   $storage_definitions = $key_value_store_definition->get('redirect.field_storage_definitions');
-  $storage_definitions['hash'] = $storage_definition = \Drupal::entityManager()
+  $storage_definitions['hash'] = $storage_definition = \Drupal::service('entity_field.manager')
     ->getFieldStorageDefinitions('redirect')['hash'];
   $key_value_store_definition->set('redirect.field_storage_definitions', $storage_definitions);
 

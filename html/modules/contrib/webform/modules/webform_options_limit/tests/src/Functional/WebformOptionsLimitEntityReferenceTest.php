@@ -10,7 +10,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
  *
  * @group webform_browser
  */
-class WebformOptionsLimitEntityReference extends WebformBrowserTestBase {
+class WebformOptionsLimitEntityReferenceTest extends WebformBrowserTestBase {
 
   /**
    * {@inheritdoc}

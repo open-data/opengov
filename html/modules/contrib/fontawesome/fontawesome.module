@@ -107,9 +107,18 @@ function _fontawesome_modify_library(array &$libraries, $librarySuffix, $type, $
     $libraryName .= '.' . $librarySuffix;
   }
 
+  // Load the configuration settings.
+  $configuration_settings = \Drupal::config('fontawesome.settings');
+
   // Handle SVG method.
   if ($type == 'svg') {
     $librarySettings = array_shift($libraries[$libraryName]['js']);
+    $librarySettings['type'] = 'external';
+    $librarySettings['attributes']['crossorigin'] = 'anonymous';
+    // Add the integrity check if set.
+    if (!empty($configuration_settings->get('external_svg_integrity'))) {
+      $librarySettings['attributes']['integrity'] = $configuration_settings->get('external_svg_integrity');
+    }
     $libraries[$libraryName]['js'] = [
       $cdnLocation => $librarySettings,
     ];
@@ -117,6 +126,9 @@ function _fontawesome_modify_library(array &$libraries, $librarySuffix, $type, $
   // Handle WebFonts method.
   elseif ($type == 'webfonts') {
     $librarySettings = array_shift($libraries[$libraryName]['css']['theme']);
+    $librarySettings['type'] = 'external';
+    // TODO: add integrity and crossorigin to CSS.
+    // See https://www.drupal.org/project/drupal/issues/2716115.
     $libraries[$libraryName]['css']['theme'] = [
       $cdnLocation => $librarySettings,
     ];

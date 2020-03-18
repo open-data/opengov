@@ -10,6 +10,7 @@ use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_autocomplete\Entity\Search;
+use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
@@ -237,18 +238,40 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * Tests the conversion of Search API queries into Solr queries.
    */
   protected function checkQueryParsers() {
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
-    $backend = Server::load($this->serverId)->getBackend();
+    $parse_mode_manager = \Drupal::service('plugin.manager.search_api.parse_mode');
+    $parse_mode_terms = $parse_mode_manager->createInstance('terms');
+    $parse_mode_phrase = $parse_mode_manager->createInstance('phrase');
+    $parse_mode_sloppy_terms = $parse_mode_manager->createInstance('sloppy_terms');
+    $parse_mode_sloppy_phrase = $parse_mode_manager->createInstance('sloppy_phrase');
+    $parse_mode_direct = $parse_mode_manager->createInstance('direct');
+    $parse_mode_edismax = $parse_mode_manager->createInstance('edismax');
 
     $query = $this->buildSearch('foo "apple pie" bar');
-
+    $query->setParseMode($parse_mode_phrase);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       [],
       'phrase'
     );
-    $this->assertEquals('(+"foo" +"apple pie" +"bar")', $flat);
+    $this->assertEquals('(+"foo \"apple pie\" bar")', $flat);
 
+    $query->setParseMode($parse_mode_sloppy_terms);
+    $flat = SolrUtility::flattenKeys(
+      $query->getKeys(),
+      [],
+      'sloppy_terms'
+    );
+    $this->assertEquals('(+"foo" +"apple pie"~10000000 +"bar")', $flat);
+
+    $query->setParseMode($parse_mode_sloppy_phrase);
+    $flat = SolrUtility::flattenKeys(
+      $query->getKeys(),
+      [],
+      'sloppy_phrase'
+    );
+    $this->assertEquals('(+"foo \"apple pie\" bar"~10000000)', $flat);
+
+    $query->setParseMode($parse_mode_terms);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       [],
@@ -256,6 +279,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     );
     $this->assertEquals('(+"foo" +"apple pie" +"bar")', $flat);
 
+    $query->setParseMode($parse_mode_edismax);
     $exception = FALSE;
     try {
       $flat = SolrUtility::flattenKeys(
@@ -269,6 +293,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     }
     $this->assertTrue($exception);
 
+    $query->setParseMode($parse_mode_direct);
     $exception = FALSE;
     try {
       $flat = SolrUtility::flattenKeys(
@@ -282,13 +307,15 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     }
     $this->assertTrue($exception);
 
+    $query->setParseMode($parse_mode_phrase);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       ['solr_field'],
       'phrase'
     );
-    $this->assertEquals('solr_field:(+"foo" +"apple pie" +"bar")', $flat);
+    $this->assertEquals('solr_field:(+"foo \"apple pie\" bar")', $flat);
 
+    $query->setParseMode($parse_mode_terms);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       ['solr_field'],
@@ -296,6 +323,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     );
     $this->assertEquals('((+(solr_field:"foo") +(solr_field:"apple pie") +(solr_field:"bar")) solr_field:(+"foo" +"apple pie" +"bar"))', $flat);
 
+    $query->setParseMode($parse_mode_edismax);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       ['solr_field'],
@@ -303,13 +331,15 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     );
     $this->assertEquals('({!edismax qf=\'solr_field\'}+"foo" +"apple pie" +"bar")', $flat);
 
+    $query->setParseMode($parse_mode_phrase);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       ['solr_field_1', 'solr_field_2'],
       'phrase'
     );
-    $this->assertEquals('(solr_field_1:(+"foo" +"apple pie" +"bar") solr_field_2:(+"foo" +"apple pie" +"bar"))', $flat);
+    $this->assertEquals('(solr_field_1:(+"foo \"apple pie\" bar") solr_field_2:(+"foo \"apple pie\" bar"))', $flat);
 
+    $query->setParseMode($parse_mode_terms);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       ['solr_field_1', 'solr_field_2'],
@@ -317,6 +347,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     );
     $this->assertEquals('((+(solr_field_1:"foo" solr_field_2:"foo") +(solr_field_1:"apple pie" solr_field_2:"apple pie") +(solr_field_1:"bar" solr_field_2:"bar")) solr_field_1:(+"foo" +"apple pie" +"bar") solr_field_2:(+"foo" +"apple pie" +"bar"))', $flat);
 
+    $query->setParseMode($parse_mode_edismax);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       ['solr_field_1', 'solr_field_2'],
@@ -324,12 +355,23 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     );
     $this->assertEquals('({!edismax qf=\'solr_field_1 solr_field_2\'}+"foo" +"apple pie" +"bar")', $flat);
 
+    $query->setParseMode($parse_mode_terms);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       [],
       'keys'
     );
     $this->assertEquals('+"foo" +"apple pie" +"bar"', $flat);
+
+    $query = $this->buildSearch('foo apple pie bar');
+    $query->setParseMode($parse_mode_sloppy_phrase);
+    $flat = SolrUtility::flattenKeys(
+      $query->getKeys(),
+      [],
+      'sloppy_phrase'
+    );
+    $this->assertEquals('(+"foo apple pie bar"~10000000)', $flat);
+
   }
 
   /**
@@ -1271,26 +1313,18 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * Test generation of Solr configuration files.
    *
    * @dataProvider configGenerationDataProvider
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function testConfigGeneration(array $files) {
     $server = $this->getServer();
     $solr_major_version = $server->getBackend()->getSolrConnector()->getSolrMajorVersion();
-    $solr_version = $server->getBackend()->getSolrConnector()->getSolrVersion();
-    $solr_install_dir = '/opt/solr-' . $solr_version;
-
     $backend_config = $server->getBackendConfig();
-    // Relative path for official docker image.
-    $backend_config['connector_config']['solr_install_dir'] = $solr_install_dir;
-    $server->setBackendConfig($backend_config);
-    $server->save();
+    $solr_configset_controller = new SolrConfigSetController();
+    $solr_configset_controller->setServer($server);
 
-    /** @var \Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder $list_builder */
-    $list_builder = \Drupal::entityTypeManager()
-      ->getListBuilder('solr_field_type');
-
-    $list_builder->setServer($server);
-
-    $config_files = $list_builder->getConfigFiles();
+    $config_files = $solr_configset_controller->getConfigFiles();
 
     foreach ($files as $file_name => $expected_strings) {
       $this->assertArrayHasKey($file_name, $config_files);
@@ -1312,27 +1346,39 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       $this->assertNotContains('<statsCache', $config_files['solrconfig_extra.xml']);
     }
 
+    /*
     // Write files for docker to disk.
-    if ('8' === $solr_major_version) {
+    if (8 === $solr_major_version) {
       foreach ($config_files as $file_name => $content) {
         file_put_contents(__DIR__ . '/../../solr-conf/' . $solr_major_version . '.x/' . $file_name, $content);
       }
     }
+    */
 
     $backend_config['connector_config']['jmx'] = TRUE;
     $backend_config['disabled_field_types'] = ['text_foo_en_6_0_0', 'text_de_6_0_0', 'text_de_7_0_0'];
+    $backend_config['disabled_caches'] = ['cache_document_default_7_0_0', 'cache_filter_default_7_0_0'];
     $server->setBackendConfig($backend_config);
     $server->save();
-    // Reset list builder's static cache.
-    $list_builder->setServer($server);
+    // Reset static caches.
+    $solr_configset_controller->setServer($server);
 
-    $config_files = $list_builder->getConfigFiles();
+    $config_files = $solr_configset_controller->getConfigFiles();
     $this->assertContains('<jmx />', $config_files['solrconfig_extra.xml']);
-    $this->assertContains('solr.install.dir=' . $solr_install_dir, $config_files['solrcore.properties']);
+    $this->assertNotContains('solr.install.dir', $config_files['solrcore.properties']);
     $this->assertContains('text_en', $config_files['schema_extra_types.xml']);
     $this->assertNotContains('text_foo_en', $config_files['schema_extra_types.xml']);
     $this->assertNotContains('text_de', $config_files['schema_extra_types.xml']);
-
+    if (6 !== $solr_major_version) {
+      $this->assertNotContains('documentCache', $config_files['solrconfig_query.xml']);
+      $this->assertNotContains('filterCache', $config_files['solrconfig_query.xml']);
+      $this->assertContains('httpCaching', $config_files['solrconfig_requestdispatcher.xml']);
+      $this->assertContains('never304="true"', $config_files['solrconfig_requestdispatcher.xml']);
+    }
+    else {
+      $this->assertContains('httpCaching', $config_files['solrconfig.xml']);
+      $this->assertContains('never304="true"', $config_files['solrconfig.xml']);
+    }
     $this->assertContains('ts_X3b_en_*', $config_files['schema_extra_fields.xml']);
     $this->assertNotContains('ts_X3b_de_*', $config_files['schema_extra_fields.xml']);
 
@@ -1340,13 +1386,18 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $backend = $server->getBackend();
     if ($backend->getSolrConnector()->isCloud()) {
       $this->assertNotContains('solr.replication', $config_files['solrcore.properties']);
-      $this->assertNotContains('"/replication"', $config_files['solrconfig.xml']);
-      $this->assertNotContains('"/get"', $config_files['solrconfig.xml']);
+      $this->assertNotContains('"/replication"', $config_files[(6 !== $solr_major_version) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
+      $this->assertNotContains('"/get"', $config_files[(6 !== $solr_major_version) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
     }
     else {
       $this->assertContains('solr.replication', $config_files['solrcore.properties']);
-      $this->assertContains('"/replication"', $config_files['solrconfig.xml']);
-      $this->assertContains('"/get"', $config_files['solrconfig.xml']);
+      $this->assertContains('"/replication"', $config_files[(6 !== $solr_major_version) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
+      if (6 !== $solr_major_version) {
+        $this->assertNotContains('"/get"', $config_files['solrconfig_extra.xml']);
+      }
+      else {
+        $this->assertContains('"/get"', $config_files['solrconfig.xml']);
+      }
     }
   }
 

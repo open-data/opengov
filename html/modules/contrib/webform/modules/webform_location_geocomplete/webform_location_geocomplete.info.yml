@@ -1,0 +1,12 @@
+name: 'Webform Location Geocomplete'
+type: module
+description: 'Provides a form element to collect valid location information (address, longitude, latitude, geolocation) using Google Maps API''s Geocoding and Places Autocomplete. The jQuery: Geocoding and Places Autocomplete Plugin library is not being maintained.'
+package: 'Webform [DEPRECATED]'
+core: 8.x
+dependencies:
+  - 'webform:webform'
+
+# Information added by Drupal.org packaging script on 2020-01-21
+version: '8.x-5.8'
+project: 'webform'
+datestamp: 1579637592

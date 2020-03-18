@@ -5,8 +5,11 @@ namespace Drupal\webform\Controller;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Element\Webform as WebformElement;
+use Drupal\webform\WebformEntityReferenceManagerInterface;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformRequestInterface;
 use Drupal\webform\WebformSubmissionInterface;
@@ -43,6 +46,13 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
   protected $tokenManager;
 
   /**
+   * The webform entity reference manager.
+   *
+   * @var \Drupal\webform\WebformEntityReferenceManagerInterface
+   */
+  protected $webformEntityReferenceManager;
+
+  /**
    * Constructs a WebformEntityController object.
    *
    * @param \Drupal\Core\Render\RendererInterface $renderer
@@ -62,11 +72,13 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
+    $instance = new static(
       $container->get('renderer'),
       $container->get('webform.request'),
       $container->get('webform.token_manager')
     );
+    $instance->webformEntityReferenceManager = $container->get('webform.entity_reference_manager');
+    return $instance;
   }
 
   /**
@@ -151,6 +163,17 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
       $webform_submission->getWebform()->invokeHandlers('overrideSettings', $webform_submission);
     }
 
+    // Apply variants.
+    if ($webform->hasVariant()) {
+      if ($webform_submission) {
+        $webform->applyVariants($webform_submission);
+      }
+      else {
+        $variants = $this->getVariants($request, $webform, $source_entity);
+        $webform->applyVariants(NULL, $variants);
+      }
+    }
+
     // Get title.
     $title = $webform->getSetting('confirmation_title') ?: (($source_entity) ? $source_entity->label() : $webform->label());
 
@@ -175,6 +198,57 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
     }
 
     return $build;
+  }
+
+  /**
+   * Get variants from the current request.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
+   * @param \Drupal\webform\WebformInterface|null $webform
+   *   The current webform.
+   * @param \Drupal\Core\Entity\EntityInterface|null $source_entity
+   *   The current source entity.
+   *
+   * @return array
+   *   An associative array of variants keyed by element key
+   *   and variant instance id.
+   *
+   * @see \Drupal\webform\Entity\Webform::getSubmissionForm
+   */
+  protected function getVariants(Request $request, WebformInterface $webform, EntityInterface $source_entity = NULL) {
+    // Get variants from '_webform_variant query string parameter.
+    $webform_variant = $request->query->get('_webform_variant');
+    if ($webform_variant && ($webform->access('update') || $webform->access('test'))) {
+      return $webform_variant;
+    }
+
+    // Get default data.
+    $field_name = $this->webformEntityReferenceManager->getFieldName($source_entity);
+    if (!$field_name) {
+      return [];
+    }
+
+    $default_data = $source_entity->$field_name->default_data;
+    $default_data = ($default_data) ? Yaml::decode($default_data) : [];
+
+    // Get query string data.
+    $query = $request->query->all();
+
+    // Get variants from #prepopulate query string parameters.
+    $variants = [];
+    $element_keys = $webform->getElementsVariant();
+    foreach ($element_keys as $element_key) {
+      $element = $webform->getElement($element_key);
+      if (!empty($query[$element_key]) && !empty($element['#prepopulate'])) {
+        $variants[$element_key] = $query[$element_key];
+      }
+      elseif (!empty($default_data[$element_key])) {
+        $variants[$element_key] = $default_data[$element_key];
+      }
+    }
+
+    return $variants;
   }
 
   /**

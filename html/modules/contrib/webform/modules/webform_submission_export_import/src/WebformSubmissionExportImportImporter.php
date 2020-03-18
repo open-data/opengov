@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Site\Settings;
@@ -113,6 +114,13 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
   protected $fieldDefinitions;
 
   /**
+   * The file system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
    * Constructs a WebformSubmissionExportImport object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -123,13 +131,16 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
    *   The entity type manager.
    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
    *   The webform element manager.
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
+   *   The file system service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory, EntityTypeManagerInterface $entity_type_manager, WebformElementManagerInterface $element_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory, EntityTypeManagerInterface $entity_type_manager, WebformElementManagerInterface $element_manager, FileSystemInterface $file_system) {
     $this->configFactory = $config_factory;
     $this->loggerFactory = $logger_factory;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityStorage = $entity_type_manager->getStorage('webform_submission');
     $this->elementManager = $element_manager;
+    $this->fileSystem = $file_system;
   }
 
   /**
@@ -708,7 +719,7 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
 
     // Get file destination.
     $file_destination = isset($element['#upload_location']) ? $element['#upload_location'] : NULL;
-    if (isset($file_destination) && !file_prepare_directory($file_destination, FILE_CREATE_DIRECTORY)) {
+    if (isset($file_destination) && !$this->fileSystem->prepareDirectory($file_destination, FileSystemInterface::CREATE_DIRECTORY)) {
       $this->loggerFactory->get('file')
         ->notice('The upload directory %directory for the file element %name could not be created or is not accessible. A newly uploaded file could not be saved in this directory as a consequence, and the upload was canceled.', [
           '%directory' => $file_destination,

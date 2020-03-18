@@ -426,14 +426,25 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
    * Test build user submissions breadcrumbs.
    */
   public function testBuildUserSubmissions() {
+    // Check without view own access.
     $route_match = $this->getMockRouteMatch('entity.webform.user.submission', [
       ['webform_submission', $this->webformSubmission],
+    ]);
+    $links = [
+      Link::createFromRoute($this->webform->label(), 'entity.webform.canonical', ['webform' => $this->webform->id()]),
+    ];
+    $this->assertLinks($route_match, $links);
+
+    // Check with view own access.
+    $route_match = $this->getMockRouteMatch('entity.webform.user.submission', [
+      ['webform_submission', $this->webformSubmissionAccess],
     ]);
     $links = [
       Link::createFromRoute($this->webform->label(), 'entity.webform.canonical', ['webform' => $this->webform->id()]),
       Link::createFromRoute('Submissions', 'entity.webform.user.submissions', ['webform' => $this->webform->id()]),
     ];
     $this->assertLinks($route_match, $links);
+
   }
 
   /**

@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\webform\Form\WebformDeleteFormBase;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
+use Drupal\webform\Plugin\WebformElementVariantInterface;
 use Drupal\webform\WebformEntityElementsValidatorInterface;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -141,7 +142,9 @@ class WebformUiElementDeleteForm extends WebformDeleteFormBase {
     if ($element_plugin->isContainer($this->element)) {
       $items[] = $this->t('Delete all child elements');
     }
-
+    if ($element_plugin instanceof WebformElementVariantInterface) {
+      $items[] = $this->t('Delete all related variants');
+    }
     return [
       'title' => [
         '#markup' => $this->t('This action will…'),
@@ -213,7 +216,15 @@ class WebformUiElementDeleteForm extends WebformDeleteFormBase {
     $this->webform->save();
 
     $this->messenger()->addStatus($this->t('The webform element %title has been deleted.', ['%title' => $this->getElementTitle()]));
-    $form_state->setRedirectUrl($this->webform->toUrl('edit-form'));
+
+    $query = [];
+    // Variants require the entire page to be reloaded so that Variants tab
+    // can be hidden.
+    if ($this->getWebformElementPlugin() instanceof WebformElementVariantInterface) {
+      $query = ['reload' => 'true'];
+    }
+
+    $form_state->setRedirectUrl($this->webform->toUrl('edit-form', ['query' => $query]));
   }
 
   /****************************************************************************/

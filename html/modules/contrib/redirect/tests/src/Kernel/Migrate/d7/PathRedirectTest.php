@@ -51,7 +51,7 @@ class PathRedirectTest extends MigrateDrupalTestBase {
     $redirect = Redirect::load($id);
     $this->assertSame($this->getMigration('d7_path_redirect')
       ->getIdMap()
-      ->lookupDestinationID([$id]), [$redirect->id()]);
+      ->lookupDestinationIds([$id]), [[$redirect->id()]]);
     $this->assertSame($source_url, $redirect->getSourceUrl());
     $this->assertSame($redirect_url, $redirect->getRedirectUrl()
       ->toUriString());

@@ -31,7 +31,6 @@ class WebformTermsOfService extends Checkbox {
       'terms_content' => '',
     ] + parent::getDefaultProperties();
     unset(
-      $properties['icheck'],
       $properties['field_prefix'],
       $properties['field_suffix'],
       $properties['description'],

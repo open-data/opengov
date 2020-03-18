@@ -8,6 +8,16 @@ use Drupal\Core\Site\Settings;
 use Drupal\webform\Plugin\WebformElementBase;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
+use Psr\Log\LoggerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
+use Drupal\webform\WebformTokenManagerInterface;
+use Drupal\webform\WebformLibrariesManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\File\FileSystemInterface;
 
 /**
  * Provides a 'signature' element.
@@ -22,14 +32,74 @@ use Drupal\webform\WebformSubmissionInterface;
 class WebformSignature extends WebformElementBase {
 
   /**
+   * The helpers that operate on files.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
+   * Constructs a WebformElementBase object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   A logger instance.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration factory.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
+   *   The helpers that operate on files.
+   * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
+   *   The element info manager.
+   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+   *   The webform element manager.
+   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
+   *   The webform token manager.
+   * @param \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager
+   *   The webform libraries manager.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerInterface $logger, ConfigFactoryInterface $config_factory, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager, FileSystemInterface $file_system, ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager, WebformTokenManagerInterface $token_manager, WebformLibrariesManagerInterface $libraries_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger, $config_factory, $current_user, $entity_type_manager, $element_info, $element_manager, $token_manager, $libraries_manager);
+    $this->fileSystem = $file_system;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('logger.factory')->get('webform'),
+      $container->get('config.factory'),
+      $container->get('current_user'),
+      $container->get('entity_type.manager'),
+      $container->get('file_system'),
+      $container->get('plugin.manager.element_info'),
+      $container->get('plugin.manager.webform.element'),
+      $container->get('webform.token_manager'),
+      $container->get('webform.libraries_manager')
+    );
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getDefaultProperties() {
     $properties = [
       // General settings.
       'description' => $this->t('Sign above'),
+      'readonly' => FALSE,
     ] + parent::getDefaultProperties();
-    unset($properties['disabled']);
     return $properties;
   }
 
@@ -200,7 +270,8 @@ class WebformSignature extends WebformElementBase {
     $image_base_directory = 'public://webform/' . $webform->id();
     $image_directory = "$image_base_directory/$element_key/$sid";
     if (file_exists($image_directory)) {
-      file_unmanaged_delete_recursive($image_directory);
+      $this->fileSystem->deleteRecursive($image_directory);
+      $this->fileSystem->deleteRecursive($image_directory);
     }
 
     // Please node, the signature image (no results) directory is deleted when
@@ -244,13 +315,13 @@ class WebformSignature extends WebformElementBase {
 
     // Create signature image (no results) directory.
     $image_signature_directory = "$image_base_directory/$element_key";
-    file_prepare_directory($image_signature_directory, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+    $this->fileSystem->prepareDirectory($image_signature_directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
     $image_directory = $image_signature_directory;
 
     // Create signature image submission directory.
     if ($sid) {
       $image_submission_directory = "$image_base_directory/$element_key/$sid";
-      file_prepare_directory($image_submission_directory, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+      $this->fileSystem->prepareDirectory($image_submission_directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
       $image_directory = $image_submission_directory;
     }
 
@@ -260,7 +331,7 @@ class WebformSignature extends WebformElementBase {
     if (!file_exists($image_uri)) {
       // Copy existing file.
       if ($sid && file_exists("$image_signature_directory/signature-$image_hash.png")) {
-        file_unmanaged_move(
+        $this->fileSystem->move(
           "$image_signature_directory/signature-$image_hash.png",
           "$image_directory/signature-$image_hash.png"
         );

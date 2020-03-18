@@ -128,9 +128,6 @@ abstract class WebformLocationBase extends WebformCompositeBase {
     $element += ['#element_validate' => []];
     array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformLocation']);
 
-    // Attach library.
-    $element['#attached']['library'][] = 'webform/webform.element.location.' . static::$name;
-
     return $element;
   }
 

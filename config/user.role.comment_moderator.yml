@@ -18,6 +18,8 @@ permissions:
   - 'delete own suggested_dataset content'
   - 'delete suggested_dataset revisions'
   - 'edit any suggested_dataset content'
+  - 'comment_spam admin_settings'
+  - 'comment_spam set spam'
   - 'edit own comments'
   - 'edit own suggested_dataset content'
   - 'skip comment approval'

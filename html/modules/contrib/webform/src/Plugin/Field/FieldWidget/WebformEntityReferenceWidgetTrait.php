@@ -211,6 +211,15 @@ some_value: '[paragraph:some_value:clear]";
       $item += $item['settings'];
       unset($item['settings']);
 
+      // Set default values.
+      $item += [
+        'target_id' => '',
+        'default_data' => NULL,
+        'status' => '',
+        'open' => '',
+        'close' => '',
+      ];
+
       if ($item['status'] === WebformInterface::STATUS_SCHEDULED) {
         $states = ['open', 'close'];
         foreach ($states as $state) {

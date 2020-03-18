@@ -20,7 +20,7 @@ class WebformPluginHandlerController extends ControllerBase implements Container
   /**
    * A webform handler plugin manager.
    *
-   * @var \Drupal\Component\Plugin\PluginManagerInterface
+   * @var \Drupal\webform\Plugin\WebformHandlerManagerInterface
    */
   protected $pluginManager;
 
@@ -139,7 +139,14 @@ class WebformPluginHandlerController extends ControllerBase implements Container
     $rows = [];
     foreach ($definitions as $plugin_id => $definition) {
       // Skip email handler which has dedicated button.
-      if ($plugin_id == 'email') {
+      if ($plugin_id === 'email') {
+        continue;
+      }
+      /** @var \Drupal\webform\Plugin\WebformHandlerInterface $handler_plugin */
+      $handler_plugin = $this->pluginManager->createInstance($plugin_id);
+
+      // Check if applicable.
+      if (!$handler_plugin->isApplicable($webform)) {
         continue;
       }
 
@@ -208,8 +215,6 @@ class WebformPluginHandlerController extends ControllerBase implements Container
       $rows[] = $row;
     }
 
-    $build['#attached']['library'][] = 'webform/webform.form';
-
     $build['filter'] = [
       '#type' => 'search',
       '#title' => $this->t('Filter'),
@@ -236,6 +241,8 @@ class WebformPluginHandlerController extends ControllerBase implements Container
         'class' => ['webform-handler-add-table'],
       ],
     ];
+
+    $build['#attached']['library'][] = 'webform/webform.admin';
 
     return $build;
   }

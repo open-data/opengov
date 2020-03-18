@@ -19,6 +19,7 @@ use Solarium\Exception\HttpException;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
+use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -97,7 +98,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       'http_method' => 'AUTO',
       'commit_within' => 1000,
       'jmx' => FALSE,
-      'solr_install_dir' => '../../..',
+      'solr_install_dir' => '',
     ];
   }
 
@@ -256,8 +257,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $form['advanced']['solr_install_dir'] = [
       '#type' => 'textfield',
       '#title' => $this->t('solr.install.dir'),
-      '#description' => $this->t('The path where Solr is installed on the server, relative to the configuration or absolute. Some examples are "../../.." for Solr downloaded from apache.org, "/opt/solr-EXACT_VERSION_STRING" for the official Solr docker container, "/usr/local/opt/solr/libexec" for installations via homebrew on macOS or "/opt/solr" for some linux distributions. If you use different systems for development, testing and production you can use drupal config overwrites to adjust the value per environment or adjust the generated solrcore.properties per environment or use java virtual machine options to set the property.'),
-      '#default_value' => isset($this->configuration['solr_install_dir']) ? $this->configuration['solr_install_dir'] : '../../..',
+      '#description' => $this->t('The path where Solr is installed on the server, relative to the configuration or absolute. Some examples are "../../.." for Solr downloaded from apache.org, "/usr/local/opt/solr" for installations via homebrew on macOS or "/opt/solr" for some linux distributions and for the official Solr docker container. If you use different systems for development, testing and production you can use drupal config overwrites to adjust the value per environment or adjust the generated solrcore.properties per environment or use java virtual machine options (-D) to set the property. Modern Solr installations should set that virtual machine option correctly in their start script by themselves. In this case this field should be left empty!'),
+      '#default_value' => isset($this->configuration['solr_install_dir']) ? $this->configuration['solr_install_dir'] : '',
     ];
 
     return $form;
@@ -404,9 +405,9 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function getSolrMajorVersion($version = '') {
+  public function getSolrMajorVersion($version = ''): int {
     list($major, ,) = explode('.', $version ?: $this->getSolrVersion());
-    return $major;
+    return (int) $major;
   }
 
   /**
@@ -714,7 +715,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getAutocompleteQuery() {
     $this->connect();
-    $this->solr->registerQueryType('autocomplete', '\Drupal\search_api_solr\Solarium\Autocomplete\Query');
+    $this->solr->registerQueryType('autocomplete', AutocompleteQuery::class);
     return $this->solr->createQuery('autocomplete');
   }
 
@@ -865,31 +866,32 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    *
    * @param \Solarium\Exception\HttpException $e
    *   The HttpException object.
-   * @param \Solarium\Core\Client\Endpoint $endpoint
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *   The Solarium endpoint.
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   protected function handleHttpException(HttpException $e, ?Endpoint $endpoint) {
-    $response_code = $e->getCode();
-    switch ($response_code) {
-      case 404:
+    $response_code = (int) $e->getCode();
+    switch ((string) $response_code) {
+      case '404':
         $description = 'not found';
         break;
 
-      case 401:
-      case 403:
+      case '401':
+      case '403':
         $description = 'access denied';
         break;
 
-      case 500:
-        $description = 'internal error. Check your Solr logs for details!';
+      case '500':
+      case '0':
+        $description = 'internal Solr server error';
         break;
 
       default:
-        $description = sprintf('unreachable or returned unexpected response code "%d"', $response_code);
+        $description = 'unreachable or returned unexpected response code';
     }
-    throw new SearchApiSolrException('Solr endpoint ' . $endpoint->getServerUri() . " $description.", $response_code, $e);
+    throw new SearchApiSolrException(sprintf('Solr endpoint %s %s (%d). %s', $endpoint->getServerUri(), $description, $response_code, $e->getBody()), $response_code, $e);
   }
 
   /**
@@ -1042,8 +1044,12 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     if (!empty($this->configuration['jmx'])) {
       $files['solrconfig_extra.xml'] .= "<jmx />\n";
     }
+
     if (!empty($this->configuration['solr_install_dir'])) {
       $files['solrcore.properties'] = preg_replace("/solr\.install\.dir.*$/", 'solr.install.dir=' . $this->configuration['solr_install_dir'], $files['solrcore.properties']);
+    }
+    else {
+      $files['solrcore.properties'] = preg_replace("/solr\.install\.dir.*$/", '', $files['solrcore.properties']);
     }
   }
 
