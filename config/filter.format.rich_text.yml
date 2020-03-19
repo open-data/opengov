@@ -4,6 +4,7 @@ status: true
 dependencies:
   module:
     - editor
+    - media
     - token_filter
 name: 'Rich Text'
 format: rich_text
@@ -74,3 +75,14 @@ filters:
     weight: 0
     settings:
       replace_empty: '0'
+  media_embed:
+    id: media_embed
+    provider: media
+    status: true
+    weight: 100
+    settings:
+      default_view_mode: default
+      allowed_media_types:
+        file: file
+        image: image
+      allowed_view_modes: {  }
