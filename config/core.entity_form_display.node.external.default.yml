@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.external.field_url
     - field.field.node.external.field_uuid
     - node.type.external
+    - workflows.workflow.editorial
   module:
     - comment
     - content_moderation
@@ -114,6 +115,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     region: content
     third_party_settings: {  }
   url_redirects:

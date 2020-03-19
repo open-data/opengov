@@ -13,7 +13,7 @@ id: vote_up_down_external
 title: 'Vote: Vote up or LIKE (external)'
 description: 'Simple webform to vote up or like external content such as SOLR inventory items.'
 category: Voting
-elements: "uuid:\n  '#type': hidden\n  '#title': UUID\nreferred_url:\n  '#type': hidden\n  '#title': 'Referred URL'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'"
+elements: "uuid:\n  '#type': hidden\n  '#title': UUID\nreferred_url:\n  '#type': hidden\n  '#title': 'Referred URL'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'\n  '#update__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'\n"
 css: ''
 javascript: ''
 settings:
@@ -129,6 +129,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -186,4 +187,5 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+variants: {  }
 uuid: 80a68e98-0996-481e-b176-ed909156c1f1

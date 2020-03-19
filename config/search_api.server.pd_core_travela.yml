@@ -14,7 +14,7 @@ backend_config:
   connector: standard
   connector_config:
     scheme: http
-    host: localhost
+    host: 10.55.148.68
     port: '8983'
     path: /
     core: core_travela
@@ -33,3 +33,4 @@ backend_config:
   domain: generic
   site_hash: true
   optimize: false
+  environment: default

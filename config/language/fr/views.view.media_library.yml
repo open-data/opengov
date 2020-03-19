@@ -58,9 +58,6 @@ display:
   page:
     display_title: Page
     display_options:
-      menu:
-        title: Média
-        description: 'Permet aux utilisateurs de parcourir et d''administrer des éléments média'
       header:
         result:
           content: 'Displaying @start - @end of @total'

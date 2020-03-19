@@ -20,7 +20,8 @@ default_list:
   - Verbum
   - Hec.su
   - Femdomspanking
-custom_list: {  }
-include_default_list: 0
+custom_list:
+  - Shit
+include_default_list: '0'
 webform_list:
   - contact
