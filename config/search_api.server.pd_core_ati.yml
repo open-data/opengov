@@ -14,7 +14,7 @@ backend_config:
   connector: standard
   connector_config:
     scheme: http
-    host: localhost
+    host: tbs-solrdb01.t1.tbs-sct.gc.ca
     port: '8983'
     path: /
     core: core_ati
@@ -33,3 +33,4 @@ backend_config:
   domain: generic
   site_hash: true
   optimize: false
+  environment: default

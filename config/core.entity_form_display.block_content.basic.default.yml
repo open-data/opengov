@@ -5,9 +5,7 @@ dependencies:
   config:
     - block_content.type.basic
     - field.field.block_content.basic.body
-    - workflows.workflow.editorial
   module:
-    - content_moderation
     - text
 _core:
   default_config_hash: e1Nu5xXAuF_QplbBUhQBPLnYWvHtDX0MkZnpuCiY8uM
@@ -24,6 +22,7 @@ content:
       rows: 9
       summary_rows: 3
       placeholder: ''
+      show_summary: false
     third_party_settings: {  }
   info:
     type: string_textfield

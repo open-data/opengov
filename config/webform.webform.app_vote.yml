@@ -132,6 +132,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -190,4 +191,5 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+variants: {  }
 uuid: 7824b244-3523-4d76-ad5b-526e74ce8a68

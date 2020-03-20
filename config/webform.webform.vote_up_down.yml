@@ -1,4 +1,3 @@
-uuid: f7e1ac41-a81b-44fd-b028-a50d6cc1f1b6
 langcode: en
 status: open
 dependencies:
@@ -14,7 +13,7 @@ id: vote_up_down
 title: 'Vote: Vote up or LIKE'
 description: 'Simple webform to vote up or like an entity.'
 category: Voting
-elements: "actions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'"
+elements: "actions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'\n  '#update__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'\n"
 css: ''
 javascript: ''
 settings:
@@ -130,6 +129,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
 access:
   create:
@@ -187,3 +187,5 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+variants: {  }
+uuid: f7e1ac41-a81b-44fd-b028-a50d6cc1f1b6

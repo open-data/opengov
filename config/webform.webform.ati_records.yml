@@ -128,6 +128,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
   form_login: false
   form_login_message: ''
@@ -214,6 +215,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false
@@ -249,6 +251,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: false
       attachments: false
       twig: false
@@ -267,6 +270,7 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+variants: {  }
 uuid: 94925d66-f79b-4256-9770-ff40e4f44ac5
 third_party_settings:
   honeypot:
