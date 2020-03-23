@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_form_mode.media.media_library
     - field.field.media.slideshow.field_media_image
+    - field.field.media.slideshow.field_slideshow_title
     - image.style.thumbnail
     - media.type.slideshow
   module:
@@ -30,8 +31,14 @@ content:
     weight: 0
     third_party_settings: {  }
     region: content
+  translation:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    region: content
 hidden:
   created: true
+  field_slideshow_title: true
   langcode: true
   path: true
   status: true

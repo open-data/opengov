@@ -20,7 +20,7 @@ backend_config:
   connector: standard
   connector_config:
     scheme: http
-    host: localhost
+    host: tbs-solrdb01.t1.tbs-sct.gc.ca
     port: 8983
     path: /
     core: drupal_content
@@ -42,3 +42,4 @@ backend_config:
   domain: generic
   optimize: false
   site_hash: true
+  environment: default

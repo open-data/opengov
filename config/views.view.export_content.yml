@@ -26,7 +26,6 @@ description: ''
 tag: ''
 base_table: node_field_data
 base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -340,8 +339,8 @@ display:
           label: ''
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '{{ field_sd_status__value }}'
             make_link: false
             path: ''
             absolute: false
@@ -667,6 +666,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -693,6 +694,8 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -782,9 +785,9 @@ display:
             field_suggested_dataset_dept:
               alias: Organization
               raw_output: true
-            field_status:
+            field_sd_status:
               alias: Status
-              raw_output: true
+              raw_output: false
             field_status_link:
               alias: StatusLink
               raw_output: true

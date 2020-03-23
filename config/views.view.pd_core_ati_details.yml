@@ -16,7 +16,6 @@ description: 'Details page for Solr core_ati'
 tag: ''
 base_table: search_api_index_pd_core_ati
 base_field: search_api_id
-core: 8.x
 display:
   default:
     display_plugin: default
