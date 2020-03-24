@@ -11,9 +11,11 @@ entity_type: node
 bundle: suggested_dataset
 label: Keywords
 description: ''
-required: false
+required: true
 translatable: true
-default_value: {  }
+default_value:
+  -
+    value: dataset
 default_value_callback: ''
 settings: {  }
 field_type: string

@@ -21,7 +21,7 @@ id: suggest_a_dataset
 title: 'Suggest a Dataset'
 description: 'Updated &quot;Suggest a Dataset&quot; form for the changed workflow.'
 category: ''
-elements: "page_1:\n  '#type': webform_wizard_page\n  '#title': Suggestion\n  title_of_dataset:\n    '#type': textfield\n    '#title': 'Suggested title of dataset(s)'\n    '#description': '<p class=\"text-info\">This field describes the suggested dataset''s title. Example: Canadian Wind Patterns 2016 - 2019</p>'\n    '#required': true\n  department:\n    '#type': webform_select_other\n    '#title': 'Government institution that publishes dataset'\n    '#description': '<p class=\"text-info\">This field describes the government institution that publishes the suggested dataset. Example: Environment and Climate Change Canada</p>'\n    '#options': organization\n    '#choices': true\n    '#other__option_label': Other\n    '#other__placeholder': ''\n    '#required': true\n  description_dataset:\n    '#type': textarea\n    '#title': 'Description of the dataset you would like to make available'\n    '#description': '<p class=\"text-info\">This field describes the description of the dataset being suggested. Example: This dataset would contain data collected over the years 2016-2019, pertaining to Canadian wind patterns from coast to coast.</p>'\n    '#required': true\n  additional_comments_and_feedback:\n    '#type': textarea\n    '#title': 'Additional comments and feedback'\n    '#description': '<p class=\"text-info\">Example: This data was available for the years 2010-2015 but has not been released since.</p>'\n  dataset_subject:\n    '#type': select\n    '#title': 'Suggest subject for this dataset'\n    '#multiple': true\n    '#description': '<p class=\"text-info\">Example: Environment, Science and Technology</p>'\n    '#options': dataset_subject\n  dataset_keywords:\n    '#type': textfield\n    '#title': 'Categorize your dataset by comma separated descriptive words'\n    '#description': '<p class=\"text-info\">Example: Weather, Environment and Climate Change Canada, Wind Patterns</p>'\n  reason:\n    '#type': select\n    '#title': 'Reason for requesting dataset'\n    '#description': '<p class=\"text-info\">Example: Academic</p>'\n    '#options': dataset_reason\n    '#other__option_label': Other\n    '#other__placeholder': ''\npersonal_information_optional_:\n  '#type': webform_wizard_page\n  '#title': 'Contact Information'\n  '#prev_button_label': '< Previous'\n  '#next_button_label': 'Next >'\n  first_name:\n    '#type': textfield\n    '#title': 'First Name'\n  last_name:\n    '#type': textfield\n    '#title': 'Last Name'\n  title:\n    '#type': textfield\n    '#title': Title\n  organization:\n    '#type': textfield\n    '#title': Organization\n  e_mail_address:\n    '#type': email\n    '#title': 'E-mail Address'\n    '#description': '<p class=\"text-info\">Example: user@email.com</p>'\n    '#required': true\n  telephone:\n    '#type': tel\n    '#title': Telephone\n  user_consent:\n    '#type': checkbox\n    '#title': 'I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)"
+elements: "page_1:\n  '#type': webform_wizard_page\n  '#title': Suggestion\n  title_of_dataset:\n    '#type': textfield\n    '#title': 'Suggested title of dataset(s)'\n    '#description': '<p class=\"text-info\">This field describes the suggested dataset''s title. Example: Canadian Wind Patterns 2016 - 2019</p>'\n    '#required': true\n  department:\n    '#type': webform_select_other\n    '#title': 'Government institution that publishes dataset'\n    '#description': '<p class=\"text-info\">This field describes the government institution that publishes the suggested dataset. Example: Environment and Climate Change Canada</p>'\n    '#options': organization\n    '#choices': true\n    '#other__option_label': Other\n    '#other__placeholder': ''\n    '#required': true\n  description_dataset:\n    '#type': textarea\n    '#title': 'Description of the dataset you would like to make available'\n    '#description': '<p class=\"text-info\">This field describes the description of the dataset being suggested. Example: This dataset would contain data collected over the years 2016-2019, pertaining to Canadian wind patterns from coast to coast.</p>'\n    '#required': true\n  additional_comments_and_feedback:\n    '#type': textarea\n    '#title': 'Additional comments and feedback'\n    '#description': '<p class=\"text-info\">Example: This data was available for the years 2010-2015 but has not been released since.</p>'\n  dataset_subject:\n    '#type': select\n    '#title': 'Suggest subject for this dataset'\n    '#multiple': true\n    '#description': '<p class=\"text-info\">Example: Environment, Science and Technology</p>'\n    '#options': dataset_subject\n  dataset_keywords:\n    '#type': textfield\n    '#title': 'Categorize your dataset by comma separated descriptive words'\n    '#description': '<p class=\"text-info\">Example: Weather, Environment and Climate Change Canada, Wind Patterns</p>'\n  reason:\n    '#type': select\n    '#title': 'Reason for requesting dataset'\n    '#description': '<p class=\"text-info\">Example: Academic</p>'\n    '#options': dataset_reason\n    '#other__option_label': Other\n    '#other__placeholder': ''\n    '#required': true\npersonal_information_optional_:\n  '#type': webform_wizard_page\n  '#title': 'Contact Information'\n  '#prev_button_label': '< Previous'\n  '#next_button_label': 'Next >'\n  first_name:\n    '#type': textfield\n    '#title': 'First Name'\n  last_name:\n    '#type': textfield\n    '#title': 'Last Name'\n  title:\n    '#type': textfield\n    '#title': Title\n  organization:\n    '#type': textfield\n    '#title': Organization\n  e_mail_address:\n    '#type': email\n    '#title': 'E-mail Address'\n    '#description': '<p class=\"text-info\">Example: user@email.com</p>'\n    '#required': true\n  telephone:\n    '#type': tel\n    '#title': Telephone\n  user_consent:\n    '#type': checkbox\n    '#title': 'I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)"
 css: ''
 javascript: ''
 settings:
@@ -135,6 +135,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  token_view: false
   token_update: false
   form_login: false
   form_login_message: ''
@@ -239,6 +240,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false
@@ -274,6 +276,7 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false
@@ -292,3 +295,4 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+variants: {  }
