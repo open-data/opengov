@@ -1,9 +1,7 @@
-uuid: bb87bcad-39e3-46cf-b54b-a831fee3799f
+uuid: 340005d3-f197-4c31-9c41-16914a205bc4
 langcode: en
 status: true
 dependencies: {  }
-_core:
-  default_config_hash: frLAW3TS85g_NN2Db8Jl4xNDLORi8wcA8prHMtBMczU
 id: comment_moderator
 label: 'Comment Moderator'
 weight: 4
@@ -14,9 +12,23 @@ permissions:
   - 'access contextual links'
   - 'access toolbar'
   - 'administer comments'
+  - 'create content translations'
+  - 'delete any suggested_dataset content'
+  - 'delete content translations'
+  - 'delete own suggested_dataset content'
+  - 'delete suggested_dataset revisions'
+  - 'edit any suggested_dataset content'
   - 'comment_spam admin_settings'
   - 'comment_spam set spam'
   - 'edit own comments'
+  - 'edit own suggested_dataset content'
   - 'skip comment approval'
+  - 'translate suggested_dataset node'
+  - 'update content translations'
+  - 'use editorial transition create_new_draft'
+  - 'use editorial transition publish'
   - 'use text format rich_text'
+  - 'view any unpublished content'
+  - 'view latest version'
+  - 'view suggested_dataset revisions'
   - 'view the administration theme'

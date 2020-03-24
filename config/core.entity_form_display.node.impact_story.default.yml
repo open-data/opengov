@@ -64,10 +64,10 @@ content:
     weight: 15
     region: content
     settings:
-      match_limit: 10
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
   field_story_impact:
     weight: 5
@@ -87,9 +87,13 @@ content:
     region: content
   field_subject:
     weight: 2
-    settings: {  }
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
-    type: options_select
+    type: entity_reference_autocomplete
     region: content
   field_submitter_name:
     weight: 1

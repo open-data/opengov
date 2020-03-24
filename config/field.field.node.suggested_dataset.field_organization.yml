@@ -15,9 +15,7 @@ label: 'Government institution'
 description: 'Organization for Suggested Dataset (synced with CKAN)'
 required: true
 translatable: false
-default_value:
-  -
-    value: external-externe
+default_value: {  }
 default_value_callback: ''
 settings: {  }
 field_type: list_string
