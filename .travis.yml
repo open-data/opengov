@@ -39,6 +39,7 @@ before_install:
   - composer --version
 
 install:
+  - composer clear-cache
   # remove duplicates
   - if [ -d "vendor" ]; then rm -Rf vendor; fi
   - if [ -d "html" ]; then rm -Rf html; fi
