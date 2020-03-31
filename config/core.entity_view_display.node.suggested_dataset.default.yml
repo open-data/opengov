@@ -19,10 +19,7 @@ dependencies:
     - field.field.node.suggested_dataset.field_webform_submission_id
     - node.type.suggested_dataset
     - webform.webform.vote_up_down
-  content:
-    - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
   module:
-    - block_content
     - bootstrap_layouts
     - comment
     - datetime
@@ -38,226 +35,9 @@ third_party_settings:
     enabled: true
     sections:
       -
-        layout_id: bs_2col
-        layout_settings:
-          layout:
-            wrapper: div
-            classes:
-              row: row
-            add_layout_class: 1
-            attributes: ''
-          regions:
-            left:
-              wrapper: div
-              classes:
-                col-md-8: col-md-8
-              add_region_classes: 1
-              attributes: ''
-            right:
-              wrapper: div
-              classes:
-                col-md-4: col-md-4
-              add_region_classes: 1
-              attributes: ''
-        components:
-          c584ae24-876f-454e-8c2c-eb6f3b2ed940:
-            uuid: c584ae24-876f-454e-8c2c-eb6f3b2ed940
-            region: right
-            configuration:
-              id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
-              label: 'Pillars - social media'
-              provider: block_content
-              label_display: '0'
-              status: true
-              info: ''
-              view_mode: full
-              context_mapping: {  }
-            additional: {  }
-            weight: 0
-          aae483c8-5f05-4575-8011-f7d448abca4c:
-            uuid: aae483c8-5f05-4575-8011-f7d448abca4c
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'extra_field_block:node:suggested_dataset:content_moderation_control'
-            additional: {  }
-            weight: 0
-        third_party_settings: {  }
-      -
-        layout_id: bs_2col
-        layout_settings:
-          layout:
-            wrapper: div
-            classes:
-              row: row
-            add_layout_class: 1
-            attributes: ''
-          regions:
-            left:
-              wrapper: div
-              classes:
-                col-sm-3: col-sm-3
-              add_region_classes: 1
-              attributes: class|mrgn-tp-md
-            right:
-              wrapper: div
-              classes:
-                col-sm-9: col-sm-9
-              add_region_classes: 1
-              attributes: class|well
-        components:
-          ac997583-4154-43ac-b024-b9e45babf456:
-            uuid: ac997583-4154-43ac-b024-b9e45babf456
-            region: right
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:body'
-              formatter:
-                label: above
-                type: text_default
-                settings: {  }
-                third_party_settings: {  }
-            additional: {  }
-            weight: -8
-          99eae66a-01db-4041-8dde-bd2517e3c1b3:
-            uuid: 99eae66a-01db-4041-8dde-bd2517e3c1b3
-            region: left
-            configuration:
-              id: 'field_block:node:suggested_dataset:field_status_link'
-              label: 'Status Link'
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: hidden
-                type: link
-                settings:
-                  trim_length: 80
-                  url_only: false
-                  url_plain: false
-                  rel: '0'
-                  target: '0'
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: -6
-          013afe8d-8ea6-44a7-bd40-7a684d347a0b:
-            uuid: 013afe8d-8ea6-44a7-bd40-7a684d347a0b
-            region: left
-            configuration:
-              id: 'field_block:node:suggested_dataset:field_date_published'
-              label: 'Dataset released date'
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: above
-                type: datetime_default
-                settings:
-                  timezone_override: ''
-                  format_type: html_date
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: -5
-          de281d45-231b-425d-831b-7e3ee54072a6:
-            uuid: de281d45-231b-425d-831b-7e3ee54072a6
-            region: right
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_organization'
-              formatter:
-                label: above
-                settings: {  }
-                third_party_settings: {  }
-                type: list_default
-            additional: {  }
-            weight: -9
-          f100db74-faa0-41ff-ad29-0bda2dd46907:
-            uuid: f100db74-faa0-41ff-ad29-0bda2dd46907
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_sd_status'
-              formatter:
-                label: above
-                settings: {  }
-                third_party_settings: {  }
-                type: list_default
-            additional: {  }
-            weight: -7
-          6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0:
-            uuid: 6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_dataset_subject'
-              formatter:
-                label: above
-                settings: {  }
-                third_party_settings: {  }
-                type: list_default
-            additional: {  }
-            weight: -4
-          8f818792-ff06-4bf4-bfd9-1b1c0fa18444:
-            uuid: 8f818792-ff06-4bf4-bfd9-1b1c0fa18444
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_dataset_keywords'
-              formatter:
-                label: above
-                settings:
-                  link_to_entity: false
-                third_party_settings: {  }
-                type: string
-            additional: {  }
-            weight: -3
-          f103b731-a779-445b-b1db-4c4f796112f2:
-            uuid: f103b731-a779-445b-b1db-4c4f796112f2
-            region: right
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_feedback'
-              formatter:
-                label: above
-                settings: {  }
-                third_party_settings: {  }
-                type: basic_string
-            additional: {  }
-            weight: 1
-          96c2bf7e-8722-4564-8bf2-7b75518a2e15:
-            uuid: 96c2bf7e-8722-4564-8bf2-7b75518a2e15
-            region: left
-            configuration:
-              id: webform_block
-              label: Webform
-              provider: webform
-              label_display: '0'
-              webform_id: vote_up_down
-              default_data: ''
-              redirect: false
-              context_mapping: {  }
-            additional: {  }
-            weight: -2
-        third_party_settings: {  }
-      -
         layout_id: bs_1col
         layout_settings:
+          label: ''
           layout:
             wrapper: div
             classes:
@@ -272,23 +52,20 @@ third_party_settings:
               add_region_classes: 1
               attributes: ''
         components:
-          c35ebc98-dcb5-4f3d-8344-445118624ab1:
-            uuid: c35ebc98-dcb5-4f3d-8344-445118624ab1
+          04ca5c1f-d788-4215-8bd2-0e95ac07e11d:
+            uuid: 04ca5c1f-d788-4215-8bd2-0e95ac07e11d
             region: main
             configuration:
+              id: webform_block
+              label: Webform
+              provider: webform
               label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:comment'
-              formatter:
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-                type: comment_default
+              webform_id: vote_up_down
+              default_data: ''
+              redirect: false
+              context_mapping: {  }
             additional: {  }
-            weight: 7
+            weight: 0
         third_party_settings: {  }
 id: node.suggested_dataset.default
 targetEntityType: node
