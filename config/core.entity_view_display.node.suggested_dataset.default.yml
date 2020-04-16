@@ -59,6 +59,7 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           c584ae24-876f-454e-8c2c-eb6f3b2ed940:
             uuid: c584ae24-876f-454e-8c2c-eb6f3b2ed940
@@ -107,6 +108,7 @@ third_party_settings:
                 col-sm-9: col-sm-9
               add_region_classes: 1
               attributes: class|well
+          label: ''
         components:
           ac997583-4154-43ac-b024-b9e45babf456:
             uuid: ac997583-4154-43ac-b024-b9e45babf456
@@ -271,6 +273,7 @@ third_party_settings:
                 col-sm-12: col-sm-12
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           c35ebc98-dcb5-4f3d-8344-445118624ab1:
             uuid: c35ebc98-dcb5-4f3d-8344-445118624ab1
