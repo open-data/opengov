@@ -275,7 +275,7 @@ display:
             more_link_path: ''
             strip_tags: true
             trim: false
-            preserve_tags: '<br /><br>'
+            preserve_tags: '<a><br /><br>'
             html: false
           element_type: ''
           element_class: ''

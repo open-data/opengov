@@ -1,3 +1,4 @@
+uuid: d553f7a9-bebe-433e-a683-6185a3908d41
 langcode: en
 status: open
 dependencies:
@@ -7,6 +8,12 @@ dependencies:
       - webform
   module:
     - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
+_core:
+  default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU
 open: null
 close: null
 weight: 0
@@ -180,12 +187,12 @@ access:
     roles:
       - anonymous
       - authenticated
-      - anonymous
-      - authenticated
     users: {  }
     permissions: {  }
   view_any:
-    roles: {  }
+    roles:
+      - comment_moderator
+      - business_owner
     users: {  }
     permissions: {  }
   update_any:
@@ -298,10 +305,3 @@ handlers:
       theme_name: ''
       parameters: {  }
 variants: {  }
-uuid: d553f7a9-bebe-433e-a683-6185a3908d41
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
-_core:
-  default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU

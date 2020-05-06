@@ -9,4 +9,3 @@ is_admin: null
 permissions:
   - 'access webform overview'
   - 'use text format rich_text'
-  - 'view any webform submission'
