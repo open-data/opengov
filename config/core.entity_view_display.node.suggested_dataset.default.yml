@@ -18,7 +18,6 @@ dependencies:
     - field.field.node.suggested_dataset.field_vote_up_down
     - field.field.node.suggested_dataset.field_webform_submission_id
     - node.type.suggested_dataset
-    - webform.webform.vote_up_down
   content:
     - 'block_content:basic:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
   module:
@@ -31,7 +30,6 @@ dependencies:
     - options
     - text
     - user
-    - webform
 third_party_settings:
   layout_builder:
     allow_custom: false
@@ -242,18 +240,24 @@ third_party_settings:
                 type: basic_string
             additional: {  }
             weight: 1
-          96c2bf7e-8722-4564-8bf2-7b75518a2e15:
-            uuid: 96c2bf7e-8722-4564-8bf2-7b75518a2e15
+          c93e6343-5d09-42e3-80b0-fc5e3cbba72e:
+            uuid: c93e6343-5d09-42e3-80b0-fc5e3cbba72e
             region: left
             configuration:
-              id: webform_block
-              label: Webform
-              provider: webform
+              id: 'field_block:node:suggested_dataset:field_vote_up_down'
+              label: Votes
+              provider: layout_builder
               label_display: '0'
-              webform_id: vote_up_down
-              default_data: ''
-              redirect: false
-              context_mapping: {  }
+              formatter:
+                label: inline
+                type: number_integer
+                settings:
+                  thousand_separator: ''
+                  prefix_suffix: true
+                third_party_settings: {  }
+              context_mapping:
+                entity: layout_builder.entity
+                view_mode: view_mode
             additional: {  }
             weight: -2
         third_party_settings: {  }

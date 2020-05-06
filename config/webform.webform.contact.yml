@@ -187,12 +187,12 @@ access:
     roles:
       - anonymous
       - authenticated
-      - anonymous
-      - authenticated
     users: {  }
     permissions: {  }
   view_any:
-    roles: {  }
+    roles:
+      - comment_moderator
+      - business_owner
     users: {  }
     permissions: {  }
   update_any:

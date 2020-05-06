@@ -1,9 +1,16 @@
+uuid: 94925d66-f79b-4256-9770-ff40e4f44ac5
 langcode: en
 status: open
 dependencies:
   module:
     - honeypot
     - og_ext_webform
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
+_core:
+  default_config_hash: 3KMfwnJX9MY_3tJmNyqT_XDU5kCN089MDHRQe6cdXDo
 open: null
 close: null
 weight: 0
@@ -14,7 +21,7 @@ id: ati_records
 title: 'Informal Request for ATI Records Previously Released'
 description: '&quot;Informal Request for ATI Records Previously Released&quot; webform.'
 category: ''
-elements: "solr_core:\n  '#type': hidden\n  '#title': 'Solr core'\n  '#value': pd_core_ati\nentity_id:\n  '#type': hidden\n  '#title': 'Entity ID'\n  '#value': '[current-page:url:args:last]'\norganization:\n  '#type': hidden\n  '#title': Organization\n  '#disabled': true\n  '#default_value': '[current-page:query:org]'\nyear:\n  '#type': hidden\n  '#title': Year\n  '#disabled': true\n  '#default_value': '[current-page:query:year]'\nmonth:\n  '#type': hidden\n  '#title': Month\n  '#disabled': true\n  '#default_value': '[current-page:query:month]'\nrequest_number:\n  '#type': hidden\n  '#title': 'Request Number'\n  '#disabled': true\n  '#default_value': '[current-page:query:req_num]'\nrequest_summary:\n  '#type': hidden\n  '#title': 'Request Summary'\n  '#default_value': '[current-page:query:req_sum]'\n  '#disabled': true\ndisposition:\n  '#type': hidden\n  '#title': Disposition\n  '#disabled': true\n  '#default_value': '[current-page:query:disp]'\nnumber_of_pages:\n  '#type': hidden\n  '#title': 'Number of Pages'\n  '#disabled': true\n  '#default_value': '[current-page:query:req_pages]'\ne_mail_ati_recipient:\n  '#type': hidden\n  '#title': E-mail\n  '#title_display': before\n  '#disabled': true\n  '#default_value': '[current-page:query:email]'\nrequestor_category:\n  '#type': select\n  '#title': 'Requestor Category'\n  '#description': 'Select the category that best describes you.'\n  '#title_display': before\n  '#options':\n    1: Academia\n    2: 'Business (private sector)'\n    3: Media\n    4: Organization\n    5: 'Member of the Public'\n    6: 'Decline to Identify'\n  '#required': true\n  '#smart_description': false\nrequestor_category_text:\n  '#type': webform_markup\n  '#markup': |\n    <div class=\"span-4 row-end ati-note\">\n    <details><summary><span class=\"wb-icon-question\">?</span></summary>\n    <div>\n    <div class=\"module-note\">\n    <p>This information is collected for statistical purposes and is published annually on the Government of Canada Info Source website. (<a href=\"http://www.infosource.gc.ca/\" rel=\"external\" target=\"_blank\">www.infosource.gc.ca</a>)</p>\n    \n    <p><strong>Academia:</strong> Those who are engaged in higher education and who require information for research purposes.</p>\n    \n    <p><strong>Business (Private Sector):</strong> Those who are employed by the private sector, including lawyers and consultants, and who require information for their business or on behalf of another individual.</p>\n    \n    <p><strong>Media:</strong> Those who are employed by a radio or television company, a newspaper or magazine, or any online newspaper or blog, etc., and who require information for media purposes.</p>\n    \n    <p><strong>Organization:</strong> Those who are working or volunteering for an organization and who require information for that organization.</p>\n    \n    <p><strong>Member of the Public:</strong>&nbsp;All other members of the public who require information for their own purposes.</p>\n    </div>\n    </div>\n    </details>\n    </div>\n    \ndelivery_method:\n  '#type': select\n  '#title': 'Delivery Method'\n  '#description': '<strong>Please note</strong> To the extent possible, the institution will return the requested records in the format selected, but it may not be able to accommodate all electronic formats due to size limitations.'\n  '#title_display': before\n  '#options':\n    1: 'Electronic Copy'\n    2: 'Paper Copy'\n    3: 'Examine in Person'\n  '#required': true\n  '#smart_description': false\ngiven_name:\n  '#type': textfield\n  '#title': 'Given Name'\n  '#required': true\nfamily_name:\n  '#type': textfield\n  '#title': 'Family Name'\n  '#required': true\nyour_e_mail_address:\n  '#type': email\n  '#title': 'Your E-mail Address'\n  '#required': true\nyour_telephone_number:\n  '#type': tel\n  '#title': 'Your telephone number'\n  '#required': true\nadditional_comments:\n  '#type': textarea\n  '#title': 'Additional Comments'\n  '#description': 'Explain what you want or why you are contacting this organization.'\n  '#smart_description': false\naddress_fieldset:\n  '#type': webform_address\n  '#title': Address\n  '#default_value':\n    address: ''\n    address_2: ''\n    city: ''\n    state_province: ''\n    postal_code: ''\n    country: Canada\n  '#required': true\n  '#address__required': true\n  '#city__required': true\n  '#state_province__type': webform_select_other\n  '#state_province__options': state_province_codes\n  '#state_province__required': true\n  '#postal_code__required': true\n  '#country__required': true\npreferred_language_of_correspondence:\n  '#type': select\n  '#title': 'Preferred language of correspondence'\n  '#title_display': before\n  '#options':\n    English: English\n    Français: Français\n  '#required': true\nplease_note:\n  '#type': webform_markup\n  '#markup': '<strong>Please Note:</strong>&nbsp;Institutions will work to respond to your request for this previously released package as soon as practical.'\nconsent:\n  '#type': select\n  '#title': 'I have read, understood and agree with the above Privacy Notice.'\n  '#title_display': before\n  '#options': yes_no\n  '#required': true\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)"
+elements: "solr_core:\n  '#type': hidden\n  '#title': 'Solr core'\n  '#value': pd_core_ati\nentity_id:\n  '#type': hidden\n  '#title': 'Entity ID'\n  '#value': '[current-page:url:args:last]'\norganization:\n  '#type': hidden\n  '#title': Organization\n  '#disabled': true\n  '#default_value': '[current-page:query:org]'\nyear:\n  '#type': hidden\n  '#title': Year\n  '#disabled': true\n  '#default_value': '[current-page:query:year]'\nmonth:\n  '#type': hidden\n  '#title': Month\n  '#disabled': true\n  '#default_value': '[current-page:query:month]'\nrequest_number:\n  '#type': hidden\n  '#title': 'Request Number'\n  '#disabled': true\n  '#default_value': '[current-page:query:req_num]'\nrequest_summary:\n  '#type': hidden\n  '#title': 'Request Summary'\n  '#default_value': '[current-page:query:req_sum]'\n  '#disabled': true\ndisposition:\n  '#type': hidden\n  '#title': Disposition\n  '#disabled': true\n  '#default_value': '[current-page:query:disp]'\nnumber_of_pages:\n  '#type': hidden\n  '#title': 'Number of Pages'\n  '#disabled': true\n  '#default_value': '[current-page:query:req_pages]'\ne_mail_ati_recipient:\n  '#type': hidden\n  '#title': E-mail\n  '#title_display': before\n  '#disabled': true\n  '#default_value': '[current-page:query:email]'\nrequestor_category:\n  '#type': select\n  '#title': 'Requestor Category'\n  '#description': |\n    Select the category that best describes you.\n    <div class=\"span-4 row-end ati-note\">\n    <details><summary><span class=\"wb-icon-question\">?</span></summary>\n    <div>\n    <div class=\"module-note\">\n    <p>This information is collected for statistical purposes and is published annually on the Government of Canada Info Source website. (<a href=\"http://www.infosource.gc.ca/\" rel=\"external\" target=\"_blank\">www.infosource.gc.ca</a>)</p>\n    \n    <p><strong>Academia:</strong> Those who are engaged in higher education and who require information for research purposes.</p>\n    \n    <p><strong>Business (Private Sector):</strong> Those who are employed by the private sector, including lawyers and consultants, and who require information for their business or on behalf of another individual.</p>\n    \n    <p><strong>Media:</strong> Those who are employed by a radio or television company, a newspaper or magazine, or any online newspaper or blog, etc., and who require information for media purposes.</p>\n    \n    <p><strong>Organization:</strong> Those who are working or volunteering for an organization and who require information for that organization.</p>\n    \n    <p><strong>Member of the Public:</strong>&nbsp;All other members of the public who require information for their own purposes.</p>\n    </div>\n    </div>\n    </details>\n    </div>\n    \n  '#title_display': before\n  '#options':\n    1: Academia\n    2: 'Business (private sector)'\n    3: Media\n    4: Organization\n    5: 'Member of the Public'\n    6: 'Decline to Identify'\n  '#required': true\n  '#smart_description': false\ndelivery_method:\n  '#type': select\n  '#title': 'Delivery Method'\n  '#description': '<strong>Please note</strong> To the extent possible, the institution will return the requested records in the format selected, but it may not be able to accommodate all electronic formats due to size limitations.'\n  '#title_display': before\n  '#options':\n    1: 'Electronic Copy'\n    2: 'Paper Copy'\n    3: 'Examine in Person'\n  '#required': true\n  '#smart_description': false\ngiven_name:\n  '#type': textfield\n  '#title': 'Given Name'\n  '#required': true\nfamily_name:\n  '#type': textfield\n  '#title': 'Family Name'\n  '#required': true\nyour_e_mail_address:\n  '#type': email\n  '#title': 'Your E-mail Address'\n  '#required': true\nyour_telephone_number:\n  '#type': tel\n  '#title': 'Your telephone number'\n  '#required': true\nadditional_comments:\n  '#type': textarea\n  '#title': 'Additional Comments'\n  '#description': 'Explain what you want or why you are contacting this organization.'\n  '#smart_description': false\naddress_fieldset:\n  '#type': webform_address\n  '#title': Address\n  '#default_value':\n    address: ''\n    address_2: ''\n    city: ''\n    state_province: ''\n    postal_code: ''\n    country: Canada\n  '#address__required': true\n  '#city__required': true\n  '#state_province__required': true\n  '#state_province__type': webform_select_other\n  '#state_province__options': state_province_codes\n  '#postal_code__required': true\n  '#country__required': true\npreferred_language_of_correspondence:\n  '#type': select\n  '#title': 'Preferred language of correspondence'\n  '#title_display': before\n  '#options':\n    English: English\n    Français: Français\n  '#required': true\nplease_note:\n  '#type': webform_markup\n  '#markup': '<strong>Please Note:</strong>&nbsp;Institutions will work to respond to your request for this previously released package as soon as practical.'\nconsent:\n  '#type': select\n  '#title': 'I have read, understood and agree with the above Privacy Notice.'\n  '#title_display': before\n  '#options': yes_no\n  '#required': true\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)"
 css: ''
 javascript: ''
 settings:
@@ -154,27 +161,36 @@ access:
       - anonymous
       - authenticated
     users: {  }
+    permissions: {  }
   view_any:
-    roles: {  }
+    roles:
+      - business_owner
     users: {  }
+    permissions: {  }
   update_any:
     roles: {  }
     users: {  }
+    permissions: {  }
   delete_any:
     roles: {  }
     users: {  }
+    permissions: {  }
   purge_any:
     roles: {  }
     users: {  }
+    permissions: {  }
   view_own:
     roles: {  }
     users: {  }
+    permissions: {  }
   update_own:
     roles: {  }
     users: {  }
+    permissions: {  }
   delete_own:
     roles: {  }
     users: {  }
+    permissions: {  }
   administer:
     roles: {  }
     users: {  }
@@ -271,10 +287,3 @@ handlers:
     weight: 0
     settings: {  }
 variants: {  }
-uuid: 94925d66-f79b-4256-9770-ff40e4f44ac5
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
-_core:
-  default_config_hash: 3KMfwnJX9MY_3tJmNyqT_XDU5kCN089MDHRQe6cdXDo

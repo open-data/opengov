@@ -10,7 +10,7 @@ env:
     - COMPOSER_MEMORY_LIMIT=-1
   matrix:
     - RELEASE=stable COMPOSER_CHANNEL=stable
-    - RELEASE=stable COMPOSER_CHANNEL=snapshot
+    # - RELEASE=stable COMPOSER_CHANNEL=snapshot
 
 services:
   - memcached
