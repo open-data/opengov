@@ -10,6 +10,7 @@ dependencies:
     - field.storage.node.field_vote_up_down
     - node.type.suggested_dataset
     - user.role.administrator
+    - user.role.business_owner
   module:
     - csv_serialization
     - link
@@ -38,6 +39,7 @@ display:
         options:
           role:
             administrator: administrator
+            business_owner: business_owner
       cache:
         type: tag
         options: {  }
@@ -274,7 +276,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: ''
+          label: Department/Organization
           exclude: false
           alter:
             alter_text: false
@@ -719,7 +721,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          order: ASC
+          order: DESC
           exposed: false
           expose:
             label: ''
