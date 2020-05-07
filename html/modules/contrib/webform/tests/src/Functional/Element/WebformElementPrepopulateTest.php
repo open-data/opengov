@@ -37,31 +37,59 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
 
     $files = $this->getTestFiles('text');
 
-    // Check prepopulation of an element.
+    // Check default value of elements on multiple_values.
     $this->drupalGet('/webform/test_element_prepopulate');
-    $this->assertFieldByName('textfield', '');
-    $this->assertFieldByName('textfield_prepopulate', '');
-    $this->assertFieldByName('files[managed_file_prepopulate]', '');
+    $this->assertFieldByName('textfield_01', '');
+    $this->assertFieldByName('textfield_prepopulate_01', '{default_value_01}');
+    $this->assertFieldByName('files[managed_file_prepopulate_01]', '');
+    $this->drupalPostForm('/webform/test_element_prepopulate', [], t('Next Page >'));
+    $this->assertFieldByName('textfield_02', '');
+    $this->assertFieldByName('textfield_prepopulate_02', '{default_value_02}');
 
     // Check 'textfield' can not be prepopulated.
-    $this->drupalGet('/webform/test_element_prepopulate', ['query' => ['textfield' => 'value']]);
-    $this->assertNoFieldByName('textfield', 'value');
+    $this->drupalGet('/webform/test_element_prepopulate', ['query' => ['textfield_01' => 'value']]);
+    $this->assertNoFieldByName('textfield_0', 'value');
 
-    // Check 'textfield_prepopulate' can be prepopulated.
-    $this->drupalGet('/webform/test_element_prepopulate', ['query' => ['textfield_prepopulate' => 'value']]);
-    $this->assertFieldByName('textfield_prepopulate', 'value');
+    // Check prepopulating textfield on multiple pages.
+    $options = [
+      'query' => [
+        'textfield_prepopulate_01' => 'value_01',
+        'textfield_prepopulate_02' => 'value_02',
+      ],
+    ];
+    $this->drupalGet('/webform/test_element_prepopulate', $options);
+    $this->assertFieldByName('textfield_prepopulate_01', 'value_01');
+    $this->drupalPostForm('/webform/test_element_prepopulate', [], t('Next Page >'), $options);
+    $this->assertFieldByName('textfield_prepopulate_02', 'value_02');
+
+    // Check prepopulating textfield on multiple pages and changing the value
+    $options = [
+      'query' => [
+        'textfield_prepopulate_01' => 'value_01',
+        'textfield_prepopulate_02' => 'value_02',
+      ],
+    ];
+    $this->drupalGet('/webform/test_element_prepopulate', $options);
+    $this->assertFieldByName('textfield_prepopulate_01', 'value_01');
+    $this->drupalPostForm('/webform/test_element_prepopulate', ['textfield_prepopulate_01' => 'edit_01'], t('Next Page >'), $options);
+    $this->assertFieldByName('textfield_prepopulate_02', 'value_02');
+    $this->drupalPostForm(NULL, [], t('< Previous Page'), $options);
+    $this->assertNoFieldByName('textfield_prepopulate_01', 'value_01');
+    $this->assertFieldByName('textfield_prepopulate_01', 'edit_01');
 
     // Check 'managed_file_prepopulate' can not be prepopulated.
     // The #prepopulate property is not available to managed file elements.
-    // @see \Drupal\webform\Plugin\WebformElement\WebformManagedFileBase::getDefaultProperties
+    // @see \Drupal\webform\Plugin\WebformElement\WebformManagedFileBase::defaultProperties
     $edit = [
-      'files[managed_file_prepopulate]' => \Drupal::service('file_system')->realpath($files[0]->uri),
+      'files[managed_file_prepopulate_01]' => \Drupal::service('file_system')->realpath($files[0]->uri),
     ];
-    $sid = $this->postSubmission($webform, $edit);
+    $this->drupalPostForm('/webform/test_element_prepopulate', $edit, t('Next Page >'));
+    $this->drupalPostForm(NULL, [], t('Submit'));
+    $sid = $this->getLastSubmissionId($webform);
     $webform_submission = WebformSubmission::load($sid);
-    $fid = $webform_submission->getElementData('managed_file_prepopulate');
-    $this->drupalGet('/webform/test_element_prepopulate', ['query' => ['managed_file_prepopulate' => $fid]]);
-    $this->assertFieldByName('files[managed_file_prepopulate]', '');
+    $fid = $webform_submission->getElementData('managed_file_prepopulate_01');
+    $this->drupalGet('/webform/test_element_prepopulate', ['query' => ['managed_file_prepopulate_01' => $fid]]);
+    $this->assertFieldByName('files[managed_file_prepopulate_01]', '');
   }
 
 }

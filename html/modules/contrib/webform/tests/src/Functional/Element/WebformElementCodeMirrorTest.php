@@ -44,12 +44,15 @@ class WebformElementCodeMirrorTest extends WebformElementBrowserTestBase {
     $this->assertRaw('<label for="edit-yaml-basic">yaml_basic</label>');
     $this->assertRaw('<textarea data-drupal-selector="edit-yaml-basic" class="js-webform-codemirror webform-codemirror yaml form-textarea resize-vertical" data-webform-codemirror-mode="text/x-yaml" id="edit-yaml-basic" name="yaml_basic" rows="5" cols="60">test: hello</textarea>');
 
-    // Check associative array as the #default_value.
+    // Check default value decoding.
     $this->drupalPostForm('/webform/test_element_codemirror', [], t('Submit'));
-    $this->assertRaw('yaml_array:
+    $this->assertRaw("yaml_basic: 'test: hello'
+yaml_array:
   one: One
   two: Two
-  three: Three');
+  three: Three
+yaml_decode_value:
+  test: hello");
 
     // Check invalid YAML.
     $edit = [

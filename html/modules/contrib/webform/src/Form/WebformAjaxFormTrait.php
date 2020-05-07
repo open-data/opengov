@@ -200,6 +200,12 @@ trait WebformAjaxFormTrait {
       // Announce validation errors.
       $this->announce($this->t('Form validation errors have been found.'));
     }
+    elseif ($form_state->getResponse() instanceof AjaxResponse) {
+      // Allow developers via form_alter hooks to set their own Ajax response.
+      // The custom Ajax response could be used to close modals and refresh
+      // selected regions and blocks on the page.
+      $response = $form_state->getResponse();
+    }
     elseif ($form_state->isRebuilding()) {
       // Rebuild form.
       $response = $this->replaceForm($form, $form_state);

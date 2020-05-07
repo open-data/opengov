@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformSubmissionForm;
 
 /**
@@ -203,6 +204,23 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
   /**
    * {@inheritdoc}
    */
+  public function processElements(array &$elements) {
+    foreach ($elements as $key => &$element) {
+      if (!WebformElementHelper::isElement($element, $key)) {
+        continue;
+      }
+
+      // Process the webform element.
+      $this->processElement($element);
+
+      // Recurse and prepare nested elements.
+      $this->processElements($element);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function invokeMethod($method, array &$element, &$context1 = NULL, &$context2 = NULL) {
     // Make sure element has a #type.
     if (!isset($element['#type'])) {
@@ -220,7 +238,10 @@ class WebformElementManager extends DefaultPluginManager implements FallbackPlug
    * {@inheritdoc}
    */
   public function getElementPluginId(array $element) {
-    if (isset($element['#type']) && $this->hasDefinition($element['#type'])) {
+    if (isset($element['#webform_plugin_id']) && $this->hasDefinition($element['#webform_plugin_id'])) {
+      return $element['#webform_plugin_id'];
+    }
+    elseif (isset($element['#type']) && $this->hasDefinition($element['#type'])) {
       return $element['#type'];
     }
     elseif (isset($element['#markup'])) {

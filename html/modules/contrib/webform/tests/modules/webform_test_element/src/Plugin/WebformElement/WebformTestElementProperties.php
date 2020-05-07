@@ -23,8 +23,8 @@ class WebformTestElementProperties extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    return parent::getDefaultProperties() + [
+  protected function defineDefaultProperties() {
+    return parent::defineDefaultProperties() + [
       'property_a' => 'Three',
       'property_b' => 'Three',
       'property_c' => '',

@@ -49,7 +49,7 @@ elements: |
     '#default_value':
       value: '<p><em>{default_value}</em></p>'
       format: basic_html
-
+  
 css: ''
 javascript: ''
 settings:
@@ -163,6 +163,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: true
 access:
@@ -285,3 +286,4 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
+variants: {  }

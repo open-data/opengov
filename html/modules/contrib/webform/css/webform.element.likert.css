@@ -46,8 +46,8 @@
 
 .webform-likert-table-wrapper th:first-child,
 .webform-likert-table-wrapper td:first-child {
-  text-align: inherit;
   width: 40%;
+  text-align: inherit;
 }
 
 .webform-likert-table-wrapper td:first-child label {
@@ -80,10 +80,10 @@
 
   .form-type-webform-likert td {
     display: block;
-    border: 0;
-    background: transparent;
     padding: 0;
     text-align: inherit;
+    border: 0;
+    background: transparent;
   }
 
   .webform-likert-table[data-likert-answers-count] th,
@@ -101,10 +101,10 @@
    */
   .webform-likert-table .visually-hidden {
     position: inherit !important;
-    clip: inherit;
     overflow: inherit;
-    height: inherit;
+    clip: inherit;
     width: inherit;
+    height: inherit;
   }
 
   .webform-likert-label.visually-hidden {

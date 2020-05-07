@@ -4,13 +4,13 @@
  */
 
 #drupal-off-canvas .webform-default-data textarea {
-  font-family: monospace;
   white-space: pre;
+  font-family: monospace;
 }
 
 #drupal-off-canvas .webform-default-data pre {
-  border: 1px solid #ddd;
   padding: 10px;
-  font-family: monospace;
   white-space: pre;
+  border: 1px solid #ddd;
+  font-family: monospace;
 }

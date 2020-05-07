@@ -62,11 +62,7 @@ interface WebformHelpManagerInterface {
    *   The notification to be displayed to webform administrators.
    * @param string $type
    *   (optional) The message's type. Defaults to 'status'. These values are
-   *   supported:
-   *   - 'info'
-   *   - 'status'
-   *   - 'warning'
-   *   - 'error'
+   *   supported: 'info', 'status', 'warning', 'error'.
    *
    * @internal
    *   Currently being used to display notifications related to updates.
@@ -78,11 +74,7 @@ interface WebformHelpManagerInterface {
    *
    * @param string $type
    *   (optional) The message's type. These values are
-   *   supported:
-   *   - 'info'
-   *   - 'status'
-   *   - 'warning'
-   *   - 'error'
+   *   supported: 'info', 'status', 'warning', 'error'.
    *
    * @return array
    *   An array of messages for specified message type or

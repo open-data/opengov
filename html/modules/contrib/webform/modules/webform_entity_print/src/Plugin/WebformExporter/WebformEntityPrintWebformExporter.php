@@ -2,7 +2,6 @@
 
 namespace Drupal\webform_entity_print\Plugin\WebformExporter;
 
-use Drupal\Core\Archiver\ArchiveTar;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
@@ -154,8 +153,7 @@ class WebformEntityPrintWebformExporter extends DocumentBaseWebformExporter {
     // Save printable document.
     $temporary_file_path = $this->printBuilder->savePrintable([$webform_submission], $print_engine, $scheme, $file_name);
     if ($temporary_file_path) {
-      $archiver = new ArchiveTar($this->getArchiveFilePath(), 'gz');
-      $archiver->addString($file_name, file_get_contents($temporary_file_path));
+      $this->addToArchive(file_get_contents($temporary_file_path), $file_name);
       $this->fileSystem->delete($temporary_file_path);
     }
   }

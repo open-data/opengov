@@ -3,7 +3,6 @@
 namespace Drupal\Tests\webform_entity_print\Functional;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Archiver\ArchiveTar;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 
@@ -102,12 +101,7 @@ body {
     $this->drupalPostForm('/admin/structure/webform/manage/test_entity_print/results/download', $edit, t('Download'));
 
     // Load the tar and get a list of files.
-    $tar = new ArchiveTar($submission_exporter->getArchiveFilePath(), 'gz');
-    $files = [];
-    $content_list = $tar->listContent();
-    foreach ($content_list as $file) {
-      $files[$file['filename']] = $file['filename'];
-    }
+    $files = $this->getArchiveContents($submission_exporter->getArchiveFilePath());
     $this->assertEquals(["submission-$sid.pdf" => "submission-$sid.pdf"], $files);
 
     /**************************************************************************/
@@ -140,6 +134,34 @@ body {
 }
 /** custom webform print css **/
 </style>');
+  }
+
+  /**
+   * Get archive contents.
+   *
+   * @param string $filepath
+   *   Archive file path.
+   *
+   * @return array
+   *   Array of archive contents.
+   */
+  protected function getArchiveContents($filepath) {
+    if (strpos($filepath, '.zip') !== FALSE) {
+      $archive = new \ZipArchive();
+      $archive->open($filepath);
+      $files = [];
+      for ($i = 0; $i < $archive->numFiles; $i++) {
+        $files[] = $archive->getNameIndex($i);
+      }
+    }
+    else {
+      $archive = new \Archive_Tar($filepath, 'gz');
+      $files = [];
+      foreach ($archive->listContent() as $file_data) {
+        $files[] = $file_data['filename'];
+      }
+    }
+    return array_combine($files, $files);
   }
 
 }

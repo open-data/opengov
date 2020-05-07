@@ -45,7 +45,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $this->assertRaw('<input data-drupal-selector="edit-image-file-upload" accept="image/*" type="file" id="edit-image-file-upload" name="files[image_file]" size="22" class="js-form-file form-file" />');
 
     // Check video file.
-    $this->assertRaw('<input data-drupal-selector="edit-video-file-upload" accept="video/*" type="file" id="edit-video-file-upload" name="files[video_file]" size="22" class="js-form-file form-file" />');
+    $this->assertRaw('<input data-drupal-selector="edit-video-file-upload" accept="video/mp4,video/x-m4v,video/*" type="file" id="edit-video-file-upload" name="files[video_file]" size="22" class="js-form-file form-file" />');
 
     /* Element processing */
 

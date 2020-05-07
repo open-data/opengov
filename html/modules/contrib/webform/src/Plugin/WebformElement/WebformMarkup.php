@@ -23,13 +23,15 @@ class WebformMarkup extends WebformMarkupBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'wrapper_attributes' => [],
       // Markup settings.
       'markup' => '',
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

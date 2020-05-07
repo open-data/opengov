@@ -88,6 +88,7 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
     $build['table']['#attributes']['class'][] = 'webform-access-group-table';
 
     // Attachments.
+    $build['#attached']['library'][] = 'webform/webform.admin';
     $build['#attached']['library'][] = 'webform/webform.admin.dialog';
 
     return $build;

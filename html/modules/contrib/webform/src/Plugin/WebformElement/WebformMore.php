@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "webform_more",
  *   label = @Translation("More"),
  *   description = @Translation("Provides a more slideout element."),
- *   category = @Translation("Markup"),
+ *   category = @Translation("Markup elements"),
  * )
  */
 class WebformMore extends WebformMarkupBase {
@@ -19,15 +19,17 @@ class WebformMore extends WebformMarkupBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'more_title' => \Drupal::config('webform.settings')->get('element.default_more_title'),
       'more' => '',
       'attributes' => [],
       // Markup settings.
       'display_on' => static::DISPLAY_ON_FORM,
-    ] + $this->getDefaultBaseProperties();
+    ] + $this->defineDefaultBaseProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

@@ -23,7 +23,7 @@ class Textarea extends TextBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'title' => '',
       'default_value' => '',
@@ -42,8 +42,8 @@ class Textarea extends TextBase {
       'placeholder' => '',
       'disabled' => FALSE,
       'readonly' => FALSE,
-      'rows' => '',
-      'maxlength' => '',
+      'rows' => NULL,
+      'maxlength' => NULL,
       // Form validation.
       'required' => FALSE,
       'required_error' => '',
@@ -52,9 +52,9 @@ class Textarea extends TextBase {
       'unique_entity' => FALSE,
       'unique_error' => '',
       'counter_type' => '',
-      'counter_minimum' => '',
+      'counter_minimum' => NULL,
       'counter_minimum_message' => '',
-      'counter_maximum' => '',
+      'counter_maximum' => NULL,
       'counter_maximum_message' => '',
       // Attributes.
       'wrapper_attributes' => [],
@@ -68,8 +68,11 @@ class Textarea extends TextBase {
       'format_items_html' => '',
       'format_items_text' => '',
       'format_attributes' => [],
-    ] + parent::getDefaultProperties() + $this->getDefaultMultipleProperties();
+    ] + parent::defineDefaultProperties()
+      + $this->defineDefaultMultipleProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

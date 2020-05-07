@@ -24,13 +24,13 @@ function webform_query_webform_submission_list_builder_alter(AlterableInterface 
   $property_name = $query->getMetaData('webform_submission_element_property_name');
 
   $query->distinct();
-  $query->addJoin('INNER', 'webform_submission_data', NULL, 'base_table.sid = webform_submission_data.sid');
-  $query->addField('webform_submission_data', 'value', 'value');
-  $query->condition('name', $name);
+  $query->addJoin('INNER', 'webform_submission_data', 'webform_submission_data_list_builder_element', 'base_table.sid = webform_submission_data_list_builder_element.sid');
+  $query->addField('webform_submission_data_list_builder_element', 'value');
+  $query->condition('webform_submission_data_list_builder_element.name', $name);
   if ($property_name) {
-    $query->condition('property', $property_name);
+    $query->condition('webform_submission_data_list_builder_element.property', $property_name);
   }
-  $query->orderBy('value', $direction);
+  $query->orderBy('webform_submission_data_list_builder_element.value', $direction);
 }
 
 /**

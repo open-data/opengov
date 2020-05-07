@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\webform\Functional\Element;
 
+use Drupal\taxonomy\Entity\Term;
 use Drupal\webform\Entity\Webform;
 
 /**
@@ -108,6 +109,23 @@ class WebformElementTermReferenceTest extends WebformElementBrowserTestBase {
     $this->postSubmission($webform, $edit, t('Preview'));
     $this->assertRaw('<label>webform_term_select_breadcrumb_advanced</label>');
     $this->assertRaw('<div class="item-list"><ul><li>Parent 1 › Parent 1: Child 1</li><li>Parent 1 › Parent 1: Child 2</li></ul></div>');
+
+    // Unpublish term:2.
+    Term::load(2)->setUnpublished()->save();
+
+    $this->drupalGet('/webform/test_element_term_reference');
+
+    // Check term select tree default.
+    $this->assertRaw('<option value="1">Parent 1</option>');
+    $this->assertNoRaw('<option value="2">-Parent 1: Child 1</option>');
+    $this->assertRaw('<option value="3">-Parent 1: Child 2</option>');
+    $this->assertRaw('<option value="4">-Parent 1: Child 3</option>');
+
+    // Check term select breadcrumb default.
+    $this->assertRaw('<option value="1">Parent 1</option>');
+    $this->assertNoRaw('<option value="2">Parent 1 › Parent 1: Child 1</option>');
+    $this->assertRaw('<option value="3">Parent 1 › Parent 1: Child 2</option>');
+    $this->assertRaw('<option value="4">Parent 1 › Parent 1: Child 3</option>');
   }
 
 }

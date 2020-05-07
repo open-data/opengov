@@ -275,7 +275,7 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
         break;
 
       case 'a-z0-9_-':
-        $machine_name_requirement = $this->t('lowercase letters, numbers, and underscores');
+        $machine_name_requirement = $this->t('lowercase letters, numbers, underscores, and dashes');
         break;
 
       case 'a-zA-Z0-9_-':
@@ -450,7 +450,7 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
    *   If not valid, an array of error messages.
    */
   protected function validateVariants() {
-    if (!$this->webform->hasVariant()) {
+    if (!$this->webform->hasVariants()) {
       return NULL;
     }
 
@@ -503,6 +503,16 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
       }
       elseif (!$webform_element->isContainer($element) && !empty($element['#webform_children'])) {
         $messages[] = $this->t('The %title (@type) is a webform element that can not have any child elements.', $t_args);
+      }
+      elseif ($plugin_id === 'webform_table_row') {
+        $parent_element = ($element['#webform_parent_key']) ? $elements[$element['#webform_parent_key']] : NULL;
+        if (!$parent_element || !isset($parent_element['#type']) || $parent_element['#type'] !== 'webform_table') {
+          $t_args += [
+            '%parent_title' => $this->t('Table'),
+            '@parent_type' => 'webform_table',
+          ];
+          $messages[] = $this->t('The %title (@type) must be with in a %parent_title (@parent_type) element.', $t_args);
+        }
       }
     }
     return $messages;

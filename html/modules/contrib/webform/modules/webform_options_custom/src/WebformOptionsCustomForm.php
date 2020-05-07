@@ -83,10 +83,35 @@ class WebformOptionsCustomForm extends EntityForm {
     /** @var \Drupal\webform_options_custom\WebformOptionsCustomInterface $webform_options_custom */
     $webform_options_custom = $this->entity;
 
-    // Build and return a preview of the custom options element.
-    if ($this->operation === 'preview') {
-      $form['preview'] = $webform_options_custom->getPreview();
-      return $form;
+    switch ($this->operation) {
+      case 'preview':
+        // Build and return a preview of the custom options element.
+        $form['preview'] = $webform_options_custom->getPreview();
+        return $form;
+
+      case 'source':
+        // Build and return a options YAML source element.
+        $form['options'] = [
+          '#type' => 'details',
+          '#title' => $this->t('Options'),
+          '#open' => TRUE,
+        ];
+        $form['options']['options_message'] = [
+          '#type' => 'webform_message',
+          '#message_type' => 'info',
+          '#message_message' => $this->t('Below options are used to enhance and also translate the custom options parsed from the HTML/SVG markup.'),
+          '#message_close' => TRUE,
+          '#message_storage' => WebformMessage::STORAGE_SESSION,
+        ];
+        $form['options']['options'] = [
+          '#type' => 'webform_codemirror',
+          '#mode' => 'yaml',
+          '#title' => $this->t('Options (YAML)'),
+          '#title_displace' => 'invisible',
+          '#attributes' => ['style' => 'min-height: 200px'],
+          '#default_value' => $this->getOptions(),
+        ];
+        return parent::form($form, $form_state);
     }
 
     /** @var \Drupal\webform_options_custom\WebformOptionsCustomStorageInterface $webform_options_custom_storage */
@@ -262,28 +287,16 @@ class WebformOptionsCustomForm extends EntityForm {
       '#message_close' => TRUE,
       '#message_storage' => WebformMessage::STORAGE_SESSION,
     ];
-    if ($this->getRouteMatch()->getRouteName() === 'entity.webform_options_custom.source_form') {
-      $form['options']['options'] = [
-        '#type' => 'webform_codemirror',
-        '#mode' => 'yaml',
-        '#title' => $this->t('Options (YAML)'),
-        '#title_displace' => 'invisible',
-        '#attributes' => ['style' => 'min-height: 200px'],
-        '#default_value' => $this->getOptions(),
-      ];
-    }
-    else {
-      $form['options']['options'] = [
-        '#type' => 'webform_options',
-        '#title' => $this->t('Options'),
-        '#descriptions' => $this->t('Option descriptions are displayed by tooltips.'),
-        '#title_displace' => 'invisible',
-        '#options_description' => TRUE,
-        '#empty_options' => 10,
-        '#add_more_items' => 10,
-        '#default_value' => $this->getOptions(),
-      ];
-    }
+    $form['options']['options'] = [
+      '#type' => 'webform_options',
+      '#title' => $this->t('Options'),
+      '#descriptions' => $this->t('Option descriptions are displayed by tooltips.'),
+      '#title_displace' => 'invisible',
+      '#options_description' => TRUE,
+      '#empty_options' => 10,
+      '#add_more_items' => 10,
+      '#default_value' => $this->getOptions(),
+    ];
     $form['options']['show_select'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Show select menu associated with the custom options element'),
@@ -378,6 +391,11 @@ class WebformOptionsCustomForm extends EntityForm {
     }
 
     $actions = parent::actions($form, $form_state);
+
+    // Remove delete button from source edit form.
+    if ($this->operation === 'source') {
+      unset($actions['delete']);
+    }
 
     // Open delete button in a modal dialog.
     if (isset($actions['delete'])) {

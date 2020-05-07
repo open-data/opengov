@@ -50,6 +50,10 @@ class WebformElementDateTimeTest extends WebformElementBrowserTestBase {
     // Skip time which can change during the tests.
     $this->assertRaw('type="text" step="1" data-webform-time-format="g:i A" id="edit-datetime-datepicker-timepicker-time" name="datetime_datepicker_timepicker[time]" value="4:00 PM" size="12" maxlength="12" class="form-time webform-time" />');
 
+    // Check date/time placeholder attribute.
+    $this->assertRaw(' type="text" data-drupal-date-format="Y-m-d" placeholder="{date}"');
+    $this->assertRaw(' type="text" step="1" data-webform-time-format="H:i:s" placeholder="{time}"');
+
     // Check time with custom min/max/step attributes.
     $this->assertRaw('<input min="2009-01-01" data-min-year="2009" max="2009-12-31" data-max-year="2009" data-drupal-selector="edit-datetime-time-min-max-date"');
     $this->assertRaw('<input min="09:00:00" max="17:00:00" data-drupal-selector="edit-datetime-time-min-max-time"');

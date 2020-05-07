@@ -48,7 +48,7 @@
               .removeClass('form-autocomplete');
           }
           // Always disable browser auto completion.
-          $value.attr('autocomplete', (isChrome ? 'chrome-off' : 'off'));
+          $value.attr('autocomplete', (isChrome ? 'chrome-off-' + Math.floor(Math.random() * 100000000) : 'off'));
         }).change();
       });
 

@@ -33,7 +33,7 @@ elements: |
     '#display_on': both
     '#view_mode': twig
     '#template': '{This is a custom template}'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -147,6 +147,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -233,3 +234,4 @@ handlers:
       sender_name: ''
       theme_name: ''
       parameters: {  }
+variants: {  }

@@ -225,11 +225,18 @@ entity.webform.variants:
 
 # Export
 
-entity.webform.export_form:
+entity.webform.export:
   title: 'Export'
   route_name: entity.webform.export_form
   base_route: entity.webform.canonical
   weight: 60
+
+entity.webform.export_form:
+  title: 'Config'
+  route_name: entity.webform.export_form
+  parent_id: entity.webform.export
+  base_route: entity.webform.canonical
+  weight: 0
 
 # Submission
 

@@ -20,6 +20,16 @@ use Drupal\webform\WebformSubmissionInterface;
 interface WebformExporterInterface extends PluginInspectionInterface, ConfigurableInterface, PluginFormInterface, ContainerFactoryPluginInterface {
 
   /**
+   * Tar archive.
+   */
+  const ARCHIVE_TAR = 'tar';
+
+  /**
+   * ZIP file.
+   */
+  const ARCHIVE_ZIP = 'zip';
+
+  /**
    * Returns the results exporter label.
    *
    * @return string
@@ -174,6 +184,34 @@ interface WebformExporterInterface extends PluginInspectionInterface, Configurab
    *   Archive file name.
    */
   public function getArchiveFileName();
+
+  /**
+   * Get archive file extension for a webform.
+   *
+   * @return string
+   *   Archive file extension.
+   */
+  public function getArchiveFileExtension();
+
+  /**
+   * Get archive file type.
+   *
+   * @return string
+   *   Archive file type.
+   */
+  public function getArchiveType();
+
+  /**
+   * Add file, directory, or content to exporter archive.
+   *
+   * @param string $path
+   *   System path or file content.
+   * @param string $name
+   *   Archive path or file name (applies to file content).
+   * @param array $options
+   *   Tar and zip options.
+   */
+  public function addToArchive($path, $name, array $options = []);
 
   /**
    * Get the number of submissions to be exported with each batch.

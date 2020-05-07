@@ -94,7 +94,7 @@ elements: |
         three: Three
     radios_buttons:
       '#type': radios
-      '#title': Radios (Buttons)
+      '#title': 'Radios (Buttons)'
       '#options_display': buttons
       '#options':
         one: One
@@ -232,6 +232,13 @@ elements: |
     webform_rating:
       '#type': webform_rating
       '#title': Rating
+    webform_scale:
+      '#type': webform_scale
+      '#title': Scale
+      '#min': 1
+      '#max': 10
+      '#min_text': '1 = disagree'
+      '#max_text': '10 = agree'
     webform_signature:
       '#type': webform_signature
       '#title': Signature
@@ -334,18 +341,18 @@ elements: |
     '#open': true
     webform_addresses:
       '#type': fieldset
-      '#title': 'Addresses'
+      '#title': Addresses
       webform_address:
         '#type': webform_address
-        '#title': First address
+        '#title': 'First address'
         '#flexbox': false
         '#title_display': above
       webform_same_address:
         '#type': webform_same
-        '#title': Second address same as the first address
+        '#title': 'Second address same as the first address'
         '#source': webform_address
         '#destination': webform_address_other
-        '#destination_state': 'visible-slide'
+        '#destination_state': visible-slide
         '#default_value': true
       webform_address_other:
         '#type': webform_address
@@ -485,6 +492,75 @@ elements: |
       '#wrapper_attributes':
         class:
           - 'container-inline clearfix'
+    table:
+      '#type': webform_table
+      '#title': Table
+      '#header':
+        - title: 'First Name'
+          attributes:
+            style: 'width: 40%'
+        - title: 'Last Name'
+          attributes:
+            style: 'width: 40%'
+        - title: Gender
+          attributes:
+            style: 'width: 20%'
+      table_01:
+        '#type': webform_table_row
+        '#title': 'Person (1)'
+        table_01_first_name:
+          '#type': textfield
+          '#title': 'First name (1)'
+          '#title_display': invisible
+        table_01_last_name:
+          '#type': textfield
+          '#title': 'Last name (1)'
+          '#title_display': invisible
+        table_01_gender:
+          '#type': select
+          '#title': 'Gender (1)'
+          '#title_display': invisible
+          '#options': gender
+      table_02:
+        '#type': webform_table_row
+        '#title': 'Person (2)'
+        '#states':
+          visible:
+            ':input[name="table_01_first_name"]':
+              filled: true
+        table_02_first_name:
+          '#type': textfield
+          '#title': 'First name (2)'
+          '#title_display': invisible
+        table_02_last_name:
+          '#type': textfield
+          '#title': 'Last name (2)'
+          '#title_display': invisible
+        table_02_gender:
+          '#type': select
+          '#title': 'Gender (2)'
+          '#title_display': invisible
+          '#options': gender
+      table_03:
+        '#type': webform_table_row
+        '#title': 'Person (3)'
+        '#states':
+          visible:
+            ':input[name="table_02_first_name"]':
+              filled: true
+        table_03_first_name:
+          '#type': textfield
+          '#title': 'First name (3)'
+          '#title_display': invisible
+        table_03_last_name:
+          '#type': textfield
+          '#title': 'Last name (3)'
+          '#title_display': invisible
+        table_03_gender:
+          '#type': select
+          '#title': 'Gender (3)'
+          '#title_display': invisible
+          '#options': gender
   dividers:
     '#type': details
     '#title': Dividers
@@ -681,6 +757,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -731,3 +808,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

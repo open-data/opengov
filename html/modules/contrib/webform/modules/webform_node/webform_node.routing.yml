@@ -159,6 +159,21 @@ entity.node.webform.results_submissions.custom:
   requirements:
     _custom_access: '\Drupal\webform_node\Access\WebformNodeAccess::checkWebformResultsAccess'
 
+entity.node.webform.results_submissions.custom.user:
+  path: '/node/{node}/webform/results/submissions/custom/user'
+  defaults:
+    _form: 'Drupal\webform\Form\WebformResultsCustomForm'
+    _title: 'Customize my table'
+    operation: webform_submission_view
+    entity_access: 'webform.submission_view_any'
+    type: 'user'
+  options:
+    parameters:
+      node:
+        type: 'entity:node'
+  requirements:
+    _custom_access: '\Drupal\webform_node\Access\WebformNodeAccess::checkWebformResultsAccess'
+
 entity.node.webform.results_export:
   path: '/node/{node}/webform/results/download'
   defaults:

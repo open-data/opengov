@@ -125,13 +125,17 @@ class WebformActions extends Container {
       }
     }
 
+    // Hide form actions only if the element is accessible.
+    // This prevents form from having no actions.
+    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
+    if ($has_access) {
+      $complete_form['actions']['#access'] = FALSE;
+    }
+
     // Hide actions element if no buttons are visible (i.e. #access = FALSE).
     if (!$has_visible_button) {
       $element['#access'] = FALSE;
     }
-
-    // Hide form actions.
-    $complete_form['actions']['#access'] = FALSE;
 
     return $element;
   }

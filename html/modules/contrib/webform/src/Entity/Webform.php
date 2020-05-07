@@ -414,7 +414,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   protected $elementsJavaScript = [];
 
   /**
-   * A webfrom default data extracted from each elements default value or value.
+   * A webform's default data extracted from each element's default value or value.
    *
    * @var array
    */
@@ -764,7 +764,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasVariant() {
+  public function hasVariants() {
     $this->initElements();
     return (!empty($this->elementsVariant)) ? TRUE : FALSE;
   }
@@ -1135,6 +1135,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       'purge_days' => NULL,
       'results_disabled' => FALSE,
       'results_disabled_ignore' => FALSE,
+      'results_customize' => FALSE,
       'token_view' => FALSE,
       'token_update' => FALSE,
     ];
@@ -1452,6 +1453,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     }
 
     if ($elements !== FALSE) {
+      $elements = WebformElementHelper::removeIgnoredProperties($elements);
       $this->initElementsRecursive($elements);
       $this->invokeHandlers('alterElements', $elements, $this);
     }
@@ -1499,9 +1501,6 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   protected function initElementsRecursive(array &$elements, $parent = '', $depth = 0) {
     /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
     $element_manager = \Drupal::service('plugin.manager.webform.element');
-
-    // Remove ignored properties.
-    $elements = WebformElementHelper::removeIgnoredProperties($elements);
 
     foreach ($elements as $key => &$element) {
       if (!WebformElementHelper::isElement($element, $key)) {
@@ -1568,6 +1567,15 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       if (isset($element['#type'])) {
         // Load the element's handler.
         $element_plugin = $element_manager->getElementInstance($element, $this);
+
+        // Store a reference to the plugin id which is used by derivatives.
+        // Webform elements support derivatives but Form API elements
+        // do not support derivatives. Therefore we need to store a
+        // reference to the plugin id for when a webform element derivative
+        // changes the $elements['#type'] property.
+        // @see \Drupal\webform\Plugin\WebformElementManager::getElementPluginId
+        // @see \Drupal\webform_options_custom\Plugin\WebformElement\WebformOptionsCustom::setOptions
+        $element['#webform_plugin_id'] = $element_plugin->getPluginId();
 
         // Initialize the element.
         // Note: Composite sub elements are initialized via
@@ -2039,13 +2047,21 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     /** @var \Drupal\webform\WebformInterface[] $entities */
     parent::preDelete($storage, $entities);
 
-    // Delete all paths and states associated with this webform.
+    /** @var \Drupal\user\UserDataInterface $user_data */
+    $user_data = \Drupal::service('user.data');
+
+    // Delete all paths, states, and user data associated with this webform.
     foreach ($entities as $entity) {
       // Delete all paths.
       $entity->deletePaths();
 
       // Delete the state.
+      // @see \Drupal\webform\Entity\Webform::getState
       \Drupal::state()->delete('webform.webform.' . $entity->id());
+
+      // Delete user data.
+      // @see \Drupal\webform\Entity\Webform::getUserData
+      $user_data->delete('webform', NULL, $entity->id());
     }
 
     // Delete all submission associated with this webform.
@@ -2279,7 +2295,8 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       return;
     }
 
-    $path_alias_storage->save($source, $alias, $langcode, $path['pid']);
+    $pid = $path['pid'] ?? NULL;
+    $path_alias_storage->save($source, $alias, $langcode, $pid);
   }
 
   /**
@@ -2612,6 +2629,13 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   /**
    * {@inheritdoc}
    */
+  public function hasVariant($variant_id) {
+    return $this->getVariants()->has($variant_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getVariant($variant_id) {
     return $this->getVariants()->get($variant_id);
   }
@@ -2724,9 +2748,13 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
 
     // Apply variants.
     $is_applied = FALSE;
-    foreach ($variants as $element_key => $instance_id) {
-      if ($this->applyVariant($element_key, $instance_id, $force)) {
-        $is_applied = TRUE;
+    $variant_element_keys = $this->getElementsVariant();
+    foreach ($variant_element_keys as $varient_element_key) {
+      if (!empty($variants[$varient_element_key])) {
+        $instance_id = $variants[$varient_element_key];
+        if ($this->applyVariant($varient_element_key, $instance_id, $force)) {
+          $is_applied = TRUE;
+        }
       }
     }
     if ($is_applied) {
@@ -2760,12 +2788,24 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    *   Return TRUE is variant was applied.
    */
   public function applyVariant($element_key, $instance_id, $force = FALSE) {
+    $element = $this->getElement($element_key);
     // Check that the webform has a variant instance.
     if (!$this->getVariants()->has($instance_id)) {
+      $t_args = [
+        '@title' => $element['#title'],
+        '@key' => $element_key,
+        '@instance_id' => $instance_id,
+      ];
+      // Log warning for missing variant instances.
+      \Drupal::logger('webform')->warning("The '@instance_id' variant id is missing for the '@title (@key)' variant type. <strong>No variant settings have been applied.</strong>", $t_args);
+
+      // Display onscreen warning to users who can update the webform.
+      if (\Drupal::currentUser()->hasPermission('edit webform variants')) {
+        \Drupal::messenger()->addWarning($this->t("The '@instance_id' variant id is missing for the '@title (@key)' variant type. <strong>No variant settings have been applied.</strong>", $t_args));
+      }
       return FALSE;
     }
 
-    $element = $this->getElement($element_key);
     $variant_plugin_id = $element['#variant'];
     $variant_plugin = $this->getVariant($instance_id);
 
@@ -2782,6 +2822,10 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     // Apply the variant.
     $variant_plugin->applyVariant();
   }
+
+  /****************************************************************************/
+  // URL.
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -2834,12 +2878,20 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     return parent::link($text, $rel, $options);
   }
 
+  /****************************************************************************/
+  // Revisions.
+  /****************************************************************************/
+
   /**
    * {@inheritdoc}
    */
   public function isDefaultRevision() {
     return TRUE;
   }
+
+  /****************************************************************************/
+  // State.
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -2879,6 +2931,60 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     return (isset($values[$key])) ? TRUE : FALSE;
   }
 
+  /****************************************************************************/
+  // User data.
+  /****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getUserData($key, $default = NULL) {
+    $account = \Drupal::currentUser();
+    /** @var \Drupal\user\UserDataInterface $user_data */
+    $user_data = \Drupal::service('user.data');
+    $values = $user_data->get('webform', $account->id(), $this->id());
+    return (isset($values[$key])) ? $values[$key] : $default;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUserData($key, $value) {
+    $account = \Drupal::currentUser();
+    /** @var \Drupal\user\UserDataInterface $user_data */
+    $user_data = \Drupal::service('user.data');
+    $values = $user_data->get('webform', $account->id(), $this->id()) ?: [];
+    $values[$key] = $value;
+    $user_data->set('webform', $account->id(), $this->id(), $values);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteUserData($key) {
+    $account = \Drupal::currentUser();
+    /** @var \Drupal\user\UserDataInterface $user_data */
+    $user_data = \Drupal::service('user.data');
+    $values = $user_data->get('webform', $account->id(), $this->id()) ?: [];
+    unset($values[$key]);
+    $user_data->set('webform', $account->id(), $this->id(), $values);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasUserData($key) {
+    $account = \Drupal::currentUser();
+    /** @var \Drupal\user\UserDataInterface $user_data */
+    $user_data = \Drupal::service('user.data');
+    $values = $user_data->get('webform', $account->id(), $this->id()) ?: [];
+    return (isset($values[$key])) ? TRUE : FALSE;
+  }
+
+  /****************************************************************************/
+  // Dependency.
+  /****************************************************************************/
+
   /**
    * {@inheritdoc}
    */
@@ -2886,7 +2992,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     $changed = parent::onDependencyRemoval($dependencies);
 
     $handlers = $this->getHandlers();
-      if (!empty($handlers)) {
+    if (!empty($handlers)) {
       foreach ($handlers as $handler) {
         $plugin_definition = $handler->getPluginDefinition();
         $provider = $plugin_definition['provider'];
@@ -2898,7 +3004,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     }
 
     $variants = $this->getVariants();
-      if (!empty($variants)) {
+    if (!empty($variants)) {
       foreach ($variants as $variant) {
         $plugin_definition = $variant->getPluginDefinition();
         $provider = $plugin_definition['provider'];
@@ -2911,6 +3017,10 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
 
     return $changed;
   }
+
+  /****************************************************************************/
+  // Other.
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

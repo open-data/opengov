@@ -389,7 +389,6 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
-        '#multiple': true
         '#default_value':
           - one
           - two
@@ -403,7 +402,6 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
-        '#multiple': true
         '#default_value':
           - one
           - two
@@ -417,7 +415,6 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
-        '#multiple': true
         '#default_value':
           - one
           - two
@@ -431,7 +428,6 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
-        '#multiple': true
         '#default_value':
           - one
           - two
@@ -445,12 +441,23 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
-        '#multiple': true
         '#default_value':
           - one
           - two
           - three
         '#format_items': ul
+      checkboxes_checklist:
+        '#type': checkboxes
+        '#title': 'Checkboxes (Checklist)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:boxes'
     webform_checkboxes_other:
       '#type': details
       '#title': 'Checkboxes other'
@@ -1673,6 +1680,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -1795,3 +1803,4 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
+variants: {  }

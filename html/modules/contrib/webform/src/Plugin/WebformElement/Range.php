@@ -23,7 +23,7 @@ class Range extends NumericBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       // Number settings.
       'min' => 0,
@@ -34,16 +34,21 @@ class Range extends NumericBase {
       'output__field_prefix' => '',
       'output__field_suffix' => '',
       'output__attributes' => [],
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
     unset(
       $properties['size'],
       $properties['minlength'],
       $properties['maxlength'],
       $properties['placeholder'],
-      $properties['autocomplete']
+      $properties['autocomplete'],
+      $properties['format_items'],
+      $properties['format_items_html'],
+      $properties['format_items_text']
     );
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

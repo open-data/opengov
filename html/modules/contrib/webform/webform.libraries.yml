@@ -332,6 +332,15 @@ webform.form:
     - core/jquery.once
     - webform/webform.states
 
+webform.form.auto_focus:
+  version: VERSION
+  header: true
+  js:
+    js/webform.form.auto_focus.js: { preprocess: false }
+  dependencies:
+    - core/drupal
+    - core/jquery
+
 webform.form.disable_back:
   version: VERSION
   header: true
@@ -807,6 +816,12 @@ webform.element.roles:
     - core/drupal
     - core/jquery.once
 
+webform.element.scale:
+  version: VERSION
+  css:
+    component:
+      css/webform.element.scale.css: {}
+
 webform.element.select:
   version: VERSION
   js:
@@ -885,6 +900,12 @@ webform.element.text_format:
       css/webform.element.text_format.css: {}
   js:
     js/webform.element.text_format.js: {}
+
+webform.element.table:
+  version: VERSION
+  css:
+    component:
+      css/webform.element.table.css: {}
 
 webform.element.tableselect:
   version: VERSION
@@ -969,14 +990,14 @@ libraries.choices:
 
 libraries.codemirror.text:
   remote: https://github.com/codemirror/codemirror
-  version: &webform_codemirror_version '5.48.2'
+  version: &webform_codemirror_version '5.51.0'
   license: &webform_codemirror_license
     name: MIT
     url: http://codemirror.net/LICENSE
     gpl-compatible: true
   cdn: &webform_codemirror_cdn
-    /libraries/codemirror/lib/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.2/
-    /libraries/codemirror/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.2/
+    /libraries/codemirror/lib/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/
+    /libraries/codemirror/: https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/
   css:
     component:
       /libraries/codemirror/lib/codemirror.css: {}
@@ -1055,39 +1076,39 @@ libraries.codemirror.twig:
 
 libraries.algolia.places:
   remote: https://github.com/algolia/places
-  version: '1.17.0'
+  version: '1.17.1'
   license:
     name: MIT
     url: https://github.com/algolia/places/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/algolia.places/dist/cdn/: https://cdn.jsdelivr.net/npm/places.js@1.17.0/dist/cdn/
+    /libraries/algolia.places/dist/cdn/: https://cdn.jsdelivr.net/npm/places.js@1.17.1/dist/cdn/
   js:
     /libraries/algolia.places/dist/cdn/places.js: {}
 
 libraries.jquery.inputmask:
   remote: https://github.com/RobinHerbots/jquery.inputmask
-  version: '4.0.9'
+  version: '5.0.3'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.inputmask/: https://cdn.jsdelivr.net/gh/RobinHerbots/Inputmask@4.0.9/
+    /libraries/jquery.inputmask/: https://cdn.jsdelivr.net/gh/RobinHerbots/Inputmask@5.0.3/
   js:
-    /libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js: { minified: true }
+    /libraries/jquery.inputmask/dist/jquery.inputmask.min.js: { minified: true }
   dependencies:
     - core/jquery
 
 libraries.jquery.intl-tel-input:
   remote: https://github.com/jackocnr/intl-tel-input
-  version: 'v16.0.0'
+  version: 'v16.1.0'
   license:
     name: MIT
     url: https://github.com/jackocnr/intl-tel-input/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/jquery.intl-tel-input/: https://cdn.jsdelivr.net/gh/jackocnr/intl-tel-input@v16.0.0/
+    /libraries/jquery.intl-tel-input/: https://cdn.jsdelivr.net/gh/jackocnr/intl-tel-input@v16.1.0/
   css:
     component:
       /libraries/jquery.intl-tel-input/build/css/intlTelInput.min.css: { minified: true }
@@ -1100,13 +1121,13 @@ libraries.jquery.intl-tel-input:
 
 libraries.jquery.rateit:
   remote: https://github.com/gjunge/rateit.js
-  version: '1.1.2'
+  version: '1.1.3'
   license:
     name: MIT
     url: https://github.com/gjunge/rateit.js/blob/master/LICENSE.md
     gpl-compatible: true
   cdn:
-    /libraries/jquery.rateit/: https://cdn.jsdelivr.net/gh/gjunge/rateit.js@1.1.2/
+    /libraries/jquery.rateit/: https://cdn.jsdelivr.net/gh/gjunge/rateit.js@1.1.3/
   css:
     component:
       /libraries/jquery.rateit/scripts/rateit.css: {}
@@ -1165,13 +1186,13 @@ libraries.jquery.textcounter:
 
 libraries.jquery.timepicker:
   remote: https://github.com/jonthornton/jquery-timepicker
-  version: '1.11.15'
+  version: '1.13.0'
   license:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
   cdn:
-    /libraries/jquery.timepicker/: https://cdn.jsdelivr.net/gh/jonthornton/jquery-timepicker@1.11.15/
+    /libraries/jquery.timepicker/: https://cdn.jsdelivr.net/gh/jonthornton/jquery-timepicker@1.13.0/
   css:
     component:
       /libraries/jquery.timepicker/jquery.timepicker.min.css: { minified: true }

@@ -96,6 +96,20 @@
     else if ('greater' in reference) {
       return (value !== '' && parseFloat(reference['greater']) < parseFloat(value));
     }
+    else if ('between' in reference) {
+      if (value === '') {
+        return false;
+      }
+      else {
+        var between = reference['between'];
+        var betweenParts = between.split(':');
+        var greater = betweenParts[0];
+        var less = (typeof betweenParts[1] !== 'undefined') ? betweenParts[1] : null;
+        var isGreaterThan = (greater === null || greater === '' || parseFloat(value) >= parseFloat(greater));
+        var isLessThan = (less === null || less === '' || parseFloat(value) <= parseFloat(less));
+        return (isGreaterThan && isLessThan);
+      }
+    }
     else {
       return reference.indexOf(value) !== false;
     }
@@ -171,6 +185,12 @@
 
   });
 
+  $document.on('state:checked', function (e) {
+    if (e.trigger) {
+      $(e.target).change();
+    }
+  });
+
   $document.on('state:readonly', function (e) {
     if (e.trigger && $(e.target).isWebform()) {
       $(e.target).prop('readonly', e.value).closest('.js-form-item, .js-form-wrapper').toggleClass('webform-readonly', e.value).find('input, textarea').prop('readonly', e.value);
@@ -217,6 +237,19 @@
         .prop('disabled', e.value)
         .closest('.js-form-item, .js-form-submit, .js-form-wrapper').toggleClass('form-disabled', e.value)
         .find('select, input, textarea, button').prop('disabled', e.value);
+
+      // Never disable hidden file[fids] because the existing values will
+      // be completely lost when the webform is submitted.
+      var fileElements = $(e.target)
+        .find(':input[type="hidden"][name$="[fids]"]');
+      if (fileElements.length) {
+        // Remove 'disabled' attribute from fieldset which will block
+        // all disabled elements from being submitted.
+        if ($(e.target).is('fieldset')) {
+          $(e.target).prop('disabled', false);
+        }
+        fileElements.removeAttr('disabled');
+      }
 
       // Trigger webform:disabled.
       $(e.target).trigger('webform:disabled')
@@ -269,6 +302,12 @@
         .trigger('keydown', extraParameters)
         .trigger('keyup', extraParameters)
         .trigger('blur', extraParameters);
+
+      // Make sure input mask is reset when value is restored.
+      // @see https://www.drupal.org/project/webform/issues/3124155
+      if ($input.attr('data-inputmask-mask')) {
+        setTimeout(function () {$input.inputmask('remove').inputmask();});
+      }
     }
   }
 

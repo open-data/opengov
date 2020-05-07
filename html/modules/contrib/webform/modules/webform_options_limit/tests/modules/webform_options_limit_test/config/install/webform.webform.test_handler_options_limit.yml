@@ -91,7 +91,26 @@ elements: |
       - R
       - S
       - T
-
+  options_limit_tableselect_multiple:
+    '#type': tableselect
+    '#title': options_limit_tableselect_multiple
+    '#options':
+      U: U
+      V: V
+      W: W
+    '#default_value':
+      - U
+      - V
+      - W
+  options_limit_tableselect_single:
+    '#type': tableselect
+    '#title': options_limit_tableselect_single
+    '#multiple': false
+    '#options':
+      X: X
+      Y: Y
+      Z: Z
+    '#default_value': X
 css: ''
 javascript: ''
 settings:
@@ -205,6 +224,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -278,6 +298,7 @@ handlers:
       option_none_message: '[@remaining remaining]'
       option_unlimited_message: '[Unlimited]'
       option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
   options_limit_messages:
     id: options_limit
     label: options_limit_messages
@@ -300,6 +321,7 @@ handlers:
       option_none_message: 'No options remaining / @limit limit / @total total'
       option_unlimited_message: 'Unlimited / @total total'
       option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
   options_limit_select_disable:
     id: options_limit
     label: options_limit_select_disable
@@ -322,6 +344,7 @@ handlers:
       option_none_message: '[@remaining remaining]'
       option_unlimited_message: '[Unlimited]'
       option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
   options_limit_select_remove:
     id: options_limit
     label: options_limit_select_remove
@@ -344,6 +367,7 @@ handlers:
       option_none_message: '[@remaining remaining]'
       option_unlimited_message: '[Unlimited]'
       option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
   options_limit_select_none:
     id: options_limit
     label: options_limit_select_none
@@ -366,6 +390,7 @@ handlers:
       option_none_message: '[@remaining remaining]'
       option_unlimited_message: '[Unlimited]'
       option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
   options_limit_select_other:
     id: options_limit
     label: options_limit_select_other
@@ -388,3 +413,51 @@ handlers:
       option_none_message: '[@remaining remaining]'
       option_unlimited_message: '[Unlimited]'
       option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
+  options_limit_tableselect_multiple:
+    id: options_limit
+    label: options_limit_tableselect_multiple
+    handler_id: options_limit_tableselect_multiple
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      element_key: options_limit_tableselect_multiple
+      limits:
+        U: 1
+        V: 2
+      limit_reached_message: '@name is not available.'
+      limit_source_entity: true
+      limit_user: false
+      option_none_action: disable
+      option_message_display: label
+      option_multiple_message: '[@remaining remaining]'
+      option_single_message: '[@remaining remaining]'
+      option_none_message: '[@remaining remaining]'
+      option_unlimited_message: '[Unlimited]'
+      option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
+  options_limit_tableselect_single:
+    id: options_limit
+    label: options_limit_tableselect_single
+    handler_id: options_limit_tableselect_single
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      element_key: options_limit_tableselect_single
+      limits:
+        X: 1
+        Y: 2
+      limit_reached_message: '@name is not available.'
+      limit_source_entity: true
+      limit_user: false
+      option_none_action: disable
+      option_message_display: description
+      option_multiple_message: '[@remaining remaining]'
+      option_single_message: '[@remaining remaining]'
+      option_none_message: '[@remaining remaining]'
+      option_unlimited_message: '[Unlimited]'
+      option_error_message: '@name: @label is unavailable.'
+      tableselect_header: 'Limits'
+variants: {  }

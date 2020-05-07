@@ -21,6 +21,21 @@ class LanguageSelect extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
+  protected function defineDefaultProperties() {
+    $properties = parent::defineDefaultProperties();
+    unset(
+      $properties['format_items'],
+      $properties['format_items_html'],
+      $properties['format_items_text']
+    );
+    return $properties;
+  }
+
+  /****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */
   protected function formatTextItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $value = $this->getValue($element, $webform_submission, $options);
 

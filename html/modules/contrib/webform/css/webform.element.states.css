@@ -44,14 +44,14 @@ tr.webform-states-table--state td select {
 }
 
 .webform-states-table td.webform-states-table--operations input[type="image"] {
-  opacity: 0.4;
   box-sizing: border-box;
   width: 20px;
   min-width: initial;
   max-width: initial;
+  padding: 2px;
+  opacity: 0.4;
   border: 2px solid #333;
   border-radius: 50%;
-  padding: 2px;
 }
 
 .webform-states-table td.webform-states-table--operations input[type="image"] + input[type="image"] {
@@ -79,7 +79,7 @@ tr.webform-states-table--state td select {
  * https://stackoverflow.com/questions/7617373/limit-results-in-jquery-ui-autocomplete
  */
 .ui-autocomplete {
-  max-height: 200px;
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 200px;
 }

@@ -119,6 +119,25 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $this->drupalGet('/webform/test_element_managed_file/test');
     $this->assertNoRaw('<div class="webform-managed-file-placeholder managed-file-placeholder js-form-wrapper form-wrapper" data-drupal-selector="edit-managed-file-single-placeholder-file-placeholder" id="edit-managed-file-single-placeholder-file-placeholder">This is the single file upload placeholder</div>');
     $this->assertNoRaw('<div class="webform-managed-file-placeholder managed-file-placeholder js-form-wrapper form-wrapper" data-drupal-selector="edit-managed-file-multiple-placeholder-file-placeholder" id="edit-managed-file-multiple-placeholder-file-placeholder">This is the multiple file upload placeholder</div>');
+
+
+    $this->drupalLogout();
+
+    /* Required error */
+
+    // Set required error.
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = Webform::load('test_element_managed_file');
+    $webform->setElementProperties('managed_file_single', $webform->getElementDecoded('managed_file_single') + [
+      '#required' => TRUE,
+      '#required_error' => '{Custom required error}',
+    ]);
+    $webform->save();
+
+    // Check that required error is displayed.
+    $this->postSubmission($webform);
+    $this->assertRaw('<h2 class="visually-hidden">Error message</h2>');
+    $this->assertRaw('{Custom required error}');
   }
 
   /**

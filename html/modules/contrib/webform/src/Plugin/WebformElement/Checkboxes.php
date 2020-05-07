@@ -23,7 +23,7 @@ class Checkboxes extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'multiple' => TRUE,
       'multiple_error' => '',
@@ -33,8 +33,10 @@ class Checkboxes extends OptionsBase {
       'options__properties' => [],
       // Wrapper.
       'wrapper_type' => 'fieldset',
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

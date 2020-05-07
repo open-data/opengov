@@ -27,7 +27,7 @@ class WebformOptionsLimitUserTest extends WebformBrowserTestBase {
   public function testOptionsLimitUserTest() {
     $webform = Webform::load('test_handler_options_limit_user');
 
-    // Create authenticated user
+    // Create authenticated user.
     $user = $this->drupalCreateUser();
     $this->drupalLogin($user);
 
@@ -47,7 +47,7 @@ class WebformOptionsLimitUserTest extends WebformBrowserTestBase {
     $this->assertRaw('C [0 remaining]');
     $this->assertRaw('options_limit_user is not available.');
 
-    // Create another authenticated user
+    // Create another authenticated user.
     $user = $this->drupalCreateUser();
     $this->drupalLogin($user);
 

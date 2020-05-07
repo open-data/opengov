@@ -18,7 +18,7 @@ elements: |
   textfield:
     '#type': textfield
     '#title': textfield
-
+  
 css: ''
 javascript: ''
 settings:
@@ -110,7 +110,7 @@ settings:
   confirmation_message: |
     <p>You can view your submission via <a href="[webform_submission:view-url]">[webform_submission:view-url:relative]</a></p>
     <p>You can update your submission via <a href="[webform_submission:update-url]">[webform_submission:update-url:relative]</a></p>
-
+    
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -135,6 +135,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: true
   token_update: true
 access:
@@ -208,7 +209,7 @@ handlers:
       body: |
         <a href="[webform_submission:view-url]">[webform_submission:view-url]</a><br/>
         <a href="[webform_submission:update-url]">[webform_submission:update-url]</a>
-
+        
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
@@ -224,3 +225,4 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
+variants: {  }

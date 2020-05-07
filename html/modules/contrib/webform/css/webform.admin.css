@@ -19,7 +19,7 @@
 }
 
 /**
- * Webform setting button displays a gear icon.
+ * Webform setting button displays a table rows icon.
  * @see /admin/structure/webform/manage/contact/results/submissions
  */
 .button.button-webform-table-setting {
@@ -38,8 +38,8 @@
  */
 .webform-results-table th,
 .webform-results-table td {
-  max-width: 400px;
   overflow: hidden;
+  max-width: 400px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -53,8 +53,8 @@
 
 th.webform-results-table__icon,
 td.webform-results-table__icon {
-  padding-left: 0;
   padding-right: 0;
+  padding-left: 0;
 }
 
 /* Hide throbber, which breaks icon alignment */
@@ -69,8 +69,8 @@ td.webform-results-table__icon {
 
 /* Limit image height to 60px */
 .webform-results-table td img {
-  max-height: 60px;
   width: auto;
+  max-height: 60px;
 }
 
 /**
@@ -78,14 +78,14 @@ td.webform-results-table__icon {
  */
 .webform-icon {
   display: inline-block;
-  height: 16px;
   width: 16px;
+  height: 16px;
   text-align: center;
+  vertical-align: -2px;
   background-color: transparent;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% auto;
-  vertical-align: -2px;
 }
 
 /* Notes */
@@ -112,8 +112,8 @@ a:focus .webform-icon-notes--off {
 /* Sticky */
 
 .webform-icon-sticky {
-  background: transparent url(../images/icons/sticky.svg) no-repeat left top;
   display: inline-block;
+  background: transparent url(../images/icons/sticky.svg) no-repeat left top;
   background-size: 64px 16px;
 }
 

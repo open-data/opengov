@@ -32,6 +32,9 @@
           if (document.readyState === 'complete') {
             $rateit.rateit();
           }
+          else {
+            window.setTimeout(function () {$rateit.rateit();});
+          }
 
           // Update the RateIt widget when the input's value has changed.
           // @see webform.states.js

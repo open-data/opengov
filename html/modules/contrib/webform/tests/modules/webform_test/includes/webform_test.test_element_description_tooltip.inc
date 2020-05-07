@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Generate test elements with with description tooltips.
+ * Generate test elements with description tooltips.
  */
 
 /**

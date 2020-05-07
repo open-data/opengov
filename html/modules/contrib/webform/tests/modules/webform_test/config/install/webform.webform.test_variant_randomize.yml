@@ -25,6 +25,7 @@ elements: |
     '#attributes':
       style: 'display: inline-block; margin: 0; padding: 0 20px; font-size: 100px;'
     '#markup': '{X}'
+  
 css: ''
 javascript: ''
 settings:
@@ -138,6 +139,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -210,7 +212,7 @@ variants:
       elements: |
         letter_markup:
           '#markup': '[A]'
-
+        
       handlers: {  }
       debug: false
   b:
@@ -226,6 +228,6 @@ variants:
       elements: |
         letter_markup:
           '#markup': '[B]'
-
+        
       handlers: {  }
       debug: false

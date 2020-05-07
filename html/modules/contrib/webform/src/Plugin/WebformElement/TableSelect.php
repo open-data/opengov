@@ -20,15 +20,17 @@ class TableSelect extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Options settings.
       'multiple' => TRUE,
       'multiple_error' => '',
       // Table settings.
       'js_select' => TRUE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

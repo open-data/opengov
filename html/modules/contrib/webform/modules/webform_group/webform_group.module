@@ -339,8 +339,17 @@ function webform_group_webform_submission_access(WebformSubmissionInterface $web
   /** @var \Drupal\webform_group\WebformGroupManagerInterface $webform_group_manager */
   $webform_group_manager = \Drupal::service('webform_group.manager');
 
-  // Get the current user's group roles for the current group content.
-  $current_user_group_roles = $webform_group_manager->getCurrentUserGroupRoles();
+  // During testing we need to only look at the current users group roles.
+  // @todo Rework webform_group_webform_submission_query_access_alter().
+  // @see \Drupal\Tests\webform_group\Functional\WebformGroupSubmissionAccessTest
+  if (drupal_valid_test_ua()) {
+    // Get the current user's group roles for the current group content.
+    $user_group_roles = $webform_group_manager->getCurrentUserGroupRoles();
+  }
+  else {
+    // Get the user's group roles for the current group content.
+    $user_group_roles = $webform_group_manager->getWebformSubmissionUserGroupRoles($webform_submission, $account);
+  }
 
   // Get webform access rules.
   $webform = $webform_submission->getWebform();
@@ -350,11 +359,11 @@ function webform_group_webform_submission_access(WebformSubmissionInterface $web
   // access rules' group roles.
   if (
     // Is admin.
-    (array_intersect($access_rules['administer']['group_roles'], $current_user_group_roles)) ||
+    (array_intersect($access_rules['administer']['group_roles'], $user_group_roles)) ||
     // Is operation any.
-    (array_intersect($access_rules[$operation . '_any']['group_roles'], $current_user_group_roles)) ||
+    (array_intersect($access_rules[$operation . '_any']['group_roles'], $user_group_roles)) ||
     // Is operation own.
-    (array_intersect($access_rules[$operation . '_own']['group_roles'], $current_user_group_roles)  && $webform_submission->getOwnerId() == $account->id())
+    (array_intersect($access_rules[$operation . '_own']['group_roles'], $user_group_roles)  && $webform_submission->getOwnerId() == $account->id())
   ) {
     return AccessResult::allowed()
       ->cachePerUser()

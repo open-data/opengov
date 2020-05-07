@@ -66,7 +66,7 @@ function webform_demo_application_evaluation_webform_submission_delete(WebformSu
  */
 function _webform_demo_application_evaluation_calculate_evaluation_rating(WebformSubmissionInterface $webform_submission) {
   $webform = $webform_submission->getWebform();
-  if ($webform->id() !== 'demo_application_evaluation') {
+  if (!$webform || $webform->id() !== 'demo_application_evaluation') {
     return;
   }
 

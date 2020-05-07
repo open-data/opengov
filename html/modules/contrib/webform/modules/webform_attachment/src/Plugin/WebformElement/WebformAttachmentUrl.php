@@ -21,18 +21,20 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'url' => '',
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTranslatableProperties() {
-    return array_merge(parent::getTranslatableProperties(), ['url']);
+  protected function defineTranslatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['url']);
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -68,14 +70,14 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
       $value = \Drupal::request()->getSchemeAndHttpHost() . $value;
     }
 
-    // Validate URL formatting.
-    if ($value !== '' && !UrlHelper::isValid($value, TRUE)) {
-      $form_state->setError($element, t('The URL %url is not valid.', ['%url' => $value]));
-    }
-
     // Skip validating [webform_submission] tokens which can't be replaced.
     if (strpos($value, '[webform_submission:') !== FALSE) {
       return;
+    }
+
+    // Validate URL formatting.
+    if ($value !== '' && !UrlHelper::isValid($value, TRUE)) {
+      $form_state->setError($element, t('The URL %url is not valid.', ['%url' => $value]));
     }
 
     // Validate URL access.

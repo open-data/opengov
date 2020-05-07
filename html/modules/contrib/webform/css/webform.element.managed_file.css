@@ -13,8 +13,8 @@
 .webform-managed-file-preview-wrapper,
 .webform-managed-file-preview-wrapper.form-item {
   display: table;
-  border: 1px solid #ccc;
   padding: 0.5em;
+  border: 1px solid #ccc;
 }
 
 .webform-managed-file-preview,

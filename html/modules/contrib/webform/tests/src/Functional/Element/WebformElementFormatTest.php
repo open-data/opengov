@@ -181,6 +181,7 @@ class WebformElementFormatTest extends WebformElementBrowserTestBase {
       'Checkboxes (And)' => 'One, Two, and Three',
       'Checkboxes (Ordered list)' => '<div class="item-list"><ol><li>One</li><li>Two</li><li>Three</li></ol>',
       'Checkboxes (Unordered list)' => '<div class="item-list"><ul><li>One</li><li>Two</li><li>Three</li></ul>',
+      'Checkboxes (Checklist)' => '<span style="font-size: 1.4em; line-height: 1em">☑</span> One<br /><span style="font-size: 1.4em; line-height: 1em">☑</span> Two<br /><span style="font-size: 1.4em; line-height: 1em">☑</span> Three<br />',
     ];
     foreach ($elements as $label => $value) {
       $this->assertContains('<b>' . $label . '</b><br />' . $value, $body, new FormattableMarkup('Found @label: @value', [
@@ -214,6 +215,10 @@ class WebformElementFormatTest extends WebformElementBrowserTestBase {
 - One
 - Two
 - Three',
+      'Checkboxes (Checklist):
+☑ One
+☑ Two
+☑ Three',
     ];
     foreach ($elements as $value) {
       $this->assertContains($value, $body, new FormattableMarkup('Found @value', ['@value' => $value]));

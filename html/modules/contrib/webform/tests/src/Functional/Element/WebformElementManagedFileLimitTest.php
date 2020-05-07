@@ -79,6 +79,16 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
     ];
     $this->postSubmission($webform, $edit);
     $this->assertRaw('This form\'s file upload quota of <em class="placeholder">2 KB</em> has been exceeded. Please remove some files.');
+
+    // Check invalid composite file upload.
+    $edit = [
+      'files[managed_file_01]' => \Drupal::service('file_system')->realpath($file->uri),
+      'files[custom_composite_managed_files_items_0_managed_file]' => \Drupal::service('file_system')->realpath($file->uri),
+      'files[custom_composite_managed_files_items_1_managed_file]' => \Drupal::service('file_system')->realpath($file->uri),
+    ];
+    $this->drupalPostForm('/webform/test_element_managed_file_limit', [], t('Add'));
+    $this->drupalPostForm(NULL, $edit, t('Submit'));
+    $this->assertRaw('This form\'s file upload quota of <em class="placeholder">2 KB</em> has been exceeded. Please remove some files.');
   }
 
 }

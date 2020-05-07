@@ -24,7 +24,7 @@ class Table extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Table settings.
       'header' => [],
@@ -35,9 +35,11 @@ class Table extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getTranslatableProperties() {
-    return array_merge(parent::getTranslatableProperties(), ['header']);
+  protected function defineTranslatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['header']);
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

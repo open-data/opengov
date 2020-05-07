@@ -20,7 +20,7 @@ class Details extends ContainerBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Description/Help.
       'help' => '',
@@ -34,8 +34,10 @@ class Details extends ContainerBase {
       // Details.
       'open' => FALSE,
       'summary_attributes' => [],
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

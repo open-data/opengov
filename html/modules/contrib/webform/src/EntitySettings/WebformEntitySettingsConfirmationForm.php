@@ -127,7 +127,7 @@ class WebformEntitySettingsConfirmationForm extends WebformEntitySettingsBaseFor
       ],
     ];
     $form['confirmation_type']['confirmation_update'] = [
-      '#title' => $this->t('Display confirmation when submission is updated.'),
+      '#title' => $this->t('Display confirmation when submission is updated'),
       '#description' => $this->t('If checked this select confirmation type and message will be displayed when the submission is updated. Otherwise, a status message will be displayed at the top the page when a submission is updated.'),
       '#type' => 'checkbox',
       '#return_type' => TRUE,

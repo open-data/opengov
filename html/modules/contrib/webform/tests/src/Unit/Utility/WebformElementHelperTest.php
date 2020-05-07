@@ -131,10 +131,39 @@ class WebformElementHelperTest extends UnitTestCase {
       ['#tree' => TRUE, '#value' => 'text', '#element_validate' => 'some_function'],
       ['#value' => 'text'],
     ];
+    // Remove #ajax: string
+    $tests[] = [
+      ['#ajax' => 'some_function'],
+      [],
+    ];
+    // Don't remove #ajax: FALSE.
+    // @see @see \Drupal\webform\Element\WebformComputedBase
+    $tests[] = [
+      ['#ajax' => FALSE],
+      ['#ajax' => FALSE],
+    ];
     // Remove #subelement__tree and #subelement__element_validate.
     $tests[] = [
       ['#subelement__tree' => TRUE, '#value' => 'text', '#subelement__element_validate' => 'some_function'],
       ['#value' => 'text'],
+    ];
+    // Remove random nested #element_validate.
+    $tests[] = [
+      ['random' => ['#element_validate' => 'some_function']],
+      ['random' => []],
+    ];
+    $tests[] = [
+      ['#prefix' => ['#markup' => 'some_markup', '#element_validate' => 'some_function']],
+      ['#prefix' => ['#markup' => 'some_markup']],
+    ];
+    // Remove any *_validate(s) and *_callback(s).
+    $tests[] = [
+      ['random' => ['#some_random_validate' => 'some_function']],
+      ['random' => []],
+    ];
+    $tests[] = [
+      ['random' => ['#some_random_callbacks' => 'some_function']],
+      ['random' => []],
     ];
     return $tests;
   }

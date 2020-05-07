@@ -3,6 +3,7 @@
 namespace Drupal\webform_access;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -32,7 +33,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, WebformAccessGroupStorageInterface $access_group_storage) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, ConfigEntityStorageInterface $access_group_storage) {
     parent::__construct($entity_type, $storage);
     $this->accessGroupStorage = $access_group_storage;
   }
