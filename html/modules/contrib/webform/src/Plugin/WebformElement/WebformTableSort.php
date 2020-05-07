@@ -26,11 +26,13 @@ class WebformTableSort extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = parent::getDefaultProperties();
+  protected function defineDefaultProperties() {
+    $properties = parent::defineDefaultProperties();
     unset($properties['options_randomize']);
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

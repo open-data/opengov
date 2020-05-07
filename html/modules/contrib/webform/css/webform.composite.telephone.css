@@ -4,9 +4,9 @@
  */
 
 .form-type-webform-telephone:after {
-  content: "";
   display: table;
   clear: both;
+  content: "";
 }
 
 .form-type-webform-telephone .form-item,
@@ -17,6 +17,6 @@
 }
 
 .form-type-webform-telephone .form-item label {
-  line-height: 2em;
   height: 2em;
+  line-height: 2em;
 }

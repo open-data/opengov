@@ -174,7 +174,7 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
       'data' => $this->t('Type'),
       'class' => [RESPONSIVE_PRIORITY_MEDIUM],
     ];
-    if ($webform->hasVariant()) {
+    if ($webform->hasVariants()) {
       $element_keys = $webform->getElementsVariant();
       foreach ($element_keys as $element_key) {
         $element = $webform->getElement($element_key);
@@ -220,7 +220,7 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
       '#url' => $entity->toUrl(),
     ];
     $row['type'] = node_get_type_label($entity);
-    if ($webform->hasVariant()) {
+    if ($webform->hasVariants()) {
       $variant_element_keys = $webform->getElementsVariant();
       foreach ($variant_element_keys as $variant_element_key) {
         $variants = [];
@@ -390,7 +390,7 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
     // @see https://www.drupal.org/node/2585169
     $local_actions = [];
 
-    if ($this->webform->hasVariant()) {
+    if ($this->webform->hasVariants()) {
       foreach ($this->nodeTypes as $bundle => $node_type) {
         if ($node_type->access('create')) {
           $local_actions['webform_node.references.add_form'] = [

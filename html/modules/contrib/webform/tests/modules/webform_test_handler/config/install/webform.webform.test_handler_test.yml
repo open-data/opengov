@@ -21,7 +21,7 @@ elements: |
     '#type': textfield
     '#title': 'Empty element'
     '#description': 'Entering any value will throw an error'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -135,6 +135,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -202,3 +203,4 @@ handlers:
     conditions: {  }
     weight: 2
     settings: {  }
+variants: {  }

@@ -20,6 +20,11 @@ elements: |
     '#title': required_textfield
     '#required': true
     '#required_error': 'This is a custom required message'
+  required_textfield_html:
+    '#type': textfield
+    '#title': required_textfield_html
+    '#required': true
+    '#required_error': 'This is a <em>custom required message</em>'
   required_radios:
     '#type': radios
     '#title': required_radios
@@ -143,6 +148,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -193,3 +199,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

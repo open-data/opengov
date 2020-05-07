@@ -28,20 +28,23 @@ class WebformLocationGeocomplete extends WebformLocationBase {
   /**
    * {@inheritdoc}
    */
-  public function getPluginLabel() {
-    return $this->elementManager->isExcluded('webform_location_places') ? $this->t('Location') : parent::getPluginLabel();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDefaultProperties() {
-    return parent::getDefaultProperties() + [
+  protected function defineDefaultProperties() {
+    return [
       'geolocation' => FALSE,
       'hidden' => FALSE,
       'map' => FALSE,
       'api_key' => '',
-    ] + $this->getDefaultBaseProperties();
+    ] + parent::defineDefaultProperties()
+      + $this->defineDefaultBaseProperties();
+  }
+
+  /****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginLabel() {
+    return $this->elementManager->isExcluded('webform_location_places') ? $this->t('Location') : parent::getPluginLabel();
   }
 
   /**

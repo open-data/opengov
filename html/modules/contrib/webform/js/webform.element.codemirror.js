@@ -87,9 +87,14 @@
         }
 
         // Issue #2764443: CodeMirror is not setting submitted value when
-        // rendered within a webform UI dialog.
-        editor.on('blur', function (event) {
-          editor.save();
+        // rendered within a webform UI dialog or within an Ajaxified element.
+        var changeTimer = null;
+        editor.on('change', function () {
+          if (changeTimer) {
+            window.clearTimeout(changeTimer);
+            changeTimer = null;
+          }
+          changeTimer = setTimeout(function () {editor.save();}, 500);
         });
 
         // Update CodeMirror when the textarea's value has changed.

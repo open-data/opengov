@@ -23,14 +23,17 @@ class WebformTelephone extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = parent::getDefaultProperties();
-    $properties['title_display'] = '';
-    $properties['phone__international'] = TRUE;
-    $properties['phone__international_initial_country'] = '';
+  protected function defineDefaultProperties() {
+    $properties = [
+      'title_display' => '',
+      'phone__international' => TRUE,
+      'phone__international_initial_country' => '',
+    ] + parent::defineDefaultProperties();
     unset($properties['flexbox']);
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

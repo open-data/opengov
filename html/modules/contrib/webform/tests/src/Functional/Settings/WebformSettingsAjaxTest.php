@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\webform\Functional\Settings;
 
+use Drupal\Tests\webform_node\Traits\WebformNodeBrowserTestTrait;
 use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 
@@ -12,6 +13,15 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
  */
 class WebformSettingsAjaxTest extends WebformBrowserTestBase {
 
+  use WebformNodeBrowserTestTrait;
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['webform', 'webform_node'];
+
   /**
    * Test webform submission form Ajax setting.
    */
@@ -21,6 +31,7 @@ class WebformSettingsAjaxTest extends WebformBrowserTestBase {
     // Check that Ajax is not enabled.
     $this->drupalGet('/webform/contact');
     $this->assertNoRaw('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
+    $this->assertNoCssSelect('#webform-submission-contact-form-ajax');
 
     // Set 'Use Ajax' for the individual webform.
     $webform->setSetting('ajax', TRUE);
@@ -29,6 +40,7 @@ class WebformSettingsAjaxTest extends WebformBrowserTestBase {
     // Check that Ajax is enabled for the individual webform.
     $this->drupalGet('/webform/contact');
     $this->assertRaw('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
+    $this->assertCssSelect('#webform-submission-contact-form-ajax');
     $this->assertRaw('"effect":"fade","speed":500');
 
     // Unset 'Use Ajax' for the individual webform.
@@ -51,6 +63,12 @@ class WebformSettingsAjaxTest extends WebformBrowserTestBase {
     $this->drupalGet('/webform/contact');
     $this->assertRaw('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="slide" data-progress-type="fullscreen">');
     $this->assertRaw('"effect":"slide","speed":1500');
+
+    // Check webform node Ajax wrapper.
+    $node = $this->createWebformNode('contact');
+    $this->drupalGet('/node/' . $node->id());
+    $this->assertNoCssSelect('#webform-submission-contact-form-ajax');
+    $this->assertCssSelect('#webform-submission-contact-node-' . $node->id() . '-form-ajax-content');
   }
 
 }

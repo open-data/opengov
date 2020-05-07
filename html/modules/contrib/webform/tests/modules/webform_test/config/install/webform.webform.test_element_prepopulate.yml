@@ -15,20 +15,38 @@ title: 'Test: Element: Prepopulate'
 description: 'Test prepopulating individual elements using query string parameters.'
 category: 'Test: Element'
 elements: |
-  textfield:
-    '#type': textfield
-    '#title': textfield
-  textfield_prepopulate:
-    '#type': textfield
-    '#title': textfield_prepopulate
-    '#prepopulate': true
-  managed_file_prepopulate:
-    '#type': managed_file
-    '#title': managed_file_prepopulate
-    '#prepopulate': true
-  prepopulate_test:
-    '#markup': '<a href="?textfield=value&textfield_prepopulate=value">?textfield=value&textfield_prepopulate=value</a>'
-  
+  page_01:
+    '#type': webform_wizard_page
+    '#title': page_01
+    textfield_01:
+      '#type': textfield
+      '#title': textfield_01
+    textfield_prepopulate_01:
+      '#type': textfield
+      '#title': textfield_prepopulate_01
+      '#prepopulate': true
+      '#default_value': '{default_value_01}'
+    managed_file_prepopulate_01:
+      '#type': managed_file
+      '#title': managed_file_prepopulate_01
+      '#prepopulate': true
+    prepopulate_test:
+      '#markup': '<a href="?textfield_01=value&textfield_prepopulate_01=value">?textfield_01=value&textfield_prepopulate_01=value</a>'
+  page_02:
+    '#type': webform_wizard_page
+    '#title': page_02
+    textfield_02:
+      '#type': textfield
+      '#title': textfield_02
+    textfield_prepopulate_02:
+      '#type': textfield
+      '#title': textfield_prepopulate_02
+      '#prepopulate': true
+      '#default_value': '{default_value_02}'
+    managed_file_prepopulate_02:
+      '#type': managed_file
+      '#title': managed_file_prepopulate_02
+      '#prepopulate': true
 css: ''
 javascript: ''
 settings:
@@ -142,6 +160,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: true
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -192,3 +211,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

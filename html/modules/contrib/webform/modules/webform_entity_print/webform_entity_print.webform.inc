@@ -132,8 +132,8 @@ function _webform_entity_print_form(array &$element, array $template_settings, a
 function webform_entity_print_webform_admin_third_party_settings_form_alter(&$form, FormStateInterface $form_state) {
   /** @var \Drupal\webform\WebformThirdPartySettingsManagerInterface $third_party_settings_manager */
   $third_party_settings_manager = \Drupal::service('webform.third_party_settings_manager');
-  $template_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'template');
-  $export_type_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'export_types');
+  $template_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'template') ?: [];
+  $export_type_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'export_types') ?: [];
 
   // Set export type default values.
   $export_types = _webform_entity_print_get_export_types();
@@ -159,7 +159,7 @@ function webform_entity_print_webform_admin_third_party_settings_form_alter(&$fo
     '#title' => t('Debug generated documents'),
     '#description' => t('If checked, administrators will see debug links below each export type.'),
     '#return_value' => TRUE,
-    '#default_value' => $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'debug'),
+    '#default_value' => $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'debug') ?: FALSE,
   ];
 
   $form['#validate'][] = '_webform_entity_print_form_submit';
@@ -171,8 +171,8 @@ function webform_entity_print_webform_admin_third_party_settings_form_alter(&$fo
 function webform_entity_print_webform_third_party_settings_form_alter(&$form, FormStateInterface $form_state) {
   /** @var \Drupal\webform\WebformThirdPartySettingsManagerInterface $third_party_settings_manager */
   $third_party_settings_manager = \Drupal::service('webform.third_party_settings_manager');
-  $default_template_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'template');
-  $default_export_type_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'export_types');
+  $default_template_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'template') ?: [];
+  $default_export_type_settings = $third_party_settings_manager->getThirdPartySetting('webform_entity_print', 'export_types') ?: [];
 
   /** @var \Drupal\webform\WebformInterface $webform */
   $webform = $form_state->getFormObject()->getEntity();
@@ -217,7 +217,12 @@ function _webform_entity_print_get_export_types() {
   $export_types = \Drupal::service('plugin.manager.entity_print.export_type')->getDefinitions();
 
   // Remove unsupported export types.
-  // @see Issue #2733781: Add Export to Word Support.
-  unset($export_types['word_docx'], $export_types['epub']);
+  // Issue #2733781: Add Export to Word Support.
+  // @see https://www.drupal.org/project/entity_print/issues/2733781
+  unset($export_types['word_docx']);
+  // Issue #2735559: Add Export to ePub.
+  // @see https://www.drupal.org/project/entity_print/issues/2735559
+  unset($export_types['epub']);
+
   return $export_types;
 }

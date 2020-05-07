@@ -608,7 +608,7 @@ class WebformEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   protected function ensureDestination(Url $url) {
-    // Never add add a destination to operation URLs.
+    // Never add a destination to operation URLs.
     return $url;
   }
 

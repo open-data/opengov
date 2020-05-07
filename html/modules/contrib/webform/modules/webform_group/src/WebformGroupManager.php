@@ -5,6 +5,7 @@ namespace Drupal\webform_group;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\group\Entity\GroupContentInterface;
 use Drupal\webform\WebformAccessRulesManagerInterface;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformRequestInterface;
@@ -141,38 +142,8 @@ class WebformGroupManager implements WebformGroupManagerInterface {
       return $this->currentGroupRoles;
     }
 
-    $this->currentGroupRoles = [];
-
     $group_content = $this->getCurrentGroupContent();
-    if (!$group_content) {
-      return $this->currentGroupRoles;
-    }
-    else {
-      $group = $group_content->getGroup();
-      $group_type_id = $group->getGroupType()->id();
-
-      // Must get implied groups, which includes outsider, by calling
-      // \Drupal\group\Entity\Storage\GroupRoleStorage::loadByUserAndGroup.
-      // @see \Drupal\group\Entity\Storage\GroupRoleStorageInterface::loadByUserAndGroup
-      /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
-      $group_role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
-      $group_roles = $group_role_storage->loadByUserAndGroup($this->currentUser, $group, TRUE);
-      if (!$group_roles) {
-        return $this->currentGroupRoles;
-      }
-
-      $group_roles = array_keys($group_roles);
-      $this->currentGroupRoles = array_combine($group_roles, $group_roles);
-
-      // Add global roles (i.e. member, outsider, etc...)
-      foreach ($this->currentGroupRoles as $group_role_id) {
-        if (strpos($group_role_id, $group_type_id . '-') === 0) {
-          $global_role_id = str_replace($group_type_id . '-', '', $group_role_id);
-          $this->currentGroupRoles[$global_role_id] = $global_role_id;
-        }
-      }
-    }
-
+    $this->currentGroupRoles = ($group_content) ? $this->getUserGroupRoles($group_content, $this->currentUser) : [];
     return $this->currentGroupRoles;
   }
 
@@ -216,7 +187,15 @@ class WebformGroupManager implements WebformGroupManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getGroupContent(WebformSubmissionInterface $webform_submission) {
+  public function getWebformSubmissionUserGroupRoles(WebformSubmissionInterface $webform_submission, AccountInterface $account) {
+    $group_content = $this->getWebformSubmissionGroupContent($webform_submission);
+    return ($group_content) ? $this->getUserGroupRoles($group_content, $account) : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getWebformSubmissionGroupContent(WebformSubmissionInterface $webform_submission) {
     $source_entity = $webform_submission->getSourceEntity();
     if (!$source_entity) {
       return NULL;
@@ -274,6 +253,49 @@ class WebformGroupManager implements WebformGroupManagerInterface {
 
     $this->accessRules[$webform_id] = $access_rules;
     return $access_rules;
+  }
+
+  /****************************************************************************/
+  // Helper methods.
+  /****************************************************************************/
+
+  /**
+   * Get current user group roles for group content.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   Group content.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   A user account.
+   *
+   * @return array
+   *   An array of group roles for the group content.
+   */
+  protected function getUserGroupRoles(GroupContentInterface $group_content, AccountInterface $account) {
+    $group = $group_content->getGroup();
+    $group_type_id = $group->getGroupType()->id();
+
+    // Must get implied groups, which includes outsider, by calling
+    // \Drupal\group\Entity\Storage\GroupRoleStorage::loadByUserAndGroup.
+    // @see \Drupal\group\Entity\Storage\GroupRoleStorageInterface::loadByUserAndGroup
+    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
+    $group_role_storage = $this->entityTypeManager->getStorage('group_role');
+    $group_roles = $group_role_storage->loadByUserAndGroup($account, $group, TRUE);
+    if (!$group_roles) {
+      return [];
+    }
+
+    $group_roles = array_keys($group_roles);
+    $group_roles = array_combine($group_roles, $group_roles);
+
+    // Add global roles (i.e. member, outsider, etc...)
+    foreach ($group_roles as $group_role_id) {
+      if (strpos($group_role_id, $group_type_id . '-') === 0) {
+        $global_role_id = str_replace($group_type_id . '-', '', $group_role_id);
+        $group_roles[$global_role_id] = $global_role_id;
+      }
+    }
+
+    return $group_roles;
   }
 
 }

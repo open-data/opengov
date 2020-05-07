@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Element;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
 
@@ -41,7 +42,7 @@ class WebformSubmissionViewsReplace extends FormElement {
   }
 
   /**
-   * Processes a ng webform submission views replacement element.
+   * Processes a webform submission views replacement element.
    */
   public static function processWebformSubmissionViewsReplace(&$element, FormStateInterface $form_state, &$complete_form) {
     $is_global = (!empty($element['#global'])) ? TRUE : FALSE;
@@ -110,7 +111,26 @@ class WebformSubmissionViewsReplace extends FormElement {
       '#element_validate' => [['\Drupal\webform\Utility\WebformElementHelper', 'filterValues']],
     ];
 
+    // Add validate callback that extracts the array of items.
+    $element += ['#element_validate' => []];
+    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformSubmissionViewsReplace']);
+
     return $element;
+  }
+
+  /**
+   * Validates webform submission views replacement element.
+   */
+  public static function validateWebformSubmissionViewsReplace(&$element, FormStateInterface $form_state, &$complete_form) {
+    $values = NestedArray::getValue($form_state->getValues(), $element['#parents']);
+
+    // Remove empty view replace references.
+    if (empty($values['global_routes']) && empty($values['webform_routes']) && empty($values['node_routes'])) {
+      $values = [];
+    }
+
+    $element['#value'] = $values;
+    $form_state->setValueForElement($element, $values);
   }
 
 }

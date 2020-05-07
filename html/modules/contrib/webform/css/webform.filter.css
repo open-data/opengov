@@ -13,8 +13,8 @@
  * @see \Drupal\webform\Form\WebformSubmissionFilterForm
  */
 .webform-filter-form .form-submit {
-  margin-left: 0;
   margin-right: 5px;
+  margin-left: 0;
 }
 
 .webform-filter-form .form-item {
@@ -46,8 +46,8 @@
  * @see webform.filter.js
  */
 .webform-form-filter {
-  display: inline-block;
   position: relative;
+  display: inline-block;
 }
 
 .webform-form-filter input.webform-form-filter-reset {
@@ -55,8 +55,8 @@
   top: 0;
   right: 0;
   padding: 0.5em;
-  background-color: transparent;
   border: none;
+  background-color: transparent;
   line-height: 1;
 }
 

@@ -321,7 +321,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
    *   An associative array containing the structure of the form.
    */
   protected function buildConfirmForm(array $form, FormStateInterface $form_state) {
-    $import_options = $form_state->get('import_options');
+    $import_options = $form_state->get('import_options') ?: [];
     $form['#disable_inline_form_errors'] = TRUE;
     $form['#attributes']['class'][] = 'confirmation';
     $form['#theme'] = 'confirm_form';
@@ -344,7 +344,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
       $this->t('Update submissions that have a corresponding UUID.'),
       $this->t('Create new submissions.'),
     ];
-    if ($import_options['skip_validation']) {
+    if (!empty($import_options['skip_validation'])) {
       $actions[] = $this->t('Form validation will be skipped.');
     }
     else {

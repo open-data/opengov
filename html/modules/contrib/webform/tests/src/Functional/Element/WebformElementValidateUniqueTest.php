@@ -32,6 +32,7 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
       'unique_user_textfield' => '{unique_user_textfield}',
       'unique_entity_textfield' => '{unique_entity_textfield}',
       'unique_error' => '{unique_error}',
+      'unique_error_html' => '{unique_error}',
       'unique_multiple[1]' => TRUE,
     ];
 
@@ -43,6 +44,7 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
     $this->assertNoRaw('unique_user_textfield error message.');
     $this->assertNoRaw('unique_entity_textfield error message.');
     $this->assertNoRaw('unique_error error message.');
+    $this->assertNoRaw('unique_error <em>error message</em>.');
     $this->assertNoRaw('unique_multiple error message.');
 
     // Check post duplicate submission with default values does trigger
@@ -53,6 +55,7 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
     $this->assertRaw('unique_user_textfield error message.');
     $this->assertRaw('unique_entity_textfield error message.');
     $this->assertRaw('unique_error error message.');
+    $this->assertRaw('unique_error <em>error message</em>.');
     $this->assertRaw('unique_multiple error message.');
 
     // Check #unique element can be updated.
@@ -61,6 +64,7 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
     $this->assertNoRaw('unique_user_textfield error message.');
     $this->assertNoRaw('unique_entity_textfield error message.');
     $this->assertNoRaw('unique_error error message.');
+    $this->assertNoRaw('unique_error <em>error message</em>.');
     $this->assertNoRaw('unique_multiple error message.');
 
     // Check #unique multiple validation within the same element.

@@ -22,7 +22,7 @@ class WebformMessage extends WebformMarkupBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Attributes.
       'attributes' => [],
@@ -33,15 +33,17 @@ class WebformMessage extends WebformMarkupBase {
       'message_close_effect' => 'slide',
       'message_id' => '',
       'message_storage' => '',
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTranslatableProperties() {
-    return array_merge(parent::getTranslatableProperties(), ['message_message']);
+  protected function defineTranslatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['message_message']);
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

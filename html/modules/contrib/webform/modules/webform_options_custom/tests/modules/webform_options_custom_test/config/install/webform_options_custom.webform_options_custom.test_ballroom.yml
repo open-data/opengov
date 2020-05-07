@@ -3,8 +3,8 @@ status: true
 dependencies: {  }
 id: test_ballroom
 label: 'Test: Ballroom'
-description: 'A SVG image of a a ballroom'
-help: 'A SVG image of a a ballroom'
+description: 'A SVG image of a ballroom'
+help: 'A SVG image of a ballroom'
 category: Test
 type: url
 template: ''

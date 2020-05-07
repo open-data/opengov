@@ -22,7 +22,7 @@ class WebformRating extends Range {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       // Number settings.
       'max' => 5,
@@ -31,7 +31,7 @@ class WebformRating extends Range {
       // Rating settings.
       'star_size' => 'medium',
       'reset' => FALSE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
     unset(
       $properties['output'],
       $properties['output__field_prefix'],
@@ -40,6 +40,8 @@ class WebformRating extends Range {
     );
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

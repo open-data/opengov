@@ -19,7 +19,7 @@ class Container extends ContainerBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Attributes.
       'attributes' => [],

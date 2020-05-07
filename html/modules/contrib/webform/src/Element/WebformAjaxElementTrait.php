@@ -192,6 +192,7 @@ trait WebformAjaxElementTrait {
     $element = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, -1));
     if (isset($element['#webform_ajax_element_id'])
       && $element['#webform_ajax_element_id'] === $id
+      && isset($element['#webform_type'])
       && $element['#webform_type'] === 'wrapper') {
       return $element;
     }

@@ -41,6 +41,9 @@ class WebformElementDateTest extends WebformElementBrowserTestBase {
     $default_value = date('D, m/d/Y', strtotime('now'));
     $this->assertRaw('<input min="' . $min . '" data-min-year="' . $min_year . '" max="' . $max . '" data-max-year="' . $max_year . '" type="text" data-drupal-date-format="D, m/d/Y" data-drupal-selector="edit-date-datepicker-min-max-dynamic" aria-describedby="edit-date-datepicker-min-max-dynamic--description" id="edit-date-datepicker-min-max-dynamic" name="date_datepicker_min_max_dynamic" value="' . $default_value . '" class="form-text" />');
 
+    // Check date placeholder attribute.
+    $this->assertRaw('<input placeholder="{date}" type="text" data-drupal-date-format="Y-m-d" data-drupal-selector="edit-date-datepicker-placeholder" id="edit-date-datepicker-placeholder" name="date_datepicker_placeholder" value="" class="form-text" />');
+
     // Check 'datelist' and 'datetime' #default_value.
     $form = $webform->getSubmissionForm();
     $this->assert(is_string($form['elements']['date_default']['#default_value']), 'date_default #default_value is a string.');

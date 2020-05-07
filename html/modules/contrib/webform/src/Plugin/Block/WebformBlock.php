@@ -232,8 +232,9 @@ class WebformBlock extends BlockBase implements ContainerFactoryPluginInterface 
   public function calculateDependencies() {
     $dependencies = parent::calculateDependencies();
 
-    $webform = $this->getWebform();
-    $dependencies[$webform->getConfigDependencyKey()][] = $webform->getConfigDependencyName();
+    if ($webform = $this->getWebform()) {
+      $dependencies[$webform->getConfigDependencyKey()][] = $webform->getConfigDependencyName();
+    }
 
     return $dependencies;
   }

@@ -77,6 +77,13 @@ elements: |
     '#title': datetime_datepicker_time_text
     '#default_value': '2009-08-18T01:00:00-05:00'
     '#date_time_element': text
+  datetime_placeholder:
+    '#type': datetime
+    '#title': datetime_placeholder
+    '#date_date_element': datepicker
+    '#date_date_placeholder': '{date}'
+    '#date_time_element': timepicker
+    '#date_time_placeholder': '{time}'
   datetime_datepicker_timepicker_button:
     '#type': datetime
     '#title': datetime_datepicker_timepicker_button
@@ -116,7 +123,7 @@ elements: |
     '#description': |
       @see <a href="https://www.drupal.org/node/2917107">Issue #2917107: Date and Time validation problem</a><br/>
       @see <a href="https://www.drupal.org/node/2723159">Issue #2723159: Datetime form element cannot validate when using a format without seconds</a><br/>
-      
+  
     '#date_date_element': datepicker
     '#date_time_element': text
     '#date_time_format': 'H:i'
@@ -260,6 +267,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -318,3 +326,4 @@ handlers:
     conditions: {  }
     weight: 1
     settings: {  }
+variants: {  }

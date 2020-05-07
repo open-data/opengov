@@ -12,7 +12,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformMessage;
+use Drupal\webform\Plugin\WebformElement\BooleanBase;
+use Drupal\webform\Plugin\WebformElement\NumericBase;
+use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
 use Drupal\webform\Plugin\WebformElement\WebformManagedFileBase;
+use Drupal\webform\Plugin\WebformElementInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformInterface;
@@ -77,6 +81,20 @@ class RemotePostWebformHandler extends WebformHandlerBase {
   protected $elementManager;
 
   /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
+
+  /**
+   * The DrupalKernel instance used in the test.
+   *
+   * @var \Drupal\Core\DrupalKernel
+   */
+  protected $kernel;
+
+  /**
    * List of unsupported webform submission properties.
    *
    * The below properties will not being included in a remote post.
@@ -103,7 +121,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
+    $instance = new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
@@ -117,6 +135,11 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       $container->get('webform.message_manager'),
       $container->get('plugin.manager.webform.element')
     );
+
+    $instance->request = $container->get('request_stack')->getCurrentRequest();
+    $instance->kernel = $container->get('kernel');
+
+    return $instance;
   }
 
   /**
@@ -155,6 +178,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       'excluded_data' => $excluded_data,
       'custom_data' => '',
       'custom_options' => '',
+      'cast' => FALSE,
       'debug' => FALSE,
       // States.
       'completed_url' => '',
@@ -291,6 +315,13 @@ class RemotePostWebformHandler extends WebformHandlerBase {
         '!required' => [':input[name="settings[method]"]' => ['value' => 'GET']],
       ],
       '#default_value' => $this->configuration['type'],
+    ];
+    $form['additional']['cast'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Cast posted data'),
+      '#description' => $this->t('If checked, posted data will be casted to booleans and floats as needed.'),
+      '#return_value' => TRUE,
+      '#default_value' => $this->configuration['cast'],
     ];
     $form['additional']['custom_data'] = [
       '#type' => 'webform_codemirror',
@@ -550,20 +581,22 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       }
 
       $element_plugin = $this->elementManager->getElementInstance($element);
-      if (!($element_plugin instanceof WebformManagedFileBase)) {
-        continue;
-      }
 
-      if ($element_plugin->hasMultipleValues($element)) {
-        foreach ($element_value as $fid) {
-          $data['_' . $element_key][] = $this->getResponseFileData($fid);
+      if ($element_plugin instanceof WebformManagedFileBase) {
+        if ($element_plugin->hasMultipleValues($element)) {
+          foreach ($element_value as $fid) {
+            $data['_' . $element_key][] = $this->getResponseFileData($fid);
+          }
+        }
+        else {
+          $data['_' . $element_key] = $this->getResponseFileData($element_value);
+          // @deprecated in Webform 8.x-5.0-rc17. Use new format
+          // This code will be removed in 8.x-6.x.
+          $data += $this->getResponseFileData($element_value, $element_key . '__');
         }
       }
-      else {
-        $data['_' . $element_key] = $this->getResponseFileData($element_value);
-        // @deprecated in Webform 8.x-5.0-rc17. Use new format
-        // The code needs to be removed before 8.x-5.0 or 8.x-6.x.
-        $data += $this->getResponseFileData($element_value, $element_key . '__');
+      elseif (!empty($this->configuration['cast'])) {
+        $data[$element_key] = $this->castRequestValues($element, $element_plugin, $element_value);
       }
     }
 
@@ -584,7 +617,70 @@ class RemotePostWebformHandler extends WebformHandlerBase {
   }
 
   /**
-   * Get response file data.
+   * Cast request values.
+   *
+   * @param array $element
+   *   An element.
+   * @param \Drupal\webform\Plugin\WebformElementInterface $element_plugin
+   *   The element's webform plugin.
+   * @param mixed $value
+   *   The element's value.
+   *
+   * @return mixed
+   *   The element's values cast to boolean or float when appropriate.
+   */
+  protected function castRequestValues(array $element, WebformElementInterface $element_plugin, $value) {
+    $element_plugin->initialize($element);
+    if ($element_plugin->hasMultipleValues($element)) {
+      foreach ($value as $index => $item) {
+        $value[$index] = $this->castRequestValue($element, $element_plugin, $item);
+      }
+      return $value;
+    }
+    else {
+      return $this->castRequestValue($element, $element_plugin, $value);
+    }
+  }
+
+  /**
+   * Cast request value.
+   *
+   * @param array $element
+   *   An element.
+   * @param \Drupal\webform\Plugin\WebformElementInterface $element_plugin
+   *   The element's webform plugin.
+   * @param mixed $value
+   *   The element's value.
+   *
+   * @return mixed
+   *   The element's value cast to boolean or float when appropriate.
+   */
+  protected function castRequestValue(array $element, WebformElementInterface $element_plugin, $value) {
+    if ($element_plugin instanceof BooleanBase) {
+      return (boolean) $value;
+    }
+    elseif ($element_plugin instanceof NumericBase) {
+      return (float) $value;
+    }
+    elseif ($element_plugin instanceof WebformCompositeBase) {
+      $composite_elements = (isset($element['#element']))
+        ? $element['#element']
+        : $element_plugin->getCompositeElements();
+      foreach ($composite_elements as $key => $composite_element) {
+        if (isset($value[$key])) {
+          $composite_element_plugin = $this->elementManager->getElementInstance($composite_element);
+          $value[$key] = $this->castRequestValue($composite_element, $composite_element_plugin, $value[$key]);
+        }
+      }
+      return $value;
+    }
+    else {
+      return $value;
+    }
+  }
+
+  /**
+   * Get request file data.
    *
    * @param int $fid
    *   A file id.
@@ -902,6 +998,11 @@ class RemotePostWebformHandler extends WebformHandlerBase {
         $error_url = $base_url . preg_replace('#^' . $base_path . '#', '/', $error_url);
       }
       $response = new TrustedRedirectResponse($error_url);
+      // Save the session so things like messages get saved.
+      $this->request->getSession()->save();
+      $response->prepare($this->request);
+      // Make sure to trigger kernel events.
+      $this->kernel->terminate($this->request, $response);
       $response->send();
     }
   }

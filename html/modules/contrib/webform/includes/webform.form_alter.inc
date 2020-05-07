@@ -169,3 +169,17 @@ function _webform_form_smtp_admin_settings_submit(&$form, FormStateInterface $fo
   $email_provider = \Drupal::service('webform.email_provider');
   $email_provider->check();
 }
+
+/******************************************************************************/
+// Configuration management.
+/******************************************************************************/
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function webform_form_config_single_import_form_alter(&$form, FormStateInterface $form_state) {
+  $config_type = \Drupal::request()->query->get('config_type');
+  if ($config_type === 'webform') {
+    $form['config_type']['#default_value'] = 'webform';
+  }
+}

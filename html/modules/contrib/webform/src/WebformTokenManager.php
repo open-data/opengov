@@ -108,7 +108,7 @@ class WebformTokenManager implements WebformTokenManagerInterface {
     // Replace tokens within an array.
     if (is_array($text)) {
       foreach ($text as $key => $token_value) {
-        $text[$key] = $this->replace($token_value, $entity, $data, $options);
+        $text[$key] = $this->replace($token_value, $entity, $data, $options, $bubbleable_metadata);
       }
       return $text;
     }
@@ -339,12 +339,17 @@ class WebformTokenManager implements WebformTokenManagerInterface {
       return $element;
     }
 
-    // Remove suffixes which are not valid.
-    $element['#value'] = preg_replace('/\[(webform[^]]+)((?::' . implode('|:', static::$suffixes) . ')+)\]/', '[\1]', $value);
+    // Remove all suffixes which are not valid.
+    $pattern = '/\[(webform[^]]+)((?::' . implode('|:', static::$suffixes) . ')+)\]/';
+    while (preg_match($pattern, $value)) {
+      $value = preg_replace($pattern, '[\1]', $value);
+    }
 
     // Convert all token field deltas to 0 to prevent unexpected
     // token validation errors.
-    $element['#value'] = preg_replace('/:\d+:/', ':0:', $element['#value']);
+    $value = preg_replace('/:\d+:/', ':0:', $value);
+
+    $element['#value'] = $value;
 
     token_element_validate($element, $form_state);
   }
@@ -434,7 +439,7 @@ class WebformTokenManager implements WebformTokenManagerInterface {
         else {
           // Decode and XSS filter value first.
           if (isset($suffixes['htmldecode'])) {
-            $replace = html_entity_decode($replace);
+            $replace = html_entity_decode($replace, ENT_QUOTES);
             $replace = (isset($suffixes['striptags'])) ? strip_tags($replace) : html_entity_decode(Xss::filterAdmin($replace));
           }
           // Encode URL.

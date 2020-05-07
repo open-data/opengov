@@ -13,8 +13,8 @@
  * Fix webform submission views dropdown display.
  */
 .js .webform-submission-views-dropbutton .dropbutton-wrapper {
-  display: block;
   position: relative;
+  display: block;
   min-height: 2em;
 }
 

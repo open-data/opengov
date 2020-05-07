@@ -4,6 +4,13 @@ entity.webform.schema_form:
   parent_id: devel.entities:webform.devel_tab
   weight: 100
 
+entity.webform.fapi_export_form:
+  title: 'Form API'
+  route_name: entity.webform.fapi_export_form
+  parent_id: entity.webform.export
+  base_route: entity.webform.canonical
+  weight: 10
+
 entity.webform.test_form.form:
   title: 'Form'
   route_name: entity.webform.test_form

@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Element\Webform as WebformElement;
-use Drupal\webform\WebformEntityReferenceManagerInterface;
+use Drupal\webform\Routing\WebformUncacheableResponse;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformRequestInterface;
 use Drupal\webform\WebformSubmissionInterface;
@@ -17,7 +17,7 @@ use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Drupal\Core\Cache\CacheableResponse;
 
 /**
  * Provides route responses for Webform entity.
@@ -104,12 +104,17 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    * @param \Drupal\webform\WebformInterface $webform
    *   The webform.
    *
-   * @return \Symfony\Component\HttpFoundation\Response
+   * @return \Symfony\Component\HttpFoundation\Response|\Drupal\Core\Cache\CacheableResponse
    *   The response object.
    */
   public function css(Request $request, WebformInterface $webform) {
     $assets = $webform->getAssets();
-    return new Response($assets['css'], 200, ['Content-Type' => 'text/css']);
+    if ($webform->access('update')) {
+      return new WebformUncacheableResponse($assets['css'], 200, ['Content-Type' => 'text/css']);
+    }
+    else {
+      return new CacheableResponse($assets['css'], 200, ['Content-Type' => 'text/css']);
+    }
   }
 
   /**
@@ -120,12 +125,17 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
    * @param \Drupal\webform\WebformInterface $webform
    *   The webform.
    *
-   * @return \Symfony\Component\HttpFoundation\Response
+   * @return \Symfony\Component\HttpFoundation\Response|\Drupal\Core\Cache\CacheableResponse
    *   The response object.
    */
   public function javascript(Request $request, WebformInterface $webform) {
     $assets = $webform->getAssets();
-    return new Response($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
+    if ($webform->access('update')) {
+      return new WebformUncacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
+    }
+    else {
+      return new CacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
+    }
   }
 
   /**
@@ -164,7 +174,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
     }
 
     // Apply variants.
-    if ($webform->hasVariant()) {
+    if ($webform->hasVariants()) {
       if ($webform_submission) {
         $webform->applyVariants($webform_submission);
       }

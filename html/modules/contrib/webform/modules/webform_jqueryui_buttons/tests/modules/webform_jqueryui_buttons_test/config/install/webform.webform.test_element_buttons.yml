@@ -47,7 +47,7 @@ elements: |
     '#other__option_label': Other
     '#other__placeholder': 'What is this other option'
     '#other__description': 'Other button description'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -161,6 +161,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -219,3 +220,4 @@ handlers:
     conditions: {  }
     weight: 1
     settings: {  }
+variants: {  }

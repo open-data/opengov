@@ -36,7 +36,7 @@ class Address extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       // Element settings.
       'title' => '',
@@ -64,10 +64,13 @@ class Address extends WebformCompositeBase {
       'available_countries' => [],
       'field_overrides' => [],
       'langcode_override' => '',
-    ] + $this->getDefaultBaseProperties() + $this->getDefaultMultipleProperties();
+    ] + $this->defineDefaultBaseProperties()
+      + $this->defineDefaultMultipleProperties();
     unset($properties['multiple__header']);
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

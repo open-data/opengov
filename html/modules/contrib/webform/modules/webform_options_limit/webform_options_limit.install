@@ -14,3 +14,10 @@ include_once __DIR__ . '/../../includes/webform.install.inc';
 function webform_options_limit_update_8001() {
   _webform_update_webform_handler_settings();
 }
+
+/**
+ * Issue #3124729: Option Limit broken for Tableselect.
+ */
+function webform_options_limit_update_8002() {
+  _webform_update_webform_handler_settings();
+}

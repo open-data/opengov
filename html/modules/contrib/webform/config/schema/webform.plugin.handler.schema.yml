@@ -149,6 +149,9 @@ webform.handler.remote_post:
     custom_options:
       label: 'Custom options'
       type: string
+    cast:
+      type: boolean
+      label: 'Cast remote post data'
     debug:
       type: boolean
       label: 'Enable debugging'

@@ -462,6 +462,7 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
     $form['preview_settings']['preview_container']['elements']['preview_excluded_elements'] = [
       '#type' => 'webform_excluded_elements',
       '#webform_id' => $this->getEntity()->id(),
+      '#exclude_markup' => FALSE,
       '#default_value' => $settings['preview_excluded_elements'],
     ];
     $form['preview_settings']['preview_container']['elements']['preview_exclude_empty'] = [

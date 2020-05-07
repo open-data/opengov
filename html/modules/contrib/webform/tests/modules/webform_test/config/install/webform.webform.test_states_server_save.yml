@@ -184,6 +184,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: true
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -242,3 +243,4 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+variants: {  }

@@ -21,18 +21,18 @@
 }
 
 .webform-details-toggle-state {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
   margin-top: 0;
   padding: 0;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
   font-size: 1em;
 }
 
 /* Tweak details toggle state. */
 .webform-details-toggle-state {
-  color: #337ab7;
   text-decoration: none;
+  color: #337ab7;
 }
 
 .webform-details-toggle-state:hover,

@@ -22,17 +22,17 @@ class WebformLink extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = parent::getDefaultProperties();
-
+  protected function defineDefaultProperties() {
+    $properties = parent::defineDefaultProperties();
     // Link does not have select menus.
     unset(
       $properties['select2'],
       $properties['chosed']
     );
-
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

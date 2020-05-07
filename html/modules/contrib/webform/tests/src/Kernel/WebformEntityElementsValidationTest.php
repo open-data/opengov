@@ -152,6 +152,32 @@ duplicate:
           'The <em class="placeholder">root</em> (webform_wizard_page) is a root element that can not be used as child to another element',
         ],
       ],
+
+      // Check validate table hierarchy.
+      [
+        'getElementsRaw' => 'empty: empty',
+        'getElementsOriginalRaw' => 'empty: empty',
+        'getElementsInitializedAndFlattened' => [
+          'table' => [
+            '#type' => 'webform_table',
+            '#webform_key' => 'table',
+          ],
+          'table_row' => [
+            '#type' => 'webform_table_row',
+            '#webform_key' => 'table_row',
+            '#webform_parent_key' => 'table',
+          ],
+          'table_row_invalid' => [
+            '#type' => 'webform_table_row',
+            '#webform_key' => 'table_row',
+            '#webform_parent_key' => NULL,
+          ],
+        ],
+        'messages' => [
+          'The <em class="placeholder">table_row_invalid</em> (webform_table_row) must be with in a <em class="placeholder">Table</em> (webform_table) element.',
+        ],
+      ],
+
 /*
       // Check validate rendering.
       [

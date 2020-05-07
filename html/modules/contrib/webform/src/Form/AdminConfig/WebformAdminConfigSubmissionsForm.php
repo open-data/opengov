@@ -133,6 +133,10 @@ class WebformAdminConfigSubmissionsForm extends WebformAdminConfigBaseForm {
         'description' => $this->t('If checked, all submission events will be logged to dedicated submission log available to all webforms and submissions.') . '<br/><br/>' .
           '<em>' . t('The webform submission log will track more detailed user information including email addresses and subjects.') . '</em>',
       ],
+      'default_results_customize' => [
+        'title' => $this->t('Allow users to customize the submission results table'),
+        'description' => $this->t('If checked, users can individually customize the submission results table for all webforms.'),
+      ],
     ];
     foreach ($behavior_elements as $behavior_key => $behavior_element) {
       $form['submission_behaviors'][$behavior_key] = [

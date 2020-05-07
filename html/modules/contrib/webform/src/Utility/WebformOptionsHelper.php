@@ -97,7 +97,8 @@ class WebformOptionsHelper {
   public static function getOptionText($value, array $options, $options_description = FALSE) {
     foreach ($options as $option_value => $option_text) {
       if (is_array($option_text)) {
-        if ($option_text = self::getOptionText($value, $option_text, $options_description)) {
+        $option_text = self::getOptionText($value, $option_text, $options_description);
+        if ((string) $value !== (string) $option_text) {
           return $option_text;
         }
       }

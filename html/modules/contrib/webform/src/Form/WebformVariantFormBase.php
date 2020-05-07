@@ -154,7 +154,7 @@ abstract class WebformVariantFormBase extends FormBase {
     if (count($variant_options) === 1) {
       $form['general']['element_key'] = [
         '#type' => 'value',
-        '#value' => array_key_first($variant_options),
+        '#value' => key($variant_options),
       ];
       $form['general']['element_key_item'] = [
         '#title' => $this->t('Element'),
@@ -185,7 +185,7 @@ abstract class WebformVariantFormBase extends FormBase {
     ];
     $form['advanced']['status'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Enable the %name variant.', ['%name' => $this->webformVariant->label()]),
+      '#title' => $this->t('Enable the %name variant', ['%name' => $this->webformVariant->label()]),
       '#return_value' => TRUE,
       '#default_value' => $this->webformVariant->isEnabled(),
       // Disable broken plugins.
@@ -356,11 +356,14 @@ abstract class WebformVariantFormBase extends FormBase {
    */
   protected function getVariantElementsAsOptions() {
     $webform = $this->getWebform();
+    $variant_plugin_id = $this->getWebformVariant()->getPluginId();
     $elements = $this->getWebform()->getElementsVariant();
     $options = [];
     foreach ($elements as $element_key) {
       $element = $webform->getElement($element_key);
-      $options[$element_key] = WebformElementHelper::getAdminTitle($element);
+      if ($element['#variant'] === $variant_plugin_id) {
+        $options[$element_key] = WebformElementHelper::getAdminTitle($element);
+      }
     }
     return $options;
   }

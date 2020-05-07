@@ -157,6 +157,7 @@ elements: |
       '#access_update_roles': {  }
       '#access_view_roles':
         - authenticated
+  
 css: ''
 javascript: ''
 settings:
@@ -270,6 +271,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -321,3 +323,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

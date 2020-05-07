@@ -23,22 +23,26 @@ class WebformCustomComposite extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = $this->getDefaultMultipleProperties() + parent::getDefaultProperties();
-    $properties['title_display'] = '';
-    $properties['element'] = [];
+  protected function defineDefaultProperties() {
+    $properties = [
+      'title_display' => '',
+      'element' => [],
+    ] + $this->defineDefaultMultipleProperties()
+      + parent::defineDefaultProperties();
     unset($properties['flexbox']);
     return $properties;
   }
 
+  /****************************************************************************/
+
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultMultipleProperties() {
+  protected function defineDefaultMultipleProperties() {
     $properties = [
       'multiple' => TRUE,
       'multiple__header' => TRUE,
-    ] + parent::getDefaultMultipleProperties();
+    ] + parent::defineDefaultMultipleProperties();
     return $properties;
 
   }
@@ -64,7 +68,7 @@ class WebformCustomComposite extends WebformCompositeBase {
     }
 
     // Apply multiple properties.
-    $multiple_properties = $this->getDefaultMultipleProperties();
+    $multiple_properties = $this->defineDefaultMultipleProperties();
     foreach ($multiple_properties as $multiple_property => $multiple_value) {
       if (strpos($multiple_property, 'multiple__') === 0) {
         $property_name = str_replace('multiple__', '', $multiple_property);

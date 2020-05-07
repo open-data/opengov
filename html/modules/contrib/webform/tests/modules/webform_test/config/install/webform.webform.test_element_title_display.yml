@@ -1513,7 +1513,7 @@ elements: |
       '#title_display': none
     machine_name_hr:
       '#type': webform_horizontal_rule
-
+  
 css: ''
 javascript: ''
 settings:
@@ -1627,6 +1627,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -1685,3 +1686,4 @@ handlers:
     conditions: {  }
     weight: 1
     settings: {  }
+variants: {  }

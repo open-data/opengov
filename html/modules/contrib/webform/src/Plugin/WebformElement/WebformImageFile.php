@@ -24,8 +24,8 @@ class WebformImageFile extends WebformManagedFileBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = parent::getDefaultProperties() + [
+  protected function defineDefaultProperties() {
+    $properties = parent::defineDefaultProperties() + [
       'max_resolution' => '',
       'min_resolution' => '',
     ];
@@ -34,6 +34,8 @@ class WebformImageFile extends WebformManagedFileBase {
     }
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

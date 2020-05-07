@@ -1909,7 +1909,7 @@ elements: |
       '#help_display': element_after
     machine_name_hr:
       '#type': webform_horizontal_rule
-
+  
 css: ''
 javascript: ''
 settings:
@@ -2023,6 +2023,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -2073,6 +2074,7 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }
 uuid: 28d4e7be-efdb-4a88-bc0d-16ed5e8a1767
 _core:
   default_config_hash: n-o0dubYyFAYHV9OGOrntyVrFt0L6owQM3jhd_cjuIc

@@ -13,8 +13,8 @@
 }
 
 .choices .webform-choices.choices__input.is-hidden {
-  display: block;
   position: absolute !important;
+  display: block;
   overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
   width: 1px;

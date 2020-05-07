@@ -24,14 +24,16 @@ class WebformTableSelectSort extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'multiple' => TRUE,
       'multiple_error' => '',
       // Table settings.
       'js_select' => TRUE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

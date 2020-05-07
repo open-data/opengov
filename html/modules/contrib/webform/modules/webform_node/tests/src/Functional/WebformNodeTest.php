@@ -42,6 +42,10 @@ class WebformNodeTest extends WebformNodeBrowserTestBase {
    * Tests webform node.
    */
   public function testNode() {
+    global $base_path;
+
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = Webform::load('contact');
     $node = $this->createWebformNode('contact');
 
     /** @var \Drupal\webform\WebformEntityReferenceManagerInterface $entity_reference_manager */
@@ -73,6 +77,27 @@ class WebformNodeTest extends WebformNodeBrowserTestBase {
     $this->assertFieldByName('name', 'John Smith');
 
     /**************************************************************************/
+    // Webform closed.
+    /**************************************************************************/
+
+    $webform->setStatus(WebformInterface::STATUS_CLOSED);
+    $webform->save();
+
+    // Check page closed message
+    $this->drupalGet('/node/' . $node->id());
+    $this->assertRaw('Sorry… This form is closed to new submissions.');
+
+    $this->drupalLogin($this->rootUser);
+
+    // Check webform closed warning
+    $this->drupalGet('/node/' . $node->id() . '/edit');
+    $this->assertRaw('The <em class="placeholder">Contact</em> webform is <a href="' . $base_path . 'admin/structure/webform/manage/contact/settings/form">closed</a>. The below status will be ignored.');
+
+    $webform->setStatus(WebformInterface::STATUS_OPEN);
+    $webform->save();
+    $this->drupalLogout();
+
+    /**************************************************************************/
     // Webform node open and closed.
     /**************************************************************************/
 
@@ -96,7 +121,7 @@ class WebformNodeTest extends WebformNodeBrowserTestBase {
     $this->assertRaw('This is a custom inline confirmation message.');
 
     /**************************************************************************/
-    // Webform node scheduleD.
+    // Webform node scheduled.
     /**************************************************************************/
 
     // Check scheduled to open.

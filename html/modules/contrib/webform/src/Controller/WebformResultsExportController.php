@@ -190,7 +190,7 @@ class WebformResultsExportController extends ControllerBase implements Container
     }
 
     $response = new BinaryFileResponse($file_path, 200, $headers, FALSE, $download ? 'attachment' : 'inline');
-    // Don't delete the file during automatted tests.
+    // Don't delete the file during automated tests.
     // @see \Drupal\webform\Tests\WebformResultsExportDownloadTest
     // @see \Drupal\Tests\webform_entity_print\Functional\WebformEntityPrintFunctionalTest
     if (!drupal_valid_test_ua()) {

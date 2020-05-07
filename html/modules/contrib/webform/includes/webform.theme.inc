@@ -653,7 +653,7 @@ function _webform_preprocess_options(array &$variables) {
  */
 function _webform_preprocess_element(array &$variables, $title_parents = ['title']) {
   $element =& $variables['element'];
-  $type = $element['#type'];
+  $type = (isset($element['#type'])) ? $element['#type'] : '';
 
   // Fix details 'description' property which does not have description.content.
   // @see template_preprocess_details
@@ -762,7 +762,7 @@ function _webform_preprocess_description_help(array &$variables) {
  */
 function _webform_preprocess_help(array &$variables, $title_parents = ['title']) {
   $element =& $variables['element'];
-  $type = $element['#type'];
+  $type = (isset($element['#type'])) ? $element['#type'] : '';
 
   if (empty($element['#help'])) {
     return;
@@ -1164,7 +1164,9 @@ function webform_theme_suggestions_form_element(array $variables) {
   $suggestions = [];
 
   // Add webform type suggestion.
-  $suggestions[] = 'form_element__webform_' . $element['#type'];
+  if (isset($element['#type'])) {
+    $suggestions[] = 'form_element__webform_' . $element['#type'];
+  }
 
   // Add radio/checkbox displayed as a button suggestion.
   // @sse webform_process_options()

@@ -48,13 +48,13 @@ abstract class WebformCompositeBase extends WebformElementBase {
   protected $elementsManagedFiles = [];
 
   /****************************************************************************/
-  // Property methods.
+  // Property definitions.
   /****************************************************************************/
 
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       'default_value' => [],
       'title_display' => 'invisible',
@@ -66,7 +66,8 @@ abstract class WebformCompositeBase extends WebformElementBase {
       'chosen' => FALSE,
       // Wrapper.
       'wrapper_type' => 'fieldset',
-    ] + parent::getDefaultProperties() + $this->getDefaultMultipleProperties();
+    ] + parent::defineDefaultProperties()
+      + $this->defineDefaultMultipleProperties();
     unset($properties['required_error']);
 
     $composite_elements = $this->getCompositeElements();
@@ -98,12 +99,16 @@ abstract class WebformCompositeBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultMultipleProperties() {
+  protected function defineDefaultMultipleProperties() {
     return [
       'multiple__header' => FALSE,
       'multiple__header_label' => '',
-    ] + parent::getDefaultMultipleProperties();
+    ] + parent::defineDefaultMultipleProperties();
   }
+
+  /****************************************************************************/
+  // Property methods.
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -830,7 +835,7 @@ abstract class WebformCompositeBase extends WebformElementBase {
 
     // Update #required label.
     $form['validation']['required_container']['required']['#title'] .= ' <em>' . $this->t('(Display purposes only)') . '</em>';
-    $form['validation']['required_container']['required']['#description'] = $this->t('If checked, adds required indicator to the title, if visible. To enforce individual fields, also tick "Required" under the @name settings above.', ['@name' => $this->getPluginLabel()]);
+    $form['validation']['required_container']['required']['#description'] = $this->t('If checked, adds required indicator to the title, if visible. To required individual elements, also tick "Required" under the @name settings above.', ['@name' => $this->getPluginLabel()]);
 
     // Update '#multiple__header_label'.
     $form['element']['multiple__header_container']['multiple__header_label']['#states']['visible'][':input[name="properties[multiple__header]"]'] = ['checked' => FALSE];
@@ -928,8 +933,6 @@ abstract class WebformCompositeBase extends WebformElementBase {
         '#access' => TRUE,
       ];
     }
-
-
 
     return $form;
   }
@@ -1412,7 +1415,7 @@ abstract class WebformCompositeBase extends WebformElementBase {
    * @return array
    *   An array of managed file element keys.
    */
-  protected function getManagedFiles(array $element) {
+  public function getManagedFiles(array $element) {
     $id = $element['#webform_id'];
 
     if (isset($this->elementsManagedFiles[$id])) {

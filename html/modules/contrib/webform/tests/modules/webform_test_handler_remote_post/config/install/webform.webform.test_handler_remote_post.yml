@@ -154,6 +154,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -243,6 +244,7 @@ handlers:
           'Accept-Language': '[webform_submission:langcode]'
           custom_header: 'true'
         
+      cast: false
       debug: true
       completed_url: 'http://webform-test-handler-remote-post/completed'
       completed_custom_data: |
@@ -275,3 +277,4 @@ handlers:
         - code: 404
           message: 'This is a custom 404 not found message.'
       error_url: ''
+variants: {  }

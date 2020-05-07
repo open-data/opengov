@@ -23,13 +23,13 @@ class WebformActions extends ContainerBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       // Title.
       'title' => '',
       // Attributes.
       'attributes' => [],
-    ] + $this->getDefaultBaseProperties();
+    ] + $this->defineDefaultBaseProperties();
     foreach (WebformActionsElement::$buttons as $button) {
       $properties[$button . '_hide'] = FALSE;
       $properties[$button . '__label'] = '';
@@ -37,6 +37,8 @@ class WebformActions extends ContainerBase {
     }
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

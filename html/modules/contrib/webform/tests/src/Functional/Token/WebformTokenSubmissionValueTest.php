@@ -126,6 +126,11 @@ first_name: John
 last_name: Smith
 </pre>',
 
+      // Markup.
+      'webform_submission:values:webform_markup' => '*This is some basic HTML.*
+',
+      'webform_submission:values:webform_markup:html' => '<strong>This is some basic HTML.</strong>',
+
       // Submission limits.
       'webform_submission:limit:webform' => '100',
       'webform_submission:total:webform' => '1',
@@ -147,7 +152,7 @@ last_name: Smith
       'webform_submission:values:markup:htmldecode' => '<b>Bold</b> &amp; UPPERCASE',
       'webform_submission:values:markup:htmldecode:striptags' => 'Bold &amp; UPPERCASE',
       'webform_submission:values:script' => '&lt;script&gt;alert(&#039;hi&#039;);&lt;/script&gt;',
-      'webform_submission:values:script:htmldecode' => 'alert(&#039;hi&#039;);',
+      'webform_submission:values:script:htmldecode' => 'alert(\'hi\');',
 
       // URL encode.
       'webform_submission:values:url' => 'http://example.com?query=param',

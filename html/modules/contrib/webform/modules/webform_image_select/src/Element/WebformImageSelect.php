@@ -4,9 +4,9 @@ namespace Drupal\webform_image_select\Element;
 
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Select;
+use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**
@@ -139,8 +139,9 @@ class WebformImageSelect extends Select {
       foreach ($element['#images'] as $value => &$image) {
         if (isset($image['text'])) {
           // Apply XSS filter to image text.
-          $image['text'] = Xss::filter($image['text']);
-          $options[$value] = $image['text'];
+          $image['text'] = WebformHtmlEditor::stripTags($image['text']);
+          // Strip all HTML tags from the option.
+          $options[$value] = strip_tags($image['text']);
         }
         else {
           $options[$value] = $value;

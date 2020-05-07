@@ -25,15 +25,18 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Entity reference settings.
       'target_type' => '',
       'selection_handler' => 'default',
       'selection_settings' => [],
       'tags' => FALSE,
-    ] + parent::getDefaultProperties() + $this->getDefaultMultipleProperties();
+    ] + parent::defineDefaultProperties()
+      + $this->defineDefaultMultipleProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

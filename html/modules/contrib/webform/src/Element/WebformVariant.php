@@ -46,15 +46,15 @@ class WebformVariant extends FormElement {
   public static function processWebformVariant(&$element, FormStateInterface $form_state, &$complete_form) {
     $form_object = $form_state->getFormObject();
     if ($element['#value']) {
+      $element['#children'] = $element['#value'];
       if ($form_object instanceof WebformSubmissionForm) {
         // Display variant label.
         /** @var \Drupal\webform\WebformInterface $webform */
         $webform = $form_object->getWebform();
-        $variant_plugin = $webform->getVariant($element['#value']);
-        $element['#children'] = ($variant_plugin) ? $variant_plugin->label() : $element['#value'];
-      }
-      else {
-        $element['#children'] = $element['#value'];
+        if ($webform->hasVariant($element['#value'])) {
+          $variant_plugin = $webform->getVariant($element['#value']);
+          $element['#children'] = $variant_plugin->label();
+        }
       }
     }
     return $element;

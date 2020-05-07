@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Settings;
 
+use Drupal\Component\Utility\Html;
+use Drupal\user\Entity\User;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
@@ -74,6 +76,11 @@ class WebformSettingsDraftTest extends WebformBrowserTestBase {
       // Check access allowed to review drafts.
       $this->drupalGet("webform/$webform_id/drafts");
       $this->assertResponse(200);
+
+      // Check draft title and info.
+      $account = ($is_authenticated) ? $normal_user : User::getAnonymousUser();
+      $this->assertRaw('<title>' . Html::escape('Drafts for ' . $webform->label() . ' for ' . ($account->getAccountName() ?: 'Anonymous') . ' | Drupal') . '</title>');
+      $this->assertRaw('<div>1 draft</div>');
 
       // Check loaded draft message.
       $this->drupalGet("webform/$webform_id");

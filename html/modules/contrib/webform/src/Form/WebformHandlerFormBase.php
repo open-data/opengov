@@ -234,6 +234,7 @@ abstract class WebformHandlerFormBase extends FormBase {
           'disabled' => $this->t('Disabled'),
         ],
         '#selector_options' => $webform->getElementsSelectorOptions(['excluded_elements' => []]),
+        '#selector_sources' => $webform->getElementsSelectorSourceValues(),
         '#multiple' => FALSE,
         '#default_value' => $this->webformHandler->getConditions(),
       ];

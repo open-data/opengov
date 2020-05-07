@@ -62,6 +62,11 @@ elements: |
     '#description': '(14:00 to 18:00)'
     '#time_format': 'g:i A'
     '#default_value': '14:00'
+  time_timepicker_placeholder:
+    '#type': webform_time
+    '#title': time_timepicker_placeholder
+    '#timepicker': true
+    '#placeholder': '{time}'
   
 css: ''
 javascript: ''
@@ -176,6 +181,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -234,3 +240,4 @@ handlers:
     conditions: {  }
     weight: 1
     settings: {  }
+variants: {  }
