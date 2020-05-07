@@ -374,12 +374,15 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       // @see /node/{node}/webform/results/submissions
       case "$base_route_name.webform.results_submissions":
         $this->columns = $webform_submission_storage->getCustomColumns($this->webform, $this->sourceEntity, $this->account, TRUE);
-        $this->sort = $webform_submission_storage->getCustomSetting('sort', 'created', $this->webform, $this->sourceEntity);
-        $this->direction = $webform_submission_storage->getCustomSetting('direction', 'desc', $this->webform, $this->sourceEntity);
-        $this->limit = $webform_submission_storage->getCustomSetting('limit', 20, $this->webform, $this->sourceEntity);
-        $this->format = $webform_submission_storage->getCustomSetting('format', $this->format, $this->webform, $this->sourceEntity);
-        $this->linkType = $webform_submission_storage->getCustomSetting('link_type', $this->linkType, $this->webform, $this->sourceEntity);
-        $this->customize = $this->webform->access('update');
+        $this->sort = $this->getCustomSetting('sort', 'created');
+        $this->direction = $this->getCustomSetting('direction', 'desc');
+        $this->limit = $this->getCustomSetting('limit', 20);
+        $this->format = $this->getCustomSetting('format', $this->format);
+        $this->linkType = $this->getCustomSetting('link_type', $this->linkType);
+
+        $this->customize = $this->webform->access('update')
+          || $this->webform->getSetting('results_customize', TRUE);
+
         if ($this->format['element_format'] == 'raw') {
           foreach ($this->columns as &$column) {
             $column['format'] = 'raw';
@@ -429,7 +432,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         '%webform' => $this->webform->label(),
         '%user' => $this->account->getDisplayName(),
       ];
-      if ($this->state == self::STATE_DRAFT) {
+      if ($this->draft) {
         $build['#title'] = $this->t('Drafts for %webform for %user', $t_args);
       }
       else {
@@ -493,10 +496,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     // Populate the views arguments.
     $arguments = [];
     foreach ($display_arguments as $argument_name => $display_argument) {
-      if ($display_argument['table'] !== 'webform_submission') {
-        $arguments[] = 'all';
-      }
-      else {
+      if ($display_argument['table'] === 'webform_submission') {
         switch ($argument_name) {
           case 'webform_id':
             $arguments[] = (isset($this->webform)) ? $this->webform->id() : 'all';
@@ -691,11 +691,26 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    *   A render array representing the customize button.
    */
   protected function buildCustomizeButton() {
-    $route_name = $this->requestHandler->getRouteName($this->webform, $this->sourceEntity, 'webform.results_submissions.custom');
-    $route_parameters = $this->requestHandler->getRouteParameters($this->webform, $this->sourceEntity, $route_name) + ['webform' => $this->webform->id()];
+    $results_customize = $this->webform->getSetting('results_customize', TRUE);
+
+    $title = ($results_customize)
+      ? $this->t('Customize my table')
+      : $this->t('Customize');
+
+    $route_name = $this->requestHandler->getRouteName(
+      $this->webform,
+      $this->sourceEntity,
+      'webform.results_submissions.custom' . ($results_customize ? '.user' : '')
+    );
+
+    $route_parameters = $this->requestHandler->getRouteParameters(
+      $this->webform,
+      $this->sourceEntity
+    );
+
     return [
       '#type' => 'link',
-      '#title' => $this->t('Customize'),
+      '#title' => $title,
       '#url' => $this->ensureDestination(Url::fromRoute($route_name, $route_parameters)),
       '#attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NORMAL, ['button', 'button-action', 'button--small', 'button-webform-table-setting']),
     ];
@@ -708,7 +723,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    *   A render array representing the information summary.
    */
   protected function buildInfo() {
-    if ($this->account && $this->state == self::STATE_DRAFT) {
+    if ($this->draft) {
       $info = $this->formatPlural($this->total, '@total draft', '@total drafts', ['@total' => $this->total]);
     }
     else {
@@ -840,7 +855,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    *   Throw exception if table row column is not found.
    */
   public function buildRowColumn(array $column, EntityInterface $entity) {
-    /** @var $entity \Drupal\webform\WebformSubmissionInterface */
+    /** @var \Drupal\webform\WebformSubmissionInterface $entity */
 
     $is_raw = ($column['format'] == 'raw');
     $name = $column['name'];
@@ -1417,6 +1432,23 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     }
 
     return $query;
+  }
+
+  /**
+   * Get custom setting.
+   *
+   * @param string $name
+   *   The custom setting name.
+   * @param mixed $default
+   *   Default custom setting value.
+   *
+   * @return mixed
+   *   The custom setting value.
+   */
+  protected function getCustomSetting($name, $default = NULL) {
+    /** @var WebformSubmissionStorageInterface $webform_submission_storage */
+    $webform_submission_storage = $this->getStorage();
+    return $webform_submission_storage->getCustomSetting($name, $default, $this->webform, $this->sourceEntity);
   }
 
 }

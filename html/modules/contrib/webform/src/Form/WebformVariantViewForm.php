@@ -121,7 +121,8 @@ class WebformVariantViewForm extends FormBase {
       // querystring parameter for view and test operations.
       // @see \Drupal\webform\Entity\Webform::getSubmissionForm
       if (empty($variant_element['#prepopulate'])) {
-        $query['_webform_variant'] = [$element_key => $variant_id];
+        $query += ['_webform_variant' => []];
+        $query['_webform_variant'][$element_key] = $variant_id;
       }
       else {
         $query[$element_key] = $variant_id;

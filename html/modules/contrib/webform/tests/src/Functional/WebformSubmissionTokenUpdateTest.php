@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\webform\Functional;
 
-use Drupal\Component\Utility\Html;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 

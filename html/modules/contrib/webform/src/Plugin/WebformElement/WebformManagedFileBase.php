@@ -15,6 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url as UrlGenerator;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -151,9 +152,9 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $file_extensions = $this->getFileExtensions();
-    $properties = parent::getDefaultProperties() + [
+    $properties = parent::defineDefaultProperties() + [
       'multiple' => FALSE,
       'max_filesize' => '',
       'file_extensions' => $file_extensions,
@@ -175,9 +176,11 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
   /**
    * {@inheritdoc}
    */
-  public function getTranslatableProperties() {
-    return array_merge(parent::getTranslatableProperties(), ['file_placeholder']);
+  protected function defineTranslatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['file_placeholder']);
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -270,14 +273,19 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       $element['#access'] = FALSE;
       $this->displayDisabledWarning($element);
     }
-    else {
+    elseif ($webform_submission) {
       $element['#upload_location'] = $this->getUploadLocation($element, $webform_submission->getWebform());
     }
 
     // Get file limit.
-    $file_limit = $webform_submission->getWebform()->getSetting('form_file_limit')
-        ?: \Drupal::config('webform.settings')->get('settings.default_form_file_limit')
-        ?: '';
+    if ($webform_submission) {
+      $file_limit = $webform_submission->getWebform()->getSetting('form_file_limit')
+          ?: \Drupal::config('webform.settings')->get('settings.default_form_file_limit')
+          ?: '';
+    }
+    else {
+      $file_limit = '';
+    }
 
     // Validate callbacks.
     $element_validate = [];
@@ -780,7 +788,10 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     if (!empty($element['#multiple']) && !empty($element['#files'])
       && (count($element['#files']) === $element['#multiple'])) {
       $element['upload']['#access'] = FALSE;
-      $element['upload_button']['#access'] = FALSE;
+      // We can't complete remove the upload button because it breaks
+      // the Ajax callback. Instead, we are going visually hide it from
+      // browsers with JavaScript disabled.
+      $element['upload_button']['#attributes']['style'] = 'display:none';
     }
 
     // Preview uploaded file.
@@ -889,6 +900,19 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
    * Form API callback. Consolidate the array of fids for this field into a single fids.
    */
   public static function validateManagedFile(array &$element, FormStateInterface $form_state, &$complete_form) {
+    // Issue #3130448: Add custom #required_message support to
+    // ManagedFile elements.
+    // @see https://www.drupal.org/project/drupal/issues/3130448
+    if (!empty($element['#required_error'])) {
+      $errors = $form_state->getErrors();
+      $key = $element['#webform_key'];
+      if (isset($errors[$key])
+        && $errors[$key] instanceof TranslatableMarkup
+        && $errors[$key]->getUntranslatedString() === '@name field is required.') {
+        $errors[$key]->__construct($element['#required_error']);
+      }
+    }
+
     if (!empty($element['#files'])) {
       $fids = array_keys($element['#files']);
       if (empty($element['#multiple'])) {

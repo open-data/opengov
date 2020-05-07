@@ -20,19 +20,21 @@ class TextField extends TextBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Form display.
       'input_mask' => '',
       'input_hide' => FALSE,
       // Form validation.
       'counter_type' => '',
-      'counter_minimum' => '',
+      'counter_minimum' => NULL,
       'counter_minimum_message' => '',
-      'counter_maximum' => '',
+      'counter_maximum' => NULL,
       'counter_maximum_message' => '',
-    ] + parent::getDefaultProperties() + $this->getDefaultMultipleProperties();
+    ] + parent::defineDefaultProperties() + $this->defineDefaultMultipleProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

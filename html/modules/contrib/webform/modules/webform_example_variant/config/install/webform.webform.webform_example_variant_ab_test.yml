@@ -45,7 +45,7 @@ elements: |
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': 'Submit feedback'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -159,6 +159,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -316,7 +317,7 @@ variants:
           '#title_display': 'inline'
         actions:
           '#title': 'Submit'
-
+        
       handlers:
         email_confirmation:
           status: false

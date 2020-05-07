@@ -3,34 +3,41 @@ status: open
 dependencies:
   enforced:
     module:
-      - webform_test
+      - webform_test_handler_remote_post
 open: null
 close: null
 weight: 0
 uid: null
 template: false
 archive: false
-id: test_element_pattern
-title: 'Test: Element: Pattern'
-description: 'Test element pattern validation.'
-category: 'Test: Element'
+id: test_handler_remote_post_cast
+title: 'Test: Handler: Remote post cast'
+description: 'Test remote post cast handler.'
+category: 'Test: Handler'
 elements: |
-  pattern:
-    '#type': textfield
-    '#title': pattern
-    '#pattern': Hello
-    '#description': 'Enter ''Hello'''
-  pattern_error:
-    '#type': textfield
-    '#title': pattern_error
-    '#pattern': Hello
-    '#pattern_error': 'You did not enter ''Hello'''
-    '#description': 'Enter ''Hello'''
-  pattern_unicode:
-    '#type': textfield
-    '#title': pattern_unicode
-    '#pattern': \u2E8F
-    '#description': 'Enter unicode CJK characters ''⺏'''
+  checkbox:
+    '#title': checkbox
+    '#type': checkbox
+  number:
+    '#title': number
+    '#type': number
+  number_multiple:
+    '#type': number
+    '#title': number_multiple
+    '#multiple': true
+  custom_composite:
+    '#type': webform_custom_composite
+    '#title': custom_composite
+    '#element':
+      textfield:
+        '#type': textfield
+        '#title': textfield
+      checkbox:
+        '#type': checkbox
+        '#title': checkbox
+      number:
+        '#type': number
+        '#title': number
   
 css: ''
 javascript: ''
@@ -53,7 +60,7 @@ settings:
   form_confidential: false
   form_confidential_message: ''
   form_remote_addr: true
-  form_convert_anonymous: false
+  form_convert_anonymous: true
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
@@ -76,7 +83,9 @@ settings:
   submission_label: ''
   submission_log: false
   submission_views: {  }
-  submission_views_replace: {  }
+  submission_views_replace:
+    webform_routes: {  }
+    node_routes: {  }
   submission_user_columns: {  }
   submission_user_duplicate: false
   submission_access_denied: default
@@ -118,9 +127,11 @@ settings:
   draft_loaded_message: ''
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
-  confirmation_type: message
+  confirmation_type: inline
   confirmation_title: ''
-  confirmation_message: ''
+  confirmation_message: |
+    <p>Your confirmation number is [webform_submission:values:confirmation_number].</p>
+    
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -143,8 +154,9 @@ settings:
   entity_limit_user_interval: null
   purge: none
   purge_days: null
-  results_disabled: true
-  results_disabled_ignore: true
+  results_disabled: false
+  results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -195,11 +207,53 @@ access:
     users: {  }
     permissions: {  }
 handlers:
-  debug:
-    id: debug
-    label: Debug
-    handler_id: debug
+  remote_post:
+    id: remote_post
+    label: 'Remote post'
+    handler_id: remote_post
     status: true
     conditions: {  }
-    weight: 0
-    settings: {  }
+    weight: 1
+    settings:
+      method: POST
+      type: x-www-form-urlencoded
+      excluded_data:
+        serial: serial
+        sid: sid
+        uuid: uuid
+        token: token
+        uri: uri
+        created: created
+        completed: completed
+        changed: changed
+        in_draft: in_draft
+        current_page: current_page
+        remote_addr: remote_addr
+        uid: uid
+        langcode: langcode
+        webform_id: webform_id
+        entity_type: entity_type
+        entity_id: entity_id
+        locked: locked
+        sticky: sticky
+        notes: notes
+      custom_data: ''
+      custom_options: ''
+      debug: true
+      completed_url: 'http://webform-test-handler-remote-post/completed'
+      completed_custom_data: ''
+      updated_url: 'http://webform-test-handler-remote-post/updated'
+      updated_custom_data: ''
+      deleted_url: 'http://webform-test-handler-remote-post/deleted'
+      deleted_custom_data: ''
+      draft_created_url: 'http://webform-test-handler-remote-post/draft_created'
+      draft_created_custom_data: ''
+      draft_updated_url: 'http://webform-test-handler-remote-post/draft_updated'
+      draft_updated_custom_data: ''
+      converted_url: 'http://webform-test-handler-remote-post/converted'
+      converted_custom_data: ''
+      message: ''
+      messages: {  }
+      error_url: ''
+      cast: true
+variants: {  }

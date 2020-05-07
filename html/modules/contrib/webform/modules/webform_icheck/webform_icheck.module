@@ -28,119 +28,41 @@ function webform_icheck_webform_libraries_info() {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
- *
- * PLEASE NOTE:
- * The custom_* prefix should be replaced with the custom module's namespace.
- * For example, the Acme module (acme.module) should prefix all custom
- * element properties with 'acme_'.
- *
- * @see \Drupal\webform_ui\Form\WebformUiElementFormBase
- * @see \Drupal\webform\Plugin\WebformElementBase::buildConfigurationForm
- * @see \Drupal\webform\Plugin\WebformElementBase::form
+ * Implements hook_webform_element_default_properties_alter().
  */
-function webform_icheck_form_webform_ui_element_form_alter(&$form, FormStateInterface $form_state) {
+function webform_icheck_webform_element_default_properties_alter(array &$properties, array &$definition) {
+  if (_webform_icheck_is_supported($definition['id'])) {
+    $properties['icheck'] = '';
+  }
+}
+
+/**
+ * Implements hook_webform_element_configuration_form_alter().
+ */
+function webform_icheck_webform_element_configuration_form_alter(&$form, FormStateInterface $form_state) {
   /** @var \Drupal\webform_ui\Form\WebformUiElementEditForm $form_object */
   $form_object = $form_state->getFormObject();
   $element_plugin = $form_object->getWebformElementPlugin();
-  if (!_webform_icheck_is_supported($element_plugin->getPluginId())) {
+  $element_type = $element_plugin->getTypeName();
+  if (!_webform_icheck_is_supported($element_type)) {
     return;
   }
-
-  $default_custom_properties = [
-    'icheck' => '',
-  ];
-
-  // Append the $default_custom_properties to $default_properties stored in the
-  // webform's state. This allows default custom properties to be removed when the
-  // webform is submitted. If this is omitted, custom properties will always
-  // be append to the element's properties.
-  // @see \Drupal\webform\Plugin\WebformElementBase::getConfigurationFormProperties
-  $form_state->set(
-    'default_properties',
-    $form_state->get('default_properties') + $default_custom_properties
-  );
-
-  // Retrieve the values from the custom properties element's default value.
-  // @see \Drupal\webform\Plugin\WebformElementBase::buildConfigurationForm
-  $custom_properties = $form['properties']['custom']['properties']['#default_value'];
-
-  // Make sure to unset the custom properties which are going to be handled via
-  // the below webform elements.
-  $form['properties']['custom']['properties']['#default_value'] = array_diff_key(
-    $custom_properties,
-    $default_custom_properties
-  );
-
-  // Finally, append the default custom property values.
-  $custom_properties += $default_custom_properties;
 
   /** @var \Drupal\webform\WebformThirdPartySettingsManagerInterface $third_party_settings_manager */
   $third_party_settings_manager = \Drupal::service('webform.third_party_settings_manager');
   $default_icheck = $third_party_settings_manager->getThirdPartySetting('webform_icheck', 'default_icheck');
-  $form['properties']['form']['icheck'] = [
+  $form['form']['icheck'] = [
     '#type' => 'select',
     '#title' => t('Enhance using iCheck'),
     '#description' => t('Replaces @type element with jQuery <a href=":href">iCheck</a> boxes.', ['@type' => mb_strtolower($element_plugin->getPluginLabel()), ':href' => 'http://icheck.fronteed.com/']),
     '#empty_option' => t('- Default -'),
-    '#parents' => ['properties', 'icheck'],
-    '#default_value' => $custom_properties['icheck'],
-    '#options' => [
-      (string) t('Minimal') => [
-        'minimal' => t('Minimal: Black'),
-        'minimal-grey' => t('Minimal: Grey'),
-        'minimal-yellow' => t('Minimal: Yellow'),
-        'minimal-orange' => t('Minimal: Orange'),
-        'minimal-red' => t('Minimal: Red'),
-        'minimal-pink' => t('Minimal: Pink'),
-        'minimal-purple' => t('Minimal: Purple'),
-        'minimal-blue' => t('Minimal: Blue'),
-        'minimal-green' => t('Minimal: Green'),
-        'minimal-aero' => t('Minimal: Aero'),
-      ],
-      (string) t('Square') => [
-        'square' => t('Square: Black'),
-        'square-grey' => t('Square: Grey'),
-        'square-yellow' => t('Square: Yellow'),
-        'square-orange' => t('Square: Orange'),
-        'square-red' => t('Square: Red'),
-        'square-pink' => t('Square: Pink'),
-        'square-purple' => t('Square: Purple'),
-        'square-blue' => t('Square: Blue'),
-        'square-green' => t('Square: Green'),
-        'square-aero' => t('Square: Aero'),
-      ],
-      (string) t('Flat') => [
-        'flat' => t('Flat: Black'),
-        'flat-grey' => t('Flat: Grey'),
-        'flat-yellow' => t('Flat: Yellow'),
-        'flat-orange' => t('Flat: Orange'),
-        'flat-red' => t('Flat: Red'),
-        'flat-pink' => t('Flat: Pink'),
-        'flat-purple' => t('Flat: Purple'),
-        'flat-blue' => t('Flat: Blue'),
-        'flat-green' => t('Flat: Green'),
-        'flat-aero' => t('Flat: Aero'),
-      ],
-      (string) t('Line') => [
-        'line' => t('Line: Black'),
-        'line-grey' => t('Line: Grey'),
-        'line-yellow' => t('Line: Yellow'),
-        'line-orange' => t('Line: Orange'),
-        'line-red' => t('Line: Red'),
-        'line-pink' => t('Line: Pink'),
-        'line-purple' => t('Line: Purple'),
-        'line-blue' => t('Line: Blue'),
-        'line-green' => t('Line: Green'),
-        'line-aero' => t('Line: Aero'),
-      ],
-    ],
+    '#options' => _webform_icheck_get_options(),
   ];
   if ($default_icheck) {
-    $icheck_options = OptGroup::flattenOptions($form['properties']['form']['icheck']['#options']);
-    $form['properties']['form']['icheck']['#description'] .= '<br /><br />' . t("Leave blank to use the default iCheck style. Select 'None' to display the default HTML element.");
-    $form['properties']['form']['icheck']['#description'] .= '<br /><br />' . t('Defaults to: %value', ['%value' => $icheck_options[$default_icheck]]);
-    $form['properties']['form']['icheck']['#options']['none'] = t('None');
+    $icheck_options = OptGroup::flattenOptions($form['form']['icheck']['#options']);
+    $form['form']['icheck']['#description'] .= '<br /><br />' . t("Leave blank to use the default iCheck style. Select 'None' to display the default HTML element.");
+    $form['form']['icheck']['#description'] .= '<br /><br />' . t('Defaults to: %value', ['%value' => $icheck_options[$default_icheck]]);
+    $form['form']['icheck']['#options']['none'] = t('None');
   }
 }
 
@@ -196,44 +118,7 @@ function webform_icheck_webform_admin_third_party_settings_form_alter(&$form, Fo
     '#title' => t('Enhance checkboxes/radio buttons using iCheck'),
     '#description' => t('If set, all checkboxes/radio buttons with be enhanced using jQuery <a href=":href">iCheck</a> boxes.', [':href' => 'http://icheck.fronteed.com/']),
     '#empty_option' => t('- Default -'),
-    '#options' => [
-      (string) t('Minimal') => [
-        'minimal' => t('Minimal: Black'),
-        'minimal-grey' => t('Minimal: Grey'),
-        'minimal-yellow' => t('Minimal: Yellow'),
-        'minimal-orange' => t('Minimal: Orange'),
-        'minimal-red' => t('Minimal: Red'),
-        'minimal-pink' => t('Minimal: Pink'),
-        'minimal-purple' => t('Minimal: Purple'),
-        'minimal-blue' => t('Minimal: Blue'),
-        'minimal-green' => t('Minimal: Green'),
-        'minimal-aero' => t('Minimal: Aero'),
-      ],
-      (string) t('Square') => [
-        'square' => t('Square: Black'),
-        'square-grey' => t('Square: Grey'),
-        'square-yellow' => t('Square: Yellow'),
-        'square-orange' => t('Square: Orange'),
-        'square-red' => t('Square: Red'),
-        'square-pink' => t('Square: Pink'),
-        'square-purple' => t('Square: Purple'),
-        'square-blue' => t('Square: Blue'),
-        'square-green' => t('Square: Green'),
-        'square-aero' => t('Square: Aero'),
-      ],
-      (string) t('Line') => [
-        'line' => t('Line: Black'),
-        'line-grey' => t('Line: Grey'),
-        'line-yellow' => t('Line: Yellow'),
-        'line-orange' => t('Line: Orange'),
-        'line-red' => t('Line: Red'),
-        'line-pink' => t('Line: Pink'),
-        'line-purple' => t('Line: Purple'),
-        'line-blue' => t('Line: Blue'),
-        'line-green' => t('Line: Green'),
-        'line-aero' => t('Line: Aero'),
-      ],
-    ],
+    '#options' => _webform_icheck_get_options(),
     '#default_value' => $default_icheck,
   ];
 }
@@ -263,4 +148,63 @@ function _webform_icheck_is_supported($element_type) {
     'webform_term_checkboxes',
   ];
   return in_array($element_type, $element_types);
+}
+
+/**
+ * Get the iCheck style options.
+ *
+ * @return array
+ *   The iCheck style options.
+ */
+function _webform_icheck_get_options() {
+  return [
+    (string) t('Minimal') => [
+      'minimal' => t('Minimal: Black'),
+      'minimal-grey' => t('Minimal: Grey'),
+      'minimal-yellow' => t('Minimal: Yellow'),
+      'minimal-orange' => t('Minimal: Orange'),
+      'minimal-red' => t('Minimal: Red'),
+      'minimal-pink' => t('Minimal: Pink'),
+      'minimal-purple' => t('Minimal: Purple'),
+      'minimal-blue' => t('Minimal: Blue'),
+      'minimal-green' => t('Minimal: Green'),
+      'minimal-aero' => t('Minimal: Aero'),
+    ],
+    (string) t('Square') => [
+      'square' => t('Square: Black'),
+      'square-grey' => t('Square: Grey'),
+      'square-yellow' => t('Square: Yellow'),
+      'square-orange' => t('Square: Orange'),
+      'square-red' => t('Square: Red'),
+      'square-pink' => t('Square: Pink'),
+      'square-purple' => t('Square: Purple'),
+      'square-blue' => t('Square: Blue'),
+      'square-green' => t('Square: Green'),
+      'square-aero' => t('Square: Aero'),
+    ],
+    (string) t('Flat') => [
+      'flat' => t('Flat: Black'),
+      'flat-grey' => t('Flat: Grey'),
+      'flat-yellow' => t('Flat: Yellow'),
+      'flat-orange' => t('Flat: Orange'),
+      'flat-red' => t('Flat: Red'),
+      'flat-pink' => t('Flat: Pink'),
+      'flat-purple' => t('Flat: Purple'),
+      'flat-blue' => t('Flat: Blue'),
+      'flat-green' => t('Flat: Green'),
+      'flat-aero' => t('Flat: Aero'),
+    ],
+    (string) t('Line') => [
+      'line' => t('Line: Black'),
+      'line-grey' => t('Line: Grey'),
+      'line-yellow' => t('Line: Yellow'),
+      'line-orange' => t('Line: Orange'),
+      'line-red' => t('Line: Red'),
+      'line-pink' => t('Line: Pink'),
+      'line-purple' => t('Line: Purple'),
+      'line-blue' => t('Line: Blue'),
+      'line-green' => t('Line: Green'),
+      'line-aero' => t('Line: Aero'),
+    ],
+  ];
 }

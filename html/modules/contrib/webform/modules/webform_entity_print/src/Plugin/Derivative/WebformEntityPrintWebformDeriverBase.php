@@ -58,8 +58,12 @@ abstract class WebformEntityPrintWebformDeriverBase extends DeriverBase implemen
     $definitions = $this->exportTypeManager->getDefinitions();
 
     // Remove unsupported export types.
-    // @see Issue #2733781: Add Export to Word Support.
-    unset($definitions['word_docx'], $definitions['epub']);
+    // Issue #2733781: Add Export to Word Support.
+    // @see https://www.drupal.org/project/entity_print/issues/2733781
+    unset($definitions['word_docx']);
+    // Issue #2735559: Add Export to ePub.
+    // @see https://www.drupal.org/project/entity_print/issues/2735559
+    unset($definitions['epub']);
 
     return $definitions;
   }

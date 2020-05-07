@@ -16,7 +16,7 @@ libraries.jquery.hotkeys:
     url: https://github.com/rvera/image-picker/blob/master/LICENSE
     gpl-compatible: true
   cdn:
-    /libraries/jquery.hotkeys/: https://cdn.rawgit.com/jeresig/jquery.hotkeys/0.2.0/
+    /libraries/jquery.hotkeys/: https://cdn.jsdelivr.net/gh/jeresig/jquery.hotkeys@0.2.0/
   js:
     /libraries/jquery.hotkeys/jquery.hotkeys.js: {}
   dependencies:

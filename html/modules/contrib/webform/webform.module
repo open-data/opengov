@@ -10,6 +10,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Entity\EntityInterface;
@@ -127,17 +128,24 @@ function webform_modules_uninstalled($modules) {
  * Implements hook_config_schema_info_alter().
  */
 function webform_config_schema_info_alter(&$definitions) {
+  if (empty($definitions['webform.webform.*']['mapping'])) {
+    return;
+  }
   $mapping = $definitions['webform.webform.*']['mapping'];
 
   // Copy setting, elements, and handlers to variant override schema.
-  $definitions['webform.variant.override']['mapping'] += [
-    'settings' => $mapping['settings'],
-    'elements' => $mapping['elements'],
-    'handlers' => $mapping['handlers'],
-  ];
+  if (isset($definitions['webform.variant.override'])) {
+    $definitions['webform.variant.override']['mapping'] += [
+      'settings' => $mapping['settings'],
+      'elements' => $mapping['elements'],
+      'handlers' => $mapping['handlers'],
+    ];
+  }
 
   // Append settings handler settings schema.
-  $definitions['webform.handler.settings']['mapping'] += _webform_config_schema_info_alter_settings_recursive($mapping['settings']['mapping']);
+  if (isset($definitions['webform.handler.settings'])) {
+    $definitions['webform.handler.settings']['mapping'] += _webform_config_schema_info_alter_settings_recursive($mapping['settings']['mapping']);
+  }
 }
 
 /**
@@ -213,7 +221,7 @@ function webform_local_tasks_alter(&$local_tasks) {
 /**
  * Implements hook_menu_local_tasks_alter().
  */
-function webform_menu_local_tasks_alter(&$data, $route_name, \Drupal\Core\Cache\RefinableCacheableDependencyInterface $cacheability) {
+function webform_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableDependencyInterface $cacheability) {
   // Change config entities 'Translate *' tab to be just label 'Translate'.
   $webform_entities = [
     'webform',
@@ -253,7 +261,7 @@ function webform_menu_local_tasks_alter(&$data, $route_name, \Drupal\Core\Cache\
     }
   }
 
-  // Allow webform query string parameters be be transfered
+  // Allow webform query string parameters to be transfered
   // from canonical to test URL.
   $route_names = [
     'entity.webform.canonical', 'entity.webform.test_form',
@@ -337,7 +345,7 @@ function webform_token_info_alter(&$data) {
   $more = _webform_token_render_more(t('Learn about token suffixes'), $token_suffixes);
   foreach ($data['types'] as $type => &$info) {
     if (strpos($type, 'webform') === 0) {
-      if (!empty($info['description'])) {
+      if (!empty($info['description'] && isset($info['description']))) {
         $description = $info['description'] . $more;
       }
       else {

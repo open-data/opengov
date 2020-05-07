@@ -25,6 +25,10 @@ table hr {
   margin: 0.5em 0;
 }
 
+form hr {
+  margin: 1em 0;
+}
+
 /* Add background to nested details */
 details.seven-details details.seven-details {
   background-color: #f8f8f8;
@@ -35,19 +39,19 @@ details details details {
 }
 
 code {
-  font-weight: bold;
-  border: 1px solid #333;
-  background-color: #f8f8f8;
   padding: 2px 4px;
   color: #333;
+  border: 1px solid #333;
+  background-color: #f8f8f8;
+  font-weight: bold;
 }
 
 /* Add yellow background to tooltips and tabs */
 /* @see core/assets/vendor/jquery.ui/themes/base/tabs.css */
 .ui-tooltip.ui-widget {
-  background: #fe6;
   border: 1px solid #ed5;
   border-radius: 2px;
+  background: #fe6;
 }
 
 .webform-tabs .ui-tabs-nav .ui-tabs-anchor {
@@ -55,9 +59,9 @@ code {
 }
 
 .webform-tabs .ui-tabs-active.ui-state-active {
-  background: #fe6;
-  border: 1px solid #ed5;
   text-decoration: none;
+  border: 1px solid #ed5;
+  background: #fe6;
 }
 
 .webform-tabs .ui-state-hover {
@@ -124,13 +128,14 @@ pre.webform-codemirror-runmode {
 /* System tray divider */
 
 .ui-dialog.ui-dialog-off-canvas.webform-off-canvas {
-  z-index: 599 !important; /* Place off canvas under dialog overlay */
+  /* Place un admin menu toolbar (z-index: 502) */
+  z-index: 501 !important;
 }
 
 .ui-dialog.ui-dialog-off-canvas .ui-resizable-w {
-  background-color: #bfbfba;
   border: 1px solid #6b6b6b;
   border-width: 1px 2px;
+  background-color: #bfbfba;
 }
 
 /* System tray title bar */
@@ -151,8 +156,8 @@ pre.webform-codemirror-runmode {
 .ui-autocomplete a /* For filter autocomplete. */,
 .ui-autocomplete .ui-menu-item-wrapper /* For #states value autocomplete. */ {
   display: block;
-  border: 1px solid transparent;
   color: #0074bd;
+  border: 1px solid transparent;
 }
 
 .ui-autocomplete a.ui-state-hover,
@@ -161,38 +166,38 @@ pre.webform-codemirror-runmode {
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-hover,
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-active,
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-focus {
+  margin: 0;
   text-decoration: underline;
   color: #0074bd;
-  background: #fe6;
   border: solid 1px #ed5;
-  margin: 0;
+  background: #fe6;
 }
 
 /* jQuery UI button states */
 .webform-buttons .ui-button.ui-state-default {
-  background: #f5f5f2;
   border: solid 1px #bfbfba;
+  background: #f5f5f2;
 }
 
 .webform-buttons .ui-button.ui-state-active {
   color: #840;
-  background: #fe6;
   border: solid 1px #ed5;
+  background: #fe6;
 }
 
 /* jQuery UI tooltip */
 .ui-tooltip hr {
-  background: #666;
-  margin: 0.3em 0;
   height: 1px;
+  margin: 0.3em 0;
+  background: #666;
 }
 
 .ui-tooltip code {
-  font-weight: bold;
+  padding: 0.2em;
   white-space: nowrap;
   background-color: #f5f5f2;
   font-size: 0.9em;
-  padding: 0.2em;
+  font-weight: bold;
 }
 
 /* jQuery UI tabs */

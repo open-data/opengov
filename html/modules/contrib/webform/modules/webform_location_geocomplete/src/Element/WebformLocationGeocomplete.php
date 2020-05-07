@@ -69,7 +69,6 @@ class WebformLocationGeocomplete extends WebformLocationBase {
     // Attach library.
     $element['#attached']['library'][] = 'webform_location_geocomplete/webform_location_geocomplete.element';
 
-
     return $element;
   }
 

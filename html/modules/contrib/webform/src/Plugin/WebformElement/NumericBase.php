@@ -15,15 +15,17 @@ abstract class NumericBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Form validation.
       'readonly' => FALSE,
       'size' => '',
       'placeholder' => '',
       'autocomplete' => 'on',
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -80,6 +82,24 @@ abstract class NumericBase extends WebformElementBase {
       '#size' => 4,
     ];
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+    parent::validateConfigurationForm($form, $form_state);
+
+    // Validate min/max value.
+    $min = $form_state->getValue('min');
+    $max = $form_state->getValue('max');
+    if (($min === '' || !isset($min)) || ($max === '' ||  !isset($max))) {
+      return;
+    }
+
+    if ($min >= $max) {
+      $form_state->setErrorByName('min', $this->t('Minimum value can not exceed the maximum value.'));
+    }
   }
 
 }

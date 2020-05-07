@@ -22,8 +22,8 @@ class WebformEmailConfirm extends Email {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = parent::getDefaultProperties() + [
+  protected function defineDefaultProperties() {
+    $properties = parent::defineDefaultProperties() + [
       // Email confirm settings.
       'confirm__title' => '',
       'confirm__description' => '',
@@ -34,10 +34,15 @@ class WebformEmailConfirm extends Email {
     ];
     unset(
       $properties['multiple'],
-      $properties['multiple__header_label']
+      $properties['multiple__header_label'],
+      $properties['format_items'],
+      $properties['format_items_html'],
+      $properties['format_items_text']
     );
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

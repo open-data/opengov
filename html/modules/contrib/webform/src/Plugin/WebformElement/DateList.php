@@ -26,7 +26,7 @@ class DateList extends DateBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'date_min' => '',
       'date_max' => '',
@@ -43,8 +43,10 @@ class DateList extends DateBase {
       'date_year_range_reverse' => FALSE,
       'date_increment' => 1,
       'date_abbreviate' => TRUE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

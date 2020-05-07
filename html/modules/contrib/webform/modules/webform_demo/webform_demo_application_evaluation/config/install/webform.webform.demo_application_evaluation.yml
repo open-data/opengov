@@ -25,12 +25,12 @@ elements: |
       {{ children }}
       <div>{{ 'Submitted by'|t }}: <em>[webform_submission:user]</em></div>
       <hr/>
-
+  
     '#format_text': |
       {{ children }}
       {{ 'Submitted by'|t }} [webform_submission:user]
       ------------------------------------------------------------
-
+  
     rating:
       '#type': webform_rating
       '#title': Rating
@@ -38,6 +38,7 @@ elements: |
     comments:
       '#type': textarea
       '#title': Comments
+  
 css: ''
 javascript: ''
 settings:
@@ -151,6 +152,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -201,3 +203,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

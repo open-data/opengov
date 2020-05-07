@@ -111,11 +111,36 @@ thead th .dropbutton {
   .js-off-canvas-dialog-open .webform-ui-elements-table td {
     display: none;
   }
+
   .js-off-canvas-dialog-open .webform-ui-elements-table th:first-child,
+  .js-off-canvas-dialog-open .webform-ui-elements-table th:nth-child(2),
   .js-off-canvas-dialog-open .webform-ui-elements-table th:last-child,
   .js-off-canvas-dialog-open .webform-ui-elements-table td:first-child,
+  .js-off-canvas-dialog-open .webform-ui-elements-table td:nth-child(2),
   .js-off-canvas-dialog-open .webform-ui-elements-table td:last-child {
     display: table-cell;
+  }
+
+  .js-off-canvas-dialog-open .webform-ui-elements-table th:nth-child(2) span,
+  .js-off-canvas-dialog-open .webform-ui-elements-table td:nth-child(2) span {
+    position: absolute !important;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    width: 1px;
+    height: 1px;
+    word-wrap: normal;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .webform-ui-elements-table th:nth-child(2) span,
+  .webform-ui-elements-table td:nth-child(2) span {
+    position: absolute !important;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    width: 1px;
+    height: 1px;
+    word-wrap: normal;
   }
 }
 

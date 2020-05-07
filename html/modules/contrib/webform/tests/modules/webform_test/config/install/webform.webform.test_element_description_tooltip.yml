@@ -466,7 +466,7 @@ elements: |
       '#title': 'Machine name'
       '#description': 'This is a description for the ''machine_name'' element.'
       '#description_display': tooltip
-
+  
 css: ''
 javascript: ''
 settings:
@@ -580,6 +580,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -630,3 +631,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

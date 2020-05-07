@@ -196,25 +196,21 @@ class WebformNodeAccess {
     }
 
     // Check the node operation.
-    if ($operation && $node->access($operation, $account)) {
-      return AccessResult::allowed();
-    }
+    $result = $operation ? $node->access($operation, $account, TRUE) : AccessResult::neutral();
 
     // Check entity access.
     if ($entity_access) {
       // Check entity access for the webform.
-      if (strpos($entity_access, 'webform.') === 0
-        && $webform->access(str_replace('webform.', '', $entity_access), $account)) {
-        return AccessResult::allowed();
+      if (strpos($entity_access, 'webform.') === 0) {
+        $result = $result->orIf($webform->access(str_replace('webform.', '', $entity_access), $account, TRUE));
       }
       // Check entity access for the webform submission.
-      if (strpos($entity_access, 'webform_submission.') === 0
-        && $webform_submission->access(str_replace('webform_submission.', '', $entity_access), $account)) {
-        return AccessResult::allowed();
+      if (strpos($entity_access, 'webform_submission.') === 0) {
+        $result = $result->orIf($webform_submission->access(str_replace('webform_submission.', '', $entity_access), $account, TRUE));
       }
     }
 
-    return AccessResult::forbidden();
+    return $result;
   }
 
 }

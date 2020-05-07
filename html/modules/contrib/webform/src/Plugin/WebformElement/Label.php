@@ -19,7 +19,7 @@ class Label extends WebformMarkupBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'title' => '',
       // General settings.
@@ -28,8 +28,10 @@ class Label extends WebformMarkupBase {
       'required' => FALSE,
       // Attributes.
       'attributes' => [],
-    ] + $this->getDefaultBaseProperties();
+    ] + $this->defineDefaultBaseProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

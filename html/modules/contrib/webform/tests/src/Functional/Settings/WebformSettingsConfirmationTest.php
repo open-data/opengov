@@ -83,13 +83,25 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
     $webform_confirmation_modal = Webform::load('test_confirmation_modal');
 
     // Check confirmation modal.
-    $this->postSubmission($webform_confirmation_modal, ['test' => 'value']);
+    $sid = $this->postSubmission($webform_confirmation_modal, ['test' => 'value']);
     $this->assertRaw('This is a <b>custom</b> confirmation modal.');
     $this->assertRaw('<div class="js-hide webform-confirmation-modal js-webform-confirmation-modal webform-message js-webform-message js-form-wrapper form-wrapper" data-drupal-selector="edit-webform-confirmation-modal" id="edit-webform-confirmation-modal">');
     $this->assertRaw('<div role="contentinfo" aria-label="Status message" class="messages messages--status">');
     $this->assertRaw('<b class="webform-confirmation-modal--title">Custom confirmation modal</b><br />');
     $this->assertRaw('<div class="webform-confirmation-modal--content">This is a <b>custom</b> confirmation modal. (test: value)</div>');
     $this->assertUrl('webform/test_confirmation_modal');
+
+    // Check confirmation modal update does not display modal.
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_modal/submission/$sid/edit", [], t('Save'));
+    $this->assertRaw('Submission updated in <em class="placeholder">Test: Confirmation: Modal</em>.');
+
+    // Set display confirmation modal when submission is updated.
+    $webform_confirmation_modal->setSetting('confirmation_update', TRUE)
+      ->save();
+
+    // Check confirmation modal update does display modal.
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_modal/submission/$sid/edit", [], t('Save'));
+    $this->assertRaw('<b class="webform-confirmation-modal--title">Custom confirmation modal</b><br /><div class="webform-confirmation-modal--content">This is a <b>custom</b> confirmation modal. (test: value)</div>');
 
     /* Test confirmation inline (confirmation_type=inline) */
 

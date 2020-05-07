@@ -37,23 +37,23 @@
 
 .messages.messages--webform a.button {
   margin: 0;
-  background-color: #003cc5;
-  color: #fff;
   text-decoration: none;
+  color: #fff;
+  background-color: #003cc5;
 }
 
 html.js .webform-message--close .webform-message__link {
-  line-height: 36px;
-  font-size: 36px;
-  color: #ffd23f;
   opacity: inherit;
+  color: #ffd23f;
+  font-size: 36px;
+  line-height: 36px;
 }
 
 html.js .webform-message--close .webform-message__link:hover,
 html.js .webform-message--close .webform-message__link:focus,
 html.js .webform-message--close .webform-message__link:active {
-  color: #fff;
   opacity: inherit;
+  color: #fff;
 }
 
 /**
@@ -67,24 +67,24 @@ html.js .webform-message--close .webform-message__link:active {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  background-color: #353641;
+  margin-bottom: 1rem;
+  padding: 1.5rem 1.5rem 2rem -webkit-calc(1.5rem - 5px);
+  padding: 1.5rem 1.5rem 2rem calc(1.5rem - 5px); /* LTR */
+  color: #fff;
   border-width: 0 0 0 5px; /* LTR */
   border-style: solid;
   border-color: #a6a6a6;
-  color: #fff;
   border-radius: 2px;
-  padding: 1.5rem 1.5rem 2rem -webkit-calc(1.5rem - 5px);
-  padding: 1.5rem 1.5rem 2rem calc(1.5rem - 5px); /* LTR */
-  margin-bottom: 1rem;
+  background-color: #353641;
   box-shadow: none;
 }
 
 [dir="rtl"] .webform-message .messages.messages--webform {
-  border-left-width: 0;
-  border-right-width: 5px;
-  padding-left: 1.5rem;
   padding-right: -webkit-calc(1.5rem - 5px);
   padding-right: calc(1.5rem - 5px);
+  padding-left: 1.5rem;
+  border-right-width: 5px;
+  border-left-width: 0;
 }
 
 /**
@@ -92,9 +92,9 @@ html.js .webform-message--close .webform-message__link:active {
  */
 .messages.messages--info {
   color: #fff;
-  background-image: none;
-  background-color: #353641;
   border-color: #0074bd;
+  background-color: #353641;
+  background-image: none;
   box-shadow: none;
 }
 [dir="rtl"] .messages.messages--info {
@@ -120,9 +120,13 @@ table th {
  */
 table td,
 table td.tabledrag-cell {
-  vertical-align: top;
   height: auto;
   padding: 1em 1rem;
+  vertical-align: top;
+}
+
+table .tabledrag-cell-content .indentation {
+  height: 1.5625rem;
 }
 
 table td.tabledrag-cell .tabledrag-handle::after {
@@ -220,8 +224,8 @@ div.webform-form-filter input.webform-form-filter-text {
  * @see /admin/structure/webform/manage/[webform_id]/element/add
  */
 .webform-ui-element-type-select-form > details > .claro-details__wrapper.details-wrapper {
-  padding: 0;
   margin: 0.5em 1em 0 1em;
+  padding: 0;
 }
 
 .webform-details-toggle-state {
@@ -232,10 +236,10 @@ div.webform-form-filter input.webform-form-filter-text {
  * Make tooltip a little bigger.
  */
 .webform-element-help {
-  line-height: 18px;
-  height: 18px;
   width: 18px;
+  height: 18px;
   font-size: 14px;
+  line-height: 18px;
 }
 
 /*****************************************************************************   */
@@ -285,23 +289,23 @@ div.webform-form-filter input.webform-form-filter-text {
  * @see core/assets/vendor/jquery.ui/themes/base/tabs.css
  */
 .ui-tooltip.ui-widget {
-  background: #fe6;
   border: 1px solid #ed5;
   border-radius: 2px;
+  background: #fe6;
 }
 
 .ui-tooltip hr {
-  background: #666;
-  margin: 0.3em 0;
   height: 1px;
+  margin: 0.3em 0;
+  background: #666;
 }
 
 .ui-tooltip code {
-  font-weight: bold;
+  padding: 0.2em;
   white-space: nowrap;
   background-color: #f5f5f2;
   font-size: 0.9em;
-  padding: 0.2em;
+  font-weight: bold;
 }
 
 /**
@@ -327,9 +331,9 @@ div.webform-form-filter input.webform-form-filter-text {
  * System tray divider.
  */
 .ui-dialog.ui-dialog-off-canvas .ui-resizable-w {
-  background-color: #bfbfba;
   border: 1px solid #6b6b6b;
   border-width: 1px 2px;
+  background-color: #bfbfba;
 }
 
 /* System tray title bar */
@@ -339,4 +343,22 @@ div.webform-form-filter input.webform-form-filter-text {
 
 .ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar {
   border-radius: 0;
+}
+
+.webform-off-canvas .fieldset__label {
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.webform-off-canvas .fieldset__label--group {
+  padding: 0;
+}
+
+.webform-off-canvas .fieldset__wrapper,
+.webform-off-canvas .claro-details__wrapper {
+  margin: 1rem;
+}
+
+.webform-off-canvas .fieldset__wrapper--group {
+  margin: 0;
 }

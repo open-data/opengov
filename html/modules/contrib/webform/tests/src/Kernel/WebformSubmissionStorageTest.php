@@ -97,7 +97,7 @@ class WebformSubmissionStorageTest extends KernelTestBase {
     $query->accessCheck(FALSE);
     $query->condition('webform_id', $webform_no_purging->id());
     $result = $query->execute();
-    $this->assertEquals(count($webform_submissions_definition), count($result), 'No purging is executed when webform not not set up to purge.');
+    $this->assertEquals(count($webform_submissions_definition), count($result), 'No purging is executed when webform is not set up to purge.');
 
     $query = \Drupal::entityTypeManager()->getStorage('webform_submission')->getQuery();
     $query->accessCheck(FALSE);

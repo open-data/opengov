@@ -29,13 +29,13 @@ class TextFormat extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       'default_value' => [],
       // Text format settings.
       'allowed_formats' => [],
       'hide_help' => FALSE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
     unset(
       $properties['disabled'],
       $properties['attributes'],
@@ -43,10 +43,15 @@ class TextFormat extends WebformElementBase {
       $properties['title_display'],
       $properties['description_display'],
       $properties['field_prefix'],
-      $properties['field_suffix']
+      $properties['field_suffix'],
+      $properties['format_items'],
+      $properties['format_items_html'],
+      $properties['format_items_text']
     );
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

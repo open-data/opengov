@@ -62,6 +62,21 @@ interface WebformElementManagerInterface extends PluginManagerInterface, CachedD
   public function processElement(array &$element);
 
   /**
+   * Process form elements and apply webform element specific enhancements.
+   *
+   * This method allows any form API elements to be enhanced using webform
+   * specific features include custom validation, external libraries,
+   * accessibility improvements, etc…
+   *
+   * @param array $elements
+   *   An associative array containing form elements.
+   *
+   * @return array
+   *   The processed form elements with webform element specific enhancements.
+   */
+  public function processElements(array &$elements);
+
+  /**
    * Invoke a method for a Webform element.
    *
    * @param string $method

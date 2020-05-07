@@ -9,6 +9,7 @@ use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Controller\WebformResultsExportController;
 use Drupal\webform\Entity\Webform;
+use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Form\WebformResultsClearForm;
 use Drupal\webform\Form\WebformSubmissionsPurgeForm;
 use Drupal\webform\Utility\WebformObjectHelper;
@@ -98,6 +99,7 @@ class WebformCliService implements WebformCliServiceInterface {
         'multiple-delimiter' => 'Delimiter between an element with multiple values (defaults to site-wide setting).',
         // Document and managed file export options.
         'file-name' => 'File name used to export submission and uploaded filed. You may use tokens.',
+        'archive-type' => 'Archive file type for submission file uploadeds and generated records. (tar or zip)',
         // Tabular export options.
         'header-format' => 'Set to "label" (default) or "key"',
         'options-item-format' => 'Set to "label" (default) or "key". Set to "key" to print select list values by their keys instead of labels.',
@@ -264,6 +266,16 @@ class WebformCliService implements WebformCliServiceInterface {
         'webform-repair' => 'Repairs admin configuration and webform settings are up-to-date.',
       ],
       'aliases' => ['wfr'],
+    ];
+
+    $items['webform-remove-orphans'] = [
+      'description' => "Removes orphaned submissions where the submission's webform was deleted.",
+      'core' => ['8+'],
+      'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
+      'examples' => [
+        'webform-remove-orphans' => "Removes orphaned submissions where the submission's webform was deleted.",
+      ],
+      'aliases' => ['wfro'],
     ];
 
     /* Docs */
@@ -881,6 +893,43 @@ class WebformCliService implements WebformCliServiceInterface {
     Cache::invalidateTags(['rendered']);
     // @todo Remove when that is fixed in https://www.drupal.org/node/2773591.
     \Drupal::service('cache.discovery')->deleteAll();
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @see \Drupal\webform\Form\AdminConfig\WebformAdminConfigAdvancedForm::submitForm
+   */
+  public function drush_webform_remove_orphans() {
+    $webform_ids = [];
+    $config_factory = \Drupal::configFactory();
+    foreach ($config_factory->listAll('webform.webform.') as $webform_config_name) {
+      $webform_id = str_replace('webform.webform.', '', $webform_config_name);
+      $webform_ids[$webform_id] = $webform_id;
+    }
+
+   $sids = \Drupal::database()->select('webform_submission')
+      ->fields('webform_submission', ['sid'])
+      ->condition('webform_id', $webform_ids, 'NOT IN')
+      ->orderBy('sid')
+      ->execute()
+      ->fetchCol();
+
+    if (!$sids) {
+      $this->drush_print($this->dt('No orphaned submission found.'));
+      return;
+    }
+
+    $t_args = ['@total' => count($sids)];
+    if (!$this->drush_confirm($this->dt("Are you sure you want remove @total orphaned webform submissions?", $t_args))) {
+      return $this->drush_user_abort();
+    }
+
+    $this->drush_print($this->dt('Deleting @total orphaned webform submissions…', $t_args));
+    $submissions = WebformSubmission::loadMultiple($sids);
+    foreach ($submissions as $submission) {
+      $submission->delete();
+    }
   }
 
   /******************************************************************************/

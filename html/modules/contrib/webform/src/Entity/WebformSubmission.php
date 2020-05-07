@@ -680,7 +680,10 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
    */
   protected function urlRouteParameters($rel) {
     $uri_route_parameters = parent::urlRouteParameters($rel);
-    $uri_route_parameters['webform'] = $this->getWebform()->id();
+    $webform = $this->getWebform();
+    if ($webform) {
+      $uri_route_parameters['webform'] = $webform->id();
+    }
     return $uri_route_parameters;
   }
 

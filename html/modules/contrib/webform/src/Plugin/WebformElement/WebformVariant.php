@@ -26,7 +26,7 @@ class WebformVariant extends WebformElementBase implements WebformElementDisplay
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       // Element settings.
       'title' => '',
@@ -56,13 +56,15 @@ class WebformVariant extends WebformElementBase implements WebformElementDisplay
       'prepopulate' => TRUE,
       'randomize' => FALSE,
       'display_on' => static::DISPLAY_ON_NONE,
-    ] + $this->getDefaultBaseProperties();
+    ] + $this->defineDefaultBaseProperties();
     unset(
       $properties['states'],
       $properties['states_clear']
     );
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

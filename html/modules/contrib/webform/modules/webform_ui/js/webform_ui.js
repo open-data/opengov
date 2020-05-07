@@ -112,7 +112,7 @@
    *
    * @type {Drupal~behavior}
    */
-   Drupal.behaviors.webformUiElementKey = {
+  Drupal.behaviors.webformUiElementKey = {
     attach: function (context) {
       if (!drupalSettings.webform_ui ||
         !drupalSettings.webform_ui.reserved_keys ||

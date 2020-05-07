@@ -12,7 +12,7 @@ template: false
 archive: false
 id: test_element_checkbox_value
 title: 'Test: Element: Checkbox value'
-description: 'Test the checkboxes value.'
+description: 'Test the checkbox value element.'
 category: 'Test: Element'
 elements: |
   checkbox_value_empty:
@@ -148,6 +148,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -206,3 +207,4 @@ handlers:
     conditions: {  }
     weight: 1
     settings: {  }
+variants: {  }

@@ -132,6 +132,7 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: true
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -182,3 +183,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

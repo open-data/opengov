@@ -46,6 +46,7 @@ class WebformCodeMirror extends Textarea {
       '#input' => TRUE,
       '#mode' => 'text',
       '#skip_validation' => FALSE,
+      '#decode_value' => FALSE,
       '#cols' => 60,
       '#rows' => 5,
       '#wrap' => TRUE,
@@ -158,7 +159,9 @@ class WebformCodeMirror extends Textarea {
     }
     else {
       // If editing YAML and #default_value is an array, decode #value.
-      if ($element['#mode'] == 'yaml' && (isset($element['#default_value']) && is_array($element['#default_value']))) {
+      if ($element['#mode'] == 'yaml'
+        && (isset($element['#default_value']) && is_array($element['#default_value']) || $element['#decode_value'])
+      ) {
         // Handle rare case where single array value is not parsed correctly.
         if (preg_match('/^- (.*?)\s*$/', $element['#value'], $match)) {
           $value = [$match[1]];

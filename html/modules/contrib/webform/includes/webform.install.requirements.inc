@@ -28,7 +28,7 @@ function webform_requirements($phase) {
   $experimental = [];
   $enabled_modules = \Drupal::moduleHandler()->getModuleList();
   foreach ($enabled_modules as $module => $data) {
-    $info = system_get_info('module', $module);
+    $info = \Drupal::service('extension.list.module')->getExtensionInfo($module);
     if (isset($info['package']) && $info['package'] === 'Webform' && !empty($info['experimental'])) {
       $experimental[$module] = str_replace(' [EXPERIMENTAL]', '', $info['name']);
     }

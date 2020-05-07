@@ -17,7 +17,7 @@ abstract class ContainerBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'title' => '',
       // Form validation.
@@ -31,17 +31,19 @@ abstract class ContainerBase extends WebformElementBase {
       'format_html' => '',
       'format_text' => '',
       'format_attributes' => [],
-    ] + $this->getDefaultBaseProperties();
+    ] + $this->defineDefaultBaseProperties();
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultBaseProperties() {
-    $properties = parent::getDefaultBaseProperties();
+  protected function defineDefaultBaseProperties() {
+    $properties = parent::defineDefaultBaseProperties();
     unset($properties['prepopulate']);
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

@@ -5,6 +5,7 @@ namespace Drupal\webform\Plugin\WebformElement;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\webform\Element\WebformSignature as WebformSignatureElement;
 use Drupal\webform\Plugin\WebformElementBase;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
@@ -94,14 +95,21 @@ class WebformSignature extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       // General settings.
       'description' => $this->t('Sign above'),
       'readonly' => FALSE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
+    unset(
+      $properties['format_items'],
+      $properties['format_items_html'],
+      $properties['format_items_text']
+    );
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -128,16 +136,17 @@ class WebformSignature extends WebformElementBase {
           return '[' . $this->t('not signed') . ']';
         }
 
-        return [
+        $src = $this->getImageUrl($element, $webform_submission, $options);
+        return $src ? [
           '#type' => 'html_tag',
           '#tag' => 'img',
           '#attributes' => [
-            'src' => $this->getImageUrl($element, $webform_submission, $options),
+            'src' => $src,
             'alt' => $this->t('Signature'),
             'class' => ['webform-signature-image'],
           ],
           '#attached' => ['library' => ['webform/webform.element.signature']],
-        ];
+        ] : '[' . $this->t('not valid') . ']';
 
       default:
         return parent::formatHtmlItem($element, $webform_submission, $options);
@@ -307,6 +316,11 @@ class WebformSignature extends WebformElementBase {
       return '';
     }
 
+    // Make sure existing signature values are valid.
+    if (!WebformSignatureElement::isSignatureValid($value)) {
+      return '';
+    }
+
     $webform = $webform_submission->getWebform();
     $element_key = $element['#webform_key'];
     $sid = $webform_submission->id();
@@ -325,7 +339,15 @@ class WebformSignature extends WebformElementBase {
       $image_directory = $image_submission_directory;
     }
 
-    $image_hash = Crypt::hmacBase64($value, Settings::getHashSalt());
+    // If a signature file was already created and shared using an
+    // unsafe image hash, then return it.
+    $unsafe_image_hash = Crypt::hmacBase64($value, Settings::getHashSalt());
+    $unsafe_image_uri = "$image_directory/signature-$unsafe_image_hash.png";
+    if (file_exists($unsafe_image_uri)) {
+      return file_create_url($unsafe_image_uri);
+    }
+
+    $image_hash = Crypt::hmacBase64('webform-signature-' . $value, Settings::getHashSalt());
     $image_uri = "$image_directory/signature-$image_hash.png";
 
     if (!file_exists($image_uri)) {

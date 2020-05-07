@@ -12,7 +12,7 @@ abstract class WebformLocationBase extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       'title' => '',
       'default_value' => [],
@@ -40,7 +40,7 @@ abstract class WebformLocationBase extends WebformCompositeBase {
       'format_items' => $this->getItemsDefaultFormat(),
       'format_items_html' => '',
       'format_items_text' => '',
-    ] + $this->getDefaultBaseProperties();
+    ] + $this->defineDefaultBaseProperties();
 
     $composite_elements = $this->getCompositeElements();
     foreach ($composite_elements as $composite_key => $composite_element) {
@@ -55,6 +55,8 @@ abstract class WebformLocationBase extends WebformCompositeBase {
     }
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

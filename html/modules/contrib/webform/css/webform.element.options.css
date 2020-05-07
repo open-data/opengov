@@ -61,29 +61,29 @@
 .webform-options-display-buttons label.webform-options-display-buttons-label {
   display: table-cell;
   height: 100%;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+  color: #666;
   border: 3px solid #ccc;
   border-radius: 3px;
   background-color: #fff;
-  padding: 10px;
-  vertical-align: middle;
-  text-align: center;
-  color: #666;
 }
 
 .webform-options-display-buttons input:hover + label.webform-options-display-buttons-label {
-  border-color: #999;
   color: #333;
+  border-color: #999;
 }
 
 .webform-options-display-buttons input:focus + label.webform-options-display-buttons-label {
+  color: #333;
   border-color: #999;
   box-shadow: 0 0 5px #999;
-  color: #333;
 }
 
 .webform-options-display-buttons input:checked + label.webform-options-display-buttons-label {
-  border-color: #0074bd;
   color: #000;
+  border-color: #0074bd;
 }
 
 .webform-options-display-buttons input:checked:focus + label.webform-options-display-buttons-label {
@@ -98,8 +98,8 @@
 .webform-options-display-buttons input:disabled:hover + label.webform-options-display-buttons-label,
 .webform-options-display-buttons input:disabled:focus + label.webform-options-display-buttons-label {
   cursor: not-allowed;
-  border-color: #ccc;
   color: #999;
+  border-color: #ccc;
 }
 
 /**

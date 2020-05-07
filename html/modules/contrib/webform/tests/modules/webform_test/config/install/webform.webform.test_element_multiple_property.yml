@@ -35,6 +35,21 @@ elements: |
     '#title': webform_element_multiple_disabled
     '#disabled': disabled
     '#default_value': 5
+  webform_element_multiple_true_access:
+    '#type': webform_element_multiple
+    '#title': webform_element_multiple_true_access
+    '#default_value': true
+    '#access': false
+  webform_element_multiple_false_access:
+    '#type': webform_element_multiple
+    '#title': webform_element_multiple_false_access
+    '#default_value': false
+    '#access': false
+  webform_element_multiple_custom_access:
+    '#type': webform_element_multiple
+    '#title': webform_element_multiple_custom_access
+    '#default_value': 5
+    '#access': false
   
 css: ''
 javascript: ''
@@ -149,6 +164,7 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -207,3 +223,4 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+variants: {  }

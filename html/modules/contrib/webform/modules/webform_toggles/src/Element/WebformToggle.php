@@ -34,15 +34,7 @@ class WebformToggle extends Checkbox {
   }
 
   /**
-   * Prepares a #type 'checkbox' render element for input.html.twig.
-   *
-   * @param array $element
-   *   An associative array containing the properties of the element.
-   *   Properties used: #title, #value, #return_value, #description, #required,
-   *   #attributes, #checked.
-   *
-   * @return array
-   *   The $element with prepared variables ready for input.html.twig.
+   * {@inheritdoc}
    */
   public static function preRenderCheckbox($element) {
     $element = parent::preRenderCheckbox($element);

@@ -23,7 +23,7 @@ class ProcessedText extends WebformMarkupBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     if (function_exists('filter_formats')) {
       // Works around filter_default_format() throwing fatal error when
       // user is not allowed to use any filter formats.
@@ -42,15 +42,17 @@ class ProcessedText extends WebformMarkupBase {
       // Markup settings.
       'text' => '',
       'format' => $default_format ,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTranslatableProperties() {
-    return array_merge(parent::getTranslatableProperties(), ['text']);
+  protected function defineTranslatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['text']);
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

@@ -13,6 +13,22 @@ webform_devel.schema.export:
   requirements:
     _permission: 'access devel information'
 
+entity.webform.fapi_export_form:
+  path: '/admin/structure/webform/manage/{webform}/fapi'
+  defaults:
+    _entity_form: 'webform.fapi_export'
+    _title_callback: '\Drupal\webform\Controller\WebformEntityController::title'
+  requirements:
+    _permission: 'access devel information'
+
+entity.webform.fapi_test_form:
+  path: '/admin/structure/webform/manage/{webform}/fapi/test'
+  defaults:
+    _entity_form: 'webform.fapi_test'
+    _title_callback: '\Drupal\webform\Controller\WebformEntityController::title'
+  requirements:
+    _permission: 'access devel information'
+
 entity.webform.api_form:
   path: '/webform/{webform}/api'
   defaults:

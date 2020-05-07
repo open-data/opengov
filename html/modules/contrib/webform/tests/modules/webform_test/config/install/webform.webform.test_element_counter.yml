@@ -47,6 +47,15 @@ elements: |
       '#counter_type': character
       '#counter_maximum': 10
       '#counter_maximum_message': '%d character(s) remaining. This is custom text'
+    counter_characters_xss:
+      '#type': textfield
+      '#title': 'counter_characters_xss'
+      '#counter_type': character
+      '#counter_minimum': 5
+      '#counter_maximum': 10
+      '#counter_minimum_message': '<script>alert(''XSS'');</script><em>%d</em> character(s) entered.'
+      '#counter_maximum_message': '<script>alert(''XSS'');</script><em>%d</em> character(s) remaining.'
+
   counter_word:
     '#type': details
     '#title': counter_word
@@ -193,6 +202,7 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -251,3 +261,4 @@ handlers:
     conditions: {  }
     weight: 1
     settings: {  }
+variants: {  }

@@ -23,8 +23,8 @@ trait WebformToggleTrait {
   /**
    * {@inheritdoc}
    */
-  public function getTranslatableProperties() {
-    return array_merge(parent::getTranslatableProperties(), ['on_text', 'off_text']);
+  protected function translatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['on_text', 'off_text']);
   }
 
   /**
