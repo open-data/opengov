@@ -13,7 +13,7 @@ id: open_government_week
 title: 'Open Government Week'
 description: 'Open Government Week webform to submit OG events'
 category: ''
-elements: "title_of_the_event:\n  '#type': textfield\n  '#title': 'Title of the event'\nlink_to_information_or_registration_page:\n  '#type': url\n  '#title': 'Link to information or registration page'\nhost_organization:\n  '#type': textfield\n  '#title': 'Host organization'\nyour_email_address:\n  '#type': email\n  '#title': 'Your email address'\nlocation_city_and_province_or_territory_or_online_:\n  '#type': textfield\n  '#title': 'Location (city and province or territory, or online)'\ndate:\n  '#type': date\n  '#title': Date\n  '#datepicker': true\ntime_optional_:\n  '#type': webform_time\n  '#title': 'Time (Optional)'\n  '#timepicker': true\n  '#step': '60'\n"
+elements: "title_of_the_event:\n  '#type': textfield\n  '#title': 'Title of the event'\nlink_to_information_or_registration_page:\n  '#type': url\n  '#title': 'Link to information or registration page'\nhost_organization:\n  '#type': textfield\n  '#title': 'Host organization'\nyour_email_address:\n  '#type': email\n  '#title': 'Your email address'\nlocation_city_and_province_or_territory_or_online_:\n  '#type': textfield\n  '#title': 'Location (city and province or territory, or online)'\ndate:\n  '#type': date\n  '#title': Date\n  '#datepicker': true\ntime_optional_:\n  '#type': webform_time\n  '#title': 'Time (Optional)'\n  '#timepicker': true\n  '#step': 60\n"
 css: ''
 javascript: ''
 settings:
@@ -127,6 +127,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
   form_login: false
