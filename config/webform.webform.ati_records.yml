@@ -1,16 +1,9 @@
-uuid: 94925d66-f79b-4256-9770-ff40e4f44ac5
 langcode: en
 status: open
 dependencies:
   module:
     - honeypot
     - og_ext_webform
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
-_core:
-  default_config_hash: 3KMfwnJX9MY_3tJmNyqT_XDU5kCN089MDHRQe6cdXDo
 open: null
 close: null
 weight: 0
@@ -135,6 +128,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
   form_login: false
@@ -287,3 +281,10 @@ handlers:
     weight: 0
     settings: {  }
 variants: {  }
+uuid: 94925d66-f79b-4256-9770-ff40e4f44ac5
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
+_core:
+  default_config_hash: 3KMfwnJX9MY_3tJmNyqT_XDU5kCN089MDHRQe6cdXDo
