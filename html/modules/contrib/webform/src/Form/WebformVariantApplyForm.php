@@ -107,7 +107,7 @@ class WebformVariantApplyForm extends WebformDeleteFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'webform_variant_delete_form';
+    return 'webform_variant_apply_form';
   }
 
   /**

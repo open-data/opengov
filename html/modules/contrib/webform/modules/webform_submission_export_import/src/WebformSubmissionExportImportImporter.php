@@ -219,7 +219,7 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
    * {@inheritdoc}
    */
   public function getImportOption($name) {
-    return $this->importOptions[$name];
+    return $this->importOptions[$name] ?? NULL;
   }
 
   /**
@@ -636,7 +636,7 @@ class WebformSubmissionExportImportImporter implements WebformSubmissionExportIm
         $record[$element_key][$composite_key] = $value;
       }
       elseif ($element_plugin instanceof WebformCompositeBase) {
-        // Get the the composite element element and make sure it exists.
+        // Get the composite element and make sure it exists.
         $composite_elements = $element_plugin->getCompositeElements();
         if (!isset($composite_elements[$composite_key])) {
           continue;

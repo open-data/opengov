@@ -22,7 +22,7 @@ abstract class WebformComputedBase extends WebformElementBase implements Webform
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Element settings.
       'title' => '',
@@ -46,8 +46,10 @@ abstract class WebformComputedBase extends WebformElementBase implements Webform
       // Attributes.
       'wrapper_attributes' => [],
       'label_attributes' => [],
-    ] + $this->getDefaultBaseProperties();
+    ] + $this->defineDefaultBaseProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

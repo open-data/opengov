@@ -42,6 +42,11 @@ elements: |
     '#title': unique_error
     '#unique': true
     '#unique_error': 'unique_error error message.'
+  unique_error_html:
+    '#type': textfield
+    '#title': unique_error_html
+    '#unique': true
+    '#unique_error': 'unique_error <em>error message</em>.'
   unique_multiple:
     '#type': checkboxes
     '#title': unique_multiple
@@ -164,6 +169,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -214,3 +220,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

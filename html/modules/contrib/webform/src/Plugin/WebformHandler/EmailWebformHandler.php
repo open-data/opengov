@@ -666,7 +666,7 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
     ];
     $form['elements']['ignore_access'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Always include elements with private and restricted access.'),
+      '#title' => $this->t('Always include elements with private and restricted access'),
       '#description' => $this->t('If checked, access controls for included element will be ignored.'),
       '#return_value' => TRUE,
       '#default_value' => $this->configuration['ignore_access'],
@@ -1268,6 +1268,17 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
       '#title' => $this->t('To email'),
       '#default_value' => $message['to_mail'],
     ];
+    $element['cc_mail'] = [
+      '#type' => 'webform_email_multiple',
+      '#title' => $this->t('CC email'),
+      '#default_value' => $message['cc_mail'],
+    ];
+    $element['bcc_mail'] = [
+      '#type' => 'webform_email_multiple',
+      '#title' => $this->t('BCC email'),
+      '#default_value' => $message['bcc_mail'],
+    ];
+    $element['from_divider'] = ['#markup' => '<hr/>'];
     $element['from_mail'] = [
       '#type' => 'webform_email_multiple',
       '#title' => $this->t('From email'),
@@ -1280,6 +1291,7 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
       '#required' => TRUE,
       '#default_value' => $message['from_name'],
     ];
+    $element['message_divider'] = ['#markup' => '<hr/>'];
     $element['subject'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Subject'),

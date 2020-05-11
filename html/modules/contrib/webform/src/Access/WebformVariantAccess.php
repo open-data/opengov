@@ -50,7 +50,7 @@ class WebformVariantAccess {
    *   The access result.
    */
   protected static function checkVariantAccess(WebformInterface $webform, $webform_variant = NULL) {
-    if (!$webform->hasVariant()) {
+    if (!$webform->hasVariants()) {
       $access_result = AccessResult::forbidden();
     }
     else {

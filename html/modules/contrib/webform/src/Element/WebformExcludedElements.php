@@ -5,6 +5,7 @@ namespace Drupal\webform\Element;
 use Drupal\user\Entity\Role;
 use Drupal\webform\Entity\Webform as WebformEntity;
 use Drupal\webform\Utility\WebformArrayHelper;
+use Drupal\webform\Plugin\WebformElement\WebformActions as WebformActionsWebformElement;
 
 /**
  * Provides a webform element for webform excluded elements.
@@ -78,9 +79,9 @@ class WebformExcludedElements extends WebformExcludedBase {
     }
     foreach ($form_elements as $key => $form_element) {
       $form_element_plugin = $element_manager->getElementInstance($form_element);
-      // Skip markup elements that are containers.
+      // Skip markup elements that are containers or actions.
       if (!$element['#exclude_markup']
-        && $form_element_plugin->isContainer($form_element)) {
+        && ($form_element_plugin->isContainer($form_element) || $form_element_plugin instanceof WebformActionsWebformElement)) {
         continue;
       }
 

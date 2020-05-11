@@ -40,7 +40,7 @@ elements: |
     '#type': textarea
     '#required': true
     '#default_value': '{message}'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -154,6 +154,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -227,7 +228,7 @@ handlers:
       body: |
         <p>Submitted values are:</p>
         {{ webform_token('[webform_submission:values]', webform_submission) }}
-
+        
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
@@ -243,3 +244,4 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
+variants: {  }

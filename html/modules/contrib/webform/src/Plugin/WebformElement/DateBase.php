@@ -25,13 +25,14 @@ abstract class DateBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Form validation.
       'date_date_min' => '',
       'date_date_max' => '',
       'date_days' => ['0', '1', '2', '3', '4', '5', '6'],
-    ] + parent::getDefaultProperties() + $this->getDefaultMultipleProperties();
+    ] + parent::defineDefaultProperties()
+      + $this->defineDefaultMultipleProperties();
   }
 
   /****************************************************************************/

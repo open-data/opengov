@@ -30,7 +30,7 @@
       type: label
       label: Title
     description:
-      type: label
+      type: text
       label: 'Administrative description'
     category:
       type: label
@@ -434,6 +434,9 @@
         results_disabled_ignore:
           type: boolean
           label: 'Ignore disabled results warning'
+        results_customize:
+          type: boolean
+          label: 'Allow users to customize the results'
         token_view:
           type: boolean
           label: 'Allow viewing a submission using token'

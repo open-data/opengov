@@ -5,6 +5,8 @@ namespace Drupal\webform\Plugin\Field\FieldWidget;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Element\WebformAjaxElementTrait;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\Utility\WebformDateHelper;
 use Drupal\webform\WebformInterface;
 
@@ -12,6 +14,8 @@ use Drupal\webform\WebformInterface;
  * Trait for webform entity reference and autocomplete widget.
  */
 trait WebformEntityReferenceWidgetTrait {
+
+  use WebformAjaxElementTrait;
 
   /**
    * {@inheritdoc}
@@ -96,6 +100,18 @@ trait WebformEntityReferenceWidgetTrait {
     // Get weight.
     $weight = $element['target_id']['#weight'];
 
+    // Get webform.
+    if ($form_state->isRebuilding()) {
+      $user_input = $form_state->getUserInput();
+      $target_id = $user_input[$field_name][$delta]['target_id'];
+    }
+    else {
+      $target_id = $items[$delta]->target_id;
+    }
+
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = ($target_id) ? Webform::load($target_id) : NULL;
+
     $element['settings'] = [
       '#type' => 'details',
       '#title' => $this->t('@title settings', ['@title' => $element['target_id']['#title']]),
@@ -103,6 +119,34 @@ trait WebformEntityReferenceWidgetTrait {
       '#open' => ($items[$delta]->target_id) ? TRUE : FALSE,
       '#weight' => $weight++,
     ];
+
+    // Disable a warning message about the webform's state using Ajax
+    $is_webform_closed = ($webform && $webform->isClosed());
+    if ($is_webform_closed) {
+      $t_args = [
+        '%webform' => $webform->label(),
+        ':href' => $webform->toUrl('settings-form')->toString(),
+      ];
+      if ($webform->access('update')) {
+        $message = $this->t('The %webform webform is <a href=":href">closed</a>. The below status will be ignored.', $t_args);
+      }
+      else {
+        $message = $this->t('The %webform webform is <strong>closed</strong>. The below status will be ignored.', $t_args);
+      }
+      $element['settings']['status_message'] = [
+        '#type' => 'webform_message',
+        '#message_type' => 'warning',
+        '#message_message' => $message,
+      ];
+    }
+    else {
+      // Render empty element so that Ajax wrapper is embedded in the page.
+      $element['settings']['status_message'] = [];
+    }
+    $ajax_id = 'webform-entity-reference-' . $field_name . '-' . $delta;
+    $this->buildAjaxElementTrigger($ajax_id, $element['target_id']);
+    $this->buildAjaxElementUpdate($ajax_id, $element);
+    $this->buildAjaxElementWrapper($ajax_id, $element['settings']['status_message']);
 
     $element['settings']['status'] = [
       '#type' => 'radios',

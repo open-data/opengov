@@ -1,20 +1,26 @@
 <?php
 
-namespace Drupal\Tests\webform\Functional\Element;
+namespace Drupal\Tests\webform_example_element_properties\Functiona;
+
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 
 /**
- * Tests for the webform element custom properties.
+ * Tests for webform example element properties.
  *
  * @group Webform
  */
-class WebformElementCustomPropertiesTest extends WebformElementBrowserTestBase {
+class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_ui', 'webform_test_custom_properties'];
+  public static $modules = [
+    'webform',
+    'webform_ui',
+    'webform_example_element_properties',
+  ];
 
   /**
    * Tests element custom properties.

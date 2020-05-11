@@ -29,6 +29,7 @@ class WebformElementTimeTest extends WebformElementBrowserTestBase {
     // Check timepicker elements.
     $this->assertRaw('<input data-drupal-selector="edit-time-timepicker" data-webform-time-format="g:i A" type="text" id="edit-time-timepicker" name="time_timepicker" value="2:00 PM" size="12" maxlength="12" class="form-time webform-time" />');
     $this->assertRaw('<input data-drupal-selector="edit-time-timepicker-min-max" aria-describedby="edit-time-timepicker-min-max--description" data-webform-time-format="g:i A" type="text" id="edit-time-timepicker-min-max" name="time_timepicker_min_max" value="2:00 PM" size="12" maxlength="12" min="14:00" max="18:00" class="form-time webform-time" />');
+    $this->assertRaw('<input placeholder="{time}" data-drupal-selector="edit-time-timepicker-placeholder" data-webform-time-format="H:i" type="text" id="edit-time-timepicker-placeholder" name="time_timepicker_placeholder" value="" size="12" maxlength="12" class="form-time webform-time" />');
 
     // Check time processing.
     $this->drupalPostForm('/webform/test_element_time', [], t('Submit'));

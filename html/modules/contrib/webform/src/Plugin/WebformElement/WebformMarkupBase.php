@@ -17,6 +17,30 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
   /**
    * {@inheritdoc}
    */
+  protected function defineDefaultProperties() {
+    return [
+      // Markup settings.
+      'display_on' => static::DISPLAY_ON_FORM,
+    ] + $this->defineDefaultBaseProperties();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function defineDefaultBaseProperties() {
+    $properties = parent::defineDefaultBaseProperties();
+    unset(
+      $properties['prepopulate'],
+      $properties['states_clear']
+    );
+    return $properties;
+  }
+
+  /****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */
   public function isInput(array $element) {
     return FALSE;
   }
@@ -26,26 +50,6 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
    */
   public function isContainer(array $element) {
     return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDefaultProperties() {
-    return [
-      // Markup settings.
-      'display_on' => static::DISPLAY_ON_FORM,
-    ] + $this->getDefaultBaseProperties();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getDefaultBaseProperties() {
-    $properties = parent::getDefaultBaseProperties();
-    unset($properties['prepopulate']);
-    unset($properties['states_clear']);
-    return $properties;
   }
 
   /**

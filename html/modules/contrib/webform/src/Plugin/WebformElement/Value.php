@@ -20,13 +20,15 @@ class Value extends TextBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Element settings.
       'title' => '',
       'value' => '',
     ];
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

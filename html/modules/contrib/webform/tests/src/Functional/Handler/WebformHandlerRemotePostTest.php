@@ -31,6 +31,7 @@ class WebformHandlerRemotePostTest extends WebformBrowserTestBase {
     'test_handler_remote_put',
     'test_handler_remote_get',
     'test_handler_remote_post_file',
+    'test_handler_remote_post_cast',
   ];
 
   /**
@@ -192,7 +193,7 @@ options:
 
     // Check 404 Not Found with custom error uri.
     $this->postSubmission($webform, ['response_type' => '404']);
-    $this->assertNoRaw('This is a custom 404 not found message.');
+    $this->assertRaw('This is a custom 404 not found message.');
     $this->assertUrl($webform->toUrl('canonical', ['query' => ['error' => '1']])->setAbsolute()->toString());
 
     /**************************************************************************/
@@ -291,6 +292,34 @@ options:
       mime: text/plain
       uuid: $files_uuid
       data: dGhpcyBpcyBhIHNhbXBsZSB0eHQgZmlsZQppdCBoYXMgdHdvIGxpbmVzCg==");
+
+    /**************************************************************************/
+    // POST cast.
+    /**************************************************************************/
+
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = Webform::load('test_handler_remote_post_cast');
+
+    $edit = [
+      'checkbox' => TRUE,
+      'number' => '10',
+      'number_multiple[items][0][_item_]' => '10.5',
+      'custom_composite[items][0][textfield]' => 'text',
+      'custom_composite[items][0][checkbox]' => TRUE,
+      'custom_composite[items][0][number]' => '20.5',
+    ];
+    $this->postSubmission($webform, $edit);
+    $this->assertRaw("form_params:
+    checkbox: true
+    number: 10
+    number_multiple:
+      - 10.5
+    custom_composite:
+      -
+        textfield: text
+        checkbox: true
+        number: 20.5");
+
   }
 
 }

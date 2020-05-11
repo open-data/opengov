@@ -20,7 +20,7 @@ elements: |
     '#title': webform_image_file_attachment
     '#file_extensions': gif
     '#attachment_image_style': thumbnail
-
+  
 css: ''
 javascript: ''
 settings:
@@ -134,6 +134,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -220,3 +221,4 @@ handlers:
       sender_name: ''
       theme_name: ''
       parameters: {  }
+variants: {  }

@@ -15,55 +15,6 @@ title: 'Example: Computed'
 description: 'Examples of a computed elements.'
 category: Example
 elements: |
-  calculation:
-    '#title': Calculation
-    '#type': webform_wizard_page
-    '#open': true
-    calculation_section:
-      '#type': webform_section
-      '#title': 'Basic adding calculation using a ''computed twig'' element'
-      container:
-        '#type': container
-        '#attributes':
-          class:
-            - 'container-inline clearfix'
-        a:
-          '#type': number
-          '#title': a
-          '#title_display': invisible
-          '#placeholder': a
-        markup:
-          '#type': webform_markup
-          '#markup': ' + '
-        b:
-          '#type': number
-          '#title': b
-          '#title_display': invisible
-          '#placeholder': b
-        markup_01:
-          '#type': webform_markup
-          '#markup': ' = '
-        c:
-          '#type': webform_computed_twig
-          '#title': c
-          '#title_display': invisible
-          '#ajax': true
-          '#template': '{% if data.a|length and data.b|length %}{{ data.a + data.b }}{% else %}c{% endif %}'
-    message_warning:
-      '#type': webform_message
-      '#states':
-        visible:
-          ':input[name="c"]':
-            value: c
-      '#message_type': warning
-      '#message_message': 'Please enter <strong>a</strong> and <strong>b</strong> to perform a basic adding calculation.'
-    message_status:
-      '#type': webform_message
-      '#message_message': 'Thank you for entering <strong>a</strong> and <strong>b</strong> to perform basic adding calculation.'
-      '#states':
-        visible:
-          ':input[name="c"]':
-            '!value': c
   information:
     '#title': 'Your Information'
     '#type': webform_wizard_page
@@ -209,6 +160,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -259,3 +211,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

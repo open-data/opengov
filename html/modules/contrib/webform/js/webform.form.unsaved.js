@@ -31,7 +31,7 @@
         unsaved = true;
       }
       else {
-        $('.js-webform-unsaved :input:not(:button, :submit, :reset)', context).once('webform-unsaved').on('change keypress', function (event, param1) {
+        $('.js-webform-unsaved :input:not(:button, :submit, :reset)').once('webform-unsaved').on('change keypress', function (event, param1) {
           // Ignore events triggered when #states API is changed,
           // which passes 'webform.states' as param1.
           // @see webform.states.js ::triggerEventHandlers().
@@ -97,7 +97,7 @@
     if (!navigator.userAgent.toLowerCase().match(/iphone|ipad|ipod|opera/)) {
       return;
     }
-    $('a').bind('click', function (evt) {
+    $('a:not(.use-ajax)').bind('click', function (evt) {
       var href = $(evt.target).closest('a').attr('href');
       if (typeof href !== 'undefined' && !(href.match(/^#/) || href.trim() === '')) {
         if ($(window).triggerHandler('beforeunload')) {

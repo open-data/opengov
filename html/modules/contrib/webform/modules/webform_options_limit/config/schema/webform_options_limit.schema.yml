@@ -5,9 +5,12 @@ webform.handler.options_limit:
     element_key:
       type: string
       label: 'Element'
+    limit:
+      type: ignore
+      label: 'Boolean limit'
     limits:
       type: ignore
-      label: 'Limits'
+      label: 'Options limits'
     limit_reached_message:
       type: label
       label: 'Limit reached message'
@@ -38,3 +41,6 @@ webform.handler.options_limit:
     option_error_message:
       type: label
       label: 'Option validation error message'
+    tableselect_header:
+      type: label
+      label: 'Table select header'

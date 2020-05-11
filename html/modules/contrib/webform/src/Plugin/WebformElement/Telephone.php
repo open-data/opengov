@@ -14,11 +14,9 @@ use Drupal\webform\WebformSubmissionInterface;
  *
  * @WebformElement(
  *   id = "tel",
- *   api =
- *   "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Tel.php/class/Tel",
- *   label = @Translation("Telephone"), description = @Translation("Provides a
- *   form element for entering a telephone number."), category =
- *   @Translation("Advanced elements"),
+ *   api = "https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Tel.php/class/Tel",
+ *   label = @Translation("Telephone"), description = @Translation("Provides a form element for entering a telephone number."),
+ *   category = @Translation("Advanced elements"),
  * )
  */
 class Telephone extends TextBase {
@@ -26,15 +24,14 @@ class Telephone extends TextBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
         'input_hide' => FALSE,
         'multiple' => FALSE,
         'international' => FALSE,
         'international_initial_country' => '',
         'international_preferred_countries' => [],
-      ] + parent::getDefaultProperties();
-
+      ] + parent::defineDefaultProperties() + $this->defineDefaultMultipleProperties();
     // Add support for telephone_validation.module.
     if (\Drupal::moduleHandler()->moduleExists('telephone_validation')) {
       $properties += [
@@ -43,16 +40,17 @@ class Telephone extends TextBase {
         'telephone_validation_countries' => [],
       ];
     }
-
     return $properties;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTranslatableProperties() {
-    return array_merge(parent::getTranslatableProperties(), ['international_initial_country']);
+  protected function defineTranslatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['international_initial_country']);
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

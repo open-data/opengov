@@ -27,7 +27,13 @@ elements: |
     '#type': managed_file
     '#title': managed_file_03
     '#file_extensions': txt
-  
+  custom_composite_managed_files:
+    '#type': webform_custom_composite
+    '#title': custom_composite_managed_files
+    '#element':
+      managed_file:
+        '#type': managed_file
+        '#title': managed_file
 css: ''
 javascript: ''
 settings:
@@ -141,6 +147,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -191,3 +198,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

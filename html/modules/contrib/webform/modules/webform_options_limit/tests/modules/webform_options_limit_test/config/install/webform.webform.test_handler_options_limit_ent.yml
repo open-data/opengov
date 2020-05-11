@@ -140,6 +140,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -211,3 +212,5 @@ handlers:
       option_unlimited_message: '[Unlimited]'
       option_none_message: '[@remaining remaining]'
       option_error_message: '@name: @label is unavailable.'
+      tableselect_header: ''
+variants: {  }

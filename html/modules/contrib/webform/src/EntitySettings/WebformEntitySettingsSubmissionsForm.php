@@ -219,6 +219,11 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
         'all_description' => $this->t('All submission event are being logged for all webforms'),
         'form_description' => $this->t('If checked, events will be logged for submissions to this webform.'),
       ],
+      'results_customize' => [
+        'title' => $this->t('Allow users to customize the submission results table'),
+        'all_description' => $this->t('Users can customize the submission results table for all webforms'),
+        'form_description' => $this->t('If checked, users can customize the submission results table for this webform.'),
+      ],
     ];
     $this->appendBehaviors($form['submission_behaviors'], $behavior_elements, $settings, $default_settings);
     $form['submission_behaviors']['token_update_warning'] = [
@@ -652,8 +657,8 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
     ];
     $form['draft_settings']['draft_container']['draft_auto_save'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Automatically save as draft when paging, previewing, and when there are validation errors.'),
-      "#description" => $this->t('Automatically save partial submissions when users click the "Preview" button or when validation errors prevent a webform from being submitted.'),
+      '#title' => $this->t('Automatically save as draft when paging, previewing, and when there are validation errors'),
+      "#description" => $this->t('Automatically save partial submissions when users click the "Next Page", "Previous Page", or "Preview" buttons or when validation errors prevent a webform from being submitted.'),
       '#return_value' => TRUE,
       '#default_value' => $settings['draft_auto_save'],
     ];

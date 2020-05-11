@@ -22,14 +22,16 @@ class View extends WebformMarkupBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'name' => '',
       'display_id' => '',
       'arguments' => [],
       'display_on' => static::DISPLAY_ON_BOTH,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

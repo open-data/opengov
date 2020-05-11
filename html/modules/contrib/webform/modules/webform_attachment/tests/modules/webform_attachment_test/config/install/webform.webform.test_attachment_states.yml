@@ -27,7 +27,7 @@ elements: |
       'enabled':
         ':input[name="attach"]':
           checked: true
-
+  
 css: ''
 javascript: ''
 settings:
@@ -141,6 +141,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -227,6 +228,7 @@ handlers:
       sender_name: ''
       theme_name: ''
       parameters: {  }
+variants: {  }
 uuid: 08971b54-57be-4bc9-956a-8cfa57c7cadd
 _core:
   default_config_hash: XUf67HS7kvhJPn6INGzCeH3OdEnQNm9Kb_H5o-HfYlQ

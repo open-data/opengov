@@ -22,8 +22,8 @@ class Select extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    return [
+  protected function defineDefaultProperties() {
+    $properties = [
       // Options settings.
       'multiple' => FALSE,
       'multiple_error' => '',
@@ -35,8 +35,11 @@ class Select extends OptionsBase {
       'placeholder' => '',
       'help_display' => '',
       'size' => '',
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
+    return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

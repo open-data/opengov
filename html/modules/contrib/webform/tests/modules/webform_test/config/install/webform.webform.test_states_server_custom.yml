@@ -11,8 +11,8 @@ uid: null
 template: false
 archive: false
 id: test_states_server_custom
-title: 'Test: Form API #states custom pattern, less, and greater condition validation'
-description: 'Test Drupal''s #states API custom pattern, less, and greater condition validation.'
+title: 'Test: Form API #states custom pattern, less, greater, and between condition validation'
+description: 'Test Drupal''s #states API custom pattern, less, greater, and between condition validation.'
 category: 'Test: Form API #states'
 elements: |
   trigger_pattern:
@@ -79,6 +79,22 @@ elements: |
         ':input[name="trigger_greater"]':
           value:
             greater: 10
+  trigger_between:
+    '#type': number
+    '#title': trigger_between
+    '#description': '10 > & < 20'
+  dependent_between:
+    '#type': textfield
+    '#title': dependent_between
+    '#states':
+      visible:
+        ':input[name="trigger_between"]':
+          value:
+            between: '10:20'
+      required:
+        ':input[name="trigger_between"]':
+          value:
+            between: '10:20'
   trigger_visible_slide:
     '#type': checkbox
     '#title': trigger_visible_slide
@@ -203,6 +219,7 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: true
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -253,3 +270,4 @@ access:
     users: {  }
     permissions: {  }
 handlers: {  }
+variants: {  }

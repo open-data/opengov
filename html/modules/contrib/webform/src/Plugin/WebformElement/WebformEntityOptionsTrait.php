@@ -12,16 +12,28 @@ trait WebformEntityOptionsTrait {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = parent::getDefaultProperties() + [
+  protected function defineDefaultProperties() {
+    $properties = parent::defineDefaultProperties() + [
       // Entity reference settings.
       'target_type' => '',
       'selection_handler' => '',
       'selection_settings' => [],
     ];
-    unset($properties['options'], $properties['options_description_display']);
+    unset(
+      $properties['options'],
+      $properties['options_description_display']
+    );
+    if ($this->getPluginId() === 'webform_entity_radios') {
+      unset(
+        $properties['format_items'],
+        $properties['format_items_html'],
+        $properties['format_items_text']
+      );
+    }
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

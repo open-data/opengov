@@ -17,7 +17,7 @@ category: 'Test: Handler'
 elements: |
   message:
     '#markup': 'Click ''Save Draft'' and ''Submit'' to send emails triggered by submissions  state.'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -131,6 +131,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -433,3 +434,4 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
+variants: {  }

@@ -30,7 +30,7 @@ elements: |
     '#title': radios_other
     '#options': gender
     '#description': 'Check and enter ''Other'' to trigger an email.'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -144,6 +144,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -386,3 +387,4 @@ handlers:
       return_path: ''
       sender_mail: ''
       sender_name: ''
+variants: {  }

@@ -26,8 +26,9 @@ class WebformElementIgnoredPropertiesTest extends WebformElementBrowserTestBase 
   public function testIgnoredProperties() {
     $webform_ignored_properties = Webform::load('test_element_ignored_properties');
     $elements = $webform_ignored_properties->getElementsInitialized();
+    $this->assert(isset($elements['textfield']));
     foreach (WebformElementHelper::$ignoredProperties as $ignored_property) {
-      $this->assert(!isset($elements['test'][$ignored_property]), new FormattableMarkup('@property ignored.', ['@property' => $ignored_property]));
+      $this->assert(!isset($elements['textfield'][$ignored_property]), new FormattableMarkup('@property ignored.', ['@property' => $ignored_property]));
     }
   }
 

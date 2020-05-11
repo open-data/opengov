@@ -414,7 +414,7 @@ function template_preprocess_webform_element_base_html(array &$variables) {
   // Build form (item) element for HTML display.
   // @see form-element.html.twig
   // @see template_preprocess_form_element
-  if (empty($variables['options']['email'])) {
+  if (empty($variables['options']['email']) && isset($element['#type'])) {
     $type = $element['#type'];
 
     $attributes = (isset($element['#format_attributes'])) ? $element['#format_attributes'] : [];

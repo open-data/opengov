@@ -46,9 +46,7 @@ class WebformElementSubmissionViewsReplaceTest extends WebformElementBrowserTest
     - entity.webform.results_submissions
   node_routes:
     - entity.node.webform.results_submissions
-webform_submission_views_replace:
-  webform_routes: {  }
-  node_routes: {  }");
+webform_submission_views_replace: {  }");
 
     // Clear default_submission_views_replace.
     \Drupal::configFactory()

@@ -24,17 +24,19 @@ class WebformToggle extends Checkbox {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
-    $properties = parent::getDefaultProperties() + [
+  protected function defineDefaultProperties() {
+    $properties = [
       'toggle_theme' => 'light',
       'toggle_size' => 'medium',
       'on_text' => '',
       'off_text' => '',
-    ];
-    $properties['title_display'] = 'after';
+      'title_display' => 'after',
+    ] + parent::defineDefaultProperties();
     unset($properties['required']);
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

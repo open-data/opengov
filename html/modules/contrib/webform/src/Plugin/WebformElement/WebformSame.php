@@ -21,18 +21,20 @@ class WebformSame extends Checkbox {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       'source' => '',
       'destination' => '',
       'destination_state' => 'visible',
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
     unset(
       $properties['required'],
       $properties['required_error']
     );
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

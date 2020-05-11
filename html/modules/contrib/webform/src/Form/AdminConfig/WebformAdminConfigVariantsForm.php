@@ -57,7 +57,7 @@ class WebformAdminConfigVariantsForm extends WebformAdminConfigBaseForm {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('webform.settings');
 
-    // Display warning about '>Edit webform variants'
+    // Display warning about needing 'Edit webform variants' permission.
     $t_args = [
       '@href' => Url::fromRoute('user.admin_permissions', [], ['fragment' => 'module-webform'])->toString(),
     ];

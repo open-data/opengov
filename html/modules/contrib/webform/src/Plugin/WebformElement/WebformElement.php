@@ -19,9 +19,11 @@ class WebformElement extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [];
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

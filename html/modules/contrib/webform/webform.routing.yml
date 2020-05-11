@@ -369,6 +369,20 @@ entity.webform.results_submissions.custom:
     _entity_access: 'webform.update'
     _custom_access: '\Drupal\webform\Access\WebformEntityAccess:checkResultsAccess'
 
+entity.webform.results_submissions.custom.user:
+  path: '/admin/structure/webform/manage/{webform}/results/submissions/custom/user'
+  defaults:
+    _form: 'Drupal\webform\Form\WebformResultsCustomForm'
+    _title: 'Customize my table'
+    type: 'user'
+  options:
+    parameters:
+      webform:
+        type: 'entity:webform'
+  requirements:
+    _entity_access: 'webform.submission_view_any'
+    _custom_access: '\Drupal\webform\Access\WebformEntityAccess:checkResultsAccess'
+
 entity.webform.results_export:
   path: '/admin/structure/webform/manage/{webform}/results/download'
   defaults:

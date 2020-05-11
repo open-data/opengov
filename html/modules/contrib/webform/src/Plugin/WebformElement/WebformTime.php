@@ -22,16 +22,20 @@ class WebformTime extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Time settings.
       'timepicker' => FALSE,
       'time_format' => 'H:i',
+      'placeholder' => '',
       'min' => '',
       'max' => '',
       'step' => 60,
-    ] + parent::getDefaultProperties() + $this->getDefaultMultipleProperties();
+    ] + parent::defineDefaultProperties()
+      + $this->defineDefaultMultipleProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -41,7 +45,10 @@ class WebformTime extends WebformElementBase {
     if (!isset($element['#time_format'])) {
       $element['#time_format'] = $this->getDefaultProperty('time_format');
     }
-
+    // Set placeholder attribute.
+    if (!empty($element['#placeholder'])) {
+      $element['#attributes']['placeholder'] = $element['#placeholder'];
+    }
     // Prepare element after date format has been updated.
     parent::prepare($element, $webform_submission);
   }
@@ -125,6 +132,13 @@ class WebformTime extends WebformElementBase {
       '#other__type' => 'number',
       '#other__description' => $this->t('Enter interval in seconds.'),
     ];
+    // Show placeholder for the timepicker only.
+    $form['form']['placeholder']['#states'] = [
+      'visible' => [
+        ':input[name="properties[timepicker]"]' => ['checked' => TRUE],
+      ],
+    ];
+
     return $form;
   }
 

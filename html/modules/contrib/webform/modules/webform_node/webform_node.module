@@ -62,7 +62,7 @@ function webform_node_node_access(NodeInterface $node, $operation, AccountInterf
       return AccessResult::allowed();
     }
 
-    return AccessResult::forbidden();
+    return AccessResult::neutral();
   }
 }
 

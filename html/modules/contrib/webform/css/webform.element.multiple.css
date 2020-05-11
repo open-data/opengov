@@ -6,9 +6,9 @@
  */
 
 .form-type-webform-multiple:after {
-  content: " ";
   display: table;
   clear: both;
+  content: " ";
 }
 
 .webform-multiple-table table {
@@ -16,8 +16,8 @@
 }
 
 .webform-multiple-table td {
-  white-space: nowrap;
   vertical-align: top;
+  white-space: nowrap;
 }
 
 .webform-multiple-table td .description,
@@ -26,10 +26,10 @@
 }
 
 .webform-multiple-table td.webform-multiple-table--handle {
-  padding: 0 0 0 1em;
   width: 26px;
-  vertical-align: middle;
+  padding: 0 0 0 1em;
   text-align: center;
+  vertical-align: middle;
 }
 
 .webform-multiple-table td.webform-multiple-table--weight {
@@ -37,10 +37,10 @@
 }
 
 .webform-multiple-table td.webform-multiple-table--operations {
-  padding: 0 2px;
-  vertical-align: middle;
-  text-align: center;
   width: 30px;
+  padding: 0 2px;
+  text-align: center;
+  vertical-align: middle;
 }
 .webform-multiple-table td.webform-multiple-table--operations-two {
   width: 60px;
@@ -85,15 +85,15 @@
 }
 
 .webform-multiple-table td input[type="image"] {
+  box-sizing: border-box;
   width: 20px;
-  height: auto;
   min-width: initial;
   max-width: initial;
-  box-sizing: border-box;
+  height: auto;
   margin: 0;
+  padding: 2px;
   border: 2px solid #333;
   border-radius: 50%;
-  padding: 2px;
 }
 
 .webform-multiple-table td input[type="image"] + input[type="image"] {
@@ -139,9 +139,9 @@
  * Tweak tabledrag toggle weight.
  */
 .tabledrag-toggle-weight-wrapper.webform-multiple-tabledrag-toggle-weight {
-  float: right;
-  display: inherit;
   position: inherit;
+  display: inherit;
+  float: right;
 }
 
 .tabledrag-toggle-weight-wrapper.webform-multiple-tabledrag-toggle-weight button {
@@ -172,17 +172,17 @@
 
   .webform-multiple-table-responsive td {
     display: block;
-    border: 0;
-    background: transparent;
-    text-align: inherit;
     width: inherit;
     padding: 0.5em 1em;
+    text-align: inherit;
+    border: 0;
+    background: transparent;
   }
 
   .webform-multiple-table-responsive td:after {
-    content: "";
     display: table;
     clear: both;
+    content: "";
   }
 
   .webform-multiple-table-responsive td.webform-multiple-table--handle,
@@ -195,12 +195,12 @@
   }
 
   .webform-multiple-table-responsive td > div > label.visually-hidden {
-    display: block;
     position: inherit !important;
-    clip: inherit;
+    display: block;
     overflow: inherit;
-    height: inherit;
+    clip: inherit;
     width: inherit;
+    height: inherit;
     margin: 0.2em 0;
   }
 }

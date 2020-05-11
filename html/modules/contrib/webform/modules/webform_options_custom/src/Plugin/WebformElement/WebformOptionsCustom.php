@@ -29,7 +29,7 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     $properties = [
       // Options settings.
       'multiple' => FALSE,
@@ -44,10 +44,12 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
       'size' => '',
       'options_custom' => '',
       'options_description_display' => TRUE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
     unset($properties['options_randomize']);
     return $properties;
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

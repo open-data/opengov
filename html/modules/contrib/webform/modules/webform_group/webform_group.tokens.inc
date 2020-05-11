@@ -94,7 +94,7 @@ function webform_group_tokens($type, $tokens, array $data, array $options, Bubbl
 
     /** @var \Drupal\webform_group\WebformGroupManagerInterface $webform_group_manager */
     $webform_group_manager = \Drupal::service('webform_group.manager');
-    $group_content = $webform_group_manager->getGroupContent($webform_submission);
+    $group_content = $webform_group_manager->getWebformSubmissionGroupContent($webform_submission);
     if (!$group_content) {
       return $replacements;
     }

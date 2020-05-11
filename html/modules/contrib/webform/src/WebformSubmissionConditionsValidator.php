@@ -723,7 +723,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     // @see http://drupalsun.com/julia-evans/2012/03/09/extending-form-api-states-regular-expressions
     if ($trigger_state == 'value' && is_array($trigger_value)) {
       $trigger_substate = key($trigger_value);
-      if (in_array($trigger_substate, ['pattern', '!pattern', 'less', 'greater'])) {
+      if (in_array($trigger_substate, ['pattern', '!pattern', 'less', 'greater', 'between'])) {
         $trigger_state = $trigger_substate;
         $trigger_value = reset($trigger_value);
       }
@@ -771,6 +771,23 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         $result = ($element_value !== '' && floatval($trigger_value) < floatval($element_value));
         break;
 
+      case 'between':
+        $result = FALSE;
+        if ($element_value !== '') {
+          $greater = NULL;
+          $less = NULL;
+          if (strpos($trigger_value, ':') === FALSE) {
+            $greater = $trigger_value;
+          }
+          else {
+            list($greater, $less) = explode(':', $trigger_value);
+          }
+          $is_greater_than = ($greater === NULL || $greater === '' || floatval($element_value) >= floatval($greater));
+          $is_less_than = ($less === NULL || $less === '' || floatval($element_value) <= floatval($less));
+          $result = ($is_greater_than && $is_less_than);
+        }
+        break;
+
       default:
         return NULL;
     }
@@ -799,7 +816,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
 
     // Set negate.
     $negate = FALSE;
-    if ($state[0] === '!') {
+    if (strpos($state, '!') === 0) {
       $negate = TRUE;
       $state = ltrim($state, '!');
     }

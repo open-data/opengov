@@ -16,7 +16,7 @@ class WebformElementMultipleTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  protected static $testWebforms = ['test_element_multiple', 'test_element_multiple_property'];
+  protected static $testWebforms = ['test_element_multiple'];
 
   /**
    * Tests multiple element.
@@ -238,18 +238,6 @@ webform_multiple_custom_attributes: {  }");
     $this->assertNoRaw('No items entered. Please add items below.');
     $this->drupalPostForm(NULL, $edit, 'webform_multiple_default_table_remove_0');
     $this->assertNoRaw('No items entered. Please add items below.');
-
-    /**************************************************************************/
-    // Property (#multiple).
-    /**************************************************************************/
-
-    // Check processing.
-    $this->drupalPostForm('/webform/test_element_multiple_property', [], t('Submit'));
-    $this->assertRaw('webform_element_multiple: false
-webform_element_multiple_true: true
-webform_element_multiple_false: false
-webform_element_multiple_custom: 5
-webform_element_multiple_disabled: 5');
   }
 
 }

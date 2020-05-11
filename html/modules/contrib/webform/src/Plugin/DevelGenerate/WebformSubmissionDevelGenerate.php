@@ -244,7 +244,7 @@ class WebformSubmissionDevelGenerate extends DevelGenerateBase implements Contai
 
     $form['kill'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Delete existing submissions in specified webform before generating new submissions.'),
+      '#title' => $this->t('Delete existing submissions in specified webform before generating new submissions'),
       '#default_value' => $this->getSetting('kill'),
     ];
 

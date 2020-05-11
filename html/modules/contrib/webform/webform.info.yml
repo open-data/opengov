@@ -2,27 +2,13 @@ name: Webform
 type: module
 description: 'Enables the creation of webforms and questionnaires.'
 package: Webform
-core: 8.x
-core_version_requirement: ^8
+core_version_requirement: ^8.7.7 || ^9
 configure: entity.webform.collection
 dependencies:
   - 'drupal:field'
-  - 'drupal:system (>= 8.7)'
   - 'drupal:user'
-test_dependencies:
-  - 'address:address'
-  - 'bootstrap:bootstrap'
-  - 'captcha:captcha'
-  - 'chosen:chosen'
-  - 'group:group'
-  - 'jsonapi:jsonapi'
-  - 'mailsystem:mailsystem'
-  - 'select2:select2'
-  - 'smtp:smtp'
-  - 'telephone_validation:telephone_validation'
-  - 'token:token'
 
-# Information added by Drupal.org packaging script on 2020-01-21
-version: '8.x-5.8'
+# Information added by Drupal.org packaging script on 2020-05-05
+version: '8.x-5.11'
 project: 'webform'
-datestamp: 1579637592
+datestamp: 1588690393

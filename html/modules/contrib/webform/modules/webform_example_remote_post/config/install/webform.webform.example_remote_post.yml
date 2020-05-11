@@ -155,6 +155,7 @@ settings:
   purge_days: null
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
 access:
@@ -239,6 +240,7 @@ handlers:
         custom_all: true
         
       custom_options: ''
+      cast: false
       debug: true
       completed_url: '[site:url]webform_example_remote_post/completed'
       completed_custom_data: |
@@ -261,3 +263,4 @@ handlers:
       message: ''
       messages: {  }
       error_url: ''
+variants: {  }

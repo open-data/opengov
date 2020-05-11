@@ -44,7 +44,7 @@ class WebformSubmissionExportImportWebformExporter extends WebformExporterBase {
     ];
     $form['uuid'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Use UUIDs for all entity references.'),
+      '#title' => $this->t('Use UUIDs for all entity references'),
       '#description' => $this->t("If checked, all entity references will use the entity's UUID"),
       '#return_value' => TRUE,
       '#default_value' => $this->configuration['uuid'],

@@ -18,14 +18,6 @@
 }
 
 /**
- * Make sure flexbox is always using 'display: flex' when toggled via #states.
- * @see https://stackoverflow.com/questions/38491653/jquery-show-a-flex-box/4121
- */
-.webform-flexbox.js-webform-states-hidden[style*="display: block"] {
-  display: flex !important;
-}
-
-/**
  * Container inline
  */
 .form-item .container-inline {
@@ -65,8 +57,8 @@
 
 [dir=rtl] .form-composite.webform-fieldset--title-inline legend {
   float: right; /* RTL */
-  margin-left: 0.5em; /* RTL */
   margin-right: 0; /* RTL */
+  margin-left: 0.5em; /* RTL */
 }
 
 .form-composite.webform-fieldset--title-inline .fieldset-wrapper,
@@ -97,7 +89,7 @@
 .webform-readonly input[type="time"],
 .webform-readonly input[type="url"],
 .webform-readonly textarea {
-  background: #ededed;
-  border-color: #bbb;
   color: #717171;
+  border-color: #bbb;
+  background: #ededed;
 }

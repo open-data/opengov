@@ -30,6 +30,15 @@ class WebformWizardBasicTest extends WebformWizardTestBase {
     $this->drupalPostForm(NULL, [], t('Submit'));
     $sid = $this->getLastSubmissionId($wizard_webform);
 
+    // Check confirmation message for wizard form.
+    $this->drupalGet("admin/structure/webform/manage/test_form_wizard_basic/submission/$sid/edit");
+    $this->assertCurrentPage('Page 1', 'page_1');
+    $this->drupalPostForm(NULL, [], t('Next Page >'));
+    $this->assertCurrentPage('Page 2', 'page_2');
+    $this->drupalPostForm(NULL, [], t('Save'));
+    $this->assertRaw('Submission updated in <em class="placeholder">Test: Webform: Wizard basic</em>.');
+    $this->assertCurrentPage('Page 1', 'page_1');
+
     // Check access to 'Edit: All' tab for wizard.
     $this->drupalGet("admin/structure/webform/manage/test_form_wizard_basic/submission/$sid/edit/all");
     $this->assertResponse(200);
