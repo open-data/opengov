@@ -1,4 +1,4 @@
-uuid: d477e4ae-fb04-48ea-aa2c-31a50d9a594f
+uuid: b756c741-265f-4f08-aff0-9260bfc16fd6
 langcode: en
 status: true
 dependencies:
@@ -7,13 +7,13 @@ dependencies:
     - views.view.suggested_dataset
   module:
     - search_api
-id: sd_organization_en
-name: 'Suggested Dataset: Organization'
-url_alias: sd_organization_en
-weight: -4
+id: sd_subject_fr
+name: 'Suggested Dataset: Sujet'
+url_alias: sd_subject_fr
+weight: 1
 min_count: 1
 show_only_one_result: false
-field_identifier: field_organization
+field_identifier: field_dataset_subject
 facet_source_id: 'search_api:views_block__suggested_dataset__block_1'
 widget:
   type: checkbox
@@ -21,8 +21,8 @@ widget:
     show_numbers: true
     soft_limit: 10
     soft_limit_settings:
-      show_less_label: 'Show less'
-      show_more_label: 'Show more'
+      show_less_label: 'Afficher moins'
+      show_more_label: 'Afficher plus'
     show_reset_link: false
     reset_text: 'Show all'
     hide_reset_when_no_selection: false
