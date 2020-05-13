@@ -1,4 +1,4 @@
-uuid: d477e4ae-fb04-48ea-aa2c-31a50d9a594f
+uuid: 59046c39-3308-4908-8561-af17a41ae9a3
 langcode: en
 status: true
 dependencies:
@@ -7,13 +7,13 @@ dependencies:
     - views.view.suggested_dataset
   module:
     - search_api
-id: sd_organization_en
-name: 'Suggested Dataset: Organization'
-url_alias: sd_organization_en
-weight: -4
+id: sd_subject_en
+name: 'Suggested Dataset: Subject'
+url_alias: sd_subject_en
+weight: 0
 min_count: 1
 show_only_one_result: false
-field_identifier: field_organization
+field_identifier: field_dataset_subject
 facet_source_id: 'search_api:views_block__suggested_dataset__block_1'
 widget:
   type: checkbox
@@ -39,7 +39,7 @@ processor_configs:
     weights:
       sort: 20
     settings:
-      sort: ASC
+      sort: DESC
   display_value_widget_order:
     processor_id: display_value_widget_order
     weights:
