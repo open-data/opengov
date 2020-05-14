@@ -1,3 +1,4 @@
+uuid: f7e1ac41-a81b-44fd-b028-a50d6cc1f1b6
 langcode: en
 status: open
 dependencies:
@@ -13,7 +14,7 @@ id: vote_up_down
 title: 'Vote: Vote up or LIKE'
 description: 'Simple webform to vote up or like an entity.'
 category: Voting
-elements: "actions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'\n  '#update__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'\n"
+elements: "actions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#access_view_roles':\n    - administrator\n  '#submit__label': ' '\n  '#submit__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'\n  '#update__attributes':\n    class:\n      - 'vote-thumbs-up-down glyphicon glyphicon-thumbs-up'"
 css: ''
 javascript: ''
 settings:
@@ -102,7 +103,7 @@ settings:
   draft_loaded_message: ''
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
-  confirmation_type: none
+  confirmation_type: inline
   confirmation_title: ''
   confirmation_message: "<div class=\"alert alert-success\">\r\n<p>Thank you for submitting your vote.</p>\r\n</div>"
   confirmation_url: ''
@@ -189,4 +190,3 @@ handlers:
     weight: 0
     settings: {  }
 variants: {  }
-uuid: f7e1ac41-a81b-44fd-b028-a50d6cc1f1b6

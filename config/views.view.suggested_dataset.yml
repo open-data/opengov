@@ -17,7 +17,7 @@ dependencies:
     - search_api
     - text
 id: suggested_dataset
-label: 'Suggested Dataset'
+label: 'Suggested Dataset: Search'
 module: views
 description: 'Search API powered view for Suggested Datasets '
 tag: ''

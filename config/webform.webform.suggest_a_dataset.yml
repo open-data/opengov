@@ -1,0 +1,301 @@
+uuid: 5e4e214c-3b14-4ead-b409-2d4b2f3d86f6
+langcode: en
+status: open
+dependencies:
+  module:
+    - honeypot
+    - og_ext_webform
+third_party_settings:
+  honeypot:
+    honeypot: true
+_core:
+  default_config_hash: XMXyI2hAGIOAFbxkyKuNuVPqPlXX_LzNOmyXJ7IWfco
+open: null
+close: null
+weight: 0
+uid: 283
+template: false
+archive: false
+id: suggest_a_dataset
+title: 'Suggest a Dataset'
+description: 'Updated &quot;Suggest a Dataset&quot; form for the changed workflow.'
+category: ''
+elements: "page_1:\n  '#type': webform_wizard_page\n  '#title': Suggestion\n  title_of_dataset:\n    '#type': textfield\n    '#title': 'Suggested title of dataset(s)'\n    '#description': '<p class=\"text-info\">This field describes the suggested dataset''s title. Example: Canadian Wind Patterns 2016 - 2019</p>'\n    '#required': true\n  department:\n    '#type': webform_select_other\n    '#title': 'Government institution that publishes dataset'\n    '#description': '<p class=\"text-info\">This field describes the government institution that publishes the suggested dataset. If you are looking for provincial data please refer to the relevant <a href=\"[site:url]/maps/open-data-canada#toc1\">province or territory</a>. Please select <strong>&lsquo;Other&rsquo;</strong> if you do not know the name of organization. Example: Environment and Climate Change Canada</p>'\n    '#options': organization\n    '#choices': true\n    '#other__option_label': Other\n    '#other__placeholder': ''\n    '#required': true\n  description_dataset:\n    '#type': textarea\n    '#title': 'Description of the dataset you would like to see made available'\n    '#description': '<p class=\"text-info\">This field describes the description of the dataset being suggested. Example: This dataset would contain data collected over the years 2016-2019, pertaining to Canadian wind patterns from coast to coast.</p>'\n    '#required': true\n  additional_comments_and_feedback:\n    '#type': textarea\n    '#title': 'Additional comments and feedback'\n    '#description': '<p class=\"text-info\">Example: This data was available for the years 2010-2015 but has not been released since.</p>'\n  dataset_subject:\n    '#type': select\n    '#title': 'Suggest subject for this dataset'\n    '#multiple': true\n    '#description': '<p class=\"text-info\">Hold CTRL and click for multiple selections. Example: Environment, Science and Technology</p>'\n    '#options': dataset_subject\n    '#required': true\n  dataset_keywords:\n    '#type': textfield\n    '#title': 'Categorize your dataset by comma separated descriptive words'\n    '#description': '<p class=\"text-info\">Example: Weather, Environment and Climate Change Canada, Wind Patterns</p>'\n  reason:\n    '#type': select\n    '#title': 'Reason for requesting dataset'\n    '#description': '<p class=\"text-info\">Example: Academic</p>'\n    '#options': dataset_reason\n    '#other__option_label': Other\n    '#other__placeholder': ''\n    '#required': true\npersonal_information_optional_:\n  '#type': webform_wizard_page\n  '#title': 'Contact Information'\n  '#prev_button_label': '< Previous'\n  '#next_button_label': 'Next >'\n  first_name:\n    '#type': textfield\n    '#title': 'First Name'\n  last_name:\n    '#type': textfield\n    '#title': 'Last Name'\n  title:\n    '#type': textfield\n    '#title': Title\n  organization:\n    '#type': textfield\n    '#title': Organization\n  e_mail_address:\n    '#type': email\n    '#title': 'E-mail Address'\n    '#description': '<p class=\"text-info\">Example: user@email.com</p>'\n  telephone:\n    '#type': tel\n    '#title': Telephone\n  user_consent:\n    '#type': checkbox\n    '#title': 'I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'"
+css: ''
+javascript: ''
+settings:
+  ajax: true
+  ajax_scroll_top: ''
+  ajax_progress_type: fullscreen
+  ajax_effect: fade
+  ajax_speed: 1500
+  page: false
+  page_submit_path: ''
+  page_confirm_path: ''
+  page_admin_theme: false
+  form_title: source_entity_webform
+  form_submit_once: false
+  form_exception_message: ''
+  form_open_message: ''
+  form_close_message: ''
+  form_previous_submissions: true
+  form_confidential: false
+  form_confidential_message: ''
+  form_remote_addr: true
+  form_convert_anonymous: false
+  form_prepopulate: false
+  form_prepopulate_source_entity: false
+  form_prepopulate_source_entity_required: false
+  form_prepopulate_source_entity_type: ''
+  form_reset: false
+  form_disable_autocomplete: false
+  form_novalidate: false
+  form_disable_inline_errors: false
+  form_required: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
+  form_autofocus: false
+  form_details_toggle: false
+  form_access_denied: default
+  form_access_denied_title: ''
+  form_access_denied_message: ''
+  form_access_denied_attributes: {  }
+  form_file_limit: ''
+  submission_label: ''
+  submission_log: false
+  submission_views: {  }
+  submission_views_replace: {  }
+  submission_user_columns: {  }
+  submission_user_duplicate: false
+  submission_access_denied: default
+  submission_access_denied_title: ''
+  submission_access_denied_message: ''
+  submission_access_denied_attributes: {  }
+  submission_exception_message: ''
+  submission_locked_message: ''
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
+  previous_submission_message: ''
+  previous_submissions_message: ''
+  autofill: false
+  autofill_message: ''
+  autofill_excluded_elements: {  }
+  wizard_progress_bar: true
+  wizard_progress_pages: false
+  wizard_progress_percentage: false
+  wizard_progress_link: true
+  wizard_progress_states: false
+  wizard_start_label: ''
+  wizard_preview_link: true
+  wizard_confirmation: true
+  wizard_confirmation_label: ''
+  wizard_track: ''
+  preview: 1
+  preview_label: ''
+  preview_title: ''
+  preview_message: ''
+  preview_attributes: {  }
+  preview_excluded_elements: {  }
+  preview_exclude_empty: true
+  preview_exclude_empty_checkbox: false
+  draft: ''
+  draft_multiple: false
+  draft_auto_save: false
+  draft_saved_message: ''
+  draft_loaded_message: ''
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
+  confirmation_type: url_message
+  confirmation_title: ''
+  confirmation_message: 'Thank you for your submission. Your request will be processed and added to the Suggested Dataset Catalogue as soon as possible.'
+  confirmation_url: '[site:url]/node/11'
+  confirmation_attributes: {  }
+  confirmation_back: true
+  confirmation_back_label: ''
+  confirmation_back_attributes: {  }
+  confirmation_exclude_query: false
+  confirmation_exclude_token: false
+  confirmation_update: false
+  limit_total: null
+  limit_total_interval: null
+  limit_total_message: ''
+  limit_total_unique: false
+  limit_user: null
+  limit_user_interval: null
+  limit_user_message: ''
+  limit_user_unique: false
+  entity_limit_total: null
+  entity_limit_total_interval: null
+  entity_limit_user: null
+  entity_limit_user_interval: null
+  purge: none
+  purge_days: null
+  results_disabled: false
+  results_disabled_ignore: false
+  token_view: false
+  token_update: false
+  form_login: false
+  form_login_message: ''
+  submission_login: false
+  submission_login_message: ''
+  form_submit_label: ''
+  form_submit_attributes: {  }
+  form_closed_message: ''
+  wizard_next_button_label: ''
+  wizard_next_button_attributes: {  }
+  wizard_prev_button_label: ''
+  wizard_prev_button_attributes: {  }
+  wizard_complete: true
+  wizard_complete_label: ''
+  preview_next_button_label: ''
+  preview_next_button_attributes: {  }
+  preview_prev_button_label: ''
+  preview_prev_button_attributes: {  }
+  draft_button_label: ''
+  draft_button_attributes: {  }
+  results_customize: false
+access:
+  create:
+    roles:
+      - anonymous
+      - authenticated
+    users: {  }
+    permissions: {  }
+  view_any:
+    roles:
+      - administrator
+      - comment_moderator
+    users: {  }
+    permissions: {  }
+  update_any:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  delete_any:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  purge_any:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  view_own:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  update_own:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  delete_own:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  administer:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  test:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+  configuration:
+    roles:
+      - administrator
+    users: {  }
+    permissions: {  }
+handlers:
+  email:
+    id: email
+    label: 'Notification email'
+    handler_id: email
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: open-ouvert@tbs-sct.gc.ca
+      to_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      subject: '[webform:title]'
+      body: "<p>Submitted on [webform_submission:created]</p>\r\n\r\n<p>Submitted by: [webform_submission:user]</p>\r\n\r\n<p>Submitted values are:</p>\r\n[webform_submission:values] The results of this submission may be viewed at: [webform_submission:url]"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: false
+      debug: false
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      theme_name: ''
+      parameters: {  }
+  email_1:
+    id: email
+    label: 'Confirmation to user'
+    handler_id: email_1
+    status: true
+    conditions:
+      disabled:
+        ':input[name="e_mail_address"]':
+          empty: true
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: '[webform_submission:values:e_mail_address:raw]'
+      to_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      subject: '[webform:title]'
+      body: "<p>Thank you for your submission. Your request will be processed and added to the Suggested Dataset Catalogue as soon as possible.</p>\r\n[webform_submission:values]"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: false
+      debug: false
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      theme_name: ''
+      parameters: {  }
+  suggested_dataset_form_handler:
+    id: suggested_dataset_form_handler
+    label: 'Suggested Dataset Form Handler'
+    handler_id: suggested_dataset_form_handler
+    status: true
+    conditions: {  }
+    weight: 0
+    settings: {  }
+variants: {  }

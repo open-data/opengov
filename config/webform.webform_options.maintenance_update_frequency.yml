@@ -1,0 +1,9 @@
+uuid: 2bdb8372-080f-40cb-87e5-52e10b7717d1
+langcode: en
+status: true
+dependencies: {  }
+id: maintenance_update_frequency
+label: 'Maintenance and Update Frequency'
+category: 'Open Government'
+likert: false
+options: ''

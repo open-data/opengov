@@ -11,10 +11,6 @@ display:
           label: 'Titre du jeu de données '
         body:
           label: Description
-        field_suggested_dataset_dept:
-          label: Organisation
-        field_status:
-          label: État
         field_vote_up_down:
           label: Votez
       title: 'Jeux de données suggérés par les utilisateurs'

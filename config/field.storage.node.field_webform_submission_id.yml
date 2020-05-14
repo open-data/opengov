@@ -1,17 +1,16 @@
-uuid: 50c2bf87-910d-428a-9791-a2cd97a7a437
+uuid: 9eafd5cf-c734-40a5-a521-16287a010aa6
 langcode: en
 status: true
 dependencies:
   module:
     - node
-id: node.field_status
-field_name: field_status
+id: node.field_webform_submission_id
+field_name: field_webform_submission_id
 entity_type: node
-type: string
+type: integer
 settings:
-  max_length: 255
-  is_ascii: false
-  case_sensitive: false
+  unsigned: false
+  size: normal
 module: core
 locked: false
 cardinality: 1

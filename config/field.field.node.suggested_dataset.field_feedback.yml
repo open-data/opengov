@@ -1,18 +1,19 @@
-uuid: 466c8661-26d7-4b7f-ae58-d7f1cf60f131
+uuid: 40a1c7f1-443e-4f6b-8018-08813469ddea
 langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.node.field_feedback
     - node.type.suggested_dataset
-id: node.suggested_dataset.title
-field_name: title
+id: node.suggested_dataset.field_feedback
+field_name: field_feedback
 entity_type: node
 bundle: suggested_dataset
-label: 'Suggested title of dataset(s)'
+label: Feedback
 description: ''
-required: true
+required: false
 translatable: true
 default_value: {  }
 default_value_callback: ''
 settings: {  }
-field_type: string
+field_type: string_long

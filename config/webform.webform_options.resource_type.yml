@@ -1,0 +1,9 @@
+uuid: 80f968b9-e4dd-4b78-b212-33451031a742
+langcode: en
+status: true
+dependencies: {  }
+id: resource_type
+label: 'Resource Type'
+category: 'Open Government'
+likert: false
+options: ''
