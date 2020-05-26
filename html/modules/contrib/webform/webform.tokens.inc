@@ -832,7 +832,7 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
         $key_exists = NULL;
         $value = NestedArray::getValue($webform_handler, $parents, $key_exists);
         // A handler response is always considered safe markup.
-        $replacements[$original] = ($key_exists) ? Markup::create($value) : $original;
+        $replacements[$original] = ($key_exists && is_scalar($value)) ? Markup::create($value) : $original;
       }
     }
 

@@ -579,7 +579,7 @@ class WebformSubmissionForm extends ContentEntityForm {
     // Ajax: Scroll to.
     // @see \Drupal\webform\Form\WebformAjaxFormTrait::submitAjaxForm
     if ($this->isAjax()) {
-      $form['#webform_ajax_scroll_top'] = $this->getWebformSetting('ajax_scroll_top');
+      $form['#webform_ajax_scroll_top'] = $this->getWebformSetting('ajax_scroll_top', '');
     }
 
     // Alter element's form.
@@ -1795,7 +1795,7 @@ class WebformSubmissionForm extends ContentEntityForm {
       // @see \Drupal\webform\WebformSubmissionForm::setConfirmation
       if ($state === WebformSubmissionInterface::STATE_UPDATED) {
         if (!$this->getRequest()->get('destination')) {
-          $this->reset($form, $form_state);
+          $this->rebuild($form, $form_state);
         }
       }
       elseif ($confirmation_type === WebformInterface::CONFIRMATION_MESSAGE || $confirmation_type === WebformInterface::CONFIRMATION_NONE) {

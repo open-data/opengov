@@ -910,7 +910,7 @@ class WebformSubmissionStorage extends SqlContentEntityStorage implements Webfor
       }
     }
 
-    $source_entity_key = $key .'.' . $source_entity->getEntityTypeId() . '.' . $source_entity->id();
+    $source_entity_key = $key . '.' . $source_entity->getEntityTypeId() . '.' . $source_entity->id();
     if ($results_customize && $webform->hasUserData($source_entity_key)) {
       return $webform->getUserData($source_entity_key);
     }

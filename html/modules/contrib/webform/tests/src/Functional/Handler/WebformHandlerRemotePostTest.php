@@ -72,7 +72,7 @@ options:
   response_type: '200'
   first_name: John
   last_name: Smith");
-    $this->assertRaw('Processed completed request.');
+    $this->assertRaw('This is a custom 200 success message.');
 
     // Check confirmation number is set via the
     // [webform:handler:remote_post:completed:confirmation_number] token.
@@ -144,10 +144,19 @@ options:
     $this->assertRaw("sid: '$sid'");
     $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
 
+    // Check 200 Success Error.
+    $this->postSubmission($webform, ['response_type' => '200']);
+    $this->assertRaw('This is a custom 200 success message.');
+    $this->assertRaw('Processed completed request.');
+    $this->assertRaw('messages--status');
+    $this->assertNoRaw('messages--error');
+
     // Check 500 Internal Server Error.
     $this->postSubmission($webform, ['response_type' => '500']);
     $this->assertRaw('Failed to process completed request.');
     $this->assertRaw('Unable to process this submission. Please contact the site administrator.');
+    $this->assertRaw('messages--error');
+    $this->assertNoRaw('messages--status');
 
     // Check default custom response message.
     $handler = $webform->getHandler('remote_post');
@@ -160,17 +169,33 @@ options:
     $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
     $this->assertRaw('This is a custom response message');
 
+    // Check 201 Completed with no custom message.
+    $this->postSubmission($webform, ['response_type' => '201']);
+
+    $this->assertNoRaw('Processed created request.');
+    $this->assertNoRaw('This is a custom 404 not found message.');
+    $this->assertNoRaw('messages--status');
+    $this->assertNoRaw('messages--error');
+
     // Check 404 Not Found with custom message.
     $this->postSubmission($webform, ['response_type' => '404']);
     $this->assertRaw('File not found');
     $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
     $this->assertRaw('This is a custom 404 not found message.');
+    $this->assertRaw('messages--error');
+    $this->assertNoRaw('messages--status');
 
     // Check 401 Unauthorized with custom message and token.
     $this->postSubmission($webform, ['response_type' => '401']);
     $this->assertRaw('Unauthorized');
     $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
     $this->assertRaw('This is a message token <strong>Unauthorized to process completed request.</strong>');
+
+    // Check 405 Method Not Allowed with custom message and token.
+    $this->postSubmission($webform, ['response_type' => '405']);
+    $this->assertRaw('Method Not Allowed');
+    $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
+    $this->assertRaw('This is a array token <strong>[webform:handler:remote_post:options]</strong>');
 
     // Disable saving of results.
     $webform->setSetting('results_disabled', TRUE);
@@ -310,16 +335,18 @@ options:
     ];
     $this->postSubmission($webform, $edit);
     $this->assertRaw("form_params:
-    checkbox: true
-    number: 10
-    number_multiple:
-      - 10.5
-    custom_composite:
-      -
-        textfield: text
-        checkbox: true
-        number: 20.5");
-
+  boolean_true: true
+  integer: 100
+  float: 100.01
+  checkbox: true
+  number: !!float 10
+  number_multiple:
+    - 10.5
+  custom_composite:
+    -
+      textfield: text
+      checkbox: true
+      number: 20.5");
   }
 
 }

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
+class ComposerStaticInit0c20c808dd491870d6ff64de4fd4dda3
 {
     public static $files = array (
         '92c8763cd6170fce6fcfe7e26b4e8c10' => __DIR__ . '/..' . '/symfony/phpunit-bridge/bootstrap.php',
@@ -143,8 +143,6 @@ class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
         'J' => 
         array (
             'JsonSchema\\' => 11,
-            'JakubOnderka\\PhpConsoleHighlighter\\' => 35,
-            'JakubOnderka\\PhpConsoleColor\\' => 29,
         ),
         'I' => 
         array (
@@ -173,11 +171,14 @@ class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
             'Drupal\\Console\\Composer\\Plugin\\' => 31,
             'Drupal\\Console\\' => 15,
             'Drupal\\Component\\' => 17,
+            'Drupal\\' => 7,
+            'DrupalPractice\\' => 15,
             'DrupalComposer\\DrupalScaffold\\' => 30,
             'DrupalCodeGenerator\\' => 20,
             'Dotenv\\' => 7,
             'Doctrine\\Persistence\\' => 21,
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Inflector\\' => 19,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Inflector\\' => 26,
             'Doctrine\\Common\\Collections\\' => 28,
@@ -481,14 +482,6 @@ class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
         array (
             0 => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema',
         ),
-        'JakubOnderka\\PhpConsoleHighlighter\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/jakub-onderka/php-console-highlighter/src',
-        ),
-        'JakubOnderka\\PhpConsoleColor\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
-        ),
         'Interop\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
@@ -553,6 +546,14 @@ class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
         array (
             0 => __DIR__ . '/../..' . '/html/core/lib/Drupal/Component',
         ),
+        'Drupal\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/drupal/coder/coder_sniffer/Drupal',
+        ),
+        'DrupalPractice\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/drupal/coder/coder_sniffer/DrupalPractice',
+        ),
         'DrupalComposer\\DrupalScaffold\\' => 
         array (
             0 => __DIR__ . '/..' . '/drupal-composer/drupal-scaffold/src',
@@ -572,6 +573,10 @@ class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
         'Doctrine\\Instantiator\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
+        ),
+        'Doctrine\\Inflector\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
         ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
@@ -714,14 +719,6 @@ class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
         ),
         'D' => 
         array (
-            'Drupal\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/drupal/coder/coder_sniffer/Drupal',
-            ),
-            'DrupalPractice\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/drupal/coder/coder_sniffer/DrupalPractice',
-            ),
             'Dflydev\\PlaceholderResolver' => 
             array (
                 0 => __DIR__ . '/..' . '/dflydev/placeholder-resolver/src',
@@ -1326,11 +1323,11 @@ class ComposerStaticInite30eebb7db8684c484de3ce64924dbcc
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite30eebb7db8684c484de3ce64924dbcc::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite30eebb7db8684c484de3ce64924dbcc::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInite30eebb7db8684c484de3ce64924dbcc::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInite30eebb7db8684c484de3ce64924dbcc::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInite30eebb7db8684c484de3ce64924dbcc::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit0c20c808dd491870d6ff64de4fd4dda3::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit0c20c808dd491870d6ff64de4fd4dda3::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit0c20c808dd491870d6ff64de4fd4dda3::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit0c20c808dd491870d6ff64de4fd4dda3::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit0c20c808dd491870d6ff64de4fd4dda3::$classMap;
 
         }, null, ClassLoader::class);
     }

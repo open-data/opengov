@@ -4,6 +4,7 @@ namespace Drupal\webform\Plugin\WebformHandler;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -193,10 +194,10 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       'draft_updated_custom_data' => '',
       'converted_url' => '',
       'converted_custom_data' => '',
-      // Custom error response messages.
+      // Custom response messages.
       'message' => '',
       'messages' => [],
-      // Custom error response redirect URL.
+      // Custom response redirect URL.
       'error_url' => '',
     ];
   }
@@ -318,8 +319,16 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     ];
     $form['additional']['cast'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Cast posted data'),
-      '#description' => $this->t('If checked, posted data will be casted to booleans and floats as needed.'),
+      '#title' => $this->t('Cast posted element value and custom data'),
+      '#description' => $this->t('If checked, posted element values will be cast to integers, floats, and booleans as needed. Custom data can be cast by placing the desired type in parentheses before the value or token. (i.e. "(int) [webform_submission:value:total]" or "(int) 100")') .
+        '<br/>' .
+        '<br/>' .
+        $this->t('For custom data, the casts allowed are:') .
+        '<ul>' .
+        '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(int), (integer)', '@type' => 'integer']) . '</li>' .
+        '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(float), (double), (real)', '@type' => 'float']) . '</li>' .
+        '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(bool), (boolean)', '@type' => 'boolean']) . '</li>' .
+        '</ul>',
       '#return_value' => TRUE,
       '#default_value' => $this->configuration['cast'],
     ];
@@ -340,7 +349,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     $form['additional']['message'] = [
       '#type' => 'webform_html_editor',
       '#title' => $this->t('Custom error response message'),
-      '#description' => $this->t('This message is displayed when the response status code is not 2xx'),
+      '#description' => $this->t('This message is displayed when the response status code is not 2xx.') . '<br/><br/>' . $this->t('Defaults to: %value', ['%value' => $this->messageManager->render(WebformMessageManagerInterface::SUBMISSION_EXCEPTION_MESSAGE)]),
       '#default_value' => $this->configuration['message'],
     ];
     $form['additional']['messages_token'] = [
@@ -350,8 +359,8 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     ];
     $form['additional']['messages'] = [
       '#type' => 'webform_multiple',
-      '#title' => $this->t('Custom error response messages'),
-      '#description' => $this->t('Enter custom response messages for specific status codes.') . '<br/>' . $this->t('Defaults to: %value', ['%value' => $this->messageManager->render(WebformMessageManagerInterface::SUBMISSION_EXCEPTION_MESSAGE)]),
+      '#title' => $this->t('Custom response messages'),
+      '#description' => $this->t('Enter custom response messages for specific status codes.'),
       '#empty_items' => 0,
       '#no_items_message' => $this->t('No error response messages entered. Please add messages below.'),
       '#add' => FALSE,
@@ -360,6 +369,9 @@ class RemotePostWebformHandler extends WebformHandlerBase {
           '#type' => 'webform_select_other',
           '#title' => $this->t('Response status code'),
           '#options' => [
+            '200' => $this->t('200 OK'),
+            '201' => $this->t('201 Created'),
+            '204' => $this->t('204 No Content'),
             '400' => $this->t('400 Bad Request'),
             '401' => $this->t('401 Unauthorized'),
             '403' => $this->t('403 Forbidden'),
@@ -509,11 +521,12 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     }
 
     // Display submission exception if response code is not 2xx.
-    $status_code = $response->getStatusCode();
-    if ($status_code < 200 || $status_code >= 300) {
-      $message = $this->t('Remote post request return @status_code status code.', ['@status_code' => $status_code]);
+    if ($this->responseHasError($response)) {
+      $message = $this->t('Remote post request return @status_code status code.', ['@status_code' => $response->getStatusCode()]);
       $this->handleError($state, $message, $request_url, $request_method, $request_type, $request_options, $response);
       return;
+    } else {
+      $this->displayCustomResponseMessage($response, FALSE);
     }
 
     // If debugging is enabled, display the request and response.
@@ -596,22 +609,33 @@ class RemotePostWebformHandler extends WebformHandlerBase {
         }
       }
       elseif (!empty($this->configuration['cast'])) {
+        // Cast value.
         $data[$element_key] = $this->castRequestValues($element, $element_plugin, $element_value);
       }
     }
 
+    // Replace tokens.
+    $data = $this->replaceTokens($data, $webform_submission);
+
     // Append custom data.
     if (!empty($this->configuration['custom_data'])) {
-      $data = Yaml::decode($this->configuration['custom_data']) + $data;
+      $custom_data = Yaml::decode($this->configuration['custom_data']);
+      // Replace tokens.
+      $custom_data = $this->replaceTokens($custom_data, $webform_submission);
+      // Cast custom data.
+      $custom_data = $this->castCustomData($custom_data);
+      $data = $custom_data + $data;
     }
 
     // Append state custom data.
     if (!empty($this->configuration[$state . '_custom_data'])) {
-      $data = Yaml::decode($this->configuration[$state . '_custom_data']) + $data;
+      $state_custom_data = Yaml::decode($this->configuration[$state . '_custom_data']);
+      // Replace tokens.
+      $state_custom_data = $this->replaceTokens($state_custom_data, $webform_submission);
+      // Cast custom data.
+      $state_custom_data = $this->castCustomData($state_custom_data);
+      $data = $state_custom_data + $data;
     }
-
-    // Replace tokens.
-    $data = $this->replaceTokens($data, $webform_submission);
 
     return $data;
   }
@@ -677,6 +701,48 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     else {
       return $value;
     }
+  }
+
+  /**
+   * Cast custom data.
+   *
+   * @param array $data
+   *   Custom data.
+   *
+   * @return array
+   */
+  protected function castCustomData(array $data) {
+    if (empty($this->configuration['cast'])) {
+      return $data;
+    }
+
+    foreach ($data as $key => $value) {
+      if (is_array($value)) {
+        $data[$key] = $this->castCustomData($value);
+      }
+      elseif (is_string($value) && preg_match('/^\((int|integer|bool|boolean|float|double|real)\)\s*(.+)$/', $value, $match)) {
+        $type_cast = $match[1];
+        $type_value = $match[2];
+        switch ($type_cast) {
+          case 'int':
+          case 'integer':
+            $data[$key] = (int) $type_value;
+            break;
+
+          case 'bool':
+          case 'boolean';
+            $data[$key] = (bool) $type_value;
+            break;
+
+          case 'float':
+          case 'double':
+          case 'real':
+            $data[$key] = (float) $type_value;
+            break;
+        }
+      }
+    }
+    return $data;
   }
 
   /**
@@ -975,18 +1041,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       ->error('@form webform remote @type post (@state) to @url failed. @message', $context);
 
     // Display custom or default exception message.
-    if ($custom_response_message = $this->getCustomResponseMessage($response)) {
-      $token_data = [
-        'webform_handler' => [
-          $this->getHandlerId() => $this->getResponseData($response),
-        ],
-      ];
-      $build_message = [
-        '#markup' => $this->replaceTokens($custom_response_message, $this->getWebform(), $token_data),
-      ];
-      $this->messenger()->addError(\Drupal::service('renderer')->renderPlain($build_message));
-    }
-    else {
+    if (!$this->displayCustomResponseMessage($response, TRUE)) {
       $this->messageManager->display(WebformMessageManagerInterface::SUBMISSION_EXCEPTION_MESSAGE, 'error');
     }
 
@@ -1008,15 +1063,17 @@ class RemotePostWebformHandler extends WebformHandlerBase {
   }
 
   /**
-   * Get custom custom response message.
+   * Get custom response message.
    *
    * @param \Psr\Http\Message\ResponseInterface|null $response
    *   The response returned by the remote server.
+   * @param bool $default
+   *   Display the default message. Defaults to TRUE.
    *
    * @return string
-   *   A custom custom response message.
+   *   A custom response message.
    */
-  protected function getCustomResponseMessage($response) {
+  protected function getCustomResponseMessage($response, $default = TRUE) {
     if ($response instanceof ResponseInterface) {
       $status_code = $response->getStatusCode();
       foreach ($this->configuration['messages'] as $message_item) {
@@ -1025,7 +1082,52 @@ class RemotePostWebformHandler extends WebformHandlerBase {
         }
       }
     }
-    return (!empty($this->configuration['message'])) ? $this->configuration['message'] : '';
+    return ($default && !empty($this->configuration['message'])) ? $this->configuration['message'] : '';
+  }
+
+  /**
+   * Display custom response message.
+   *
+   * @param \Psr\Http\Message\ResponseInterface|null $response
+   *   The response returned by the remote server.
+   * @param bool $default
+   *   Display the default message. Defaults to TRUE.
+   *
+   * @return bool
+   *   TRUE if custom response message is displayed.
+   */
+  protected function displayCustomResponseMessage($response, $default = TRUE) {
+    $custom_response_message = $this->getCustomResponseMessage($response, $default);
+    if (!$custom_response_message) {
+      return FALSE;
+    }
+
+    $token_data = [
+      'webform_handler' => [
+        $this->getHandlerId() => $this->getResponseData($response),
+      ],
+    ];
+    $build_message = [
+      '#markup' => $this->replaceTokens($custom_response_message, $this->getWebform(), $token_data),
+    ];
+    $message = \Drupal::service('renderer')->renderPlain($build_message);
+    $type = ($this->responseHasError($response)) ? MessengerInterface::TYPE_ERROR : MessengerInterface::TYPE_STATUS;
+    $this->messenger()->addMessage($message, $type);
+    return TRUE;
+  }
+
+  /**
+   * Determine if response has an error status code.
+   *
+   * @param \Psr\Http\Message\ResponseInterface|null $response
+   *   The response returned by the remote server.
+   *
+   * @return bool
+   *   TRUE if response status code reflects an unsuccessful value.
+   */
+  protected function responseHasError($response) {
+    $status_code = $response->getStatusCode();
+    return $status_code < 200 || $status_code >= 300;
   }
 
   /**

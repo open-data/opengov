@@ -18,5 +18,6 @@
 {% if settings.converted_url %}<b>{{ 'Converted URL:'|t }}</b> {{ settings.converted_url }}<br />{% endif %}
 {% if settings.error_url %}<b>{{ 'Error URL:'|t }}</b> {{ settings.error_url }}<br />{% endif %}
 <b>{{ 'Method:'|t }}</b> {{ settings.method }}<br />
-{% if settings.method == 'POST' %}<b>{{ 'Type:'|t }}</b> {{ settings.type }}<br />{% endif %}
+{% if settings.method == 'POST' %}<b>{{ 'Post type:'|t }}</b> {{ settings.type }}<br />{% endif %}
+{% if settings.cast %}<b>{{ 'Type casting:'|t }}</b> {{ 'Enabled' }}<br />{% endif %}
 {% if settings.message or settings.messages %}<b>{{ 'Response message:'|t }}</b> {{ 'Yes'|t }}<br/>{% endif %}

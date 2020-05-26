@@ -1,6 +1,7 @@
 *.patch
 interdiff-*.txt
 
+
 # Ignore the HTML and reports directory used for generate Webform documentation.
 /html
 /reports/accessiblity/html

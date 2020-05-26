@@ -33,7 +33,7 @@ class WebformYaml implements SerializationInterface {
    * {@inheritdoc}
    */
   public static function decode($raw) {
-    return Yaml::decode($raw);
+    return $raw ? Yaml::decode($raw) : [];
   }
 
   /**

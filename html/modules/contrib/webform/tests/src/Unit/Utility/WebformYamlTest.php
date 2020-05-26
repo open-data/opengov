@@ -65,4 +65,66 @@ class WebformYamlTest extends UnitTestCase {
     return $tests;
   }
 
+  /**
+   * Tests WebformYaml tidy with WebformYaml::decode().
+   *
+   * @param string $yaml
+   *   The string to run through WebformYaml::decode().
+   * @param string $expected
+   *   The expected result from calling the function.
+   *
+   * @see WebformYaml::decode()
+   *
+   * @dataProvider providerDecode
+   */
+  public function testDecode($yaml, $expected) {
+    $result = WebformYaml::decode($yaml);
+    $this->assertEquals($expected, $result);
+  }
+
+  /**
+   * Data provider for testDecode().
+   *
+   * @see testDecode()
+   */
+  public function providerDecode() {
+    $tests[] = [
+      "simple: value",
+      ['simple' => 'value'],
+    ];
+    $tests[] = [
+      "returns: |\n  line 1\n  line 2",
+      ['returns' => "line 1\nline 2"],
+    ];
+    $tests[] = [
+      "'one two': |\n  line 1\n  line 2",
+      ['one two' => "line 1\nline 2"],
+    ];
+    $tests[] = [
+      "array:\n  - one\n  - two",
+      ['array' => ['one', 'two']],
+    ];
+    $tests[] = [
+      "- one: One\n- two: Two",
+      [['one' => 'One'], ['two' => 'Two']],
+    ];
+    $tests[] = [
+      FALSE,
+      [],
+    ];
+    $tests[] = [
+      NULL,
+      [],
+    ];
+    $tests[] = [
+      [],
+      [],
+    ];
+    $tests[] = [
+      0,
+      [],
+    ];
+    return $tests;
+  }
+
 }

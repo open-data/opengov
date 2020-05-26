@@ -23,8 +23,6 @@ class WebformWizardBasicJavaScriptTest extends WebformWebDriverTestBase {
    * Test webform basic wizard.
    */
   public function testBasicWizard() {
-    global $base_path;
-
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();

@@ -3,6 +3,8 @@
 namespace Drupal\webform\EntitySettings;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
@@ -464,6 +466,26 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
     $form['#attached']['library'][] = 'webform/webform.admin.settings';
 
     return parent::form($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+
+    if ($this->entity instanceof EntityWithPluginCollectionInterface) {
+      // Do not manually update values represented by plugin collections.
+      $values = array_diff_key($values, $this->entity->getPluginCollections());
+    }
+
+    // Do not manually update third party settings.
+    // @see \Drupal\webform\EntitySettings\WebformEntitySettingsGeneralForm::save
+    unset($values['third_party_settings']);
+
+    foreach ($values as $key => $value) {
+      $entity->set($key, $value);
+    }
   }
 
   /**

@@ -62,7 +62,7 @@ class WebformElementDateTimeTest extends WebformElementBrowserTestBase {
 
     // Check 'datelist' and 'datetime' #default_value.
     $form = $webform->getSubmissionForm();
-    $this->assert($form['elements']['datetime_default']['#default_value'] instanceof DrupalDateTime, 'datetime_default #default_value instance of \Drupal\Core\Datetime\DrupalDateTime.');
+    $this->assertInstanceOf(DrupalDateTime::class, $form['elements']['datetime_default']['#default_value']);
 
     // Check datetime #date_date_max validation.
     $edit = ['datetime_min_max[date]' => '2010-08-18'];

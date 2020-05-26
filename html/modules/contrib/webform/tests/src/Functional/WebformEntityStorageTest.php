@@ -28,7 +28,7 @@ class WebformEntityStorageTest extends WebformBrowserTestBase {
     // The below test will fail when and if
     // 'Issue #1885830: Enable static caching for config entities.'
     // is resolved.
-    $this->assert(!isset($storage->loadMultiple(['contact'])->cached));
+    $this->assertFalse(isset($storage->loadMultiple(['contact'])->cached));
   }
 
 }

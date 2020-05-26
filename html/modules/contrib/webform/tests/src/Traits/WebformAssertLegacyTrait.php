@@ -308,7 +308,7 @@ trait WebformAssertLegacyTrait {
     $actual = $this->getRawContent();
     $message = sprintf('The string "%s" was not found anywhere in the HTML response of the current page.', $raw);
 
-    $this->assert(strpos($actual, (string) $raw) !== false, $message);
+    $this->assertNotSame(strpos($actual, (string) $raw), false, $message);
   }
 
   /**
@@ -323,7 +323,7 @@ trait WebformAssertLegacyTrait {
     $actual = $this->getRawContent();
     $message = sprintf('The string "%s" was not found anywhere in the HTML response of the current page.', $raw);
 
-    $this->assert(strpos($actual, (string) $raw) === false, $message);
+    $this->assertSame(strpos($actual, (string) $raw), false, $message);
   }
 
   /**

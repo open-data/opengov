@@ -87,7 +87,7 @@ class WebformSubmissionApiTest extends WebformBrowserTestBase {
       'data' => [],
     ];
     $webform_submission = WebformSubmissionForm::submitFormValues($values);
-    $this->assert($webform_submission instanceof WebformSubmissionInterface);
+    $this->assertInstanceOf(WebformSubmissionInterface::class, $webform_submission);
 
     /**************************************************************************/
     // Multistep form.

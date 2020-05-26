@@ -37,6 +37,10 @@ class WebformTestHandlerRemotePostClient extends Client {
       case 404:
         return new Response(404, [], 'File not found');
 
+      // 405 Method Not Allowed.
+      case 405:
+        return new Response(405, [], 'Method Not Allowed');
+
       // 401 Unauthorized.
       case 401:
         $status = 401;
@@ -58,6 +62,18 @@ class WebformTestHandlerRemotePostClient extends Client {
           'status' => 'fail',
           'message' => (string) new FormattableMarkup('Failed to process @type request.', ['@type' => $operation]),
           'options' => $options,
+        ];
+        return new Response($status, $headers, Json::encode($json));
+
+      case 201:
+        $status = 201;
+        $headers = ['Content-Type' => ['application/json']];
+        $json = [
+          'method' => $method,
+          'status' => 'success',
+          'message' => (string) new FormattableMarkup('Process @type request.', ['@type' => $operation]),
+          'options' => $options,
+          'confirmation_number' => $random->name(20, TRUE),
         ];
         return new Response($status, $headers, Json::encode($json));
 

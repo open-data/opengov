@@ -121,8 +121,8 @@ class WebformAdminConfigAdvancedForm extends WebformAdminConfigBaseForm {
       '#type' => 'checkbox',
       '#title' => $this->t('Save details open/close state'),
       '#description' => $this->t('If checked, all <a href=":details_href">Details</a> element\'s open/close state will be saved using <a href=":local_storage_href">Local Storage</a>.', [
-        ':details_href' => 'http://www.w3schools.com/tags/tag_details.asp',
-        ':local_storage_href' => 'http://www.w3schools.com/html/html5_webstorage.asp',
+        ':details_href' => 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details',
+        ':local_storage_href' => 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API',
       ]),
       '#return_value' => TRUE,
       '#default_value' => $config->get('ui.details_save'),

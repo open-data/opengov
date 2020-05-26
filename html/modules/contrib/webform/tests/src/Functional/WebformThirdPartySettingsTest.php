@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional;
 
+use Drupal\webform\Entity\Webform;
+
 /**
  * Tests for webform third party settings.
  *
@@ -20,7 +22,24 @@ class WebformThirdPartySettingsTest extends WebformBrowserTestBase {
    * Tests webform third party settings.
    */
   public function testThirdPartySettings() {
+    $webform = Webform::load('contact');
+
     $this->drupalLogin($this->rootUser);
+
+    /**************************************************************************/
+
+    // Check honeypot (custom) third party setting does not exist.
+    $this->assertNull($webform->getThirdPartySetting('honeypot', 'honeypot'));
+
+    // Add honeypot (custom) third party setting, even though the honeypot
+    // module is not installed.
+    $webform = $this->reloadWebform('contact');
+    $webform->setThirdPartySetting('honeypot', 'honeypot', TRUE);
+    $webform->save();
+
+    // Check honeypot (custom) third party setting.
+    $webform = $this->reloadWebform('contact');
+    $this->assertTrue($webform->getThirdPartySetting('honeypot', 'honeypot'));
 
     // Check 'Webform: Settings' shows no modules installed.
     $this->drupalGet('/admin/structure/webform/config');
@@ -64,6 +83,10 @@ class WebformThirdPartySettingsTest extends WebformBrowserTestBase {
     $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
     $this->drupalGet('/webform/contact');
     $this->assertRaw('Message for only this webform');
+
+    // Check honeypot (custom) third party setting still exists.
+    $webform = $this->reloadWebform('contact');
+    $this->assertTrue($webform->getThirdPartySetting('honeypot', 'honeypot'));
 
     // Uninstall test third party settings module.
     $this->drupalPostForm('admin/modules/uninstall', [

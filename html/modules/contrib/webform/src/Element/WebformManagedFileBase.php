@@ -21,7 +21,7 @@ if (class_exists('\Drupal\file\Element\ManagedFile')) {
      *
      * @var string
      *
-     * @see http://www.w3schools.com/tags/att_input_accept.asp
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept
      */
     protected static $accept;
 

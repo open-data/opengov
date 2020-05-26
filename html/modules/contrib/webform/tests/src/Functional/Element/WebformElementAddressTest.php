@@ -144,7 +144,7 @@ address_multiple:
     $composite_elements = $element['#webform_composite_elements'];
     $diff_composite_elements = array_diff_key($composite_elements, $schema['columns']);
     $this->debug($diff_composite_elements);
-    $this->assert(empty($diff_composite_elements));
+    $this->assertEmpty($diff_composite_elements);
 
     // Check composite elements maxlength against address schema.
     foreach ($schema['columns'] as $column_name => $column) {

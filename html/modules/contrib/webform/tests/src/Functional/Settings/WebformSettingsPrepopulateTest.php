@@ -86,7 +86,7 @@ class WebformSettingsPrepopulateTest extends WebformBrowserTestBase {
     $this->drupalPostForm('/webform/test_form_prepopulate', [], t('Submit'), ['query' => ['source_entity_type' => 'webform', 'source_entity_id' => 'contact']]);
     $sid = $this->getLastSubmissionId($webform_prepopulate);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assert(!$webform_submission->getSourceEntity());
+    $this->assertFalse($webform_submission->getSourceEntity());
 
     // Set prepopulated source entity required.
     $webform_prepopulate->setSetting('form_prepopulate_source_entity', TRUE);

@@ -1,9 +1,12 @@
+uuid: b754b5b4-0b50-4a42-a23c-30f95cd9870e
 langcode: en
 status: open
 dependencies:
   enforced:
     module:
       - webform_test
+_core:
+  default_config_hash: l67ofWFfSw0nP4K6ZBRppS9Dv_uBzGiAeEUKwW7-IwA
 open: null
 close: null
 weight: 0
@@ -36,7 +39,7 @@ elements: |
       managed_file:
         '#type': managed_file
         '#title': managed_file
-  
+
 css: ''
 javascript: ''
 settings:
@@ -207,6 +210,42 @@ handlers:
     handler_id: debug
     status: true
     conditions: {  }
-    weight: 0
+    weight: -49
     settings: {  }
+  email:
+    id: email
+    label: Email
+    handler_id: email
+    status: true
+    conditions: {  }
+    weight: -50
+    settings:
+      states:
+        - completed
+      to_mail: _default
+      to_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      subject: _default
+      body: _default
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: true
+      twig: false
+      debug: true
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      theme_name: ''
+      parameters: {  }
 variants: {  }

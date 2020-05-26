@@ -11,6 +11,7 @@
 
 namespace Psy;
 
+use Psy\Exception\ErrorException;
 use XdgBaseDir\Xdg;
 
 /**
@@ -136,7 +137,7 @@ class ConfigPaths
     {
         $xdg = new Xdg();
 
-        \set_error_handler(['Psy\Exception\ErrorException', 'throwException']);
+        \set_error_handler([ErrorException::class, 'throwException']);
 
         try {
             // XDG doesn't really work on Windows, sometimes complains about
@@ -161,18 +162,18 @@ class ConfigPaths
         }, $baseDirs);
 
         // Add ~/.psysh
-        if ($home = \getenv('HOME')) {
-            $dirs[] = \strtr($home, '\\', '/') . '/.psysh';
+        if (isset($_SERVER['HOME']) && $_SERVER['HOME']) {
+            $dirs[] = \strtr($_SERVER['HOME'], '\\', '/') . '/.psysh';
         }
 
         // Add some Windows specific ones :)
         if (\defined('PHP_WINDOWS_VERSION_MAJOR')) {
-            if ($appData = \getenv('APPDATA')) {
+            if (isset($_SERVER['APPDATA']) && $_SERVER['APPDATA']) {
                 // AppData gets preference
-                \array_unshift($dirs, \strtr($appData, '\\', '/') . '/PsySH');
+                \array_unshift($dirs, \strtr($_SERVER['APPDATA'], '\\', '/') . '/PsySH');
             }
 
-            $dir = \strtr(\getenv('HOMEDRIVE') . '/' . \getenv('HOMEPATH'), '\\', '/') . '/.psysh';
+            $dir = \strtr($_SERVER['HOMEDRIVE'] . '/' . $_SERVER['HOMEPATH'], '\\', '/') . '/.psysh';
             if (!\in_array($dir, $dirs)) {
                 $dirs[] = $dir;
             }

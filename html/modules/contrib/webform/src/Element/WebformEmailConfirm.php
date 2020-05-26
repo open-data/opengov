@@ -92,6 +92,9 @@ class WebformEmailConfirm extends FormElement {
     $mail_1_properties = [
       '#title',
       '#description',
+      '#help_title',
+      '#help',
+      '#help_display',
     ];
     $element['mail_1'] = $element_shared_properties + array_intersect_key($element, array_combine($mail_1_properties, $mail_1_properties));
     $element['mail_1']['#attributes']['class'][] = 'webform-email';
@@ -124,9 +127,14 @@ class WebformEmailConfirm extends FormElement {
     $element['#description_display'] = 'invisible';
 
     // Remove properties that are being applied to the sub elements.
-    unset($element['#maxlength']);
-    unset($element['#attributes']);
-    unset($element['#description']);
+    unset(
+      $element['#maxlength'],
+      $element['#attributes'],
+      $element['#description'],
+      $element['#help'],
+      $element['#help_title'],
+      $element['#help_display']
+    );
 
     // Add validate callback.
     $element += ['#element_validate' => []];

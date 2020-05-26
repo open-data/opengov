@@ -3299,7 +3299,7 @@ function webform_update_8177() {
 }
 
 /**
- * Issue #3095275: Allow webform management filter by default category and states to be customized
+ * Issue #3095275: Allow webform management category/state to be customized.
  */
 function webform_update_8178() {
   _webform_update_admin_settings();
@@ -3366,7 +3366,7 @@ function webform_update_8180() {
 }
 
 /**
- * Issue #3103032: Move deprecated location geocomplete element into a sub-module
+ * Issue #3103032: Move deprecated geocomplete element into a sub-module.
  */
 function webform_update_8181() {
   $config_factory = \Drupal::configFactory();
@@ -3666,11 +3666,11 @@ function webform_update_8191() {
 }
 
 /**
-+ * Unsafe HMAC construction.
-+ */
+ * Unsafe HMAC construction.
+ */
 function webform_update_8192() {
   $invalid_signatures = [];
-  $files = file_scan_directory('public://webform/','/signature-/');
+  $files = file_scan_directory('public://webform/', '/signature-/');
   foreach ($files as $file) {
     $value = file_get_contents($file->uri);
     $value = 'data:image/png;base64,' . base64_encode($value);
@@ -3702,7 +3702,7 @@ function webform_update_8192() {
   if (PHP_SAPI === 'cli') {
     $text = t('Invalid signature file detected and deleted. (@see @url)', ['@url' => 'https://www.drupal.org/security/psa']) . PHP_EOL;
     foreach ($webform_submissions as $webform_submission) {
-      $text .= '- ' . $webform_submission->label() . ' (' .  $webform_submission->toUrl()->setAbsolute()->toString() . ')' . PHP_EOL;
+      $text .= '- ' . $webform_submission->label() . ' (' . $webform_submission->toUrl()->setAbsolute()->toString() . ')' . PHP_EOL;
     }
     return $text;
   }

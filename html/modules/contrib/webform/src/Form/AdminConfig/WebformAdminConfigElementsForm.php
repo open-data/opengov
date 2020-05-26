@@ -431,7 +431,7 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
       $form['file']["default_{$file_type_name}_extensions"] = [
         '#type' => 'textfield',
         '#title' => $this->t('Default allowed @title extensions', ['@title' => $file_type_title]),
-        '#description' => $this->t('Separate extensions with a space and do not include the leading dot.'),
+        '#description' => $this->t('Separate extensions with a space or comma and do not include the leading dot.'),
         '#element_validate' => [[get_class($this), 'validateExtensions']],
         '#required' => TRUE,
         '#maxlength' => 256,

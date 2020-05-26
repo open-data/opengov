@@ -101,9 +101,9 @@ trait WebformEntityReferenceWidgetTrait {
     $weight = $element['target_id']['#weight'];
 
     // Get webform.
+    $target_id = NULL;
     if ($form_state->isRebuilding()) {
-      $user_input = $form_state->getUserInput();
-      $target_id = $user_input[$field_name][$delta]['target_id'];
+      $target_id = $form_state->getValue(array_merge($element['target_id']['#field_parents'], [$field_name, $delta, 'target_id']));
     }
     else {
       $target_id = $items[$delta]->target_id;

@@ -76,6 +76,10 @@ class WebformTermCheckboxes extends Checkboxes {
     foreach ($tree as $item) {
       // Set the item in the correct language for display.
       $item = $entity_repository->getTranslationFromContext($item);
+      if (!$item->access('view')) {
+        continue;
+      }
+
       $options[$item->id()] = $item->getName();
     }
     return $options;
