@@ -108,7 +108,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $this->assertEqual($file->getFileUri(), 'private://webform/test_element_managed_file/' . $sid . '/' . $first_file->filename);
 
     // Check that test file exists.
-    $this->assert(file_exists($file->getFileUri()), 'File exists');
+    $this->assertFileExists($file->getFileUri());
 
     // Login admin user.
     $this->drupalLogin($this->adminSubmissionUser);
@@ -153,7 +153,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $this->assertEqual($submission->getElementData($key), $second, 'Test new file was upload to the current submission');
 
     // Check that test file was deleted from the disk and database.
-    $this->assert(!file_exists($file->getFileUri()), 'Test file deleted from disk');
+    $this->assertFileNotExists($file->getFileUri(), 'Test file deleted from disk');
     $this->assertEqual(0, \Drupal::database()->query('SELECT COUNT(fid) AS total FROM {file_managed} WHERE fid = :fid', [':fid' => $fid])->fetchField(), 'Test file 0 deleted from database');
     $this->assertEqual(0, \Drupal::database()->query('SELECT COUNT(fid) AS total FROM {file_usage} WHERE fid = :fid', [':fid' => $fid])->fetchField(), 'Test file 0 deleted from database');
 
@@ -164,7 +164,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $submission->delete();
 
     // Check that test file 1 was deleted from the disk and database.
-    $this->assert(!file_exists($new_file->getFileUri()), 'Test new file deleted from disk');
+    $this->assertFileNotExists($new_file->getFileUri(), 'Test new file deleted from disk');
     $this->assertEqual(0, \Drupal::database()->query('SELECT COUNT(fid) AS total FROM {file_managed} WHERE fid = :fid', [':fid' => $new_fid])->fetchField(), 'Test new file deleted from database');
   }
 

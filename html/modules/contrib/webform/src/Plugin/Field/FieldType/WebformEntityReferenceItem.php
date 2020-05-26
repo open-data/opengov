@@ -112,9 +112,17 @@ class WebformEntityReferenceItem extends EntityReferenceItem {
    * {@inheritdoc}
    */
   public function getSettableOptions(AccountInterface $account = NULL) {
-    /** @var \Drupal\webform\WebformEntityStorageInterface $webform_storage */
-    $webform_storage = \Drupal::service('entity_type.manager')->getStorage('webform');
-    return $webform_storage->getOptions(FALSE);
+    $options = parent::getSettableOptions($account);
+
+    // Remove all templates.
+    if ($options && \Drupal::moduleHandler()->moduleExists('webform_templates')) {
+      /** @var \Drupal\webform\WebformEntityStorageInterface $webform_storage */
+      $webform_storage = \Drupal::service('entity_type.manager')->getStorage('webform');
+      $webform_templates = $webform_storage->loadByProperties(['template' => TRUE]);
+      $options = array_diff_key($options, $webform_templates);
+    }
+
+    return $options;
   }
 
 }

@@ -76,6 +76,9 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     // Check single custom file upload button.
     $this->assertRaw('<label style="color: red" for="edit-managed-file-single-button-custom-upload-button--2" class="button button-action webform-file-button">{Custom label}</label>');
 
+    // Check comma delimited file extensions.
+    $this->assertRaw('Allowed types: txt, text.');
+
     /* Element processing */
 
     $this->checkFileUpload('single', $this->files[0], $this->files[1]);
@@ -119,7 +122,6 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $this->drupalGet('/webform/test_element_managed_file/test');
     $this->assertNoRaw('<div class="webform-managed-file-placeholder managed-file-placeholder js-form-wrapper form-wrapper" data-drupal-selector="edit-managed-file-single-placeholder-file-placeholder" id="edit-managed-file-single-placeholder-file-placeholder">This is the single file upload placeholder</div>');
     $this->assertNoRaw('<div class="webform-managed-file-placeholder managed-file-placeholder js-form-wrapper form-wrapper" data-drupal-selector="edit-managed-file-multiple-placeholder-file-placeholder" id="edit-managed-file-multiple-placeholder-file-placeholder">This is the multiple file upload placeholder</div>');
-
 
     $this->drupalLogout();
 
@@ -172,7 +174,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
 
     /** @var \Drupal\file\FileInterface[] $multiple_file */
     $multiple_file = File::loadMultiple($submission->getElementData('file_multiple'));
-    $this->assertEqual(count($multiple_file), 2, 'Two files found in the multiple element.');
+    $this->assertCount(2, $multiple_file, 'Two files found in the multiple element.');
 
     $i = -1;
     foreach ($multiple_file as $file) {
@@ -323,7 +325,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $this->assertEqual($file->getFileUri(), 'private://webform/test_element_managed_file/' . $sid . '/' . $first_file->filename);
 
     // Check that test file exists.
-    $this->assert(file_exists($file->getFileUri()), 'File exists');
+    $this->assertFileExists($file->getFileUri());
 
     // Login admin user.
     $this->drupalLogin($this->adminSubmissionUser);
@@ -368,7 +370,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $this->assertEqual($submission->getElementData($key), $second, 'Test new file was upload to the current submission');
 
     // Check that test file was deleted from the disk and database.
-    $this->assert(!file_exists($file->getFileUri()), 'Test file deleted from disk');
+    $this->assertFileNotExists($file->getFileUri(), 'Test file deleted from disk');
     $this->assertEqual(0, \Drupal::database()->query('SELECT COUNT(fid) AS total FROM {file_managed} WHERE fid = :fid', [':fid' => $fid])->fetchField(), 'Test file 0 deleted from database');
     $this->assertEqual(0, \Drupal::database()->query('SELECT COUNT(fid) AS total FROM {file_usage} WHERE fid = :fid', [':fid' => $fid])->fetchField(), 'Test file 0 deleted from database');
 
@@ -376,17 +378,17 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $this->assertIdentical(['webform' => ['webform_submission' => [$sid => '1']]], $this->fileUsage->listUsage($new_file), 'The new file has 1 usage.');
 
     // Check that file directory was create.
-    $this->assertTrue(file_exists('private://webform/test_element_managed_file/' . $sid . '/'));
+    $this->assertFileExists('private://webform/test_element_managed_file/' . $sid . '/');
 
     // Delete the submission.
     $submission->delete();
 
     // Check that test file 1 was deleted from the disk and database.
-    $this->assert(!file_exists($new_file->getFileUri()), 'Test new file deleted from disk');
+    $this->assertFileNotExists($new_file->getFileUri(), 'Test new file deleted from disk');
     $this->assertEqual(0, \Drupal::database()->query('SELECT COUNT(fid) AS total FROM {file_managed} WHERE fid = :fid', [':fid' => $new_fid])->fetchField(), 'Test new file deleted from database');
 
     // Check that empty file directory was deleted.
-    $this->assertFalse(file_exists('private://webform/test_element_managed_file/' . $sid . '/'));
+    $this->assertFileNotExists('private://webform/test_element_managed_file/' . $sid . '/');
   }
 
 }

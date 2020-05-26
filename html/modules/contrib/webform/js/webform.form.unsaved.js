@@ -98,14 +98,21 @@
       return;
     }
     $('a:not(.use-ajax)').bind('click', function (evt) {
-      var href = $(evt.target).closest('a').attr('href');
+      var a = $(evt.target).closest('a');
+      var href = a.attr('href');
       if (typeof href !== 'undefined' && !(href.match(/^#/) || href.trim() === '')) {
         if ($(window).triggerHandler('beforeunload')) {
           if (!window.confirm(Drupal.t('Changes you made may not be saved.') + '\n\n' + Drupal.t('Press OK to leave this page or Cancel to stay.'))) {
             return false;
           }
         }
-        window.location.href = href;
+        var target = a.attr('target');
+        if (target) {
+          window.open(href, target);
+        }
+        else {
+          window.location.href = href;
+        }
         return false;
       }
     });

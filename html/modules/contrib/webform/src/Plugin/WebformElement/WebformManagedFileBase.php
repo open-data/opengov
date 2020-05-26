@@ -301,8 +301,16 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     array_splice($element['#element_validate'], 1, 0, $element_validate);
 
     // Upload validators.
+    // @see webform_preprocess_file_upload_help
     $element['#upload_validators']['file_validate_size'] = [$this->getMaxFileSize($element)];
     $element['#upload_validators']['file_validate_extensions'] = [$this->getFileExtensions($element)];
+    // Define 'webform_file_validate_extensions' which allows file
+    // extensions within webforms to be comma-delimited. The
+    // 'webform_file_validate_extensions' will be ignored by file_validate().
+    // @see file_validate()
+    // Issue #3136578: Comma-separate the list of allowed file extensions.
+    // @see https://www.drupal.org/project/drupal/issues/3136578
+    $element['#upload_validators']['webform_file_validate_extensions'] = [];
     $element['#upload_validators']['webform_file_validate_name_length'] = [];
 
     // Add file upload help to the element as #description, #help, or #more.
@@ -662,7 +670,9 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
    *   File extensions.
    */
   protected function getFileExtensions(array $element = NULL) {
-    return (!empty($element['#file_extensions'])) ? $element['#file_extensions'] : $this->getDefaultFileExtensions();
+    $extensions = (!empty($element['#file_extensions'])) ? $element['#file_extensions'] : $this->getDefaultFileExtensions();
+    $extensions = str_replace(',', ' ', $extensions);
+    return $extensions;
   }
 
   /**
@@ -1089,7 +1099,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     $form['file']['file_extensions'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Allowed file extensions'),
-      '#description' => $this->t('Separate extensions with a space and do not include the leading dot.') . '<br/><br/>' .
+      '#description' => $this->t('Separate extensions with a space or comma and do not include the leading dot.') . '<br/><br/>' .
         $this->t('Defaults to: %value', ['%value' => $this->getDefaultFileExtensions()]),
       '#maxlength' => 255,
     ];
@@ -1474,7 +1484,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
         'filecontent' => file_get_contents($file->getFileUri()),
         'filename' => $file->getFilename(),
         'filemime' => $file->getMimeType(),
-        // File URIs that are not supportted return FALSE, when this happens
+        // File URIs that are not supported return FALSE, when this happens
         // still use the file's URI as the file's path.
         'filepath' => \Drupal::service('file_system')->realpath($file->getFileUri()) ?: $file->getFileUri(),
         // URI is used when debugging or resending messages.

@@ -388,7 +388,7 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
       '#states' => [
         'visible' => [
           ':input[name="settings[limit_user]"]' => ['checked' => TRUE],
-        ]
+        ],
       ],
     ];
     // Option settings.

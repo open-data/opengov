@@ -85,9 +85,10 @@ class WebformElementHelperTest extends UnitTestCase {
       ['#tree' => TRUE, '#value' => 'text', '#element_validate' => 'some_function'],
       ['#tree' => '#tree', '#element_validate' => '#element_validate'],
     ];
-    // Ignore #subelement__tree and #subelement__element_validate.
+    // Ignore #subelement__tree and #subelement__element_validate,
+    // but not '#subelement__weight'.
     $tests[] = [
-      ['#subelement__tree' => TRUE, '#value' => 'text', '#subelement__element_validate' => 'some_function'],
+      ['#subelement__tree' => TRUE, '#value' => 'text', '#subelement__element_validate' => 'some_function', '#subelement__weight' => 0],
       ['#subelement__tree' => '#subelement__tree', '#subelement__element_validate' => '#subelement__element_validate'],
     ];
     return $tests;
@@ -144,8 +145,8 @@ class WebformElementHelperTest extends UnitTestCase {
     ];
     // Remove #subelement__tree and #subelement__element_validate.
     $tests[] = [
-      ['#subelement__tree' => TRUE, '#value' => 'text', '#subelement__element_validate' => 'some_function'],
-      ['#value' => 'text'],
+      ['#subelement__tree' => TRUE, '#value' => 'text', '#subelement__element_validate' => 'some_function', '#subelement__equal_stepwise_validate' => TRUE],
+      ['#value' => 'text', '#subelement__equal_stepwise_validate' => TRUE],
     ];
     // Remove random nested #element_validate.
     $tests[] = [
@@ -153,8 +154,8 @@ class WebformElementHelperTest extends UnitTestCase {
       ['random' => []],
     ];
     $tests[] = [
-      ['#prefix' => ['#markup' => 'some_markup', '#element_validate' => 'some_function']],
-      ['#prefix' => ['#markup' => 'some_markup']],
+      ['#prefix' => ['#markup' => 'some_markup', '#element_validate' => 'some_function', '#equal_stepwise_validate' => TRUE]],
+      ['#prefix' => ['#markup' => 'some_markup', '#equal_stepwise_validate' => TRUE]],
     ];
     // Remove any *_validate(s) and *_callback(s).
     $tests[] = [
@@ -164,6 +165,11 @@ class WebformElementHelperTest extends UnitTestCase {
     $tests[] = [
       ['random' => ['#some_random_callbacks' => 'some_function']],
       ['random' => []],
+    ];
+    // Remove #weight but not subelement__weight.
+    $tests[] = [
+      ['#weight' => 1, '#subelement__weight' => 1],
+      ['#subelement__weight' => 1],
     ];
     return $tests;
   }

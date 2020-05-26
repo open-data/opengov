@@ -107,7 +107,7 @@ class WebformSubmissionStorageTest extends KernelTestBase {
       $result[$submission->serial()] = $submission;
     }
     foreach ($purged as $sequence_id) {
-      $this->assertFalse(isset($result[$sequence_id]), 'Webform submission with sequence ' . $sequence_id . ' is purged.');
+      $this->assertArrayNotHasKey($sequence_id, $result, 'Webform submission with sequence ' . $sequence_id . ' is purged.');
     }
     $this->assertEquals(count($webform_submissions_definition) - count($purged), count($result), 'Remaining webform submissions are not purged.');
   }

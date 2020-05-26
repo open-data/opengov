@@ -33,7 +33,7 @@ trait WebformTermReferenceTrait {
 
     // Add the vocabulary to the cache tags.
     // Issue #2920913: The taxonomy_term_list cache should be invalidated
-    // on a vocabulary-by-vocabulary basis
+    // on a vocabulary-by-vocabulary basis.
     // @see https://www.drupal.org/project/drupal/issues/2920913
     $element['#cache']['tags'][] = 'taxonomy_term_list';
   }

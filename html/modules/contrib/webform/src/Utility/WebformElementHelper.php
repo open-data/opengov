@@ -50,11 +50,28 @@ class WebformElementHelper {
   ];
 
   /**
+   * Allowed (whitelist) element properties.
+   *
+   * @var array
+   */
+  public static $allowedProperties = [
+    # webform_validation.module.
+    '#equal_stepwise_validate' => '#equal_stepwise_validate',
+  ];
+
+  /**
    * Regular expression used to determine if sub-element property should be ignored.
    *
    * @var string
    */
   protected static $ignoredSubPropertiesRegExp;
+
+  /**
+   * Regular expression used to determine if sub-element property should be allowed.
+   *
+   * @var string
+   */
+  protected static $allowedSubPropertiesRegExp;
 
   /**
    * Determine if an element and its key is a renderable array.
@@ -399,7 +416,7 @@ class WebformElementHelper {
    */
   public static function removeIgnoredProperties(array $element) {
     foreach ($element as $key => $value) {
-      if (Element::property($key) && self::isIgnoredProperty($key)) {
+      if ($key && is_string($key) && Element::property($key) && self::isIgnoredProperty($key)) {
         // Computed elements use #ajax as boolean and should not be ignored.
         // @see \Drupal\webform\Element\WebformComputedBase
         $is_ajax_computed = ($key === '#ajax' && is_bool($value));
@@ -432,10 +449,22 @@ class WebformElementHelper {
   protected static function isIgnoredProperty($property) {
     // Build cached ignored sub properties regular expression.
     if (!isset(self::$ignoredSubPropertiesRegExp)) {
-      self::$ignoredSubPropertiesRegExp = '/__(' . implode('|', array_keys(WebformArrayHelper::removePrefix(self::$ignoredProperties))) . ')$/';
+      $allowedSubProperties = self::$allowedProperties;
+      $ignoredSubProperties = self::$ignoredProperties;
+      // Allow #weight as sub property. This makes it easier for developer to
+      // sort composite sub-elements
+      unset($ignoredSubProperties['#weight']);
+      self::$ignoredSubPropertiesRegExp = '/__(' . implode('|', array_keys(WebformArrayHelper::removePrefix($ignoredSubProperties))) . ')$/';
+      self::$allowedSubPropertiesRegExp = '/__(' . implode('|', array_keys(WebformArrayHelper::removePrefix($allowedSubProperties))) . ')$/';
     }
 
-    if (isset(self::$ignoredProperties[$property])) {
+    if (isset(self::$allowedProperties[$property])) {
+      return FALSE;
+    }
+    elseif (strpos($property, '__') !== FALSE && preg_match(self::$allowedSubPropertiesRegExp, $property)) {
+      return FALSE;
+    }
+    elseif (isset(self::$ignoredProperties[$property])) {
       return TRUE;
     }
     elseif (strpos($property, '__') !== FALSE && preg_match(self::$ignoredSubPropertiesRegExp, $property)) {

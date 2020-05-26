@@ -37,10 +37,10 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
 
     // Check advanced select_other w/ custom label.
     $this->assertRaw('<span class="fieldset-legend js-form-required form-required">Select other advanced</span>');
-    $this->assertRaw('<select data-drupal-selector="edit-select-other-advanced-select" id="edit-select-other-advanced-select" name="select_other_advanced[select]" class="form-select required" required="required" aria-required="true">');
+    $this->assertRaw('<select data-webform-required-error="This is a custom required error message." data-drupal-selector="edit-select-other-advanced-select" id="edit-select-other-advanced-select" name="select_other_advanced[select]" class="form-select required" required="required" aria-required="true">');
     $this->assertRaw('<option value="_other_" selected="selected">Is there another option you wish to enter?</option>');
     $this->assertRaw('<label for="edit-select-other-advanced-other">Other</label>');
-    $this->assertRaw('<input data-counter-type="character" data-counter-minimum="4" data-counter-maximum="10" class="js-webform-counter webform-counter form-text" data-drupal-selector="edit-select-other-advanced-other" aria-describedby="edit-select-other-advanced-other--description" type="text" id="edit-select-other-advanced-other" name="select_other_advanced[other]" value="Four" size="20" maxlength="10" placeholder="What is this other option" />');
+    $this->assertRaw('<input data-webform-required-error="This is a custom required error message." data-counter-type="character" data-counter-minimum="4" data-counter-maximum="10" class="js-webform-counter webform-counter form-text" data-drupal-selector="edit-select-other-advanced-other" aria-describedby="edit-select-other-advanced-other--description" type="text" id="edit-select-other-advanced-other" name="select_other_advanced[other]" value="Four" size="20" maxlength="10" placeholder="What is this other option" />');
     $this->assertRaw('<div id="edit-select-other-advanced-other--description" class="webform-element-description">Other select description</div>');
 
     // Check multiple select_other.
@@ -125,7 +125,17 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'select_other_advanced[other]' => '',
     ];
     $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
-    $this->assertRaw('Select other advanced field is required.');
+    $this->assertNoRaw('Select other advanced field is required.');
+    $this->assertRaw('This is a custom required error message.');
+
+    // Check select other custom required error.
+    $edit = [
+      'select_other_advanced[select]' => '_other_',
+      'select_other_advanced[other]' => '',
+    ];
+    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->assertNoRaw('Select other advanced field is required.');
+    $this->assertRaw('This is a custom required error message.');
 
     // Check select other processing w/ other min/max character validation.
     $edit = [
@@ -158,13 +168,13 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
     $elements['select_other']['select_other_advanced']['#default_value'] = NULL;
     $webform->setElements($elements)->save();
     $this->drupalPostForm('/webform/test_element_other', [], t('Submit'));
-    $this->assertRaw('Select other advanced field is required.');
+    $this->assertRaw('This is a custom required error message.');
 
     // Check select other validation is skipped when #access is set to FALSE.
     $elements['select_other']['select_other_advanced']['#access'] = FALSE;
     $webform->setElements($elements)->save();
     $this->drupalPostForm('/webform/test_element_other', [], t('Submit'));
-    $this->assertNoRaw('Select other advanced field is required.');
+    $this->assertNoRaw('This is a custom required error message.');
 
     /**************************************************************************/
     // radios_other

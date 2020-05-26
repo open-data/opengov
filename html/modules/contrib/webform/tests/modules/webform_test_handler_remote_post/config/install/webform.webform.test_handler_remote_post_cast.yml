@@ -38,7 +38,7 @@ elements: |
       number:
         '#type': number
         '#title': number
-  
+
 css: ''
 javascript: ''
 settings:
@@ -131,7 +131,7 @@ settings:
   confirmation_title: ''
   confirmation_message: |
     <p>Your confirmation number is [webform_submission:values:confirmation_number].</p>
-    
+
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -237,7 +237,10 @@ handlers:
         locked: locked
         sticky: sticky
         notes: notes
-      custom_data: ''
+      custom_data: |
+        boolean_true: '(boolean) true'
+        integer: '(integer) 100'
+        float: '(float) 100.01'
       custom_options: ''
       debug: true
       completed_url: 'http://webform-test-handler-remote-post/completed'

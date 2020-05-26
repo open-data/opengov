@@ -731,7 +731,7 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
         'group' => $this->t('Validation'),
         'title' => $this->t('Disable client-side validation'),
         'all_description' => $this->t('Client-side validation is disabled for all forms.'),
-        'form_description' => $this->t('If checked, the <a href=":href">novalidate</a> attribute, which disables client-side validation, will be added to this form.', [':href' => 'http://www.w3schools.com/tags/att_form_novalidate.asp']),
+        'form_description' => $this->t('If checked, the <a href=":href">novalidate</a> attribute, which disables client-side validation, will be added to this form.', [':href' => 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form']),
       ],
       'form_disable_inline_errors' => [
         'group' => $this->t('Validation'),
@@ -755,7 +755,7 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
       'form_disable_autocomplete' => [
         'group' => $this->t('Elements'),
         'title' => $this->t('Disable autocompletion'),
-        'form_description' => $this->t('If checked, the <a href=":href">autocomplete</a> attribute will be set to off, which disables autocompletion for all form elements.', [':href' => 'http://www.w3schools.com/tags/att_form_autocomplete.asp']),
+        'form_description' => $this->t('If checked, the <a href=":href">autocomplete</a> attribute will be set to off, which disables autocompletion for all form elements.', [':href' => 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form']),
       ],
       'form_details_toggle' => [
         'group' => $this->t('Elements'),

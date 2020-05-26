@@ -47,6 +47,15 @@ abstract class WebformOtherBase extends FormElement {
   ];
 
   /**
+   * The properties of the other element.
+   *
+   * @var array
+   */
+  protected static $otherProperties = [
+    '#required_error',
+  ];
+
+  /**
    * {@inheritdoc}
    */
   public function getInfo() {
@@ -133,6 +142,7 @@ abstract class WebformOtherBase extends FormElement {
         '#title_display' => 'invisible',
       ];
     }
+    $element['other'] += array_intersect_key($element, array_combine(static::$otherProperties, static::$otherProperties));
 
     $element['other']['#wrapper_attributes']['class'][] = "js-webform-$type-other-input";
     $element['other']['#wrapper_attributes']['class'][] = "webform-$type-other-input";

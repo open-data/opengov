@@ -8,7 +8,7 @@ dependencies:
   - 'webform:webform'
   - 'webform:webform_devel'
 
-# Information added by Drupal.org packaging script on 2020-05-05
-version: '8.x-5.11'
+# Information added by Drupal.org packaging script on 2020-05-16
+version: '8.x-5.13'
 project: 'webform'
-datestamp: 1588690393
+datestamp: 1589661359

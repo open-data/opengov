@@ -33,6 +33,7 @@
           inputErrorClass: 'webform-counter-warning',
           counterErrorClass: 'webform-counter-warning',
           countSpaces: true,
+          twoCharCarriageReturn: true,
           stopInputAtMaximum: false,
           // Don't display min/max message since server-side validation will
           // display these messages.

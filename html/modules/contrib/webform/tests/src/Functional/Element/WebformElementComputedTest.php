@@ -94,7 +94,7 @@ class WebformElementComputedTest extends WebformElementBrowserTestBase {
       ->condition('name', ['webform_computed_token_auto', 'webform_computed_token_html', 'webform_computed_token_text'], 'IN')
       ->execute()
       ->fetchAll();
-    $this->assert(empty($result));
+    $this->assertEmpty($result);
 
     /* Twig */
 

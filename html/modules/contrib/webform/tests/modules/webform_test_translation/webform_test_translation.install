@@ -4,7 +4,7 @@
  * @file
  * Install, update and uninstall functions for the Webform test translation module.
  *
- * drush php-eval 'module_load_include('install', 'webform_test_translation');webform_test_translation_install()'; drush cr;
+ * drush php-eval 'module_load_include('install', 'webform_test_translation'); webform_test_translation_install()'; drush cr;
  */
 
 use Drupal\Core\Serialization\Yaml;

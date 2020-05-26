@@ -75,7 +75,7 @@ class WebformElementStatesSelectorsTest extends WebformElementBrowserTestBase {
 
     // Check the value element is excluded.
     $selectors = $webform->getElementsSelectorOptions();
-    $this->assert(!isset($selectors[':input[name="value"]']));
+    $this->assertArrayNotHasKey(':input[name="value"]', $selectors);
 
     // Check the value element is included.
     $selectors = $webform->getElementsSelectorOptions(['excluded_elements' => []]);

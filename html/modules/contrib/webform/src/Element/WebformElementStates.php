@@ -240,7 +240,7 @@ class WebformElementStates extends FormElement {
       if ($triggers) {
         $element['disabled_message'] = [
           '#type' => 'webform_message',
-          '#message_message' => t('<a href="https://www.w3schools.com/tags/att_input_disabled.asp">Disabled</a> elements do not submit data back to the server and the element\'s server-side default or current value will be preserved and saved to the database.'),
+          '#message_message' => t('<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-disabled">Disabled</a> elements do not submit data back to the server and the element\'s server-side default or current value will be preserved and saved to the database.'),
           '#message_type' => 'warning',
           '#states' => ['visible' => $triggers],
         ];
@@ -494,7 +494,7 @@ class WebformElementStates extends FormElement {
     ];
     $row['condition']['pattern'] = [
       '#type' => 'container',
-      'description' => ['#markup' => t('Enter a <a href=":href">regular expression</a>', [':href' => 'http://www.w3schools.com/js/js_regexp.asp'])],
+      'description' => ['#markup' => t('Enter a <a href=":href">regular expression</a>', [':href' => 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions'])],
       '#states' => [
         'visible' => [
           [$trigger_selector => ['value' => 'pattern']],

@@ -48,6 +48,7 @@ elements: |
       '#other__counter_minimum': '4'
       '#other__counter_maximum': '10'
       '#required': true
+      '#required_error': 'This is a custom required error message.'
     select_other_multiple:
       '#type': webform_select_other
       '#title': 'Select other multiple'
@@ -147,7 +148,7 @@ elements: |
         Two: Two
         Three: Three
       '#wrapper_type': container
-  
+
 css: ''
 javascript: ''
 settings:

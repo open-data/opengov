@@ -58,7 +58,7 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     $this->assertEqual($sent_email['headers']['Sender'], 'sender_name <sender_mail@example.com>');
     $this->assertEqual($sent_email['headers']['Reply-to'], 'reply_to@example.com');
     $this->assertEqual($sent_email['params']['custom_parameter'], 'test');
-    $this->assert(!isset($sent_email['params']['parameters']));
+    $this->assertArrayNotHasKey('parameters', $sent_email['params']);
 
     $email_handler = $webform->getHandler('email');
     $configuration = $email_handler->getConfiguration();
@@ -177,7 +177,7 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     $this->postSubmissionTest($webform);
     $sent_email = $this->getLastEmail();
     $this->assertNotContains('<b>File</b><br />', $sent_email['params']['body']);
-    $this->assertTrue(isset($sent_email['params']['attachments'][0]['filecontent']));
+    $this->assertArrayHasKey('filecontent', $sent_email['params']['attachments'][0]);
 
     // Exclude file element.
     $configuration = $email_handler->getConfiguration();

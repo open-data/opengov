@@ -53,7 +53,7 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
     $file = File::load($fid);
 
     // Check file permanent.
-    $this->assert($file->isPermanent(), 'Test file is permanent');
+    $this->assertTrue($file->isPermanent());
 
     // Check file upload.
     $element_data = $webform_submission->getElementData('webform_test_composite_file');
@@ -66,7 +66,7 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
     $this->assertEqual($file->getFileUri(), 'private://webform/test_element_comp_file_plugin/' . $sid . '/' . $first_file->filename);
 
     // Check that test file exists.
-    $this->assert(file_exists($file->getFileUri()), 'File exists');
+    $this->assertFileExists($file->getFileUri());
 
     /**************************************************************************/
     // Multiple composite with file upload.
@@ -84,7 +84,7 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
     $file = File::load($fid);
 
     // Check file permanent.
-    $this->assert($file->isPermanent(), 'Test file is permanent');
+    $this->assertTrue($file->isPermanent());
 
     // Check file upload.
     $element_data = $webform_submission->getElementData('webform_test_composite_file_multiple_header');
@@ -97,7 +97,7 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
     $this->assertEqual($file->getFileUri(), 'private://webform/test_element_comp_file_plugin/' . $sid . '/' . $second_file->filename);
 
     // Check that test file exists.
-    $this->assert(file_exists($file->getFileUri()), 'File exists');
+    $this->assertFileExists($file->getFileUri());
   }
 
 }

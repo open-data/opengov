@@ -1187,7 +1187,7 @@ webform_flexbox:
   deprecated: false
   deprecated_message: ''
   id: webform_flexbox
-  api: 'http://www.w3schools.com/css/css3_flexbox.asp'
+  api: 'https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox'
   label: 'Flexbox layout'
   class: Drupal\webform\Plugin\WebformElement\WebformFlexbox
   provider: webform
@@ -1706,7 +1706,7 @@ webform_time:
   deprecated: false
   deprecated_message: ''
   id: webform_time
-  api: 'http://www.w3schools.com/tags/tag_time.asp'
+  api: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time'
   label: Time
   class: Drupal\webform\Plugin\WebformElement\WebformTime
   provider: webform

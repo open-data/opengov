@@ -283,7 +283,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       'default_form_novalidate' => [
         'group' => $this->t('Validation'),
         'title' => $this->t('Disable client-side validation for all webforms'),
-        'description' => $this->t('If checked, the <a href=":href">novalidate</a> attribute, which disables client-side validation, will be added to all webforms.', [':href' => 'http://www.w3schools.com/tags/att_form_novalidate.asp']),
+        'description' => $this->t('If checked, the <a href=":href">novalidate</a> attribute, which disables client-side validation, will be added to all webforms.', [':href' => 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form']),
       ],
       'default_form_disable_inline_errors' => [
         'group' => $this->t('Validation'),

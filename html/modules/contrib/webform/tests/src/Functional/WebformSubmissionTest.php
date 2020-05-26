@@ -44,7 +44,7 @@ class WebformSubmissionTest extends WebformBrowserTestBase {
     /**************************************************************************/
 
     // Check create submission.
-    $this->assert($webform_submission instanceof WebformSubmission, '$webform_submission instanceof WebformSubmission');
+    $this->assertInstanceOf(WebformSubmission::class, $webform_submission);
 
     // Check get webform.
     $this->assertEqual($webform_submission->getWebform()->id(), $webform->id());

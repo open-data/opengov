@@ -47,10 +47,10 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
     $this->drupalLogin($this->rootUser);
 
     // Check that aliases exist.
-    $this->assert(is_array($alias_storage->load(['alias' => $form_path])));
-    $this->assert(is_array($alias_storage->load(['alias' => "$form_path/confirmation"])));
-    $this->assert(is_array($alias_storage->load(['alias' => "$form_path/drafts"])));
-    $this->assert(is_array($alias_storage->load(['alias' => "$form_path/submissions"])));
+    $this->assertIsArray($alias_storage->load(['alias' => $form_path]));
+    $this->assertIsArray($alias_storage->load(['alias' => "$form_path/confirmation"]));
+    $this->assertIsArray($alias_storage->load(['alias' => "$form_path/drafts"]));
+    $this->assertIsArray($alias_storage->load(['alias' => "$form_path/submissions"]));
 
     // Check default system submit path.
     $this->drupalGet($webform_path);

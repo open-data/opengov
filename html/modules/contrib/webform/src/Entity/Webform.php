@@ -1188,7 +1188,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   public function getElementsOriginalDecoded() {
     $this->elementsOriginal;
     try {
-      $elements = Yaml::decode($this->elementsOriginal);
+      $elements = WebformYaml::decode($this->elementsOriginal);
       return (is_array($elements)) ? $elements : [];
     }
     catch (\Exception $exception) {
@@ -1434,7 +1434,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
         }
       }
       else {
-        $elements = Yaml::decode($this->elements);
+        $elements = WebformYaml::decode($this->elements);
       }
 
       // Since YAML supports simple values.

@@ -38,7 +38,7 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
     $this->drupalPostForm(NULL, [], t('Submit'));
     $this->assertCurrentPage('Complete', 'webform_confirmation');
     $sid = $this->getLastSubmissionId($webform);
-    $this->assert(!empty($sid));
+    $this->assertNotEmpty($sid);
 
     // Check hiding all pages and skipping to complete.
     $edit = [
@@ -49,7 +49,7 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
     $this->assertRaw('New submission added to Test: Webform: Wizard conditional.');
     $this->assertCurrentPage('Complete', 'webform_confirmation');
     $sid = $this->getLastSubmissionId($webform);
-    $this->assert(!empty($sid));
+    $this->assertNotEmpty($sid);
 
     // Enable preview.
     $webform->setSetting('preview', 1);
