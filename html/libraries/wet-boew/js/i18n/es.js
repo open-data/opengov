@@ -54,7 +54,7 @@ wb.i18nDict = {
 	"prv-l": "Anterior (tecla flecha izquierda)",
 	first: "Primero",
 	last: "Último",
-	page: "Page",
+	page: "Jump to: Page",
 	"srch-menus": "Búsqueda y menús",
 	email: "Correo electrónico",
 	"menu-close": "Cierre el menú",
@@ -160,8 +160,8 @@ wb.i18nDict = {
 	"chrt-cmbslc": "Combined slice",
 
 	/* Session timeout */
-	"st-to-msg-bgn": "Su sesión expirará automáticamente en #min# min #sec# sec.",
-	"st-to-msg-end": "Seleccione \"Continuar sesión\" para prolongar tu sesión.",
+	"st-to-msg-bgn": "Su sesión expirará automáticamente en #min# min #sec# seg.",
+	"st-to-msg-end": "Seleccione \"Continuar sesión\" para prolongar su sesión.",
 	"st-msgbx-ttl": "Aviso de finalización de sesión",
 	"st-alrdy-to-msg": "Lo sentimos, su sesión ha expirado. Por favor ingrese nuevamente.",
 	"st-btn-cont": "Continuar sesión",
