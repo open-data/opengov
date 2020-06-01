@@ -2,10 +2,9 @@
 /*!
  * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
  * wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * v5.1.0 - 2019-06-21
+ * v6.0.0 - 2019-11-13
  *
  */
-@charset "UTF-8";
 /*!
  *
  * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
@@ -28,7 +27,7 @@ Left menu variables
  * If there is a Bootstrap variable not shown here that you want to override, go to "../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables" to view the variables that you can override. Simply copy and paste the variable and its applicable section (if applicable) from the Bootstrap file into this override file and override the variables as applicable.
  */
 /*!
- * GLYPHICONS Halflings for Twitter Bootstrap by GLYPHICONS.com | Licensed under http://www.apache.org/licenses/LICENSE-2.0
+ * GLYPHICONS Halflings for Twitter Bootstrap by GLYPHICONS.com | Licensed under https://www.apache.org/licenses/LICENSE-2.0
  */
 /*!
  * Bootstrap v3.4.1 (https://getbootstrap.com/)
@@ -1088,7 +1087,7 @@ th {
 
 html {
   font-size: 10px;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
 body {
   font-family: "Noto Sans", sans-serif;
@@ -5480,7 +5479,7 @@ button.close {
   color: #fff;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   filter: alpha(opacity=50);
   opacity: 0.5; }
   .carousel-control.left {
@@ -5547,7 +5546,7 @@ button.close {
     text-indent: -999px;
     cursor: pointer;
     background-color: #000 \9;
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0);
     border: 1px solid #fff;
     border-radius: 10px; }
   .carousel-indicators .active {
@@ -5892,6 +5891,24 @@ a {
   color: #959595; }
 
 /*
+ *	Abbreviations with title attributes
+ *	Workaround for abbreviations with titles using solid underlines in IE11/Edge in Bootstrap 3.4.0 (via normalize.css 4.0.1-8.0.1):
+ *	- Use a dotted underline in browsers that support it (e.g. Firefox, Chrome, etc...)
+ *	- Fallback on a dotted bottom border in browsers that don't support it (e.g. IE11, Edge, etc...)
+ *	Source: https://github.com/necolas/normalize.css/pull/738#issuecomment-387549760
+ *	Created by: @mattbrundage
+ */
+abbr[title] {
+  border-bottom: 1px dotted;
+  text-decoration: none; }
+
+@supports ((-webkit-text-decoration: underline dotted) or (text-decoration: underline dotted)) {
+  abbr[title] {
+    border-bottom: 0;
+    -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted; } }
+
+/*
  *	Override the design of alerts and labels
  */
 .alert, .label {
@@ -6039,9 +6056,17 @@ blockquote {
  *	Default should be representative of the expected length of input.
  *	Full width should be only for cases when the expected length of input is
  *	greater than the available width.
+ *  height:37px; rule of Bootstrap was overwritten by height: auto; first
+ *  then a min-height specified, in order to address the issue #8492. July 2019.
  */
+input[type=button], input[type=reset], input[type=submit] {
+  height: auto;
+  min-height: 37px; }
+
 .form-control {
+  height: auto;
   max-width: 100%;
+  min-height: 37px;
   width: auto; }
 
 /*
@@ -6218,6 +6243,39 @@ caption {
   font-size: 1.1em;
   font-weight: bold;
   text-align: center; }
+
+/*
+  WET-BOEW
+  @title: Bootstrap 4 suplemental style for WET-BOEW
+ */
+/* Padding */
+.p-0 {
+  padding: 0 !important; }
+
+.pl-2 .px-2 {
+  padding-left: 5px !important; }
+
+.px-2 {
+  padding-right: 5px !important; }
+
+.pt-4,
+.py-4 {
+  padding-top: 30px !important; }
+
+.py-4 {
+  padding-bottom: 30px !important; }
+
+/* Stretched link */
+.stretched-link:after {
+  background-color: rgba(0, 0, 0, 0);
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1; }
 
 /* WET Core */
 /*
@@ -6400,11 +6458,11 @@ q:before, q:after {
   white-space: nowrap; }
 
 /*
-* Based upon jQuery Mobile Transitions (http://jquerymobile.com)
+* Based upon jQuery Mobile Transitions (https://jquerymobile.com)
 *
 * Copyright 2010, 2013 jQuery Foundation, Inc. and other contributors
 * Released under the MIT license.
-* http://jquery.org/license
+* https://jquery.org/license
 *
 */
 .pop.in, .fade.in, .fade.reverse.out {
@@ -7621,7 +7679,7 @@ button::-moz-focus-inner {
   padding: 0;
   width: 90px;
   height: 110px;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
   .mfp-arrow:active {
     margin-top: -54px; }
   .mfp-arrow:hover, .mfp-arrow:focus {
@@ -9754,7 +9812,7 @@ ol-geolocate button {
     background-size: 30px 30px;
     z-index: 2; }
   .feeds-cont.waiting:before {
-    background: transparent;
+    background: rgba(0, 0, 0, 0);
     z-index: 1; }
 
 .feeds-cont .feeds-date:before {
@@ -10029,6 +10087,19 @@ details {
  */
   .col-sm-auto {
     width: auto; }
+  /*
+  WET-BOEW
+  @title: Bootstrap 4 suplemental style for WET-BOEW - Small view and over (screen only)
+ */
+  /* Margin */
+  .mb-sm-5 {
+    margin-bottom: 50px !important; }
+  /* Padding */
+  .p-sm-3 {
+    padding: 15px !important; }
+  .px-sm-3 {
+    padding-left: 15px !important;
+    padding-right: 15px !important; }
   /*
   WET-BOEW
   @title: Proximity CSS - Small view and over

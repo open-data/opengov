@@ -6429,12 +6429,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/open-data/gcweb_bootstrap.git",
-            "reference": "09fc011bd06e5cc919bcc5d9a21a6e21232e1dd0"
+            "reference": "1048b4f8b698f7187134103b08d8938055a3386a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/open-data/gcweb_bootstrap/zipball/09fc011bd06e5cc919bcc5d9a21a6e21232e1dd0",
-            "reference": "09fc011bd06e5cc919bcc5d9a21a6e21232e1dd0",
+            "url": "https://api.github.com/repos/open-data/gcweb_bootstrap/zipball/1048b4f8b698f7187134103b08d8938055a3386a",
+            "reference": "1048b4f8b698f7187134103b08d8938055a3386a",
             "shasum": ""
         },
         "require": {
@@ -6442,10 +6442,10 @@
             "cweagans/composer-patches": "^1.6.5",
             "drupal/bootstrap": "3.21.0",
             "drupal/core": "^8",
-            "wet-boew/theme-gcweb": "5.1",
-            "wet-boew/wet-boew": "v4.0.31"
+            "wet-boew/theme-gcweb": "6.0",
+            "wet-boew/wet-boew": "v4.0.32"
         },
-        "time": "2020-05-14T22:28:51+00:00",
+        "time": "2020-06-01T17:25:34+00:00",
         "type": "drupal-theme",
         "extra": {
             "composer-exit-on-patch-failure": false,
@@ -11630,34 +11630,34 @@
     },
     {
         "name": "wet-boew/theme-gcweb",
-        "version": "v5.1",
-        "version_normalized": "5.1.0.0",
+        "version": "v6.0",
+        "version_normalized": "6.0.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wet-boew/themes-cdn.git",
-            "reference": "v5.1-gcweb"
+            "reference": "v6.0-gcweb"
         },
         "dist": {
             "type": "tar",
-            "url": "https://github.com/wet-boew/themes-cdn/archive/v5.1-gcweb.tar.gz",
-            "reference": "v5.1-gcweb"
+            "url": "https://github.com/wet-boew/themes-cdn/archive/v6.0-gcweb.tar.gz",
+            "reference": "v6.0-gcweb"
         },
         "type": "drupal-library",
         "installation-source": "dist"
     },
     {
         "name": "wet-boew/wet-boew",
-        "version": "v4.0.31",
-        "version_normalized": "4.0.31.0",
+        "version": "v4.0.32",
+        "version_normalized": "4.0.32.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wet-boew/wet-boew-cdn.git",
-            "reference": "v4.0.31"
+            "reference": "v4.0.32"
         },
         "dist": {
             "type": "tar",
-            "url": "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.31.tar.gz",
-            "reference": "v4.0.31"
+            "url": "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.32.tar.gz",
+            "reference": "v4.0.32"
         },
         "type": "drupal-library",
         "installation-source": "dist"
