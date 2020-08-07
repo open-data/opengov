@@ -7,6 +7,6 @@ handlers:
   email_confirmation:
     label: 'Email confirmation'
     settings:
-      from_name: default
+      from_name: _default
   email_notification:
     label: 'Email notification'

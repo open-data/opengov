@@ -6,6 +6,6 @@ handlers:
   email:
     label: Courriel
     settings:
-      from_name: default
+      from_name: _default
       subject: 'Soumettre votre application'
       body: "Soumis le [webform_submission:created]<br />\r\nSoumis par : [webform_submission:user]<br />\r\nLes valeurs soumises sont :<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"
