@@ -56,11 +56,18 @@ class VariableAnalysisSniff implements Sniff {
 
   /**
    *  Allow function parameters to be unused without provoking unused-var warning.
-   *  Set generic.codeanalysis.variableanalysis.allowUnusedFunctionParameters to a true value.
    *
    *  @var bool
    */
   public $allowUnusedFunctionParameters = false;
+
+  /**
+   *  If set, ignores undefined variables in the file scope (the top-level
+   *  scope of a file).
+   *
+   *  @var bool
+   */
+  public $allowUndefinedVariablesInFileScope = false;
 
   /**
    *  A space-separated list of names of placeholder variables that you want to
@@ -104,6 +111,15 @@ class VariableAnalysisSniff implements Sniff {
    *  @var bool
    */
   public $allowUnusedForeachVariables = true;
+
+  /**
+   * If set to true, unused variables in a function before a require or import
+   * statement will not be marked as unused because they may be used in the
+   * required file.
+   *
+   *  @var bool
+   */
+  public $allowUnusedVariablesBeforeRequire = false;
 
   /**
    * @return (int|string)[]
@@ -260,37 +276,14 @@ class VariableAnalysisSniff implements Sniff {
       if (isset($this->ignoreUnusedRegexp) && preg_match($this->ignoreUnusedRegexp, $varName) === 1) {
         $scopeInfo->variables[$varName]->ignoreUnused = true;
       }
+      if ($scopeInfo->owner === 0 && $this->allowUndefinedVariablesInFileScope) {
+        $scopeInfo->variables[$varName]->ignoreUndefined = true;
+      }
       if (in_array($varName, $validUndefinedVariableNames)) {
         $scopeInfo->variables[$varName]->ignoreUndefined = true;
       }
     }
     return $scopeInfo->variables[$varName];
-  }
-
-  /**
-   * @param VariableInfo $varInfo
-   * @param ScopeInfo $scopeInfo
-   *
-   * @return bool
-   */
-  protected function areFollowingArgumentsUsed($varInfo, $scopeInfo) {
-    $foundVarPosition = false;
-    foreach ($scopeInfo->variables as $variable) {
-      if ($variable === $varInfo) {
-        $foundVarPosition = true;
-        continue;
-      }
-      if (! $foundVarPosition) {
-        continue;
-      }
-      if ($variable->scopeType !== 'param') {
-        continue;
-      }
-      if ($variable->firstRead) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -1398,7 +1391,7 @@ class VariableAnalysisSniff implements Sniff {
     if ($this->allowUnusedFunctionParameters && $varInfo->scopeType === 'param') {
       return;
     }
-    if ($this->allowUnusedParametersBeforeUsed && $varInfo->scopeType === 'param' && $this->areFollowingArgumentsUsed($varInfo, $scopeInfo)) {
+    if ($this->allowUnusedParametersBeforeUsed && $varInfo->scopeType === 'param' && Helpers::areFollowingArgumentsUsed($varInfo, $scopeInfo)) {
       Helpers::debug("variable {$varInfo->name} at end of scope has unused following args");
       return;
     }
@@ -1423,6 +1416,9 @@ class VariableAnalysisSniff implements Sniff {
       $stackPtr = $varInfo->firstDeclared;
     } elseif (!empty($varInfo->firstInitialized)) {
       $stackPtr = $varInfo->firstInitialized;
+    }
+    if ($this->allowUnusedVariablesBeforeRequire && Helpers::isRequireInScopeAfter($phpcsFile, $varInfo, $scopeInfo)) {
+      return;
     }
     if ($stackPtr) {
       Helpers::debug("variable {$varInfo->name} at end of scope looks undefined");
