@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita169d887d00a098714d2aa3f9a2689bd
+class ComposerStaticInit361b8133573751b39b3139c45906f56e
 {
     public static $files = array (
         '92c8763cd6170fce6fcfe7e26b4e8c10' => __DIR__ . '/..' . '/symfony/phpunit-bridge/bootstrap.php',
@@ -780,6 +780,7 @@ class ComposerStaticInita169d887d00a098714d2aa3f9a2689bd
     public static $classMap = array (
         'ArithmeticError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
         'AssertionError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/AssertionError.php',
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'DivisionByZeroError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/DivisionByZeroError.php',
         'Drupal' => __DIR__ . '/../..' . '/html/core/lib/Drupal.php',
         'DrupalFinder\\DrupalFinder' => __DIR__ . '/..' . '/webflo/drupal-finder/src/DrupalFinder.php',
@@ -1352,11 +1353,11 @@ class ComposerStaticInita169d887d00a098714d2aa3f9a2689bd
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita169d887d00a098714d2aa3f9a2689bd::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita169d887d00a098714d2aa3f9a2689bd::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInita169d887d00a098714d2aa3f9a2689bd::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInita169d887d00a098714d2aa3f9a2689bd::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInita169d887d00a098714d2aa3f9a2689bd::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit361b8133573751b39b3139c45906f56e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit361b8133573751b39b3139c45906f56e::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit361b8133573751b39b3139c45906f56e::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit361b8133573751b39b3139c45906f56e::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit361b8133573751b39b3139c45906f56e::$classMap;
 
         }, null, ClassLoader::class);
     }

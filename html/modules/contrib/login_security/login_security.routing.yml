@@ -1,7 +1,0 @@
-login_security.settings:
-  path: admin/config/people/login_security
-  defaults:
-    _form: '\Drupal\login_security\Form\LoginSecurityAdminSettings'
-    _title: 'Login Security'
-  requirements:
-    _permission: 'administer site configuration'
