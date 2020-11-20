@@ -1240,9 +1240,9 @@ function _twig_escape_js_callback($matches)
 
     // Split characters outside the BMP into surrogate pairs
     // https://tools.ietf.org/html/rfc2781.html#section-2.1
-    $u    = $codepoint - 0x10000;
+    $u = $codepoint - 0x10000;
     $high = 0xD800 | ($u >> 10);
-    $low  = 0xDC00 | ($u & 0x3FF);
+    $low = 0xDC00 | ($u & 0x3FF);
 
     return sprintf('\u%04X\u%04X', $high, $low);
 }
@@ -1565,11 +1565,13 @@ function twig_include(Environment $env, $context, $template, $variables = [], $w
         if (!$alreadySandboxed = $sandbox->isSandboxed()) {
             $sandbox->enableSandbox();
         }
-    }
 
-    // if a Template instance is passed, it might have been instantiated outside of a sandbox, check security
-    if ($template instanceof TemplateWrapper || $template instanceof Template) {
-        $template->unwrap()->checkSecurity();
+        foreach ((\is_array($template) ? $template : [$template]) as $name) {
+            // if a Template instance is passed, it might have been instantiated outside of a sandbox, check security
+            if ($name instanceof TemplateWrapper || $name instanceof Template) {
+                $name->unwrap()->checkSecurity();
+            }
+        }
     }
 
     $loaded = null;
