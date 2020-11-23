@@ -35,7 +35,7 @@ before_install:
 
   # update composer
   - composer clear-cache
-  - composer --verbose self-update --$COMPOSER_CHANNEL
+  #- composer --verbose self-update --$COMPOSER_CHANNEL
   - composer --version
 
 install:
