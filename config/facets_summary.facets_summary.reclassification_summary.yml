@@ -34,6 +34,18 @@ facets:
     separator: ', '
     weight: 0
     show_count: false
+  reclassification_nil_en:
+    checked: true
+    label: 'Nothing to Report'
+    separator: ', '
+    weight: 0
+    show_count: false
+  reclassification_nil_fr:
+    checked: true
+    label: 'Rien à signaler'
+    separator: ', '
+    weight: 0
+    show_count: false
 facet_source_id: 'search_api:views_block__pd_core_reclassification__block_1'
 processor_configs:
   reset_facets:

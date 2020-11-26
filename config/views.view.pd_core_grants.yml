@@ -1,6 +1,6 @@
 uuid: 9ee5809b-c12e-4c20-81d7-a2a3bbd2adfa
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - search_api.index.pd_core_grants

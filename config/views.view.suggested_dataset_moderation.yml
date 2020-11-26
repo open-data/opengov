@@ -2553,6 +2553,7 @@ display:
         filter_groups: false
         fields: false
         footer: false
+        header: false
       menu:
         type: tab
         title: 'Unapproved Dataset Suggestions'
@@ -3175,6 +3176,17 @@ display:
           tokenize: false
           content: '<a href="[site:url]/export/unapproved-suggested-dataset.csv" class="button">Download as CSV</a>'
           plugin_id: text_custom
+      header:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          content: 'Displaying @start - @end of @total'
+          plugin_id: result
     cache_metadata:
       max-age: 0
       contexts:
@@ -3203,6 +3215,7 @@ display:
         filter_groups: false
         fields: false
         pager: false
+        header: false
       display_description: ''
       filters:
         type:
@@ -3799,6 +3812,7 @@ display:
         type: none
         options:
           offset: 0
+      header: {  }
     cache_metadata:
       max-age: 0
       contexts:

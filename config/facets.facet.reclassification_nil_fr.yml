@@ -1,28 +1,28 @@
-uuid: c991ef69-5a98-4a9a-ae27-cb8625e7127b
+uuid: 9d075020-b511-4ed6-8287-19658dc0bd4f
 langcode: en
 status: true
 dependencies:
   config:
-    - search_api.index.pd_core_travelq
-    - views.view.pd_core_travelq
+    - search_api.index.pd_core_reclassification
+    - views.view.pd_core_reclassification
   module:
     - search_api
-id: travelq_total_fr
-name: 'PD Travel (Q) - Total FR'
-url_alias: travelq_total_fr
-weight: 1
+id: reclassification_nil_fr
+name: 'PD Reclassification - Rapport nul'
+url_alias: reclassification_nil_fr
+weight: 0
 min_count: 1
 show_only_one_result: false
-field_identifier: total_fr
-facet_source_id: 'search_api:views_block__pd_core_travelq__block_1'
+field_identifier: report_type_fr
+facet_source_id: 'search_api:views_block__pd_core_reclassification__block_1'
 widget:
   type: checkbox
   config:
     show_numbers: true
-    soft_limit: 10
+    soft_limit: 0
     soft_limit_settings:
-      show_less_label: 'Afficher moins'
-      show_more_label: 'Afficher plus'
+      show_less_label: 'Show less'
+      show_more_label: 'Show more'
     show_reset_link: false
     reset_text: 'Show all'
     hide_reset_when_no_selection: false
@@ -38,6 +38,12 @@ processor_configs:
     processor_id: active_widget_order
     weights:
       sort: 20
+    settings:
+      sort: DESC
+  count_widget_order:
+    processor_id: count_widget_order
+    weights:
+      sort: 30
     settings:
       sort: DESC
   display_value_widget_order:

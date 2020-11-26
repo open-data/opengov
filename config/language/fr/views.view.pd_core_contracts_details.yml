@@ -19,13 +19,15 @@ display:
         contract_value_1:
           label: 'Valeur totale de contrat'
         amendment_value:
-          label: 'Valeur originale de contrat'
+          label: 'Valeur de la modification'
         reporting_period:
           label: 'Période de déclaration'
         standing_offer_number:
           label: 'Commande subséquente à une l’offre à commandes ou arrangements en matière d’approvisionnement'
         commodity_code:
           label: 'Code de produit'
+        original_value:
+          label: 'Valeur d''origine du contrat'
       title: 'Contrats gouvernementaux'
       footer:
         area_text_custom:

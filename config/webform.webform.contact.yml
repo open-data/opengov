@@ -1,5 +1,6 @@
+uuid: d553f7a9-bebe-433e-a683-6185a3908d41
 langcode: en
-status: open
+status: closed
 dependencies:
   enforced:
     module:
@@ -7,6 +8,12 @@ dependencies:
       - webform
   module:
     - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
+_core:
+  default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU
 open: null
 close: null
 weight: 0
@@ -17,7 +24,7 @@ id: contact
 title: Contact
 description: '&quot;Contact&quot; webform.'
 category: ''
-elements: "subject:\n  '#title': Subject\n  '#type': textfield\n  '#required': true\n  '#test': 'Testing contact webform from [site:name]'\ncomments_and_feedback:\n  '#type': textarea\n  '#title': 'Comments and Feedback'\n  '#required': true\n  '#counter_type': character\n  '#counter_maximum': 2000\n  '#counter_message': 'character(s) left'\n  '#smart_description': false\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'Your Email'\ntelephone:\n  '#type': tel\n  '#title': Telephone\n  '#pattern': '^\\+?\\d{0,}?(\\s|-|\\.){0,}?\\(?\\d{3}\\)?(\\s|-|\\.){0,}?\\d{3}(\\s|-|\\.){0,}?\\d{4}(\\s|-|\\.){0,}?(ex?t?|extension|x)?(\\s|-|\\.){0,}?\\d{0,}'\nconsent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)\n"
+elements: "subject:\n  '#title': Subject\n  '#type': textfield\n  '#required': true\n  '#test': 'Testing contact webform from [site:name]'\ncomments_and_feedback:\n  '#type': textarea\n  '#title': 'Comments and Feedback'\n  '#required': true\n  '#counter_type': character\n  '#counter_maximum': 2000\n  '#counter_message': 'character(s) left'\n  '#smart_description': false\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'Your Email'\ntelephone:\n  '#type': tel\n  '#title': Telephone\n  '#pattern': '^\\+?\\d{0,}?(\\s|-|\\.){0,}?\\(?\\d{3}\\)?(\\s|-|\\.){0,}?\\d{3}(\\s|-|\\.){0,}?\\d{4}(\\s|-|\\.){0,}?(ex?t?|extension|x)?(\\s|-|\\.){0,}?\\d{0,}'\nconsent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)"
 css: ''
 javascript: ''
 settings:
@@ -30,7 +37,7 @@ settings:
   page_submit_path: ''
   page_confirm_path: ''
   page_admin_theme: false
-  form_title: both
+  form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
   form_open_message: ''
@@ -299,10 +306,3 @@ handlers:
       theme_name: ''
       parameters: {  }
 variants: {  }
-uuid: d553f7a9-bebe-433e-a683-6185a3908d41
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
-_core:
-  default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU

@@ -1,6 +1,6 @@
 uuid: d9a6fa8d-ddfd-44aa-925c-f4df64b9f697
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - search_api.index.pd_core_contracts
