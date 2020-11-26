@@ -10,7 +10,7 @@ dependencies:
 id: sd_organization_en
 name: 'Suggested Dataset: Organization'
 url_alias: sd_organization_en
-weight: -4
+weight: -2
 min_count: 1
 show_only_one_result: false
 field_identifier: field_organization

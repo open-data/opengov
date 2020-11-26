@@ -4,7 +4,9 @@ status: true
 dependencies:
   config:
     - field.field.user.user.field_firstname
+    - field.field.user.user.field_last_password_reset
     - field.field.user.user.field_lastname
+    - field.field.user.user.field_password_expiration
     - field.field.user.user.user_picture
   module:
     - user
@@ -43,6 +45,8 @@ content:
     region: content
 hidden:
   contact: true
+  field_last_password_reset: true
+  field_password_expiration: true
   langcode: true
   language: true
   path: true

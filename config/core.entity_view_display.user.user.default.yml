@@ -4,9 +4,12 @@ status: true
 dependencies:
   config:
     - field.field.user.user.field_firstname
+    - field.field.user.user.field_last_password_reset
     - field.field.user.user.field_lastname
+    - field.field.user.user.field_password_expiration
     - field.field.user.user.user_picture
   module:
+    - datetime
     - user
 _core:
   default_config_hash: V51QPCKkgNREKtSmB9Iu2wmAMEpktVpnzklWaZV8UYo
@@ -23,6 +26,15 @@ content:
     third_party_settings: {  }
     type: string
     region: content
+  field_last_password_reset:
+    type: datetime_default
+    weight: 2
+    region: content
+    label: inline
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
   field_lastname:
     weight: 1
     label: inline
@@ -31,8 +43,18 @@ content:
     third_party_settings: {  }
     type: string
     region: content
+  field_password_expiration:
+    type: boolean
+    weight: 3
+    region: content
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
   member_for:
-    weight: 2
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

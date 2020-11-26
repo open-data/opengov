@@ -231,112 +231,6 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        nothing_to_report_en:
-          id: nothing_to_report_en
-          table: search_api_index_pd_core_reclassification
-          field: nothing_to_report_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        nothing_to_report_fr:
-          id: nothing_to_report_fr
-          table: search_api_index_pd_core_reclassification
-          field: nothing_to_report_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
         old_class_level:
           id: old_class_level
           table: search_api_index_pd_core_reclassification
@@ -1026,6 +920,165 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
+        report_type_en:
+          id: report_type_en
+          table: search_api_index_pd_core_reclassification
+          field: report_type_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        report_type_fr:
+          id: report_type_fr
+          table: search_api_index_pd_core_reclassification
+          field: report_type_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        year:
+          id: year
+          table: search_api_index_pd_core_reclassification
+          field: year
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
         nothing:
           id: nothing
           table: views
@@ -1037,7 +1090,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h2 class=\"h4 mrgn-tp-0\">\r\n{% if nothing_to_report_en %}\r\n<span class=\"hgl\">{{ nothing_to_report_en }}</span>\r\n{% else %}\r\n<a href=\"/search/reclassification/reference/{{ id }}\"><span class=\"hgl\">{{ pos_title_en }}</span></a>\r\n{%endif%}\r\n</h2>\r\n{% if not nothing_to_report_en %}<p>Position # <span class=\"hgl\">{{ pos_number }}</span></p>{%endif%}\r\n<p><small><strong>Organization:</strong> <span class=\"hgl\">{{ org_name_en}}</span>\r\n{% if not nothing_to_report_en %}<br />Ref # <span class=\"hgl\">{{ ref_number }}</span>{%endif%}</small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if not nothing_to_report_en %}<span class=\"h3 mrgn-tp-0\"><span class=\"hgl\">{{ old_class_group_code }}-{{ old_class_level }}</span> <span class=\"glyphicon glyphicon-arrow-right\"></span> <span class=\"hgl\">{{ new_class_group_code }}-{{ new_class_level }}</span></span><br />{%endif%}\r\n<small>{% if nothing_to_report_en %}{{ quarter_en }}, {{ date_year }}{% else %}{{ date_clean }}{% endif %}</small>\r\n</div>\r\n</div>"
+            text: "<div class=\"row\">\r\n{% if report_type_en == \"Nothing to report\" %}\r\n<div class=\"col-sm-8\">\r\n<h2 class=\"h4 mrgn-tp-0\">\r\n  <span class=\"hgl\">{{ report_type_en }}</span>\r\n</h2>\r\n<p><small><strong>Organization:</strong> <span class=\"hgl\">{{ org_name_en}}</span></small>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n  <small>{{ quarter_en }}, {{ date_year }}</small>\r\n</div>\r\n{% else %}\r\n<div class=\"col-sm-8\">\r\n<h2 class=\"h4 mrgn-tp-0\">\r\n  <a href=\"/search/reclassification/reference/{{ id }}\"><span class=\"hgl\">{{ pos_title_en }}</span></a>\r\n</h2>\r\n<p>Position # <span class=\"hgl\">{{ pos_number }}</span></p>\r\n<p><small>\r\n  <strong>Organization:</strong> <span class=\"hgl\">{{ org_name_en}}</span>\r\n  <br />Ref # <span class=\"hgl\">{{ ref_number }}</span>\r\n  </small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n  <h3 class=\"mrgn-tp-0\"><span class=\"hgl\">{{ old_class_group_code }}-{{ old_class_level }}</span> \r\n  <span class=\"glyphicon glyphicon-arrow-right\"></span> \r\n  <span class=\"hgl\">{{ new_class_group_code }}-{{ new_class_level }}</span>\r\n  </h3>\r\n  <small>{{ date_clean }}</small>\r\n</div>\r\n{%endif%}\r\n</div>\r\n"
             make_link: false
             path: ''
             absolute: false

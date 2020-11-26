@@ -8,12 +8,12 @@ dependencies:
   module:
     - search_api
 id: travelq_total_fr
-name: 'PD Travel (Q) - Total FR'
+name: 'PD Travel (Q) - Total'
 url_alias: travelq_total_fr
 weight: 1
 min_count: 1
 show_only_one_result: false
-field_identifier: title_fr
+field_identifier: total_fr
 facet_source_id: 'search_api:views_block__pd_core_travelq__block_1'
 widget:
   type: checkbox

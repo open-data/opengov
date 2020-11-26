@@ -10,7 +10,7 @@ dependencies:
 id: sd_status_en
 name: 'Suggested Dataset: Status'
 url_alias: sd_status_en
-weight: -2
+weight: 0
 min_count: 1
 show_only_one_result: false
 field_identifier: field_sd_status

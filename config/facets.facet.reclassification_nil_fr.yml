@@ -1,28 +1,28 @@
-uuid: b756c741-265f-4f08-aff0-9260bfc16fd6
+uuid: d6e5ee85-ae9a-4442-9a2d-4dd46b757047
 langcode: en
 status: true
 dependencies:
   config:
-    - search_api.index.drupal_content
-    - views.view.suggested_dataset
+    - search_api.index.pd_core_reclassification
+    - views.view.pd_core_reclassification
   module:
     - search_api
-id: sd_subject_fr
-name: 'Suggested Dataset: Sujet'
-url_alias: sd_subject_fr
-weight: 1
+id: reclassification_nil_fr
+name: 'PD Reclassification - Rapport nul'
+url_alias: reclassification_nil_fr
+weight: 0
 min_count: 1
 show_only_one_result: false
-field_identifier: field_dataset_subject
-facet_source_id: 'search_api:views_block__suggested_dataset__block_1'
+field_identifier: report_type_fr
+facet_source_id: 'search_api:views_block__pd_core_reclassification__block_1'
 widget:
   type: checkbox
   config:
     show_numbers: true
-    soft_limit: 10
+    soft_limit: 0
     soft_limit_settings:
-      show_less_label: 'Afficher moins'
-      show_more_label: 'Afficher plus'
+      show_less_label: 'Show less'
+      show_more_label: 'Show more'
     show_reset_link: false
     reset_text: 'Show all'
     hide_reset_when_no_selection: false
@@ -40,6 +40,12 @@ processor_configs:
       sort: 20
     settings:
       sort: DESC
+  count_widget_order:
+    processor_id: count_widget_order
+    weights:
+      sort: 30
+    settings:
+      sort: DESC
   display_value_widget_order:
     processor_id: display_value_widget_order
     weights:
@@ -50,11 +56,6 @@ processor_configs:
     processor_id: hide_non_narrowing_result_processor
     weights:
       build: 40
-    settings: {  }
-  list_item:
-    processor_id: list_item
-    weights:
-      build: 5
     settings: {  }
   url_processor_handler:
     processor_id: url_processor_handler

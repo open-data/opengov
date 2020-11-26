@@ -11,7 +11,6 @@ dependencies:
     - field.storage.node.body
     - field.storage.node.field_organization
     - field.storage.node.field_sd_status
-    - field.storage.node.field_dataset_subject
     - field.storage.node.field_vote_up_down
     - search_api.server.drupal_content
 third_party_settings:
@@ -65,14 +64,6 @@ field_settings:
     dependencies:
       module:
         - node
-  field_dataset_subject:
-    label: Subject
-    datasource_id: 'entity:node'
-    property_path: field_dataset_subject
-    type: string
-    dependencies:
-      config:
-        - field.storage.node.field_dataset_subject
   field_organization:
     label: Organization
     datasource_id: 'entity:node'
@@ -177,7 +168,6 @@ processor_settings:
   html_filter:
     all_fields: true
     fields:
-      - field_dataset_subject
       - field_organization
       - field_sd_status
       - moderation_state

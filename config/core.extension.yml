@@ -1,5 +1,4 @@
 module:
-  action: 0
   admin_toolbar: 0
   admin_toolbar_links_access_filter: 0
   admin_toolbar_tools: 0
@@ -8,7 +7,6 @@ module:
   alter_field: 0
   alter_view: 0
   autologout: 0
-  ban: 0
   block: 0
   block_content: 0
   bootstrap_layouts: 0
@@ -46,18 +44,23 @@ module:
   map: 0
   media: 0
   media_library: 0
-  memcache: 0
   menu_breadcrumb: 0
   menu_ui: 0
   metatag: 0
   metatag_dc: 0
-  metatag_twitter_cards: 0
   node: 0
   og: 0
   og_ext_cron: 0
   og_ext_webform: 0
   options: 0
   page_cache: 0
+  password_policy: 0
+  password_policy_character_types: 0
+  password_policy_characters: 0
+  password_policy_consecutive: 0
+  password_policy_history: 0
+  password_policy_length: 0
+  password_policy_username: 0
   path: 0
   path_alias: 0
   quickedit: 0
@@ -69,6 +72,7 @@ module:
   search_api_solr: 0
   serialization: 0
   simple_sitemap: 0
+  syslog: 0
   system: 0
   taxonomy: 0
   text: 0
@@ -80,7 +84,6 @@ module:
   views_ui: 0
   voting_webform: 0
   webform: 0
-  webform_resend: 0
   webform_ui: 0
   workflows: 0
   menu_link_content: 1

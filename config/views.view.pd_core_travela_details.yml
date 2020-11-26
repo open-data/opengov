@@ -2852,7 +2852,7 @@ display:
           plugin_id: search_api
       filters: {  }
       sorts: {  }
-      title: 'Travel and Hospitality Annual'
+      title: ''
       header: {  }
       footer:
         area_text_custom:

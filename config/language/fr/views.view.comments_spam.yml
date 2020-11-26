@@ -23,7 +23,7 @@ display:
           label: Title
           separator: ', '
         comment_body:
-          label: Comment
+          label: Commentaire
           separator: ', '
         name:
           label: Auteur
