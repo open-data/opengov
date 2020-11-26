@@ -3538,17 +3538,17 @@
     },
     {
         "name": "drupal/core",
-        "version": "8.8.11",
-        "version_normalized": "8.8.11.0",
+        "version": "8.8.12",
+        "version_normalized": "8.8.12.0",
         "source": {
             "type": "git",
             "url": "https://github.com/drupal/core.git",
-            "reference": "049a282977f56cf58aa2fb70bb9be9ca6c87d250"
+            "reference": "9cbfd3b0e955bc34649bdc471b9a702650887f73"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/drupal/core/zipball/049a282977f56cf58aa2fb70bb9be9ca6c87d250",
-            "reference": "049a282977f56cf58aa2fb70bb9be9ca6c87d250",
+            "url": "https://api.github.com/repos/drupal/core/zipball/9cbfd3b0e955bc34649bdc471b9a702650887f73",
+            "reference": "9cbfd3b0e955bc34649bdc471b9a702650887f73",
             "shasum": ""
         },
         "require": {
@@ -3573,7 +3573,7 @@
             "ext-xml": "*",
             "guzzlehttp/guzzle": "^6.3",
             "masterminds/html5": "^2.1",
-            "pear/archive_tar": "^1.4.9",
+            "pear/archive_tar": "^1.4.11",
             "php": ">=7.0.8",
             "stack/builder": "^1.0",
             "symfony-cmf/routing": "^1.4",
@@ -3714,7 +3714,7 @@
             "drupal/workflows": "self.version",
             "drupal/workspaces": "self.version"
         },
-        "time": "2020-11-17T22:06:51+00:00",
+        "time": "2020-11-26T02:06:22+00:00",
         "type": "drupal-core",
         "extra": {
             "drupal-scaffold": {
@@ -3778,8 +3778,8 @@
     },
     {
         "name": "drupal/core-dev",
-        "version": "8.9.9",
-        "version_normalized": "8.9.9.0",
+        "version": "8.9.10",
+        "version_normalized": "8.9.10.0",
         "source": {
             "type": "git",
             "url": "https://github.com/drupal/core-dev.git",
@@ -6750,12 +6750,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/open-data/og.git",
-            "reference": "12c73b258749b30df7282324136f4a2b1f947ab7"
+            "reference": "e4ce6fc87b0b004a92d8c2416648c857650fcfbb"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/open-data/og/zipball/12c73b258749b30df7282324136f4a2b1f947ab7",
-            "reference": "12c73b258749b30df7282324136f4a2b1f947ab7",
+            "url": "https://api.github.com/repos/open-data/og/zipball/e4ce6fc87b0b004a92d8c2416648c857650fcfbb",
+            "reference": "e4ce6fc87b0b004a92d8c2416648c857650fcfbb",
             "shasum": ""
         },
         "require": {
@@ -6767,7 +6767,7 @@
             "drupal/bootstrap_layouts": "5.1.0",
             "drupal/ckeditor_codemirror": "2.2.0",
             "drupal/console": "1.9.4",
-            "drupal/core": "8.8.11",
+            "drupal/core": "8.8.12",
             "drupal/csv_serialization": "1.4.0",
             "drupal/facets": "1.4.0",
             "drupal/fontawesome": "2.15.0",
@@ -6805,7 +6805,7 @@
         "require-dev": {
             "drupal/core-dev": "^8.8"
         },
-        "time": "2020-11-20T19:26:03+00:00",
+        "time": "2020-11-26T18:19:40+00:00",
         "type": "drupal-profile",
         "extra": {
             "enable-patching": true,
