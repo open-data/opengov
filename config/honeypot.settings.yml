@@ -4,10 +4,10 @@ unprotected_forms:
   - search_block_form
   - views_exposed_form
   - honeypot_settings_form
-protect_all_forms: true
+protect_all_forms: false
 log: true
 element_name: details
-time_limit: 10
+time_limit: 5
 expire: 300
 form_settings:
   user_register_form: true

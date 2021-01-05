@@ -87,6 +87,7 @@ custom_list:
   - 'https://tinyurl.com/y5aohrne'
   - 'https://tinyurl.com/yycsxyth'
   - 'https://tinyurl.com/'
+  - 'https://is.gd/'
 include_default_list: '1'
 webform_list:
   - contact
