@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for webform submission views replace element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementSubmissionViewsReplaceTest extends WebformElementBrowserTestBase {
 
@@ -38,7 +38,7 @@ class WebformElementSubmissionViewsReplaceTest extends WebformElementBrowserTest
     $this->assertNoRaw('<fieldset data-drupal-selector="edit-webform-submission-views-replace-node-routes" id="edit-webform-submission-views-replace-node-routes--wrapper" class="fieldgroup form-composite js-form-item form-item js-form-wrapper form-wrapper">');
 
     // Check processing clears hidden webform_submission_views_replace.
-    $this->drupalPostForm('/webform/test_element_submission_views_r', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views_r', [], 'Submit');
     $this->assertRaw("webform_submission_views_replace_global:
   global_routes:
     - entity.webform_submission.collection
@@ -64,7 +64,7 @@ webform_submission_views_replace: {  }");
     $this->assertRaw('<fieldset data-drupal-selector="edit-webform-submission-views-replace-node-routes" id="edit-webform-submission-views-replace-node-routes--wrapper" class="fieldgroup form-composite js-form-item form-item js-form-wrapper form-wrapper">');
 
     // Check processing with webform replace element is visible.
-    $this->drupalPostForm('/webform/test_element_submission_views_r', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views_r', [], 'Submit');
     $this->assertRaw("webform_submission_views_replace_global:
   global_routes:
     - entity.webform_submission.collection

@@ -14,14 +14,14 @@ interface WebformEntityReferenceManagerInterface {
   /****************************************************************************/
 
   /**
-   * Is the current request a webform croute where the user can specific a webform.
+   * Is the current request a webform route where the user can specify a webform.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   A fieldable content entity.
    *
    * @return bool
-   *   TRUE if the current request a webform croute where the user can
-   *   specific a webform.
+   *   TRUE if the current request a webform route where the user can
+   *   specify a webform.
    */
   public function isUserWebformRoute(EntityInterface $entity);
 

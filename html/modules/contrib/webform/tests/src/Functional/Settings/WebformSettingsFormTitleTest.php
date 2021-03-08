@@ -10,7 +10,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for webform form title.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsFormTitleTest extends WebformBrowserTestBase {
 

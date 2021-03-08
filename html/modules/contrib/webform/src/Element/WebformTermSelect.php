@@ -23,6 +23,7 @@ class WebformTermSelect extends Select {
       '#tree_delimiter' => '-',
       '#breadcrumb' => FALSE,
       '#breadcrumb_delimiter' => ' › ',
+      '#depth' => NULL,
     ] + parent::getInfo();
   }
 

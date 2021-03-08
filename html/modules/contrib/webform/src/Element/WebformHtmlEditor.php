@@ -103,6 +103,13 @@ class WebformHtmlEditor extends FormElement {
         '#type' => 'text_format',
         '#format' => $format,
         '#allowed_formats' => [$format],
+        // Do not allow the text format value to be cleared when the text format
+        // is hidden via #states. We must use a wrapper <div> because
+        // The TextFormat element does not support #attributes.
+        // @see \Drupal\webform\Plugin\WebformElement\TextFormat::preRenderFixTextFormatStates
+        // @see \Drupal\filter\Element\TextFormat
+        '#prefix' => '<div data-webform-states-no-clear>',
+        '#suffix' => '</div>',
       ];
       WebformElementHelper::fixStatesWrapper($element);
       return $element;

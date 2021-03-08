@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform submission form previous.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsPreviousTest extends WebformBrowserTestBase {
 

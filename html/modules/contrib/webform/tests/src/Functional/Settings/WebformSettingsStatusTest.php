@@ -8,7 +8,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for webform default status.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsStatusTest extends WebformBrowserTestBase {
 

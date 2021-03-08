@@ -262,8 +262,8 @@ class WebformOptions extends FormElement {
   public static function convertOptionsToValues(array $options = [], $options_description = FALSE) {
     $values = [];
     foreach ($options as $value => $text) {
-      if ($options_description && strpos($text, WebformOptionsHelper::DESCRIPTION_DELIMITER) !== FALSE) {
-        list($text, $description) = explode(WebformOptionsHelper::DESCRIPTION_DELIMITER, $text);
+      if ($options_description && WebformOptionsHelper::hasOptionDescription($text)) {
+        list($text, $description) = WebformOptionsHelper::splitOption($text);
         $values[$value] = ['text' => $text, 'description' => $description];
       }
       else {

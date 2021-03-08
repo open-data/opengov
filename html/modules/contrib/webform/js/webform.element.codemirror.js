@@ -28,19 +28,19 @@
         var $input = $(this);
 
         // Open all closed details, so that editor height is correctly calculated.
-        var $details = $(this).parents('details:not([open])');
+        var $details = $input.parents('details:not([open])');
         $details.attr('open', 'open');
 
         // #59 HTML5 required attribute breaks hack for webform submission.
         // https://github.com/marijnh/CodeMirror-old/issues/59
-        $(this).removeAttr('required');
+        $input.removeAttr('required');
 
         var options = $.extend({
-          mode: $(this).attr('data-webform-codemirror-mode'),
+          mode: $input.attr('data-webform-codemirror-mode'),
           lineNumbers: true,
-          lineWrapping: ($(this).attr('wrap') === 'off') ? false : true,
+          lineWrapping: ($input.attr('wrap') !== 'off'),
           viewportMargin: Infinity,
-          readOnly: ($(this).prop('readonly') || $(this).prop('disabled')) ? true : false,
+          readOnly: !!($input.prop('readonly') || $input.prop('disabled')),
           extraKeys: {
             // Setting for using spaces instead of tabs - https://github.com/codemirror/CodeMirror/issues/988
             Tab: function (cm) {
@@ -59,7 +59,7 @@
               $(textarea).hide().removeClass('visually-hidden');
 
               // Tabindex + 2 accounts for the CodeMirror's iframe.
-              $tabbable.eq(tabindex + 2).focus();
+              $tabbable.eq(tabindex + 2).trigger('focus');
             }
 
           }
@@ -109,7 +109,7 @@
           editor.setOption('readOnly', $input.is(':disabled'));
         });
 
-        // Delay refreshing CodeMirror for 10 millisecond while the dialog is
+        // Delay refreshing CodeMirror for 500 millisecond while the dialog is
         // still being rendered.
         // @see http://stackoverflow.com/questions/8349571/codemirror-editor-is-not-loading-content-until-clicked
         setTimeout(function () {
@@ -129,7 +129,7 @@
           // Hide tab panel and close details.
           $tabPanel.hide();
           $details.removeAttr('open');
-        }, 10);
+        }, 500);
       });
 
       // Webform CodeMirror syntax coloring.

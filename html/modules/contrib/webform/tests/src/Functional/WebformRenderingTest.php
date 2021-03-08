@@ -8,7 +8,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform token submission value.
  *
- * @group Webform
+ * @group webform
  */
 class WebformRenderingTest extends WebformBrowserTestBase {
 
@@ -31,7 +31,7 @@ class WebformRenderingTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create filters.
@@ -50,7 +50,7 @@ class WebformRenderingTest extends WebformBrowserTestBase {
     // Preview.
     /**************************************************************************/
 
-    $this->drupalPostForm('/webform/test_rendering', [], t('Preview'));
+    $this->drupalPostForm('/webform/test_rendering', [], 'Preview');
 
     // Check preview submission_label.
     $this->assertRaw('submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)');
@@ -84,21 +84,21 @@ class WebformRenderingTest extends WebformBrowserTestBase {
     // Check HTML email.
     $this->assertEqual($html_email['subject'], 'submission label (&>');
     $this->assertEqual($html_email['params']['subject'], 'submission <em>label</em> (&><#)');
-    $this->assertContains('<b>submission_label</b><br />submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)<br /><br />', $html_email['params']['body']);
-    $this->assertContains('<b>textfield_plain_text</b><br />{prefix}{default_value}{suffix}<br /><br />', $html_email['params']['body']);
-    $this->assertContains('<b><em>textfield_markup</em></b><br /><em>{prefix}</em>{default_value}<em>{suffix}</em><br /><br />', $html_email['params']['body']);
-    $this->assertContains('<b>textfield_special_characters (&amp;&gt;&lt;#)</b><br />(&amp;&gt;&lt;#){default_value}(&amp;&gt;&lt;#)<br /><br />', $html_email['params']['body']);
-    $this->assertContains('<b>text_format_basic_html</b><br /><p><em>{default_value}</em></p><br /><br />', $html_email['params']['body']);
+    $this->assertStringContainsString('<b>submission_label</b><br />submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)<br /><br />', $html_email['params']['body']);
+    $this->assertStringContainsString('<b>textfield_plain_text</b><br />{prefix}{default_value}{suffix}<br /><br />', $html_email['params']['body']);
+    $this->assertStringContainsString('<b><em>textfield_markup</em></b><br /><em>{prefix}</em>{default_value}<em>{suffix}</em><br /><br />', $html_email['params']['body']);
+    $this->assertStringContainsString('<b>textfield_special_characters (&amp;&gt;&lt;#)</b><br />(&amp;&gt;&lt;#){default_value}(&amp;&gt;&lt;#)<br /><br />', $html_email['params']['body']);
+    $this->assertStringContainsString('<b>text_format_basic_html</b><br /><p><em>{default_value}</em></p><br /><br />', $html_email['params']['body']);
 
     // Check plain text email.
     $this->assertEqual($text_email['subject'], 'submission label (&>');
     $this->assertEqual($text_email['params']['subject'], 'submission <em>label</em> (&><#)');
-    $this->assertContains('submission_label: submission <em>label</em> (&><#)', $text_email['params']['body']);
-    $this->assertContains('textfield_plain_text: {prefix}{default_value}{suffix}', $text_email['params']['body']);
-    $this->assertContains('textfield_markup: {prefix}{default_value}{suffix}', $text_email['params']['body']);
-    $this->assertContains('textfield_special_characters (&>: (&>{default_value}(&>', $text_email['params']['body']);
-    $this->assertContains('text_format_basic_html:', $text_email['params']['body']);
-    $this->assertContains('/{default_value}/', $text_email['params']['body']);
+    $this->assertStringContainsString('submission_label: submission <em>label</em> (&><#)', $text_email['params']['body']);
+    $this->assertStringContainsString('textfield_plain_text: {prefix}{default_value}{suffix}', $text_email['params']['body']);
+    $this->assertStringContainsString('textfield_markup: {prefix}{default_value}{suffix}', $text_email['params']['body']);
+    $this->assertStringContainsString('textfield_special_characters (&>: (&>{default_value}(&>', $text_email['params']['body']);
+    $this->assertStringContainsString('text_format_basic_html:', $text_email['params']['body']);
+    $this->assertStringContainsString('/{default_value}/', $text_email['params']['body']);
 
     /**************************************************************************/
     // Submission.
@@ -108,7 +108,7 @@ class WebformRenderingTest extends WebformBrowserTestBase {
     $this->drupalGet("admin/structure/webform/manage/test_rendering/submission/$sid");
 
     // Check submission label token replacements.
-    $this->assertRaw('<h1 class="page-title">submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)</h1>');
+    $this->assertRaw('<h1>submission &lt;em&gt;label&lt;/em&gt; (&amp;&gt;&lt;#)</h1>');
   }
 
 }

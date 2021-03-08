@@ -3,6 +3,7 @@
 namespace Drupal\webform_ui\Form;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -31,7 +32,7 @@ class WebformUiElementDuplicateForm extends WebformUiElementFormBase {
 
     $element_initialized = $webform->getElement($key);
 
-    $t_args = ['@title' => $element_initialized['#admin_title'] ?: $element_initialized['#title']];
+    $t_args = ['@title' => WebformElementHelper::getAdminTitle($element_initialized)];
     $form['#title'] = $this->t('Duplicate @title element', $t_args);
 
     $this->action = $this->t('created');

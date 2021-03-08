@@ -10,7 +10,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for webform submission log.
  *
- * @group WebformSubmissionLog
+ * @group webform_submission_log
  */
 class WebformSubmissionLogTest extends WebformBrowserTestBase {
 
@@ -60,7 +60,7 @@ class WebformSubmissionLogTest extends WebformBrowserTestBase {
     $this->assertNull($log->entity_id);
 
     // Check submission draft created.
-    $sid_2 = $this->postSubmission($webform, ['value' => 'Test'], t('Save Draft'));
+    $sid_2 = $this->postSubmission($webform, ['value' => 'Test'], 'Save Draft');
     $log = $this->getLastSubmissionLog();
     $this->assertEqual($log->lid, 2);
     $this->assertEqual($log->sid, 2);
@@ -74,7 +74,7 @@ class WebformSubmissionLogTest extends WebformBrowserTestBase {
     $this->assertNull($log->entity_id);
 
     // Check submission draft updated.
-    $this->postSubmission($webform, ['value' => 'Test'], t('Save Draft'));
+    $this->postSubmission($webform, ['value' => 'Test'], 'Save Draft');
     $log = $this->getLastSubmissionLog();
     $this->assertEqual($log->lid, 3);
     $this->assertEqual($log->sid, 2);
@@ -125,7 +125,7 @@ class WebformSubmissionLogTest extends WebformBrowserTestBase {
     $this->assertEqual($log->variables, ['@title' => 'Test: Submission: Logging: Submission #1', '@user' => $admin_user->label()]);
 
     // Check submission updated.
-    $this->drupalPostForm("admin/structure/webform/manage/test_submission_log/submission/$sid_2/edit", [], t('Save'));
+    $this->drupalPostForm("admin/structure/webform/manage/test_submission_log/submission/$sid_2/edit", [], 'Save');
     $log = $this->getLastSubmissionLog();
     $this->assertEqual($log->lid, 7);
     $this->assertEqual($log->sid, 2);
@@ -140,8 +140,8 @@ class WebformSubmissionLogTest extends WebformBrowserTestBase {
     $this->assertNull($log->entity_id);
 
     // Check submission deleted removes all log entries for this sid.
-    $this->drupalPostForm("admin/structure/webform/manage/test_submission_log/submission/$sid_1/delete", [], t('Delete'));
-    $this->drupalPostForm("admin/structure/webform/manage/test_submission_log/submission/$sid_2/delete", [], t('Delete'));
+    $this->drupalPostForm("admin/structure/webform/manage/test_submission_log/submission/$sid_1/delete", [], 'Delete');
+    $this->drupalPostForm("admin/structure/webform/manage/test_submission_log/submission/$sid_2/delete", [], 'Delete');
     $log = $this->getLastSubmissionLog();
     $this->assertFalse($log);
 

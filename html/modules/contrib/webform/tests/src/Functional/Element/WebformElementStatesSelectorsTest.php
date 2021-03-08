@@ -9,7 +9,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for webform element #states selectors.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementStatesSelectorsTest extends WebformElementBrowserTestBase {
 
@@ -30,7 +30,7 @@ class WebformElementStatesSelectorsTest extends WebformElementBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create 'tags' vocabulary.

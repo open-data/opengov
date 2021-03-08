@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for table select and sort elements.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementTableSelectSortTest extends WebformElementBrowserTestBase {
 
@@ -42,7 +42,7 @@ class WebformElementTableSelectSortTest extends WebformElementBrowserTestBase {
       'webform_tableselect_sort_custom[four][checkbox]' => TRUE,
       'webform_tableselect_sort_custom[five][checkbox]' => TRUE,
     ];
-    $this->drupalPostForm('/webform/test_element_table_select_sort', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_table_select_sort', $edit, 'Submit');
     $this->assertRaw("webform_tableselect_sort_custom:
   - five
   - four
@@ -62,7 +62,7 @@ class WebformElementTableSelectSortTest extends WebformElementBrowserTestBase {
       'webform_table_sort_custom[four][weight]' => '1',
       'webform_table_sort_custom[five][weight]' => '0',
     ];
-    $this->drupalPostForm('/webform/test_element_table_select_sort', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_table_select_sort', $edit, 'Submit');
     $this->assertRaw("webform_table_sort_custom:
   - five
   - four

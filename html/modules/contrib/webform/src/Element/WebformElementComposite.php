@@ -210,7 +210,7 @@ class WebformElementComposite extends FormElement {
           '#title' => t('Labels'),
           '#help' => '<b>' . t('Title') . ':</b> ' . t('This is used as a descriptive label when displaying this webform element.') .
             '<hr/><b>' . t('Placeholder') . ':</b> ' . t('The placeholder will be shown in the element until the user starts entering a value.') .
-            '<hr/><b>' . t('Description') . ':</b> ' . t('A short description of the element used as help for the user when he/she uses the webform.') .
+            '<hr/><b>' . t('Description') . ':</b> ' . t('A short description of the element used as help for the user when they use the webform.') .
             '<hr/><b>' . t('Help text') . ':</b> ' . t('A tooltip displayed after the title.'),
           'title' => [
             '#type' => 'textfield',
@@ -235,7 +235,7 @@ class WebformElementComposite extends FormElement {
           'description' => [
             '#type' => 'textarea',
             '#title' => t('Description'),
-            '#description' => t('A short description of the element used as help for the user when he/she uses the webform.'),
+            '#description' => t('A short description of the element used as help for the user when they use the webform.'),
             '#description_display' => 'invisible',
             '#title_display' => 'invisible',
             '#placeholder' => t('Enter description…'),

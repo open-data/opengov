@@ -3,6 +3,7 @@
 namespace Drupal\Tests\webform\Functional\States;
 
 use Drupal\Component\Utility\Crypt;
+use Drupal\Tests\TestFileCreationTrait;
 use Drupal\webform\Element\WebformOtherBase;
 use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
@@ -10,9 +11,11 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform submission conditions (#states) validator.
  *
- * @group Webform
+ * @group webform
  */
 class WebformStatesServerTest extends WebformBrowserTestBase {
+
+  use TestFileCreationTrait;
 
   /**
    * Webforms to load.
@@ -23,6 +26,8 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
     'test_states_crosspage',
     'test_states_server_custom',
     'test_states_server_comp',
+    'test_states_server_file',
+    'test_states_server_file',
     'test_states_server_likert',
     'test_states_server_nested',
     'test_states_server_multiple',
@@ -35,12 +40,12 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'webform'];
+  public static $modules = ['filter', 'file', 'webform'];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create filters.
@@ -356,26 +361,51 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
       'trigger_pattern' => 'abc',
       'trigger_not_pattern' => 'ABC',
       'trigger_less' => 1,
+      'trigger_less_equal' => 1,
       'trigger_greater' => 11,
+      'trigger_greater_equal' => 11,
     ];
     $this->postSubmission($webform, $edit);
     $this->assertNoRaw('New submission added to Test: Form API #states custom pattern, less, greater, and between condition validation.');
     $this->assertRaw('dependent_pattern field is required.');
     $this->assertRaw('dependent_not_pattern field is required.');
     $this->assertRaw('dependent_less field is required.');
+    $this->assertRaw('dependent_less_equal field is required.');
     $this->assertRaw('dependent_greater field is required.');
+    $this->assertRaw('dependent_greater_equal field is required.');
+
+    $edit = [
+      'trigger_less' => 10,
+      'trigger_less_equal' => 10,
+      'trigger_greater' => 10,
+      'trigger_greater_equal' => 10,
+    ];
+    $this->postSubmission($webform, $edit);
+    $this->assertNoRaw('dependent_less field is required.');
+    $this->assertRaw('dependent_less_equal field is required.');
+    $this->assertNoRaw('dependent_greater field is required.');
+    $this->assertRaw('dependent_greater_equal field is required.');
+
+    $edit = [
+      'trigger_between' => 11,
+    ];
+    $this->postSubmission($webform, $edit);
+    $this->assertRaw('dependent_between field is required.');
+    $this->assertNoRaw('dependent_not_between field is required.');
 
     $edit = [
       'trigger_between' => 9,
     ];
     $this->postSubmission($webform, $edit);
     $this->assertNoRaw('dependent_between field is required.');
+    $this->assertRaw('dependent_not_between field is required.');
 
     $edit = [
       'trigger_between' => 21,
     ];
     $this->postSubmission($webform, $edit);
     $this->assertNoRaw('dependent_between field is required.');
+    $this->assertRaw('dependent_not_between field is required.');
 
     /**************************************************************************/
     // multiple element.
@@ -421,6 +451,20 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
     $this->assertRaw('webform_name_nested_first field is required.');
     $this->assertRaw('webform_name_nested_last field is required.');
     $this->assertRaw(' <input data-drupal-selector="edit-webform-name-nested-last" type="text" id="edit-webform-name-nested-last" name="webform_name_nested[last]" value="" size="60" maxlength="255" class="form-text error" aria-invalid="true" data-drupal-states="{&quot;required&quot;:{&quot;.webform-submission-test-states-server-comp-add-form :input[name=\u0022webform_name_nested_trigger\u0022]&quot;:{&quot;checked&quot;:true}}}" />');
+
+    /**************************************************************************/
+    // file_trigger.
+    /**************************************************************************/
+
+    $webform = Webform::load('test_states_server_file');
+
+    // Check required error.
+    $files = $this->getTestFiles('text');;
+    $edit = [
+      'files[trigger_file]' => \Drupal::service('file_system')->realpath($files[0]->uri),
+    ];
+    $this->postSubmission($webform, $edit);
+    $this->assertRaw('textfield_dependent_required field is required.');
 
     /**************************************************************************/
     // likert element.
@@ -496,17 +540,17 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
 
     // Check a and b sets target required page 1.
     $edit = ['a' => TRUE, 'b' => TRUE, 'c' => FALSE];
-    $this->drupalPostForm('/webform/test_states_server_nested', $edit, t('Next Page >'));
+    $this->drupalPostForm('/webform/test_states_server_nested', $edit, 'Next >');
     $this->assertRaw('page_1_target: [a and b] or c = required field is required.');
 
     // Check c sets target required page 1.
     $edit = ['a' => FALSE, 'b' => TRUE, 'c' => TRUE];
-    $this->drupalPostForm('/webform/test_states_server_nested', $edit, t('Next Page >'));
+    $this->drupalPostForm('/webform/test_states_server_nested', $edit, 'Next >');
     $this->assertRaw('page_1_target: [a and b] or c = required field is required.');
 
     // Check none sets target not required page 1.
     $edit = ['a' => FALSE, 'b' => FALSE, 'c' => FALSE];
-    $this->drupalPostForm('/webform/test_states_server_nested', $edit, t('Next Page >'));
+    $this->drupalPostForm('/webform/test_states_server_nested', $edit, 'Next >');
     $this->assertNoRaw('page_1_target: [a and b] or c = required field is required.');
 
     // Check none sets target not required page 2.
@@ -515,7 +559,7 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
 
     // Check a and b sets target required page 2.
     $edit = ['a' => TRUE, 'b' => TRUE, 'c' => FALSE, 'page_1_target' => '{value}'];
-    $this->drupalPostForm('/webform/test_states_server_nested', $edit, t('Next Page >'));
+    $this->drupalPostForm('/webform/test_states_server_nested', $edit, 'Next >');
     $this->assertNoRaw('<input data-drupal-selector="edit-page-2-target" type="text" id="edit-page-2-target" name="page_2_target" value="" size="60" maxlength="255" class="form-text" />');
     $this->assertRaw('<label for="edit-page-2-target" class="js-form-required form-required">page_2_target: [a and b] or c = required</label>');
     $this->assertRaw('<input data-drupal-selector="edit-page-2-target" type="text" id="edit-page-2-target" name="page_2_target" value="" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
@@ -535,7 +579,7 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
     $this->assertFieldByName($trigger_2_name);
 
     // Check cross page states attribute and input on page 2.
-    $this->postSubmission($webform, ['trigger_1' => TRUE], t('Next Page >'));
+    $this->postSubmission($webform, ['trigger_1' => TRUE], 'Next >');
     $this->assertRaw(':input[name=\u0022' . $trigger_1_name . '\u0022]');
     $this->assertFieldByName($trigger_1_name);
   }

@@ -27,7 +27,7 @@
         var $telephone = $(this);
 
         // Add error message container.
-        var $error = $('<div class="form-item--error-message">' + Drupal.t('Invalid phone number') + '</div>').hide();
+        var $error = $('<strong class="error form-item--error-message">' + Drupal.t('Invalid phone number') + '</strong>').hide();
         $telephone.closest('.js-form-item').append($error);
 
         var options = {
@@ -54,17 +54,33 @@
           $error.hide();
         };
 
-        $telephone.blur(function () {
-          reset();
+        var validate = function () {
           if ($.trim($telephone.val())) {
             if (!$telephone.intlTelInput('isValidNumber')) {
               $telephone.addClass('error');
-              $error.show();
+              var message = Drupal.t('The phone number is not valid. (e.g. @example)', {'@example': $telephone.attr('placeholder')});
+              $error.html(message).show();
+              return false;
             }
           }
+          return true;
+        };
+
+        $telephone.on('blur', function () {
+          reset();
+          validate();
         });
 
         $telephone.on('keyup change', reset);
+
+        // Check for a valid phone number on submit.
+        var $form = $(this.form);
+        $form.on('submit', function (event) {
+          if (!validate()) {
+            $telephone.focus();
+            event.preventDefault();
+          }
+        });
       });
     }
   };

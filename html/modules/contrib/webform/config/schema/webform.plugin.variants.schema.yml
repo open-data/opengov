@@ -10,4 +10,4 @@ webform.variant.override:
   mapping:
     debug:
       label: Debug
-      type: string
+      type: boolean

@@ -13,7 +13,7 @@
     window.onpopstate = function (event) {
       $('#edit-wizard-prev, #edit-preview-prev, .webform-button--previous')
         .slice(0, 1)
-        .click();
+        .trigger('click');
     };
   }
 

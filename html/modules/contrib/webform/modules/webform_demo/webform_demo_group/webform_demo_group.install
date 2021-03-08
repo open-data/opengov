@@ -8,8 +8,10 @@
  * drush php-eval "module_load_include('install', 'webform_demo_group'); webform_demo_group_uninstall()";
  */
 
+use Drupal\Core\Language\Language;
 use Drupal\group\Entity\Group;
 use Drupal\node\Entity\Node;
+use Drupal\path_alias\Entity\PathAlias;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 use Drupal\webform\WebformInterface;
@@ -22,8 +24,6 @@ use Drupal\webform\Entity\WebformSubmission;
 function webform_demo_group_install() {
   /** @var \Drupal\webform\WebformSubmissionGenerateInterface $submission_generate */
   $submission_generate = \Drupal::service('webform_submission.generate');
-  /** @var \Drupal\Core\Path\AliasStorageInterface $path_alias_storage */
-  $path_alias_storage = \Drupal::service('path.alias_storage');
 
   $demo_base_path = '/webform/group';
 
@@ -101,9 +101,11 @@ function webform_demo_group_install() {
       $group->save();
 
       // Create URL alias.
-      $source = $group->toUrl()->toString();
-      $alias = "$demo_base_path/$letter/$number";
-      $path_alias_storage->save($source, $alias);
+      PathAlias::create([
+        'path' => $group->toUrl()->toString(),
+        'alias' => "$demo_base_path/$letter/$number",
+        'langcode' => Language::LANGCODE_NOT_SPECIFIED,
+      ])->save();
 
       // Create webform node.
       /** @var \Drupal\node\NodeInterface $webform_node */
@@ -125,9 +127,11 @@ function webform_demo_group_install() {
       $group->addContent($webform_node, 'group_node:webform');
 
       // Create URL alias.
-      $source = $webform_node->toUrl()->toString();
-      $alias = "$demo_base_path/$letter/$number/contact";
-      $path_alias_storage->save($source, $alias);
+      PathAlias::create([
+        'path' => $webform_node->toUrl()->toString(),
+        'alias' => "$demo_base_path/$letter/$number/contact",
+        'langcode' => Language::LANGCODE_NOT_SPECIFIED,
+      ])->save();
 
       foreach ($role_types as $role_type => $role_settings) {
         // Create users with roles and add them as members to the group.
@@ -206,8 +210,7 @@ function webform_demo_group_uninstall() {
   }
 
   // Delete URL aliases.
-  // @todo Remove once Drupal 8.8.x is only supported.
-  $table_name = (floatval(\Drupal::VERSION) >= 8.8) ? 'path_alias' : 'url_alias';
+  $table_name = 'path_alias';
   $params = [':alias' => '/webform/group/%'];
   \Drupal::database()->query('DELETE FROM {' . $table_name . '} WHERE alias LIKE :alias', $params);
 }

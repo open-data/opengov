@@ -3,7 +3,7 @@
  * JavaScript behaviors for Ajax.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, drupalSettings) {
 
   'use strict';
 
@@ -12,6 +12,10 @@
   // Allow scrollTopOffset to be custom defined or based on whether there is a
   // floating toolbar.
   Drupal.webform.ajax.scrollTopOffset = Drupal.webform.ajax.scrollTopOffset || ($('#toolbar-administration').length ? 140 : 10);
+
+  // Set global scroll top offset.
+  // @todo Remove in Webform 6.x.
+  Drupal.webform.scrollTopOffset = Drupal.webform.ajax.scrollTopOffset;
 
   /**
    * Provide Webform Ajax link behavior.
@@ -90,12 +94,12 @@
     attach: function (context) {
       $('.js-webform-confirmation-back-link-ajax', context)
         .once('webform-confirmation-back-ajax')
-        .click(function (event) {
+        .on('click', function (event) {
           var $form = $(this).parents('form');
 
           // Trigger the Ajax call back for the hidden submit button.
           // @see \Drupal\webform\WebformSubmissionForm::getCustomForm
-          $form.find('.js-webform-confirmation-back-submit-ajax').click();
+          $form.find('.js-webform-confirmation-back-submit-ajax').trigger('click');
 
           // Move the progress indicator from the submit button to after this link.
           // @todo Figure out a better way to set a progress indicator.
@@ -152,7 +156,7 @@
       var addSelector = (addElement === '_root_')
         ? '#webform-ui-add-element'
         : '[data-drupal-selector="edit-webform-ui-elements-' + addElement + '-add"]';
-      $(addSelector).click();
+      $(addSelector).trigger('click');
     }
 
     // If not add element, then scroll to and highlight the updated table row.
@@ -164,16 +168,14 @@
       setTimeout(function () {$element.removeClass('color-success');}, 3000);
 
       // Focus first tabbable item for the updated elements and handlers.
-      $element.find(':tabbable:not(.tabledrag-handle)').eq(0).focus();
+      $element.find(':tabbable:not(.tabledrag-handle)').eq(0).trigger('focus');
 
-      // Scroll to elements that are not visible.
-      if (!isScrolledIntoView($element)) {
-        $('html, body').animate({scrollTop: $element.offset().top - Drupal.webform.ajax.scrollTopOffset}, 500);
-      }
+      // Scroll element into view.
+      Drupal.webformScrolledIntoView($element);
     }
     else {
       // Focus main content.
-      $('#main-content').focus();
+      $('#main-content').trigger('focus');
     }
 
     // Display main page's status message in a floating container.
@@ -214,40 +216,15 @@
    * @see Drupal.AjaxCommands.prototype.viewScrollTop
    */
   Drupal.AjaxCommands.prototype.webformScrollTop = function (ajax, response) {
-    // Scroll to the top of the view. This will allow users
-    // to browse newly loaded content after e.g. clicking a pager
-    // link.
-    var offset = $(response.selector).offset();
-    // We can't guarantee that the scrollable object should be
-    // the body, as the view could be embedded in something
-    // more complex such as a modal popup. Recurse up the DOM
-    // and scroll the first element that has a non-zero top.
-    var scrollTarget = response.selector;
-    while ($(scrollTarget).scrollTop() === 0 && $(scrollTarget).parent()) {
-      scrollTarget = $(scrollTarget).parent();
-    }
-
-    if (response.target === 'page' && $(scrollTarget).length && $(scrollTarget)[0].tagName === 'HTML') {
-      // Scroll to top when scroll target is the entire page.
-      // @see https://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport
-      var rect = $(scrollTarget)[0].getBoundingClientRect();
-      if (!(rect.top >= 0 && rect.left >= 0 && rect.bottom <= $(window).height() && rect.right <= $(window).width())) {
-        $(scrollTarget).animate({scrollTop: 0}, 500);
-      }
-    }
-    else {
-      // Only scroll upward.
-      if (offset.top - Drupal.webform.ajax.scrollTopOffset < $(scrollTarget).scrollTop()) {
-        $(scrollTarget).animate({scrollTop: (offset.top - Drupal.webform.ajax.scrollTopOffset)}, 500);
-      }
-    }
+    // Scroll top.
+    Drupal.webformScrollTop(response.selector, response.target);
 
     // Focus on the form wrapper content bookmark if
     // .js-webform-autofocus is not enabled.
     // @see \Drupal\webform\Form\WebformAjaxFormTrait::buildAjaxForm
     var $form = $(response.selector + '-content').find('form');
     if (!$form.hasClass('js-webform-autofocus')) {
-      $(response.selector + '-content').focus();
+      $(response.selector + '-content').trigger('focus');
     }
   };
 
@@ -278,7 +255,7 @@
     if (a.pathname === window.location.pathname && $('.webform-ajax-refresh').length) {
       updateKey = (response.url.match(/[?|&]update=([^&]+)($|&)/)) ? RegExp.$1 : null;
       addElement = (response.url.match(/[?|&]add_element=([^&]+)($|&)/)) ? RegExp.$1 : null;
-      $('.webform-ajax-refresh').click();
+      $('.webform-ajax-refresh').trigger('click');
     }
     else {
       // Clear unsaved information flag so that the current webform page
@@ -288,7 +265,16 @@
         Drupal.behaviors.webformUnsaved.clear();
       }
 
-      this.redirect(ajax, response, status);
+      // For webform embedded in an iframe, open all redirects in the top
+      // of the browser window.
+      // @see \Drupal\webform_share\Controller\WebformShareController::page
+      if (drupalSettings.webform_share &&
+        drupalSettings.webform_share.page) {
+        window.top.location = response.url;
+      }
+      else {
+        this.redirect(ajax, response, status);
+      }
     }
   };
 
@@ -348,29 +334,4 @@
     }
   };
 
-  /** ********************************************************************** **/
-  // Helper functions.
-  /** ********************************************************************** **/
-
-  /**
-   * Determine if element is visible in the viewport.
-   *
-   * @param {Element} element
-   *   An element.
-   *
-   * @return {boolean}
-   *   TRUE if element is visible in the viewport.
-   *
-   * @see https://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
-   */
-  function isScrolledIntoView(element) {
-    var docViewTop = $(window).scrollTop();
-    var docViewBottom = docViewTop + $(window).height();
-
-    var elemTop = $(element).offset().top;
-    var elemBottom = elemTop + $(element).height();
-
-    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
-  }
-
-})(jQuery, Drupal);
+})(jQuery, Drupal, drupalSettings);

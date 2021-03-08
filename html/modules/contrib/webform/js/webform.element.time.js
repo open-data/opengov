@@ -57,6 +57,11 @@
           options.step = 1;
         }
 
+        // Set step to 'any' to prevent clientside validation issues.
+        // @see \Drupal\clientside_validation\Plugin\CvValidator\Step
+        // @see https://www.drupal.org/project/clientside_validation/issues/2941434
+        $input.attr('step', 'any');
+
         options = $.extend(options, Drupal.webform.timePicker.options);
 
         $input.timepicker(options);

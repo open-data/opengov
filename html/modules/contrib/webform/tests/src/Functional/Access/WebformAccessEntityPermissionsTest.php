@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform entity permissions.
  *
- * @group Webform
+ * @group webform
  */
 class WebformAccessEntityPermissionsTest extends WebformBrowserTestBase {
 
@@ -42,14 +42,14 @@ class WebformAccessEntityPermissionsTest extends WebformBrowserTestBase {
     $this->drupalLogin($own_account);
 
     // Check create own webform.
-    $this->drupalPostForm('/admin/structure/webform/add', ['id' => 'test_own', 'title' => 'test_own'], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/add', ['id' => 'test_own', 'title' => 'test_own'], 'Save');
 
     // Check webform submission overview contains own webform.
     $this->drupalGet('/admin/structure/webform');
     $this->assertRaw('test_own');
 
     // Add test element to own webform.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_own', ['elements' => "test:\n  '#markup': 'test'"], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_own', ['elements' => "test:\n  '#markup': 'test'"], 'Save');
 
     // Check duplicate own webform.
     $this->drupalGet('/admin/structure/webform/manage/test_own/duplicate');

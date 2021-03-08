@@ -54,7 +54,7 @@ function webform_test_test_example_elements() {
           $multiple_element = $element;
           $multiple_element['#title'] = $element['#title'] . ' ' . $property;
           $multiple_element["#$property"] = TRUE;
-          if ($property == 'multiple' && $webform_element->hasProperty('select2')) {
+          if ($property === 'multiple' && $webform_element->hasProperty('select2')) {
             $multiple_element['#select2'] = TRUE;
           }
           $data[$category_id][$element_type . '_' . $property] = $multiple_element;

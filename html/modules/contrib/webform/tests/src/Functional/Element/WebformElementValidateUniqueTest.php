@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform validate unique.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
 
@@ -59,7 +59,7 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
     $this->assertRaw('unique_multiple error message.');
 
     // Check #unique element can be updated.
-    $this->drupalPostForm("admin/structure/webform/manage/test_element_validate_unique/submission/$sid/edit", [], t('Save'));
+    $this->drupalPostForm("admin/structure/webform/manage/test_element_validate_unique/submission/$sid/edit", [], 'Save');
     $this->assertNoRaw('The value <em class="placeholder">{unique_textfield}</em> has already been submitted once for the <em class="placeholder">unique_textfield</em> element. You may have already submitted this webform, or you need to use a different value.</li>');
     $this->assertNoRaw('unique_user_textfield error message.');
     $this->assertNoRaw('unique_entity_textfield error message.');
@@ -79,7 +79,7 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
       'unique_textfield_multiple[items][0][_item_]' => '{same}',
       'unique_textfield_multiple[items][2][_item_]' => '{same}',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Submit'));
+    $this->drupalPostForm(NULL, $edit, 'Submit');
     $this->assertRaw('unique_textfield_multiple error message.');
 
     // Purge existing submissions.

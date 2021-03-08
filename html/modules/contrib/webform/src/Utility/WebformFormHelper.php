@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Utility;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 
@@ -9,6 +10,29 @@ use Drupal\Core\Url;
  * Helper class webform based methods.
  */
 class WebformFormHelper {
+
+  /**
+   * Adds JavaScript to change the state of an element based on another element.
+   *
+   * @param array $elements
+   *   A renderable array element having a #states property as described above.
+   * @param string $key
+   *   The element property to add the states attribute to.
+   *
+   * @see \Drupal\Core\Form\FormHelper::processStates
+   */
+  public static function processStates(array &$elements, $key = '#attributes') {
+    if (empty($elements['#states'])) {
+      return;
+    }
+
+    $elements['#attached']['library'][] = 'core/drupal.states';
+    $elements[$key]['data-drupal-states'] = Json::encode($elements['#states']);
+    // Make sure to include target class for this container.
+    if (empty($elements[$key]['class']) || !WebformArrayHelper::inArray(['js-form-item', 'js-form-submit', 'js-form-wrapper'], $elements[$key]['class'])) {
+      $elements[$key]['class'][] = 'js-form-item';
+    }
+  }
 
   /**
    * Build form jQuery UI tabs.

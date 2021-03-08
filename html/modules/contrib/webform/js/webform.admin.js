@@ -26,7 +26,7 @@
           $(this).bind('autocompleteselect', function (event, ui) {
             if (ui.item) {
               $(this).val(ui.item.value);
-              this.form.submit();
+              $(this.form).trigger('submit');
             }
           });
         });
@@ -42,12 +42,12 @@
     attach: function (context) {
       // Only attach the click event handler to the entire table and determine
       // which row triggers the event.
-      $('.webform-results-table', context).once('webform-results-table').click(function (event) {
+      $('.webform-results-table', context).once('webform-results-table').on('click', function (event) {
         if (event.target.tagName === 'A' || event.target.tagName === 'BUTTON') {
           return true;
         }
 
-        if ($(event.target).parents('a[href]').length) {
+        if ($(event.target).parents('a[href]').length || $(event.target).parents('.dropbutton-widget').length) {
           return true;
         }
 

@@ -136,7 +136,7 @@
           $wrapper.addClass('webform-computed-loading');
 
           // Trigger computation.
-          $element.find('.js-form-submit').mousedown();
+          $element.find('.js-form-submit').trigger('mousedown');
         }
       }
     }

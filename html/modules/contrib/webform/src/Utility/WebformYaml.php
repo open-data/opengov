@@ -18,7 +18,14 @@ class WebformYaml implements SerializationInterface {
   public static function encode($data) {
     // Convert \r\n to \n so that multiline strings are properly formatted.
     // @see \Symfony\Component\Yaml\Dumper::dump
-    static::normalize($data);
+    if (is_array($data)) {
+      static::normalize($data);
+    }
+
+    // If empty array then return an empty string instead of '{ }'.
+    if (is_array($data) && empty($data)) {
+      return '';
+    }
 
     $dumper = new Dumper(2);
     $yaml = $dumper->dump($data, PHP_INT_MAX, 0, SymfonyYaml::DUMP_EXCEPTION_ON_INVALID_TYPE | SymfonyYaml::DUMP_MULTI_LINE_LITERAL_BLOCK);

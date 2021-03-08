@@ -21,7 +21,7 @@ class WebformComputedToken extends WebformComputedBase {
     $token_manager = \Drupal::service('webform.token_manager');
 
     // Replace tokens in value.
-    return $token_manager->replace($element['#template'], $webform_submission, [], ['html' => ($mode == static::MODE_HTML)]);
+    return $token_manager->replace($element['#template'], $webform_submission, [], ['html' => ($mode === WebformComputedInterface::MODE_HTML)]);
   }
 
 }

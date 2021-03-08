@@ -242,7 +242,7 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
       '#type' => 'link',
       '#title' => $webform_element->getPluginLabel(),
       '#url' => $url,
-      '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+      '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes($webform_element->getOffCanvasWidth()),
       '#prefix' => '<span class="webform-form-filter-text-source">',
       '#suffix' => '</span>',
     ];
@@ -264,14 +264,14 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
       // Must clone the URL object to prevent the above 'label' link attributes
       // (i.e. webform-tooltip-link) from being copied to 'operation' link.
       '#url' => clone $url,
-      '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(WebformDialogHelper::DIALOG_NORMAL, ['button', 'button--primary', 'button--small']),
+      '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes($webform_element->getOffCanvasWidth(), ['button', 'button--primary', 'button--small']),
     ];
 
     // Issue #2741877 Nested modals don't work: when using CKEditor in a
     // modal, then clicking the image button opens another modal,
     // which closes the original modal.
     // @todo Remove the below workaround once this issue is resolved.
-    if ($webform_element->getTypeName() == 'processed_text' && !WebformDialogHelper::useOffCanvas()) {
+    if ($webform_element->getTypeName() === 'processed_text' && !WebformDialogHelper::useOffCanvas()) {
       unset($row['type']['#attributes']);
       unset($row['operation']['#attributes']);
       if (isset($row['operation'])) {

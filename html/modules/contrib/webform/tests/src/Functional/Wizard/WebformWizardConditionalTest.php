@@ -3,11 +3,12 @@
 namespace Drupal\Tests\webform\Functional\Wizard;
 
 use Drupal\webform\Entity\Webform;
+use Drupal\webform\WebformInterface;
 
 /**
  * Tests for webform conditional wizard.
  *
- * @group Webform
+ * @group webform
  */
 class WebformWizardConditionalTest extends WebformWizardTestBase {
 
@@ -31,12 +32,12 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
       'trigger_pages[page_3]' => FALSE,
       'trigger_pages[page_5]' => FALSE,
     ];
-    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next Page >');
+    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next >');
     $this->assertCurrentPage('Page 2', 'page_2');
-    $this->drupalPostForm(NULL, [], t('Next Page >'));
+    $this->drupalPostForm(NULL, [], 'Next >');
     $this->assertCurrentPage('Page 4', 'page_4');
-    $this->drupalPostForm(NULL, [], t('Submit'));
-    $this->assertCurrentPage('Complete', 'webform_confirmation');
+    $this->drupalPostForm(NULL, [], 'Submit');
+    $this->assertCurrentPage('Complete', WebformInterface::PAGE_CONFIRMATION);
     $sid = $this->getLastSubmissionId($webform);
     $this->assertNotEmpty($sid);
 
@@ -44,10 +45,10 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
     $edit = [
       'trigger_none' => TRUE,
     ];
-    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next Page >');
+    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next >');
     $this->assertRaw('<div class="webform-progress">');
     $this->assertRaw('New submission added to Test: Webform: Wizard conditional.');
-    $this->assertCurrentPage('Complete', 'webform_confirmation');
+    $this->assertCurrentPage('Complete', WebformInterface::PAGE_CONFIRMATION);
     $sid = $this->getLastSubmissionId($webform);
     $this->assertNotEmpty($sid);
 
@@ -59,8 +60,8 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
     $edit = [
       'trigger_none' => TRUE,
     ];
-    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next Page >');
-    $this->assertCurrentPage('Preview', 'webform_preview');
+    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next >');
+    $this->assertCurrentPage('Preview', WebformInterface::PAGE_PREVIEW);
 
     // Disable preview and include confirmation in progress page.
     $webform->setSettings(['preview' => 0, 'wizard_confirmation' => FALSE]);
@@ -72,7 +73,7 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
     $edit = [
       'trigger_none' => TRUE,
     ];
-    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next Page >');
+    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next >');
     $this->assertNoRaw('<div class="webform-progress">');
     $this->assertRaw('New submission added to Test: Webform: Wizard conditional.');
     $last_sid = $this->getLastSubmissionId($webform);
@@ -89,7 +90,7 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
       'trigger_pages[page_3]' => FALSE,
       'trigger_pages[page_5]' => FALSE,
     ];
-    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next Page >');
+    $this->drupalPostForm('/webform/test_form_wizard_conditional', $edit, 'Next >');
 
     // Assert the progress bar no longer includes page 5.
     $this->assertNoPattern('|<li data-webform-page="5" class="webform-progress-bar__page">\s+<b>Page 5</b>|');

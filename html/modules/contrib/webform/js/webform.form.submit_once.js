@@ -16,8 +16,14 @@
    *   Attaches the behavior for preventing duplicate webform submissions.
    */
   Drupal.behaviors.webformSubmitOnce = {
+    clear: function () {
+      var $form = $('.js-webform-submit-once');
+      $form.removeData('webform-submitted');
+      $form.find('.js-webform-wizard-pages-links :submit, .form-actions :submit').removeClass('is-disabled');
+      $form.find('.form-actions .ajax-progress.ajax-progress-throbber').remove();
+    },
     attach: function (context) {
-      $('.js-webform-submit-once', context).each(function () {
+      $('.js-webform-submit-once', context).once('webform-submit-once').each(function () {
         var $form = $(this);
         // Remove data-webform-submitted.
         $form.removeData('webform-submitted');
@@ -26,14 +32,14 @@
 
         // Track which submit button was clicked.
         // @see http://stackoverflow.com/questions/5721724/jquery-how-to-get-which-button-was-clicked-upon-form-submission
-        $form.find('.js-webform-wizard-pages-links :submit, .form-actions :submit').click(function () {
+        $form.find('.js-webform-wizard-pages-links :submit, .form-actions :submit').on('click', function () {
           $form.find('.js-webform-wizard-pages-links :submit, .form-actions :submit')
             .removeClass('js-webform-submit-clicked');
           $(this)
             .addClass('js-webform-submit-clicked');
         });
 
-        $(this).submit(function () {
+        $(this).on('submit', function () {
           // Find clicked button
           var $clickedButton = $form.find('.js-webform-wizard-pages-links :submit.js-webform-submit-clicked, .form-actions :submit.js-webform-submit-clicked');
 
@@ -53,9 +59,7 @@
           $form.find('.js-webform-wizard-pages-links :submit, .form-actions :submit').addClass('is-disabled');
 
           // Set the throbber progress indicator.
-          // @see Drupal.Ajax.prototype.setProgressIndicatorThrobber
-          var $progress = $('<div class="ajax-progress ajax-progress-throbber"><div class="throbber">&nbsp;</div></div>');
-          $clickedButton.after($progress);
+          $clickedButton.after(Drupal.theme.ajaxProgressThrobber());
         });
       });
     }

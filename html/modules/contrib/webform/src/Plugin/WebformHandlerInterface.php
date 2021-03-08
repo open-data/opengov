@@ -137,6 +137,24 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   public function setLabel($label);
 
   /**
+   * Returns notes of the webform variant.
+   *
+   * @return string
+   *   Notes for the webform variant, or an empty string.
+   */
+  public function getNotes();
+
+  /**
+   * Set notes for this webform variant.
+   *
+   * @param string $notes
+   *   Notes for this webform variant.
+   *
+   * @return $this
+   */
+  public function setNotes($notes);
+
+  /**
    * Returns the weight of the webform handler.
    *
    * @return int|string
@@ -386,6 +404,19 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   /****************************************************************************/
 
   /**
+   * Get configuration form's off-canvas width.
+   *
+   * @return string
+   *   The off-canvas width.
+   *
+   * @see WebformDialogHelper::DIALOG_NARROW
+   * @see WebformDialogHelper::DIALOG_NORMAL
+   * @see WebformDialogHelper::DIALOG_WIDE
+   * @see WebformDialogHelper::DIALOG_NONE
+   */
+  public function getOffCanvasWidth();
+
+  /**
    * Alter webform submission webform .
    *
    * @param array $form
@@ -480,6 +511,26 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    *   TRUE if the entity has been updated, or FALSE if it has been inserted.
    */
   public function postSave(WebformSubmissionInterface $webform_submission, $update = TRUE);
+
+  /**
+   * Acts on webform submissions before they are purged.
+   *
+   * Used before the entities are purged and before they are deleted.
+   *
+   * @param \Drupal\webform\WebformSubmissionInterface[] $webform_submissions
+   *   The webform submissions to be purged.
+   */
+  public function prePurge(array $webform_submissions);
+
+  /**
+   * Acts on webform submissions after they are purged.
+   *
+   * Used after the entities are purged and after they are deleted..
+   *
+   * @param \Drupal\webform\WebformSubmissionInterface[] $webform_submissions
+   *   The webform submissions that were purged.
+   */
+  public function postPurge(array $webform_submissions);
 
   /**
    * Acts on a webform submission before they are deleted and before hooks are invoked.

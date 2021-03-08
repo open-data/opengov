@@ -5,10 +5,8 @@
  * Enables the creation of webforms and questionnaires.
  */
 
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Render\Element;
@@ -23,8 +21,8 @@ use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Plugin\WebformElement\ManagedFile;
 use Drupal\webform\Utility\Mail;
-use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\WebformInterface;
 
@@ -49,7 +47,7 @@ function webform_help($route_name, RouteMatchInterface $route_match) {
 
   /** @var \Drupal\webform\WebformHelpManagerInterface $help_manager */
   $help_manager = \Drupal::service('webform.help_manager');
-  if ($route_name == 'help.page.webform') {
+  if ($route_name === 'help.page.webform') {
     $build = $help_manager->buildIndex();
   }
   else {
@@ -261,7 +259,7 @@ function webform_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableD
     }
   }
 
-  // Allow webform query string parameters to be transfered
+  // Allow webform query string parameters to be transferred
   // from canonical to test URL.
   $route_names = [
     'entity.webform.canonical', 'entity.webform.test_form',
@@ -286,42 +284,10 @@ function webform_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableD
  * Implements hook_module_implements_alter().
  */
 function webform_module_implements_alter(&$implementations, $hook) {
-  if ($hook == 'form_alter') {
+  if ($hook === 'form_alter') {
     $implementation = $implementations['webform'];
     unset($implementations['webform']);
     $implementations['webform'] = $implementation;
-  }
-}
-
-/**
- * Implements hook_system_breadcrumb_alter().
- */
-function webform_system_breadcrumb_alter(Breadcrumb &$breadcrumb, RouteMatchInterface $route_match, array $context) {
-  // Prevent 'Route required in Drupal\Core\Url::fromRouteMatch()' errors.
-  // @see \Drupal\Core\Url::fromRouteMatch
-  if (!$route_match->getRouteObject()) {
-    return;
-  }
-
-  // Remove 'Webforms' prefix from breadcrumb links generated path breadcrumbs.
-  // @see \Drupal\system\PathBasedBreadcrumbBuilder
-  $path = Url::fromRouteMatch($route_match)->toString();
-  if (strpos($path, '/admin/structure/webform/config/') !== FALSE) {
-    $links = $breadcrumb->getLinks();
-    foreach ($links as $link) {
-      $text = $link->getText();
-      if (strpos($text, ((string) t('Webforms')) . ' ') == 0) {
-        $text = str_replace(((string) t('Webforms')) . ': ', '', $text);
-        $link->setText(Unicode::ucfirst($text));
-      }
-    }
-  }
-
-  // Fix 'Help' breadcrumb text.
-  if ($route_match->getRouteName() == 'webform.help.video') {
-    $links = $breadcrumb->getLinks();
-    $link = end($links);
-    $link->setText(t('Webforms'));
   }
 }
 
@@ -336,16 +302,16 @@ function webform_token_info_alter(&$data) {
   // @see webform_page_attachments()
   $token_suffixes = t('Append the below suffixes to alter the returned value.') .
     '<ul>' .
-    '<li>' . t('<code>:clear</code> to removes token when not replaced.') . '</li>' .
+    '<li>' . t('<code>:clear</code> removes the token when it is not replaced.') . '</li>' .
     '<li>' . t('<code>:urlencode</code> URL encodes returned value.') . '</li>' .
     '<li>' . t('<code>:xmlencode</code> XML encodes returned value.') . '</li>' .
-    '<li>' . t('<code>:htmldecode</code> decodes HTML enities in returned value.') . '<br/><b>' . t('This suffix has security implications.') . '</b><br/>' . t('Use <code>:htmldecode</code> with <code>:striptags</code>.') . '</li>' .
+    '<li>' . t('<code>:htmldecode</code> decodes HTML entities in returned value.') . '<br/><b>' . t('This suffix has security implications.') . '</b><br/>' . t('Use <code>:htmldecode</code> with <code>:striptags</code>.') . '</li>' .
     '<li>' . t('<code>:striptags</code> removes all HTML tags from returned value.') . '</li>' .
   '</ul>';
   $more = _webform_token_render_more(t('Learn about token suffixes'), $token_suffixes);
   foreach ($data['types'] as $type => &$info) {
     if (strpos($type, 'webform') === 0) {
-      if (!empty($info['description'] && isset($info['description']))) {
+      if (isset($info['description']) && !empty($info['description'])) {
         $description = $info['description'] . $more;
       }
       else {
@@ -420,11 +386,18 @@ function _webform_clear_webform_submission_list_cache_tag(EntityInterface $entit
  * Implements hook_mail().
  */
 function webform_mail($key, &$message, $params) {
-  // Never send emails when using devel generate to create 1000's of
-  // submissions.
-  if (\Drupal::moduleHandler()->moduleExists('devel_generate')
-    && \Drupal\webform\Plugin\DevelGenerate\WebformSubmissionDevelGenerate::isGeneratingSubmissions()) {
-    $message['send'] = FALSE;
+  // Never send emails when using devel generate to create
+  // 1000's of submissions.
+  if (\Drupal::moduleHandler()->moduleExists('devel_generate')) {
+    /** @var \Drupal\devel_generate\DevelGeneratePluginManager $devel_generate */
+    $devel_generate = \Drupal::service('plugin.manager.develgenerate');
+    $definition = $devel_generate->getDefinition('webform_submission', FALSE);
+    if ($definition) {
+      $class = $definition['class'];
+      if ($class::isGeneratingSubmissions()) {
+        $message['send'] = FALSE;
+      }
+    }
   }
 
   // Set default parameters.
@@ -447,7 +420,12 @@ function webform_mail($key, &$message, $params) {
   // instead of site's email address.
   // @see: \Drupal\Core\Mail\MailManager::mail.
   if (!empty($params['from_mail'])) {
-    $message['from'] = $message['headers']['From'] = (!empty($params['from_name'])) ? Mail::formatDisplayName($params['from_name']) . ' <' . $params['from_mail'] . '>' : $params['from_mail'];
+    // 'From name' is only used when the 'From mail' contains a single
+    // email address.
+    $from = (!empty($params['from_name']) && strpos($params['from_mail'], ',') === FALSE)
+      ? Mail::formatDisplayName($params['from_name']) . ' <' . $params['from_mail'] . '>'
+      : $params['from_mail'];
+    $message['from'] = $message['headers']['From'] = $from;
   }
 
   // Set header 'Cc'.
@@ -469,10 +447,12 @@ function webform_mail($key, &$message, $params) {
     $message['reply-to'] = $message['headers']['Reply-to'] = $reply_to;
   }
 
-  // Set header 'Return-Path'.
+  // Set header 'Return-Path' which only supports a single email address and the
+  // 'from_mail' may contain multiple comma delimited email addresses.
   $return_path = $params['return_path'] ?: $params['from_mail'] ?: '';
   if ($return_path) {
-    $message['headers']['Sender'] = $message['headers']['Return-Path'] = $return_path;
+    $return_path = explode(',', $return_path);
+    $message['headers']['Sender'] = $message['headers']['Return-Path'] = $return_path[0];
   }
 
   // Set header 'Sender'.
@@ -495,6 +475,72 @@ function webform_mail_alter(&$message) {
   if (strpos($message['id'], 'webform') === 0) {
     if (isset($message['params']['html']) && $message['params']['html']) {
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+    }
+  }
+}
+
+/**
+ * Implements hook_toolbar_alter().
+ */
+function webform_toolbar_alter(&$items) {
+  if (\Drupal::config('webform.settings')->get('ui.toolbar_item')) {
+    $items['administration']['#attached']['library'][] = 'webform/webform.admin.toolbar';
+  }
+}
+
+/**
+ * Implements hook_menu_links_discovered_alter().
+ */
+function webform_menu_links_discovered_alter(&$links) {
+  if (\Drupal::config('webform.settings')->get('ui.toolbar_item')) {
+    $links['entity.webform.collection']['parent'] = 'system.admin';
+    $links['entity.webform.collection']['weight'] = -9;
+  }
+
+  // Add webform local tasks as admin menu toolbar menu items.
+  // @see admin_toolbar_tools_menu_links_discovered_alter()
+  if (\Drupal::moduleHandler()->moduleExists('admin_toolbar_tools')) {
+    /** @var \Drupal\Core\Menu\LocalTaskManager $local_task_manager */
+    $local_task_manager = \Drupal::service('plugin.manager.menu.local_task');
+
+    $local_tasks = $local_task_manager->getLocalTasks('entity.webform.collection', 0);
+    foreach ($local_tasks['tabs'] as $local_task) {
+      if (!$local_task['#link']['url'] instanceof Url) {
+        continue;
+      }
+
+      $menu_item_title = $local_task['#link']['title'];
+      $menu_item_route_name = $local_task['#link']['url']->getRouteName();
+      $menu_item_name = $menu_item_route_name . '.item';
+      $links[$menu_item_name] = [
+        'title' => $menu_item_title,
+        'route_name' => $menu_item_route_name,
+        'parent' => 'entity.webform.collection',
+        'weight' => $local_task['#weight'],
+        'provider' => 'webform',
+        'menu_name' => 'admin',
+      ];
+
+      if (\Drupal::config('webform.settings')->get('ui.toolbar_item')) {
+        $local_sub_tasks = $local_task_manager->getLocalTasks($menu_item_route_name, 1);
+        foreach ($local_sub_tasks['tabs'] as $local_sub_task) {
+          if (!$local_task['#link']['url'] instanceof Url) {
+            continue;
+          }
+
+          $menu_sub_item_title = $local_sub_task['#link']['title'];
+          $menu_sub_item_route_name = $local_sub_task['#link']['url']->getRouteName();
+          $menu_sub_item_name = $menu_sub_item_route_name . '.sub_item';
+          $links[$menu_sub_item_name] = [
+            'title' => $menu_sub_item_title,
+            'route_name' => $menu_sub_item_route_name,
+            'parent' => $menu_item_name,
+            'weight' => $local_sub_task['#weight'],
+            'provider' => 'webform',
+            'menu_name' => 'admin',
+          ];
+        }
+      }
     }
   }
 }
@@ -587,7 +633,16 @@ function _webform_page_attachments(array &$attachments) {
 
   // Attach variant randomization JavaScript.
   $route_name = \Drupal::routeMatch()->getRouteName();
-  if (in_array($route_name, ['entity.webform.canonical', 'entity.webform.test_form', 'entity.node.canonical', 'entity.node.webform.test_form'])) {
+  $route_names = [
+    'entity.webform.canonical',
+    'entity.webform.test_form',
+    'entity.node.canonical',
+    'entity.node.webform.test_form',
+    // Webform Share module routes.
+    'entity.webform.share_page',
+    'entity.webform.share_page.javascript',
+  ];
+  if (in_array($route_name, $route_names)) {
     $variants = [];
     $element_keys = $webform->getElementsVariant();
     foreach ($element_keys as $element_key) {
@@ -596,6 +651,27 @@ function _webform_page_attachments(array &$attachments) {
         $variant_plugins = $webform->getVariants(NULL, TRUE, $element_key);
         if ($variant_plugins->count()) {
           $variants[$element_key] = array_values($variant_plugins->getInstanceIds());
+        }
+        else {
+          $attachments['#attached']['html_head'][] = [
+            [
+              '#type' => 'html_tag',
+              '#tag' => 'script',
+              '#value' => Markup::create("
+(function(){
+  try {
+    if (window.sessionStorage) {
+      var key = 'Drupal.webform.{$webform->id()}.variant.{$element_key}';
+      window.sessionStorage.removeItem(key);
+    }
+  }
+  catch(e) {}
+})();
+"),
+              '#weight' => 1000,
+            ],
+            'webform_variant_' . $element_key . '_clear',
+          ];
         }
       }
     }
@@ -610,6 +686,33 @@ function _webform_page_attachments(array &$attachments) {
           '#tag' => 'script',
           '#value' => Markup::create("
 (function(){
+
+  var hasSessionStorage = (function () {
+    try {
+      sessionStorage.setItem('webform', 'webform');
+      sessionStorage.removeItem('webform');
+      return true;
+    }
+    catch (e) {
+      return false;
+    }
+  }());
+
+  function getSessionVariantID(variant_key) {
+    if (hasSessionStorage) {
+      var key = 'Drupal.webform.{$webform->id()}.variant.' + variant_key;
+      return window.sessionStorage.getItem(key);
+    }
+    return null;
+  }
+
+  function setSessionVariantID(variant_key, variant_id) {
+    if (hasSessionStorage) {
+      var key = 'Drupal.webform.{$webform->id()}.variant.' + variant_key;
+      window.sessionStorage.setItem(key, variant_id);
+    }
+  }
+
   var variants = $json_variants;
   var search = location.search;
   var element_key, variant_ids, variant_id;
@@ -617,13 +720,17 @@ function _webform_page_attachments(array &$attachments) {
     if (variants.hasOwnProperty(element_key)
       && !search.match(new RegExp('[?&]' + element_key + '='))) {
         variant_ids = variants[element_key];
-        variant_id = variant_ids[Math.floor(Math.random() * variant_ids.length)];
+        variant_id = getSessionVariantID(element_key);
+        if (!variant_ids.includes(variant_id)) {
+          variant_id = variant_ids[Math.floor(Math.random() * variant_ids.length)];
+          setSessionVariantID(element_key, variant_id);
+        }
         search += (search ? '&' : '?') + element_key + '=' + variant_id;
     }
   }
   if (search !== location.search) {
     location.replace(location.pathname + search);
-  } 
+  }
 })();
 "),
           '#weight' => 1000,
@@ -641,10 +748,28 @@ function _webform_page_attachments(array &$attachments) {
  * @see webform_preprocess_file_link()
  */
 function webform_file_access(FileInterface $file, $operation, AccountInterface $account) {
-  // Block access to temporary anonymous private file uploads.
-  if ($operation == 'download' && $file->isTemporary() && $file->getOwnerId() == 0 && strpos($file->getFileUri(), 'private://webform/') === 0) {
+  $is_webform_download = ($operation === 'download' && strpos($file->getFileUri(), 'private://webform/') === 0);
+
+  // Block access to temporary anonymous private file uploads
+  // only when an anonymous user is attempting to download the file.
+  // Links to anonymous file uploads are automatically suppressed.
+  // @see webform_preprocess_file_link()
+  // @see webform_file_download()
+  if ($is_webform_download
+    && $file->isTemporary()
+    && $file->getOwner() && $file->getOwner()->isAnonymous()
+    && \Drupal::routeMatch()->getRouteName() === 'system.files') {
     return AccessResult::forbidden();
   }
+
+  // Allow access to files associated with a webform submission.
+  // This prevent uploaded webform files from being lost when another user
+  // edits a submission with multiple file uploads.
+  // @see \Drupal\file\Element\ManagedFile::valueCallback
+  if ($is_webform_download && ManagedFile::accessFile($file, $account)) {
+    return AccessResult::allowed();
+  }
+
   return AccessResult::neutral();
 }
 
@@ -765,18 +890,34 @@ function webform_webform_access_rules() {
  * @param string $key
  *   The element property to add the states attribute to.
  *
- * @see drupal_process_states()
+ * @deprecated Scheduled for removal in Webform 8.x-6.x
+ *   Use \Drupal\Core\Form\FormHelper::processStates instead.
  */
 function webform_process_states(array &$elements, $key = '#attributes') {
-  if (empty($elements['#states'])) {
+  WebformFormHelper::processStates($elements, $key);
+}
+
+/******************************************************************************/
+// Devel generate info hooks.
+/******************************************************************************/
+
+/**
+ * Implements hook_devel_generate_info_alter().
+ */
+function webform_devel_generate_info_alter(array &$generators) {
+  if (!isset($generators['webform_submission'])) {
     return;
   }
 
-  $elements['#attached']['library'][] = 'core/drupal.states';
-  $elements[$key]['data-drupal-states'] = Json::encode($elements['#states']);
-  // Make sure to include target class for this container.
-  if (empty($elements[$key]['class']) || !WebformArrayHelper::inArray(['js-form-item', 'js-form-submit', 'js-form-wrapper'], $elements[$key]['class'])) {
-    $elements[$key]['class'][] = 'js-form-item';
+  // Use deprecated generator because the devel_generate.module changed the
+  // DevelGenerateBaseInterface.
+  //
+  // @see \Drupal\webform\Plugin\DevelGenerate\WebformSubmissionDevelGenerateDeprecated
+  // @see https://www.drupal.org/project/webform/issues/3155654
+  // @see https://gitlab.com/drupalspoons/devel/-/issues/324
+  $info = \Drupal::service('extension.list.module')->getExtensionInfo('devel_generate');
+  if (!empty($info['version']) && strpos($info['version'], '8.x-') === 0) {
+    $generators['webform_submission']['class'] = 'Drupal\webform\Plugin\DevelGenerate\WebformSubmissionDevelGenerateDeprecated';
   }
 }
 
@@ -815,15 +956,15 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
 
   // Description display.
   if (!empty($element['#options_description_display'])) {
-    $description_property_name = ($element['#options_description_display'] == 'help') ? '#help' : '#description';
+    $description_property_name = ($element['#options_description_display'] === 'help') ? '#help' : '#description';
     foreach (Element::children($element) as $key) {
       $title = (string) $element[$key]['#title'];
       // Check for -- delimiter.
-      if (strpos($title, WebformOptionsHelper::DESCRIPTION_DELIMITER) === FALSE) {
+      if (!WebformOptionsHelper::hasOptionDescription($title)) {
         continue;
       }
 
-      list($title, $description) = explode(WebformOptionsHelper::DESCRIPTION_DELIMITER, $title);
+      list($title, $description) = WebformOptionsHelper::splitOption($title);
       $element[$key]['#title'] = $title;
       $element[$key]['#webform_element'] = TRUE;
       $element[$key][$description_property_name] = $description;
@@ -831,7 +972,7 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
   }
 
   // Display as buttons.
-  if (!empty($element['#options_display']) && $element['#options_display'] === 'buttons') {
+  if (!empty($element['#options_display']) && strpos($element['#options_display'], 'buttons') === 0) {
     foreach (Element::children($element) as $key) {
       // Add wrapper which is needed to make flexbox work with tables.
       $element[$key]['#prefix'] = '<div class="webform-options-display-buttons-wrapper">';
@@ -901,19 +1042,19 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
  * @param string $message
  *   The error message.
  * @param string $filename
- *   The filename that the error was raised in.
- * @param int $line
- *   The line number the error was raised at.
+ *   (optional) The filename that the error was raised in.
+ * @param string $line
+ *   (optional) The line number the error was raised at.
  * @param array $context
- *   An array that points to the active symbol table at the point the error
- *   occurred.
+ *   (optional) An array that points to the active symbol table at the point the
+ *   error occurred.
  *
  * @throws \ErrorException
  *   Throw ErrorException for E_RECOVERABLE_ERROR errors.
  *
  * @see \Drupal\webform\WebformEntityElementsValidator::validateRendering()
  */
-function _webform_entity_element_validate_rendering_error_handler($error_level, $message, $filename, $line, array $context) {
+function _webform_entity_element_validate_rendering_error_handler($error_level, $message, $filename = NULL, $line = NULL, $context = NULL) {
   // From: http://stackoverflow.com/questions/15461611/php-try-catch-not-catching-all-exceptions
   if (E_RECOVERABLE_ERROR === $error_level) {
     // Allow Drupal to still log the error but convert it to a warning.

@@ -10,7 +10,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for action webform handler functionality.
  *
- * @group Webform
+ * @group webform
  */
 class WebformHandlerActionTest extends WebformBrowserTestBase {
 
@@ -52,7 +52,7 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
       'sticky' => 'flag',
       'notes_add' => 'This is the first note',
     ];
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, t('Save'));
+    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, 'Save');
 
     // Check messages.
     $this->assertRaw('Submission has been flagged.');
@@ -76,7 +76,7 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
       'sticky' => 'unflag',
       'notes_add' => 'This is the second note',
     ];
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, t('Save'));
+    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, 'Save');
 
     // Check messages.
     $this->assertRaw('Submission has been unflagged.');
@@ -103,7 +103,7 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
     $edit = [
       'lock' => 'locked',
     ];
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, t('Save'));
+    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, 'Save');
 
     // Check locked message.
     $this->assertRaw('Submission has been locked.');

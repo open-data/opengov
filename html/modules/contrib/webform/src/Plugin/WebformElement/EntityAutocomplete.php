@@ -131,15 +131,18 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
       return;
     }
 
-    if (empty($element['#webform_multiple'])) {
-      $form_state->setValueForElement($element, static::getEntityIdFromItem($value));
-    }
-    else {
+    /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
+    $element_manager = \Drupal::service('plugin.manager.webform.element');
+    $element_plugin = $element_manager->getElementInstance($element);
+    if ($element_plugin->hasMultipleValues($element)) {
       $entity_ids = [];
       foreach ($value as $item) {
-        $entity_ids[] = static::getEntityIdFromItem($item);
+        $entity_ids[] = (string) static::getEntityIdFromItem($item);
       }
       $form_state->setValueForElement($element, $entity_ids);
+    }
+    else {
+      $form_state->setValueForElement($element, (string) static::getEntityIdFromItem($value));
     }
   }
 

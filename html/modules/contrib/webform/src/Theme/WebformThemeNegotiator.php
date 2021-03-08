@@ -28,14 +28,14 @@ class WebformThemeNegotiator implements ThemeNegotiatorInterface {
   protected $configFactory;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */
   protected $requestHandler;
 
   /**
-   * Creates a new AdminNegotiator instance.
+   * Creates a new WebformThemeNegotiator instance.
    *
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
@@ -56,14 +56,34 @@ class WebformThemeNegotiator implements ThemeNegotiatorInterface {
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
+    return $this->getActiveTheme($route_match) ? TRUE : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function determineActiveTheme(RouteMatchInterface $route_match) {
+    return $this->getActiveTheme($route_match);
+  }
+
+  /**
+   * Determine the active theme for the current route.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   *
+   * @return string
+   *   The active theme or an empty string.
+   */
+  protected function getActiveTheme(RouteMatchInterface $route_match) {
     $route_name = $route_match->getRouteName();
     if (strpos($route_name, 'webform') === FALSE) {
-      return FALSE;
+      return '';
     }
 
     $webform = $this->requestHandler->getCurrentWebform();
     if (empty($webform)) {
-      return FALSE;
+      return '';
     }
 
     $is_webform_route = in_array($route_name, [
@@ -74,25 +94,22 @@ class WebformThemeNegotiator implements ThemeNegotiatorInterface {
     ]);
     $is_user_submission_route = (strpos($route_name, 'entity.webform.user.') === 0);
 
-    // If page is disabled, apply admin theme to the webform routes.
-    if (!$webform->getSetting('page') && $is_webform_route) {
-      return ($this->user->hasPermission('view the administration theme'));
+    // If webform route and page is disabled, apply admin theme to
+    // the webform routes.
+    if ($is_webform_route && !$webform->getSetting('page')) {
+      return ($this->user->hasPermission('view the administration theme'))
+        ? $this->configFactory->get('system.theme')->get('admin')
+        : '';
     }
 
-    // If admin theme is enabled, apply it to webform and user submission routes.
-    if ($webform->getSetting('page_admin_theme')
-      && ($is_webform_route || $is_user_submission_route)) {
-      return ($this->user->hasPermission('view the administration theme'));
+    // If webform and user submission routes apply custom page theme to
+    // the webform routes.
+    if (($is_webform_route || $is_user_submission_route)
+      && $webform->getSetting('page_theme_name')) {
+      return $webform->getSetting('page_theme_name');
     }
 
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function determineActiveTheme(RouteMatchInterface $route_match) {
-    return $this->configFactory->get('system.theme')->get('admin');
+    return '';
   }
 
 }

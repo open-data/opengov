@@ -29,6 +29,7 @@ class Select extends OptionsBase {
       'multiple_error' => '',
       'empty_option' => '',
       'empty_value' => '',
+      'sort_options' => FALSE,
       'select2' => FALSE,
       'choices' => FALSE,
       'chosen' => FALSE,

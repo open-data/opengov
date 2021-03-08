@@ -9,7 +9,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for webform example element.
  *
- * @group Webform
+ * @group webform_example_element
  */
 class WebformExampleElementTest extends WebformBrowserTestBase {
 
@@ -31,7 +31,7 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
     // NOTE:
     // This is a very lazy but easy way to check that the element is rendering
     // as expected.
-    $this->assertRaw('<div class="js-form-item form-item js-form-type-webform-example-element form-type-webform-example-element js-form-item-webform-example-element form-item-webform-example-element">');
+    $this->assertRaw('<div class="js-form-item form-item js-form-type-webform-example-element form-item-webform-example-element js-form-item-webform-example-element">');
     $this->assertRaw('<label for="edit-webform-example-element">Webform Example Element</label>');
     $this->assertRaw('<input data-drupal-selector="edit-webform-example-element" type="text" id="edit-webform-example-element" name="webform_example_element" value="" size="60" class="form-text webform-example-element" />');
 

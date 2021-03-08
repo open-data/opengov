@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for the webform handler plugin.
  *
- * @group Webform
+ * @group webform
  */
 class WebformHandlerPluginTest extends WebformBrowserTestBase {
 

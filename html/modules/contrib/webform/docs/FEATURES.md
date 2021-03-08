@@ -17,18 +17,18 @@ Whether you need a multi-page form containing a multi-column input layout with
 conditional logic or a simple contact form that pushes data to a SalesForce/CRM,
  it is all possible using the Webform module for Drupal 8.
 
-Drupal and the Webform module strives to be fully accessible to all users and 
+Drupal and the Webform module strives to be fully accessible to all users and
 site builders. Assistive technologies, including screen readers and
 keyboard access, are fully supported.
 
-Besides being a feature rich form builder, the Webform module is part of the 
+Besides being a feature rich form builder, the Webform module is part of the
 Drupal project's ecosystem and community.
 
 <blockquote>
-The <a href="https://www.drupal.org/about">Drupal project</a> is open source software. 
-Anyone can download, use, work on, and share it with others. 
-It's built on principles like collaboration, globalism, and innovation. 
-It's distributed under the terms of the <a href="https://www.gnu.org/copyleft/gpl.html">GNU General Public License</a> (GPL). 
+The <a href="https://www.drupal.org/about">Drupal project</a> is open source software.
+Anyone can download, use, work on, and share it with others.
+It's built on principles like collaboration, globalism, and innovation.
+It's distributed under the terms of the <a href="https://www.gnu.org/copyleft/gpl.html">GNU General Public License</a> (GPL).
 There are <a href="https://www.drupal.org/about/licensing">no licensing fees</a>, ever. Drupal (and Webform) will always be free.
 </blockquote>
 
@@ -89,9 +89,9 @@ Form manager features include:
   </tr>
 </table>
 
-The Webform module provides an intuitive form builder based upon Drupal 8's 
-best practices for user interface design and user experience. 
-The form builder allows non-technical users to easily build 
+The Webform module provides an intuitive form builder based upon Drupal 8's
+best practices for user interface design and user experience.
+The form builder allows non-technical users to easily build
 and maintain webforms.
 
 Form builder features include:
@@ -124,7 +124,7 @@ Form behaviors, features, submission handling, messaging, and confirmations are 
 
 ### General settings
 
-Allow a webform's administrative information, paths, behaviors, and third-party settings to be customized. 
+Allow a webform's administrative information, paths, behaviors, and third-party settings to be customized.
 
 General settings include:
 
@@ -136,7 +136,7 @@ General settings include:
 ### Form settings
 
 Allow a form's status, attributes, behaviors, labels, messages, wizard settings,
-and preview to be customized. 
+and preview to be customized.
 
 Form settings include:
 
@@ -146,12 +146,12 @@ Form settings include:
 - Submission preview
 - Input prepopulation using query string parameters.
 
-<table class="views-view-grid" width="100%">  
+<table class="views-view-grid" width="100%">
   <tr>
     <td width="50%"><div class="note">
     <a href="https://www.drupal.org/files/webform-8.x.5.x-features--settings-submissions.png">
-    <img src="https://www.drupal.org/files/webform-8.x.5.x-features--settings-submissions.png" alt="Configuration settings: Submisssions" /><br/>
-    <strong>Submisssions</strong>
+    <img src="https://www.drupal.org/files/webform-8.x.5.x-features--settings-submissions.png" alt="Configuration settings: Submissions" /><br/>
+    <strong>Submissions</strong>
     </a>
     </div></td>
     <td width="50%"><div class="note">
@@ -165,8 +165,8 @@ Form settings include:
 
 ### Submissions settings
 
-Allows a submission's labels, behaviors, limits, and draft settings to be 
-customized. 
+Allows a submission's labels, behaviors, limits, and draft settings to be
+customized.
 
 Submission settings include:
 
@@ -177,7 +177,7 @@ Submission settings include:
 
 ### Confirmation settings
 
-Allows the form's confirmation type, message, and URL to be customized. 
+Allows the form's confirmation type, message, and URL to be customized.
 
 Confirmation types include:
 
@@ -186,7 +186,7 @@ Confirmation types include:
 - Displaying of a custom status message
 - Opening a modal dialog
 
-<table class="views-view-grid" width="100%">  
+<table class="views-view-grid" width="100%">
   <tr>
     <td width="50%"><div class="note">
     <a href="https://www.drupal.org/files/webform-8.x.5.x-features--settings-handlers.png">
@@ -206,9 +206,9 @@ Confirmation types include:
 
 ### Emails / Handlers
 
-Allows additional actions and behaviors to be processed when a webform or 
-submission is created, updated, or deleted. Handlers are used to route 
-submitted data to external applications and send notifications & confirmations. 
+Allows additional actions and behaviors to be processed when a webform or
+submission is created, updated, or deleted. Handlers are used to route
+submitted data to external applications and send notifications & confirmations.
 
 Email support features include:
 
@@ -222,7 +222,7 @@ Remote post features include:
 - Posting selected elements to a remote server
 - Adding custom parameters to remote post requests
 
-<table class="views-view-grid" width="100%">  
+<table class="views-view-grid" width="100%">
   <tr>
     <td width="50%"><div class="note">
     <a href="https://www.drupal.org/files/webform-8.x.5.x-features--settings-assets.png">
@@ -242,14 +242,14 @@ Remote post features include:
 ### CSS/JS assets
 
 The CSS/JS assets page allows site builders to attach custom CSS and JavaScript
-to a webform.  Custom CSS can be used to make simple layout or design tweaks 
-to a form. Custom JavaScript allows additional conditional logic and 
+to a webform.  Custom CSS can be used to make simple layout or design tweaks
+to a form. Custom JavaScript allows additional conditional logic and
 behaviors to be added to a form.
 
 ### Access settings
 
-Allows an administrator to determine who can administer a webform and/or create, 
-update, delete, and purge webform submissions. 
+Allows an administrator to determine who can administer a webform and/or create,
+update, delete, and purge webform submissions.
 
 ## Elements
 
@@ -268,9 +268,9 @@ update, delete, and purge webform submissions.
     </a>
     </div></td>
   </tr>
-</table>  
+</table>
 
-The Webform module is built directly on top of Drupal 8's Form API. 
+The Webform module is built directly on top of Drupal 8's Form API.
 Every form element available in Drupal 8 is supported by the Webform module.
 
 Form elements include:
@@ -285,7 +285,7 @@ Form elements include:
 
 ### Element settings
 
-All of Drupal 8's default form element properties and behaviors are supported. 
+All of Drupal 8's default form element properties and behaviors are supported.
 There are also several custom webform element properties and settings available
 to enhance a form element's behavior.
 
@@ -302,7 +302,7 @@ Standard and custom properties allow for:
 - Private elements, visible only to administrators
 - Unique values per element
 
-<table class="views-view-grid" width="100%">  
+<table class="views-view-grid" width="100%">
   <tr>
     <td width="50%"><div class="note">
     <a href="https://www.drupal.org/files/webform-8.x.5.x-features--elements-conditional.png">
@@ -321,7 +321,7 @@ Standard and custom properties allow for:
 
 ### States/Conditional logic
 
-Drupal's State API can be used by developers to provide conditional logic 
+Drupal's State API can be used by developers to provide conditional logic
 to hide and show form elements.
 
 Drupal's State API supports:
@@ -333,11 +333,11 @@ Drupal's State API supports:
 
 ### Viewing source
 
-At the heart of a Webform module's form elements is a Drupal 
-[render array](https://www.drupal.org/docs/8/api/render-api/render-arrays), 
-which can be edited and managed by developers. The Drupal render array 
+At the heart of a Webform module's form elements is a Drupal
+[render array](https://www.drupal.org/docs/8/api/render-api/render-arrays),
+which can be edited and managed by developers. The Drupal render array
 gives developers complete control over a webform's elements, layout,
-and look-and-feel by allowing developers to make bulk updates 
+and look-and-feel by allowing developers to make bulk updates
 to a webform's label, descriptions, and behaviors.
 
 ## Forms
@@ -361,15 +361,15 @@ to a webform's label, descriptions, and behaviors.
 
 ### Accessibility
 
-The outputted forms and even the Webform module's administrative interface 
+The outputted forms and even the Webform module's administrative interface
 (i.e. form builder) are accessible using keyboard navigation and screen readers.
 The Webform module complies with [WCAG 2.0](http://www.w3.org/TR/WCAG20/#contents)
 and [ATAG 2.0](http://www.w3.org/TR/ATAG20/#contents) guidelines.
 
 ### Multistep form
 
-Forms can be broken up into multiple pages using a progress bar. 
-Authenticated users can save drafts and/or have their changes automatically 
+Forms can be broken up into multiple pages using a progress bar.
+Authenticated users can save drafts and/or have their changes automatically
 saved as they progress through a long form.
 
 Multistep form features include:
@@ -397,9 +397,9 @@ Multistep form features include:
   </tr>
 </table>
 
-Webforms can be attached to nodes or displayed as blocks. 
+Webforms can be attached to nodes or displayed as blocks.
 Webforms can also have dedicated SEO-friendly URLs.
-Form elements are render arrays that can easily be altered using 
+Form elements are render arrays that can easily be altered using
 custom hooks and/or plugins.
 
 ## Results management
@@ -421,7 +421,7 @@ custom hooks and/or plugins.
   </tr>
 </table>
 
-Form submissions can optionally be stored in the database, reviewed, 
+Form submissions can optionally be stored in the database, reviewed,
 and downloaded. Submissions can also be flagged with administrative notes.
 
 Results management features include:
@@ -431,7 +431,7 @@ Results management features include:
 - Customizable reports
 - Downloading results as a CSV to Google Sheets or MS Excel
 - Saving of download preferences per form
-- [Drupal Views](https://www.drupal.org/docs/8/core/modules/views) integration 
+- [Drupal Views](https://www.drupal.org/docs/8/core/modules/views) integration
 for advanced reporting.
 
 ## Access controls
@@ -453,10 +453,10 @@ for advanced reporting.
   </tr>
 </table>
 
-The Webform module provides full access controls and permissions for managing 
-who can create forms, post submissions, and access a webform's results. 
-Access controls can be applied to roles and/or specific users. 
-The Webform access submodule allows you to even setup reusable permission 
+The Webform module provides full access controls and permissions for managing
+who can create forms, post submissions, and access a webform's results.
+Access controls can be applied to roles and/or specific users.
+The Webform access submodule allows you to even setup reusable permission
 groups which can be applied to multiple instances of the same webform.
 
 Access controls allow users to:
@@ -489,8 +489,8 @@ Access controls allow users to:
   </tr>
 </table>
 
-The Webform module provides a few starter templates and multiple example 
-forms which webform administrators can update or use to create new 
+The Webform module provides a few starter templates and multiple example
+forms which webform administrators can update or use to create new
 reusable templates for their organization.
 
 Starter templates include:
@@ -527,22 +527,22 @@ Starter templates include:
 
 
 Administrators can define reusable global options for select menus, checkboxes,
-and radio buttons. The Webform module includes default options for states, 
+and radio buttons. The Webform module includes default options for states,
 countries, demographics, likert answers, and more.
 
 Reusable options include:
 
 - **Geographic**: Languages, country, and states
 - **Date and time**: Days, months, and time zones
-- **Demographic**: Education, employment status, ethnicity, Industry, 
+- **Demographic**: Education, employment status, ethnicity, Industry,
 languages, marital status, relationship, size, and job titles
-- **Likert**: Agreement, comparison, importance, quality, satisfaction, 
+- **Likert**: Agreement, comparison, importance, quality, satisfaction,
 ten scale, and would you
 
 
 ## Internationalization
 
-Forms and configuration can be translated into multiple languages using 
+Forms and configuration can be translated into multiple languages using
 Drupal's [configuration translation system](https://www.drupal.org/docs/8/core/modules/config-translation.
 
 ## Add-ons
@@ -565,14 +565,14 @@ Drupal's [configuration translation system](https://www.drupal.org/docs/8/core/m
 </table>
 
 There are [dozens of add-ons available](https://www.drupal.org/node/2837065)
-that extend and/or provide additional functionality to the Webform module 
-and Drupal's Form API. 
+that extend and/or provide additional functionality to the Webform module
+and Drupal's Form API.
 
 Add-ons include:
 
 - Analysis for creating graphs and charts
 - CRM integration including SalesForce, HubSpot, MyEmma, SugarCRM, more…
-- SPAM protection 
+- SPAM protection
 - Advanced workflows
 - Data encryption
 - GDPR compliance
@@ -596,7 +596,7 @@ Add-ons include:
   </tr>
 </table>
 
-Examples and tools are provided to help developers get started customizing 
+Examples and tools are provided to help developers get started customizing
 existing features and adding new features to the Webform module.
 
 Development tools include:

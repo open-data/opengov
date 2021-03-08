@@ -175,7 +175,7 @@ class WebformEmailProvider implements WebformEmailProviderInterface {
    */
   public function getMailPluginDefinition() {
     $plugin_id = $this->getMailPluginId();
-    return ($plugin_id) ? $this->mailManager->getDefinition($plugin_id) : NULL;
+    return ($plugin_id && $this->mailManager->hasDefinition($plugin_id)) ? $this->mailManager->getDefinition($plugin_id) : NULL;
   }
 
 }

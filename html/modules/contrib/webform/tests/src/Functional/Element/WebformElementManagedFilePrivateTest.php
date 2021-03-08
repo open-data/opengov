@@ -10,7 +10,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Test for webform element managed file handling.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementManagedFilePrivateTest extends WebformElementManagedFileTestBase {
 
@@ -87,13 +87,13 @@ class WebformElementManagedFilePrivateTest extends WebformElementManagedFileTest
     $edit = [
       'files[managed_file_single]' => \Drupal::service('file_system')->realpath($this->files[1]->uri),
     ];
-    $this->drupalPostForm('/webform/' . $webform->id(), $edit, t('Preview'));
+    $this->drupalPostForm('/webform/' . $webform->id(), $edit, 'Preview');
 
     $temp_file_uri = file_create_url('private://webform/test_element_managed_file/_sid_/' . basename($this->files[1]->uri));
 
     // Check that temp file is not linked.
-    $this->assertNoRaw('<span class="file file--mime-text-plain file--text"> <a href="' . $temp_file_uri . '" type="text/plain; length=16384">text-1.txt</a></span>');
-    $this->assertRaw('<span class="file file--mime-text-plain file--text"> ' . basename($this->files[1]->uri) . '</span>');
+    $this->assertNoRaw('<span class="file file--mime-text-plain file--text"><a href="' . $temp_file_uri . '" type="text/plain; length=16384">text-1.txt</a></span>');
+    $this->assertRaw('<span class="file file--mime-text-plain file--text">' . basename($this->files[1]->uri) . '</span>');
 
     // Check that anonymous user can't access temp file.
     $this->drupalGet($temp_file_uri);

@@ -1,3 +1,4 @@
+uuid: null
 langcode: en
 status: open
 dependencies:
@@ -24,13 +25,16 @@ elements: |
     first_name:
       '#title': 'First Name'
       '#type': textfield
+      '#required': true
     last_name:
       '#title': 'Last Name'
       '#type': textfield
+      '#required': true
     gender:
       '#type': webform_radios_other
       '#title': Gender
       '#options': gender
+      '#required': true
   contact:
     '#title': 'Contact Information'
     '#type': webform_wizard_page
@@ -38,9 +42,11 @@ elements: |
     email:
       '#title': Email
       '#type': email
+      '#required': true
     phone:
       '#title': Phone
       '#type': tel
+      '#required': true
     contact_via_phone:
       '#type': radios
       '#title': 'Can we contact you via phone?'
@@ -51,15 +57,11 @@ elements: |
     '#open': true
     comments:
       '#type': textarea
-  actions:
-    '#type': webform_actions
-    '#title': 'Submit button(s)'
-    '#submit__label': Apply
   
 css: ''
 javascript: ''
 settings:
-  ajax: false
+  ajax: true
   ajax_scroll_top: form
   ajax_progress_type: ''
   ajax_effect: ''
@@ -67,7 +69,7 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -97,6 +99,11 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
   submission_views: {  }
@@ -122,11 +129,19 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: true
   wizard_progress_states: false
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: true
   wizard_confirmation: true
   wizard_confirmation_label: ''
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 2
   preview_label: ''
   preview_title: ''
@@ -172,6 +187,8 @@ settings:
   results_customize: false
   token_view: false
   token_update: false
+  token_delete: false
+  serial_disabled: false
 access:
   create:
     roles:

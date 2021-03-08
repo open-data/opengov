@@ -24,7 +24,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
   protected $limit = FALSE;
 
   /**
-   * Access group storage.
+   * The access group storage.
    *
    * @var \Drupal\webform_access\WebformAccessGroupStorageInterface
    */

@@ -9,7 +9,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for webform element prepopulate.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
 
@@ -42,7 +42,7 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
     $this->assertFieldByName('textfield_01', '');
     $this->assertFieldByName('textfield_prepopulate_01', '{default_value_01}');
     $this->assertFieldByName('files[managed_file_prepopulate_01]', '');
-    $this->drupalPostForm('/webform/test_element_prepopulate', [], t('Next Page >'));
+    $this->drupalPostForm('/webform/test_element_prepopulate', [], 'Next >');
     $this->assertFieldByName('textfield_02', '');
     $this->assertFieldByName('textfield_prepopulate_02', '{default_value_02}');
 
@@ -59,10 +59,10 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
     ];
     $this->drupalGet('/webform/test_element_prepopulate', $options);
     $this->assertFieldByName('textfield_prepopulate_01', 'value_01');
-    $this->drupalPostForm('/webform/test_element_prepopulate', [], t('Next Page >'), $options);
+    $this->drupalPostForm('/webform/test_element_prepopulate', [], 'Next >', $options);
     $this->assertFieldByName('textfield_prepopulate_02', 'value_02');
 
-    // Check prepopulating textfield on multiple pages and changing the value
+    // Check prepopulating textfield on multiple pages and changing the value.
     $options = [
       'query' => [
         'textfield_prepopulate_01' => 'value_01',
@@ -71,9 +71,9 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
     ];
     $this->drupalGet('/webform/test_element_prepopulate', $options);
     $this->assertFieldByName('textfield_prepopulate_01', 'value_01');
-    $this->drupalPostForm('/webform/test_element_prepopulate', ['textfield_prepopulate_01' => 'edit_01'], t('Next Page >'), $options);
+    $this->drupalPostForm('/webform/test_element_prepopulate', ['textfield_prepopulate_01' => 'edit_01'], 'Next >', $options);
     $this->assertFieldByName('textfield_prepopulate_02', 'value_02');
-    $this->drupalPostForm(NULL, [], t('< Previous Page'), $options);
+    $this->drupalPostForm(NULL, [], '< Previous', $options);
     $this->assertNoFieldByName('textfield_prepopulate_01', 'value_01');
     $this->assertFieldByName('textfield_prepopulate_01', 'edit_01');
 
@@ -83,8 +83,8 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
     $edit = [
       'files[managed_file_prepopulate_01]' => \Drupal::service('file_system')->realpath($files[0]->uri),
     ];
-    $this->drupalPostForm('/webform/test_element_prepopulate', $edit, t('Next Page >'));
-    $this->drupalPostForm(NULL, [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_prepopulate', $edit, 'Next >');
+    $this->drupalPostForm(NULL, [], 'Submit');
     $sid = $this->getLastSubmissionId($webform);
     $webform_submission = WebformSubmission::load($sid);
     $fid = $webform_submission->getElementData('managed_file_prepopulate_01');

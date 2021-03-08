@@ -8,6 +8,7 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Plugin\WebformVariantBase;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformYaml;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -174,6 +175,11 @@ class OverrideWebformVariant extends WebformVariantBase {
     $elements = Yaml::decode($values['elements']) ?: [];
     if ($elements) {
       foreach ($elements as $element_key => $element_properties) {
+        // Skip custom form property.
+        if (WebformElementHelper::property($element_key)) {
+          continue;
+        }
+
         $element = $webform->getElement($element_key);
         if (!$element) {
           $form_state->setErrorByName('elements', $this->t('Element %key is not a valid element key.', ['%key' => $element_key]));
@@ -218,11 +224,18 @@ class OverrideWebformVariant extends WebformVariantBase {
     $elements = Yaml::decode($this->configuration['elements']) ?: [];
     if ($elements) {
       foreach ($elements as $element_key => $element_properties) {
-        $element = $webform->getElement($element_key);
-        if (!$element) {
-          continue;
+        if (WebformElementHelper::property($element_key)) {
+          // Set custom form property.
+          $webform->setElements([$element_key => $element_properties] + $webform->getElementsDecoded());
         }
-        $webform->setElementProperties($element_key, $element_properties + $element);
+        else {
+          $element = $webform->getElement($element_key);
+          if (!$element) {
+            continue;
+          }
+          $webform->setElementProperties($element_key, $element_properties + $element);
+        }
+
       }
     }
 

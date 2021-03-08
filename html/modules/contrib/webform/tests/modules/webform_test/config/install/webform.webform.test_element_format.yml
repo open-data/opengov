@@ -1,3 +1,4 @@
+uuid: null
 langcode: en
 status: open
 dependencies:
@@ -496,15 +497,15 @@ elements: |
         '#title': 'Image select (Value)'
         '#show_label': true
         '#images':
-          bear_1:
-            text: 'Bear 1'
-            src: 'https://www.placebear.com/80/100'
-          bear_2:
-            text: 'Bear 2'
-            src: 'https://www.placebear.com/100/100'
-          bear_3:
-            text: 'Bear 3'
-            src: 'https://www.placebear.com/120/100'
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
         '#default_value': Loremipsum
         '#format': value
       webform_image_select_raw:
@@ -512,15 +513,15 @@ elements: |
         '#title': 'Image select (Raw value)'
         '#show_label': true
         '#images':
-          bear_1:
-            text: 'Bear 1'
-            src: 'https://www.placebear.com/80/100'
-          bear_2:
-            text: 'Bear 2'
-            src: 'https://www.placebear.com/100/100'
-          bear_3:
-            text: 'Bear 3'
-            src: 'https://www.placebear.com/120/100'
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
         '#default_value': Loremipsum
         '#format': raw
       webform_image_select_image:
@@ -528,15 +529,15 @@ elements: |
         '#title': 'Image select (Image)'
         '#show_label': true
         '#images':
-          bear_1:
-            text: 'Bear 1'
-            src: 'https://www.placebear.com/80/100'
-          bear_2:
-            text: 'Bear 2'
-            src: 'https://www.placebear.com/100/100'
-          bear_3:
-            text: 'Bear 3'
-            src: 'https://www.placebear.com/120/100'
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
         '#default_value': Loremipsum
         '#format': image
     radios:
@@ -1304,7 +1305,7 @@ elements: |
         '#title': 'Machine name (Raw value)'
         '#default_value': loremipsum
         '#format': raw
-  
+
 css: ''
 javascript: ''
 settings:
@@ -1316,7 +1317,7 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -1346,6 +1347,11 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
   submission_views: {  }
@@ -1371,11 +1377,19 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 1
   preview_label: ''
   preview_title: ''
@@ -1421,6 +1435,8 @@ settings:
   results_customize: false
   token_view: false
   token_update: false
+  token_delete: false
+  serial_disabled: false
 access:
   create:
     roles:
@@ -1472,6 +1488,7 @@ handlers:
   email_text:
     id: email
     label: 'Email (Text)'
+    notes: ''
     handler_id: email_text
     status: true
     conditions: {  }
@@ -1508,6 +1525,7 @@ handlers:
   email_html:
     id: email
     label: 'Email (HTML)'
+    notes: ''
     handler_id: email_html
     status: true
     conditions: {  }

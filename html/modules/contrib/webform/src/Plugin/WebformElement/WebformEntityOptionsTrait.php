@@ -23,12 +23,24 @@ trait WebformEntityOptionsTrait {
       $properties['options'],
       $properties['options_description_display']
     );
-    if ($this->getPluginId() === 'webform_entity_radios') {
-      unset(
-        $properties['format_items'],
-        $properties['format_items_html'],
-        $properties['format_items_text']
-      );
+    switch ($this->getPluginId()) {
+      case 'webform_entity_checkboxes':
+        // Remove 'None of the above' options.
+        unset(
+          $properties['options_none'],
+          $properties['options_none_value'],
+          $properties['options_none_text']
+        );
+        break;
+
+      case 'webform_entity_radios':
+        // Remove format multiple items.
+        unset(
+          $properties['format_items'],
+          $properties['format_items_html'],
+          $properties['format_items_text']
+        );
+        break;
     }
     return $properties;
   }

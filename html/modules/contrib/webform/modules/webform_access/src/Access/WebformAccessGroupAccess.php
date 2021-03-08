@@ -21,7 +21,7 @@ class WebformAccessGroupAccess {
     if ($account->hasPermission('administer webform')) {
       $access_result = AccessResult::allowed();
     }
-    elseif (self::isAdmin($account)) {
+    elseif (static::isAdmin($account)) {
       $access_result = AccessResult::allowed();
       $access_result->addCacheTags(['webform_access_group_list']);
     }

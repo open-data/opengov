@@ -56,7 +56,7 @@ class WebformOptionsHelper {
           return $has_value;
         }
       }
-      elseif ($value == $option_value) {
+      elseif ((string) $value === (string) $option_value) {
         return TRUE;
       }
     }
@@ -82,6 +82,32 @@ class WebformOptionsHelper {
   }
 
   /**
+   * Determine if option text includes a description.
+   *
+   * @param string $text
+   *   Option text.
+   *
+   * @return bool
+   *   TRUE option text includes a description.
+   */
+  public static function hasOptionDescription($text) {
+    return (strpos($text, WebformOptionsHelper::DESCRIPTION_DELIMITER) !== FALSE) ? TRUE : FALSE;
+  }
+
+  /**
+   * Split option text into an array containing an option's text and description.
+   *
+   * @param string $text
+   *   Option text.
+   *
+   * @return array
+   *   An array containing an option's text and description.
+   */
+  public static function splitOption($text) {
+    return explode(static::DESCRIPTION_DELIMITER, $text);
+  }
+
+  /**
    * Get the text string for an option value.
    *
    * @param string $value
@@ -104,7 +130,7 @@ class WebformOptionsHelper {
       }
       elseif ($value !== NULL && (string) $value === (string) $option_value) {
         if ($options_description && strpos($option_text, static::DESCRIPTION_DELIMITER) !== FALSE) {
-          list($option_text) = explode(static::DESCRIPTION_DELIMITER, $option_text);
+          list($option_text) = static::splitOption($option_text);
           return $option_text;
         }
         else {
@@ -137,7 +163,7 @@ class WebformOptionsHelper {
       }
       elseif ($value !== NULL && (string) $value === (string) $option_value) {
         if ($options_description && strpos($option_text, static::DESCRIPTION_DELIMITER) !== FALSE) {
-          list($option_text, $option_description) = explode(static::DESCRIPTION_DELIMITER, $option_text);
+          list($option_text, $option_description) = static::splitOption($option_text);
           return $option_description;
         }
         else {

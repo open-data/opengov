@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for element allowed tags.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementAllowsTagsTest extends WebformElementBrowserTestBase {
 

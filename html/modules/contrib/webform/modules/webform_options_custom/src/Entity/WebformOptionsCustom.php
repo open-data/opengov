@@ -262,12 +262,12 @@ class WebformOptionsCustom extends ConfigEntityBase implements WebformOptionsCus
    */
   public function getTemplate() {
     switch ($this->type) {
-      case static::TYPE_URL:
+      case WebformOptionsCustomInterface::TYPE_URL:
         $url = $this->getUrl();
         return ($url) ? file_get_contents($url) : '';
 
       default:
-      case static::TYPE_TEMPLATE:
+      case WebformOptionsCustomInterface::TYPE_TEMPLATE:
         return $this->template;
     }
   }

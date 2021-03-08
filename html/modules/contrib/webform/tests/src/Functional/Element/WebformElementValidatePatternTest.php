@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for webform pattern validation.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementValidatePatternTest extends WebformElementBrowserTestBase {
 
@@ -34,11 +34,11 @@ class WebformElementValidatePatternTest extends WebformElementBrowserTestBase {
       'pattern_error_html' => 'GoodBye',
       'pattern_unicode' => 'Unicode',
     ];
-    $this->drupalPostForm('/webform/test_element_validate_pattern', $edit, t('Submit'));
-    $this->assertRaw('<li class="messages__item"><em class="placeholder">pattern</em> field is not in the right format.</li>');
-    $this->assertRaw('<li class="messages__item">You did not enter &#039;Hello&#039;</li>');
-    $this->assertRaw('<li class="messages__item">You did not enter <strong>Hello</strong></li>');
-    $this->assertRaw('<li class="messages__item"><em class="placeholder">pattern_unicode</em> field is not in the right format.</li>');
+    $this->drupalPostForm('/webform/test_element_validate_pattern', $edit, 'Submit');
+    $this->assertRaw('<li><em class="placeholder">pattern</em> field is not in the right format.</li>');
+    $this->assertRaw('<li>You did not enter &#039;Hello&#039;</li>');
+    $this->assertRaw('<li>You did not enter <strong>Hello</strong></li>');
+    $this->assertRaw('<li><em class="placeholder">pattern_unicode</em> field is not in the right format.</li>');
 
     // Check validation.
     $edit = [
@@ -47,11 +47,11 @@ class WebformElementValidatePatternTest extends WebformElementBrowserTestBase {
       'pattern_error_html' => 'Hello',
       'pattern_unicode' => '⺏',
     ];
-    $this->drupalPostForm('/webform/test_element_validate_pattern', $edit, t('Submit'));
-    $this->assertNoRaw('<li class="messages__item"><em class="placeholder">pattern</em> field is not in the right format.</li>');
-    $this->assertNoRaw('<li class="messages__item">You did not enter &#039;Hello&#039;</li>');
-    $this->assertNoRaw('<li class="messages__item">You did not enter <strong>Hello</strong></li>');
-    $this->assertNoRaw('<li class="messages__item"><em class="placeholder">pattern_unicode</em> field is not in the right format.</li>');
+    $this->drupalPostForm('/webform/test_element_validate_pattern', $edit, 'Submit');
+    $this->assertNoRaw('<li><em class="placeholder">pattern</em> field is not in the right format.</li>');
+    $this->assertNoRaw('<li>You did not enter &#039;Hello&#039;</li>');
+    $this->assertNoRaw('<li>You did not enter <strong>Hello</strong></li>');
+    $this->assertNoRaw('<li><em class="placeholder">pattern_unicode</em> field is not in the right format.</li>');
   }
 
 }

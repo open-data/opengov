@@ -1,6 +1,6 @@
 /**
  * @file
- * Element options display styles.
+ * Options element styles.
  *
  * @see /webform/example_layout_basic
  */
@@ -15,7 +15,8 @@
  */
 @media (min-width: 400px) {
   .webform-options-display-two-columns {
-    display: inline-block;
+    display: block;
+    max-width: 900px;
     margin-top: 0.4em;
     -moz-column-count: 2;
     -webkit-column-count: 2;
@@ -23,7 +24,8 @@
   }
 
   .webform-options-display-three-columns {
-    display: inline-block;
+    display: block;
+    max-width: 900px;
     margin-top: 0.4em;
     -moz-column-count: 3;
     -webkit-column-count: 3;
@@ -100,6 +102,26 @@
   cursor: not-allowed;
   color: #999;
   border-color: #ccc;
+}
+
+/**
+ * Horizontal.
+ */
+.webform-options-display-buttons-horizontal .webform-options-display-buttons-wrapper {
+  flex: none;
+}
+
+/**
+ * Vertical.
+ */
+.webform-options-display-buttons-vertical,
+.form-composite.webform-fieldset--title-inline .fieldset-wrapper > div.webform-options-display-buttons-vertical {
+  flex-direction: column;
+}
+
+.webform-options-display-buttons-vertical .webform-options-display-buttons-wrapper {
+  flex: 1;
+  margin: 0 5px 0 5px;
 }
 
 /**

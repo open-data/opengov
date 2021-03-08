@@ -9,7 +9,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform submission form ajax.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsAjaxTest extends WebformBrowserTestBase {
 

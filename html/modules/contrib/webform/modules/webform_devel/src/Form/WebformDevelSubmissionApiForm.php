@@ -19,14 +19,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class WebformDevelSubmissionApiForm extends FormBase {
 
   /**
-   * Webform submission storage.
+   * The webform submission storage.
    *
    * @var \Drupal\webform\WebformSubmissionStorageInterface
    */
   protected $submissionStorage;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */
@@ -132,12 +132,12 @@ class WebformDevelSubmissionApiForm extends FormBase {
 $values = ' . Variable::export($values) . ';
 
 // Check that the webform is open.
-$webform = \Drupal\webform\entity\Webform::load(\'' . $webform->id() . '\'); 
+$webform = \Drupal\webform\entity\Webform::load(\'' . $webform->id() . '\');
 $is_open = \Drupal\webform\WebformSubmissionForm::isOpen($webform);
 if ($is_open === TRUE) {
   // Validate webform submission values.
   $errors = \Drupal\webform\WebformSubmissionForm::validateFormValues($values);
-  
+
   // Submit webform submission values.
   if (empty($errors)) {
     $webform_submission = \Drupal\webform\WebformSubmissionForm::submitFormValues($values);

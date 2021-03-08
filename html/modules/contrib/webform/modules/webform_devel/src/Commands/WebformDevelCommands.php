@@ -52,7 +52,7 @@ class WebformDevelCommands extends DrushCommands {
   public function drush_webform_devel_config_update() {
     module_load_include('inc', 'webform', 'includes/webform.install');
 
-    $files = file_scan_directory(drupal_get_path('module', 'webform'), '/^webform\.webform\..*\.yml$/');
+    $files = $files = \Drupal::service('file_system')->scanDirectory(drupal_get_path('module', 'webform'), '/^webform\.webform\..*\.yml$/');
     $total = 0;
     foreach ($files as $filename => $file) {
       try {
@@ -70,7 +70,7 @@ class WebformDevelCommands extends DrushCommands {
         $data = _webform_update_webform_setting($data);
         $tidied_yaml = WebformYaml::encode($data) . PHP_EOL;
 
-        if ($tidied_yaml != $original_yaml) {
+        if ($tidied_yaml !== $original_yaml) {
           $this->output()->writeln(dt('Updating @file…', ['@file' => $file->filename]));
           file_put_contents($file->uri, $tidied_yaml);
           $total++;

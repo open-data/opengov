@@ -40,7 +40,7 @@ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
   protected $tokenManager;
 
   /**
-   * The webform element (plugin) manager.
+   * The webform element plugin manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
@@ -179,7 +179,7 @@ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
       return $value;
     }
     else {
-       return '<T>' . $value . '</T>';
+      return '<T>' . $value . '</T>';
     }
   }
 

@@ -20,7 +20,7 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
   protected function defineDefaultProperties() {
     return [
       // Markup settings.
-      'display_on' => static::DISPLAY_ON_FORM,
+      'display_on' => WebformElementDisplayOnInterface::DISPLAY_ON_FORM,
     ] + $this->defineDefaultBaseProperties();
   }
 
@@ -59,7 +59,7 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
     parent::prepare($element, $webform_submission);
 
     // Hide element if it should not be displayed on 'form'.
-    if ($this->hasProperty('display_on') && !$this->isDisplayOn($element, static::DISPLAY_ON_FORM)) {
+    if ($this->hasProperty('display_on') && !$this->isDisplayOn($element, WebformElementDisplayOnInterface::DISPLAY_ON_FORM)) {
       $element['#access'] = FALSE;
     }
 
@@ -74,7 +74,7 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
    */
   public function buildHtml(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     // Hide element if it should not be displayed on 'view'.
-    if (!$this->isDisplayOn($element, static::DISPLAY_ON_VIEW)) {
+    if (!$this->isDisplayOn($element, WebformElementDisplayOnInterface::DISPLAY_ON_VIEW)) {
       return [];
     }
 
@@ -99,7 +99,7 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
    */
   public function buildText(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     // Hide element if it should not be displayed on 'view'.
-    if (!$this->isDisplayOn($element, static::DISPLAY_ON_VIEW)) {
+    if (!$this->isDisplayOn($element, WebformElementDisplayOnInterface::DISPLAY_ON_VIEW)) {
       return [];
     }
 

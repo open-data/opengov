@@ -77,7 +77,7 @@ function webform_access_token_info() {
  */
 function webform_access_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
-  if ($type == 'webform_access' && !empty($data['webform_access'])) {
+  if ($type === 'webform_access' && !empty($data['webform_access'])) {
     /** @var \Drupal\webform_access\WebformAccessGroupStorageInterface $webform_access_group_storage */
     $webform_access_group_storage = \Drupal::entityTypeManager()->getStorage('webform_access_group');
 

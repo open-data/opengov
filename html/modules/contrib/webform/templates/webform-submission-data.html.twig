@@ -13,11 +13,11 @@
  */
 #}
 {%
-set classes = [
-'webform-submission-data',
-'webform-submission-data--webform-' ~ webform.id()|clean_class,
-view_mode ? 'webform-submission-data--view-mode-' ~ view_mode|clean_class,
-]
+  set classes = [
+    'webform-submission-data',
+    'webform-submission-data--webform-' ~ webform.id()|clean_class,
+    view_mode ? 'webform-submission-data--view-mode-' ~ view_mode|clean_class,
+  ]
 %}
 <div{{ attributes.addClass(classes) }}>
 {{ elements }}

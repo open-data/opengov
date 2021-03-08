@@ -31,7 +31,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
   protected $dateFormatter;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */
@@ -275,7 +275,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
 
       case 'url':
         $import_url = $form_state->getValue('import_url');
-        $file_path = tempnam(file_directory_temp(), 'webform_submission_export_import_') . '.csv';
+        $file_path = tempnam(\Drupal::service('file_system')->getTempDirectory(), 'webform_submission_export_import_') . '.csv';
         file_put_contents($file_path, file_get_contents($import_url));
 
         $form_field_name = $this->t('Submission CSV (Comma Separated Values) file');
@@ -631,7 +631,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     $context['message'] = t('Imported @count of @total submissions…', ['@count' => $context['sandbox']['progress'], '@total' => $context['sandbox']['max']]);
 
     // Track finished.
-    if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    if ($context['sandbox']['progress'] !== $context['sandbox']['max']) {
       $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
     }
 

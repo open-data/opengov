@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for email webform handler email roles functionality.
  *
- * @group Webform
+ * @group webform
  */
 class WebformHandlerEmailRolesTest extends WebformBrowserTestBase {
 

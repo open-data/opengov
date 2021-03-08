@@ -8,6 +8,7 @@
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
@@ -15,6 +16,7 @@ use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Entity\Webform;
+use Drupal\webform\WebformInterface;
 
 /**
  * Implements hook_entity_type_alter().
@@ -25,6 +27,22 @@ function webform_node_entity_type_alter(array &$entity_types) {
     $webform_entity_type = $entity_types['webform'];
     $webform_entity_type->setLinkTemplate('references', '/admin/structure/webform/manage/{webform}/references');
   }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function webform_node_entity_operation(EntityInterface $entity) {
+  $operations = [];
+  if ($entity instanceof WebformInterface
+    && $entity->access('update')) {
+    $operations['references'] = [
+      'title' => t('References'),
+      'url' => $entity->toUrl('references'),
+      'weight' => 40,
+    ];
+  }
+  return $operations;
 }
 
 /**

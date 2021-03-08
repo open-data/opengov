@@ -31,6 +31,8 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
       /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
       $token_manager = \Drupal::service('webform.token_manager');
       $url = $token_manager->replace($url, $webform_submission);
+      // Url can be a URI.
+      $url = file_create_url($url) ?: $url;
       // Prepend scheme and host to root relative path.
       if (strpos($url, '/') === 0) {
         $url = \Drupal::request()->getSchemeAndHttpHost() . $url;
@@ -48,11 +50,10 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
    */
   public static function getFileName(array $element, WebformSubmissionInterface $webform_submission) {
     if (!isset($element['#filename']) && !empty($element['#url'])) {
-      $filename = basename($element['#url']);
       /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
       $token_manager = \Drupal::service('webform.token_manager');
-      $filename = $token_manager->replace($filename, $webform_submission);
-      return $filename;
+      $url = $token_manager->replace($element['#url'], $webform_submission);
+      return basename($url);
     }
     else {
       return parent::getFileName($element, $webform_submission);

@@ -10,7 +10,7 @@
  * @ingroup themeable
  */
 #}
-{% if settings.debug %}<b class="color-error">{{ 'Debugging is enabled'|t }}</b><br />{% endif %}
+{% if settings.debug %}<strong class="color-error">{{ 'Debugging is enabled'|t }}</strong><br />{% endif %}
 <b>{{ 'Completed URL:'|t }}</b> {{ settings.completed_url }}<br />
 {% if settings.updated_url %}<b>{{ 'Updated URL:'|t }}</b> {{ settings.updated_url }}<br />{% endif %}
 {% if settings.deleted_url %}<b>{{ 'Deleted URL:'|t }}</b> {{ settings.deleted_url }}<br />{% endif %}

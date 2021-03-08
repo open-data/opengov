@@ -82,6 +82,11 @@ function webform_token_info() {
     'description' => t('The URL that can used to update the webform submission. The webform must be configured to allow users to update a submission using a secure token.'),
     'type' => 'url',
   ];
+  $webform_submission['delete-url'] = [
+    'name' => t('Delete (token) URL'),
+    'description' => t('The URL that can used to delete the webform submission. The webform must be configured to allow users to delete a submission using a secure token.'),
+    'type' => 'url',
+  ];
   $webform_submission['langcode'] = [
     'name' => t('Langcode'),
     'description' => t('The language code of the webform submission.'),
@@ -103,12 +108,12 @@ function webform_token_info() {
     'description' => t('Is the webform submission in draft.'),
   ];
   $webform_submission['state'] = [
-    'name' => t('State'),
-    'description' => t('The state of the webform submission. (Unsaved, Draft, Completed, Updated, Locked, or Converted)'),
+    'name' => t('State (Name)'),
+    'description' => t('The state of the webform submission. (unsaved, draft, completed, updated, locked, or converted)'),
   ];
-  $webform_submission['state:raw'] = [
-    'name' => t('State (Raw value)'),
-    'description' => t('The state raw value untranslated of the webform submission. (unsaved, draft, completed, updated, locked, or converted)'),
+  $webform_submission['state:label'] = [
+    'name' => t('State (Label)'),
+    'description' => t('The state raw value untranslated of the webform submission. (Unsaved, Draft, Completed, Updated, Locked, or Converted)'),
   ];
   $webform_submission['label'] = [
     'name' => t('Label'),
@@ -424,12 +429,12 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
   }
 
   $replacements = [];
-  if ($type == 'webform_role' && !empty($data['webform_role'])) {
+  if ($type === 'webform_role' && !empty($data['webform_role'])) {
     $roles = $data['webform_role'];
     $any_role = in_array('authenticated', $roles) ? TRUE : FALSE;
     foreach ($tokens as $role_name => $original) {
       if ($any_role || in_array($role_name, $roles)) {
-        if ($role_name == 'authenticated') {
+        if ($role_name === 'authenticated') {
           // Get all active authenticated users.
           $query = \Drupal::database()->select('users_field_data', 'u');
           $query->fields('u', ['mail']);
@@ -455,7 +460,7 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
     }
 
   }
-  elseif ($type == 'webform_submission' && !empty($data['webform_submission'])) {
+  elseif ($type === 'webform_submission' && !empty($data['webform_submission'])) {
     /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
     $element_manager = \Drupal::service('plugin.manager.webform.element');
 
@@ -538,11 +543,9 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
           break;
 
         case 'view-url':
-          $replacements[$original] = $webform_submission->getTokenUrl('view')->toString();
-          break;
-
         case 'update-url':
-          $replacements[$original] = $webform_submission->getTokenUrl('update')->toString();
+        case 'delete-url':
+          $replacements[$original] = $webform_submission->getTokenUrl(str_replace('-url', '', $name))->toString();
           break;
 
         case 'token':
@@ -730,21 +733,21 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
       $replacements += $token_service->generate('webform', $webform_tokens, ['webform' => $webform], $options, $bubbleable_metadata);
     }
     if (($source_entity_tokens = $token_service->findWithPrefix($tokens, 'source-entity')) && ($source_entity = $webform_submission->getSourceEntity(TRUE))) {
-      $replacements += $token_service->generate($source_entity->getEntityTypeId(), $source_entity_tokens, [$source_entity->getEntityTypeId() => $source_entity], $options, $bubbleable_metadata);
+      $type = $source_entity->getEntityType()->get('token_type') ?: $source_entity->getEntityTypeId();
+      $replacements += $token_service->generate($type, $source_entity_tokens, [$type => $source_entity], $options, $bubbleable_metadata);
     }
     if (($submitted_to_tokens = $token_service->findWithPrefix($tokens, 'submitted-to')) && ($submitted_to = $webform_submission->getSourceEntity(TRUE) ?: $webform_submission->getWebform())) {
-      $replacements += $token_service->generate($submitted_to->getEntityTypeId(), $submitted_to_tokens, [$submitted_to->getEntityTypeId() => $submitted_to], $options, $bubbleable_metadata);
+      $type = $submitted_to->getEntityType()->get('token_type') ?: $submitted_to->getEntityTypeId();
+      $replacements += $token_service->generate($type, $submitted_to_tokens, [$type => $submitted_to], $options, $bubbleable_metadata);
     }
-    foreach (['view-url', 'update-url', 'source-url'] as $token) {
+    foreach (['view-url', 'update-url', 'delete-url', 'source-url'] as $token) {
       if ($url_tokens = $token_service->findWithPrefix($tokens, $token)) {
         $url = NULL;
         switch ($token) {
           case 'view-url':
-            $url = $webform_submission->getTokenUrl('view');
-            break;
-
           case 'update-url':
-            $url = $webform_submission->getTokenUrl('update');
+          case 'delete-url':
+            $url = $webform_submission->getTokenUrl(str_replace('-url', '', $token));
             break;
 
           case 'source-url':
@@ -758,7 +761,7 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
     }
 
   }
-  elseif ($type == 'webform' && !empty($data['webform'])) {
+  elseif ($type === 'webform' && !empty($data['webform'])) {
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = $data['webform'];
@@ -894,7 +897,7 @@ function _webform_token_get_submission_value($value_token, array $options, Webfo
   $element_key = array_shift($keys);
 
   // Build HTML values.
-  if ($element_key == 'html' && empty($keys)) {
+  if ($element_key === 'html' && empty($keys)) {
     $options['html'] = TRUE;
     return _webform_token_get_submission_values($options, $webform_submission);
   }
@@ -966,7 +969,7 @@ function _webform_token_get_submission_value($value_token, array $options, Webfo
   /****************************************************************************/
 
   // Set entity reference chaining.
-  if ($keys && $keys[0] == 'entity' && $element_plugin instanceof WebformElementEntityReferenceInterface) {
+  if ($keys && $keys[0] === 'entity' && $element_plugin instanceof WebformElementEntityReferenceInterface) {
     // Remove entity from keys.
     array_shift($keys);
 
@@ -1103,7 +1106,7 @@ function _webform_token_render_more($more_title, $more) {
   // Token info might be called via CLI and not all modules are loaded
   // or an active theme is defined.
   //
-  // Prevent the below expections:
+  // Prevent the below exceptions:
   // - The theme implementations may not be rendered until all modules
   //   are loaded.
   // - Call to a member function setParser() on array in Twig\Parser->parse().

@@ -117,6 +117,18 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
       '#description' => $this->t('The value of the next submission number. This is usually 1 when you start and will go up with each webform submission.'),
       '#min' => 1,
       '#default_value' => $webform_storage->getNextSerial($webform),
+      '#states' => [
+        'visible' => [
+          ':input[name="serial_disabled"]' => ['checked' => FALSE],
+        ],
+      ],
+    ];
+    $form['submission_settings']['serial_disabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Disable next submission number'),
+      '#description' => $this->t('If checked the next number will be automatically set to the internal submission id.'),
+      '#return_value' => TRUE,
+      '#default_value' => $settings['serial_disabled'],
     ];
     $form['submission_settings']['token_tree_link'] = $this->tokenManager->buildTreeElement();
     $form['submission_settings']['submission_container']['elements'] = [
@@ -201,17 +213,6 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
         'title' => $this->t('Show the notification about previous submissions'),
         'form_description' => $this->t('Show the previous submissions notification that appears when users have previously submitted this form.'),
       ],
-      'token_view' => [
-        'title' => $this->t('Allow users to view a submission using a secure token'),
-        'form_description' => $this->t("If checked users will be able to view a submission using the webform submission's URL appended with the submission's (secure) token.") . ' ' .
-          $this->t("The 'tokenized' URL to view a submission will be available when viewing a submission's information and can be inserted into an email using the [webform_submission:view-url] token."),
-      ],
-      'token_update' => [
-        'title' => $this->t('Allow users to update a submission using a secure token'),
-        'form_description' => $this->t("If checked users will be able to update a submission using the webform's URL appended with the submission's (secure) token.") . ' ' .
-          $this->t("The 'tokenized' URL to update a submission will be available when viewing a submission's information and can be inserted into an email using the [webform_submission:update-url] token.") . ' ' .
-          $this->t('Only webforms that are open to new submissions can be updated using the secure token.'),
-      ],
       // Global behaviors.
       // @see \Drupal\webform\Form\WebformAdminSettingsForm
       'submission_log' => [
@@ -226,19 +227,6 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
       ],
     ];
     $this->appendBehaviors($form['submission_behaviors'], $behavior_elements, $settings, $default_settings);
-    $form['submission_behaviors']['token_update_warning'] = [
-      '#type' => 'webform_message',
-      '#message_type' => 'warning',
-      '#message_message' => $this->t("Submissions accessed using the (secure) token will by-pass all webform submission access rules."),
-      '#states' => [
-        'visible' => [
-          [':input[name="token_view"]' => ['checked' => TRUE]],
-          'or',
-          [':input[name="token_update"]' => ['checked' => TRUE]],
-        ],
-      ],
-      '#weight' => $form['submission_behaviors']['token_update']['#weight'] + 1,
-    ];
 
     // User settings.
     $form['submission_user_settings'] = [
@@ -289,6 +277,49 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
       '#options' => $columns_options,
       '#default_value' => $columns_default_value,
     ];
+
+    // Submission access.
+    $form['submission_access'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Submission access token settings'),
+      '#open' => TRUE,
+    ];
+    $form['submission_access']['token_update_warning'] = [
+      '#type' => 'webform_message',
+      '#message_type' => 'warning',
+      '#message_message' => $this->t("Submissions accessed using the (secure) token will by-pass all webform submission access rules."),
+      '#message_close' => TRUE,
+      '#message_storage' => WebformMessage::STORAGE_SESSION,
+      '#states' => [
+        'visible' => [
+          [':input[name="token_view"]' => ['checked' => TRUE]],
+          'or',
+          [':input[name="token_update"]' => ['checked' => TRUE]],
+          'or',
+          [':input[name="token_delete"]' => ['checked' => TRUE]],
+        ],
+      ],
+    ];
+    $behavior_elements = [
+      'token_view' => [
+        'title' => $this->t('Allow users to view a submission using a secure token'),
+        'form_description' => $this->t("If checked users will be able to view a submission using the webform submission's URL appended with the submission's (secure) token.") . ' ' .
+          $this->t("The 'tokenized' URL to view a submission will be available when viewing a submission's information and can be inserted into an email using the [webform_submission:view-url] token."),
+      ],
+      'token_update' => [
+        'title' => $this->t('Allow users to update a submission using a secure token'),
+        'form_description' => $this->t("If checked users will be able to update a submission using the webform's URL appended with the submission's (secure) token.") . ' ' .
+          $this->t("The 'tokenized' URL to update a submission will be available when viewing a submission's information and can be inserted into an email using the [webform_submission:update-url] token.") . ' ' .
+          $this->t('Only webforms that are open to new submissions can be updated using the secure token.'),
+      ],
+      'token_delete' => [
+        'title' => $this->t('Allow users to delete a submission using a secure token'),
+        'form_description' => $this->t("If checked users will be able to delete a submission using the webform's URL appended with the submission's (secure) token.") . ' ' .
+          $this->t("The 'tokenized' URL to update a submission will be available when viewing a submission's information and can be inserted into an email using the [webform_submission:delete-url] token.") . ' ' .
+          $this->t('Only webforms that are open to new submissions can be deleted using the secure token.'),
+      ],
+    ];
+    $this->appendBehaviors($form['submission_access'], $behavior_elements, $settings, $default_settings);
 
     // Access denied.
     $form['access_denied'] = [
@@ -782,7 +813,7 @@ class WebformEntitySettingsSubmissionsForm extends WebformEntitySettingsBaseForm
 
     // Set customize submission user columns.
     $values['submission_user_columns'] = array_values($values['submission_user_columns']);
-    if ($values['submission_user_columns'] == $webform_submission_storage->getUserDefaultColumnNames($webform)) {
+    if ($values['submission_user_columns'] === $webform_submission_storage->getUserDefaultColumnNames($webform)) {
       $values['submission_user_columns'] = [];
     }
 

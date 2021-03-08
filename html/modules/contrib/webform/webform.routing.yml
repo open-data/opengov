@@ -625,7 +625,7 @@ webform_submission.multiple_delete_confirm:
   defaults:
     _form: '\Drupal\webform\Form\WebformSubmissionDeleteMultiple'
   requirements:
-    _permission: 'administer webform submission'
+    _permission: 'administer webform submission+delete any webform submission+delete own webform submission'
 
 # Handlers.
 
@@ -818,6 +818,17 @@ entity.webform.variant.test_form:
     _form: '\Drupal\webform\Form\WebformVariantViewForm'
     _title: 'Test webform variants'
     operation: 'test'
+  requirements:
+    _permission: 'edit webform variants'
+    _entity_access: 'webform.update'
+    _custom_access: '\Drupal\webform\Access\WebformVariantAccess::checkVariantSettingsAccess'
+
+entity.webform.variant.share_form:
+  path: '/admin/structure/webform/manage/{webform}/variants/share'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformVariantViewForm'
+    _title: 'Share webform variants'
+    operation: 'share'
   requirements:
     _permission: 'edit webform variants'
     _entity_access: 'webform.update'

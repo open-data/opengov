@@ -13,7 +13,6 @@
 #}
 {{ attach_library('webform_example_composite/webform_example_composite') }}
 {% if flexbox %}
-
     <div class="webform-flexbox">
       {% if content.first_name %}
         <div class="webform-flex webform-flex--1"><div class="webform-flex--container">{{ content.first_name }}</div></div>
@@ -28,7 +27,6 @@
         <div class="webform-flex webform-flex--1"><div class="webform-flex--container">{{ content.gender }}</div></div>
       {% endif %}
     </div>
-
 {% else %}
   {{ content }}
 {% endif %}

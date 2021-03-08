@@ -32,7 +32,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
   protected $renderer;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */

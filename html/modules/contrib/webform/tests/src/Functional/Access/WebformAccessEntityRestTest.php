@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform entity REST access.
  *
- * @group Webform
+ * @group webform
  */
 class WebformAccessEntityRestTest extends WebformBrowserTestBase {
 

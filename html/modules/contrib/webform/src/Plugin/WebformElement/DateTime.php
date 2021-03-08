@@ -127,21 +127,6 @@ class DateTime extends DateBase {
   /**
    * {@inheritdoc}
    */
-  public static function afterBuild(array $element, FormStateInterface $form_state) {
-    $element = parent::afterBuild($element, $form_state);
-    // Date and time custom placeholder
-    if (isset($element['#date_date_placeholder'])) {
-      $element['date']['#attributes']['placeholder'] = $element['#date_date_placeholder'];
-    }
-    if (isset($element['#date_time_placeholder'])) {
-      $element['time']['#attributes']['placeholder'] = $element['#date_time_placeholder'];
-    }
-    return $element;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function getElementSelectorInputsOptions(array $element) {
     $t_args = ['@title' => $this->getAdminLabel($element)];
     return [

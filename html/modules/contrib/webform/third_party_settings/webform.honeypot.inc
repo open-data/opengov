@@ -74,14 +74,14 @@ function _webform_honeypot_form(array &$form, FormStateInterface $form_state, $h
     '#return_value' => TRUE,
   ];
 
-  if ($honeypot_state != WEBFORM_HONEYPOT_NEUTRAL) {
+  if ($honeypot_state !== WEBFORM_HONEYPOT_NEUTRAL) {
     $form['third_party_settings']['honeypot']['honeypot']['#attributes']['disabled'] = 'disabled';
     $form_state->set('honeypot_disabled', TRUE);
-    if ($honeypot_state == WEBFORM_HONEYPOT_ENABLED_ALL) {
+    if ($honeypot_state === WEBFORM_HONEYPOT_ENABLED_ALL) {
       $form['third_party_settings']['honeypot']['honeypot']['#default_value'] = 1;
       $form['third_party_settings']['honeypot']['honeypot']['#description'] = t('<a href=":href_honeypot">Honeypot protection</a> is enabled for all webforms.', $t_args);
     }
-    elseif ($honeypot_state == WEBFORM_HONEYPOT_ENABLED_WEBFORM) {
+    elseif ($honeypot_state === WEBFORM_HONEYPOT_ENABLED_WEBFORM) {
       $form['third_party_settings']['honeypot']['honeypot']['#default_value'] = 1;
       $form['third_party_settings']['honeypot']['honeypot']['#description'] = t('<a href=":href_webform">Honeypot protection</a> is enabled for all webforms.', $t_args);
     }
@@ -96,14 +96,14 @@ function _webform_honeypot_form(array &$form, FormStateInterface $form_state, $h
     '#return_value' => TRUE,
   ];
 
-  if ($time_restriction_state != WEBFORM_HONEYPOT_NEUTRAL) {
+  if ($time_restriction_state !== WEBFORM_HONEYPOT_NEUTRAL) {
     $form['third_party_settings']['honeypot']['time_restriction']['#attributes']['disabled'] = 'disabled';
     $form_state->set('time_restriction_disabled', TRUE);
-    if ($time_restriction_state == WEBFORM_HONEYPOT_DISABLED_ALL) {
+    if ($time_restriction_state === WEBFORM_HONEYPOT_DISABLED_ALL) {
       $form['third_party_settings']['honeypot']['time_restriction']['#default_value'] = 0;
       $form['third_party_settings']['honeypot']['time_restriction']['#description'] = t('<a href=":href_honeypot">Time limit</a> is disabled for all webforms.', $t_args);
     }
-    elseif ($time_restriction_state == WEBFORM_HONEYPOT_ENABLED_WEBFORM) {
+    elseif ($time_restriction_state === WEBFORM_HONEYPOT_ENABLED_WEBFORM) {
       $form['third_party_settings']['honeypot']['time_restriction']['#default_value'] = 1;
       $form['third_party_settings']['honeypot']['time_restriction']['#description'] = t('<a href=":href_webform">Time limit</a> is enabled for all webforms.', $t_args);
     }
@@ -113,7 +113,6 @@ function _webform_honeypot_form(array &$form, FormStateInterface $form_state, $h
     . '<strong>' . t('Page caching will be disabled when a time restriction is applied to a webform.') . '</strong>';
 
   $form['#validate'][] = '_webform_honeypot_form_validate';
-
 }
 
 /**
@@ -127,9 +126,6 @@ function _webform_honeypot_form_validate(&$form, FormStateInterface $form_state)
   if ($form_state->get('time_restriction_disabled') || empty($third_party_settings['honeypot']['time_restriction'])) {
     unset($third_party_settings['honeypot']['time_restriction']);
   }
-  if (empty($third_party_settings['honeypot'])) {
-    unset($third_party_settings['honeypot']);
-  }
   $form_state->setValue('third_party_settings', $third_party_settings);
 }
 
@@ -140,11 +136,12 @@ function honeypot_webform_admin_third_party_settings_form_alter(&$form, FormStat
   /** @var \Drupal\webform\WebformThirdPartySettingsManagerInterface $third_party_settings_manager */
   $third_party_settings_manager = \Drupal::service('webform.third_party_settings_manager');
 
-  $honeypot = $third_party_settings_manager->getThirdPartySetting('honeypot', 'honeypot');
+  $honeypot = (int) $third_party_settings_manager->getThirdPartySetting('honeypot', 'honeypot');
   $honeypot_state = \Drupal::config('honeypot.settings')->get('protect_all_forms') ? WEBFORM_HONEYPOT_ENABLED_ALL : WEBFORM_HONEYPOT_NEUTRAL;
+  $honeypot_time_limit = (int) \Drupal::config('honeypot.settings')->get('time_limit');
 
-  $time_restriction = $third_party_settings_manager->getThirdPartySetting('honeypot', 'time_restriction');
-  $time_restriction_state = (\Drupal::config('honeypot.settings')->get('time_limit') == 0) ? WEBFORM_HONEYPOT_DISABLED_ALL : WEBFORM_HONEYPOT_NEUTRAL;
+  $time_restriction = (int) $third_party_settings_manager->getThirdPartySetting('honeypot', 'time_restriction');
+  $time_restriction_state = ($honeypot_time_limit === 0) ? WEBFORM_HONEYPOT_DISABLED_ALL : WEBFORM_HONEYPOT_NEUTRAL;
 
   _webform_honeypot_form(
     $form,
@@ -167,7 +164,7 @@ function honeypot_webform_third_party_settings_form_alter(&$form, FormStateInter
   /** @var \Drupal\webform\WebformInterface $webform */
   $webform = $form_state->getFormObject()->getEntity();
 
-  $honeypot = $webform->getThirdPartySetting('honeypot', 'honeypot');
+  $honeypot = (int) $webform->getThirdPartySetting('honeypot', 'honeypot');
   if (\Drupal::config('honeypot.settings')->get('protect_all_forms')) {
     $honeypot_state = WEBFORM_HONEYPOT_ENABLED_ALL;
   }
@@ -178,8 +175,9 @@ function honeypot_webform_third_party_settings_form_alter(&$form, FormStateInter
     $honeypot_state = WEBFORM_HONEYPOT_NEUTRAL;
   }
 
-  $time_restriction = $webform->getThirdPartySetting('honeypot', 'time_restriction');
-  if (\Drupal::config('honeypot.settings')->get('time_limit') == 0) {
+  $time_restriction = (int) $webform->getThirdPartySetting('honeypot', 'time_restriction');
+  $honeypot_time_limit = (int) \Drupal::config('honeypot.settings')->get('time_limit');
+  if ($honeypot_time_limit === 0) {
     $time_restriction_state = WEBFORM_HONEYPOT_DISABLED_ALL;
   }
   elseif ($third_party_settings_manager->getThirdPartySetting('honeypot', 'time_restriction')) {
@@ -220,13 +218,13 @@ function honeypot_webform_submission_form_alter(&$form, FormStateInterface $form
 
   $options = [];
 
-  $honeypot = $third_party_settings_manager->getThirdPartySetting('honeypot', 'honeypot') ?:
+  $honeypot = (int) $third_party_settings_manager->getThirdPartySetting('honeypot', 'honeypot') ?:
     $webform->getThirdPartySetting('honeypot', 'honeypot');
   if ($honeypot) {
     $options[] = 'honeypot';
   }
 
-  $time_restriction = $third_party_settings_manager->getThirdPartySetting('honeypot', 'time_restriction') ?:
+  $time_restriction = (int) $third_party_settings_manager->getThirdPartySetting('honeypot', 'time_restriction') ?:
     $webform->getThirdPartySetting('honeypot', 'time_restriction');
   if ($time_restriction) {
     $options[] = 'time_restriction';

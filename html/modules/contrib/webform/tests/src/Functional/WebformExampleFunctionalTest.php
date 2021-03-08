@@ -2,14 +2,12 @@
 
 namespace Drupal\Tests\webform\Functional;
 
-use Drupal\Tests\BrowserTestBase;
-
 /**
  * Example of webform browser test.
  *
  * @group webform_browser
  */
-class WebformExampleFunctionalTest extends BrowserTestBase {
+class WebformExampleFunctionalTest extends WebformBrowserTestBase {
 
   /**
    * {@inheritdoc}

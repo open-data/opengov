@@ -8,7 +8,7 @@ use Drupal\Tests\webform_node\Functional\WebformNodeBrowserTestBase;
 /**
  * Tests for webform node access permissions.
  *
- * @group WebformNode
+ * @group webform_node
  */
 class WebformNodeAccessPermissionsTest extends WebformNodeBrowserTestBase {
 

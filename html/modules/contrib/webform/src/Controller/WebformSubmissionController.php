@@ -28,7 +28,7 @@ class WebformSubmissionController extends ControllerBase {
   protected $renderer;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */

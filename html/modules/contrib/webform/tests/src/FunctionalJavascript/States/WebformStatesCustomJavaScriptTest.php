@@ -7,7 +7,7 @@ use Drupal\Tests\webform\FunctionalJavascript\WebformWebDriverTestBase;
 /**
  * Tests for webform submission conditions (#states) validator.
  *
- * @group Webform
+ * @group webform_javascript
  */
 class WebformStatesCustomJavaScriptTest extends WebformWebDriverTestBase {
 
@@ -78,6 +78,22 @@ class WebformStatesCustomJavaScriptTest extends WebformWebDriverTestBase {
     $this->assertFalse($dependent_less->isVisible());
 
     /**************************************************************************/
+    // Less/Equal (<= 10).
+    /**************************************************************************/
+
+    // Check less dependent is not visible.
+    $dependent_less_equal = $page->findField('edit-dependent-less-equal');
+    $this->assertFalse($dependent_less_equal->isVisible());
+
+    // Check less dependent is visible.
+    $page->fillField('edit-trigger-less-equal', '10');
+    $this->assertTrue($dependent_less_equal->isVisible());
+
+    // Check less dependent is not visible.
+    $page->fillField('edit-trigger-less-equal', '11');
+    $this->assertFalse($dependent_less_equal->isVisible());
+
+    /**************************************************************************/
     // Greater (> 10).
     /**************************************************************************/
 
@@ -94,28 +110,50 @@ class WebformStatesCustomJavaScriptTest extends WebformWebDriverTestBase {
     $this->assertFalse($dependent_greater->isVisible());
 
     /**************************************************************************/
+    // Greater/Equal (> 10).
+    /**************************************************************************/
+
+    // Check greater dependent is not visible.
+    $dependent_greater_equal = $page->findField('edit-dependent-greater-equal');
+    $this->assertFalse($dependent_greater_equal->isVisible());
+
+    // Check greater dependent is visible.
+    $page->fillField('edit-trigger-greater-equal', '10');
+    $this->assertTrue($dependent_greater_equal->isVisible());
+
+    // Check greater dependent is not visible.
+    $page->fillField('edit-trigger-greater-equal', '5');
+    $this->assertFalse($dependent_greater_equal->isVisible());
+
+    /**************************************************************************/
     // Between (10 > & < 20).
     /**************************************************************************/
 
     // Check between dependent is not visible.
     $dependent_between = $page->findField('edit-dependent-between');
+    $dependent_not_between = $page->findField('edit-dependent-not-between');
     $this->assertFalse($dependent_between->isVisible());
+    $this->assertFalse($dependent_not_between->isVisible());
 
     // Check between dependent is visible.
     $page->fillField('edit-trigger-between', '11');
     $this->assertTrue($dependent_between->isVisible());
+    $this->assertFalse($dependent_not_between->isVisible());
 
     // Check between dependent is not visible.
     $page->fillField('edit-trigger-between', '5');
     $this->assertFalse($dependent_between->isVisible());
+    $this->assertTrue($dependent_not_between->isVisible());
 
     // Check between dependent is not visible.
     $page->fillField('edit-trigger-between', '');
     $this->assertFalse($dependent_between->isVisible());
+    $this->assertFalse($dependent_not_between->isVisible());
 
     // Check between dependent is not visible.
     $page->fillField('edit-trigger-between', '21');
     $this->assertFalse($dependent_between->isVisible());
+    $this->assertTrue($dependent_not_between->isVisible());
   }
 
 }

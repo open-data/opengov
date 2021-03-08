@@ -17,6 +17,13 @@ abstract class WebformBrowserTestBase extends BrowserTestBase {
   use WebformAssertLegacyTrait;
 
   /**
+   * Set default theme to stable.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stable';
+
+  /**
    * Modules to enable.
    *
    * @var array
@@ -33,7 +40,7 @@ abstract class WebformBrowserTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
     $this->loadWebforms(static::$testWebforms);
   }
@@ -41,7 +48,7 @@ abstract class WebformBrowserTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown() {
     $this->purgeSubmissions();
     parent::tearDown();
   }

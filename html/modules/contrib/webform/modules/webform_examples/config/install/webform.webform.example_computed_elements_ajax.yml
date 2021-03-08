@@ -1,3 +1,4 @@
+uuid: null
 langcode: en
 status: open
 dependencies:
@@ -63,48 +64,79 @@ elements: |
         '#title_display': invisible
         '#ajax': true
         '#template': '{% if data.a|length and data.b|length %}{{ data.a + data.b }}{% else %}c{% endif %}'
-  user_information:
+  user_summary:
     '#type': fieldset
     '#title': 'User information'
     user:
       '#type': webform_entity_select
-      '#title': User
+      '#title': 'User: Summary'
       '#target_type': user
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: false
         filter:
           type: _none
-    user_ud:
+    user_preview:
       '#type': webform_computed_token
-      '#title': 'User: ID'
+      '#title': 'User'
+      '#title_display': none
       '#ajax': true
       '#hide_empty': true
+      '#template': |
+        <strong>User: ID:</strong> [webform_submission:values:user:entity:uid:clear]<br/>
+        <strong>User: Display name:</strong> [webform_submission:values:user:entity:display-name:clear]<br/>
+        <strong>User: Email:</strong> [webform_submission:values:user:entity:mail:clear]<br/>
+        <strong>User: URL:</strong> [webform_submission:values:user:entity:url:clear]<br/>
+        <strong>User: Created:</strong> [webform_submission:values:user:entity:created:clear]
+      '#display_on': form
+    user_uid:
+      '#type': webform_computed_token
+      '#title': 'User: ID'
       '#template': '[webform_submission:values:user:entity:uid:clear]'
+      '#display_on': view
     user_display_name:
       '#type': webform_computed_token
       '#title': 'User: Display name'
-      '#ajax': true
-      '#hide_empty': true
       '#template': '[webform_submission:values:user:entity:display-name:clear]'
+      '#display_on': view
     user_mail:
       '#type': webform_computed_token
       '#title': 'User: Email'
-      '#ajax': true
-      '#hide_empty': true
       '#template': '[webform_submission:values:user:entity:mail:clear]'
+      '#display_on': view
     user_url:
       '#type': webform_computed_token
       '#title': 'User: URL'
-      '#ajax': true
-      '#hide_empty': true
       '#template': '[webform_submission:values:user:entity:url:clear]'
+      '#display_on': view
     user_created:
       '#type': webform_computed_token
       '#title': 'User: Created'
-      '#ajax': true
-      '#hide_empty': true
       '#template': '[webform_submission:values:user:entity:created:clear]'
+      '#display_on': view
+  bmi_calculator:
+    '#type': fieldset
+    '#title': 'Body Mass Index (BMI) calculator'
+    '#description': |
+      Formula: weight (lb) / [height (in)]2 x 703<br/>
+      @see <a href="https://www.cdc.gov/nccdphp/dnpao/growthcharts/training/bmiage/page5_2.html">https://www.cdc.gov/nccdphp/dnpao/growthcharts/training/bmiage/page5_2.html</a>
+    weight:
+      '#type': number
+      '#title': Weight
+      '#field_suffix': ' pounds'
+      '#default_value': 37.25
+      '#step': .25
+      '#min': 1
+    height:
+      '#type': webform_height
+      '#title': Height
+      '#default_value': 41.5
+      '#inches__step': .5
+    bmi:
+      '#type': webform_computed_twig
+      '#title': BMI
+      '#ajax': true
+      '#template': '{% if data.weight|length and data.height|length %}{{ (data.weight / (data.height * data.height) * 703)|number_format(2) }}{% endif %}'
   
 css: |
   .calculation {
@@ -125,7 +157,7 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -155,6 +187,11 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
   submission_views: {  }
@@ -180,11 +217,19 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -230,6 +275,8 @@ settings:
   results_customize: false
   token_view: false
   token_update: false
+  token_delete: false
+  serial_disabled: false
 access:
   create:
     roles:

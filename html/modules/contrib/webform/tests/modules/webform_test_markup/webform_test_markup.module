@@ -6,7 +6,7 @@
  */
 
 /**
- * Prepares variables for Webform HTML Editor markup templates.
+ * Implements hook_preprocess_webform_html_editor_markup() for Webform HTML Editor markup templates.
  *
  * @see webform.webform.test_element_markup.yml
  */

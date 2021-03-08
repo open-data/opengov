@@ -8,7 +8,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Test for webform element managed file handling.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
 
@@ -51,7 +51,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
 
     // Get test webform preview with test values.
     $this->drupalLogin($this->rootUser);
-    $this->drupalPostForm('/webform/test_element_media_file/test', [], t('Preview'));
+    $this->drupalPostForm('/webform/test_element_media_file/test', [], 'Preview');
 
     // Check audio file preview.
     $this->assertRaw('<source src="' . $this->getAbsoluteUrl('/system/files/webform/test_element_media_file/_sid_/audio_file_mp3.mp3') . '" type="audio/mpeg">');
@@ -83,7 +83,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
    */
   protected function checkFileUpload($type, $first_file, $second_file) {
     $key = 'managed_file_' . $type;
-    $parameter_name = ($type == 'multiple') ? "files[$key][]" : "files[$key]";
+    $parameter_name = ($type === 'multiple') ? "files[$key][]" : "files[$key]";
 
     $edit = [
       $parameter_name => \Drupal::service('file_system')->realpath($first_file->uri),
@@ -98,7 +98,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $file = File::load($fid);
 
     // Check that test file was uploaded to the current submission.
-    $second = ($type == 'multiple') ? [$fid] : $fid;
+    $second = ($type === 'multiple') ? [$fid] : $fid;
     $this->assertEqual($submission->getElementData($key), $second, 'Test file was upload to the current submission');
 
     // Check test file file usage.
@@ -115,20 +115,20 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
 
     // Check managed file formatting.
     $this->drupalGet('/admin/structure/webform/manage/test_element_managed_file/submission/' . $sid);
-    if ($type == 'multiple') {
+    if ($type === 'multiple') {
       $this->assertRaw('<label>managed_file_multiple</label>');
       $this->assertRaw('<div class="item-list">');
     }
     $this->assertRaw('<span class="file file--mime-text-plain file--text"> <a href="' . file_create_url($file->getFileUri()) . '" type="text/plain; length=' . $file->getSize() . '">' . $file->getFilename() . '</a></span>');
 
     // Remove the uploaded file.
-    if ($type == 'multiple') {
+    if ($type === 'multiple') {
       $edit = ['managed_file_multiple[file_' . $fid . '][selected]' => TRUE];
-      $submit = t('Remove selected');
+      $submit = 'Remove selected';
     }
     else {
       $edit = [];
-      $submit = t('Remove');
+      $submit = 'Remove';
     }
     $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/submission/' . $sid . '/edit', $edit, $submit);
 
@@ -136,10 +136,10 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $edit = [
       $parameter_name => \Drupal::service('file_system')->realpath($second_file->uri),
     ];
-    $this->drupalPostForm(NULL, $edit, t('Upload'));
+    $this->drupalPostForm(NULL, $edit, 'Upload');
 
     // Submit the new file.
-    $this->drupalPostForm(NULL, [], t('Save'));
+    $this->drupalPostForm(NULL, [], 'Save');
 
     /** @var \Drupal\file\Entity\File $test_file_0 */
     $new_fid = $this->getLastFileId();
@@ -149,7 +149,7 @@ class WebformElementMediaFileTest extends WebformElementManagedFileTestBase {
     $submission = WebformSubmission::load($sid);
 
     // Check that test new file was uploaded to the current submission.
-    $second = ($type == 'multiple') ? [$new_fid] : $new_fid;
+    $second = ($type === 'multiple') ? [$new_fid] : $new_fid;
     $this->assertEqual($submission->getElementData($key), $second, 'Test new file was upload to the current submission');
 
     // Check that test file was deleted from the disk and database.

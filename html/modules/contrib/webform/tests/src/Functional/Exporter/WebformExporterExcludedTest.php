@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for the webform exporter excluded.
  *
- * @group Webform
+ * @group webform
  */
 class WebformExporterExcludedTest extends WebformBrowserTestBase {
 

@@ -10,7 +10,7 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\user\Entity\User;
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for webform submission export import upload form.
  *
  * Make testing the CSV import a little easier by using and prepopulating
  * external Google Sheet CSV.

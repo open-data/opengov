@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Wizard;
 /**
  * Tests for webform custom wizard.
  *
- * @group Webform
+ * @group webform
  */
 class WebformWizardCustomTest extends WebformWizardTestBase {
 
@@ -32,11 +32,11 @@ class WebformWizardCustomTest extends WebformWizardTestBase {
     $this->assertCurrentPage('Wizard page #1', 'wizard_1');
 
     // Check next page is #2.
-    $this->drupalPostForm('/webform/test_form_wizard_custom', [], 'Next Page >');
+    $this->drupalPostForm('/webform/test_form_wizard_custom', [], 'Next >');
     $this->assertCurrentPage('Wizard page #2', 'wizard_2');
 
     // Check previous page is #1.
-    $this->drupalPostForm(NULL, [], '< Previous Page');
+    $this->drupalPostForm(NULL, [], '< Previous');
     $this->assertCurrentPage('Wizard page #1', 'wizard_1');
 
     // Hide pages #3 and #4.
@@ -49,21 +49,21 @@ class WebformWizardCustomTest extends WebformWizardTestBase {
       'pages[wizard_6]' => TRUE,
       'pages[wizard_7]' => TRUE,
     ];
-    $this->drupalPostForm(NULL, $edit, 'Next Page >');
+    $this->drupalPostForm(NULL, $edit, 'Next >');
 
     // Check next page is #2.
     $this->assertCurrentPage('Wizard page #2', 'wizard_2');
 
     // Check next page is #5.
-    $this->drupalPostForm(NULL, [], 'Next Page >');
+    $this->drupalPostForm(NULL, [], 'Next >');
     $this->assertCurrentPage('Wizard page #5', 'wizard_5');
 
     // Check previous page is #2.
-    $this->drupalPostForm(NULL, [], '< Previous Page');
+    $this->drupalPostForm(NULL, [], '< Previous');
     $this->assertCurrentPage('Wizard page #2', 'wizard_2');
 
     // Check previous page is #1.
-    $this->drupalPostForm(NULL, [], '< Previous Page');
+    $this->drupalPostForm(NULL, [], '< Previous');
     $this->assertCurrentPage('Wizard page #1', 'wizard_1');
   }
 

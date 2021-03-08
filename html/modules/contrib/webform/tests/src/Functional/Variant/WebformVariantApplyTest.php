@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for the webform variant apply.
  *
- * @group Webform
+ * @group webform
  */
 class WebformVariantApplyTest extends WebformBrowserTestBase {
 
@@ -63,7 +63,7 @@ class WebformVariantApplyTest extends WebformBrowserTestBase {
 
     // Apply 'a' variant.
     $edit = ['delete' => 'none'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, t('Apply'), ['query' => ['variant_id' => 'a']]);
+    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'a']]);
     $webform = $this->reloadWebform('test_variant_randomize');
 
     // Check that the 'a' variant has been applied and no variants have been deleted.
@@ -80,7 +80,7 @@ class WebformVariantApplyTest extends WebformBrowserTestBase {
 
     // Apply the 'b' variant which is disabled.
     $edit = ['delete' => 'none'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, t('Apply'), ['query' => ['variant_id' => 'b']]);
+    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'b']]);
     $webform = $this->reloadWebform('test_variant_randomize');
     $this->assertNoRaw('{X}');
     $this->assertRaw('[B]');
@@ -89,7 +89,7 @@ class WebformVariantApplyTest extends WebformBrowserTestBase {
 
     // Apply and delete the 'a' variant.
     $edit = ['delete' => 'selected'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, t('Apply'), ['query' => ['variant_id' => 'a']]);
+    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'a']]);
     $webform = $this->reloadWebform('test_variant_randomize');
 
     // Check that the 'a' variant has been applied and no variants have been deleted.
@@ -101,7 +101,7 @@ class WebformVariantApplyTest extends WebformBrowserTestBase {
 
     // Apply the 'b' variant and delete all variants.
     $edit = ['delete' => 'all'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, t('Apply'), ['query' => ['variant_id' => 'b']]);
+    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'b']]);
     $webform = $this->reloadWebform('test_variant_randomize');
 
     // Check that the 'b' variant has been applied and all variants have been deleted.

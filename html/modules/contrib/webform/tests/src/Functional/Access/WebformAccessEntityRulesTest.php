@@ -9,7 +9,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform entity access rules.
  *
- * @group Webform
+ * @group webform
  */
 class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
 
@@ -275,7 +275,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       $path = str_replace('{webform_submission}', $sid, $path);
 
       $this->drupalGet($path);
-      $this->assertResponse($status_code, new FormattableMarkup('Webform @status_code access via own access rules.', ['@status_code' => ($status_code == 403 ? 'denies' : 'allows')]));
+      $this->assertResponse($status_code, new FormattableMarkup('Webform @status_code access via own access rules.', ['@status_code' => ($status_code === 403 ? 'denies' : 'allows')]));
     }
 
     // Enable submission user duplicate.

@@ -8,7 +8,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for the webform element plugin.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementPluginTest extends WebformElementBrowserTestBase {
 
@@ -77,7 +77,7 @@ class WebformElementPluginTest extends WebformElementBrowserTestBase {
     $this->assertRaw('Invoked: Drupal\webform_test_element\Plugin\WebformElement\WebformTestElement:postLoad');
 
     // Check update.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_plugin/submission/' . $sid . '/edit', [], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_element_plugin/submission/' . $sid . '/edit', [], 'Save');
     $this->assertRaw('Invoked: Drupal\webform_test_element\Plugin\WebformElement\WebformTestElement:postLoad');
     $this->assertRaw('Invoked: Drupal\webform_test_element\Plugin\WebformElement\WebformTestElement:prepare');
     $this->assertRaw('Invoked: Drupal\webform_test_element\Plugin\WebformElement\WebformTestElement:setDefaultValue');
@@ -97,7 +97,7 @@ class WebformElementPluginTest extends WebformElementBrowserTestBase {
     $this->assertRaw('Invoked: Drupal\webform_test_element\Plugin\WebformElement\WebformTestElement:formatText');
 
     // Check delete.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_plugin/submission/' . $sid . '/delete', [], t('Delete'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_element_plugin/submission/' . $sid . '/delete', [], 'Delete');
     $this->assertRaw('Invoked: Drupal\webform_test_element\Plugin\WebformElement\WebformTestElement:preDelete');
     $this->assertRaw('Invoked: Drupal\webform_test_element\Plugin\WebformElement\WebformTestElement:postDelete');
     $this->assertRaw('<em class="placeholder">Test: Element: Test (plugin): Submission #' . $webform_submission->serial() . '</em> has been deleted.');

@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for element input mask.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementInputMaskTest extends WebformElementBrowserTestBase {
 

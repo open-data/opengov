@@ -115,7 +115,7 @@ class WebformExceptionHtmlSubscriber extends DefaultExceptionHtmlSubscriber {
    *   The event to process.
    */
   public function on403(GetResponseForExceptionEvent $event) {
-    if ($event->getRequestType() != HttpKernelInterface::MASTER_REQUEST) {
+    if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
       return;
     }
 

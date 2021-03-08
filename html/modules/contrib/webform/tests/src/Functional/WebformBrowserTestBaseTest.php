@@ -28,7 +28,7 @@ class WebformBrowserTestBaseTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
   }
 
@@ -73,9 +73,9 @@ class WebformBrowserTestBaseTest extends WebformBrowserTestBase {
     // Check place blocks.
     $this->placeBlocks();
     $this->drupalGet('/webform/contact');
-    $this->assertRaw('block-system-breadcrumb-block');
-    $this->assertRaw('block-page-title-block');
-    $this->assertRaw('block-local-tasks-block');
+    $this->assertRaw('<h1>Contact</h1>');
+    $this->assertRaw('<h2 id="system-breadcrumb" class="visually-hidden">Breadcrumb</h2>');
+    $this->assertRaw('<h2 class="visually-hidden">Primary tabs</h2>');
   }
 
 }

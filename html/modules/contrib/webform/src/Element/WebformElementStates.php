@@ -260,7 +260,7 @@ class WebformElementStates extends FormElement {
         if (!isset($sources[$sources_key])) {
           foreach ($values as $key => $value) {
             $sources[$sources_key][] = [
-              'label' => (string) $value . ($value != $key ? ' (' . $key . ')' : ''),
+              'label' => (string) $value . ($value !== $key ? ' (' . $key . ')' : ''),
               'value' => (string) $key,
             ];
           }
@@ -483,9 +483,15 @@ class WebformElementStates extends FormElement {
           'or',
           [$trigger_selector => ['value' => 'greater']],
           'or',
+          [$trigger_selector => ['value' => 'greater_equal']],
+          'or',
           [$trigger_selector => ['value' => 'less']],
           'or',
+          [$trigger_selector => ['value' => 'less_equal']],
+          'or',
           [$trigger_selector => ['value' => 'between']],
+          'or',
+          [$trigger_selector => ['value' => '!between']],
         ],
       ],
       '#wrapper_attributes' => ['class' => ['webform-states-table--value']],
@@ -509,6 +515,8 @@ class WebformElementStates extends FormElement {
       '#states' => [
         'visible' => [
           [$trigger_selector => ['value' => 'between']],
+          'or',
+          [$trigger_selector => ['value' => '!between']],
         ],
       ],
     ];
@@ -613,11 +621,11 @@ class WebformElementStates extends FormElement {
 
     // The $row_index is not sequential so we need to rebuild the value instead
     // of just using an array_slice().
-    $row_index = $button['#row_index'];
+    $row_index = (int) $button['#row_index'];
     $values = [];
     foreach ($element['states']['#value'] as $index => $value) {
       $values[] = $value;
-      if ($index == $row_index) {
+      if ($index === $row_index) {
         $values[] = ['selector' => '', 'trigger' => '', 'value' => ''];
       }
     }
@@ -858,7 +866,7 @@ class WebformElementStates extends FormElement {
         foreach ($state_array['conditions'] as $index => $condition) {
           extract(static::getFormApiStatesCondition($condition));
           if ($selector && $trigger) {
-            if ($operator == 'or' || $operator == 'xor') {
+            if ($operator === 'or' || $operator === 'xor') {
               if ($index !== 0) {
                 $states[$state][] = $operator;
               }
@@ -931,7 +939,7 @@ class WebformElementStates extends FormElement {
       if (in_array($trigger, ['value', '!value'])) {
         $value = $condition['value'];
       }
-      elseif (in_array($trigger, ['pattern', '!pattern', 'less', 'greater', 'between'])) {
+      elseif (in_array($trigger, ['pattern', '!pattern', 'less', 'less_equal', 'greater', 'greater_equal', 'between', '!between'])) {
         $value = [$trigger => $condition['value']];
         $trigger = 'value';
       }
@@ -1026,7 +1034,7 @@ class WebformElementStates extends FormElement {
           }
 
           // Make sure the same operator is being used between the conditions.
-          if ($operator && $operator != $condition) {
+          if ($operator && $operator !== $condition) {
             return t('Conditional logic (Form API #states) has multiple operators.', ['%operator' => mb_strtoupper($condition)]);
           }
 
@@ -1092,8 +1100,11 @@ class WebformElementStates extends FormElement {
       'pattern' => t('Pattern'),
       '!pattern' => t('Not Pattern'),
       'less' => t('Less than'),
+      'less_equal' => t('Less than/Equal to'),
       'greater' => t('Greater than'),
+      'greater_equal' => t('Greater than/Equal to'),
       'between' => t('Between'),
+      '!between' => t('Not between'),
     ];
   }
 

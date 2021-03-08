@@ -8,7 +8,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for computed elements.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementComputedTest extends WebformElementBrowserTestBase {
 
@@ -33,7 +33,7 @@ class WebformElementComputedTest extends WebformElementBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create filters.
@@ -55,7 +55,7 @@ class WebformElementComputedTest extends WebformElementBrowserTestBase {
     $this->assertRaw('<b class="webform_computed_token_auto">simple string:</b> This is a string<br />');
 
     // Get computed token preview.
-    $this->drupalPostForm('/webform/test_element_computed_token', [], t('Preview'));
+    $this->drupalPostForm('/webform/test_element_computed_token', [], 'Preview');
 
     // Check token auto detection.
     $this->assertRaw('<b class="webform_computed_token_auto">simple string:</b> This is a string<br />');
@@ -72,7 +72,7 @@ class WebformElementComputedTest extends WebformElementBrowserTestBase {
     $this->assertRaw('<b class="webform_computed_token_html">xss:</b> &lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;<br />');
 
     // Check token plain text rendering.
-    $this->assertRaw('<div class="webform-element webform-element-type-webform-computed-token js-form-item form-item js-form-type-item form-type-item js-form-item-webform-computed-token-text form-item-webform-computed-token-text" id="test_element_computed_token--webform_computed_token_text">');
+    $this->assertRaw(' <div class="webform-element webform-element-type-webform-computed-token js-form-item form-item js-form-type-item form-item-webform-computed-token-text js-form-item-webform-computed-token-text" id="test_element_computed_token--webform_computed_token_text">');
     $this->assertRaw('<label>webform_computed_token_text</label>');
     $this->assertRaw('simple string: This is a string<br />');
     $this->assertRaw('complex string : This is a &lt;strong&gt;complex&lt;/strong&gt; string, which contains &quot;double&quot; and &#039;single&#039; quotes with special characters like &gt;, &lt;, &gt;&lt;, and &lt;&gt;.<br />');
@@ -111,7 +111,7 @@ class WebformElementComputedTest extends WebformElementBrowserTestBase {
     $this->assertFieldByName('webform_computed_twig_spaceless', '<em>This is spaceless</em><br/>');
 
     // Get computed Twig preview.
-    $this->drupalPostForm('/webform/test_element_computed_twig', [], t('Preview'));
+    $this->drupalPostForm('/webform/test_element_computed_twig', [], 'Preview');
 
     // Check Twig auto detection.
     $this->assertRaw('<b class="webform_computed_twig_auto">number:</b> 2 * 2 = 4<br />');

@@ -21,6 +21,22 @@ class WebformCheckboxesOther extends Checkboxes implements WebformElementOtherIn
   /**
    * {@inheritdoc}
    */
+  protected function defineDefaultProperties() {
+    $properties = parent::defineDefaultProperties();
+    // Remove 'All of the above' options.
+    unset(
+      $properties['options_all'],
+      $properties['options_all_value'],
+      $properties['options_all_text']
+    );
+    return $properties;
+  }
+
+  /****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */
   public function getElementSelectorOptions(array $element) {
     $title = $this->getAdminLabel($element);
     $name = $element['#webform_key'];

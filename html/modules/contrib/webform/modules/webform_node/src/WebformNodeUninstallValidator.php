@@ -39,7 +39,7 @@ class WebformNodeUninstallValidator implements ModuleUninstallValidatorInterface
    */
   public function validate($module) {
     $reasons = [];
-    if ($module == 'webform_node') {
+    if ($module === 'webform_node') {
       // The webform node type is provided by the Webform node module. Prevent
       // uninstall if there are any nodes of that type.
       if ($this->hasWebformNodes()) {

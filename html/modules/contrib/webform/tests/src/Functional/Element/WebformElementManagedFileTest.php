@@ -9,7 +9,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Test for webform element managed file handling.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
 
@@ -48,7 +48,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     $this->webform = Webform::load('test_element_managed_file');
@@ -101,7 +101,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
         \Drupal::service('file_system')->realpath($this->files[2]->uri),
       ],
     ];
-    $this->drupalPostForm('/webform/test_element_managed_file', $edit, t('Upload'));
+    $this->drupalPostForm('/webform/test_element_managed_file', $edit, 'Upload');
     $this->assertRaw('<em class="placeholder">managed_file_multiple_two</em> can only hold 2 values but there were 3 uploaded. The following files have been omitted as a result: <em class="placeholder">text-2.txt</em>.');
 
     // Check file input is removed.
@@ -178,7 +178,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
 
     $i = -1;
     foreach ($multiple_file as $file) {
-      $suffix = $i == -1 ? '' : '_' . $i;
+      $suffix = $i === -1 ? '' : '_' . $i;
       $this->assertEqual('file_multiple_' . $source_for_filename . $suffix . '.txt', $file->getFilename());
       $i++;
     }
@@ -300,7 +300,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
    */
   protected function checkFileUpload($type, $first_file, $second_file) {
     $key = 'managed_file_' . $type;
-    $parameter_name = ($type == 'multiple') ? "files[$key][]" : "files[$key]";
+    $parameter_name = ($type === 'multiple') ? "files[$key][]" : "files[$key]";
 
     $edit = [
       $parameter_name => \Drupal::service('file_system')->realpath($first_file->uri),
@@ -315,7 +315,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $file = File::load($fid);
 
     // Check that test file was uploaded to the current submission.
-    $second = ($type == 'multiple') ? [$fid] : $fid;
+    $second = ($type === 'multiple') ? [$fid] : $fid;
     $this->assertEqual($submission->getElementData($key), $second, 'Test file was upload to the current submission');
 
     // Check test file file usage.
@@ -332,20 +332,26 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
 
     // Check managed file formatting.
     $this->drupalGet('/admin/structure/webform/manage/test_element_managed_file/submission/' . $sid);
-    if ($type == 'multiple') {
+    if ($type === 'multiple') {
       $this->assertRaw('<label>managed_file_multiple</label>');
-      $this->assertRaw('<div class="item-list">');
+      $this->assertRaw('<ul>');
     }
-    $this->assertRaw('<span class="file file--mime-text-plain file--text"> <a href="' . file_create_url($file->getFileUri()) . '" type="text/plain; length=' . $file->getSize() . '">' . $file->getFilename() . '</a></span>');
+    // @todo Remove once Drupal 9.1.x is only supported.
+    if (floatval(\Drupal::VERSION) >= 9.1) {
+      $this->assertRaw('<span class="file file--mime-text-plain file--text"><a href="' . file_create_url($file->getFileUri()) . '" type="text/plain">' . $file->getFilename() . '</a></span>');
+    }
+    else {
+      $this->assertRaw('<span class="file file--mime-text-plain file--text"><a href="' . file_create_url($file->getFileUri()) . '" type="text/plain; length=' . $file->getSize() . '">' . $file->getFilename() . '</a></span>');
+    }
 
     // Remove the uploaded file.
-    if ($type == 'multiple') {
+    if ($type === 'multiple') {
       $edit = ['managed_file_multiple[file_' . $fid . '][selected]' => TRUE];
-      $submit = t('Remove selected');
+      $submit = 'Remove selected';
     }
     else {
       $edit = [];
-      $submit = t('Remove');
+      $submit = 'Remove';
     }
     $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/submission/' . $sid . '/edit', $edit, $submit);
 
@@ -353,10 +359,10 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $edit = [
       $parameter_name => \Drupal::service('file_system')->realpath($second_file->uri),
     ];
-    $this->drupalPostForm(NULL, $edit, t('Upload'));
+    $this->drupalPostForm(NULL, $edit, 'Upload');
 
     // Submit the new file.
-    $this->drupalPostForm(NULL, [], t('Save'));
+    $this->drupalPostForm(NULL, [], 'Save');
 
     /** @var \Drupal\file\FileInterface $test_file_0 */
     $new_fid = $this->getLastFileId();
@@ -366,7 +372,7 @@ class WebformElementManagedFileTest extends WebformElementManagedFileTestBase {
     $submission = WebformSubmission::load($sid);
 
     // Check that test new file was uploaded to the current submission.
-    $second = ($type == 'multiple') ? [$new_fid] : $new_fid;
+    $second = ($type === 'multiple') ? [$new_fid] : $new_fid;
     $this->assertEqual($submission->getElementData($key), $second, 'Test new file was upload to the current submission');
 
     // Check that test file was deleted from the disk and database.

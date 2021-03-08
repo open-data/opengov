@@ -189,6 +189,13 @@ abstract class WebformHandlerFormBase extends FormBase {
         'exists' => [$this, 'exists'],
       ],
     ];
+    $form['general']['notes'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Administrative notes'),
+      '#description' => $this->t("Entered text will be displayed on the handlers administrative page and replace this handler's default description."),
+      '#rows' => 2,
+      '#default_value' => $this->webformHandler->getNotes(),
+    ];
 
     $form['advanced'] = [
       '#type' => 'fieldset',
@@ -201,7 +208,7 @@ abstract class WebformHandlerFormBase extends FormBase {
       '#return_value' => TRUE,
       '#default_value' => $this->webformHandler->isEnabled(),
       // Disable broken plugins.
-      '#disabled' => ($this->webformHandler->getPluginId() == 'broken'),
+      '#disabled' => ($this->webformHandler->getPluginId() === 'broken'),
     ];
 
     $form['#parents'] = [];
@@ -317,6 +324,7 @@ abstract class WebformHandlerFormBase extends FormBase {
 
     $this->webformHandler->setHandlerId($form_state->getValue('handler_id'));
     $this->webformHandler->setLabel($form_state->getValue('label'));
+    $this->webformHandler->setNotes($form_state->getValue('notes'));
     $this->webformHandler->setStatus($form_state->getValue('status'));
     $this->webformHandler->setWeight($form_state->getValue('weight'));
     // Clear conditions if conditions or handler is disabled.

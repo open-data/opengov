@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform example element properties.
  *
- * @group Webform
+ * @group webform_example_element_properties
  */
 class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
 
@@ -58,7 +58,7 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
     $edit = [
       'properties[custom_data]' => '',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, 'Save');
 
     // Get updated contact webform.
     $webform_storage->resetCache();
@@ -72,7 +72,7 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
     $edit = [
       'properties[custom_data]' => 'custom-data',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, 'Save');
 
     // Get updated contact webform.
     $webform_storage->resetCache();

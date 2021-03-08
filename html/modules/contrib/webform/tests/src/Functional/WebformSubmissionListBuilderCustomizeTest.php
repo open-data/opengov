@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform submission list builder.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSubmissionListBuilderCustomizeTest extends WebformBrowserTestBase {
 
@@ -115,7 +115,7 @@ class WebformSubmissionListBuilderCustomizeTest extends WebformBrowserTestBase {
       'limit' => 20,
       'link_type' => 'table',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, 'Save');
     $this->assertRaw('The customized table has been saved.');
 
     // Check webform state.
@@ -232,7 +232,7 @@ class WebformSubmissionListBuilderCustomizeTest extends WebformBrowserTestBase {
     $this->drupalLogin($admin_user);
 
     // Clear customized default able.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, t('Reset'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, 'Reset');
     $this->assertRaw('The customized table has been reset.');
 
     // Check that 'Customize' button and link are visible.
@@ -277,7 +277,7 @@ class WebformSubmissionListBuilderCustomizeTest extends WebformBrowserTestBase {
       'columns[element__first_name][weight]' => '8',
       'columns[element__last_name][weight]' => '7',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom/user', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom/user', $edit, 'Save');
     $this->assertRaw('Your customized table has been saved.');
 
     // Check that first name is now after last name.
@@ -291,7 +291,7 @@ class WebformSubmissionListBuilderCustomizeTest extends WebformBrowserTestBase {
       'columns[element__first_name][checkbox]' => FALSE,
       'columns[element__last_name][checkbox]' => FALSE,
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, 'Save');
     $this->assertRaw('The default customized table has been saved.');
     // Check that first name and last name are not visible.
     $this->assertNoRaw('First name');
@@ -317,7 +317,7 @@ class WebformSubmissionListBuilderCustomizeTest extends WebformBrowserTestBase {
     $this->assertPattern('#Last name.+First name#ms');
 
     // Reset user customized table.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom/user', $edit, t('Reset'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom/user', $edit, 'Reset');
     $this->assertRaw('Your customized table has been reset.');
 
     // Check that first name and last name are now not visible.
@@ -361,12 +361,12 @@ class WebformSubmissionListBuilderCustomizeTest extends WebformBrowserTestBase {
       'columns[element__first_name][weight]' => '8',
       'columns[element__last_name][weight]' => '7',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom', $edit, 'Save');
     $edit = [
       'columns[element__first_name][weight]' => '8',
       'columns[element__last_name][weight]' => '7',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom/user', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submissions/results/submissions/custom/user', $edit, 'Save');
 
     // Check that state and user data exists.
     $this->assertNotEmpty(\Drupal::state()->get('webform.webform.test_submissions'));

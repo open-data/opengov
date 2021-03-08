@@ -4,6 +4,7 @@ namespace Drupal\webform\EntitySettings;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\OptGroup;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Utility\WebformElementHelper;
 
@@ -29,7 +30,7 @@ abstract class WebformEntitySettingsBaseForm extends EntityForm {
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
     // Only display delete button on Settings > General tab/form.
-    if ($this->operation != 'settings') {
+    if ($this->operation !== 'settings') {
       unset($actions['delete']);
     }
 
@@ -82,6 +83,12 @@ abstract class WebformEntitySettingsBaseForm extends EntityForm {
         // Append default value to an element's description.
         $value = $default_settings["default_$key"];
         if (!is_array($value)) {
+          if (isset($element['#options'])) {
+            $flattened_options = OptGroup::flattenOptions($element['#options']);
+            if (isset($flattened_options[$value])) {
+              $value = $flattened_options[$value];
+            }
+          }
           $element['#description'] .= ($element['#description'] ? '<br /><br />' : '');
           $element['#description'] .= $this->t('Defaults to: %value', ['%value' => $value]);
         }

@@ -18,7 +18,7 @@
         var $permissions = $(this);
         var $checkbox = $permissions.find('input[name="permissions[administer]"]');
 
-        $checkbox.click(toggleAdminister);
+        $checkbox.on('click', toggleAdminister);
         if ($checkbox.prop('checked')) {
           toggleAdminister();
         }

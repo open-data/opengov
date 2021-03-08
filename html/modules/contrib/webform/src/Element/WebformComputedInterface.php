@@ -10,6 +10,27 @@ use Drupal\webform\WebformSubmissionInterface;
 interface WebformComputedInterface {
 
   /**
+   * Denotes HTML.
+   *
+   * @var string
+   */
+  const MODE_HTML = 'html';
+
+  /**
+   * Denotes plain text.
+   *
+   * @var string
+   */
+  const MODE_TEXT = 'text';
+
+  /**
+   * Denotes markup whose content type should be detected.
+   *
+   * @var string
+   */
+  const MODE_AUTO = 'auto';
+
+  /**
    * Compute value.
    *
    * @param array $element

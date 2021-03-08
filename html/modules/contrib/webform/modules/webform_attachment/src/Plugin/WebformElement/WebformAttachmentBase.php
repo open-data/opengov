@@ -28,7 +28,7 @@ abstract class WebformAttachmentBase extends WebformElementBase implements Webfo
       // Form display.
       'title_display' => '',
       // Display settings.
-      'display_on' => static::DISPLAY_ON_NONE,
+      'display_on' => WebformElementDisplayOnInterface::DISPLAY_ON_NONE,
       // Attachment values.
       'filename' => '',
       'sanitize' => FALSE,
@@ -97,7 +97,8 @@ abstract class WebformAttachmentBase extends WebformElementBase implements Webfo
       default:
       case 'link';
       case 'url';
-        return $attachment_element::getFileUrl($element, $webform_submission)->toString();
+        $fileUrl = $attachment_element::getFileUrl($element, $webform_submission);
+        return $fileUrl ? $fileUrl->toString() : '';
     }
   }
 

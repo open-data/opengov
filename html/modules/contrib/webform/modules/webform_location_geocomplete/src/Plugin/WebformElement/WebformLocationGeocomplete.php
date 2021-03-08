@@ -59,7 +59,7 @@ class WebformLocationGeocomplete extends WebformLocationBase {
     }
 
     $format = $this->getItemFormat($element);
-    if ($format == 'map') {
+    if ($format === 'map') {
       $google_map_url = UrlGenerator::fromUri('http://maps.google.com/', ['query' => ['q' => $value['value']]]);
 
       $location = $value['location'];

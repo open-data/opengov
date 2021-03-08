@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Webform options limit test.
  *
- * @group webform_browser
+ * @group webform_options_limit
  */
 class WebformOptionsLimitAccessTest extends WebformBrowserTestBase {
 

@@ -8,7 +8,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for the webform variant element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformVariantElementTest extends WebformBrowserTestBase {
 
@@ -29,7 +29,7 @@ class WebformVariantElementTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
     $this->placeBlocks();
   }
@@ -47,13 +47,13 @@ class WebformVariantElementTest extends WebformBrowserTestBase {
     // 'edit webform variants' permission.
     $this->drupalLogin($variant_user);
     $this->drupalGet('/admin/structure/webform/manage/contact/element/add');
-    $this->assertLink('Variant [EXPERIMENTAL]');
+    $this->assertLink('Variant');
 
     // Check that the variant element is hidden to users without
     // 'edit webform variants' permission.
     $this->drupalLogin($admin_user);
     $this->drupalGet('/admin/structure/webform/manage/contact/element/add');
-    $this->assertNoLink('Variant [EXPERIMENTAL]');
+    $this->assertNoLink('Variant');
 
     // Check that hidden variant element is still available.
     $this->drupalGet('/admin/structure/webform/manage/contact/element/add/webform_variant');
@@ -88,7 +88,7 @@ class WebformVariantElementTest extends WebformBrowserTestBase {
       'properties[title]' => '{variant_title}',
       'properties[variant]' => 'override',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/add/webform_variant', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/add/webform_variant', $edit, 'Save');
 
     // Check that the 'Variants' tab is visible.
     $this->drupalGet('/admin/structure/webform/manage/contact');

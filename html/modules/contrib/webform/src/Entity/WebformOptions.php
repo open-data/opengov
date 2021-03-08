@@ -3,11 +3,11 @@
 namespace Drupal\webform\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webform\Utility\WebformOptionsHelper;
+use Drupal\webform\Utility\WebformYaml;
 use Drupal\webform\WebformOptionsInterface;
 
 /**
@@ -133,7 +133,7 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
   public function getOptions() {
     if (!isset($this->optionsDecoded)) {
       try {
-        $options = Yaml::decode($this->options);
+        $options = WebformYaml::decode($this->options);
         // Since YAML supports simple values.
         $options = (is_array($options)) ? $options : [];
       }
@@ -151,7 +151,7 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
    * {@inheritdoc}
    */
   public function setOptions(array $options) {
-    $this->options = Yaml::encode($options);
+    $this->options = WebformYaml::encode($options);
     $this->optionsDecoded = NULL;
     return $this;
   }

@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class WebformAdminConfigLibrariesForm extends WebformAdminConfigBaseForm {
 
   /**
-   * The libraries manager.
+   * The webform libraries manager.
    *
    * @var \Drupal\webform\WebformLibrariesManagerInterface
    */

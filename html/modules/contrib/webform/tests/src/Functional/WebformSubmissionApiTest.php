@@ -10,7 +10,7 @@ use Drupal\webform\WebformSubmissionInterface;
 /**
  * Tests for webform submission API.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSubmissionApiTest extends WebformBrowserTestBase {
 

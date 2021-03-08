@@ -98,7 +98,7 @@ class WebformTime extends FormElement {
    * Note that #required is validated by _form_valistatic::formatTime() already.
    */
   public static function validateWebformTime(&$element, FormStateInterface $form_state, &$complete_form) {
-    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
+    $has_access = Element::isVisibleElement($element);
 
     $value = $element['#value'];
     if (trim($value) === '') {
@@ -117,9 +117,9 @@ class WebformTime extends FormElement {
     // @see https://github.com/jonthornton/jquery-timepicker
     // @see js/webform.element.time.js
     $is_valid_time = $time && (
-      $value == static::formatTime('H:i', $time) ||
-      $value == static::formatTime('H:i:s', $time) ||
-      $value == static::formatTime($element['#time_format'], $time)
+      $value === static::formatTime('H:i', $time) ||
+      $value === static::formatTime('H:i:s', $time) ||
+      $value === static::formatTime($element['#time_format'], $time)
     );
     if (!$is_valid_time) {
       if ($has_access) {

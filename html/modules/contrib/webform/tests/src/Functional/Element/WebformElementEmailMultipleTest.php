@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for email_multiple element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementEmailMultipleTest extends WebformElementBrowserTestBase {
 
@@ -30,28 +30,28 @@ class WebformElementEmailMultipleTest extends WebformElementBrowserTestBase {
     $edit = [
       'email_multiple_basic' => 'example@example.com, Not a valid email address',
     ];
-    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, 'Submit');
     $this->assertRaw('The email address <em class="placeholder">Not a valid email address</em> is not valid.');
 
     // Check email multiple invalid token email address.
     $edit = [
       'email_multiple_basic' => 'example@example.com, [token]',
     ];
-    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, 'Submit');
     $this->assertRaw('The email address <em class="placeholder">[token]</em> is not valid.');
 
     // Check email multiple valid second email address.
     $edit = [
       'email_multiple_basic' => 'example@example.com, other@other.com',
     ];
-    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, 'Submit');
     $this->assertRaw("email_multiple_basic: 'example@example.com, other@other.com'");
 
     // Check email multiple valid token email address (via #allow_tokens).
     $edit = [
       'email_multiple_advanced' => 'example@example.com, [token], [token1]@[token2].com',
     ];
-    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_email_multiple', $edit, 'Submit');
     $this->assertRaw("email_multiple_advanced: 'example@example.com, [token], [token1]@[token2].com'");
   }
 

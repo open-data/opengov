@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for composite element (builder).
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementCompositeTest extends WebformElementBrowserTestBase {
 
@@ -124,18 +124,23 @@ webform_element_composite_advanced:
     $this->assertRaw('<fieldset data-drupal-selector="edit-radios-wrapper-fieldset-hidden-title" id="edit-radios-wrapper-fieldset-hidden-title--wrapper" class="radios--wrapper fieldgroup form-composite webform-composite-hidden-title required js-webform-type-radios webform-type-radios js-form-item form-item js-form-wrapper form-wrapper">');
 
     // Check form element wrapper.
-    $this->assertRaw('<div class="js-form-item form-item js-form-type-radios form-type-radios js-form-item-radios-wrapper-form-element form-item-radios-wrapper-form-element">');
+    $this->assertRaw('<div class="js-form-item form-item js-form-type-radios form-item-radios-wrapper-form-element js-form-item-radios-wrapper-form-element">');
 
     // Check container wrapper.
     $this->assertRaw('<div data-drupal-selector="edit-radios-wrapper-container" id="edit-radios-wrapper-container--wrapper" class="radios--wrapper fieldgroup form-composite js-form-wrapper form-wrapper">');
 
     // Check radios 'aria-describedby' with wrapper description.
     $this->assertRaw('<input data-drupal-selector="edit-radios-wrapper-fieldset-description-one" aria-describedby="edit-radios-wrapper-fieldset-description--wrapper--description" type="radio" id="edit-radios-wrapper-fieldset-description-one" name="radios_wrapper_fieldset_description" value="One" class="form-radio" />');
-    $this->assertRaw('<div class="description"><div id="edit-radios-wrapper-fieldset-description--wrapper--description" class="webform-element-description">This is a description</div>');
+    if (floatval(\Drupal::VERSION) >= 9) {
+      $this->assertRaw('<div class="description"><div id="edit-radios-wrapper-fieldset-description--wrapper--description" data-drupal-field-elements="description" class="webform-element-description">This is a description</div>');
+    }
+    else {
+      $this->assertRaw('<div class="description"><div id="edit-radios-wrapper-fieldset-description--wrapper--description" class="webform-element-description">This is a description</div>');
+    }
 
     // Check wrapper with #states.
     $this->assertRaw('<fieldset data-drupal-selector="edit-states-fieldset" class="js-webform-states-hidden radios--wrapper fieldgroup form-composite webform-composite-visible-title js-webform-type-radios webform-type-radios js-form-item form-item js-form-wrapper form-wrapper" id="edit-states-fieldset--wrapper" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-element-composite-wrapper-add-form :input[name=\u0022states_checkbox\u0022]&quot;:{&quot;checked&quot;:true}}}">');
-    $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-radios form-type-radios js-form-item-states-form-item form-item-states-form-item" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-element-composite-wrapper-add-form :input[name=\u0022states_checkbox\u0022]&quot;:{&quot;checked&quot;:true}}}">');
+    $this->assertRaw('<div class="js-webform-states-hidden js-form-item form-item js-form-type-radios form-item-states-form-item js-form-item-states-form-item" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-element-composite-wrapper-add-form :input[name=\u0022states_checkbox\u0022]&quot;:{&quot;checked&quot;:true}}}">');
     $this->assertRaw('<div data-drupal-selector="edit-states-container" class="js-webform-states-hidden radios--wrapper fieldgroup form-composite js-form-wrapper form-wrapper" id="edit-states-container--wrapper" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-element-composite-wrapper-add-form :input[name=\u0022states_checkbox\u0022]&quot;:{&quot;checked&quot;:true}}}">');
 
     // Below tests are only failing on Drupal.org and pass locally.

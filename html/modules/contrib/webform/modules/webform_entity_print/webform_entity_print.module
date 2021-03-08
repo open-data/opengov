@@ -13,7 +13,7 @@ use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\Render\Markup;
 
 /**
- * Implements hook_ENTITY_TYPE_view_alter().
+ * Implements hook_ENTITY_TYPE_view_alter() for webform_submission entities.
  *
  * @see entity_print_entity_view_alter();
  */
@@ -179,6 +179,9 @@ function webform_entity_print_preprocess_entity_print(array &$variables) {
   if (!$webform_submission) {
     return;
   }
+
+  // Add webform submission to variables.
+  $variables['webform_submission'] = $webform_submission;
 
   $webform = $webform_submission->getWebform();
 

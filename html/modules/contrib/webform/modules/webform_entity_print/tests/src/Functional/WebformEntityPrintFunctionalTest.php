@@ -72,7 +72,7 @@ body {
     $edit = [
       'third_party_settings[webform_entity_print][export_types][pdf][link_text]' => 'Generate PDF',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
     $this->drupalGet("/admin/structure/webform/manage/test_entity_print/submission/$sid");
     $this->assertNoLink('Download PDF');
     $this->assertLink('Generate PDF');
@@ -81,7 +81,7 @@ body {
     $edit = [
       'third_party_settings[webform_entity_print][export_types][pdf][enabled]' => FALSE,
     ];
-    $this->drupalPostForm('/admin/structure/webform/config', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
     $this->drupalGet("/admin/structure/webform/manage/test_entity_print/submission/$sid");
     $this->assertNoLink('Download PDF');
 
@@ -98,7 +98,7 @@ body {
     $edit = [
       'exporter' => 'webform_entity_print:pdf',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_entity_print/results/download', $edit, t('Download'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_entity_print/results/download', $edit, 'Download');
 
     // Load the tar and get a list of files.
     $files = $this->getArchiveContents($submission_exporter->getArchiveFilePath());

@@ -3,8 +3,8 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\webform\Plugin\WebformElementBase;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 
@@ -106,13 +106,13 @@ class Table extends WebformElementBase {
   protected function formatHtmlItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $rows = [];
     foreach ($element as $row_key => $row_element) {
-      if (Element::property($row_key)) {
+      if (WebformElementHelper::property($row_key)) {
         continue;
       }
 
       $element[$row_key] = [];
       foreach ($row_element as $column_key => $column_element) {
-        if (Element::property($column_key)) {
+        if (WebformElementHelper::property($column_key)) {
           continue;
         }
 

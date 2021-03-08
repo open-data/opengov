@@ -9,6 +9,7 @@
  * Implements hook_webform_help_info().
  */
 function webform_options_limit_webform_help_info() {
+  $help = [];
   $help['webform_options_limit'] = [
     'group' => 'forms',
     'title' => t('Options limit'),
@@ -20,7 +21,6 @@ function webform_options_limit_webform_help_info() {
       'entity.node.webform_options_limit.summary',
     ],
   ];
-
   return $help;
 }
 

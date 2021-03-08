@@ -3,9 +3,9 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\webform\Plugin\WebformElementBase;
 use Drupal\webform\Element\WebformMessage as WebformMessageElement;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -101,7 +101,7 @@ class WebformTableRow extends WebformElementBase {
       case 'table':
       default:
         foreach ($element as $column_key => $column_element) {
-          if (Element::property($column_key)) {
+          if (WebformElementHelper::property($column_key)) {
             continue;
           }
 

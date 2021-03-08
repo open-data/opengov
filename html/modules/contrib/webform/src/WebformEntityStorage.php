@@ -115,7 +115,7 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
    * {@inheritdoc}
    */
   protected function doPostSave(EntityInterface $entity, $update) {
-    if ($update && $entity->getAccessRules() != $entity->original->getAccessRules()) {
+    if ($update && $entity->getAccessRules() !== $entity->original->getAccessRules()) {
       // Invalidate webform_submission listing cache tags because due to the
       // change in access rules of this webform, some listings might have
       // changed for users.
@@ -173,16 +173,18 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
       foreach ($stream_wrappers as $stream_wrapper) {
         $file_directory = $stream_wrapper . '://webform/' . $entity->id();
 
-        // Clear all signature files.
-        // @see \Drupal\webform\Plugin\WebformElement\WebformSignature::getImageUrl
-        $files = file_scan_directory($file_directory, '/^signature-.*/');
-        foreach (array_keys($files) as $uri) {
-          $this->fileSystem->delete($uri);
-        }
+        if (file_exists($file_directory)) {
+          // Clear all signature files.
+          // @see \Drupal\webform\Plugin\WebformElement\WebformSignature::getImageUrl
+          $files = $this->fileSystem->scanDirectory($file_directory, '/^signature-.*/');
+          foreach (array_keys($files) as $uri) {
+            $this->fileSystem->delete($uri);
+          }
 
-        // Clear empty webform directory.
-        if (file_exists($file_directory) && empty(file_scan_directory($file_directory, '/.*/'))) {
-          $this->fileSystem->deleteRecursive($file_directory);
+          // Clear empty webform directory.
+          if (empty($this->fileSystem->scanDirectory($file_directory, '/.*/'))) {
+            $this->fileSystem->deleteRecursive($file_directory);
+          }
         }
       }
     }
@@ -195,7 +197,7 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
     $webforms = $this->loadMultiple();
     $categories = [];
     foreach ($webforms as $webform) {
-      if ($template !== NULL && $webform->get('template') != $template) {
+      if ($template !== NULL && $webform->get('template') !== $template) {
         continue;
       }
       if ($category = $webform->get('category')) {
@@ -218,7 +220,7 @@ class WebformEntityStorage extends ConfigEntityStorage implements WebformEntityS
     $categorized_options = [];
     foreach ($webforms as $id => $webform) {
       // Skip templates.
-      if ($template !== NULL && $webform->get('template') != $template) {
+      if ($template !== NULL && $webform->get('template') !== $template) {
         continue;
       }
       // Skip archived.

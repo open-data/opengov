@@ -9,7 +9,7 @@ use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\Core\Render\Element;
+use Drupal\webform_bootstrap\WebformBootstrapRenderCallbacks;
 
 /**
  * Implements hook_page_attachments().
@@ -35,19 +35,7 @@ function webform_bootstrap_webform_element_webform_terms_of_service_alter(array 
  * Implements hook_webform_element_ELEMENT_TYPE_alter().
  */
 function webform_bootstrap_webform_element_webform_likert_alter(array &$element, \Drupal\Core\Form\FormStateInterface $form_state, array $context) {
-  $element['#pre_render'] = array_merge(['_webform_bootstrap_webform_element_webform_likert_pre_render'], $element['#pre_render']);
-}
-
-function _webform_bootstrap_webform_element_webform_likert_pre_render(array $element) {
-  foreach (Element::children($element) as $element_key) {
-    // Likerts allow description display to be configured, so disable
-    // smart description.
-    if (!empty($element[$element_key]['#description'])) {
-      $element[$element_key]['#smart_description'] = FALSE;
-    }
-    $element[$element_key] = _webform_bootstrap_webform_element_webform_likert_pre_render($element[$element_key]);
-  }
-  return $element;
+  $element['#pre_render'] = array_merge([[WebformBootstrapRenderCallbacks::class, 'webformLikertPreRender']], $element['#pre_render']);
 }
 
 /**
@@ -121,17 +109,17 @@ function webform_bootstrap_js_alter(&$javascript, AttachedAssetsInterface $asset
     return;
   }
 
-  $path = drupal_get_path('module', 'webform_bootstrap');
-  // Make sure jQuery tooltip is never loaded and use custom
-  // webform.element.help.js.
-  unset(
-    $javascript['core/assets/vendor/jquery.ui/ui/tooltip-min.js'],
-    $javascript['core/assets/vendor/jquery.ui/ui/widgets/tooltip-min.js']
-  );
-
+  // Make sure jQuery tooltip is never loaded and use
+  // bootstrap specific webform.element.help.js.
+  foreach ($javascript as $javascript_path => $javascript_item) {
+    if (strpos($javascript_path, 'tooltip-min') !== FALSE) {
+      unset($javascript[$javascript_path]);
+    }
+  }
   $webform_help_path = drupal_get_path('module', 'webform') . '/js/webform.element.help.js';
+  $webform_bootstrap_help_path = drupal_get_path('module', 'webform_bootstrap') . '/js/webform.element.help.js';;
   if (isset($javascript[$webform_help_path])) {
-    $javascript[$webform_help_path]['data'] = $path . '/js/webform.element.help.js';
+    $javascript[$webform_help_path]['data'] = $webform_bootstrap_help_path;
   }
 }
 
@@ -178,7 +166,7 @@ function webform_bootstrap_preprocess_input(&$variables) {
 }
 
 /**
- * Prepares variables for form element templates.
+ * Implements hook_preprocess_form_element() for form element templates.
  */
 function webform_bootstrap_preprocess_form_element(&$variables) {
   if (!_webform_bootstrap_is_active_theme()) {
@@ -283,7 +271,21 @@ function _webform_bootstrap_convert_button_classes(array &$classes) {
  *   TRUE if Bootstrap is the active theme.
  */
 function _webform_bootstrap_is_active_theme() {
-  /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
-  $theme_manager = \Drupal::service('webform.theme_manager');
-  return $theme_manager->isActiveTheme('bootstrap');
+  $is_active_theme = &drupal_static(__FUNCTION__);
+  if (isset($is_active_theme)) {
+    return $is_active_theme;
+  }
+
+  // Catch 'TypeError' in Drupal\webform\WebformThemeManager::__construct()
+  // which is triggered by service argument changes before the cache is cleared.
+  try {
+    /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
+    $theme_manager = \Drupal::service('webform.theme_manager');
+    $is_active_theme = $theme_manager->isActiveTheme('bootstrap');
+  }
+  catch (\TypeError $error) {
+    $is_active_theme = FALSE;
+  }
+
+  return $is_active_theme;
 }

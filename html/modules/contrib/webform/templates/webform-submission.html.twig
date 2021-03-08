@@ -14,12 +14,12 @@
  */
 #}
 {%
-set classes = [
-'webform-submission',
-'webform-submission--webform-' ~ webform.id()|clean_class,
-webform_submission.isSticky() ? 'webform-submission--sticky',
-view_mode ? 'webform-submission--view-mode-' ~ view_mode|clean_class,
-]
+  set classes = [
+    'webform-submission',
+    'webform-submission--webform-' ~ webform.id()|clean_class,
+    webform_submission.isSticky() ? 'webform-submission--sticky',
+    view_mode ? 'webform-submission--view-mode-' ~ view_mode|clean_class,
+  ]
 %}
 <div{{ attributes.addClass(classes) }}>
 {{ navigation }}

@@ -21,6 +21,7 @@
 }
 
 .webform-multiple-table td .description,
+.webform-multiple-table td .messages,
 .webform-multiple-table td .form-item--error-message {
   white-space: normal;
 }

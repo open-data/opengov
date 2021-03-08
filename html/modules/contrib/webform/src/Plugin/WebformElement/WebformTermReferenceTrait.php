@@ -103,6 +103,11 @@ trait WebformTermReferenceTrait {
         ],
       ],
     ];
+    $form['term_reference']['depth'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Limit term depth'),
+      '#field_suffix' => $this->t('level(s)'),
+    ];
     $form['term_reference']['scroll'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Allow terms to be scrollable'),

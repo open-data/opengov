@@ -26,3 +26,4 @@ libraries.jquery.geocomplete:
     /libraries/geocomplete/jquery.geocomplete.min.js: { minified: true }
   dependencies:
     - core/jquery
+  deprecated: The "%library_id%" asset library is deprecated. This project is not maintained anymore. See https://github.com/ubilabs/geocomplete

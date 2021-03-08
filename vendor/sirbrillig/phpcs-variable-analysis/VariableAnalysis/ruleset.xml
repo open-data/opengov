@@ -1,14 +1,5 @@
 <?xml version="1.0"?>
 <ruleset name="VariableAnalysis">
- <description>A code sniff to detect problems with variables.</description>
-
- <!-- If you want everything, with the defaults, just include this line -->
- <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis"/>
- <!--
-    You can also refer to these policy codes to customize them:
-      VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-      VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-      VariableAnalysis.CodeAnalysis.VariableAnalysis.VariableRedeclaration
-      VariableAnalysis.CodeAnalysis.VariableAnalysis.SelfOutsideClass
- -->
+  <description>Plugin for PHP_CodeSniffer static analysis tool that adds analysis of problematic variable use.</description>
+   <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis"/>
 </ruleset>

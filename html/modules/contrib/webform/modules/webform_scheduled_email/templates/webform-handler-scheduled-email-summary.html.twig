@@ -15,7 +15,6 @@
  * @ingroup themeable
  */
 #}
-
 <b>{{ 'Send on:'|t }}</b> {{ settings.send }}{% if settings.days %} {{ settings.days > 0 ? '+' : ''}}{{ settings.days }} {{ 'days'|t }}{% endif %}<br />
 <b>{{ 'Unschedule:'|t }}</b> {{ settings.unschedule ? 'Yes'|t : 'No'|t }}<br />
 <b>{{ 'Ignore past:'|t }}</b> {{ settings.ignore_past ? 'Yes'|t : 'No'|t }}<br />

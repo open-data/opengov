@@ -55,7 +55,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
   protected $entityTypeManager;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */
@@ -143,7 +143,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
         'webform' => $this->t('Current webform'),
         'user' => $this->t('Current user'),
       ],
-      '#ajax' => self::getTokenAjaxSettings(),
+      '#ajax' => static::getTokenAjaxSettings(),
       '#default_value' => $this->configuration['type'],
       '#parents' => ['settings', 'type'],
     ];
@@ -151,7 +151,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
       '#title' => $this->t('Restrict limit and total submissions to current or specified source entity'),
       '#type' => 'checkbox',
       '#return_value' => TRUE,
-      '#ajax' => self::getTokenAjaxSettings(),
+      '#ajax' => static::getTokenAjaxSettings(),
       '#default_value' => $this->configuration['source_entity'],
       '#parents' => ['settings', 'source_entity'],
     ];
@@ -164,7 +164,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
     ];
 
     // Tokens.
-    $form['tokens'] = self::buildTokens($this->configuration['type'], $this->configuration['source_entity']);
+    $form['tokens'] = static::buildTokens($this->configuration['type'], $this->configuration['source_entity']);
 
     // Progress.
     $form['progress'] = [
@@ -384,7 +384,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
    */
   protected function getLimit() {
     $name = ($this->configuration['source_entity']) ? 'entity_' : '';
-    $name .= ($this->configuration['type'] == 'user') ? 'limit_user' : 'limit_total';
+    $name .= ($this->configuration['type'] === 'user') ? 'limit_user' : 'limit_total';
     return $this->getWebform()->getSetting($name) ?: FALSE;
   }
 
@@ -396,7 +396,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
    */
   protected function getInterval() {
     $name = ($this->configuration['source_entity']) ? 'entity_' : '';
-    $name .= ($this->configuration['type'] == 'user') ? 'limit_user_interval' : 'limit_total_interval';
+    $name .= ($this->configuration['type'] === 'user') ? 'limit_user_interval' : 'limit_total_interval';
     return $this->getWebform()->getSetting($name);
   }
 
@@ -503,7 +503,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
    *   The current user account or NULL if the user limit is not being displayed.
    */
   protected function getCurrentUser() {
-    return ($this->configuration['type'] == 'user') ? $this->currentUser : NULL;
+    return ($this->configuration['type'] === 'user') ? $this->currentUser : NULL;
   }
 
   /****************************************************************************/
@@ -529,7 +529,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
    */
   public static function tokenAjaxCallback(array &$form, FormStateInterface $form_state) {
     $settings = $form_state->getValue('settings');
-    return self::buildTokens($settings['type'], $settings['source_entity']);
+    return static::buildTokens($settings['type'], $settings['source_entity']);
   }
 
   /**
@@ -557,7 +557,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
     $token_types = ['limit', 'interval', 'total', 'remaining'];
     $rows = [];
     foreach ($token_types as $token_type) {
-      $token_name = self::getTokenName($token_type, $type, $source_entity);
+      $token_name = static::getTokenName($token_type, $type, $source_entity);
       $rows[] = [
         ['data' => '[' . $token_type . ']', 'style' => 'vertical-align: top'],
         [

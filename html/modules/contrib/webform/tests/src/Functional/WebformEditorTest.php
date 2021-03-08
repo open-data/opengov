@@ -9,7 +9,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform editor.
  *
- * @group Webform
+ * @group webform
  */
 class WebformEditorTest extends WebformBrowserTestBase {
 
@@ -32,7 +32,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     $this->fileUsage = $this->container->get('file.usage');
@@ -62,7 +62,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->reloadImages($images);
 
     // Check that first image is not temporary.
@@ -77,7 +77,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/><img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->reloadImages($images);
 
     // Check that first and second image are not temporary.
@@ -93,7 +93,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->reloadImages($images);
 
     // Check that first is temporary and second image is not temporary.
@@ -109,7 +109,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'description[value]' => '',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->reloadImages($images);
 
     // Check that first and second image are temporary.
@@ -128,7 +128,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->reloadImages($images);
     $this->assertFalse($images[0]->isTemporary());
 
@@ -136,7 +136,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'description[value]' => '',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->reloadImages($images);
     $this->assertFalse($images[0]->isTemporary());
 
@@ -148,7 +148,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->reloadImages($images);
 
     // Check that upload file is not temporary.
@@ -186,7 +186,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'form_settings[default_form_open_message][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
     $this->reloadImages($images);
 
     // Check that first image is not temporary.
@@ -201,7 +201,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'form_settings[default_form_open_message][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/><img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
     $this->reloadImages($images);
 
     // Check that first and second image are not temporary.
@@ -217,7 +217,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $edit = [
       'form_settings[default_form_open_message][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
     $this->reloadImages($images);
 
     // Check that first is temporary and second image is not temporary.

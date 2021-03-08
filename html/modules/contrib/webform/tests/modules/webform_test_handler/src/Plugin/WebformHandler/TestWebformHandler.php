@@ -250,7 +250,7 @@ class TestWebformHandler extends WebformHandlerBase {
    *   Additional parameter passed to the invoked method name.
    */
   protected function displayMessage($method_name, $context1 = NULL) {
-    if (PHP_SAPI != 'cli') {
+    if (PHP_SAPI !== 'cli') {
       $t_args = [
         '@id' => $this->getHandlerId(),
         '@class_name' => get_class($this),

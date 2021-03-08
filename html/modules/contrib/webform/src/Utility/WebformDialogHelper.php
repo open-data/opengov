@@ -37,6 +37,13 @@ class WebformDialogHelper {
   const DIALOG_NARROW = 'narrow';
 
   /**
+   * Prevent dialog from being displayed.
+   *
+   * @var string
+   */
+  const DIALOG_NONE = 'none';
+
+  /**
    * Use outside-in off-canvas system tray instead of dialogs.
    *
    * @return bool
@@ -112,7 +119,8 @@ class WebformDialogHelper {
    *   Modal dialog attributes.
    */
   public static function getOffCanvasDialogAttributes($width = self::DIALOG_NORMAL, array $class = []) {
-    if (\Drupal::config('webform.settings')->get('ui.dialog_disabled')) {
+    if (\Drupal::config('webform.settings')->get('ui.dialog_disabled')
+      || $width === self::DIALOG_NONE) {
       return $class ? ['class' => $class] : [];
     }
 

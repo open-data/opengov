@@ -19,7 +19,7 @@ class WebformEntityPrintWebformExporterDeriver extends WebformEntityPrintWebform
       $this->derivatives[$id] = $base_plugin_definition;
       $this->derivatives[$id]['id'] = $id;
       $this->derivatives[$id]['label'] = $this->t('@label documents', $t_args);
-      $this->derivatives[$id]['description'] = $this->t('Exports results as @label documents');
+      $this->derivatives[$id]['description'] = $this->t('Exports results as @label documents', $t_args);
     }
     return $this->derivatives;
   }

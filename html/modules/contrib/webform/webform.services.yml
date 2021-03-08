@@ -43,6 +43,10 @@ services:
   webform.cli_service:
     class: Drupal\webform\Commands\WebformCliService
 
+  webform.conditions_manager:
+    class: Drupal\webform\WebformEntityConditionsManager
+    arguments: ['@plugin.manager.webform.element']
+
   webform.elements_validator:
     class: Drupal\webform\WebformEntityElementsValidator
     arguments: ['@renderer', '@plugin.manager.webform.element', '@entity_type.manager', '@form_builder', '@config.factory']
@@ -53,7 +57,7 @@ services:
 
   webform.entity_reference_manager:
     class: Drupal\webform\WebformEntityReferenceManager
-    arguments: ['@current_route_match', '@current_user', '@user.data']
+    arguments: ['@current_route_match', '@current_user', '@user.data', '@module_handler', '@entity_type.manager']
 
   webform.help_manager:
     class: Drupal\webform\WebformHelpManager
@@ -107,7 +111,7 @@ services:
 
   webform.breadcrumb:
     class: Drupal\webform\Breadcrumb\WebformBreadcrumbBuilder
-    arguments: ['@module_handler', '@webform.request', '@string_translation']
+    arguments: ['@module_handler', '@webform.request', '@string_translation', '@config.factory']
     tags:
       - { name: breadcrumb_builder, priority: 1002 }
 
@@ -123,6 +127,7 @@ services:
 
   webform.route_subscriber:
     class: Drupal\webform\Routing\WebformRouteSubscriber
+    arguments: ['@module_handler', '@config.factory']
     tags:
       - { name: event_subscriber }
 

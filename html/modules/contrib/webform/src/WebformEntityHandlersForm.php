@@ -30,7 +30,7 @@ class WebformEntityHandlersForm extends EntityForm {
   protected $entity;
 
   /**
-   * Webform handler manager.
+   * The webform handler manager.
    *
    * @var \Drupal\webform\Plugin\WebformHandlerManagerInterface
    */
@@ -78,6 +78,8 @@ class WebformEntityHandlersForm extends EntityForm {
     $handlers = $this->entity->getHandlers();
     $rows = [];
     foreach ($handlers as $handler_id => $handler) {
+      $offcanvas_dialog_attributes = WebformDialogHelper::getOffCanvasDialogAttributes($handler->getOffCanvasWidth());
+
       $row['#attributes']['class'][] = 'draggable';
       $row['#attributes']['data-webform-key'] = $handler_id;
 
@@ -93,11 +95,11 @@ class WebformEntityHandlersForm extends EntityForm {
               'webform' => $this->entity->id(),
               'webform_handler' => $handler_id,
             ]),
-            '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+            '#attributes' => $offcanvas_dialog_attributes,
           ],
           'description' => [
             '#prefix' => '<br/>',
-            '#markup' => $handler->description(),
+            '#markup' => $handler->getNotes() ?: $handler->description(),
           ],
         ],
       ];
@@ -136,7 +138,7 @@ class WebformEntityHandlersForm extends EntityForm {
           'webform' => $this->entity->id(),
           'webform_handler' => $handler_id,
         ]),
-        'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+        'attributes' => $offcanvas_dialog_attributes,
       ];
       // Duplicate.
       if ($handler->cardinality() === WebformHandlerInterface::CARDINALITY_UNLIMITED) {
@@ -146,7 +148,7 @@ class WebformEntityHandlersForm extends EntityForm {
             'webform' => $this->entity->id(),
             'webform_handler' => $handler_id,
           ]),
-          'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+          'attributes' => $offcanvas_dialog_attributes,
         ];
       }
       // Test individual handler.

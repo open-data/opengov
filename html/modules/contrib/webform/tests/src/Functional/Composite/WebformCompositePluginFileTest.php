@@ -10,7 +10,7 @@ use Drupal\Tests\webform\Functional\Element\WebformElementManagedFileTestBase;
 /**
  * Tests for composite plugin file upload.
  *
- * @group Webform
+ * @group webform
  */
 class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
 

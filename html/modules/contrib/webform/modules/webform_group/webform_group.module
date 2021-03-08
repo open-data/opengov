@@ -41,7 +41,7 @@ function webform_group_config_schema_info_alter(&$definitions) {
 /******************************************************************************/
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for webform handler form.
  *
  * Adds group role token options to email handler elements.
  */
@@ -132,7 +132,7 @@ function _webform_group_form_webform_handler_form_alter_email_element_recursive(
       continue;
     }
     if (isset($element['#type']) && $element['#type'] === 'webform_select_other'
-      && isset($element['#other__type']) && $element['#other__type'] == 'webform_email_multiple') {
+      && isset($element['#other__type']) && $element['#other__type'] === 'webform_email_multiple') {
       $group_optgroup = (string) t('Group roles');
       $other_optgroup = (string) t('Other');
       $other_options = $element['#options'][$other_optgroup];
@@ -145,7 +145,7 @@ function _webform_group_form_webform_handler_form_alter_email_element_recursive(
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for webform settings access form.
  */
 function webform_group_form_webform_settings_access_form_alter(&$form, FormStateInterface $form_state) {
   /** @var \Drupal\webform_group\WebformGroupManagerInterface $webform_group_manager */
@@ -199,7 +199,7 @@ function webform_group_form_webform_settings_access_form_alter(&$form, FormState
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for webform ui element form.
  */
 function webform_group_form_webform_ui_element_form_alter(&$form, FormStateInterface $form_state) {
   $default_properties = $form_state->get('default_properties');
@@ -248,7 +248,7 @@ function webform_group_form_webform_ui_element_form_alter(&$form, FormStateInter
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for webform admin config handlers form.
  */
 function webform_group_form_webform_admin_config_handlers_form_alter(&$form, FormStateInterface $form_state) {
   $form['mail']['roles']['#weight'] = 0;
@@ -292,7 +292,7 @@ function _webform_group_form_webform_admin_config_handlers_form_submit(&$form, F
 /******************************************************************************/
 
 /**
- * Implements hook_ENTITY_TYPE_access().
+ * Implements hook_ENTITY_TYPE_access() for webform entities.
  */
 function webform_group_webform_access(WebformInterface $webform, $operation, AccountInterface $account) {
   // Prevent recursion when a webform is being passed as the source entity
@@ -329,7 +329,7 @@ function webform_group_webform_access(WebformInterface $webform, $operation, Acc
 }
 
 /**
- * Implements hook_ENTITY_TYPE_access().
+ * Implements hook_ENTITY_TYPE_access() for webform_submission entities.
  */
 function webform_group_webform_submission_access(WebformSubmissionInterface $webform_submission, $operation, AccountInterface $account) {
   if (!in_array($operation, ['view', 'update', 'delete'])) {
@@ -363,7 +363,7 @@ function webform_group_webform_submission_access(WebformSubmissionInterface $web
     // Is operation any.
     (array_intersect($access_rules[$operation . '_any']['group_roles'], $user_group_roles)) ||
     // Is operation own.
-    (array_intersect($access_rules[$operation . '_own']['group_roles'], $user_group_roles)  && $webform_submission->getOwnerId() == $account->id())
+    (array_intersect($access_rules[$operation . '_own']['group_roles'], $user_group_roles)  && (int) $webform_submission->getOwnerId() === (int) $account->id())
   ) {
     return AccessResult::allowed()
       ->cachePerUser()

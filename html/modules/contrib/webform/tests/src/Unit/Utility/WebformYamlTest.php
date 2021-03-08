@@ -66,7 +66,7 @@ class WebformYamlTest extends UnitTestCase {
   }
 
   /**
-   * Tests WebformYaml tidy with WebformYaml::decode().
+   * Tests WebformYaml decode with WebformYaml::decode().
    *
    * @param string $yaml
    *   The string to run through WebformYaml::decode().
@@ -123,6 +123,64 @@ class WebformYamlTest extends UnitTestCase {
     $tests[] = [
       0,
       [],
+    ];
+    return $tests;
+  }
+
+  /**
+   * Tests WebformYaml encode with WebformYaml::encode().
+   *
+   * @param string $yaml
+   *   The string to run through WebformYaml::encode().
+   * @param string $expected
+   *   The expected result from calling the function.
+   *
+   * @see WebformYaml::encode()
+   *
+   * @dataProvider providerEncode
+   */
+  public function testEncdoe($yaml, $expected) {
+    $result = WebformYaml::encode($yaml);
+    $this->assertEquals($expected, $result);
+  }
+
+  /**
+   * Data provider for testEncode().
+   *
+   * @see testEncode()
+   */
+  public function providerEncode() {
+    $tests[] = [
+      ['simple' => 'value'],
+      "simple: value",
+    ];
+    $tests[] = [
+      ['returns' => "line 1\nline 2"],
+      "returns: |\n  line 1\n  line 2",
+    ];
+    $tests[] = [
+      ['one two' => "line 1\nline 2"],
+      "'one two': |\n  line 1\n  line 2",
+    ];
+    $tests[] = [
+      ['array' => ['one', 'two']],
+      "array:\n  - one\n  - two",
+    ];
+    $tests[] = [
+      [['one' => 'One'], ['two' => 'Two']],
+      "- one: One\n- two: Two",
+    ];
+    $tests[] = [
+      [],
+      '',
+    ];
+    $tests[] = [
+      '',
+      "''",
+    ];
+    $tests[] = [
+      0,
+      '0',
     ];
     return $tests;
   }

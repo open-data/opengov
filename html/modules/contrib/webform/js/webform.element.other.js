@@ -35,7 +35,7 @@
       $element[showEffect]();
       // If not initializing, then focus the other element.
       if (effect !== false) {
-        $input.focus();
+        $input.trigger('focus');
       }
       // Require the input.
       $input.prop('required', true).attr('aria-required', 'true');
@@ -151,7 +151,7 @@
         var $container = $(this).find('.js-webform-webform-buttons');
 
         // Create set onchange handler.
-        $container.change(function () {
+        $container.on('change', function () {
           toggleOther(($(this).find(':radio:checked').val() === '_other_'), $input);
         });
 

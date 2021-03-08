@@ -7,7 +7,7 @@ namespace Drupal\Tests\webform\Functional\Element;
  *
  * @see https://www.drupal.org/psa-2016-003
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementManagedFilePublicTest extends WebformElementBrowserTestBase {
 
@@ -28,7 +28,7 @@ class WebformElementManagedFilePublicTest extends WebformElementBrowserTestBase 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Set public file upload support for testing.
@@ -43,7 +43,7 @@ class WebformElementManagedFilePublicTest extends WebformElementBrowserTestBase 
   public function testPublicUpload() {
     // Check status report private file system warning.
     $requirements = webform_requirements('runtime');
-    $this->assertEqual($requirements['webform_file_private']['value'], (string) t('Private file system is set.'));
+    $this->assertEqual($requirements['webform_file_private']['value'], (string) 'Private file system is set.');
 
     $this->drupalLogin($this->rootUser);
 

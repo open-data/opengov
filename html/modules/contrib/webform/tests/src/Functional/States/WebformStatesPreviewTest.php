@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform states preview.
  *
- * @group Webform
+ * @group webform
  */
 class WebformStatesPreviewTest extends WebformBrowserTestBase {
 
@@ -30,7 +30,7 @@ class WebformStatesPreviewTest extends WebformBrowserTestBase {
     $webform_preview = Webform::load('test_states_server_preview');
 
     // Check trigger unchecked and elements are conditionally hidden.
-    $this->postSubmission($webform_preview, [], t('Preview'));
+    $this->postSubmission($webform_preview, [], 'Preview');
     $this->assertRaw('trigger_checkbox');
     $this->assertNoRaw('dependent_checkbox');
     $this->assertNoRaw('dependent_markup');
@@ -39,7 +39,7 @@ class WebformStatesPreviewTest extends WebformBrowserTestBase {
     $this->assertNoRaw('nested_textfield');
 
     // Check trigger checked and elements are conditionally visible.
-    $this->postSubmission($webform_preview, ['trigger_checkbox' => TRUE], t('Preview'));
+    $this->postSubmission($webform_preview, ['trigger_checkbox' => TRUE], 'Preview');
     $this->assertRaw('trigger_checkbox');
     $this->assertRaw('dependent_checkbox');
     $this->assertRaw('dependent_markup');
@@ -50,7 +50,7 @@ class WebformStatesPreviewTest extends WebformBrowserTestBase {
     $webform_save = Webform::load('test_states_server_save');
 
     // Check trigger unchecked and saved.
-    $this->postSubmission($webform_save, ['trigger_checkbox' => FALSE], t('Submit'));
+    $this->postSubmission($webform_save, ['trigger_checkbox' => FALSE], 'Submit');
     $this->assertRaw("trigger_checkbox: 0
 dependent_hidden: ''
 dependent_checkbox: ''
@@ -60,7 +60,7 @@ dependent_textfield_multiple: {  }
 dependent_details_textfield: ''");
 
     // Check trigger checked and saved.
-    $this->postSubmission($webform_save, ['trigger_checkbox' => TRUE], t('Submit'));
+    $this->postSubmission($webform_save, ['trigger_checkbox' => TRUE], 'Submit');
     $this->assertRaw("trigger_checkbox: 1
 dependent_hidden: '{dependent_hidden}'
 dependent_checkbox: 0
@@ -73,7 +73,7 @@ dependent_details_textfield: '{dependent_details_textfield}'");
     $webform_clear = Webform::load('test_states_server_clear');
 
     // Check trigger unchecked and not cleared.
-    $this->postSubmission($webform_clear, ['trigger_checkbox' => FALSE], t('Submit'));
+    $this->postSubmission($webform_clear, ['trigger_checkbox' => FALSE], 'Submit');
     $this->assertRaw("trigger_checkbox: 0
 dependent_hidden: '{dependent_hidden}'
 dependent_checkbox: 1

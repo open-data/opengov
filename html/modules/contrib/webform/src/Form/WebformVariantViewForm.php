@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Provides a view and tests form for webform variants.
@@ -52,9 +53,29 @@ class WebformVariantViewForm extends FormBase {
     $this->operation = $operation;
     $this->webform = $webform;
 
-    $t_args = [
-      '@operation' => ($operation === 'view') ? $this->t('view') : $this->t('test'),
-    ];
+    switch ($operation) {
+      case 'view':
+        $form['#rel'] = 'canonical';
+        $submit_label = $this->t('View');
+        $t_args = ['@operation' => $this->t('view')];
+        break;
+
+      case 'test':
+        $form['#rel'] = 'test-form';
+        $submit_label = $this->t('Test');
+        $t_args = ['@operation' => $this->t('test')];
+        break;
+
+      case 'share':
+        $form['#rel'] = 'share-embed';
+        $submit_label = $this->t('Share');
+        $t_args = ['@operation' => $this->t('share')];
+        break;
+
+      default:
+        throw new NotFoundHttpException();
+    }
+
     $form['description'] = [
       '#type' => 'container',
       'text' => [
@@ -93,7 +114,7 @@ class WebformVariantViewForm extends FormBase {
     $form['actions'] = ['#type' => 'actions'];
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => ($operation === 'view') ? $this->t('View') : $this->t('Test'),
+      '#value' => $submit_label,
       '#button_type' => 'primary',
     ];
     return $form;
@@ -130,7 +151,7 @@ class WebformVariantViewForm extends FormBase {
     }
     $options = ['query' => $query];
 
-    $rel = ($this->operation === 'view') ? 'canonical' : 'test-form';
+    $rel = $form['#rel'];
     $redirect_url = $this->webform->toUrl($rel, $options);
     $form_state->setRedirectUrl($redirect_url);
   }

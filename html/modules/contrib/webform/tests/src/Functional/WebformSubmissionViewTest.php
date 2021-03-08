@@ -10,7 +10,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for webform submission view as HTML, YAML, and plain text.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSubmissionViewTest extends WebformBrowserTestBase {
 
@@ -31,7 +31,7 @@ class WebformSubmissionViewTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create filters.

@@ -32,6 +32,7 @@ class WebformTermCheckboxes extends Checkboxes implements WebformElementEntityRe
       'breadcrumb_delimiter' => ' › ',
       'tree_delimiter' => '&nbsp;&nbsp;&nbsp;',
       'scroll' => TRUE,
+      'depth' => NULL,
     ] + parent::defineDefaultProperties();
 
     unset(

@@ -7,7 +7,7 @@ use Drupal\Tests\webform_node\Functional\WebformNodeBrowserTestBase;
 /**
  * Tests for webform alter hooks.
  *
- * @group Webform
+ * @group webform
  */
 class WebformAlterHooksTest extends WebformNodeBrowserTestBase {
 

@@ -14,7 +14,7 @@ use Drupal\webform\Utility\WebformArrayHelper;
  */
 function webform_examples_accessibility_page_attachments(array &$attachments) {
   // Attach accessibility library which shows all fieldsets and labels.
-  if (\Drupal::request()->query->get('accessibility') == '1') {
+  if (\Drupal::request()->query->get('accessibility') === '1') {
     $attachments['#attached']['library'][] = 'webform_examples_accessibility/webform_examples_accessibility';
   }
 }
@@ -47,7 +47,7 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
   $query = \Drupal::request()->query->all();
   unset($query['ajax_form'], $query['_wrapper_format']);
 
-  $accessibility = (\Drupal::request()->query->get('accessibility') == '1') ? TRUE : FALSE;
+  $accessibility = (\Drupal::request()->query->get('accessibility') === '1') ? TRUE : FALSE;
 
   $form['accessibility']['accessibility'] = [
     '#type' => 'link',
@@ -61,10 +61,10 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
 
   $form['accessibility'][] = ['#markup' => ' | '];
 
-  if (\Drupal::request()->query->get('required') == '1') {
+  if (\Drupal::request()->query->get('required') === '1') {
     $required = TRUE;
   }
-  elseif (\Drupal::request()->query->get('required') == '0') {
+  elseif (\Drupal::request()->query->get('required') === '0') {
     $required = FALSE;
   }
   else {
@@ -92,7 +92,7 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
 
   $form['accessibility'][] = ['#markup' => ' | '];
 
-  if (\Drupal::request()->query->get('novalidate') == '1') {
+  if (\Drupal::request()->query->get('novalidate') === '1') {
     $form['#attributes']['novalidate'] = TRUE;
     $novalidate = TRUE;
   }
@@ -114,7 +114,7 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
   if (\Drupal::moduleHandler()->moduleExists('inline_form_errors')) {
     $form['accessibility'][] = ['#markup' => ' | '];
 
-    if (\Drupal::request()->query->get('disable_inline_form_errors') == '1') {
+    if (\Drupal::request()->query->get('disable_inline_form_errors') === '1') {
       $form['#disable_inline_form_errors'] = TRUE;
       $disable_inline_form_errors = TRUE;
     }

@@ -10,7 +10,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for webform node results.
  *
- * @group WebformNode
+ * @group webform_node
  */
 class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
 
@@ -24,7 +24,7 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Place blocks.
@@ -107,8 +107,8 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
 
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
     $this->assertResponse(200);
-    $this->assertRaw('<h1 class="page-title">' . $node->label() . '</h1>');
-    $this->assertNoRaw('<h1 class="page-title">' . $webform->label() . '</h1>');
+    $this->assertRaw('<h1>' . $node->label() . '</h1>');
+    $this->assertNoRaw('<h1>' . $webform->label() . '</h1>');
     $this->assertRaw(('<a href="' . $node_submission_url->toString() . '" title="' . Html::escape($node_submission_title) . '" aria-label="' . Html::escape($node_submission_title) . '">' . $node_sids[1] . '</a>'));
     $this->assertNoRaw(('<a href="' . $webform_submission_url->toString() . '">' . $webform_sids[1] . '</a>'));
 
@@ -136,7 +136,7 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
       'subject' => "Node draft subject",
       'message' => "Node draft message",
     ];
-    $this->drupalPostForm('/node/' . $node->id(), $edit, t('Save Draft'));
+    $this->drupalPostForm('/node/' . $node->id(), $edit, 'Save Draft');
     $this->drupalGet('/node/' . $node->id());
     $this->assertRaw('A partially-completed form was found. Please complete the remaining portions.');
     $this->drupalGet('/webform/contact');
@@ -168,7 +168,7 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
       'limit' => 20,
       'default' => TRUE,
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions/custom', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions/custom', $edit, 'Save');
     $this->assertRaw('The customized table has been saved.');
 
     // Check that the webform node's results table is now customized.
@@ -216,7 +216,7 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
     }
 
     // Check deleting webform node results.
-    $this->drupalPostForm('/node/' . $node->id() . '/webform/results/clear', ['confirm' => TRUE], t('Clear'));
+    $this->drupalPostForm('/node/' . $node->id() . '/webform/results/clear', ['confirm' => TRUE], 'Clear');
     $this->assertEqual($submission_storage->getTotal($webform, $node), 0);
     $this->assertEqual($submission_storage->getTotal($webform), 3);
   }

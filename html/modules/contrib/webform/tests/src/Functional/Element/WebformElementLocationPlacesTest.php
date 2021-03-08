@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for location (Algolia) places element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementLocationPlacesTest extends WebformElementBrowserTestBase {
 

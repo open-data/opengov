@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Test for webform element managed file limit.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBase {
 
@@ -86,8 +86,8 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
       'files[custom_composite_managed_files_items_0_managed_file]' => \Drupal::service('file_system')->realpath($file->uri),
       'files[custom_composite_managed_files_items_1_managed_file]' => \Drupal::service('file_system')->realpath($file->uri),
     ];
-    $this->drupalPostForm('/webform/test_element_managed_file_limit', [], t('Add'));
-    $this->drupalPostForm(NULL, $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_managed_file_limit', [], 'Add');
+    $this->drupalPostForm(NULL, $edit, 'Submit');
     $this->assertRaw('This form\'s file upload quota of <em class="placeholder">2 KB</em> has been exceeded. Please remove some files.');
   }
 

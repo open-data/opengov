@@ -9,7 +9,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform handler plugin.
  *
- * @group Webform
+ * @group webform
  */
 class WebformHandlerTest extends WebformBrowserTestBase {
 
@@ -102,12 +102,12 @@ class WebformHandlerTest extends WebformBrowserTestBase {
     $this->assertRaw('<div class="webform-confirmation__message">::preprocessConfirmation</div>');
 
     // Check update submission plugin invoking.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/submission/' . $sid . '/edit', [], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/submission/' . $sid . '/edit', [], 'Save');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:accessSubmission');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postSave update');
 
     // Check delete submission plugin invoking.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/submission/' . $sid . '/delete', [], t('Delete'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/submission/' . $sid . '/delete', [], 'Delete');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:accessSubmission');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postLoad');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preDelete');
@@ -144,12 +144,12 @@ class WebformHandlerTest extends WebformBrowserTestBase {
     $this->assertNoFieldByName('element', 'element_access_denied');
 
     // Check configuration settings.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', ['settings[message]' => '{message}'], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', ['settings[message]' => '{message}'], 'Save');
     $this->postSubmission($webform_handler_test);
     $this->assertRaw('{message}');
 
     // Check disabling a handler.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', ['status' => FALSE], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', ['status' => FALSE], 'Save');
     $this->drupalGet('/webform/test_handler_test');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postCreate');
@@ -158,7 +158,7 @@ class WebformHandlerTest extends WebformBrowserTestBase {
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterForm');
 
     // Enable the handler and disable the saving of results.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', ['status' => TRUE], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', ['status' => TRUE], 'Save');
     $webform_handler_test->setSettings(['results_disabled' => TRUE]);
     $webform_handler_test->save();
 
@@ -208,16 +208,16 @@ class WebformHandlerTest extends WebformBrowserTestBase {
     /**************************************************************************/
 
     // Check update handler.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', [], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/edit', [], 'Save');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:updateHandler');
     $this->assertRaw('The webform handler was successfully updated.');
 
     // Check delete handler.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/delete', [], t('Delete'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/test/delete', [], 'Delete');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:deleteHandler');
 
     // Check create handler.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/add/test', ['handler_id' => 'test'], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/add/test', ['handler_id' => 'test'], 'Save');
     $this->assertRaw('The webform handler was successfully added.');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:createHandler');
 
@@ -235,7 +235,7 @@ class WebformHandlerTest extends WebformBrowserTestBase {
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterForm');
 
     // Check test handler is enabled and debug handler is disabled.
-    $this->drupalPostForm('/webform/test_handler_test/test', ['element' => ''], t('Submit'));
+    $this->drupalPostForm('/webform/test_handler_test/test', ['element' => ''], 'Submit');
     $this->assertRaw('One two one two this is just a test');
     $this->assertNoRaw("element: ''");
 
@@ -249,7 +249,7 @@ class WebformHandlerTest extends WebformBrowserTestBase {
     $this->assertRaw('Testing the <em class="placeholder">Test: Handler: Test invoke methods</em> webform <em class="placeholder">Debug</em> handler. <strong>All other emails/handlers are disabled.</strong>');
 
     // Check test handler is now disabled and debug handler is enabled.
-    $this->drupalPostForm('/webform/test_handler_test/test', ['element' => ''], t('Submit'), ['query' => ['_webform_handler' => 'debug']]);
+    $this->drupalPostForm('/webform/test_handler_test/test', ['element' => ''], 'Submit', ['query' => ['_webform_handler' => 'debug']]);
     $this->assertNoRaw('One two one two this is just a test');
     $this->assertRaw("element: ''");
 
@@ -257,6 +257,23 @@ class WebformHandlerTest extends WebformBrowserTestBase {
     $this->drupalGet('/webform/test_handler_test/test', ['query' => ['_webform_handler' => 'missing']]);
     $this->assertResponse(403);
     $this->assertRaw('The <em class="placeholder">missing</em> email/handler for the <em class="placeholder">Test: Handler: Test invoke methods</em> webform does not exist.');
+
+    /**************************************************************************/
+    // Off-canvas width.
+    /**************************************************************************/
+
+    // Check add off-canvas element width is 800.
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_test/handlers/add');
+    $this->assertCssSelect('[href$="/admin/structure/webform/manage/test_handler_test/handlers/add/test_offcanvas_width"][data-dialog-options*="800"]');
+    $this->assertNoCssSelect('[href$="/admin/structure/webform/manage/test_handler_test/handlers/add/test_offcanvas_width"][data-dialog-options*="550"]');
+
+    // Add handler.
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test/handlers/add/test_offcanvas_width', ['handler_id' => 'test_offcanvas_width'], 'Save');
+
+    // Check edit off-canvas element width is 800.
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_test/handlers');
+    $this->assertCssSelect('[href$="/admin/structure/webform/manage/test_handler_test/handlers/test_offcanvas_width/edit"][data-dialog-options*="800"]');
+    $this->assertNoCssSelect('[href$="/admin/structure/webform/manage/test_handler_test/handlers/test_offcanvas_width/edit"][data-dialog-options*="550"]');
   }
 
   /**
@@ -272,7 +289,7 @@ class WebformHandlerTest extends WebformBrowserTestBase {
   '#title': 'Empty element'
   '#description': 'Entering any value will throw an error",
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, 'Save');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:createElement');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:updateElement');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:deleteElement');
@@ -286,7 +303,7 @@ class WebformHandlerTest extends WebformBrowserTestBase {
 test:
   '#type': textfield",
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, 'Save');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:createElement');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:updateElement');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:deleteElement');
@@ -301,7 +318,7 @@ test:
   '#type': textfield
   '#title': Test",
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, 'Save');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:createElement');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:updateElement');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:deleteElement');
@@ -313,7 +330,7 @@ test:
   '#title': 'Empty element'
   '#description': 'Entering any value will throw an error'",
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_test', $edit, 'Save');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:createElement');
     $this->assertNoRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:updateElement');
     $this->assertRaw('Invoked test: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:deleteElement');
