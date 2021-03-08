@@ -8,7 +8,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for webform submission entity.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSubmissionTest extends WebformBrowserTestBase {
 
@@ -116,7 +116,7 @@ class WebformSubmissionTest extends WebformBrowserTestBase {
     $this->assertRaw('Duplicate Contact: Submission #' . $webform_submission->serial());
 
     // Duplicate submission.
-    $this->drupalPostForm("admin/structure/webform/manage/contact/submission/$sid/duplicate", ['subject' => '{Duplicate Subject}'], t('Send message'));
+    $this->drupalPostForm("admin/structure/webform/manage/contact/submission/$sid/duplicate", ['subject' => '{Duplicate Subject}'], 'Send message');
     $duplicate_sid = $this->getLastSubmissionId($webform);
     /** @var \Drupal\webform\WebformSubmissionInterface $duplicate_submission */
     $duplicate_submission = WebformSubmission::load($duplicate_sid);

@@ -9,7 +9,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform submission webform element custom #format support.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
 
@@ -88,7 +88,13 @@ class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
     $this->assertRaw("item['value']: $file_url<br/>");
     $this->assertRaw("item['raw']: $file_url<br/>");
     $this->assertRaw("item['link']:");
-    $this->assertRaw('<span class="file file--mime-image-png file--image"> <a href="' . $file_url . '" type="image/png; length=' . $file_size . '">' . $file_name . '</a></span>');
+    // @todo Remove once Drupal 9.1.x is only supported.
+    if (floatval(\Drupal::VERSION) >= 9.1) {
+      $this->assertRaw('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png">' . $file_name . '</a></span>');
+    }
+    else {
+      $this->assertRaw('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png; length=' . $file_size . '">' . $file_name . '</a></span>');
+    }
     $this->assertRaw('item[\'id\']: 1<br/>');
     $this->assertRaw("item['url']: $file_url<br/>");
     $this->assertRaw('<img class="webform-image-file" alt="' . $file_name . '" title="' . $file_name . '" src="' . $file_url . '" />');

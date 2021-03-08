@@ -9,7 +9,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for the webform variant operations.
  *
- * @group Webform
+ * @group webform
  */
 class WebformVariantOperationsTest extends WebformBrowserTestBase {
 

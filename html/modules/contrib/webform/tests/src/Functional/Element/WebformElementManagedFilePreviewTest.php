@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Test for webform element managed file preview.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementManagedFilePreviewTest extends WebformElementManagedFileTestBase {
 
@@ -31,10 +31,10 @@ class WebformElementManagedFilePreviewTest extends WebformElementManagedFileTest
 
     // Check that anonymous users can not preview files.
     $this->drupalGet('/webform/test_element_managed_file_prev/test');
-    $this->assertRaw('<span data-drupal-selector="edit-webform-image-file-file-1-filename" class="file file--mime-image-gif file--image"> webform_image_file.gif</span>');
-    $this->assertRaw('<span data-drupal-selector="edit-webform-audio-file-file-3-filename" class="file file--mime-audio-mpeg file--audio"> webform_audio_file.mp3</span>');
-    $this->assertRaw('<span data-drupal-selector="edit-webform-video-file-file-5-filename" class="file file--mime-video-mp4 file--video"> webform_video_file.mp4</span>');
-    $this->assertRaw('<span data-drupal-selector="edit-webform-document-file-file-7-filename" class="file file--mime-text-plain file--text"> webform_document_file.txt</span>');
+    $this->assertRaw('<span data-drupal-selector="edit-webform-image-file-file-1-filename" class="file file--mime-image-gif file--image">webform_image_file.gif</span>');
+    $this->assertRaw('<span data-drupal-selector="edit-webform-audio-file-file-3-filename" class="file file--mime-audio-mpeg file--audio">webform_audio_file.mp3</span>');
+    $this->assertRaw('<span data-drupal-selector="edit-webform-video-file-file-5-filename" class="file file--mime-video-mp4 file--video">webform_video_file.mp4</span>');
+    $this->assertRaw('<span data-drupal-selector="edit-webform-document-file-file-7-filename" class="file file--mime-text-plain file--text">webform_document_file.txt</span>');
 
     // Login admin user.
     $this->drupalLogin($this->rootUser);

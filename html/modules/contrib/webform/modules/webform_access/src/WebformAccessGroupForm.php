@@ -92,7 +92,7 @@ class WebformAccessGroupForm extends EntityForm {
    * {@inheritdoc}
    */
   protected function prepareEntity() {
-    if ($this->operation == 'duplicate') {
+    if ($this->operation === 'duplicate') {
       $this->setEntity($this->getEntity()->createDuplicate());
     }
     parent::prepareEntity();

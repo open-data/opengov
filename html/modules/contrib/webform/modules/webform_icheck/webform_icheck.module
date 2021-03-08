@@ -22,7 +22,7 @@ function webform_icheck_webform_libraries_info() {
     'download_url' => Url::fromUri('https://github.com/fronteed/icheck/archive/1.0.2.zip'),
     'version' => '1.0.2 ',
     'optional' => FALSE,
-    'deprecated' => t('The iCheck library is not being maintained. It has been <a href=":href">deprecated</a> and will be removed before Webform 8.x-6.0.', [':href' => 'https://www.drupal.org/project/webform/issues/2931154']),
+    'deprecated' => t('The iCheck library is not being maintained. It has been <a href=":href">deprecated</a> and will be removed in Webform 7.0.', [':href' => 'https://www.drupal.org/project/webform/issues/2931154']),
   ];
   return $libraries;
 }
@@ -82,7 +82,7 @@ function webform_icheck_webform_element_alter(array &$element, FormStateInterfac
   $icheck = NULL;
   $icheck_skin = NULL;
   if (isset($element['#icheck'])) {
-    if ($element['#icheck'] != 'none') {
+    if ($element['#icheck'] !== 'none') {
       $icheck = $element['#icheck'];
       $icheck_skin = strtok($element['#icheck'], '-');
     }

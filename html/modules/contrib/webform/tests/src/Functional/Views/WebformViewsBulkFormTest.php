@@ -50,7 +50,7 @@ class WebformViewsBulkFormTest extends WebformBrowserTestBase {
       'webform_submission_bulk_form[0]' => TRUE,
       'action' => 'webform_submission_make_sticky_action',
     ];
-    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, t('Apply to selected items'));
+    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, 'Apply to selected items');
     $webform_submission = $this->loadSubmission($webform_submission->id());
     $this->assertTrue($webform_submission->isSticky(), 'Webform submission has been made sticky');
 
@@ -59,7 +59,7 @@ class WebformViewsBulkFormTest extends WebformBrowserTestBase {
       'webform_submission_bulk_form[0]' => TRUE,
       'action' => 'webform_submission_make_unsticky_action',
     ];
-    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, t('Apply to selected items'));
+    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, 'Apply to selected items');
     $webform_submission = $this->loadSubmission($webform_submission->id());
     $this->assertFalse($webform_submission->isSticky(), 'Webform submission is not sticky anymore');
 
@@ -69,7 +69,7 @@ class WebformViewsBulkFormTest extends WebformBrowserTestBase {
       'webform_submission_bulk_form[0]' => TRUE,
       'action' => 'webform_submission_make_lock_action',
     ];
-    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, t('Apply to selected items'));
+    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, 'Apply to selected items');
     $webform_submission = $this->loadSubmission($webform_submission->id());
     $this->assertTrue($webform_submission->isLocked(), 'Webform submission has been locked');
 
@@ -78,7 +78,7 @@ class WebformViewsBulkFormTest extends WebformBrowserTestBase {
       'webform_submission_bulk_form[0]' => TRUE,
       'action' => 'webform_submission_make_unlock_action',
     ];
-    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, t('Apply to selected items'));
+    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, 'Apply to selected items');
     $webform_submission = $this->loadSubmission($webform_submission->id());
     $this->assertFalse($webform_submission->isLocked(), 'Webform submission is not locked anymore');
 
@@ -87,8 +87,8 @@ class WebformViewsBulkFormTest extends WebformBrowserTestBase {
       'webform_submission_bulk_form[0]' => TRUE,
       'action' => 'webform_submission_delete_action',
     ];
-    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, t('Apply to selected items'));
-    $this->drupalPostForm(NULL, [], t('Delete'));
+    $this->drupalPostForm('/admin/structure/webform/test/views_bulk_form', $edit, 'Apply to selected items');
+    $this->drupalPostForm(NULL, [], 'Delete');
     $webform_submission = $this->loadSubmission($webform_submission->id());
     $this->assertNull($webform_submission, '1: Webform submission has been deleted');
 

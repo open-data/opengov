@@ -22,6 +22,7 @@ function webform_templates_entity_type_alter(array &$entity_types) {
  * Implements hook_webform_help_info().
  */
 function webform_templates_webform_help_info() {
+  $help = [];
   $help['webform_templates'] = [
     'group' => 'forms',
     'title' => t('Templates'),
@@ -32,6 +33,5 @@ function webform_templates_webform_help_info() {
       'entity.webform.templates',
     ],
   ];
-
   return $help;
 }

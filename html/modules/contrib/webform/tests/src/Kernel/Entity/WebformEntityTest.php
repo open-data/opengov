@@ -21,16 +21,13 @@ class WebformEntityTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'path', 'webform', 'user', 'field'];
+  public static $modules = ['system', 'path', 'path_alias', 'webform', 'user', 'field'];
 
   /**
    * Tests some of the methods.
    */
   public function testWebformMethods() {
-    // @todo Remove once Drupal 8.8.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 8.8) {
-      $this->installEntitySchema('path_alias');
-    }
+    $this->installEntitySchema('path_alias');
     $this->installSchema('webform', ['webform']);
     $this->installConfig('webform');
 
@@ -198,7 +195,7 @@ class WebformEntityTest extends KernelTestBase {
     $webform->setElements($elements);
 
     // Check that elements are serialized to YAML.
-    $this->assertTrue($webform->getElementsRaw(), WebformYaml::encode($elements));
+    $this->assertEquals($webform->getElementsRaw(), WebformYaml::encode($elements));
 
     // Check elements decoded and flattened.
     $flattened_elements = [
@@ -282,7 +279,7 @@ class WebformEntityTest extends KernelTestBase {
 
     // Check invalid elements.
     $webform->set('elements', 'invalid')->save();
-    $this->assertFalse($webform->getElementsInitialized());
+    $this->assertEquals([], $webform->getElementsInitialized());
 
     /**************************************************************************/
     // Wizard pages.
@@ -301,30 +298,30 @@ class WebformEntityTest extends KernelTestBase {
 
     // Check get wizard pages.
     $wizard_pages = [
-      'page_1' => ['#title' => 'Page 1', '#access' => TRUE],
-      'page_2' => ['#title' => 'Page 2', '#access' => TRUE],
-      'page_3' => ['#title' => 'Page 3', '#access' => TRUE],
-      'webform_confirmation' => ['#title' => 'Complete', '#access' => TRUE],
+      'page_1' => ['#title' => 'Page 1', '#type' => 'page', '#access' => TRUE],
+      'page_2' => ['#title' => 'Page 2', '#type' => 'page', '#access' => TRUE],
+      'page_3' => ['#title' => 'Page 3', '#type' => 'page', '#access' => TRUE],
+      'webform_confirmation' => ['#title' => 'Complete', '#type' => 'page', '#access' => TRUE],
     ];
     $this->assertEquals($webform->getPages(), $wizard_pages);
 
     // Check get wizard pages with preview.
     $webform->setSetting('preview', TRUE)->save();
     $wizard_pages = [
-      'page_1' => ['#title' => 'Page 1', '#access' => TRUE],
-      'page_2' => ['#title' => 'Page 2', '#access' => TRUE],
-      'page_3' => ['#title' => 'Page 3', '#access' => TRUE],
-      'webform_preview' => ['#title' => 'Preview', '#access' => TRUE],
-      'webform_confirmation' => ['#title' => 'Complete', '#access' => TRUE],
+      'page_1' => ['#title' => 'Page 1', '#type' => 'page', '#access' => TRUE],
+      'page_2' => ['#title' => 'Page 2', '#type' => 'page', '#access' => TRUE],
+      'page_3' => ['#title' => 'Page 3', '#type' => 'page', '#access' => TRUE],
+      'webform_preview' => ['#title' => 'Preview', '#type' => 'page', '#access' => TRUE],
+      'webform_confirmation' => ['#title' => 'Complete', '#type' => 'page', '#access' => TRUE],
     ];
     $this->assertEquals($webform->getPages(), $wizard_pages);
 
     // Check get wizard pages with preview with disable pages.
     $webform->setSetting('preview', TRUE)->save();
     $wizard_pages = [
-      'webform_start' => ['#title' => 'Start', '#access' => TRUE],
-      'webform_preview' => ['#title' => 'Preview', '#access' => TRUE],
-      'webform_confirmation' => ['#title' => 'Complete', '#access' => TRUE],
+      'webform_start' => ['#title' => 'Start', '#type' => 'page', '#access' => TRUE],
+      'webform_preview' => ['#title' => 'Preview', '#type' => 'page', '#access' => TRUE],
+      'webform_confirmation' => ['#title' => 'Complete', '#type' => 'page', '#access' => TRUE],
     ];
     $this->assertEquals($webform->getPages(TRUE), $wizard_pages);
 
@@ -338,23 +335,14 @@ class WebformEntityTest extends KernelTestBase {
    * Test paths.
    */
   public function testPaths() {
-    // @todo Remove once Drupal 8.8.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 8.8) {
-      $this->installEntitySchema('path_alias');
-    }
+    $this->installEntitySchema('path_alias');
     $this->installSchema('webform', ['webform']);
     $this->installConfig('webform');
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::create(['id' => 'webform_test']);
     $webform->save();
-    // @todo Remove once Drupal 8.8.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 8.8) {
-      $aliases = \Drupal::database()->query('SELECT path, alias FROM {path_alias}')->fetchAllKeyed();
-    }
-    else {
-      $aliases = \Drupal::database()->query('SELECT source, alias FROM {url_alias}')->fetchAllKeyed();
-    }
+    $aliases = \Drupal::database()->query('SELECT path, alias FROM {path_alias}')->fetchAllKeyed();
     $this->assertEquals($aliases['/webform/webform_test'], '/form/webform-test');
     $this->assertEquals($aliases['/webform/webform_test/confirmation'], '/form/webform-test/confirmation');
     $this->assertEquals($aliases['/webform/webform_test/submissions'], '/form/webform-test/submissions');
@@ -364,10 +352,7 @@ class WebformEntityTest extends KernelTestBase {
    * Test elements CRUD operations.
    */
   public function testElementsCrud() {
-    // @todo Remove once Drupal 8.8.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 8.8) {
-      $this->installEntitySchema('path_alias');
-    }
+    $this->installEntitySchema('path_alias');
     $this->installSchema('webform', ['webform']);
     $this->installEntitySchema('webform_submission');
 

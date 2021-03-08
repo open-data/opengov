@@ -3,6 +3,7 @@
 namespace Drupal\webform\Element;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElement;
 
 /**
@@ -55,7 +56,7 @@ class WebformElementMultiple extends FormElement {
    * Processes element multiple.
    */
   public static function processWebformElementMultiple(&$element, FormStateInterface $form_state, &$complete_form) {
-    $cardinality = $element['#value'];
+    $cardinality = (int) $element['#value'];
 
     $element['#tree'] = TRUE;
 
@@ -74,11 +75,11 @@ class WebformElementMultiple extends FormElement {
         'number' => t('Limited'),
         WebformMultiple::CARDINALITY_UNLIMITED => t('Unlimited'),
       ],
-      '#default_value' => ($cardinality == WebformMultiple::CARDINALITY_UNLIMITED) ? WebformMultiple::CARDINALITY_UNLIMITED : 'number',
+      '#default_value' => ($cardinality === WebformMultiple::CARDINALITY_UNLIMITED) ? WebformMultiple::CARDINALITY_UNLIMITED : 'number',
     ];
     $element['container']['cardinality_number'] = [
       '#type' => 'number',
-      '#default_value' => $cardinality != WebformMultiple::CARDINALITY_UNLIMITED ? $cardinality : $element['#min'],
+      '#default_value' => $cardinality !== WebformMultiple::CARDINALITY_UNLIMITED ? $cardinality : $element['#min'],
       '#min' => $element['#min'],
       '#title' => t('Limit'),
       '#title_display' => 'invisible',
@@ -101,7 +102,7 @@ class WebformElementMultiple extends FormElement {
     array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformElementMultiple']);
 
     // Set #type to item to apply #states.
-    // @see drupal_process_states
+    // @see \Drupal\Core\Form\FormHelper::processStates
     $element['#type'] = 'item';
 
     return $element;
@@ -111,19 +112,16 @@ class WebformElementMultiple extends FormElement {
    * Validates element multiple.
    */
   public static function validateWebformElementMultiple(&$element, FormStateInterface $form_state, &$complete_form) {
-    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
-    $is_disabled = (!empty($element['#disabled']));
-
-    if (!$has_access) {
+    if (!Element::isVisibleElement($element)) {
       $multiple = $element['#value'];
     }
-    elseif ($is_disabled) {
+    elseif (!empty($element['#disabled'])) {
       $multiple = $element['#default_value'];
     }
     else {
-      $cardinality = $element['#value']['container']['cardinality'];
+      $cardinality = (int) $element['#value']['container']['cardinality'];
       $cardinality_number = (int) $element['#value']['container']['cardinality_number'];
-      if ($cardinality == WebformMultiple::CARDINALITY_UNLIMITED) {
+      if ($cardinality === WebformMultiple::CARDINALITY_UNLIMITED) {
         $multiple = WebformMultiple::CARDINALITY_UNLIMITED;
       }
       else {
@@ -131,7 +129,7 @@ class WebformElementMultiple extends FormElement {
       }
     }
 
-    if ($multiple == WebformMultiple::CARDINALITY_UNLIMITED) {
+    if ($multiple === WebformMultiple::CARDINALITY_UNLIMITED) {
       $multiple = TRUE;
     }
     elseif ($multiple === 1) {

@@ -16,7 +16,7 @@ use Drupal\webform\Plugin\WebformHandler\EmailWebformHandler;
  */
 function maillog_webform_submission_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   // Never display Maillog message via CLI.
-  if (PHP_SAPI == 'cli') {
+  if (PHP_SAPI === 'cli') {
     return;
   }
 

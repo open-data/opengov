@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\Element\WebformElementBrowserTestBase;
 /**
  * Tests for location geocomplete element.
  *
- * @group Webform
+ * @group webform_location_geocompleter
  */
 class WebformLocationGeocompleteTest extends WebformElementBrowserTestBase {
 

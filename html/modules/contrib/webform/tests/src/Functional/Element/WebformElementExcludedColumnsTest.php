@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for excluded columns element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementExcludedColumnsTest extends WebformElementBrowserTestBase {
 

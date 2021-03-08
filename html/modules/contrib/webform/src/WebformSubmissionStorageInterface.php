@@ -209,7 +209,7 @@ interface WebformSubmissionStorageInterface extends ContentEntityStorageInterfac
    *   A webform.
    *
    * @return array
-   *   An associative array contain ource entities as options for
+   *   An associative array contain source entities as options for
    *   a specified webform.
    */
   public function getSourceEntitiesAsOptions(WebformInterface $webform);

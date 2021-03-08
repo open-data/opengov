@@ -30,7 +30,7 @@ function webform_shortcuts_webform_libraries_info() {
  * Implements hook_preprocess_block().
  */
 function webform_shortcuts_preprocess_block(&$variables) {
-  if ($variables['plugin_id'] != 'local_actions_block') {
+  if ($variables['plugin_id'] !== 'local_actions_block') {
     return;
   }
 
@@ -84,6 +84,7 @@ function webform_shortcuts_preprocess_block(&$variables) {
     '#type' => 'webform_help',
     '#help_title' => t('Keyboard shortcuts'),
     '#help' => $items,
+    '#weight' => 100,
   ];
 
   $variables['content']['help']['#attached']['library'][] = 'webform_shortcuts/webform_shortcuts';
@@ -103,7 +104,7 @@ function webform_shortcuts_preprocess_block(&$variables) {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for admin config advanced form.
  */
 function webform_shortcuts_form_webform_admin_config_advanced_form_alter(&$form, FormStateInterface $form_state) {
   $config = \Drupal::config('webform_shortcuts.settings');

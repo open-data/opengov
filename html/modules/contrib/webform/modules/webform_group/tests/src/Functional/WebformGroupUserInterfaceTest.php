@@ -35,7 +35,7 @@ class WebformGroupUserInterfaceTest extends WebformGroupBrowserTestBase {
     $this->assertFieldByName('access[create][group_roles][]');
 
     // Add create access to webform for the member group role.
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/access', ['access[create][group_roles][]' => ['member']], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/access', ['access[create][group_roles][]' => ['member']], 'Save');
 
     // Check create access to webform for the member group role.
     \Drupal::entityTypeManager()->getStorage('webform')->resetCache();
@@ -55,7 +55,7 @@ class WebformGroupUserInterfaceTest extends WebformGroupBrowserTestBase {
     $edit = ['properties[access_create_group_roles][]' => 'member'];
 
     // Add create access to name element for the member group role.
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, 'Save');
 
     // Check create access to name element for the member group role.
     \Drupal::entityTypeManager()->getStorage('webform')->resetCache();

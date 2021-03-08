@@ -139,7 +139,7 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
       'class' => [RESPONSIVE_PRIORITY_LOW],
     ];
     $header['used_by'] = [
-      'data' => $this->t('Used by Webforms / Composites'),
+      'data' => $this->t('Used by'),
       'class' => [RESPONSIVE_PRIORITY_LOW],
     ];
     return $header + parent::buildHeader();
@@ -225,7 +225,7 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
     $options = WebformOptions::getElementOptions($element);
     $options = OptGroup::flattenOptions($options);
     foreach ($options as $key => &$value) {
-      if ($key != $value) {
+      if ($key !== $value) {
         $value .= ' (' . $key . ')';
       }
     }

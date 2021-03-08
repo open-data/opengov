@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Element;
 
+use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -174,8 +175,7 @@ class WebformEmailConfirm extends FormElement {
 
     $mail_1 = trim($mail_element['mail_1']['#value']);
     $mail_2 = trim($mail_element['mail_2']['#value']);
-    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
-    if ($has_access) {
+    if (Element::isVisibleElement($element)) {
       // Compare email addresses.
       if ((!empty($mail_1) || !empty($mail_2)) && strcmp($mail_1, $mail_2)) {
         $form_state->setError($element, t('The specified email addresses do not match.'));

@@ -60,7 +60,7 @@ class WebformSanitizeSubmissionsCommands extends DrushCommands implements Saniti
    *
    * @hook post-command sql-sanitize
    *
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function sanitize($result, CommandData $command_data) {
     $options = $command_data->options();
@@ -85,7 +85,7 @@ class WebformSanitizeSubmissionsCommands extends DrushCommands implements Saniti
   /**
    * @hook on-event sql-sanitize-confirms
    *
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function messages(&$messages, InputInterface $input) {
     $options = $input->getOptions();

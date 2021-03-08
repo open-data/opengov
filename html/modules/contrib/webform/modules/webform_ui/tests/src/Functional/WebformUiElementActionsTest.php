@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform UI actions element.
  *
- * @group WebformUi
+ * @group webform_ui
  */
 class WebformUiElementActionsTest extends WebformBrowserTestBase {
 
@@ -33,7 +33,7 @@ class WebformUiElementActionsTest extends WebformBrowserTestBase {
     ];
     $this->createWebform($values, $elements);
 
-    // Confirm submit buttons are customizable.
+    // Check that submit buttons are customizable.
     $this->drupalGet('/admin/structure/webform/manage/test');
     $this->assertLink('Customize');
 
@@ -42,7 +42,7 @@ class WebformUiElementActionsTest extends WebformBrowserTestBase {
       ->set('element.excluded_elements.webform_actions', 'webform_actions')
       ->save();
 
-    // Confirm submit buttons are not customizable.
+    // Check that submit buttons are not customizable.
     $this->drupalGet('/admin/structure/webform/manage/test');
     $this->assertNoLink('Customize');
   }

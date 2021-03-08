@@ -154,7 +154,7 @@ class WebformImageSelect extends Select {
    * {@inheritdoc}
    */
   protected function formatTextItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
-    if ($this->getItemFormat($element) == 'image') {
+    if ($this->getItemFormat($element) === 'image') {
       $element['#format'] = 'value';
     }
     return parent::formatTextItem($element, $webform_submission, $options);
@@ -200,17 +200,17 @@ class WebformImageSelect extends Select {
     return parent::preview() + [
       '#show_label' => TRUE,
       '#images' => [
-        'bear_1' => [
-          'text' => 'Bear 1',
-          'src' => 'https://www.placebear.com/80/100',
+        'dog_1' => [
+          'text' => 'Dog 1',
+          'src' => 'https://www.placedog.net/80/100',
         ],
-        'bear_2' => [
-          'text' => 'Bear 2',
-          'src' => 'https://www.placebear.com/100/100',
+        'dog_2' => [
+          'text' => 'Dog 2',
+          'src' => 'https://www.placedog.net/100/100',
         ],
-        'bear_3' => [
-          'text' => 'Bear 3',
-          'src' => 'https://www.placebear.com/120/100',
+        'dog_3' => [
+          'text' => 'Dog 3',
+          'src' => 'https://www.placedog.net/120/100',
         ],
       ],
     ];
@@ -252,6 +252,7 @@ class WebformImageSelect extends Select {
     ];
     $form['options']['filter_container'] = [
       '#type' => 'container',
+      '#attributes' => ['data-webform-states-no-clear' => TRUE],
       '#states' => [
         'visible' => [
           ':input[name="properties[filter]"]' => ['checked' => TRUE],

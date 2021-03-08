@@ -58,14 +58,14 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
   protected $entityFieldManager;
 
   /**
-   * Webform element manager.
+   * The webform element manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
   protected $elementManager;
 
   /**
-   * Webform element validator.
+   * The webform element validator.
    *
    * @var \Drupal\webform\WebformEntityElementsValidatorInterface
    */
@@ -451,7 +451,7 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
     $this->messenger()->addStatus($this->t('%title has been @action.', $t_args));
 
     // Determine add element parent key.
-    $save_and_add_element = ($op == (string) $this->t('Save + Add element')) ? TRUE : FALSE;
+    $save_and_add_element = ((string) $op === (string) $this->t('Save + Add element')) ? TRUE : FALSE;
     $add_element = ($element_plugin->isContainer($this->getElement())) ? $key : $parent_key;
     $add_element = $add_element ? Html::getClass($add_element) : '_root_';
 
@@ -466,7 +466,7 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
 
     // Still set the redirect URL just to be safe.
     // Variants require the entire page to be reloaded so that Variants tab
-    // is made visible,
+    // is made visible.
     if ($this->getWebformElementPlugin() instanceof WebformElementVariantInterface) {
       $query = ['reload' => 'true'];
     }
@@ -543,7 +543,7 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
 
     // Check the parent element #type.
     if ($parent_key && isset($elements[$parent_key]) && isset($elements[$parent_key]['#type'])) {
-      return ($elements[$parent_key]['#type'] == 'webform_flexbox') ? TRUE : FALSE;
+      return ($elements[$parent_key]['#type'] === 'webform_flexbox') ? TRUE : FALSE;
     }
 
     return FALSE;

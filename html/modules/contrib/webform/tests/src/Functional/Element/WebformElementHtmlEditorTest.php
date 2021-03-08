@@ -8,7 +8,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform HTML editor element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
 
@@ -29,7 +29,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create filters.
@@ -62,41 +62,41 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
     $this->drupalGet('/webform/test_element_html_editor');
 
     // Check that HTML editor is enabled.
-    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-html-editor form-textarea required resize-vertical" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-html-editor form-textarea required" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
 
     // Check that HTML editor is disabled.
-    $this->assertRaw('<textarea class="custom-disabled js-html-editor form-textarea required resize-vertical" data-drupal-selector="edit-webform-html-editor-disable-value" id="edit-webform-html-editor-disable-value" name="webform_html_editor_disable[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertRaw('<textarea class="custom-disabled js-html-editor form-textarea required" data-drupal-selector="edit-webform-html-editor-disable-value" id="edit-webform-html-editor-disable-value" name="webform_html_editor_disable[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
 
     // Check that CodeMirror is displayed when #format: FALSE.
-    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-codemirror-value" class="js-webform-codemirror webform-codemirror html required form-textarea resize-vertical" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-codemirror-value" name="webform_html_editor_codemirror[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-codemirror-value" class="js-webform-codemirror webform-codemirror html required form-textarea" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-codemirror-value" name="webform_html_editor_codemirror[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
 
     // Disable HTML editor.
-    $this->drupalPostForm('/admin/structure/webform/config/elements', ['html_editor[disabled]' => TRUE], t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config/elements', ['html_editor[disabled]' => TRUE], 'Save configuration');
 
     // Check that HTML editor is removed and replaced by CodeMirror HTML editor.
     $this->drupalGet('/webform/test_element_html_editor');
-    $this->assertNoRaw('<textarea class="js-html-editor form-textarea required resize-vertical" data-drupal-selector="edit-webform-html-editor-value" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
-    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-webform-codemirror webform-codemirror html required form-textarea resize-vertical" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertNoRaw('<textarea class="js-html-editor form-textarea required" data-drupal-selector="edit-webform-html-editor-value" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-webform-codemirror webform-codemirror html required form-textarea" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
 
     // Enable HTML editor and element text format.
     $edit = [
       'html_editor[disabled]' => FALSE,
       'html_editor[element_format]' => 'basic_html',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, 'Save configuration');
 
     // Check that Text format is disabled.
     $this->drupalGet('/webform/test_element_html_editor');
-    $this->assertNoRaw('<textarea class="js-html-editor form-textarea resize-vertical" data-drupal-selector="edit-webform-html-editor-value" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
-    $this->assertNoRaw('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-webform-codemirror webform-codemirror html required form-textarea resize-vertical" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
-    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-value-value" id="edit-webform-html-editor-value-value" name="webform_html_editor[value][value]" rows="5" cols="60" class="form-textarea required resize-vertical" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
-    $this->assertRaw('<h4 class="label">Basic HTML</h4>');
+    $this->assertNoRaw('<textarea class="js-html-editor form-textarea" data-drupal-selector="edit-webform-html-editor-value" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertNoRaw('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-webform-codemirror webform-codemirror html required form-textarea" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertRaw('<textarea data-drupal-selector="edit-webform-html-editor-value-value" id="edit-webform-html-editor-value-value" name="webform_html_editor[value][value]" rows="5" cols="60" class="form-textarea required" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $this->assertRaw('<h4>Basic HTML</h4>');
 
     // Disable element text format.
     $edit = [
       'html_editor[element_format]' => '',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, 'Save configuration');
 
     // Check that tidy removed <p> tags.
     $build = WebformHtmlEditor::checkMarkup('<p>Some text</p>');
@@ -109,7 +109,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
     $this->assertEqual(\Drupal::service('renderer')->renderPlain($build), '<p>Some text</p><p>More text</p>');
 
     // Disable HTML tidy.
-    $this->drupalPostForm('/admin/structure/webform/config/elements', ['html_editor[tidy]' => FALSE], t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config/elements', ['html_editor[tidy]' => FALSE], 'Save configuration');
 
     // Check that tidy is disabled.
     $build = WebformHtmlEditor::checkMarkup('<p>Some text</p>');
@@ -122,30 +122,23 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
       'html_editor[element_format]' => '',
       'html_editor[mail_format]' => '',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, 'Save configuration');
 
     // Check that HTML editor is used.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers/email_confirmation/edit');
-    $this->assertRaw('<textarea data-drupal-selector="edit-settings-body-custom-html-value" class="js-html-editor form-textarea resize-vertical" id="edit-settings-body-custom-html-value" name="settings[body_custom_html][value]" rows="5" cols="60">');
+    $this->assertRaw('<textarea data-drupal-selector="edit-settings-body-custom-html-value" class="js-html-editor form-textarea" id="edit-settings-body-custom-html-value" name="settings[body_custom_html][value]" rows="5" cols="60">');
 
     // Enable mail text format.
     $edit = [
       'html_editor[mail_format]' => 'basic_html',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, 'Save configuration');
 
     // Check mail text format is used.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers/email_confirmation/edit');
-    $this->assertNoRaw('<textarea data-drupal-selector="edit-settings-body-custom-html-value" class="js-html-editor form-textarea resize-vertical" id="edit-settings-body-custom-html-value" name="settings[body_custom_html][value]" rows="5" cols="60">');
-    $this->assertRaw('<textarea data-drupal-selector="edit-settings-body-custom-html-value-value" id="edit-settings-body-custom-html-value-value" name="settings[body_custom_html][value][value]" rows="5" cols="60" class="form-textarea resize-vertical">');
-    // @todo Remove once Drupal 8.8.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 8.8) {
-      $this->assertRaw('<div class="js-filter-wrapper filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-settings-body-custom-html-value-format" id="edit-settings-body-custom-html-value-format">');
-    }
-    else {
-      $this->assertRaw('<div class="filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-settings-body-custom-html-value-format" id="edit-settings-body-custom-html-value-format">');
-    }
-
+    $this->assertNoRaw('<textarea data-drupal-selector="edit-settings-body-custom-html-value" class="js-html-editor form-textarea" id="edit-settings-body-custom-html-value" name="settings[body_custom_html][value]" rows="5" cols="60">');
+    $this->assertRaw('<textarea data-drupal-selector="edit-settings-body-custom-html-value-value" id="edit-settings-body-custom-html-value-value" name="settings[body_custom_html][value][value]" rows="5" cols="60" class="form-textarea">');
+    $this->assertRaw('<div class="js-filter-wrapper filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-settings-body-custom-html-value-format" id="edit-settings-body-custom-html-value-format">');
   }
 
 }

@@ -107,7 +107,7 @@ class ProcessedText extends WebformMarkupBase {
    */
   protected function setConfigurationFormDefaultValue(array &$form, array &$element_properties, array &$property_element, $property_name) {
     // Apply element.format to the text (text_format) element and unset it.
-    if ($property_name == 'text') {
+    if ($property_name === 'text') {
       $property_element['#format'] = $element_properties['format'];
       unset($element_properties['format']);
     }
@@ -119,7 +119,7 @@ class ProcessedText extends WebformMarkupBase {
    * {@inheritdoc}
    */
   protected function getConfigurationFormProperty(array &$properties, $property_name, $property_value, array $element) {
-    if ($property_name == 'text') {
+    if ($property_name === 'text') {
       $properties['text'] = $property_value['value'];
       $properties['format'] = $property_value['format'];
     }

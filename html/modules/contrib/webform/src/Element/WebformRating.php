@@ -57,6 +57,9 @@ class WebformRating extends Range {
    */
   public static function preRenderWebformRating(array $element) {
     $element['#attributes']['type'] = 'range';
+
+    $element['#attributes']['class'][] = 'js-webform-visually-hidden';
+
     Element::setAttributes($element, ['id', 'name', 'value', 'step', 'min', 'max']);
     static::setAttributes($element, ['form-webform-rating']);
 
@@ -141,8 +144,7 @@ class WebformRating extends Range {
    */
   public static function validateWebformRating(&$element, FormStateInterface $form_state, &$complete_form) {
     $value = $element['#value'];
-    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
-    if ($has_access && !empty($element['#required']) && ($value === '0' || $value === '')) {
+    if (Element::isVisibleElement($element) && !empty($element['#required']) && ($value === '0' || $value === '')) {
       WebformElementHelper::setRequiredError($element, $form_state);
     }
   }

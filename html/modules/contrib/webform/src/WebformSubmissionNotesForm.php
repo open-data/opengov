@@ -18,7 +18,7 @@ class WebformSubmissionNotesForm extends ContentEntityForm {
   use WebformDialogFormTrait;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */

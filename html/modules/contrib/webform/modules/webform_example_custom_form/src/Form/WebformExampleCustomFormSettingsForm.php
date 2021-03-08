@@ -19,7 +19,7 @@ class WebformExampleCustomFormSettingsForm extends ConfigFormBase {
   protected $tokenManager;
 
   /**
-   * The webform element (plugin) manager.
+   * The webform element plugin manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */

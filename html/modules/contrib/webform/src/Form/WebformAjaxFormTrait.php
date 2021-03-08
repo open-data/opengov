@@ -408,12 +408,11 @@ trait WebformAjaxFormTrait {
    * @see \Drupal\webform\Form\WebformAjaxFormTrait::submitAjaxForm
    */
   protected function announce($text, $priority = 'polite') {
-    $announcements = $this->getAnnouncements();
+    $announcements =& drupal_static('webform_announcements', []);
     $announcements[] = [
       'text' => $text,
       'priority' => $priority,
     ];
-    $this->setAnnouncements($announcements);
   }
 
   /**
@@ -423,8 +422,7 @@ trait WebformAjaxFormTrait {
    *   An associative array of announcements.
    */
   protected function getAnnouncements() {
-    $session = $this->getRequest()->getSession();
-    return $session->get('announcements') ?: [];
+    return drupal_static('webform_announcements', []);
   }
 
   /**
@@ -434,18 +432,15 @@ trait WebformAjaxFormTrait {
    *   An associative array of announcements.
    */
   protected function setAnnouncements(array $announcements) {
-    $session = $this->getRequest()->getSession();
-    $session->set('announcements', $announcements);
-    $session->save();
+    $this->resetAnnouncements();
+    drupal_static('webform_announcements', $announcements);
   }
 
   /**
    * Reset announcements.
    */
   protected function resetAnnouncements() {
-    $session = $this->getRequest()->getSession();
-    $session->remove('announcements');
-    $session->save();
+    drupal_static_reset('webform_announcements');
   }
 
 }

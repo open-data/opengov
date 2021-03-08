@@ -49,7 +49,7 @@ abstract class WebformAccessBrowserTestBase extends WebformNodeBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create webform nodes.

@@ -3,10 +3,6 @@
  * Rating element styles.
  */
 
-html.js .form-webform-rating {
-  display: none;
-}
-
 div.svg div.rateit-range {
   background: url(../images/rating/star-normal.svg);
 }

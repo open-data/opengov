@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\webform\Plugin\WebformElementAttachmentInterface;
+use Drupal\webform\Plugin\WebformElementCompositeInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -29,7 +30,7 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
   protected $routeMatch;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */
@@ -303,11 +304,13 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
       return FALSE;
     }
 
-    // Checked excluded attachments.
+    // Checked excluded attachments, except from composite elements.
+    // @see \Drupal\webform\Plugin\WebformElement\WebformCompositeBase::formatComposite
     if (!empty($options['exclude_attachments'])) {
       /** @var \Drupal\webform\Plugin\WebformElementInterface $webform_element */
       $webform_element = $this->elementManager->getElementInstance($element, $webform_submission);
-      if ($webform_element instanceof WebformElementAttachmentInterface) {
+      if ($webform_element instanceof WebformElementAttachmentInterface
+        && !$webform_element instanceof WebformElementCompositeInterface) {
         return FALSE;
       }
     }

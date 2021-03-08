@@ -221,3 +221,7 @@ thead th .dropbutton {
 .form--inline.webform-ui-element-form-inline--input .form-item input[type="number"] {
   width: 140px;
 }
+
+.form--inline.webform-ui-element-form-inline--input .form-item input.webform-ui-element-form-inline--input-double-width {
+  width: 300px;
+}

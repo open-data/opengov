@@ -84,13 +84,17 @@ class Telephone extends TextBase {
         $cdn = reset($intl_tel_input_library['cdn']);
         $utils_script = $cdn . 'build/js/utils.js';
       }
+      else {
+        $utils_script = base_path() . 'libraries/jquery.intl-tel-input/build/js/utils.js';
+      }
       $element['#attached']['drupalSettings']['webform']['intlTelInput']['utilsScript'] = $utils_script;
     }
 
     // Add support for telephone_validation.module.
     if (\Drupal::moduleHandler()->moduleExists('telephone_validation')) {
       $format = $this->getElementProperty($element, 'telephone_validation_format');
-      if ($format == \libphonenumber\PhoneNumberFormat::NATIONAL) {
+      $format = ($format !== '') ? (int) $format : '';
+      if ($format === \libphonenumber\PhoneNumberFormat::NATIONAL) {
         $country = (array) $this->getElementProperty($element, 'telephone_validation_country');
       }
       else {

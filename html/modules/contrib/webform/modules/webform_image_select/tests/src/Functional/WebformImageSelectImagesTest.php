@@ -10,7 +10,7 @@ use Drupal\webform_image_select\Entity\WebformImageSelectImages;
 /**
  * Tests for webform image select image entity.
  *
- * @group Webform
+ * @group webform_image_select
  */
 class WebformImageSelectImagesTest extends WebformElementBrowserTestBase {
 
@@ -57,16 +57,16 @@ kitten_4:
 
     $dogs = Yaml::decode("dog_1:
   text: 'Cute Dog 1'
-  src: 'http://placedog.com/220/200'
+  src: 'http://placedog.net/220/200'
 dog_2:
   text: 'Cute Dog 2'
-  src: 'http://placedog.com/180/200'
+  src: 'http://placedog.net/180/200'
 dog_3:
   text: 'Cute Dog 3'
-  src: 'http://placedog.com/130/200'
+  src: 'http://placedog.net/130/200'
 dog_4:
   text: 'Cute Dog 4'
-  src: 'http://placedog.com/270/200'");
+  src: 'http://placedog.net/270/200'");
 
     // Check get element images for manually defined images.
     $element = ['#images' => $dogs];
@@ -89,7 +89,7 @@ dog_4:
     $webform_images->set('images', "not\nvalid\nyaml")->save();
 
     // Check invalid images.
-    $this->assertFalse($webform_images->getImages());
+    $this->assertEqual([], $webform_images->getImages());
 
     // Check admin user access denied.
     $this->drupalGet('/admin/structure/webform/config/images/manage');
@@ -108,14 +108,14 @@ dog_4:
 
     // Check image altered message.
     $this->drupalGet('/admin/structure/webform/config/images/manage/animals/edit');
-    $this->assertRaw('The <em class="placeholder">Cute Animals</em> images are being altered by the <em class="placeholder">Webform Image Select Test</em> module.');
+    $this->assertRaw('The <em class="placeholder">Cute Animals</em> images are being altered by the <em class="placeholder">Webform Image Select test</em> module.');
 
     // Check hook_webform_image_select_images_alter().
     // Check hook_webform_image_select_images_WEBFORM_IMAGE_SELECT_IMAGES_ID_alter().
     $element = ['#images' => 'animals'];
     $images = WebformImageSelectImages::getElementImages($element);
     $this->debug($images);
-    $this->assertEqual(array_keys($images), ['kitten_1', 'kitten_2', 'kitten_3', 'kitten_4', 'bear_1', 'bear_2', 'bear_3', 'bear_4']);
+    $this->assertEqual(array_keys($images), ['kitten_1', 'kitten_2', 'kitten_3', 'kitten_4', 'dog_1', 'dog_2', 'dog_3', 'dog_4']);
   }
 
 }

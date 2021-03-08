@@ -3,10 +3,10 @@
 namespace Drupal\webform_image_select\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\webform\Utility\WebformYaml;
 use Drupal\webform_image_select\WebformImageSelectImagesInterface;
 
 /**
@@ -108,7 +108,7 @@ class WebformImageSelectImages extends ConfigEntityBase implements WebformImageS
   public function getImages() {
     if (!isset($this->imagesDecoded)) {
       try {
-        $options = Yaml::decode($this->images);
+        $options = WebformYaml::decode($this->images);
         // Since YAML supports simple values.
         $options = (is_array($options)) ? $options : [];
       }
@@ -126,7 +126,7 @@ class WebformImageSelectImages extends ConfigEntityBase implements WebformImageS
    * {@inheritdoc}
    */
   public function setImages(array $images) {
-    $this->images = Yaml::encode($images);
+    $this->images = WebformYaml::encode($images);
     $this->imagesDecoded = NULL;
   }
 

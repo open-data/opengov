@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 class WebformPluginVariantController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
-   * A webform variant plugin manager.
+   * The webform variant plugin manager.
    *
    * @var \Drupal\Component\Plugin\PluginManagerInterface
    */
@@ -48,21 +49,31 @@ class WebformPluginVariantController extends ControllerBase implements Container
   public function index() {
     $excluded_variants = $this->config('webform.settings')->get('variant.excluded_variants');
 
+    $used_by = [];
+    /** @var \Drupal\webform\WebformInterface[] $webforms */
+    $webforms = Webform::loadMultiple();
+    foreach ($webforms as $webform) {
+      $variants = $webform->getVariants();
+      foreach ($variants as $variant) {
+        $used_by[$variant->getPluginId()][$webform->id()] = $webform->toLink()->toRenderable();
+      }
+    }
+
     $definitions = $this->pluginManager->getDefinitions();
     $definitions = $this->pluginManager->getSortedDefinitions($definitions);
 
     $rows = [];
     foreach ($definitions as $plugin_id => $definition) {
-      $rows[$plugin_id] = [
-        'data' => [
-          $plugin_id,
-          $definition['label'],
-          $definition['description'],
-          $definition['category'],
-          (isset($excluded_variants[$plugin_id])) ? $this->t('Yes') : $this->t('No'),
-          $definition['provider'],
-        ],
-      ];
+      $row = [];
+      $row[] = $plugin_id;
+      $row[] = ['data' => ['#markup' => $definition['label'], '#prefix' => '<span class="webform-form-filter-text-source">', '#suffix' => '</span>']];
+      $row[] = $definition['description'];
+      $row[] = $definition['category'];
+      $row[] = (isset($excluded_variants[$plugin_id])) ? $this->t('Yes') : $this->t('No');
+      $row[] = (isset($used_by[$plugin_id])) ? ['data' => ['#theme' => 'item_list', '#items' => $used_by[$plugin_id]]] : '';
+      $row[] = $definition['provider'];
+
+      $rows[$plugin_id] = ['data' => $row];
       if (isset($excluded_variants[$plugin_id])) {
         $rows[$plugin_id]['class'] = ['color-warning'];
       }
@@ -70,6 +81,24 @@ class WebformPluginVariantController extends ControllerBase implements Container
     ksort($rows);
 
     $build = [];
+
+    // Filter.
+    $build['filter'] = [
+      '#type' => 'search',
+      '#title' => $this->t('Filter'),
+      '#title_display' => 'invisible',
+      '#size' => 30,
+      '#placeholder' => $this->t('Filter by variant label'),
+      '#attributes' => [
+        'class' => ['webform-form-filter-text'],
+        'data-element' => '.webform-variant-plugin-table',
+        'data-summary' => '.webform-variant-plugin-summary',
+        'data-item-singlular' => $this->t('variant'),
+        'data-item-plural' => $this->t('variants'),
+        'title' => $this->t('Enter a part of the variant label to filter by.'),
+        'autofocus' => 'autofocus',
+      ],
+    ];
 
     // Settings.
     $build['settings'] = [
@@ -82,7 +111,7 @@ class WebformPluginVariantController extends ControllerBase implements Container
     // Display info.
     $build['info'] = [
       '#markup' => $this->t('@total variants', ['@total' => count($rows)]),
-      '#prefix' => '<p>',
+      '#prefix' => '<p class="webform-variant-plugin-summary">',
       '#suffix' => '</p>',
     ];
 
@@ -95,11 +124,17 @@ class WebformPluginVariantController extends ControllerBase implements Container
         $this->t('Description'),
         $this->t('Category'),
         $this->t('Excluded'),
+        $this->t('Used by'),
         $this->t('Provided by'),
       ],
       '#rows' => $rows,
       '#sticky' => TRUE,
+      '#attributes' => [
+        'class' => ['webform-variant-plugin-table'],
+      ],
     ];
+
+    $build['#attached']['library'][] = 'webform/webform.admin';
 
     return $build;
   }
@@ -144,13 +179,16 @@ class WebformPluginVariantController extends ControllerBase implements Container
         continue;
       }
 
+      /** @var \Drupal\webform\Plugin\WebformVariantInterface $variant_plugin */
+      $variant_plugin = $this->pluginManager->createInstance($plugin_id);
+
       $row = [];
 
       $row['title']['data'] = [
         '#type' => 'link',
         '#title' => $definition['label'],
         '#url' => Url::fromRoute('entity.webform.variant.add_form', ['webform' => $webform->id(), 'webform_variant' => $plugin_id]),
-        '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+        '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes($variant_plugin->getOffCanvasWidth()),
         '#prefix' => '<div class="webform-form-filter-text-source">',
         '#suffix' => '</div>',
       ];
@@ -166,7 +204,7 @@ class WebformPluginVariantController extends ControllerBase implements Container
       $links['add'] = [
         'title' => $this->t('Add variant'),
         'url' => Url::fromRoute('entity.webform.variant.add_form', ['webform' => $webform->id(), 'webform_variant' => $plugin_id]),
-        'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+        'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes($variant_plugin->getOffCanvasWidth()),
       ];
       $row['operations']['data'] = [
         '#type' => 'operations',

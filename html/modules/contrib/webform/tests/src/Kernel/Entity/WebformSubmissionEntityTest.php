@@ -24,7 +24,7 @@ class WebformSubmissionEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     $this->installSchema('webform', ['webform']);

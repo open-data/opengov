@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for webform submission views element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementSubmissionViewsTest extends WebformElementBrowserTestBase {
 
@@ -40,21 +40,21 @@ class WebformElementSubmissionViewsTest extends WebformElementBrowserTestBase {
 
     // Check name validation.
     $edit = ['webform_submission_views_global[items][0][name]' => ''];
-    $this->drupalPostForm('/webform/test_element_submission_views', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views', $edit, 'Submit');
     $this->assertRaw('Name is required');
 
     // Check view validation.
     $edit = ['webform_submission_views_global[items][0][view]' => ''];
-    $this->drupalPostForm('/webform/test_element_submission_views', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views', $edit, 'Submit');
     $this->assertRaw('View name/display id is required.');
 
     // Check title validation.
     $edit = ['webform_submission_views_global[items][0][title]' => ''];
-    $this->drupalPostForm('/webform/test_element_submission_views', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views', $edit, 'Submit');
     $this->assertRaw('Title is required.');
 
     // Check processing.
-    $this->drupalPostForm('/webform/test_element_submission_views', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views', [], 'Submit');
     $this->assertRaw("webform_submission_views_global:
   admin:
     view: 'webform_submissions:embed_administer'
@@ -83,7 +83,7 @@ webform_submission_views:
       'webform_submission_views_global[items][0][webform_routes][entity.webform.results_submissions]' => FALSE,
       'webform_submission_views_global[items][0][node_routes][entity.node.webform.results_submissions]' => FALSE,
     ];
-    $this->drupalPostForm('/webform/test_element_submission_views', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views', $edit, 'Submit');
     $this->assertNoRaw('Name is required');
     $this->assertNoRaw('View name/display id is required.');
     $this->assertNoRaw('Title is required.');
@@ -106,7 +106,7 @@ webform_submission_views:
     $this->assertNoRaw('<th class="webform_submission_views-table--node_routes webform-multiple-table--node_routes">');
 
     // Check processing removes node settings.
-    $this->drupalPostForm('/webform/test_element_submission_views', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views', [], 'Submit');
     $this->assertRaw("webform_submission_views_global:
   admin:
     view: 'webform_submissions:embed_administer'
@@ -131,7 +131,7 @@ webform_submission_views:
     $this->assertNoRaw('<th class="webform_submission_views-table--name_title_view webform-multiple-table--name_title_view">');
 
     // Check that value is preserved.
-    $this->drupalPostForm('/webform/test_element_submission_views', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_submission_views', [], 'Submit');
     $this->assertRaw("webform_submission_views_global: {  }
 webform_submission_views: {  }");
   }

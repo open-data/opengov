@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Plugin\WebformHandlerInterface;
 use Drupal\webform\WebformInterface;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 class WebformPluginHandlerController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
-   * A webform handler plugin manager.
+   * The webform handler plugin manager.
    *
    * @var \Drupal\webform\Plugin\WebformHandlerManagerInterface
    */
@@ -49,25 +50,34 @@ class WebformPluginHandlerController extends ControllerBase implements Container
   public function index() {
     $excluded_handlers = $this->config('webform.settings')->get('handler.excluded_handlers');
 
+    $used_by = [];
+    /** @var \Drupal\webform\WebformInterface[] $webforms */
+    $webforms = Webform::loadMultiple();
+    foreach ($webforms as $webform) {
+      $handlers = $webform->getHandlers();
+      foreach ($handlers as $handler) {
+        $used_by[$handler->getPluginId()][$webform->id()] = $webform->toLink()->toRenderable();
+      }
+    }
+
     $definitions = $this->pluginManager->getDefinitions();
     $definitions = $this->pluginManager->getSortedDefinitions($definitions);
 
     $rows = [];
     foreach ($definitions as $plugin_id => $definition) {
-      $rows[$plugin_id] = [
-        'data' => [
-          $plugin_id,
-          $definition['label'],
-          $definition['description'],
-          $definition['category'],
-          (isset($excluded_handlers[$plugin_id])) ? $this->t('Yes') : $this->t('No'),
-          ($definition['cardinality'] == -1) ? $this->t('Unlimited') : $definition['cardinality'],
-          $definition['conditions'] ? $this->t('Yes') : $this->t('No'),
-          $definition['submission'] ? $this->t('Required') : $this->t('Optional'),
-          $definition['results'] ? $this->t('Processed') : $this->t('Ignored'),
-          $definition['provider'],
-        ],
-      ];
+      $row = [];
+      $row[] = $plugin_id;
+      $row[] = ['data' => ['#markup' => $definition['label'], '#prefix' => '<span class="webform-form-filter-text-source">', '#suffix' => '</span>']];
+      $row[] = $definition['description'];
+      $row[] = $definition['category'];
+      $row[] = (isset($excluded_handlers[$plugin_id])) ? $this->t('Yes') : $this->t('No');
+      $row[] = ($definition['cardinality'] === -1) ? $this->t('Unlimited') : $definition['cardinality'];
+      $row[] = $definition['conditions'] ? $this->t('Yes') : $this->t('No');
+      $row[] = $definition['submission'] ? $this->t('Required') : $this->t('Optional');
+      $row[] = $definition['results'] ? $this->t('Processed') : $this->t('Ignored');
+      $row[] = (isset($used_by[$plugin_id])) ? ['data' => ['#theme' => 'item_list', '#items' => $used_by[$plugin_id]]] : '';
+      $row[] = $definition['provider'];
+      $rows[$plugin_id] = ['data' => $row];
       if (isset($excluded_handlers[$plugin_id])) {
         $rows[$plugin_id]['class'] = ['color-warning'];
       }
@@ -75,6 +85,24 @@ class WebformPluginHandlerController extends ControllerBase implements Container
     ksort($rows);
 
     $build = [];
+
+    // Filter.
+    $build['filter'] = [
+      '#type' => 'search',
+      '#title' => $this->t('Filter'),
+      '#title_display' => 'invisible',
+      '#size' => 30,
+      '#placeholder' => $this->t('Filter by handler label'),
+      '#attributes' => [
+        'class' => ['webform-form-filter-text'],
+        'data-element' => '.webform-handler-plugin-table',
+        'data-summary' => '.webform-handler-plugin-summary',
+        'data-item-singlular' => $this->t('handler'),
+        'data-item-plural' => $this->t('handlers'),
+        'title' => $this->t('Enter a part of the handler label to filter by.'),
+        'autofocus' => 'autofocus',
+      ],
+    ];
 
     // Settings.
     $build['settings'] = [
@@ -87,7 +115,7 @@ class WebformPluginHandlerController extends ControllerBase implements Container
     // Display info.
     $build['info'] = [
       '#markup' => $this->t('@total handlers', ['@total' => count($rows)]),
-      '#prefix' => '<p>',
+      '#prefix' => '<p class="webform-handler-plugin-summary">',
       '#suffix' => '</p>',
     ];
 
@@ -104,11 +132,17 @@ class WebformPluginHandlerController extends ControllerBase implements Container
         $this->t('Conditional'),
         $this->t('Database'),
         $this->t('Results'),
+        $this->t('Used by'),
         $this->t('Provided by'),
       ],
       '#rows' => $rows,
       '#sticky' => TRUE,
+      '#attributes' => [
+        'class' => ['webform-handler-plugin-table'],
+      ],
     ];
+
+    $build['#attached']['library'][] = 'webform/webform.admin';
 
     return $build;
   }
@@ -175,7 +209,7 @@ class WebformPluginHandlerController extends ControllerBase implements Container
           '#type' => 'link',
           '#title' => $definition['label'],
           '#url' => Url::fromRoute('entity.webform.handler.add_form', ['webform' => $webform->id(), 'webform_handler' => $plugin_id]),
-          '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+          '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes($handler_plugin->getOffCanvasWidth()),
           '#prefix' => '<div class="webform-form-filter-text-source">',
           '#suffix' => '</div>',
         ];
@@ -202,7 +236,7 @@ class WebformPluginHandlerController extends ControllerBase implements Container
         $links['add'] = [
           'title' => $this->t('Add handler'),
           'url' => Url::fromRoute('entity.webform.handler.add_form', ['webform' => $webform->id(), 'webform_handler' => $plugin_id]),
-          'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+          'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes($handler_plugin->getOffCanvasWidth()),
         ];
         $row['operations']['data'] = [
           '#type' => 'operations',

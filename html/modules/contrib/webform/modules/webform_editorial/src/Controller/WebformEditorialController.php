@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,7 +59,7 @@ class WebformEditorialController extends ControllerBase implements ContainerInje
   protected $elementManager;
 
   /**
-   * The libraries manager.
+   * The webform libraries manager.
    *
    * @var \Drupal\webform\WebformLibrariesManagerInterface
    */
@@ -101,6 +102,31 @@ class WebformEditorialController extends ControllerBase implements ContainerInje
       $container->get('plugin.manager.webform.element'),
       $container->get('webform.libraries_manager')
     );
+  }
+
+  /**
+   * Returns webform help index page.
+   *
+   * @return array
+   *   A renderable array containing webform help index page.
+   */
+  public function index() {
+    $path = drupal_get_path('module', 'webform_editorial') . '/webform_editorial.links.task.yml';
+    $tasks = Yaml::decode(file_get_contents($path));
+    $content = [];
+    foreach ($tasks as $id => $task) {
+      if (isset($task['parent_id'])) {
+        $content[$id] = [
+          'title' => $task['title'],
+          'description' => $task['description'],
+          'url' => Url::fromRoute($task['route_name']),
+        ];
+      }
+    }
+    return [
+      '#theme' => 'admin_block_content',
+      '#content' => $content,
+    ];
   }
 
   /****************************************************************************/

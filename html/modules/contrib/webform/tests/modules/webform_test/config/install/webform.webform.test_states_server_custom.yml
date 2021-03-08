@@ -1,3 +1,4 @@
+uuid: null
 langcode: en
 status: open
 dependencies:
@@ -63,6 +64,22 @@ elements: |
         ':input[name="trigger_less"]':
           value:
             less: 10
+  trigger_less_equal:
+    '#type': number
+    '#title': trigger_less_equal
+    '#description': '<= 10'
+  dependent_less_equal:
+    '#type': textfield
+    '#title': dependent_less_equal
+    '#states':
+      visible:
+        ':input[name="trigger_less_equal"]':
+          value:
+            less_equal: 10
+      required:
+        ':input[name="trigger_less_equal"]':
+          value:
+            less_equal: 10
   trigger_greater:
     '#type': number
     '#title': trigger_greater
@@ -79,6 +96,22 @@ elements: |
         ':input[name="trigger_greater"]':
           value:
             greater: 10
+  trigger_greater_equal:
+    '#type': number
+    '#title': trigger_greater_equal
+    '#description': '>= 10'
+  dependent_greater_equal:
+    '#type': textfield
+    '#title': dependent_greater_equal
+    '#states':
+      visible:
+        ':input[name="trigger_greater_equal"]':
+          value:
+            greater_equal: 10
+      required:
+        ':input[name="trigger_greater_equal"]':
+          value:
+            greater_equal: 10
   trigger_between:
     '#type': number
     '#title': trigger_between
@@ -95,6 +128,18 @@ elements: |
         ':input[name="trigger_between"]':
           value:
             between: '10:20'
+  dependent_not_between:
+    '#type': textfield
+    '#title': dependent_not_between
+    '#states':
+      visible:
+        ':input[name="trigger_between"]':
+          value:
+            '!between': '10:20'
+      required:
+        ':input[name="trigger_between"]':
+          value:
+            '!between': '10:20'
   trigger_visible_slide:
     '#type': checkbox
     '#title': trigger_visible_slide
@@ -117,7 +162,7 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -147,6 +192,11 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
   submission_views: {  }
@@ -172,11 +222,19 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -222,6 +280,8 @@ settings:
   results_customize: false
   token_view: false
   token_update: false
+  token_delete: false
+  serial_disabled: false
 access:
   create:
     roles:

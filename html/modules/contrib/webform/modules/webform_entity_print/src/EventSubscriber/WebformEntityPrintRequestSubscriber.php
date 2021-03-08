@@ -34,7 +34,7 @@ class WebformEntityPrintRequestSubscriber implements EventSubscriberInterface {
    * Set custom webform entity print submission view mode.
    */
   public function requestSetViewMode(GetResponseEvent $event) {
-    if ($event->getRequestType() != HttpKernelInterface::MASTER_REQUEST) {
+    if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
       return;
     }
 

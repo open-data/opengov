@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional;
 /**
  * Tests for webform email provider.
  *
- * @group Webform
+ * @group webform
  */
 class WebformEmailProviderTest extends WebformBrowserTestBase {
 
@@ -27,7 +27,7 @@ class WebformEmailProviderTest extends WebformBrowserTestBase {
     // Check Default PHP mailer is enabled because we manually changed the
     // system.mail configuration.
     $this->drupalGet('/admin/reports/status');
-    $this->assertRaw('Provided by php_mail mail plugin.');
+    $this->assertRaw('Provided by the php_mail mail plugin.');
     $this->assertNoRaw("Webform PHP mailer: Sends the message as plain text or HTML, using PHP's native mail() function.");
     $this->assertRaw('Default PHP mailer: Sends the message as plain text, using PHP\'s native mail() function.');
 
@@ -72,7 +72,7 @@ class WebformEmailProviderTest extends WebformBrowserTestBase {
 
     // Turn on the smtp.module via the UI.
     // @see webform_form_smtp_admin_settings_alter()
-    $this->drupalPostForm('/admin/config/system/smtp', ['smtp_on' => TRUE], t('Save configuration'));
+    $this->drupalPostForm('/admin/config/system/smtp', ['smtp_on' => TRUE], 'Save configuration');
 
     // Check SMTP: Default PHP mailer after smtp.module turned on.
     $this->drupalGet('/admin/reports/status');

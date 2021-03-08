@@ -197,7 +197,7 @@ class WebformOptionsCustomListBuilder extends ConfigEntityListBuilder {
   protected function buildOptions(WebformOptionsCustomInterface $entity) {
     $options = $entity->getTemplateOptions();
     foreach ($options as $key => &$value) {
-      if ($key != $value) {
+      if ($key !== $value) {
         $value .= ' (' . $key . ')';
       }
     }

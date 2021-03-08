@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\node\Entity\Node;
 use Drupal\webform\Utility\WebformDateHelper;
 use Drupal\webform\WebformInterface;
@@ -47,6 +49,20 @@ function webform_demo_event_registration_uninstall() {
     $nodes = Node::loadMultiple($entity_ids);
     foreach ($nodes as $node) {
       $node->delete();
+    }
+  }
+
+  // Delete field configuration manually.
+  $field_names = ['field_webform_demo_event_date', 'field_webform_entity_limit_total'];
+  foreach ($field_names as $field_name) {
+    $field_config = FieldConfig::loadByName('node', 'webform_demo_event', $field_name);
+    if ($field_config) {
+      $field_config->delete();
+    }
+
+    $field_storage_config = FieldStorageConfig::loadByName('node', $field_name);
+    if ($field_storage_config) {
+      $field_storage_config->delete();
     }
   }
 }

@@ -6,6 +6,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Context\CacheContextsManager;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\webform\Plugin\Block\WebformBlock;
@@ -135,13 +136,17 @@ class WebformBlockTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
 
+    $route_match = $this->getMockBuilder(RouteMatchInterface::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+
     $configuration = ['webform_id' => $webform->id()];
 
     $plugin_id = 'webform_block';
 
     $plugin_definition = ['provider' => 'unit_test'];
 
-    return new WebformBlock($configuration, $plugin_id, $plugin_definition, $request_stack, $entity_type_manager, $token_manager);
+    return new WebformBlock($configuration, $plugin_id, $plugin_definition, $request_stack, $entity_type_manager, $token_manager, $route_match);
   }
 
 }

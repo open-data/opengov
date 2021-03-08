@@ -24,23 +24,9 @@
 /* Fields */
 /*****************************************************************************   */
 
-/**
- * Capitalize fieldset to match details.
- */
-.fieldset__label {
-  text-transform: capitalize;
-}
-
 /*****************************************************************************   */
 /* Messages */
 /*****************************************************************************   */
-
-.messages.messages--webform a.button {
-  margin: 0;
-  text-decoration: none;
-  color: #fff;
-  background-color: #003cc5;
-}
 
 html.js .webform-message--close .webform-message__link {
   opacity: inherit;
@@ -54,6 +40,16 @@ html.js .webform-message--close .webform-message__link:focus,
 html.js .webform-message--close .webform-message__link:active {
   opacity: inherit;
   color: #fff;
+}
+
+/**
+ * Fix button link and background color.
+ */
+.webform-message a.button {
+  margin: 0;
+  text-decoration: none;
+  color: #fff;
+  background-color: #003cc5;
 }
 
 /**
@@ -233,6 +229,13 @@ div.webform-form-filter input.webform-form-filter-text {
 }
 
 /**
+ * Remove right margin so three inline elements are supported.
+ */
+.form--inline.webform-ui-element-form-inline--input .form-item {
+  margin-right: 0;
+}
+
+/**
  * Make tooltip a little bigger.
  */
 .webform-element-help {
@@ -311,16 +314,24 @@ div.webform-form-filter input.webform-form-filter-text {
 /**
  * jQuery UI tabs.
  */
-.webform-tabs.ui-tabs .ui-tabs-nav li {
-  padding: 0 5px;
-}
-
 .webform-tabs.ui-tabs .ui-tabs-panel {
   padding: 0;
 }
 
+.webform-tabs.ui-tabs .ui-tabs-nav {
+  padding: 5px 10px 4px 0px;
+}
+
+.webform-tabs.ui-tabs .ui-tabs-nav li {
+  padding: 0 5px;
+}
+
 .webform-tabs .ui-tabs-tab.ui-tab a {
   border-radius: 0;
+}
+
+.webform-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+  padding: .5em .75em;
 }
 
 .webform-tabs .ui-tabs-active.ui-state-active a {

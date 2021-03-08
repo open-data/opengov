@@ -4,6 +4,7 @@ namespace Drupal\webform_access\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,6 +35,13 @@ class WebformAccessGroupEntityBlock extends BlockBase implements ContainerFactor
   protected $webformAccessGroupStorage;
 
   /**
+   * The 'language_manager' service.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * Creates a WebformAccessGroupEntityBlock instance.
    *
    * @param array $configuration
@@ -46,11 +54,14 @@ class WebformAccessGroupEntityBlock extends BlockBase implements ContainerFactor
    *   The current user.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager, LanguageManagerInterface $language_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->currentUser = $current_user;
     $this->webformAccessGroupStorage = $entity_type_manager->getStorage('webform_access_group');
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -62,7 +73,9 @@ class WebformAccessGroupEntityBlock extends BlockBase implements ContainerFactor
       $plugin_id,
       $plugin_definition,
       $container->get('current_user'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('language_manager')
+
     );
   }
 
@@ -76,9 +89,13 @@ class WebformAccessGroupEntityBlock extends BlockBase implements ContainerFactor
       return NULL;
     }
 
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
     $items = [];
     foreach ($nodes as $node) {
       if ($node->access()) {
+        if ($node->hasTranslation($langcode)) {
+          $node = $node->getTranslation($langcode);
+        }
         $items[] = $node->toLink()->toRenderable();
       }
     }

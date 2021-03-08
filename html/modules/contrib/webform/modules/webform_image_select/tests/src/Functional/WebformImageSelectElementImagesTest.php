@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\Element\WebformElementBrowserTestBase;
 /**
  * Tests for webform image select images element.
  *
- * @group Webform
+ * @group webform_image_select
  */
 class WebformImageSelectElementImagesTest extends WebformElementBrowserTestBase {
 
@@ -23,7 +23,7 @@ class WebformImageSelectElementImagesTest extends WebformElementBrowserTestBase 
    */
   public function testElementOptions() {
     // Check default value handling.
-    $this->drupalPostForm('/webform/test_element_images', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_images', [], 'Submit');
     $this->assertRaw("webform_image_select_images: {  }
 webform_image_select_images_default_value:
   kitten_1:
@@ -58,7 +58,7 @@ webform_image_select_element_images_custom:
       'webform_image_select_images[images][items][0][src]' => 'src01',
       'webform_image_select_images[images][items][1][src]' => 'src02',
     ];
-    $this->drupalPostForm('/webform/test_element_images', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_images', $edit, 'Submit');
     $this->assertRaw("The <em class=\"placeholder\">Image value</em> '' is already in use. It must be unique.");
   }
 

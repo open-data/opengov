@@ -87,7 +87,7 @@ class WebformMessage extends RenderElement {
     $element['#attributes']['class'][] = 'js-webform-message';
 
     // Ignore 'user' and 'state' storage is current user is anonymous.
-    if (\Drupal::currentUser()->isAnonymous() && in_array($message_storage, [self::STORAGE_USER, self::STORAGE_STATE, self::STORAGE_CUSTOM])) {
+    if (\Drupal::currentUser()->isAnonymous() && in_array($message_storage, [static::STORAGE_USER, static::STORAGE_STATE, static::STORAGE_CUSTOM])) {
       $message_storage = '';
     }
 
@@ -104,7 +104,7 @@ class WebformMessage extends RenderElement {
         'aria-label' => t('close'),
         'class' => ['js-webform-message__link', 'webform-message__link'],
       ];
-      if (in_array($message_storage, [self::STORAGE_USER, self::STORAGE_STATE, self::STORAGE_CUSTOM])) {
+      if (in_array($message_storage, [static::STORAGE_USER, static::STORAGE_STATE, static::STORAGE_CUSTOM])) {
         $close_url = Url::fromRoute('webform.element.message.close', [
           'storage' => $message_storage,
           'id' => $message_id,
@@ -173,19 +173,19 @@ class WebformMessage extends RenderElement {
     $account = \Drupal::currentUser();
     $namespace = 'webform.element.message';
     switch ($storage) {
-      case self::STORAGE_STATE:
+      case static::STORAGE_STATE:
         /** @var \Drupal\Core\State\StateInterface $state */
         $state = \Drupal::service('state');
         $values = $state->get($namespace, []);
         return (isset($values[$id])) ? TRUE : FALSE;
 
-      case self::STORAGE_USER:
+      case static::STORAGE_USER:
         /** @var \Drupal\user\UserDataInterface $user_data */
         $user_data = \Drupal::service('user.data');
         $values = $user_data->get('webform', $account->id(), $namespace) ?: [];
         return (isset($values[$id])) ? TRUE : FALSE;
 
-      case self::STORAGE_CUSTOM:
+      case static::STORAGE_CUSTOM:
         $result = \Drupal::moduleHandler()->invokeAll('webform_message_custom', ['closed', $id]);
         return array_filter($result) ? TRUE : FALSE;
     }
@@ -206,7 +206,7 @@ class WebformMessage extends RenderElement {
     $account = \Drupal::currentUser();
     $namespace = 'webform.element.message';
     switch ($storage) {
-      case self::STORAGE_STATE:
+      case static::STORAGE_STATE:
         /** @var \Drupal\Core\State\StateInterface $state */
         $state = \Drupal::service('state');
         $values = $state->get($namespace, []);
@@ -214,7 +214,7 @@ class WebformMessage extends RenderElement {
         $state->set($namespace, $values);
         break;
 
-      case self::STORAGE_USER:
+      case static::STORAGE_USER:
         /** @var \Drupal\user\UserDataInterface $user_data */
         $user_data = \Drupal::service('user.data');
         $values = $user_data->get('webform', $account->id(), $namespace) ?: [];
@@ -222,7 +222,7 @@ class WebformMessage extends RenderElement {
         $user_data->set('webform', $account->id(), $namespace, $values);
         break;
 
-      case self::STORAGE_CUSTOM:
+      case static::STORAGE_CUSTOM:
         \Drupal::moduleHandler()->invokeAll('webform_message_custom', ['close', $id]);
         break;
     }
@@ -242,7 +242,7 @@ class WebformMessage extends RenderElement {
     $account = \Drupal::currentUser();
     $namespace = 'webform.element.message';
     switch ($storage) {
-      case self::STORAGE_STATE:
+      case static::STORAGE_STATE:
         /** @var \Drupal\Core\State\StateInterface $state */
         $state = \Drupal::service('state');
         $values = $state->get($namespace, []);
@@ -250,7 +250,7 @@ class WebformMessage extends RenderElement {
         $state->set($namespace, $values);
         break;
 
-      case self::STORAGE_USER:
+      case static::STORAGE_USER:
         /** @var \Drupal\user\UserDataInterface $user_data */
         $user_data = \Drupal::service('user.data');
         $values = $user_data->get('webform', $account->id(), $namespace) ?: [];
@@ -258,7 +258,7 @@ class WebformMessage extends RenderElement {
         $user_data->set('webform', $account->id(), $namespace, $values);
         break;
 
-      case self::STORAGE_CUSTOM:
+      case static::STORAGE_CUSTOM:
         \Drupal::moduleHandler()->invokeAll('webform_message_custom', ['reset', $id]);
         break;
     }

@@ -16,7 +16,7 @@ use Drupal\webform\Utility\WebformElementHelper;
  * Webform submission conditions (#states) validator.
  *
  * @see \Drupal\webform\Element\WebformElementStates
- * @see drupal_process_states()
+ * @see \Drupal\Core\Form\FormHelper::processStates
  */
 class WebformSubmissionConditionsValidator implements WebformSubmissionConditionsValidatorInterface {
 
@@ -118,7 +118,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
           $element['#after_build'][] = [get_class($this), 'elementAfterBuild'];
         }
 
-        $targets = $this->getConditionTargetsVisiblity($conditions, $visible_elements);
+        $targets = $this->getConditionTargetsVisibility($conditions, $visible_elements);
 
         // Determine if targets are visible or cross page.
         $all_targets_visible = (array_sum($targets) === count($targets));
@@ -221,7 +221,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     $cross_page_conditions = [];
     foreach ($conditions as $index => $value) {
       if (is_int($index) && is_array($value) && WebformArrayHelper::isSequential($value)) {
-        $cross_page_conditions[$index] = $this->replaceCrossPageTargets($conditions, $webform_submission, $targets, $form);
+        $cross_page_conditions[$index] = $this->replaceCrossPageTargets($value, $webform_submission, $targets, $form);
       }
       else {
         $cross_page_conditions[$index] = $value;
@@ -301,16 +301,11 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    */
   protected function validateFormRecursive(array $form, FormStateInterface $form_state) {
     foreach ($form as $key => $element) {
-      if (!WebformElementHelper::isElement($element, $key)) {
+      if (!WebformElementHelper::isElement($element, $key)
+        || !WebformElementHelper::isAccessibleElement($element)) {
         continue;
       }
-
-      if (isset($element['#access']) && $element['#access'] === FALSE) {
-        continue;
-      }
-
       $this->validateFormElement($element, $form_state);
-
       $this->validateFormRecursive($element, $form_state);
     }
   }
@@ -345,7 +340,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
 
       // Determine if the element is required.
       $is_required = $this->validateConditions($conditions, $webform_submission);
-      $is_required = ($state == 'optional') ? !$is_required : $is_required;
+      $is_required = ($state === 'optional') ? !$is_required : $is_required;
       if (!$is_required) {
         continue;
       }
@@ -386,12 +381,17 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
     $webform_submission = $form_state->getFormObject()->getEntity();
 
+    // Check if we are in the middle of multiple wizard form and determine
+    // if element access should be checked.
+    $current_page = $form_state->get('current_page');
+    $check_access = (!$current_page || $current_page === WebformInterface::PAGE_CONFIRMATION) ? FALSE : TRUE;
+
     // Get submission data.
     $data = $webform_submission->getData();
 
     // Recursive through the form and unset unset submission data for
     // form elements that are hidden.
-    $this->submitFormRecursive($form, $webform_submission, $data);
+    $this->submitFormRecursive($form, $webform_submission, $data, $check_access);
 
     // Set submission data.
     $webform_submission->setData($data);
@@ -406,10 +406,13 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    *   A webform submission.
    * @param array $data
    *   A webform submission's data.
+   * @param bool $check_access
+   *   Flag that determine if the currrent form element's access
+   *   should be checked.
    * @param bool $visible
    *   Flag that determine if the currrent form elements are visible.
    */
-  protected function submitFormRecursive(array $elements, WebformSubmissionInterface $webform_submission, array &$data, $visible = TRUE) {
+  protected function submitFormRecursive(array $elements, WebformSubmissionInterface $webform_submission, array &$data, $check_access, $visible = TRUE) {
     foreach ($elements as $key => &$element) {
       if (!WebformElementHelper::isElement($element, $key)) {
         continue;
@@ -420,7 +423,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         continue;
       }
 
-      if (isset($element['#_webform_access']) && $element['#_webform_access'] === FALSE) {
+      // Skip if element #_webform_access should be checked to
+      // preserve default values.
+      if ($check_access && isset($element['#_webform_access']) && $element['#_webform_access'] === FALSE) {
         continue;
       }
 
@@ -432,7 +437,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         $data[$key] = (is_array($data[$key])) ? [] : '';
       }
 
-      $this->submitFormRecursive($element, $webform_submission, $data, $element_visible);
+      $this->submitFormRecursive($element, $webform_submission, $data, $check_access, $element_visible);
     }
   }
 
@@ -573,6 +578,10 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    * {@inheritdoc}
    */
   public function validateConditions(array $conditions, WebformSubmissionInterface $webform_submission) {
+    if (empty($conditions)) {
+      return TRUE;
+    }
+
     // Determine condition logic.
     // @see Drupal.states.Dependent.verifyConstraints
     if (WebformArrayHelper::isSequential($conditions)) {
@@ -665,7 +674,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     // If no element is found try checking file uploads which use
     // :input[name="files[ELEMENT_KEY].
     // @see \Drupal\webform\Plugin\WebformElement\WebformManagedFileBase::getElementSelectorOptions
-    if (!$element && strpos($selector, ':input[name="files[') === 0) {
+    if (!$element && strpos($selector, ':input[name="files[') !== FALSE) {
       $element_key = static::getInputNameAsArray($input_name, 1);
       $element = $webform_submission->getWebform()->getElement($element_key);
     }
@@ -706,8 +715,8 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    *   TRUE if condition is validated. NULL if the condition can't be evaluated.
    */
   protected function checkCondition(array $element, $selector, array $condition, WebformSubmissionInterface $webform_submission) {
-    $trigger_state = key($condition);
-    $trigger_value = $condition[$trigger_state];
+    $trigger = key($condition);
+    $trigger_value = $condition[$trigger];
 
     $element_plugin = $this->elementManager->getElementInstance($element);
 
@@ -716,83 +725,111 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
       return TRUE;
     }
 
-    $element_value = $element_plugin->getElementSelectorInputValue($selector, $trigger_state, $element, $webform_submission);
+    $element_value = $element_plugin->getElementSelectorInputValue($selector, $trigger, $element, $webform_submission);
 
     // Process trigger sub state used for custom #states API validation.
-    // @see Drupal.behaviors.webformStatesComparisions
+    // @see Drupal.behaviors.webformStatesComparisons
     // @see http://drupalsun.com/julia-evans/2012/03/09/extending-form-api-states-regular-expressions
-    if ($trigger_state == 'value' && is_array($trigger_value)) {
+    if ($trigger === 'value' && is_array($trigger_value)) {
       $trigger_substate = key($trigger_value);
-      if (in_array($trigger_substate, ['pattern', '!pattern', 'less', 'greater', 'between'])) {
-        $trigger_state = $trigger_substate;
+      if (in_array($trigger_substate, ['pattern', '!pattern', 'less', 'less_equal', 'greater', 'greater_equal', 'between', '!between'])) {
+        $trigger = $trigger_substate;
         $trigger_value = reset($trigger_value);
       }
     }
 
     // Process trigger state/negate.
-    list($trigger_state, $trigger_negate) = $this->processState($trigger_state);
+    list($trigger, $trigger_negate) = $this->processState($trigger);
 
     // Process triggers (aka remote conditions).
     // @see \Drupal\webform\Element\WebformElementStates::processWebformStates
-    switch ($trigger_state) {
+    if ($element_plugin->hasMultipleValues($element) && $trigger !== 'empty') {
+      $result = FALSE;
+      $element_values = (array) $element_value;
+      foreach ($element_values as $element_value) {
+        $trigger_result = $this->checkConditionTrigger($trigger, $trigger_value, $element_value);
+        if ($trigger_result !== FALSE) {
+          $result = $trigger_result;
+        }
+      }
+    }
+    else {
+      $result = $this->checkConditionTrigger($trigger, $trigger_value, $element_value);
+    }
+
+    if ($result === NULL) {
+      return FALSE;
+    }
+
+    return ($trigger_negate) ? !$result : $result;
+  }
+
+  /**
+   * Process condition trigger.
+   *
+   * @param string $trigger
+   *   The trigger.
+   * @param string $trigger_value
+   *   The trigger value.
+   * @param string|array $element_value
+   *   The element value.
+   *
+   * @return bool|null
+   *   The result.
+   */
+  protected function checkConditionTrigger($trigger, $trigger_value, $element_value) {
+    // Process triggers (aka remote conditions).
+    // @see \Drupal\webform\Element\WebformElementStates::processWebformStates
+    switch ($trigger) {
       case 'empty':
         $empty = (empty($element_value) && $element_value !== '0');
-        $result = ($empty === (boolean) $trigger_value);
-        break;
+        return ($empty === (boolean) $trigger_value);
 
       case 'checked':
-        $result = ((boolean) $element_value === (boolean) $trigger_value);
-        break;
+        return ((boolean) $element_value === (boolean) $trigger_value);
 
       case 'value':
-        if ($element_plugin->hasMultipleValues($element)) {
-          $trigger_values = (array) $trigger_value;
-          $element_values = (array) $element_value;
-          $result = (array_intersect($trigger_values, $element_values)) ? TRUE : FALSE;
-        }
-        else {
-          $result = ((string) $element_value === (string) $trigger_value);
-        }
-        break;
+        return ((string) $element_value === (string) $trigger_value);
 
       case 'pattern':
         // PHP: Convert JavaScript-escaped Unicode characters to PCRE
         // escape sequence format.
         // @see \Drupal\webform\Plugin\WebformElement\TextBase::validatePattern
         $pcre_pattern = preg_replace('/\\\\u([a-fA-F0-9]{4})/', '\\x{\\1}', $trigger_value);
-        $result = preg_match('{' . $pcre_pattern . '}u', $element_value);
-        break;
+        return preg_match('{' . $pcre_pattern . '}u', $element_value);
 
       case 'less':
-        $result = ($element_value !== '' && floatval($trigger_value) > floatval($element_value));
-        break;
+        return ($element_value !== '' && floatval($trigger_value) > floatval($element_value));
+
+      case 'less_equal':
+        return ($element_value !== '' && floatval($trigger_value) >= floatval($element_value));
 
       case 'greater':
-        $result = ($element_value !== '' && floatval($trigger_value) < floatval($element_value));
-        break;
+        return ($element_value !== '' && floatval($trigger_value) < floatval($element_value));
+
+      case 'greater_equal':
+        return ($element_value !== '' && floatval($trigger_value) <= floatval($element_value));
 
       case 'between':
-        $result = FALSE;
-        if ($element_value !== '') {
-          $greater = NULL;
-          $less = NULL;
-          if (strpos($trigger_value, ':') === FALSE) {
-            $greater = $trigger_value;
-          }
-          else {
-            list($greater, $less) = explode(':', $trigger_value);
-          }
-          $is_greater_than = ($greater === NULL || $greater === '' || floatval($element_value) >= floatval($greater));
-          $is_less_than = ($less === NULL || $less === '' || floatval($element_value) <= floatval($less));
-          $result = ($is_greater_than && $is_less_than);
+        if ($element_value === '') {
+          return NULL;
         }
-        break;
+
+        $greater = NULL;
+        $less = NULL;
+        if (strpos($trigger_value, ':') === FALSE) {
+          $greater = $trigger_value;
+        }
+        else {
+          list($greater, $less) = explode(':', $trigger_value);
+        }
+        $is_greater_than = ($greater === NULL || $greater === '' || floatval($element_value) >= floatval($greater));
+        $is_less_than = ($less === NULL || $less === '' || floatval($element_value) <= floatval($less));
+        return ($is_greater_than && $is_less_than);
 
       default:
         return NULL;
     }
-
-    return ($trigger_negate) ? !$result : $result;
   }
 
   /****************************************************************************/
@@ -839,7 +876,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    */
   protected function &getBuildElements(array &$form) {
     $elements = [];
-    $this->getBuildElementsRecusive($elements, $form);
+    $this->getBuildElementsRecursive($elements, $form);
     return $elements;
   }
 
@@ -854,7 +891,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    *   An associative array containing 'required'/'optional' states from parent
    *   container to be set on the element.
    */
-  protected function getBuildElementsRecusive(array &$elements, array &$form, array $parent_states = []) {
+  protected function getBuildElementsRecursive(array &$elements, array &$form, array $parent_states = []) {
     foreach ($form as $key => &$element) {
       if (!WebformElementHelper::isElement($element, $key)) {
         continue;
@@ -922,14 +959,14 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         $element['#_webform_access'] = $element['#access'];
       }
 
-      // Skip if element is not visible.
-      if (isset($element['#access']) && $element['#access'] === FALSE) {
+      // Skip if element is not accessible.
+      if (!WebformElementHelper::isAccessibleElement($element)) {
         continue;
       }
 
       $elements[$key] = &$element;
 
-      $this->getBuildElementsRecusive($elements, $element, $subelement_states);
+      $this->getBuildElementsRecursive($elements, $element, $subelement_states);
 
       $element_plugin = $this->elementManager->getElementInstance($element);
       if ($element_plugin instanceof WebformCompositeBase && !$element_plugin->hasMultipleValues($element)) {
@@ -962,7 +999,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         // @see \Drupal\webform_composite\Plugin\WebformElement\WebformComposite::initializeCompositeElements
         //
         // Recurse through a composite's sub elements.
-        $this->getBuildElementsRecusive($elements, $element['#element'], $subelement_states);
+        $this->getBuildElementsRecursive($elements, $element['#element'], $subelement_states);
       }
     }
   }
@@ -978,9 +1015,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    * @return array
    *   An associative array keyed by target selectors with a boolean state.
    */
-  protected function getConditionTargetsVisiblity(array $conditions, array $elements) {
+  protected function getConditionTargetsVisibility(array $conditions, array $elements) {
     $targets = [];
-    $this->getConditionTargetsVisiblityRecursive($conditions, $targets);
+    $this->getConditionTargetsVisibilityRecursive($conditions, $targets);
     foreach ($targets as $selector) {
       // Ignore invalid selector and return FALSE.
       $input_name = static::getSelectorInputName($selector);
@@ -1009,12 +1046,12 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    * @param array $targets
    *   An associative array keyed by target selectors with a boolean state.
    */
-  protected function getConditionTargetsVisiblityRecursive(array $conditions, array &$targets = []) {
+  protected function getConditionTargetsVisibilityRecursive(array $conditions, array &$targets = []) {
     foreach ($conditions as $index => $value) {
       if (is_int($index) && is_array($value) && WebformArrayHelper::isSequential($value)) {
         // Recurse downward and get nested target element.
         // NOTE: Nested conditions is not supported via the UI.
-        $this->getConditionTargetsVisiblityRecursive($value, $targets);
+        $this->getConditionTargetsVisibilityRecursive($value, $targets);
       }
       elseif (is_string($value) && in_array($value, ['and', 'or', 'xor'])) {
         // Skip AND, OR, or XOR operators.
@@ -1022,12 +1059,12 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
       }
       elseif (is_int($index)) {
         $selector = key($value);
+        $targets[$selector] = $selector;
       }
       else {
         $selector = $index;
+        $targets[$selector] = $selector;
       }
-
-      $targets[$selector] = $selector;
     }
   }
 

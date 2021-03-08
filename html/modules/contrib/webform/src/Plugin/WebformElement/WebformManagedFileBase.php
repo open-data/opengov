@@ -295,7 +295,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     if ($file_limit) {
       $element_validate[] = [get_class($this), 'validateManagedFileLimit'];
     }
-    // NOTE: Using array_splice() to make sure that self::validateManagedFile
+    // NOTE: Using array_splice() to make sure that static::validateManagedFile
     // is executed before all other validation hooks are executed but after
     // \Drupal\file\Element\ManagedFile::validateManagedFile.
     array_splice($element['#element_validate'], 1, 0, $element_validate);
@@ -512,7 +512,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       return $value;
     }
 
-    return $this->entityTypeManager->getStorage('file')->load($value);
+    return $this->entityTypeManager->getStorage('file')->loadUnchanged($value);
   }
 
   /**
@@ -532,7 +532,9 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     if (empty($value)) {
       return [];
     }
-    return $this->entityTypeManager->getStorage('file')->loadMultiple((array) $value);
+    $fids = (array) $value;
+    $this->entityTypeManager->getStorage('file')->resetCache($fids);
+    return $this->entityTypeManager->getStorage('file')->loadMultiple($fids);
   }
 
   /**
@@ -822,7 +824,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       $preview_element = ['#format' => $element['#file_preview']] + $element;
 
       // Convert '#theme': file_link to a container with a file preview.
-      $fids = (array) $webform_submission->getElementData($element['#webform_key']) ?: [];
+      $fids = (isset($element['#webform_key'])) ? (array) $webform_submission->getElementData($element['#webform_key']) : [];
       foreach ($fids as $delta => $fid) {
         $child_key = 'file_' . $fid;
         // Make sure the child element exists.
@@ -986,8 +988,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
     }
 
     // If has access and total file size exceeds file limit then display error.
-    $has_access = (!isset($element['#access']) || $element['#access']);
-    if ($has_access && $total_file_size > $file_limit) {
+    if (Element::isVisibleElement($element) && $total_file_size > $file_limit) {
       $t_args = ['%quota' => format_size($file_limit)];
       $message = t("This form's file upload quota of %quota has been exceeded. Please remove some files.", $t_args);
       $form_state->setError($element, $message);
@@ -1266,11 +1267,12 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       $destination_uri = $this->getFileDestinationUri($element, $file, $webform_submission);
 
       // Save file if there is a new destination URI.
-      if ($source_uri != $destination_uri) {
+      if ($source_uri !== $destination_uri) {
         $destination_uri = $this->fileSystem->move($source_uri, $destination_uri);
         $file->setFileUri($destination_uri);
         $file->setFileName($this->fileSystem->basename($destination_uri));
         $file->save();
+        $this->entityTypeManager->getStorage('file')->resetCache([$file->id()]);
       }
 
       // Update file usage table.
@@ -1355,6 +1357,50 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
   }
 
   /**
+   * Check access for a file associated with a webform submission.
+   *
+   * @param \Drupal\file\FileInterface $file
+   *   A file.
+   * @param \Drupal\Core\Session\AccountInterface|null $account
+   *   A user account.
+   *
+   * @return bool|null
+   *   Returns NULL if the file is not attached to a webform submission.
+   *   Returns FALSE if the user can't access the file.
+   *   Returns TRUE if the user can access the file.
+   */
+  public static function accessFile(FileInterface $file, AccountInterface $account = NULL) {
+    if (empty($file)) {
+      return NULL;
+    }
+
+    /** @var \Drupal\file\FileUsage\FileUsageInterface $file_usage */
+    $file_usage = \Drupal::service('file.usage');
+    $usage = $file_usage->listUsage($file);
+
+    // Check for webform submission usage.
+    if (!isset($usage['webform']) || !isset($usage['webform']['webform_submission'])) {
+      return NULL;
+    }
+
+    // Check entity ids.
+    $entity_ids = array_keys($usage['webform']['webform_submission']);
+    if (empty($entity_ids)) {
+      return NULL;
+    }
+
+    // Check the first webform submission since files are can only applied to
+    // one submission.
+    $entity_id = reset($entity_ids);
+    $webform_submission = WebformSubmission::load($entity_id);
+    if (!$webform_submission) {
+      return NULL;
+    }
+
+    return $webform_submission->access('view', $account);
+  }
+
+  /**
    * Control access to webform submission private file downloads.
    *
    * @param string $uri
@@ -1378,56 +1424,30 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
     /** @var \Drupal\file\FileInterface $file */
     $file = reset($files);
-    if (empty($file)) {
+
+    $access = static::accessFile($file);
+    if ($access === TRUE) {
+      // Return file content headers.
+      $headers = file_get_content_headers($file);
+
+      /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+      $file_system = \Drupal::service('file_system');
+      $filename = $file_system->basename($uri);
+      // Force blacklisted files to be downloaded instead of opening in the browser.
+      if (in_array($headers['Content-Type'], static::$blacklistedMimeTypes)) {
+        $headers['Content-Disposition'] = 'attachment; filename="' . Unicode::mimeHeaderEncode($filename) . '"';
+      }
+      else {
+        $headers['Content-Disposition'] = 'inline; filename="' . Unicode::mimeHeaderEncode($filename) . '"';
+      }
+      return $headers;
+    }
+    elseif ($access === FALSE) {
+      return -1;
+    }
+    else {
       return NULL;
     }
-
-    /** @var \Drupal\file\FileUsage\FileUsageInterface $file_usage */
-    $file_usage = \Drupal::service('file.usage');
-    $usage = $file_usage->listUsage($file);
-    foreach ($usage as $module => $entity_types) {
-      // Check for Webform module.
-      if ($module != 'webform') {
-        continue;
-      }
-
-      foreach ($entity_types as $entity_type => $counts) {
-        $entity_ids = array_keys($counts);
-
-        // Check for webform submission entity type.
-        if ($entity_type != 'webform_submission' || empty($entity_ids)) {
-          continue;
-        }
-
-        // Get webform submission.
-        $webform_submission = WebformSubmission::load(reset($entity_ids));
-        if (!$webform_submission) {
-          continue;
-        }
-
-        // Check webform submission view access.
-        if (!$webform_submission->access('view')) {
-          return -1;
-        }
-
-        // Return file content headers.
-        $headers = file_get_content_headers($file);
-
-        /** @var \Drupal\Core\File\FileSystemInterface $file_system */
-        $file_system = \Drupal::service('file_system');
-        $filename = $file_system->basename($uri);
-        // Force blacklisted files to be downloaded instead of opening in the browser.
-        if (in_array($headers['Content-Type'], static::$blacklistedMimeTypes)) {
-          $headers['Content-Disposition'] = 'attachment; filename="' . Unicode::mimeHeaderEncode($filename) . '"';
-        }
-        else {
-          $headers['Content-Disposition'] = 'inline; filename="' . Unicode::mimeHeaderEncode($filename) . '"';
-        }
-
-        return $headers;
-      }
-    }
-    return NULL;
   }
 
   /**

@@ -32,6 +32,16 @@ webform.handler.action:
     debug:
       type: boolean
       label: 'Enable debugging'
+webform.handler.debug:
+  type: mapping
+  label: Debug
+  mapping:
+    format:
+      label: 'Data format'
+      type: string
+    submission:
+      type: boolean
+      label: 'Include submission data'
 webform.handler.log:
   type: mapping
   label: Log

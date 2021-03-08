@@ -9,7 +9,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for webform submission form settings.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsScheduleTest extends WebformBrowserTestBase {
 

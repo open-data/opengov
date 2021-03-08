@@ -26,7 +26,7 @@ class WebformReflectionHelper {
     }
 
     self::$modules = [];
-    $files = file_scan_directory(drupal_get_path('module', 'webform') . '/modules', '/.*\.info\.yml/');
+    $files = \Drupal::service('file_system')->scanDirectory(drupal_get_path('module', 'webform') . '/modules', '/.*\.info\.yml/');
     foreach ($files as $file) {
       $module_name = str_replace('.info.yml', '', $file->filename);
       self::$modules[$module_name] = $module_name;
@@ -52,7 +52,7 @@ class WebformReflectionHelper {
     while ($class_name = self::getClassName($class)) {
       $parent_classes[] = $class_name;
       $class = get_parent_class($class);
-      if ($class_name == $base_class_name || !$class) {
+      if ($class_name === $base_class_name || !$class) {
         break;
       }
     }

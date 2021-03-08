@@ -89,7 +89,7 @@
           .on('keydown', function (event) {
             if (event.which === 32) {
               // Space.
-              $(this).click();
+              $(this).trigger('click');
               event.preventDefault();
             }
             else if (event.which === 37 || event.which === 38) {
@@ -99,7 +99,7 @@
                 $prev = $prev.prev();
               }
               while ($prev.length && $prev.is(':hidden'));
-              $prev.find('.thumbnail').focus();
+              $prev.find('.thumbnail').trigger('focus');
               event.preventDefault();
             }
             else if (event.which === 39 || event.which === 40) {
@@ -109,7 +109,7 @@
                 $next = $next.next();
               }
               while ($next.length && $next.is(':hidden'));
-              $next.find('.thumbnail').focus();
+              $next.find('.thumbnail').trigger('focus');
               event.preventDefault();
             }
           })

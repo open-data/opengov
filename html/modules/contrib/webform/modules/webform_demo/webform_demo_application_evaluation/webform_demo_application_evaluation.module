@@ -8,10 +8,10 @@
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
- * Implements hook_ENTITY_TYPE_presave().
+ * Implements hook_ENTITY_TYPE_presave() for webform_submission entities.
  */
 function webform_demo_application_evaluation_webform_submission_presave(WebformSubmissionInterface $webform_submission) {
-  if ($webform_submission->getWebform()->id() != 'demo_application') {
+  if ($webform_submission->getWebform()->id() !== 'demo_application') {
     return;
   }
 
@@ -28,7 +28,7 @@ function webform_demo_application_evaluation_webform_submission_presave(WebformS
   // datetime. For example, if the current state is 'completed' the related
   // datetime element is called 'completed_date'.
   // @see /admin/structure/webform/manage/demo_application
-  if ($original_data['state'] != $current_data['state']) {
+  if ($original_data['state'] !== $current_data['state']) {
     /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
     $date_formatter = \Drupal::service('date.formatter');
     $current_data[$current_data['state'] . '_date'] = $date_formatter->format(time(), 'html_datetime');
@@ -38,21 +38,21 @@ function webform_demo_application_evaluation_webform_submission_presave(WebformS
 }
 
 /**
- * Implements hook_ENTITY_TYPE_insert().
+ * Implements hook_ENTITY_TYPE_insert() for webform_submission entities.
  */
 function webform_demo_application_evaluation_webform_submission_insert(WebformSubmissionInterface $webform_submission) {
   _webform_demo_application_evaluation_calculate_evaluation_rating($webform_submission);
 }
 
 /**
- * Implements hook_ENTITY_TYPE_update().
+ * Implements hook_ENTITY_TYPE_update() for webform_submission entities.
  */
 function webform_demo_application_evaluation_webform_submission_update(WebformSubmissionInterface $webform_submission) {
   _webform_demo_application_evaluation_calculate_evaluation_rating($webform_submission);
 }
 
 /**
- * Implements hook_ENTITY_TYPE_delete().
+ * Implements hook_ENTITY_TYPE_delete() for webform_submission entities.
  */
 function webform_demo_application_evaluation_webform_submission_delete(WebformSubmissionInterface $webform_submission) {
   _webform_demo_application_evaluation_calculate_evaluation_rating($webform_submission);

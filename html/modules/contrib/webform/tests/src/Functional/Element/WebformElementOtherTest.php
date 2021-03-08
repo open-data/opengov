@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform element other.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementOtherTest extends WebformElementBrowserTestBase {
 
@@ -48,6 +48,11 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
     $this->assertRaw('<select data-drupal-selector="edit-select-other-multiple-select" multiple="multiple" name="select_other_multiple[select][]" id="edit-select-other-multiple-select" class="form-select">');
     $this->assertRaw('<input data-drupal-selector="edit-select-other-multiple-other" type="text" id="edit-select-other-multiple-other" name="select_other_multiple[other]" value="Four" size="60" maxlength="255" placeholder="Enter other…" class="form-text" />');
 
+    // Check select_other with zero (0) as the default value.
+    $this->assertRaw('<span class="fieldset-legend">Select other zero</span>');
+    $this->assertRaw('<select data-drupal-selector="edit-select-other-zero-select" id="edit-select-other-zero-select" name="select_other_zero[select]" class="form-select">');
+    $this->assertRaw('<input data-drupal-selector="edit-select-other-zero-other" type="text" id="edit-select-other-zero-other" name="select_other_zero[other]" value="0" size="60" maxlength="255" placeholder="Enter other…" class="form-text" />');
+
     /**************************************************************************/
     // checkboxes_other
     /**************************************************************************/
@@ -63,7 +68,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
     $this->assertRaw('<span class="fieldset-legend js-form-required form-required">Checkboxes other advanced</span>');
     $this->assertRaw('<input data-drupal-selector="edit-checkboxes-other-advanced-other" aria-describedby="edit-checkboxes-other-advanced-other--description" type="text" id="edit-checkboxes-other-advanced-other" name="checkboxes_other_advanced[other]" value="Four" size="60" maxlength="255" placeholder="What is this other option" class="form-text" />');
     $this->assertRaw('<div id="edit-checkboxes-other-advanced-other--description" class="webform-element-description">Other checkbox description</div>');
-    $this->assertRaw('<label for="edit-checkboxes-other-advanced-checkboxes-one" class="option">One<span class="webform-element-help"');
+    $this->assertRaw('<label for="edit-checkboxes-other-advanced-checkboxes-one" class="option">One<span class="webform-element-help js-webform-element-help"');
 
     /**************************************************************************/
     // radios_other
@@ -80,14 +85,14 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
     $this->assertRaw('<input data-drupal-selector="edit-radios-other-advanced-radios-other-" type="radio" id="edit-radios-other-advanced-radios-other-" name="radios_other_advanced[radios]" value="_other_" checked="checked" class="form-radio" />');
     $this->assertRaw('<input data-drupal-selector="edit-radios-other-advanced-other" aria-describedby="edit-radios-other-advanced-other--description" type="text" id="edit-radios-other-advanced-other" name="radios_other_advanced[other]" value="Four" size="60" maxlength="255" placeholder="What is this other option" class="form-text" />');
     $this->assertRaw('<div id="edit-radios-other-advanced-other--description" class="webform-element-description">Other radio description</div>');
-    $this->assertRaw('<label for="edit-radios-other-advanced-radios-one" class="option">One<span class="webform-element-help"');
+    $this->assertRaw('<label for="edit-radios-other-advanced-radios-one" class="option">One<span class="webform-element-help js-webform-element-help"');
 
     /**************************************************************************/
     // wrapper_type
     /**************************************************************************/
 
     // Check form_item wrapper type.
-    $this->assertRaw('<div class="js-webform-select-other webform-select-other js-form-item form-item js-form-type-webform-select-other form-type-webform-select-other js-form-item-wrapper-other-form-element form-item-wrapper-other-form-element" id="edit-wrapper-other-form-element">');
+    $this->assertRaw('<div class="js-webform-select-other webform-select-other js-form-item form-item js-form-type-webform-select-other form-item-wrapper-other-form-element js-form-item-wrapper-other-form-element" id="edit-wrapper-other-form-element">');
 
     // Check container wrapper type.
     $this->assertRaw('<div data-drupal-selector="edit-wrapper-other-container" class="js-webform-select-other webform-select-other webform-select-other--wrapper fieldgroup form-composite js-form-wrapper form-wrapper" id="edit-wrapper-other-container">');
@@ -100,6 +105,32 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
     $webform = Webform::load('test_element_other');
 
     /**************************************************************************/
+    // Basic input processing.
+    /**************************************************************************/
+
+    $this->postSubmission($webform);
+    $this->assertRaw("select_other_basic: Four
+select_other_advanced: Four
+select_other_multiple:
+  - One
+  - Two
+  - Four
+select_other_zero: '0'
+checkboxes_other_basic:
+  - One
+  - Two
+  - Four
+checkboxes_other_advanced:
+  - One
+  - Two
+  - Four
+radios_other_basic: Four
+radios_other_advanced: Four
+wrapper_other_fieldset: ''
+wrapper_other_form_element: ''
+wrapper_other_container: ''");
+
+    /**************************************************************************/
     // select_other
     /**************************************************************************/
 
@@ -108,7 +139,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'select_other_basic[select]' => '_other_',
       'select_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('Select other basic field is required.');
 
     // Check select other is not required when not selected.
@@ -116,7 +147,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'select_other_basic[select]' => '',
       'select_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertNoRaw('Select other basic field is required.');
 
     // Check select other required validation.
@@ -124,7 +155,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'select_other_advanced[select]' => '',
       'select_other_advanced[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertNoRaw('Select other advanced field is required.');
     $this->assertRaw('This is a custom required error message.');
 
@@ -133,7 +164,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'select_other_advanced[select]' => '_other_',
       'select_other_advanced[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertNoRaw('Select other advanced field is required.');
     $this->assertRaw('This is a custom required error message.');
 
@@ -142,7 +173,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'select_other_advanced[select]' => '_other_',
       'select_other_advanced[other]' => 'X',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('Other must be longer than <em class="placeholder">4</em> characters but is currently <em class="placeholder">1</em> characters long.');
 
     // Check select other processing w/ other.
@@ -150,7 +181,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'select_other_advanced[select]' => '_other_',
       'select_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('select_other_advanced: Five');
 
     // Check select other processing w/o other.
@@ -159,7 +190,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       // This value is ignored, because 'select_other_advanced[select]' is not set to '_other_'.
       'select_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('select_other_advanced: One');
     $this->assertNoRaw('select_other_advanced: Five');
 
@@ -167,13 +198,13 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
     $elements = $webform->getElementsDecoded();
     $elements['select_other']['select_other_advanced']['#default_value'] = NULL;
     $webform->setElements($elements)->save();
-    $this->drupalPostForm('/webform/test_element_other', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', [], 'Submit');
     $this->assertRaw('This is a custom required error message.');
 
     // Check select other validation is skipped when #access is set to FALSE.
     $elements['select_other']['select_other_advanced']['#access'] = FALSE;
     $webform->setElements($elements)->save();
-    $this->drupalPostForm('/webform/test_element_other', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', [], 'Submit');
     $this->assertNoRaw('This is a custom required error message.');
 
     /**************************************************************************/
@@ -185,7 +216,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'radios_other_basic[radios]' => '_other_',
       'radios_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('Radios other basic field is required.');
 
     // Check radios other not required when not checked.
@@ -193,7 +224,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'radios_other_basic[radios]' => 'One',
       'radios_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertNoRaw('Radios other basic field is required.');
 
     // Check radios other required validation.
@@ -201,7 +232,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'radios_other_advanced[radios]' => '_other_',
       'radios_other_advanced[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('Radios other advanced field is required.');
 
     // Check radios other processing w/ other.
@@ -209,7 +240,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'radios_other_advanced[radios]' => '_other_',
       'radios_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('radios_other_advanced: Five');
 
     // Check radios other processing w/o other.
@@ -218,7 +249,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       // This value is ignored, because 'radios_other_advanced[radios]' is not set to '_other_'.
       'radios_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('radios_other_advanced: One');
     $this->assertNoRaw('radios_other_advanced: Five');
 
@@ -231,7 +262,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'checkboxes_other_basic[checkboxes][_other_]' => TRUE,
       'checkboxes_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('Checkboxes other basic field is required.');
 
     // Check checkboxes other not required when not checked.
@@ -239,7 +270,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'checkboxes_other_basic[checkboxes][_other_]' => FALSE,
       'checkboxes_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertNoRaw('Checkboxes other basic field is required.');
 
     // Check checkboxes other required validation.
@@ -250,7 +281,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'checkboxes_other_advanced[checkboxes][_other_]' => TRUE,
       'checkboxes_other_advanced[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('Checkboxes other advanced field is required.');
 
     // Check checkboxes other processing w/ other.
@@ -261,7 +292,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       'checkboxes_other_advanced[checkboxes][_other_]' => TRUE,
       'checkboxes_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('checkboxes_other_advanced:
   - Five');
 
@@ -274,7 +305,7 @@ class WebformElementOtherTest extends WebformElementBrowserTestBase {
       // This value is ignored, because 'radios_other_advanced[radios]' is not set to '_other_'.
       'checkboxes_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_other', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_other', $edit, 'Submit');
     $this->assertRaw('checkboxes_other_advanced:
   - One');
     $this->assertNoRaw('checkboxes_other_advanced:

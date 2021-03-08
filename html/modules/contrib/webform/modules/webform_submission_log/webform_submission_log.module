@@ -28,7 +28,7 @@ function webform_submission_log_webform_help_info() {
     'content' => t("The <strong>Log</strong> page shows all events and transactions for a submission."),
     'video_id' => 'submission',
     'routes' => [
-      // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/log
+      // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/log
       'entity.webform_submission.log',
       // @see /node/{node}/webform/submission/{webform_submission}/log
       'entity.node.webform_submission.log',

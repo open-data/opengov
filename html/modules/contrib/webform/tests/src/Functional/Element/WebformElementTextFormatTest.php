@@ -10,7 +10,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for text format element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
 
@@ -40,7 +40,7 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     $this->fileUsage = $this->container->get('file.usage');
@@ -54,17 +54,11 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
 
     // Check that formats and tips are removed and/or hidden.
     $this->drupalGet('/webform/test_element_text_format');
-    // @todo Remove once Drupal 8.8.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 8.8) {
-      $this->assertRaw('<div class="js-filter-wrapper filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" id="edit-text-format-format">');
-    }
-    else {
-      $this->assertRaw('<div class="filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" id="edit-text-format-format">');
-    }
+    $this->assertRaw('<div class="js-filter-wrapper filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" data-webform-states-no-clear id="edit-text-format-format">');
     $this->assertRaw('<div class="filter-help js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format-help" style="display: none" id="edit-text-format-format-help">');
 
     // Check description + more.
-    $this->assertRaw('<div data-drupal-selector="edit-text-format-description-more" id="edit-text-format-description-more--description" class="description"><div class="webform-element-description">This is a description</div>');
+    $this->assertRaw('<div data-drupal-selector="edit-text-format-description-more" id="edit-text-format-description-more--description"><div class="webform-element-description">This is a description</div>');
     $this->assertRaw('<div id="edit-text-format-description-more--more" class="js-webform-element-more webform-element-more">');
     $this->assertRaw('<div class="webform-element-more--link"><a role="button" href="#edit-text-format-description-more--more--content">More</a></div>');
     $this->assertRaw('<div id="edit-text-format-description-more--more--content" class="webform-element-more--content">This is more</div>');
@@ -127,7 +121,7 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
       'text_format[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/><img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
       'text_format[format]' => 'full_html',
     ];
-    $this->drupalPostForm("/admin/structure/webform/manage/test_element_text_format/submission/$sid/edit", $edit, t('Save'));
+    $this->drupalPostForm("/admin/structure/webform/manage/test_element_text_format/submission/$sid/edit", $edit, 'Save');
     $this->reloadImages($images);
 
     // Check that first and second image are not temporary.
@@ -144,7 +138,7 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
       'text_format[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
       'text_format[format]' => 'full_html',
     ];
-    $this->drupalPostForm("/admin/structure/webform/manage/test_element_text_format/submission/$sid/edit", $edit, t('Save'));
+    $this->drupalPostForm("/admin/structure/webform/manage/test_element_text_format/submission/$sid/edit", $edit, 'Save');
     $this->reloadImages($images);
 
     // Check that first is temporary and second image is not temporary.
@@ -171,7 +165,7 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
     $this->assertIdentical(['editor' => ['webform_submission' => [$sid => '1']]], $this->fileUsage->listUsage($images[1]), 'The file has 1 usage.');
 
     // Delete the webform submission.
-    $this->drupalPostForm("/admin/structure/webform/manage/test_element_text_format/submission/$sid/delete", [], t('Delete'));
+    $this->drupalPostForm("/admin/structure/webform/manage/test_element_text_format/submission/$sid/delete", [], 'Delete');
     $this->reloadImages($images);
 
     // Check that first and second image are temporary.

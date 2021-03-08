@@ -36,7 +36,7 @@ abstract class WebformElementManagedFileTestBase extends WebformElementBrowserTe
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     $this->fileUsage = $this->container->get('file.usage');

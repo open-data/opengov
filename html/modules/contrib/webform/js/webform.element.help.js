@@ -35,7 +35,7 @@
    */
   Drupal.behaviors.webformElementHelpIcon = {
     attach: function (context) {
-      $(context).find('.webform-element-help').once('webform-element-help').each(function () {
+      $(context).find('.js-webform-element-help').once('webform-element-help').each(function () {
         var $link = $(this);
 
         var options = $.extend({

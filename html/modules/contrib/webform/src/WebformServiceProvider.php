@@ -32,6 +32,17 @@ class WebformServiceProvider extends ServiceProviderBase {
       $service_definition->addTag('normalizer', ['priority' => 20]);
       $container->setDefinition('serializer.normalizer.webform_entity_reference_item', $service_definition);
     }
+
+    // Overrides webform.exception_html_subscriber to support ExceptionEvent in
+    // Drupal 9/Symfony 4.4.
+    //
+    // Issue #3113876: The "GetResponseForExceptionEvent::getException()"
+    // method is deprecated since Symfony 4.4, use "getThrowable()" instead.
+    // @see https://www.drupal.org/node/3113876
+    if (floatval(\Drupal::VERSION) >= 9) {
+      $definition = $container->getDefinition('webform.exception_html_subscriber');
+      $definition->setClass('Drupal\webform\EventSubscriber\WebformDefaultExceptionHtmlSubscriber');
+    }
   }
 
 }

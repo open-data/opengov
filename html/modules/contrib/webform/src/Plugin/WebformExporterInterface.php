@@ -122,7 +122,7 @@ interface WebformExporterInterface extends PluginInspectionInterface, Configurab
    * Get export file temp directory.
    *
    * @return string
-   *   The export file temp directory..
+   *   The export file temp directory.
    */
   public function getFileTempDirectory();
 

@@ -123,7 +123,7 @@ function _webform_get_config_entity_file_uuids(ConfigEntityInterface $entity) {
 /******************************************************************************/
 
 /**
- * Finds all files referenced (data-entity-uuid) in an associatve array.
+ * Finds all files referenced (data-entity-uuid) in an associative array.
  *
  * @param array $data
  *   An associative array.
@@ -228,11 +228,10 @@ function _webform_delete_file_usage(array $uuids, $type, $id, $count) {
 /******************************************************************************/
 
 /**
- * Parse an HTML snippet for any linked file with data-entity-uuid attributes.
+ * Parse text for any linked files with data-entity-uuid attributes.
  *
  * @param string $text
- *   The partial (X)HTML snippet to load. Invalid markup will be corrected on
- *   import.
+ *   The text to parse.
  *
  * @return array
  *   An array of all found UUIDs.
@@ -244,27 +243,15 @@ function _webform_parse_file_uuids($text) {
     return [];
   }
 
+  $dom = Html::load($text);
+  $xpath = new \DOMXPath($dom);
+
   $uuids = [];
-  // Get all images using a regex.
-  if (preg_match_all('/<img[^>]+>/', $text, $matches)) {
-    foreach ($matches[0] as $img) {
-      // Cleanup quotes escaped via YAML.
-      // Please note, calling stripslashes() twice because elements are
-      // double escaped.
-      $img = stripslashes(stripslashes($img));
 
-      // Create a DomElement so that we can parse the image's attributes.
-      $dom_node = Html::load($img)->getElementsByTagName('img')->item(0);
-
-      // Get the entity type and uuid.
-      $type = $dom_node->getAttribute('data-entity-type');
-      $uuid = $dom_node->getAttribute('data-entity-uuid');
-
-      // Check the image is a file entity with a uuid.
-      if ($type === 'file' && $uuid) {
-        $uuids[] = $uuid;
-      }
-    }
+  // Find all <img> and <a> tags which reference uploaded files.
+  $nodes = $xpath->query('//*[@data-entity-type="file" and @data-entity-uuid]');
+  foreach ($nodes as $node) {
+    $uuids[] = $node->getAttribute('data-entity-uuid');
   }
 
   // Use array_unique() to collect one uuid per uploaded file.

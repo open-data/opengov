@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Plugin\WebformSourceEntity;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -162,6 +163,30 @@ class QueryStringWebformSourceEntity extends PluginBase implements WebformSource
     }
 
     return $source_entity;
+  }
+
+  /**
+   * Get source entity route options query string parameters.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface|null $entity
+   *   An entity.
+   *
+   * @return array
+   *   An associative array contains a source entity's route options
+   *   query string parameters.
+   */
+  public static function getRouteOptionsQuery(EntityInterface $entity = NULL) {
+    if (!$entity) {
+      return [];
+    }
+    else {
+      return [
+        'query' => [
+          'source_entity_type' => $entity->getEntityTypeId(),
+          'source_entity_id' => $entity->id(),
+        ],
+      ];
+    }
   }
 
 }

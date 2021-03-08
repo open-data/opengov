@@ -10,5 +10,6 @@
  * @ingroup themeable
  */
 #}
-
-{{ 'Submission values will be displayed onscreen.'|t }}
+<strong class="color-error">{{ 'Submission values will be displayed onscreen.'|t }}</strong><br/>
+<b>{{ 'Data format:'|t }}</b> {{ settings.format }}<br />
+<b>{{ 'Include submission properties:'|t }}</b> {{ settings.submission ? 'Yes'|t : 'No'|t }}<br />

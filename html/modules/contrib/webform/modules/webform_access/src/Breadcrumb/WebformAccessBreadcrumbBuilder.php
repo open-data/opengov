@@ -43,6 +43,11 @@ class WebformAccessBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     if (strpos($route_name, 'webform_access') === FALSE) {
       return FALSE;
     }
+
+    if (!$route_match->getRouteObject()) {
+      return FALSE;
+    }
+
     $path = Url::fromRouteMatch($route_match)->toString();
 
     if (strpos($path, 'admin/structure/webform/access/') === FALSE) {

@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform wizard progress and preview links.
  *
- * @group Webform
+ * @group webform
  */
 class WebformWizardLinksTest extends WebformWizardTestBase {
 
@@ -29,20 +29,20 @@ class WebformWizardLinksTest extends WebformWizardTestBase {
     // Check that first page has no links.
     $this->drupalGet('/webform/test_form_wizard_links');
     $this->assertCssSelect('.webform-wizard-pages-links');
-    $this->assertNoFieldByName('webform_wizard_page-page_1', t('Edit'));
-    $this->assertNoFieldByName('webform_wizard_page-page_2', t('Edit'));
+    $this->assertNoFieldByName('webform_wizard_page-page_1', 'Edit');
+    $this->assertNoFieldByName('webform_wizard_page-page_2', 'Edit');
 
     // Check that second page links to first page.
-    $this->drupalPostForm('/webform/test_form_wizard_links', [], t('Next Page >'));
+    $this->drupalPostForm('/webform/test_form_wizard_links', [], 'Next >');
     $this->assertCssSelect('.webform-wizard-pages-links');
-    $this->assertFieldByName('webform_wizard_page-page_1', t('Edit'));
-    $this->assertNoFieldByName('webform_wizard_page-page_2', t('Edit'));
+    $this->assertFieldByName('webform_wizard_page-page_1', 'Edit');
+    $this->assertNoFieldByName('webform_wizard_page-page_2', 'Edit');
 
     // Check that preview links to first and second page.
-    $this->drupalPostForm('/webform/test_form_wizard_links', [], t('Preview'));
+    $this->drupalPostForm('/webform/test_form_wizard_links', [], 'Preview');
     $this->assertCssSelect('.webform-wizard-pages-links');
-    $this->assertFieldByName('webform_wizard_page-page_1', t('Edit'));
-    $this->assertFieldByName('webform_wizard_page-page_2', t('Edit'));
+    $this->assertFieldByName('webform_wizard_page-page_1', 'Edit');
+    $this->assertFieldByName('webform_wizard_page-page_2', 'Edit');
 
     // Check that preview links are not wrapper in .form-actions.
     $this->assertNoCssSelect('.webform-wizard-pages-links.form-actions');

@@ -40,7 +40,7 @@ function webform_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
     // If current webform is translated, load the base (default) webform and apply
     // the translation to the elements.
-    if ($webform->getLangcode() != $language_manager->getCurrentLanguage()->getId()) {
+    if ($webform->getLangcode() !== $language_manager->getCurrentLanguage()->getId()) {
       $original_language = $language_manager->getLanguage($webform->getLangcode());
       $form['langcode_message'] = [
         '#type' => 'webform_message',
@@ -88,7 +88,7 @@ function _webform_form_webform_submission_form_after_build($form, FormStateInter
 /******************************************************************************/
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for update manager update form.
  *
  * Add warnings when attempting to update the Webform module using
  * the 'Update manager'.
@@ -136,7 +136,7 @@ function webform_form_update_manager_update_form_alter(&$form, FormStateInterfac
 /******************************************************************************/
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for views exposed form.
  */
 function webform_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\views\ViewExecutable $view */
@@ -154,7 +154,7 @@ function webform_form_views_exposed_form_alter(&$form, FormStateInterface $form_
 /******************************************************************************/
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for SMTP admin settings form.
  */
 function webform_form_smtp_admin_settings_alter(&$form, FormStateInterface $form_state) {
   $form['#submit'][] = '_webform_form_smtp_admin_settings_submit';
@@ -175,7 +175,7 @@ function _webform_form_smtp_admin_settings_submit(&$form, FormStateInterface $fo
 /******************************************************************************/
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for config single import form.
  */
 function webform_form_config_single_import_form_alter(&$form, FormStateInterface $form_state) {
   $config_type = \Drupal::request()->query->get('config_type');

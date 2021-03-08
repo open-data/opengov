@@ -12,7 +12,7 @@ use Drupal\webform_options_custom\WebformOptionsCustomInterface;
 class WebformOptionsCustomAccess {
 
   /**
-   * Check that webform options custom ource can be updated by a user.
+   * Check that webform options custom source can be updated by a user.
    *
    * @param \Drupal\webform_options_custom\WebformOptionsCustomInterface $webform_options_custom
    *   A webform options custome entity.

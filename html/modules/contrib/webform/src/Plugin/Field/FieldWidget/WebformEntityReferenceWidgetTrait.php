@@ -9,6 +9,7 @@ use Drupal\webform\Element\WebformAjaxElementTrait;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Utility\WebformDateHelper;
 use Drupal\webform\WebformInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Trait for webform entity reference and autocomplete widget.
@@ -18,11 +19,28 @@ trait WebformEntityReferenceWidgetTrait {
   use WebformAjaxElementTrait;
 
   /**
+   * Webform element manager.
+   *
+   * @var \Drupal\webform\Plugin\WebformElementManagerInterface
+   */
+  protected $elementManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function defaultSettings() {
     return [
       'default_data' => TRUE,
+      'webforms' => NULL,
     ] + parent::defaultSettings();
   }
 
@@ -33,10 +51,23 @@ trait WebformEntityReferenceWidgetTrait {
     $element = parent::settingsForm($form, $form_state);
     $element['default_data'] = [
       '#type' => 'checkbox',
-      '#title' => t('Enable default submission data (YAML)'),
-      '#description' => t('If checked, site builders will be able to define default submission data (YAML)'),
+      '#title' => $this->t('Enable default submission data (YAML)'),
+      '#description' => $this->t('If checked, site builders will be able to define default submission data (YAML)'),
       '#default_value' => $this->getSetting('default_data'),
     ];
+    if ($this->getSetting('webforms') !== NULL) {
+      $element['webforms'] = [
+        '#type' => 'webform_entity_select',
+        '#title' => $this->t('Select webform'),
+        '#description' => $this->t('If left blank all webforms will be listed in the select menu.'),
+        '#select2' => TRUE,
+        '#multiple' => TRUE,
+        '#target_type' => 'webform',
+        '#selection_handler' => 'default:webform',
+        '#default_value' => $this->getSetting('webforms'),
+      ];
+      $this->elementManager->processElement($element['webforms']);
+    }
     return $element;
   }
 
@@ -45,7 +76,16 @@ trait WebformEntityReferenceWidgetTrait {
    */
   public function settingsSummary() {
     $summary = parent::settingsSummary();
-    $summary[] = t('Default submission data: @default_data', ['@default_data' => $this->getSetting('default_data') ? $this->t('Yes') : $this->t('No')]);
+    $summary[] = $this->t('Default submission data: @default_data', ['@default_data' => $this->getSetting('default_data') ? $this->t('Yes') : $this->t('No')]);
+    $webform_ids = $this->getSetting('webforms');
+    if ($webform_ids) {
+      $webforms = Webform::loadMultiple($webform_ids);
+      $webform_labels = [];
+      foreach ($webforms as $webform) {
+        $webform_labels[] = $webform->label();
+      }
+      $summary[] = $this->t('Webforms: @webforms', ['@webforms' => implode('; ', $webform_labels)]);
+    }
     return $summary;
   }
 
@@ -120,7 +160,7 @@ trait WebformEntityReferenceWidgetTrait {
       '#weight' => $weight++,
     ];
 
-    // Disable a warning message about the webform's state using Ajax
+    // Disable a warning message about the webform's state using Ajax.
     $is_webform_closed = ($webform && $webform->isClosed());
     if ($is_webform_closed) {
       $t_args = [
@@ -237,6 +277,14 @@ some_value: '[paragraph:some_value:clear]";
       ];
       $element['settings']['token_tree_link'] = $token_manager->buildTreeElement($token_types);
       $token_manager->elementValidate($element['settings']['default_data'], $token_types);
+    }
+    else {
+      // Preserve default data set by variants passed via the URL.
+      // @see webform_node_node_prepare_form().
+      $element['settings']['default_data'] = [
+        '#type' => 'value',
+        '#value' => $items[$delta]->default_data,
+      ];
     }
 
     return $element;

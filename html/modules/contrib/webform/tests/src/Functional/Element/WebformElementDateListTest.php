@@ -8,7 +8,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform datelist element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementDateListTest extends WebformElementBrowserTestBase {
 
@@ -66,7 +66,7 @@ datelist_custom_composite:
       'datelist_min_max[month]' => '8',
       'datelist_min_max[day]' => '18',
     ];
-    $this->drupalPostForm('/webform/test_element_datelist', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_datelist', $edit, 'Submit');
     $this->assertRaw('<em class="placeholder">datelist_min_max</em> must be on or before <em class="placeholder">2009-12-31</em>.');
 
     // Check datelist #date_date_min validation.
@@ -75,7 +75,7 @@ datelist_custom_composite:
       'datelist_min_max[month]' => '8',
       'datelist_min_max[day]' => '18',
     ];
-    $this->drupalPostForm('/webform/test_element_datelist', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_datelist', $edit, 'Submit');
     $this->assertRaw('<em class="placeholder">datelist_min_max</em> must be on or after <em class="placeholder">2009-01-01</em>.');
 
     // Check datelist #date_max validation.
@@ -85,7 +85,7 @@ datelist_custom_composite:
       'datelist_min_max_time[day]' => '31',
       'datelist_min_max_time[hour]' => '18',
     ];
-    $this->drupalPostForm('/webform/test_element_datelist', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_datelist', $edit, 'Submit');
     $this->assertRaw('<em class="placeholder">datelist_min_max_time</em> must be on or before <em class="placeholder">2009-12-31 17:00:00</em>.');
 
     // Check datelist #date_min validation.
@@ -95,7 +95,7 @@ datelist_custom_composite:
       'datelist_min_max_time[day]' => '1',
       'datelist_min_max_time[hour]' => '8',
     ];
-    $this->drupalPostForm('/webform/test_element_datelist', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_datelist', $edit, 'Submit');
     $this->assertRaw('<em class="placeholder">datelist_min_max_time</em> must be on or after <em class="placeholder">2009-01-01 09:00:00</em>.');
 
     // Check custom required error.
@@ -106,7 +106,7 @@ datelist_custom_composite:
       'datelist_required_error[hour]' => '',
       'datelist_required_error[minute]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_datelist', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_datelist', $edit, 'Submit');
     $this->assertRaw('Custom required error');
   }
 

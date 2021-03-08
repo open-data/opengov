@@ -4,6 +4,7 @@ namespace Drupal\webform_attachment\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\WebformInterface;
@@ -27,7 +28,7 @@ class WebformAttachmentController extends ControllerBase implements ContainerInj
   protected $elementInfo;
 
   /**
-   * A webform element plugin manager.
+   * The webform element plugin manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
@@ -89,7 +90,7 @@ class WebformAttachmentController extends ControllerBase implements ContainerInj
     // Make sure element #access is not FALSE.
     // The #private property is used to to set #access to FALSE.
     // @see \Drupal\webform\Entity\Webform::initElementsRecursive
-    if (isset($element['#access']) && $element['#access'] === FALSE) {
+    if (!Element::isVisibleElement($element)) {
       throw new AccessDeniedHttpException();
     }
 

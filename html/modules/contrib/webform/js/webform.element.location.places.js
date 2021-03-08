@@ -43,7 +43,7 @@
         var $input = $element.find('.webform-location-places');
 
         // Prevent the 'Enter' key from submitting the form.
-        $input.keydown(function (event) {
+        $input.on('keydown', function (event) {
           if (event.keyCode === 13) {
             event.preventDefault();
           }
@@ -64,9 +64,7 @@
         var placesAutocomplete = window.places(options);
 
         // Disable autocomplete.
-        // @see https://gist.github.com/niksumeiko/360164708c3b326bd1c8
-        var isChrome = (/chrom(e|ium)/.test(window.navigator.userAgent.toLowerCase()));
-        $input.attr('autocomplete', (isChrome) ? 'chrome-off-' + Math.floor(Math.random() * 100000000) : 'off');
+        $input.attr('autocomplete', 'off');
 
         // Sync values on change and clear events.
         placesAutocomplete.on('change', function (e) {

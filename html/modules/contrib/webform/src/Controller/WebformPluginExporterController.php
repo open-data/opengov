@@ -50,15 +50,14 @@ class WebformPluginExporterController extends ControllerBase implements Containe
 
     $rows = [];
     foreach ($definitions as $plugin_id => $definition) {
-      $rows[$plugin_id] = [
-        'data' => [
-          $plugin_id,
-          $definition['label'],
-          $definition['description'],
-          (isset($excluded_exporters[$plugin_id])) ? $this->t('Yes') : $this->t('No'),
-          $definition['provider'],
-        ],
-      ];
+      $row = [];
+      $row[] = $plugin_id;
+      $row[] = ['data' => ['#markup' => $definition['label'], '#prefix' => '<span class="webform-form-filter-text-source">', '#suffix' => '</span>']];
+      $row[] = $definition['description'];
+      $row[] = (isset($excluded_exporters[$plugin_id])) ? $this->t('Yes') : $this->t('No');
+      $row[] = $definition['provider'];
+
+      $rows[$plugin_id] = ['data' => $row];
       if (isset($excluded_exporters[$plugin_id])) {
         $rows[$plugin_id]['class'] = ['color-warning'];
       }
@@ -66,6 +65,24 @@ class WebformPluginExporterController extends ControllerBase implements Containe
     ksort($rows);
 
     $build = [];
+
+    // Filter.
+    $build['filter'] = [
+      '#type' => 'search',
+      '#title' => $this->t('Filter'),
+      '#title_display' => 'invisible',
+      '#size' => 30,
+      '#placeholder' => $this->t('Filter by exporter label'),
+      '#attributes' => [
+        'class' => ['webform-form-filter-text'],
+        'data-element' => '.webform-exporter-plugin-table',
+        'data-summary' => '.webform-exporter-plugin-summary',
+        'data-item-singlular' => $this->t('exporter'),
+        'data-item-plural' => $this->t('exporters'),
+        'title' => $this->t('Enter a part of the exporter label to filter by.'),
+        'autofocus' => 'autofocus',
+      ],
+    ];
 
     // Settings.
     $build['settings'] = [
@@ -78,7 +95,7 @@ class WebformPluginExporterController extends ControllerBase implements Containe
     // Display info.
     $build['info'] = [
       '#markup' => $this->t('@total exporters', ['@total' => count($rows)]),
-      '#prefix' => '<p>',
+      '#prefix' => '<p class="webform-exporter-plugin-summary">',
       '#suffix' => '</p>',
     ];
 
@@ -94,7 +111,12 @@ class WebformPluginExporterController extends ControllerBase implements Containe
       ],
       '#rows' => $rows,
       '#sticky' => TRUE,
+      '#attributes' => [
+        'class' => ['webform-exporter-plugin-table'],
+      ],
     ];
+
+    $build['#attached']['library'][] = 'webform/webform.admin';
 
     return $build;
   }

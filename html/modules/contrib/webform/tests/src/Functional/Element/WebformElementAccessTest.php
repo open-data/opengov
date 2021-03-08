@@ -8,7 +8,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for webform element access.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementAccessTest extends WebformElementBrowserTestBase {
 
@@ -198,6 +198,29 @@ class WebformElementAccessTest extends WebformElementBrowserTestBase {
       $this->drupalGet($url['path'], $url['options']);
       $this->assertRaw($raw, 'Admin submission user can access token');
     }
+
+    /* #access */
+
+    $this->drupalLogin($this->rootUser);
+
+    // Check that textfield and fieldset are disabled in the UI.
+    $this->drupalGet('/admin/structure/webform/manage/test_element_access');
+    $this->assertCssSelect('[data-webform-key="textfield_access_property"].webform-ui-element-disabled');
+    $this->assertCssSelect('[data-webform-key="fieldset_access_property"].webform-ui-element-disabled');
+    $this->assertCssSelect('[data-webform-key="fieldset_textfield_access"]');
+    $this->assertNoCssSelect('[data-webform-key="fieldset_textfield_access"].webform-ui-element-disabled');
+
+    // Check that textfield and fieldset are removed from results.
+    $this->drupalGet('/admin/structure/webform/manage/test_element_access/results/submissions');
+    $this->assertNoRaw('textfield_access_property');
+    $this->assertNoRaw('fieldset_access_property');
+    $this->assertRaw('fieldset_textfield_access');
+
+    // Check that textfield and fieldset are removed from download.
+    $this->drupalGet('/admin/structure/webform/manage/test_element_access/results/download');
+    $this->assertNoRaw('textfield_access_property');
+    $this->assertNoRaw('fieldset_access_property');
+    $this->assertRaw('fieldset_textfield_access');
   }
 
 }

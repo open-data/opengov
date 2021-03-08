@@ -878,6 +878,19 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
   /****************************************************************************/
 
   /**
+   * Get configuration form's off-canvas width.
+   *
+   * @return string
+   *   The off-canvas width.
+   *
+   * @see WebformDialogHelper::DIALOG_NARROW
+   * @see WebformDialogHelper::DIALOG_NORMAL
+   * @see WebformDialogHelper::DIALOG_WIDE
+   * @see WebformDialogHelper::DIALOG_NONE
+   */
+  public function getOffCanvasWidth();
+
+  /**
    * Gets the actual configuration webform array to be built.
    *
    * @param array $form

@@ -37,14 +37,14 @@ abstract class WebformConfigEntityDeleteFormBase extends EntityForm implements W
   public function getQuestion() {
     if ($this->isDialog()) {
       $t_args = [
-        '@entity-type' => $this->getEntity()->getEntityType()->getLowercaseLabel(),
+        '@entity-type' => $this->getEntity()->getEntityType()->getSingularLabel(),
         '@label' => $this->getEntity()->label(),
       ];
       return $this->t("Delete '@label' @entity-type?", $t_args);
     }
     else {
       $t_args = [
-        '@entity-type' => $this->getEntity()->getEntityType()->getLowercaseLabel(),
+        '@entity-type' => $this->getEntity()->getEntityType()->getSingularLabel(),
         '%label' => $this->getEntity()->label(),
       ];
       return $this->t('Delete %label @entity-type?', $t_args);
@@ -56,7 +56,7 @@ abstract class WebformConfigEntityDeleteFormBase extends EntityForm implements W
    */
   public function getWarning() {
     $t_args = [
-      '@entity-type' => $this->getEntity()->getEntityType()->getLowercaseLabel(),
+      '@entity-type' => $this->getEntity()->getEntityType()->getSingularLabel(),
       '%label' => $this->getEntity()->label(),
     ];
 
@@ -87,7 +87,7 @@ abstract class WebformConfigEntityDeleteFormBase extends EntityForm implements W
    */
   public function getConfirmInput() {
     $t_args = [
-      '@entity-type' => $this->getEntity()->getEntityType()->getLowercaseLabel(),
+      '@entity-type' => $this->getEntity()->getEntityType()->getSingularLabel(),
       '%label' => $this->getEntity()->label(),
     ];
 

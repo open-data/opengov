@@ -43,7 +43,7 @@
           if (event.which === 13) {
             // Note: Mousedown is the default trigger for Ajax events.
             // @see Drupal.Ajax.
-            $submit.mousedown();
+            $submit.trigger('mousedown');
           }
         });
       });

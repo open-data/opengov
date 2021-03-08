@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for email webform handler email states.
  *
- * @group Webform
+ * @group webform
  */
 class WebformHandlerEmailStatesTest extends WebformBrowserTestBase {
 
@@ -26,7 +26,7 @@ class WebformHandlerEmailStatesTest extends WebformBrowserTestBase {
     $webform = Webform::load('test_handler_email_states');
 
     // Check draft saved email.
-    $this->drupalPostForm('/webform/test_handler_email_states', [], t('Save Draft'));
+    $this->drupalPostForm('/webform/test_handler_email_states', [], 'Save Draft');
     $this->assertRaw('Debug: Email: Draft saved');
 
     // Check completed email.
@@ -40,7 +40,7 @@ class WebformHandlerEmailStatesTest extends WebformBrowserTestBase {
     $this->assertEqual($email['id'], 'webform_test_handler_email_states_email_converted');
 
     // Check updated email.
-    $this->drupalPostForm("/admin/structure/webform/manage/test_handler_email_states/submission/$sid/edit", [], t('Save'));
+    $this->drupalPostForm("/admin/structure/webform/manage/test_handler_email_states/submission/$sid/edit", [], 'Save');
 
     /**************************************************************************/
     // @todo Fix random test failure that can't be reproduced locally.
@@ -58,11 +58,11 @@ class WebformHandlerEmailStatesTest extends WebformBrowserTestBase {
     $this->assertRaw('<b>Subject:</b> Submission custom<br />');
 
     // Check locked email.
-    $this->drupalPostForm("/admin/structure/webform/manage/test_handler_email_states/submission/$sid/notes", ['locked' => TRUE], t('Save'));
+    $this->drupalPostForm("/admin/structure/webform/manage/test_handler_email_states/submission/$sid/notes", ['locked' => TRUE], 'Save');
     $this->assertRaw('Debug: Email: Submission locked');
 
     // Check deleted email.
-    $this->drupalPostForm("/admin/structure/webform/manage/test_handler_email_states/submission/$sid/delete", [], t('Delete'));
+    $this->drupalPostForm("/admin/structure/webform/manage/test_handler_email_states/submission/$sid/delete", [], 'Delete');
     $this->assertRaw('Debug: Email: Submission deleted');
 
     // Check that 'Send when…' is visible.
@@ -84,7 +84,7 @@ class WebformHandlerEmailStatesTest extends WebformBrowserTestBase {
 
     // Check that resave draft handler automatically switches
     // states to completed.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_email_states/handlers/email_draft/edit', [], t('Save'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_email_states/handlers/email_draft/edit', [], 'Save');
     $this->postSubmission($webform);
     $this->assertRaw('Debug: Email: Draft saved');
     $this->assertRaw('Debug: Email: Submission completed');

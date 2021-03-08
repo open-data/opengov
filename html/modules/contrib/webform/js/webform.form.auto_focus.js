@@ -18,7 +18,7 @@
   Drupal.behaviors.webformAutofocus = {
     attach: function (context) {
       $(context).find('.js-webform-autofocus :input:visible:enabled:first')
-        .focus();
+        .trigger('focus');
     }
   };
 

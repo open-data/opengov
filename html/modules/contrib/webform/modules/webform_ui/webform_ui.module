@@ -52,13 +52,11 @@ function webform_ui_entity_type_alter(array &$entity_types) {
  * @see Drupal.behaviors.webformUiElementsActionsSecondary
  */
 function webform_ui_preprocess_menu_local_action(&$variables) {
-  if (\Drupal::routeMatch()->getRouteName() != 'entity.webform.edit_form') {
+  if (\Drupal::routeMatch()->getRouteName() !== 'entity.webform.edit_form') {
     return;
   }
 
-  if (!in_array($variables['link']['#url']->getRouteName(), ['entity.webform_ui.element.add_page', 'entity.webform_ui.element.add_layout'])) {
-    return;
+  if (in_array($variables['link']['#url']->getRouteName(), ['entity.webform_ui.element.add_page', 'entity.webform_ui.element.add_layout'])) {
+    $variables['link']['#options']['attributes']['class'][] = 'button--secondary';
   }
-
-  $variables['link']['#options']['attributes']['class'][] = 'button--secondary';
 }

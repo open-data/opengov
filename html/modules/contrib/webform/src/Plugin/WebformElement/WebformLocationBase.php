@@ -46,7 +46,7 @@ abstract class WebformLocationBase extends WebformCompositeBase {
     foreach ($composite_elements as $composite_key => $composite_element) {
       $properties[$composite_key . '__title'] = (string) $composite_element['#title'];
       // The value is always visible and supports a custom placeholder.
-      if ($composite_key == 'value') {
+      if ($composite_key === 'value') {
         $properties[$composite_key . '__placeholder'] = '';
       }
       else {
@@ -65,7 +65,7 @@ abstract class WebformLocationBase extends WebformCompositeBase {
     // Hide all composite elements by default.
     $composite_elements = $this->getCompositeElements();
     foreach ($composite_elements as $composite_key => $composite_element) {
-      if ($composite_key != 'value' && !isset($element['#' . $composite_key . '__access'])) {
+      if ($composite_key !== 'value' && !isset($element['#' . $composite_key . '__access'])) {
         $element['#' . $composite_key . '__access'] = FALSE;
       }
     }

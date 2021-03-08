@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform date element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementDateTest extends WebformElementBrowserTestBase {
 
@@ -50,17 +50,17 @@ class WebformElementDateTest extends WebformElementBrowserTestBase {
 
     // Check date #max validation.
     $edit = ['date_min_max' => '2010-08-18'];
-    $this->drupalPostForm('/webform/test_element_date', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_date', $edit, 'Submit');
     $this->assertRaw('<em class="placeholder">date_min_max</em> must be on or before <em class="placeholder">2009-12-31</em>.');
 
     // Check date #min validation.
     $edit = ['date_min_max' => '2006-08-18'];
-    $this->drupalPostForm('/webform/test_element_date', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_date', $edit, 'Submit');
     $this->assertRaw('<em class="placeholder">date_min_max</em> must be on or after <em class="placeholder">2009-01-01</em>.');
 
     // Check date #date_days validation.
     $edit = ['date_datepicker_weekend' => '2010-08-18'];
-    $this->drupalPostForm('/webform/test_element_date', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_date', $edit, 'Submit');
     $this->assertRaw('<em class="placeholder">date_datepicker_weekend</em> must be a <em class="placeholder">Sunday or Saturday</em>.');
 
     // Check dynamic date.
@@ -76,7 +76,7 @@ class WebformElementDateTest extends WebformElementBrowserTestBase {
     // Format date elements.
     /**************************************************************************/
 
-    $this->drupalPostForm('/webform/test_element_date', [], t('Preview'));
+    $this->drupalPostForm('/webform/test_element_date', [], 'Preview');
 
     // Check date formats.
     $this->assertElementPreview('date_default', '2009-08-18');

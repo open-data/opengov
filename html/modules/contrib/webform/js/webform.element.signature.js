@@ -3,7 +3,7 @@
  * JavaScript behaviors for signature pad integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, debounce) {
 
   'use strict';
 
@@ -23,7 +23,6 @@
         return;
       }
 
-
       $(context).find('input.js-webform-signature').once('webform-signature').each(function () {
         var $input = $(this);
         var value = $input.val();
@@ -32,24 +31,17 @@
         var $button = $wrapper.find(':button, :submit');
         var canvas = $canvas[0];
 
-        var calculateDimensions = function () {
+        var refresh = function () {
+          // Set dimensions.
           $canvas.attr('width', $wrapper.width());
           $canvas.attr('height', $wrapper.width() / 3);
-        };
-
-        // Set height.
-        $canvas.attr('width', $wrapper.width());
-        $canvas.attr('height', $wrapper.width() / 3);
-        $(window).resize(function () {
-          calculateDimensions();
-
-          // Resizing clears the canvas so we need to reset the signature pad.
+          // Set signature.
           signaturePad.clear();
           var value = $input.val();
           if (value) {
             signaturePad.fromDataURL(value);
           }
-        });
+        };
 
         // Initialize signature canvas.
         var options = $.extend({
@@ -59,22 +51,20 @@
         }, Drupal.webform.signaturePad.options);
         var signaturePad = new SignaturePad(canvas, options);
 
-        // Set value.
-        if (value) {
-          signaturePad.fromDataURL(value);
-        }
-
         // Disable the signature pad when input is disabled or readonly.
         if ($input.is(':disabled') || $input.is('[readonly]')) {
           signaturePad.off();
           $button.hide();
         }
 
+        // Set resize handler.
+        $(window).on('resize', debounce(refresh, 10));
+
         // Set reset handler.
         $button.on('click', function () {
           signaturePad.clear();
           $input.val('');
-          this.blur();
+          this.trigger('blur');
           return false;
         });
 
@@ -84,12 +74,7 @@
         // @see webform.states.js
         // @see triggerEventHandlers()
         $input.on('change', function () {
-          if (!$input.val()) {
-            signaturePad.clear();
-          }
-          setTimeout(function () {
-            calculateDimensions();
-          }, 1);
+          setTimeout(refresh, 1);
         });
 
         // Turn signature pad off/on when the input
@@ -105,8 +90,11 @@
             $button.show();
           }
         });
+
+        // Make sure that the signature pad is initialized.
+        setTimeout(refresh, 1);
       });
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, Drupal.debounce);

@@ -42,7 +42,7 @@
               // Move focus to close dialog button.
               hasFocus = $element.parent().find('.ui-dialog-titlebar-close');
             }
-            hasFocus.eq(0).focus();
+            hasFocus.eq(0).trigger('focus');
           });
         }
       });

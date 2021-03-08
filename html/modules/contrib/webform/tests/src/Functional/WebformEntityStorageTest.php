@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional;
 /**
  * Tests for webform storage tests.
  *
- * @group Webform
+ * @group webform
  */
 class WebformEntityStorageTest extends WebformBrowserTestBase {
 

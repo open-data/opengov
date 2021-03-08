@@ -21,7 +21,7 @@ Steps for updating libraries
 
 - Enable all external libraries (admin/structure/webform/config/libraries)
 
-- Manually check for new releases. Only update to stable releases. 
+- Manually check for new releases. Only update to stable releases.
 
 - Add list of updated external libraries to issue on Drupal.org
 
@@ -62,8 +62,13 @@ Enable and download all libraries
 
 Update libraries.zip
 
-    # Remove libraries.zip.
-    rm -Rf /var/www/sites/d8_webform/web/modules/sandbox/webform_libraries/libraries.zip
+    # Checkout branch
+    cd /var/www/sites/d8_webform/web/modules/sandbox/webform_libraries/
+    git checkout 8.x-5.x
+
+    # Remove libraries.zip
+    cd /var/www/sites/d8_webform/web/modules/sandbox/webform_libraries/
+    rm -Rf libraries.zip
 
     # Create libraries.zip
     cd /var/www/sites/d8_webform/web/
@@ -74,6 +79,7 @@ Commit changes
 
     # Commit changes.
     cd /var/www/sites/d8_webform/web/modules/sandbox/webform_libraries/
+    git checkout 8.x-5.x
     git commit -am"Update webform_libraries"
     git push
 

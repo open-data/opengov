@@ -23,7 +23,7 @@ trait TextBaseTrait {
    */
   public function buildCounterForm($name = '', $title = NULL) {
     if ($title === NULL) {
-      $title = t('Counter');
+      $title = $this->t('Counter');
     }
     $t_args = ['@title' => $title];
 

@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform checkboxes element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementCheckboxesTest extends WebformElementBrowserTestBase {
 
@@ -31,11 +31,17 @@ class WebformElementCheckboxesTest extends WebformElementBrowserTestBase {
     $this->assertRaw('<input data-drupal-selector="edit-checkboxes-buttons-yes" class="visually-hidden form-checkbox" type="checkbox" id="edit-checkboxes-buttons-yes" name="checkboxes_buttons[Yes]" value="Yes" />');
     $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-checkboxes-buttons-yes">Yes</label>');
 
+    // Check checkboxes displayed as buttons_horizontal.
+    $this->assertRaw('<div id="edit-checkboxes-buttons-horizontal" class="js-webform-checkboxes webform-options-display-buttons webform-options-display-buttons-horizontal form-checkboxes"><div class="webform-options-display-buttons-wrapper">');
+
+    // Check checkboxes displayed as buttons_vertical.
+    $this->assertRaw('<div id="edit-checkboxes-buttons-vertical" class="js-webform-checkboxes webform-options-display-buttons webform-options-display-buttons-vertical form-checkboxes"><div class="webform-options-display-buttons-wrapper">');
+
     // Check checkboxes displayed as buttons with description.
     $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-checkboxes-buttons-description-one"><div class="webform-options-display-buttons-title">One</div><div class="webform-options-display-buttons-description description">This is a description</div></label>');
 
     // Check options (custom) properties wrapper attributes.
-    $this->assertRaw('<div data-custom="custom wrapper data" style="border: red 1px solid" class="one-custom-wrapper-class js-form-item form-item js-form-type-checkbox form-type-checkbox js-form-item-checkboxes-options-properties-two form-item-checkboxes-options-properties-two">');
+    $this->assertRaw('<div data-custom="custom wrapper data" style="border: red 1px solid" class="one-custom-wrapper-class js-form-item form-item js-form-type-checkbox form-item-checkboxes-options-properties-two js-form-item-checkboxes-options-properties-two">');
 
     // Check options (custom) properties label attributes.
     $this->assertRaw('<label data-custom="custom label data" style="border: blue 1px solid" class="one-custom-label-class option" for="edit-checkboxes-options-properties-two">Two</label>');
@@ -51,7 +57,7 @@ class WebformElementCheckboxesTest extends WebformElementBrowserTestBase {
       'checkboxes_required_conditions[Yes]' => TRUE,
       'checkboxes_other_required_conditions[checkboxes][Yes]' => TRUE,
     ];
-    $this->postSubmission($webform, $edit, t('Preview'));
+    $this->postSubmission($webform, $edit, 'Preview');
     $this->assertNoRaw('<label>checkbox_exclude_empty</label>');
 
     // Uncheck #exclude_empty.
@@ -63,7 +69,7 @@ class WebformElementCheckboxesTest extends WebformElementBrowserTestBase {
       'checkboxes_required_conditions[Yes]' => TRUE,
       'checkboxes_other_required_conditions[checkboxes][Yes]' => TRUE,
     ];
-    $this->postSubmission($webform, $edit, t('Preview'));
+    $this->postSubmission($webform, $edit, 'Preview');
     $this->assertRaw('<label>checkbox_exclude_empty</label>');
   }
 

@@ -15,7 +15,7 @@
   Drupal.behaviors.webformDetailsInvalid = {
     attach: function (context) {
       $('details :input', context).on('invalid', function () {
-        $(this).parents('details:not([open])').children('summary').click();
+        $(this).parents('details:not([open])').children('summary').trigger('click');
 
         // Synd details toggle label.
         if (Drupal.webform && Drupal.webform.detailsToggle) {

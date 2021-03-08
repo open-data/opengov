@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform element multiple.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementMultipleTest extends WebformElementBrowserTestBase {
 
@@ -30,7 +30,7 @@ class WebformElementMultipleTest extends WebformElementBrowserTestBase {
     $webform = Webform::load('test_element_multiple');
 
     // Check processing for all elements.
-    $this->drupalPostForm('/webform/test_element_multiple', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_multiple', [], 'Submit');
     $this->assertRaw("webform_multiple_default:
   - One
   - Two
@@ -122,19 +122,19 @@ webform_multiple_custom_attributes: {  }");
     $this->drupalGet('/webform/test_element_multiple');
 
     // Check first tr.
-    $this->assertRaw('<tr class="draggable odd" data-drupal-selector="edit-webform-multiple-default-items-0">');
-    $this->assertRaw('<td><div class="js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-webform-multiple-default-items-0--item- form-item-webform-multiple-default-items-0--item- form-no-label">');
+    $this->assertRaw('<tr class="draggable" data-drupal-selector="edit-webform-multiple-default-items-0">');
+    $this->assertRaw('<td><div class="js-form-item form-item js-form-type-textfield form-item-webform-multiple-default-items-0--item- js-form-item-webform-multiple-default-items-0--item- form-no-label">');
     $this->assertRaw('<label for="edit-webform-multiple-default-items-0-item-" class="visually-hidden">Item value</label>');
     $this->assertRaw('<input data-drupal-selector="edit-webform-multiple-default-items-0-item-" type="text" id="edit-webform-multiple-default-items-0-item-" name="webform_multiple_default[items][0][_item_]" value="One" size="60" maxlength="128" placeholder="Enter value…" class="form-text" />');
-    $this->assertRaw('<td class="webform-multiple-table--weight"><div class="webform-multiple-table--weight js-form-item form-item js-form-type-number form-type-number js-form-item-webform-multiple-default-items-0-weight form-item-webform-multiple-default-items-0-weight form-no-label">');
+    $this->assertRaw('<td class="webform-multiple-table--weight"><div class="webform-multiple-table--weight js-form-item form-item js-form-type-number form-item-webform-multiple-default-items-0-weight js-form-item-webform-multiple-default-items-0-weight form-no-label">');
     $this->assertRaw('<label for="edit-webform-multiple-default-items-0-weight" class="visually-hidden">Item weight</label>');
     $this->assertRaw('<input class="webform-multiple-sort-weight form-number" data-drupal-selector="edit-webform-multiple-default-items-0-weight" type="number" id="edit-webform-multiple-default-items-0-weight" name="webform_multiple_default[items][0][weight]" value="0" step="1" size="10" />');
     $this->assertRaw('<td class="webform-multiple-table--operations webform-multiple-table--operations-two"><input data-drupal-selector="edit-webform-multiple-default-items-0-operations-add" formnovalidate="formnovalidate" type="image" id="edit-webform-multiple-default-items-0-operations-add" name="webform_multiple_default_table_add_0"');
     $this->assertRaw('<input data-drupal-selector="edit-webform-multiple-default-items-0-operations-remove" formnovalidate="formnovalidate" type="image" id="edit-webform-multiple-default-items-0-operations-remove" name="webform_multiple_default_table_remove_0"');
 
     // Check that sorting is disabled.
-    $this->assertNoRaw('<tr class="draggable odd" data-drupal-selector="edit-webform-multiple-no-sorting-items-0">');
-    $this->assertRaw('<tr data-drupal-selector="edit-webform-multiple-no-sorting-items-0" class="odd">');
+    $this->assertNoRaw('<tr class="draggable" data-drupal-selector="edit-webform-multiple-no-sorting-items-0">');
+    $this->assertRaw('<tr data-drupal-selector="edit-webform-multiple-no-sorting-items-0">');
 
     // Check that add more is removed.
     $this->assertFieldByName('webform_multiple_no_operations[add][more_items]', '1');
@@ -176,7 +176,7 @@ webform_multiple_custom_attributes: {  }");
     $edit = [
       'webform_multiple_key[items][1][value]' => 'one',
     ];
-    $this->drupalPostForm('/webform/test_element_multiple', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_multiple', $edit, 'Submit');
     $this->assertRaw('The <em class="placeholder">Option value</em> \'one\' is already in use. It must be unique.');
 
     /**************************************************************************/

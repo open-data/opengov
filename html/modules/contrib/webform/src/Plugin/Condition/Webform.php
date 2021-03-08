@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Condition(
  *   id = "webform",
  *   label = @Translation("Webforms"),
- *   context = {
+ *   context_definitions = {
  *     "webform" = @ContextDefinition("entity:webform", label = @Translation("Webform"), required = FALSE),
  *     "webform_submission" = @ContextDefinition("entity:webform_submission", label = @Translation("Webform submission"), required = FALSE),
  *     "node" = @ContextDefinition("entity:node", label = @Translation("Node"), required = FALSE),

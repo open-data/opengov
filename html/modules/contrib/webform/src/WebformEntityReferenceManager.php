@@ -2,10 +2,13 @@
 
 namespace Drupal\webform;
 
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\user\UserDataInterface;
 use Drupal\webform\Entity\Webform;
@@ -43,6 +46,20 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
   protected $userData;
 
   /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Cache of source entity webforms.
    *
    * @var array
@@ -65,11 +82,17 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
    *   The current user.
    * @param \Drupal\user\UserDataInterface $user_data
    *   The user data service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler class to use for loading includes.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(RouteMatchInterface $route_match, AccountInterface $current_user, UserDataInterface $user_data) {
+  public function __construct(RouteMatchInterface $route_match, AccountInterface $current_user, UserDataInterface $user_data, ModuleHandlerInterface $module_handler = NULL, EntityTypeManagerInterface $entity_type_manager = NULL) {
     $this->routeMatch = $route_match;
     $this->currentUser = $current_user;
     $this->userData = $user_data;
+    $this->moduleHandler = $module_handler ?: \Drupal::moduleHandler();
+    $this->entityTypeManager = $entity_type_manager ?: \Drupal::entityTypeManager();
   }
 
   /****************************************************************************/
@@ -87,7 +110,8 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
       "entity.$entity_type.webform.api_form",
     ];
     return in_array($this->routeMatch->getRouteName(), $user_routes)
-      || (strpos($route_name, "entity.$entity_type.webform.results_") === 0);
+      || (strpos($route_name, "entity.$entity_type.webform.results_") === 0)
+      || (strpos($route_name, "entity.$entity_type.webform.share_") === 0);
   }
 
   /**
@@ -158,7 +182,7 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
    * {@inheritdoc}
    */
   public function getFieldNames(EntityInterface $entity = NULL) {
-    if ($entity === NULL || !method_exists($entity, 'hasField')) {
+    if ($entity === NULL || !$entity instanceof FieldableEntityInterface) {
       return [];
     }
 
@@ -172,7 +196,7 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     if ($entity instanceof ContentEntityInterface) {
       $fields = $entity->getFieldDefinitions();
       foreach ($fields as $field_name => $field_definition) {
-        if ($field_definition->getType() == 'webform') {
+        if ($field_definition->getType() === 'webform') {
           $field_names[$field_name] = $field_name;
         }
       }
@@ -210,15 +234,20 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
       return $this->webforms[$entity_id];
     }
 
-    $field_names = $this->getFieldNames($entity);
     $target_entities = [];
     $sorted_entities = [];
+
+    $field_names = $this->getFieldNames($entity);
     foreach ($field_names as $field_name) {
       foreach ($entity->$field_name as $item) {
         $sorted_entities[$item->target_id] = (method_exists($item->entity, 'getWeight')) ? $item->entity->getWeight() : 0;
         $target_entities[$item->target_id] = $item->entity;
       }
     }
+
+    // Add paragraphs check.
+    $this->getParagraphWebformsRecursive($entity, $target_entities, $sorted_entities);
+
     // Sort the webforms by key and then weight.
     ksort($sorted_entities);
     asort($sorted_entities, SORT_NUMERIC);
@@ -230,7 +259,81 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     }
 
     $this->webforms[$entity_id] = $webforms;
+
     return $webforms;
+  }
+
+  /****************************************************************************/
+  // Paragraph methods.
+  /****************************************************************************/
+
+  /**
+   * Get webform associate with a paragraph field from entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   An entity.
+   * @param array $target_entities
+   *   An associate array of targeted webfrom entities.
+   * @param array $sorted_entities
+   *   An associate array of sorted webfrom entities by weight.
+   */
+  protected function getParagraphWebformsRecursive(EntityInterface $entity, array &$target_entities, array &$sorted_entities) {
+    // Add paragraphs check.
+    if (!$this->moduleHandler->moduleExists('paragraphs')) {
+      return;
+    }
+    // Make sure the entity exists and is fieldable.
+    if ($entity === NULL || !$entity instanceof FieldableEntityInterface) {
+      return;
+    }
+
+    $paragraph_fields = $this->getParagraphFieldNames($entity);
+    foreach ($paragraph_fields as $paragraph_field) {
+      if (!$entity->hasField($paragraph_field)) {
+        continue;
+      }
+
+      foreach ($entity->get($paragraph_field) as $paragraph_item) {
+        $paragraph = $paragraph_item->entity;
+        if ($paragraph) {
+          $webform_field_names = $this->getFieldNames($paragraph);
+          foreach ($webform_field_names as $webform_field_name) {
+            foreach ($paragraph->$webform_field_name as $webform_field_item) {
+              if ($webform_field_item->entity) {
+                $sorted_entities[$webform_field_item->target_id] = (method_exists($webform_field_item->entity, 'getWeight')) ? $webform_field_item->entity->getWeight() : 0;
+                $target_entities[$webform_field_item->target_id] = $webform_field_item->entity;
+              }
+            }
+          }
+          $this->getParagraphWebformsRecursive($paragraph, $target_entities, $sorted_entities);
+        }
+      }
+    }
+  }
+
+  /**
+   * Get paragraph field names.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface|null $entity
+   *   A fieldable content entity.
+   *
+   * @return array
+   *   An array of paragraph field names.
+   */
+  protected function getParagraphFieldNames(EntityInterface $entity) {
+    $fields = $this->entityTypeManager->getStorage('field_storage_config')->loadByProperties([
+      'entity_type' => $entity->getEntityTypeId(),
+      'type' => 'entity_reference_revisions',
+    ]);
+
+    $field_names = [];
+    foreach ($fields as $field) {
+      if ($field->getSetting('target_type') === 'paragraph') {
+        $field_name = $field->get('field_name');
+        $field_names[$field_name] = $field_name;
+      }
+    }
+    return $field_names;
   }
 
   /****************************************************************************/
@@ -245,7 +348,7 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     $field_storage_configs = FieldStorageConfig::loadMultiple();
     $tables = [];
     foreach ($field_storage_configs as $field_storage_config) {
-      if ($field_storage_config->getType() == 'webform') {
+      if ($field_storage_config->getType() === 'webform') {
         $webform_field_table = $field_storage_config->getTargetEntityTypeId();
         $webform_field_name = $field_storage_config->getName();
         $tables[$webform_field_table . '__' . $webform_field_name] = $webform_field_name;

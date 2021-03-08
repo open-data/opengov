@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Generate long webform elements.
+ * Generate long webform wizards.
  */
 
 use Drupal\webform\WebformInterface;
 
 /**
- * Generate long webform elements.
+ * Generate long webform wizard page elements.
  *
  * @param \Drupal\webform\WebformInterface $webform
  *   A webform object.

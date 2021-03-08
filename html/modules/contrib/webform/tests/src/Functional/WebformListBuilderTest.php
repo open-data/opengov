@@ -2,14 +2,12 @@
 
 namespace Drupal\Tests\webform\Functional;
 
-use Drupal\Tests\BrowserTestBase;
-
 /**
  * Tests for webform list builder.
  *
- * @group Webform
+ * @group webform
  */
-class WebformListBuilderTest extends BrowserTestBase {
+class WebformListBuilderTest extends WebformBrowserTestBase {
 
   /**
    * Modules to enable.

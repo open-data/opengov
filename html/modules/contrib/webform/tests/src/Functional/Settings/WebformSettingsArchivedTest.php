@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for webform archived.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsArchivedTest extends WebformBrowserTestBase {
 

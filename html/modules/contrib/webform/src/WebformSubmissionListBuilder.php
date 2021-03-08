@@ -383,7 +383,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         $this->customize = $this->webform->access('update')
           || $this->webform->getSetting('results_customize', TRUE);
 
-        if ($this->format['element_format'] == 'raw') {
+        if ($this->format['element_format'] === 'raw') {
           foreach ($this->columns as &$column) {
             $column['format'] = 'raw';
             if (isset($column['element'])) {
@@ -638,16 +638,16 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     // State options.
     $state_options = [
       '' => $this->t('All [@total]', ['@total' => $this->getTotal(NULL, NULL, $this->sourceEntityTypeId)]),
-      self::STATE_STARRED => $this->t('Starred [@total]', ['@total' => $this->getTotal(NULL, self::STATE_STARRED, $this->sourceEntityTypeId)]),
-      self::STATE_UNSTARRED => $this->t('Unstarred [@total]', ['@total' => $this->getTotal(NULL, self::STATE_UNSTARRED, $this->sourceEntityTypeId)]),
-      self::STATE_LOCKED => $this->t('Locked [@total]', ['@total' => $this->getTotal(NULL, self::STATE_LOCKED, $this->sourceEntityTypeId)]),
-      self::STATE_UNLOCKED => $this->t('Unlocked [@total]', ['@total' => $this->getTotal(NULL, self::STATE_UNLOCKED, $this->sourceEntityTypeId)]),
+      static::STATE_STARRED => $this->t('Starred [@total]', ['@total' => $this->getTotal(NULL, static::STATE_STARRED, $this->sourceEntityTypeId)]),
+      static::STATE_UNSTARRED => $this->t('Unstarred [@total]', ['@total' => $this->getTotal(NULL, static::STATE_UNSTARRED, $this->sourceEntityTypeId)]),
+      static::STATE_LOCKED => $this->t('Locked [@total]', ['@total' => $this->getTotal(NULL, static::STATE_LOCKED, $this->sourceEntityTypeId)]),
+      static::STATE_UNLOCKED => $this->t('Unlocked [@total]', ['@total' => $this->getTotal(NULL, static::STATE_UNLOCKED, $this->sourceEntityTypeId)]),
     ];
     // Add draft to state options.
-    if (!$this->webform || $this->webform->getSetting('draft') != WebformInterface::DRAFT_NONE) {
+    if (!$this->webform || $this->webform->getSetting('draft') !== WebformInterface::DRAFT_NONE) {
       $state_options += [
-        self::STATE_COMPLETED => $this->t('Completed [@total]', ['@total' => $this->getTotal(NULL, self::STATE_COMPLETED, $this->sourceEntityTypeId)]),
-        self::STATE_DRAFT => $this->t('Draft [@total]', ['@total' => $this->getTotal(NULL, self::STATE_DRAFT, $this->sourceEntityTypeId)]),
+        static::STATE_COMPLETED => $this->t('Completed [@total]', ['@total' => $this->getTotal(NULL, static::STATE_COMPLETED, $this->sourceEntityTypeId)]),
+        static::STATE_DRAFT => $this->t('Draft [@total]', ['@total' => $this->getTotal(NULL, static::STATE_DRAFT, $this->sourceEntityTypeId)]),
       ];
     }
 
@@ -788,7 +788,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    */
   protected function buildHeaderColumn(array $column) {
     $name = $column['name'];
-    if ($this->format['header_format'] == 'key') {
+    if ($this->format['header_format'] === 'key') {
       $title = isset($column['key']) ? $column['key'] : $column['name'];
     }
     else {
@@ -857,7 +857,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
   public function buildRowColumn(array $column, EntityInterface $entity) {
     /** @var \Drupal\webform\WebformSubmissionInterface $entity */
 
-    $is_raw = ($column['format'] == 'raw');
+    $is_raw = ($column['format'] === 'raw');
     $name = $column['name'];
 
     switch ($name) {
@@ -871,14 +871,14 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         );
 
       case 'entity':
-        $source_entity = $entity->getSourceEntity();
+        $source_entity = $entity->getSourceEntity(TRUE);
         if (!$source_entity) {
           return '';
         }
         return ($is_raw) ? $source_entity->getEntityTypeId . ':' . $source_entity->id() : ($source_entity->hasLinkTemplate('canonical') ? $source_entity->toLink() : $source_entity->label());
 
       case 'langcode':
-        $langcode = $entity->langcode->value;
+        $langcode = $entity->getLangcode();
         if (!$langcode) {
           return '';
         }
@@ -891,7 +891,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         }
 
       case 'notes':
-        $notes_url = $this->ensureDestination($this->requestHandler->getUrl($entity, $entity->getSourceEntity(), 'webform_submission.notes_form'));
+        $notes_url = $this->ensureDestination($this->requestHandler->getUrl($entity, $entity->getSourceEntity(TRUE), 'webform_submission.notes_form'));
         $state = $entity->get('notes')->value ? 'on' : 'off';
         $t_args = ['@label' => $entity->label()];
         $label = $entity->get('notes')->value ? $this->t('Edit @label notes', $t_args) : $this->t('Add notes to @label', $t_args);
@@ -923,16 +923,16 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
           $link_url = $entity->getTokenUrl();
         }
         else {
-          $link_url = $this->requestHandler->getUrl($entity, $entity->getSourceEntity(), $this->getSubmissionRouteName());
+          $link_url = $this->requestHandler->getUrl($entity, $entity->getSourceEntity(TRUE), $this->getSubmissionRouteName());
         }
-        if ($name == 'serial') {
+        if ($name === 'serial') {
           $link_text = $entity->serial();
         }
         else {
           $link_text = $entity->label();
         }
         $link = Link::fromTextAndUrl($link_text, $link_url)->toRenderable();
-        if ($name == 'serial') {
+        if ($name === 'serial') {
           $link['#attributes']['title'] = $entity->label();
           $link['#attributes']['aria-label'] = $entity->label();
         }
@@ -1306,7 +1306,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       // Must manually initialize the pager because the DISTINCT clause in the
       // query is breaking the row counting.
       // @see webform_query_alter()
-      pager_default_initialize($this->total, $this->limit);
+      \Drupal::service('pager.manager')->createPager($this->total, $this->limit);
       return $result;
     }
     else {
@@ -1393,27 +1393,27 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
 
     // Filter by (submission) state.
     switch ($state) {
-      case self::STATE_STARRED:
+      case static::STATE_STARRED:
         $query->condition('sticky', 1);
         break;
 
-      case self::STATE_UNSTARRED:
+      case static::STATE_UNSTARRED:
         $query->condition('sticky', 0);
         break;
 
-      case self::STATE_LOCKED:
+      case static::STATE_LOCKED:
         $query->condition('locked', 1);
         break;
 
-      case self::STATE_UNLOCKED:
+      case static::STATE_UNLOCKED:
         $query->condition('locked', 0);
         break;
 
-      case self::STATE_DRAFT:
+      case static::STATE_DRAFT:
         $query->condition('in_draft', 1);
         break;
 
-      case self::STATE_COMPLETED:
+      case static::STATE_COMPLETED:
         $query->condition('in_draft', 0);
         break;
     }

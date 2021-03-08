@@ -103,7 +103,15 @@
     var message = Drupal.t('File upload in progress. Uploaded file may be lost.') +
       '\n' +
       Drupal.t('Do you want to continue?');
-    return !window.confirm(message);
+    var result = !window.confirm(message);
+
+    // If submit once behavior is available, make sure to clear it if the form
+    // can be submitted.
+    if (result && Drupal.behaviors.webformSubmitOnce) {
+      setTimeout(function () {Drupal.behaviors.webformSubmitOnce.clear();});
+    }
+
+    return result;
   }
 
 })(jQuery, Drupal);

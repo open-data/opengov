@@ -13,6 +13,7 @@ use Drupal\file\Entity\File;
  * Implements hook_webform_help_info().
  */
 function webform_submission_export_import_webform_help_info() {
+  $help = [];
   $help['webform_submission_export_import'] = [
     'group' => 'forms',
     'title' => t('Upload'),
@@ -25,7 +26,6 @@ function webform_submission_export_import_webform_help_info() {
       'entity.node.webform_submission_export_import.results_import',
     ],
   ];
-
   return $help;
 }
 
@@ -79,6 +79,9 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   /** @var \Drupal\Core\File\FileSystemInterface $file_system */
   $file_system = \Drupal::service('file_system');
   $current_user = \Drupal::currentUser();
+
+  /** @var \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $stream_wrapper_manager */
+  $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
 
   // Check for file upload errors and return FALSE for this file if a lower
   // level system error occurred. For a complete list of errors:
@@ -156,7 +159,7 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   // rename filename.php.foo and filename.php to filename.php.foo.txt and
   // filename.php.txt, respectively). Don't rename if 'allow_insecure_uploads'
   // evaluates to TRUE.
-  if (!\Drupal::config('system.file')->get('allow_insecure_uploads') && preg_match(FILE_INSECURE_EXTENSION_REGEX, $file->getFilename()) && (substr($file->getFilename(), -4) != '.txt')) {
+  if (!\Drupal::config('system.file')->get('allow_insecure_uploads') && preg_match(FILE_INSECURE_EXTENSION_REGEX, $file->getFilename()) && (substr($file->getFilename(), -4) !== '.txt')) {
     $file->setMimeType('text/plain');
     // The destination filename will also later be used to create the URI.
     $file->setFilename($file->getFilename() . '.txt');
@@ -174,15 +177,15 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   }
 
   // Assert that the destination contains a valid stream.
-  $destination_scheme = $file_system->uriScheme($destination);
-  if (!$file_system->validScheme($destination_scheme)) {
+  $destination_scheme = $stream_wrapper_manager->getScheme($destination);
+  if (!$stream_wrapper_manager->isValidScheme($destination_scheme)) {
     \Drupal::messenger()->addError(t('The file could not be uploaded because the destination %destination is invalid.', ['%destination' => $destination]));
     return FALSE;
   }
 
   $file->source = $form_field_name;
   // A file URI may already have a trailing slash or look like "public://".
-  if (substr($destination, -1) != '/') {
+  if (substr($destination, -1) !== '/') {
     $destination .= '/';
   }
   $file->destination = \Drupal::service('file_system')->getDestinationFilename($destination . $file->getFilename(), $replace);
@@ -233,9 +236,9 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
   $file_system->chmod($file->getFileUri());
 
   // If we are replacing an existing file re-use its database record.
-  // @todo Do not create a new entity in order to update it. See
-  //   https://www.drupal.org/node/2241865.
-  if ($replace == FileSystemInterface::EXISTS_REPLACE) {
+  // @todo Do not create a new entity in order to update it.
+  // @see https://www.drupal.org/node/2241865.
+  if ($replace === FileSystemInterface::EXISTS_REPLACE) {
     $existing_files = \Drupal::entityTypeManager()
       ->getStorage('file')
       ->loadByProperties(['uri' => $file->getFileUri()]);

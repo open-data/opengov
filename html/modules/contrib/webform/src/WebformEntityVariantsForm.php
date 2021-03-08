@@ -30,14 +30,14 @@ class WebformEntityVariantsForm extends EntityForm {
   protected $entity;
 
   /**
-   * Webform element manager.
+   * The webform element manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
   protected $elementManager;
 
   /**
-   * Webform variant manager.
+   * The webform variant manager.
    *
    * @var \Drupal\webform\Plugin\WebformVariantManagerInterface
    */
@@ -93,6 +93,8 @@ class WebformEntityVariantsForm extends EntityForm {
     $variants = $webform->getVariants();
     $rows = [];
     foreach ($variants as $variant_id => $variant) {
+      $offcanvas_dialog_attributes = WebformDialogHelper::getOffCanvasDialogAttributes($variant->getOffCanvasWidth());
+
       $row['#attributes']['class'][] = 'draggable';
       $row['#attributes']['data-webform-key'] = $variant_id;
 
@@ -108,7 +110,7 @@ class WebformEntityVariantsForm extends EntityForm {
               'webform' => $webform->id(),
               'webform_variant' => $variant_id,
             ]),
-            '#attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+            '#attributes' => $offcanvas_dialog_attributes,
           ],
           'notes' => [
             '#prefix' => '<br/>',
@@ -165,7 +167,7 @@ class WebformEntityVariantsForm extends EntityForm {
           'webform' => $webform->id(),
           'webform_variant' => $variant_id,
         ]),
-        'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+        'attributes' => $offcanvas_dialog_attributes,
       ];
       // Duplicate.
       $operations['duplicate'] = [
@@ -174,7 +176,7 @@ class WebformEntityVariantsForm extends EntityForm {
           'webform' => $webform->id(),
           'webform_variant' => $variant_id,
         ]),
-        'attributes' => WebformDialogHelper::getOffCanvasDialogAttributes(),
+        'attributes' => $offcanvas_dialog_attributes,
       ];
       if ($variant_element && $variant->isEnabled()) {
         // If #prepopulate is disabled use '_webform_variant'
@@ -199,6 +201,19 @@ class WebformEntityVariantsForm extends EntityForm {
             'title' => $this->t('Test'),
             'url' => Url::fromRoute(
               'entity.webform.test_form',
+              ['webform' => $webform->id()],
+              ['query' => $query]
+            ),
+          ];
+        }
+        // Share.
+        if ($this->moduleHandler->moduleExists('webform_share')
+          && $webform->access('update')
+          && $webform->getSetting('share', TRUE)) {
+          $operations['share'] = [
+            'title' => $this->t('Share'),
+            'url' => Url::fromRoute(
+              'entity.webform.share_embed',
               ['webform' => $webform->id()],
               ['query' => $query]
             ),
@@ -267,6 +282,19 @@ class WebformEntityVariantsForm extends EntityForm {
           'title' => $this->t('Test variants'),
           'url' => Url::fromRoute(
             'entity.webform.variant.test_form',
+            ['webform' => $webform->id()]
+          ),
+          'attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NARROW),
+        ];
+      }
+      // Share variants.
+      if ($this->moduleHandler->moduleExists('webform_share')
+        && $webform->access('update')
+        && $webform->getSetting('share', TRUE)) {
+        $operations['share'] = [
+          'title' => $this->t('Share variants'),
+          'url' => Url::fromRoute(
+            'entity.webform.variant.share_form',
             ['webform' => $webform->id()]
           ),
           'attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NARROW),

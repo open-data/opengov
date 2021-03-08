@@ -1,6 +1,6 @@
 /**
  * @file
- * Wizard progress tracker styles.
+ * Progress tracker styles.
  *
  * @see http://nigelotoole.github.io/progress-tracker/
  */
@@ -19,11 +19,11 @@
 .webform-progress-tracker .progress-step .progress-text {
   padding-top: 5px;
   padding-bottom: 0;
-  color: #656565;
+  color: #777;
 }
 
 .webform-progress-tracker .progress-step::after {
-  background-color: #656565;
+  background-color: #777;
 }
 
 .webform-progress-tracker .progress-step.is-active .progress-text {
@@ -38,18 +38,18 @@
   color: #333;
 }
 
-/**
- * Disable hover state because webform wizard progress markers are not clickable.
- */
-.webform-progress-tracker .progress-step:not(.is-active) .progress-marker,
+.webform-progress-tracker .progress-step .progress-marker,
 .webform-progress-tracker .progress-step:hover .progress-marker {
-  background-color: #656565;
+  background-color: #777;
 }
 
-.webform-progress-tracker .progress-step.is-complete:hover .progress-marker {
-  background-color: #1976f2;
+.webform-progress-tracker .progress-step.is-complete .progress-marker,
+.webform-progress-tracker .progress-step.is-complete:hover .progress-marker,
+.webform-progress-tracker .progress-step.is-complete::after {
+  background-color: #333;
 }
 
+.webform-progress-tracker .progress-step.is-active .progress-marker,
 .webform-progress-tracker .progress-step.is-active:hover .progress-marker {
   background-color: #2196f3;
 }
@@ -70,6 +70,27 @@
   .webform-progress-tracker .progress-text {
     display: none;
   }
+}
+
+/**
+  * Progress link styles.
+ */
+.webform-progress-tracker [role="link"] {
+  cursor: pointer;
+}
+
+.webform-progress-tracker .progress-title[role="link"] {
+  color: #1976d2;
+}
+
+.webform-progress-tracker .progress-title[role="link"]:hover,
+.webform-progress-tracker .progress-title[role="link"]:focus {
+  text-decoration: underline;
+  color: #2196f3;
+}
+
+.webform-progress-tracker .progress-step.is-complete:hover .progress-marker[role="link"] {
+  background-color: #1976f2;
 }
 
 /**

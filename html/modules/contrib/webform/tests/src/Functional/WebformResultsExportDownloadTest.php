@@ -9,7 +9,7 @@ use Drupal\webform\Entity\WebformSubmission;
 /**
  * Tests for webform results export download.
  *
- * @group Webform
+ * @group webform
  */
 class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
 
@@ -58,7 +58,7 @@ class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
         'files' => TRUE,
         'archive_type' => $archive_type,
       ];
-      $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/results/download', $edit, t('Download'));
+      $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/results/download', $edit, 'Download');
 
       // Load the archive and get a list of files.
       $files = $this->getArchiveContents($submission_exporter->getArchiveFilePath());
@@ -85,7 +85,7 @@ class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
         'exporter' => 'yaml',
         'archive_type' => $archive_type,
       ];
-      $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/results/download', $edit, t('Download'));
+      $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/results/download', $edit, 'Download');
 
       // Load the archive and get a list of files.
       $files = $this->getArchiveContents($submission_exporter->getArchiveFilePath());

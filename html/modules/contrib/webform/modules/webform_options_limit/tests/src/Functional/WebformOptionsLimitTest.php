@@ -8,7 +8,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Webform options limit test.
  *
- * @group webform_browser
+ * @group webform_options_limit
  */
 class WebformOptionsLimitTest extends WebformBrowserTestBase {
 
@@ -29,9 +29,17 @@ class WebformOptionsLimitTest extends WebformBrowserTestBase {
 
     $this->drupalGet('/webform/test_handler_options_limit');
 
+    // Check that option None is not available.
+    $this->assertRaw('<input data-drupal-selector="edit-options-limit-default-none" disabled="disabled" type="checkbox" id="edit-options-limit-default-none" name="options_limit_default[none]" value="none" class="form-checkbox" />');
+    $this->assertRaw('None [0 remaining]');
+
     // Check that option A is available.
     $this->assertRaw('<input data-drupal-selector="edit-options-limit-default-a" type="checkbox" id="edit-options-limit-default-a" name="options_limit_default[A]" value="A" checked="checked" class="form-checkbox" />');
     $this->assertRaw('A [1 remaining]');
+
+    // Check that option None is not available.
+    $this->assertRaw('<input data-drupal-selector="edit-options-limit-messages-none" aria-describedby="edit-options-limit-messages-none--description" disabled="disabled" type="checkbox" id="edit-options-limit-messages-none" name="options_limit_messages[none]" value="none" class="form-checkbox" />');
+    $this->assertRaw('No options remaining / 0 limit / 0 total');
 
     // Check that option D is available.
     $this->assertRaw('<input data-drupal-selector="edit-options-limit-messages-d" aria-describedby="edit-options-limit-messages-d--description" type="checkbox" id="edit-options-limit-messages-d" name="options_limit_messages[D]" value="D" checked="checked" class="form-checkbox" />');

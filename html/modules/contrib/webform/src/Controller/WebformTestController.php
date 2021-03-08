@@ -26,7 +26,7 @@ class WebformTestController extends ControllerBase implements ContainerInjection
   protected $messenger;
 
   /**
-   * Webform request handler.
+   * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
    */

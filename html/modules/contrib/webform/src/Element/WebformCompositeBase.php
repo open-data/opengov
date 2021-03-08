@@ -117,6 +117,9 @@ abstract class WebformCompositeBase extends FormElement implements WebformCompos
     $composite_required_states = WebformElementHelper::getRequiredFromVisibleStates($element);
 
     foreach ($composite_elements as $composite_key => &$composite_element) {
+      // Make sure the composite key is a string.
+      $composite_key = (string) $composite_key;
+
       if (!Element::child($composite_key) || !is_array($composite_element)) {
         continue;
       }
@@ -168,8 +171,7 @@ abstract class WebformCompositeBase extends FormElement implements WebformCompos
     $value = NestedArray::getValue($form_state->getValues(), $element['#parents']);
 
     // Only validate composite elements that are visible.
-    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
-    if ($has_access) {
+    if (Element::isVisibleElement($element)) {
       // Validate required composite elements.
       $composite_elements = static::getCompositeElements($element);
       $composite_elements = WebformElementHelper::getFlattened($composite_elements);
@@ -226,7 +228,7 @@ abstract class WebformCompositeBase extends FormElement implements WebformCompos
     $element_manager = \Drupal::service('plugin.manager.webform.element');
 
     foreach ($composite_elements as $composite_key => &$composite_element) {
-      if (Element::property($composite_key)) {
+      if (WebformElementHelper::property($composite_key)) {
         continue;
       }
 

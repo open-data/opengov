@@ -10,7 +10,7 @@ use Drupal\webform_attachment\Element\WebformAttachmentToken;
 /**
  * Tests for webform example element.
  *
- * @group Webform
+ * @group webform_attachment
  */
 class WebformAttachmentTest extends WebformBrowserTestBase {
 

@@ -40,6 +40,7 @@ class WebformMultiple extends FormElement {
       ],
       '#cardinality' => FALSE,
       '#min_items' => NULL,
+      '#item_label' => $this->t('item'),
       '#no_items_message' => $this->t('No items entered. Please add items below.'),
       '#empty_items' => 1,
       '#add_more' => TRUE,
@@ -171,8 +172,10 @@ class WebformMultiple extends FormElement {
     $ajax_attributes = $element['#ajax_attributes'];
     $ajax_attributes['id'] = $table_id;
     $element += ['#prefix' => '', '#suffix' => ''];
-    $element['#prefix'] = $element['#prefix'] . '<div' . new Attribute($ajax_attributes) . '>';
-    $element['#suffix'] = '</div>' . $element['#suffix'];
+    $element['#ajax_prefix'] = '<div' . new Attribute($ajax_attributes) . '>';
+    $element['#ajax_suffix'] = '</div>';
+    $element['#prefix'] = $element['#prefix'] . $element['#ajax_prefix'];
+    $element['#suffix'] = $element['#ajax_suffix'] . $element['#suffix'];
 
     // DEBUG:
     // Disable Ajax callback by commenting out the below callback and wrapper.
@@ -608,7 +611,7 @@ class WebformMultiple extends FormElement {
           //
           // WORKAROUND:
           // Convert element to rendered hidden element.
-          if (!isset($element['#access']) || $element['#access'] !== FALSE) {
+          if (Element::isVisibleElement($element)) {
             $hidden_elements[$child_key]['#type'] = 'hidden';
             // Unset #access, #element_validate, and #pre_render.
             // @see \Drupal\webform\Plugin\WebformElementBase::prepare()
@@ -662,7 +665,7 @@ class WebformMultiple extends FormElement {
       if ($element['#add']) {
         $row['_operations_']['add'] = [
           '#type' => 'image_button',
-          '#title' => t('Add'),
+          '#title' => t('Add new @item after @item @number', ['@number' => $row_index + 1, '@item' => $element['#item_label']]),
           '#src' => drupal_get_path('module', 'webform') . '/images/icons/plus.svg',
           '#limit_validation_errors' => [],
           '#submit' => [[get_called_class(), 'addItemSubmit']],
@@ -677,7 +680,7 @@ class WebformMultiple extends FormElement {
       if ($element['#remove']) {
         $row['_operations_']['remove'] = [
           '#type' => 'image_button',
-          '#title' => t('Remove'),
+          '#title' => t('Remove @item @number', ['@number' => $row_index + 1, '@item' => $element['#item_label']]),
           '#src' => drupal_get_path('module', 'webform') . '/images/icons/minus.svg',
           '#limit_validation_errors' => [],
           '#submit' => [[get_called_class(), 'removeItemSubmit']],
@@ -716,15 +719,7 @@ class WebformMultiple extends FormElement {
    *   TRUE if the element is hidden.
    */
   protected static function isHidden(array $element) {
-    if (isset($element['#access']) && $element['#access'] === FALSE) {
-      return TRUE;
-    }
-    elseif (isset($element['#type']) && in_array($element['#type'], ['hidden', 'value'])) {
-      return TRUE;
-    }
-    else {
-      return FALSE;
-    }
+    return !Element::isVisibleElement($element);
   }
 
   /**
@@ -753,7 +748,7 @@ class WebformMultiple extends FormElement {
    *   The default value.
    */
   protected static function setElementDefaultValue(array &$element, $default_value) {
-    if ($element['#type'] == 'value') {
+    if ($element['#type'] === 'value') {
       $element['#value'] = $default_value;
     }
     else {
@@ -839,7 +834,7 @@ class WebformMultiple extends FormElement {
     $values = [];
     foreach ($element['items']['#value'] as $row_index => $value) {
       $values[] = $value;
-      if ($row_index == $button['#row_index']) {
+      if ($row_index === $button['#row_index']) {
         $values[] = [];
       }
     }
@@ -903,6 +898,15 @@ class WebformMultiple extends FormElement {
     $button = $form_state->getTriggeringElement();
     $parent_length = (isset($button['#row_index'])) ? -4 : -2;
     $element = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, $parent_length));
+
+    // Make sure only the ajax prefix and suffix is used.
+    $element['#prefix'] = $element['#ajax_prefix'];
+    $element['#suffix'] = $element['#ajax_suffix'];
+
+    // Disable states and flexbox wrapper.
+    // @see \Drupal\webform\Plugin\WebformElementBase::preRenderFixFlexboxWrapper
+    $element['#webform_wrapper'] = FALSE;
+
     return $element;
   }
 

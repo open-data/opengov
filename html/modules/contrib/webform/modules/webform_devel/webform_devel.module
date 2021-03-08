@@ -13,6 +13,7 @@ use Drupal\webform\Utility\WebformYaml;
  * Implements hook_webform_help_info().
  */
 function webform_devel_webform_help_info() {
+  $help = [];
   $help['webform_devel_schema'] = [
     'group' => 'development',
     'title' => t('Devel: Webform Schema'),
@@ -23,7 +24,6 @@ function webform_devel_webform_help_info() {
       'entity.webform.schema_form',
     ],
   ];
-
   $help['webform_devel_form_api_export'] = [
     'group' => 'forms',
     'title' => t('Form API Export'),
@@ -33,7 +33,6 @@ function webform_devel_webform_help_info() {
       'entity.webform.fapi_export_form',
     ],
   ];
-
   return $help;
 }
 
@@ -53,7 +52,7 @@ function webform_devel_entity_type_alter(array &$entity_types) {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for config single export form.
  */
 function webform_devel_form_config_single_export_form_alter(&$form, FormStateInterface $form_state) {
   $form['export']['#type'] = 'webform_codemirror';

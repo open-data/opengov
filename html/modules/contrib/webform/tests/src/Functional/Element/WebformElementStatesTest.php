@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for webform element #states.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementStatesTest extends WebformElementBrowserTestBase {
 
@@ -26,7 +26,7 @@ class WebformElementStatesTest extends WebformElementBrowserTestBase {
     /**************************************************************************/
 
     // Check default value handling.
-    $this->drupalPostForm('/webform/test_element_states', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_states', [], 'Submit');
 
     $this->assertRaw("states_basic:
   enabled:
@@ -94,11 +94,11 @@ states_custom_condition:
 
     // Check 'States unsupport operator'.
     $this->assertRaw('Conditional logic (Form API #states) is using the <em class="placeholder">XXX</em> operator. Form API #states must be manually entered.');
-    $this->assertRaw('<textarea data-drupal-selector="edit-states-unsupported-operator-states" aria-describedby="edit-states-unsupported-operator-states--description" class="js-webform-codemirror webform-codemirror yaml form-textarea resize-vertical" data-webform-codemirror-mode="text/x-yaml" id="edit-states-unsupported-operator-states" name="states_unsupported_operator[states]" rows="5" cols="60">');
+    $this->assertRaw('<textarea data-drupal-selector="edit-states-unsupported-operator-states" aria-describedby="edit-states-unsupported-operator-states--description" class="js-webform-codemirror webform-codemirror yaml form-textarea" data-webform-codemirror-mode="text/x-yaml" id="edit-states-unsupported-operator-states" name="states_unsupported_operator[states]" rows="5" cols="60">');
 
     // Check 'States unsupport nested multiple selectors'.
     $this->assertRaw('Conditional logic (Form API #states) is using multiple nested conditions. Form API #states must be manually entered.');
-    $this->assertRaw('<textarea data-drupal-selector="edit-states-unsupported-nesting-states" aria-describedby="edit-states-unsupported-nesting-states--description" class="js-webform-codemirror webform-codemirror yaml form-textarea resize-vertical" data-webform-codemirror-mode="text/x-yaml" id="edit-states-unsupported-nesting-states" name="states_unsupported_nesting[states]" rows="5" cols="60">');
+    $this->assertRaw('<textarea data-drupal-selector="edit-states-unsupported-nesting-states" aria-describedby="edit-states-unsupported-nesting-states--description" class="js-webform-codemirror webform-codemirror yaml form-textarea" data-webform-codemirror-mode="text/x-yaml" id="edit-states-unsupported-nesting-states" name="states_unsupported_nesting[states]" rows="5" cols="60">');
 
     // Check 'States single' (#multiple: FALSE)
     $this->assertFieldById('edit-states-empty-actions-add', NULL);
@@ -110,12 +110,12 @@ states_custom_condition:
 
     // Check duplicate states validation.
     $edit = ['states_basic[states][0][state]' => 'required'];
-    $this->drupalPostForm('/webform/test_element_states', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_states', $edit, 'Submit');
     $this->assertRaw('The <em class="placeholder">Required</em> state is declared more than once. There can only be one declaration per state.');
 
     // Check duplicate selectors validation.
     $edit = ['states_basic[states][3][selector]' => 'selector_02'];
-    $this->drupalPostForm('/webform/test_element_states', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_states', $edit, 'Submit');
     $this->assertRaw('The <em class="placeholder">Selector 02 (selector_02)</em> element is used more than once within the <em class="placeholder">Required</em> state. To use multiple values within a trigger try using the pattern trigger.');
 
     /**************************************************************************/

@@ -72,9 +72,9 @@
         page_confirm_path:
           type: string
           label: 'Page confirm URL alias'
-        page_admin_theme:
-          type: boolean
-          label: 'Use admin theme for page'
+        page_theme_name:
+          type: string
+          label: 'Page theme'
         form_title:
           type: string
           label: 'Form title display'
@@ -162,6 +162,24 @@
         form_file_limit:
           type: string
           label: 'Form file upload limit'
+        form_elements_attributes:
+          type: ignore
+          label: 'Form elements attributes'
+        share:
+          type: boolean
+          label: 'Enable form sharing'
+        share_node:
+          type: boolean
+          label: 'Enable form sharing for webform nodes'
+        share_theme_name:
+          type: string
+          label: 'Shared form theme'
+        share_title:
+          type: boolean
+          label: 'Display shared form title'
+        share_page_body_attributes:
+          type: ignore
+          label: 'Shared form page attributes'
         submission_label:
           type: label
           label: 'Default submission label'
@@ -302,9 +320,33 @@
         wizard_confirmation_label:
           type: label
           label: 'Wizard confirmation label'
+        wizard_auto_forward:
+          type: boolean
+          label: 'Auto-forward to next page when the page is completed'
+        wizard_auto_forward_hide_next_button:
+          type: boolean
+          label: 'Hide the next button when auto-forwarding'
+        wizard_keyboard:
+          type: boolean
+          label: 'Navigate between cards when the left or right arrow is pressed'
         wizard_track:
           type: text
           label: 'Track wizard progress in the URL'
+        wizard_prev_button_label:
+          type: label
+          label: 'Wizard previous page button label'
+        wizard_next_button_label:
+          type: label
+          label: 'Wizard next page button label'
+        wizard_toggle:
+          type: boolean
+          label: 'Display show/hide all elements link'
+        wizard_toggle_show_label:
+          type: label
+          label: 'Default wizard show all elements label'
+        wizard_toggle_hide_label:
+          type: label
+          label: 'Default wizard hide all elements label'
         preview:
           type: integer
           label: 'Enable preview page'
@@ -443,6 +485,12 @@
         token_update:
           type: boolean
           label: 'Allow updating a submission using token'
+        token_delete:
+          type: boolean
+          label: 'Allow deleting a submission using token'
+        serial_disabled:
+          type: boolean
+          label: 'Next submission number disabled'
     access:
       type: sequence
       label: 'Access Rules'
@@ -483,6 +531,9 @@
           label:
             type: label
             label: Label
+          notes:
+            type: text
+            label: Notes
           status:
             type: boolean
             label: Status

@@ -98,6 +98,19 @@ class Webform extends RenderElement {
       }
     }
 
+    // Allow anonymous drafts to be restored.
+    // @see \Drupal\webform\WebformSubmissionForm::buildForm
+    if (\Drupal::currentUser()->isAnonymous()
+      && $webform->getSetting('draft') === WebformInterface::DRAFT_ALL) {
+      $element['#cache']['max-age'] = 0;
+      // @todo Remove once bubbling of element's max-age to page cache is fixed.
+      // @see https://www.drupal.org/project/webform/issues/3015760
+      // @see https://www.drupal.org/project/drupal/issues/2352009
+      if (\Drupal::moduleHandler()->moduleExists('page_cache')) {
+        \Drupal::service(('page_cache_kill_switch'))->trigger();
+      }
+    }
+
     return $element;
   }
 

@@ -10,7 +10,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for webform node.
  *
- * @group WebformNode
+ * @group webform_node
  */
 class WebformNodeTest extends WebformNodeBrowserTestBase {
 
@@ -31,7 +31,7 @@ class WebformNodeTest extends WebformNodeBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Place webform test blocks.
@@ -83,13 +83,13 @@ class WebformNodeTest extends WebformNodeBrowserTestBase {
     $webform->setStatus(WebformInterface::STATUS_CLOSED);
     $webform->save();
 
-    // Check page closed message
+    // Check page closed message.
     $this->drupalGet('/node/' . $node->id());
     $this->assertRaw('Sorry… This form is closed to new submissions.');
 
     $this->drupalLogin($this->rootUser);
 
-    // Check webform closed warning
+    // Check webform closed warning.
     $this->drupalGet('/node/' . $node->id() . '/edit');
     $this->assertRaw('The <em class="placeholder">Contact</em> webform is <a href="' . $base_path . 'admin/structure/webform/manage/contact/settings/form">closed</a>. The below status will be ignored.');
 
@@ -293,7 +293,7 @@ class WebformNodeTest extends WebformNodeBrowserTestBase {
       'subject' => 'subject',
       'message' => 'message',
     ];
-    $this->drupalPostForm('/webform/contact', $edit, t('Send message'), $source_entity_options);
+    $this->drupalPostForm('/webform/contact', $edit, 'Send message', $source_entity_options);
     $sid = $this->getLastSubmissionId($webform_contact);
     $submission = WebformSubmission::load($sid);
     $this->assertNotNull($submission->getSourceEntity());

@@ -14,21 +14,21 @@
   // Add element.
   if (shortcuts.addElement) {
     $(document).bind('keydown', shortcuts.addElement, function () {
-      $('#webform-ui-add-element').click();
+      $('#webform-ui-add-element').trigger('click');
     });
   }
 
   // Add page.
   if (shortcuts.addPage) {
     $(document).bind('keydown', shortcuts.addPage, function () {
-      $('#webform-ui-add-page').focus().click();
+      $('#webform-ui-add-page').trigger('focus').trigger('click');
     });
   }
 
   // Add layout.
   if (shortcuts.addLayout) {
     $(document).bind('keydown', shortcuts.addLayout, function () {
-      $('#webform-ui-add-layout').click();
+      $('#webform-ui-add-layout').trigger('click');
     });
   }
 
@@ -37,10 +37,10 @@
     $(document).bind('keydown', shortcuts.saveElements, function () {
       var $dialogSubmit = $('form.webform-ui-element-form [data-drupal-selector="edit-submit"]');
       if ($dialogSubmit.length) {
-        $dialogSubmit.click();
+        $dialogSubmit.trigger('click');
       }
       else {
-        $('form.webform-edit-form [data-drupal-selector="edit-submit"]').click();
+        $('form.webform-edit-form [data-drupal-selector="edit-submit"]').trigger('click');
       }
     });
   }
@@ -48,14 +48,14 @@
   // Reset elements.
   if (shortcuts.resetElements) {
     $(document).bind('keydown', shortcuts.resetElements, function () {
-      $('form.webform-edit-form [data-drupal-selector="edit-reset"]').click();
+      $('form.webform-edit-form [data-drupal-selector="edit-reset"]').trigger('click');
     });
   }
 
   // Toggle weight.
   if (shortcuts.toggleWeights) {
     $(document).bind('keydown', shortcuts.toggleWeights, function () {
-      $('.tabledrag-toggle-weight').eq(0).click();
+      $('.tabledrag-toggle-weight').eq(0).trigger('click');
     });
   }
 

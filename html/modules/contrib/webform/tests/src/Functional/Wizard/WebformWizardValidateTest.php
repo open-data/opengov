@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Wizard;
 /**
  * Tests for webform wizard validation.
  *
- * @group Webform
+ * @group webform
  */
 class WebformWizardValidateTest extends WebformWizardTestBase {
 
@@ -34,7 +34,7 @@ class WebformWizardValidateTest extends WebformWizardTestBase {
     /**************************************************************************/
 
     // Check validation errors.
-    $this->drupalPostForm('/webform/test_form_wizard_validate', [], t('Next Page >'));
+    $this->drupalPostForm('/webform/test_form_wizard_validate', [], 'Next >');
     $this->assertRaw('wizard_1_textfield field is required.');
     $this->assertRaw('wizard_1_select_other field is required.');
     $this->assertRaw('wizard_1_datelist field is required.');
@@ -49,7 +49,7 @@ class WebformWizardValidateTest extends WebformWizardTestBase {
       'wizard_1_datelist[items][0][_item_][hour]' => '1',
       'wizard_1_datelist[items][0][_item_][minute]' => '10',
     ];
-    $this->drupalPostForm('/webform/test_form_wizard_validate', $edit, t('Next Page >'));
+    $this->drupalPostForm('/webform/test_form_wizard_validate', $edit, 'Next >');
     $this->assertRaw("wizard_1_textfield: '{wizard_1_textfield}'
 wizard_1_select_other: one
 wizard_1_datelist:
@@ -68,7 +68,7 @@ wizard_2_datelist: {  }");
       'wizard_2_datelist[items][0][_item_][hour]' => '2',
       'wizard_2_datelist[items][0][_item_][minute]' => '20',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Next Page >'));
+    $this->drupalPostForm(NULL, $edit, 'Next >');
     $this->assertRaw("wizard_1_textfield: '{wizard_1_textfield}'
 wizard_1_select_other: one
 wizard_1_datelist:
@@ -83,7 +83,7 @@ wizard_2_datelist:
     /**************************************************************************/
 
     // Check validation errors.
-    $this->drupalPostForm('/webform/test_form_wizard_validate_comp', [], t('Next Page >'));
+    $this->drupalPostForm('/webform/test_form_wizard_validate_comp', [], 'Next >');
     // $this->assertRaw('The <em class="placeholder">datelist</em> date is required.');
     $this->assertRaw('textfield field is required.');
 
@@ -108,7 +108,7 @@ wizard_2_datelist:
       'wizard_1_test_composite_multiple[items][0][_item_][datelist][hour]' => '1',
       'wizard_1_test_composite_multiple[items][0][_item_][datelist][minute]' => '10',
     ];
-    $this->drupalPostForm('/webform/test_form_wizard_validate_comp', $edit, t('Next Page >'));
+    $this->drupalPostForm('/webform/test_form_wizard_validate_comp', $edit, 'Next >');
     $this->assertRaw("wizard_1_custom_composite:
   - datelist: '2001-01-01T01:10:00+1100'
     textfield: '{wizard_1_custom_composite_textfield}'
@@ -167,7 +167,7 @@ wizard_2_test_composite_multiple: {  }");
       'wizard_2_test_composite_multiple[items][0][_item_][datelist][hour]' => '2',
       'wizard_2_test_composite_multiple[items][0][_item_][datelist][minute]' => '20',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Next Page >'));
+    $this->drupalPostForm(NULL, $edit, 'Next >');
 
     $raw = "wizard_1_custom_composite:
   - datelist: '2001-01-01T01:10:00+1100'
@@ -239,13 +239,13 @@ wizard_2_test_composite_multiple:
 
     // Make sure navigating back and next through the
     // previous pages does not lose any data.
-    $this->drupalPostForm(NULL, [], t('< Previous Page'));
+    $this->drupalPostForm(NULL, [], '< Previous');
     $this->assertRaw($raw);
-    $this->drupalPostForm(NULL, [], t('< Previous Page'));
+    $this->drupalPostForm(NULL, [], '< Previous');
     $this->assertRaw($raw);
-    $this->drupalPostForm(NULL, [], t('Next Page >'));
+    $this->drupalPostForm(NULL, [], 'Next >');
     $this->assertRaw($raw);
-    $this->drupalPostForm(NULL, [], t('Next Page >'));
+    $this->drupalPostForm(NULL, [], 'Next >');
     $this->assertRaw($raw);
   }
 

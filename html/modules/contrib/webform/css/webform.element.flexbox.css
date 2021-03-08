@@ -1,6 +1,6 @@
 /**
  * @file
- * Flexbox styles.
+ * Flexbox element styles.
  *
  * @see /webform/example_layout_flexbox
  * @see /webform/test_element_flexbox_flex
@@ -53,39 +53,41 @@
     margin: 0;
   }
 
-  .webform-flex--container > .form-item > input,
+  .webform-flex--container > .form-item > input:not([type="checkbox"]),
   .webform-flex--container > .form-item > select {
     width: 100%;
   }
 
-  .container-inline .webform-flex--container > .form-item > input,
-  .container-inline .webform-flex--container > .form-item > select {
+  .container-inline .webform-flex--container > .form-item > input:not([type="checkbox"]),
+  .container-inline .webform-flex--container > .form-item > select,
+  .webform-flex--container > .form-item.webform-element--title-inline  > input:not([type="checkbox"]),
+  .webform-flex--container > .form-item.webform-element--title-inline  > select {
     width: inherit;
   }
 
-  .webform-flex--container > .webform-has-field-prefix > input,
-  .webform-flex--container > .webform-has-field-suffix > input,
+  .webform-flex--container > .webform-has-field-prefix > input:not([type="checkbox"]),
+  .webform-flex--container > .webform-has-field-suffix > input:not([type="checkbox"]),
   .webform-flex--container > .webform-has-field-prefix > select,
   .webform-flex--container > .webform-has-field-suffix > select {
     width: 85%;
   }
 
-  .webform-flex--container > .webform-has-field-prefix.webform-flex.webform-has-field-suffix > input,
+  .webform-flex--container > .webform-has-field-prefix.webform-flex.webform-has-field-suffix > input:not([type="checkbox"]),
   .webform-flex--container > .webform-has-field-prefix.webform-flex.webform-has-field-suffix > select {
     width: 70%;
   }
 
-  .webform-flex--container > .webform-element-help-container--element > input,
+  .webform-flex--container > .webform-element-help-container--element > input:not([type="checkbox"]),
   .webform-flex--container > .webform-element-help-container--element > select {
     width: 85%;
   }
 
-  .webform-flex--container > .webform-has-field-prefix.webform-element-help-container--element > input,
+  .webform-flex--container > .webform-has-field-prefix.webform-element-help-container--element > input:not([type="checkbox"]),
   .webform-flex--container > .webform-has-field-suffix.webform-element-help-container--element > select {
     width: 70%;
   }
 
-  .webform-flex--container > .webform-has-field-prefix.webform-has-field-suffix.webform-element-help-container--element > input,
+  .webform-flex--container > .webform-has-field-prefix.webform-has-field-suffix.webform-element-help-container--element > input:not([type="checkbox"]),
   .webform-flex--container > .webform-has-field-prefix.webform-has-field-suffix.webform-element-help-container--element > select {
     width: 50%;
   }

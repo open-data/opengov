@@ -44,7 +44,6 @@ class WebformGroupManager implements WebformGroupManagerInterface {
    */
   protected $requestHandler;
 
-
   /**
    * The webform access rules manager.
    *

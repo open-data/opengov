@@ -43,6 +43,9 @@
   {% if token_update %}
     <div><b>{{ 'Submission Update'|t }}:</b> {{ token_update }}</div>
   {% endif %}
+  {% if token_delete %}
+    <div><b>{{ 'Submission Delete'|t }}:</b> {{ token_delete }}</div>
+  {% endif %}
   <br />
   <div><b>{{ 'Created'|t }}:</b> {{ created }}</div>
   <div><b>{{ 'Completed'|t }}:</b> {{ completed }}</div>
@@ -74,7 +77,6 @@
       </div>
     {% endif %}
   {% endif %}
-
 {% else %}
   <div><b>{{ 'Submission Number'|t }}:</b> {{ serial }}</div>
   <div><b>{{ 'Created'|t }}:</b> {{ created }}</div>

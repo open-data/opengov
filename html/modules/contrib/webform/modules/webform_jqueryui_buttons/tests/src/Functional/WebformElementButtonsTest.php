@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\Element\WebformElementBrowserTestBase;
 /**
  * Tests for webform element buttons.
  *
- * @group Webform
+ * @group webform_jqueryui_buttons
  */
 class WebformElementButtonsTest extends WebformElementBrowserTestBase {
 
@@ -41,7 +41,7 @@ class WebformElementButtonsTest extends WebformElementBrowserTestBase {
       'buttons_other_basic[buttons]' => '_other_',
       'buttons_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_buttons', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_buttons', $edit, 'Submit');
     $this->assertRaw('buttons_other_basic field is required.');
 
     // Check buttons other not required when not checked.
@@ -49,7 +49,7 @@ class WebformElementButtonsTest extends WebformElementBrowserTestBase {
       'buttons_other_basic[buttons]' => 'One',
       'buttons_other_basic[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_buttons', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_buttons', $edit, 'Submit');
     $this->assertNoRaw('buttons_other_basic field is required.');
 
     // Check buttons other required validation.
@@ -57,7 +57,7 @@ class WebformElementButtonsTest extends WebformElementBrowserTestBase {
       'buttons_other_advanced[buttons]' => '_other_',
       'buttons_other_advanced[other]' => '',
     ];
-    $this->drupalPostForm('/webform/test_element_buttons', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_buttons', $edit, 'Submit');
     $this->assertRaw('buttons_other_advanced field is required.');
 
     // Check buttons other processing w/ other.
@@ -65,7 +65,7 @@ class WebformElementButtonsTest extends WebformElementBrowserTestBase {
       'buttons_other_advanced[buttons]' => '_other_',
       'buttons_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_buttons', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_buttons', $edit, 'Submit');
     $this->assertRaw('buttons_other_advanced: Five');
 
     // Check buttons other processing w/o other.
@@ -74,7 +74,7 @@ class WebformElementButtonsTest extends WebformElementBrowserTestBase {
       // This value is ignored, because 'buttons_other_advanced[buttons]' is not set to '_other_'.
       'buttons_other_advanced[other]' => 'Five',
     ];
-    $this->drupalPostForm('/webform/test_element_buttons', $edit, t('Submit'));
+    $this->drupalPostForm('/webform/test_element_buttons', $edit, 'Submit');
     $this->assertRaw('buttons_other_advanced: One');
     $this->assertNoRaw('buttons_other_advanced: Five');
   }

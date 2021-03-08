@@ -7,8 +7,6 @@
 
   'use strict';
 
-  var isChrome = (/chrom(e|ium)/.test(window.navigator.userAgent.toLowerCase()));
-
   /**
    * Element #states builder.
    *
@@ -28,7 +26,7 @@
         });
 
         // Initialize trigger and selector.
-        $trigger.on('change', function () {$selector.change();});
+        $trigger.on('change', function () {$selector.trigger('change');});
 
         $selector.on('change', function () {
           var selector = $selector.val();
@@ -48,8 +46,8 @@
               .removeClass('form-autocomplete');
           }
           // Always disable browser auto completion.
-          $value.attr('autocomplete', (isChrome ? 'chrome-off-' + Math.floor(Math.random() * 100000000) : 'off'));
-        }).change();
+          $value.attr('autocomplete', 'off');
+        }).trigger('change');
       });
 
       // If the states:state is required or optional the required checkbox
@@ -100,7 +98,7 @@
         requiredChecked = null;
       }
     }
-    $input.change();
+    $input.trigger('change');
   }
 
 })(jQuery, Drupal, drupalSettings);

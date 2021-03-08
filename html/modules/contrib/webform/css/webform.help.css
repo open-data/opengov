@@ -16,11 +16,6 @@
 /**
  * Help page.
  */
-.webform-help h4 {
-  text-transform: uppercase;
-  font-size: 1em;
-}
-
 .webform-help .button.button--primary {
   width: 100%;
   max-width: 600px;

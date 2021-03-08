@@ -8,7 +8,7 @@
   'use strict';
 
   $(document).on('state:required', function (e) {
-    if (e.trigger) {
+    if (e.trigger && e.target && e.target.id) {
       var $element = $('#' + e.target.id);
       // Add/remove required from the question labels.
       if ($element.hasClass('webform-likert-table')) {

@@ -10,7 +10,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for access denied webform and submissions.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsAccessDeniedTest extends WebformBrowserTestBase {
 
@@ -31,7 +31,7 @@ class WebformSettingsAccessDeniedTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Place blocks.
@@ -90,7 +90,7 @@ class WebformSettingsAccessDeniedTest extends WebformBrowserTestBase {
 
     // Check custom access denied page.
     $this->drupalGet('/admin/structure/webform/manage/test_form_access_denied');
-    $this->assertRaw('<h1 class="page-title">Webform: Access denied</h1>');
+    $this->assertRaw('<h1>Webform: Access denied</h1>');
     $this->assertRaw('<div style="border: 1px solid red" class="webform-access-denied">Please login to access <b>Test: Webform: Access Denied</b>.</div>');
 
     /**************************************************************************/
@@ -171,7 +171,7 @@ class WebformSettingsAccessDeniedTest extends WebformBrowserTestBase {
     // Check custom access denied page.
     $this->drupalGet("admin/structure/webform/manage/test_form_access_denied/submission/$sid");
     $this->assertNoRaw('You are not authorized to access this page.');
-    $this->assertRaw('<h1 class="page-title">Webform submission: Access denied</h1>');
+    $this->assertRaw('<h1>Webform submission: Access denied</h1>');
     $this->assertRaw('<div style="border: 1px solid red" class="webform-submission-access-denied">Please login to access <b>Test: Webform: Access Denied: Submission #' . $sid . '</b>.</div>');
   }
 

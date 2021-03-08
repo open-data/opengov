@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_ENTITY_TYPE_load().
+ * Implements hook_ENTITY_TYPE_load() for webform entities.
  */
 function webform_options_custom_test_webform_load(array $entities) {
   if (!isset($entities['test_element_options_custom'])) {

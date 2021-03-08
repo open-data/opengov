@@ -44,7 +44,7 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
   protected $elementManager;
 
   /**
-   * The libraries manager.
+   * The webform libraries manager.
    *
    * @var \Drupal\webform\WebformLibrariesManagerInterface
    */

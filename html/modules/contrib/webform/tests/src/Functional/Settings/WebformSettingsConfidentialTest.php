@@ -10,7 +10,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for confidential webform submissions.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsConfidentialTest extends WebformBrowserTestBase {
 
@@ -51,7 +51,7 @@ class WebformSettingsConfidentialTest extends WebformBrowserTestBase {
     // Check that test submission does not record the IP address.
     $sid = $this->postSubmissionTest($webform, ['name' => 'John']);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertEqual($webform_submission->getRemoteAddr(), t('(unknown)'));
+    $this->assertEqual($webform_submission->getRemoteAddr(), '(unknown)');
     $this->assertEqual($webform_submission->getOwnerId(), 0);
 
     // Check anonymous access to webform.
@@ -63,7 +63,7 @@ class WebformSettingsConfidentialTest extends WebformBrowserTestBase {
     // Check that submission does not track the requests IP address.
     $sid = $this->postSubmission($webform, ['name' => 'John']);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertEqual($webform_submission->getRemoteAddr(), t('(unknown)'));
+    $this->assertEqual($webform_submission->getRemoteAddr(), '(unknown)');
     $this->assertEqual($webform_submission->getOwnerId(), 0);
 
     // Check that previous submissions are visible.

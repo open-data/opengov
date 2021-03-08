@@ -30,6 +30,16 @@ class WebformEntityReferenceSelectWidget extends OptionsWidgetBase {
   /**
    * {@inheritdoc}
    */
+  public static function defaultSettings() {
+    return [
+      'default_data' => TRUE,
+      'webforms' => [],
+    ] + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTargetIdElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // Get default value (webform ID).
     $referenced_entities = $items->referencedEntities();
@@ -45,7 +55,7 @@ class WebformEntityReferenceSelectWidget extends OptionsWidgetBase {
     // it as an option.
     if ($default_value && $webform = Webform::load($default_value)) {
       if ($webform->isArchived()) {
-        $options[(string) t('Archived')][$webform->id()] = $webform->label();
+        $options[(string) $this->t('Archived')][$webform->id()] = $webform->label();
       }
     }
 
@@ -89,14 +99,26 @@ class WebformEntityReferenceSelectWidget extends OptionsWidgetBase {
    */
   protected function getOptions(FieldableEntityInterface $entity) {
     if (!isset($this->options)) {
-      // Limit the settable options for the current user account.
-      // Note: All active webforms are returned and grouped by category.
-      // @see \Drupal\webform\Plugin\Field\FieldType\WebformEntityReferenceItem::getSettableOptions
-      // @see \Drupal\webform\WebformEntityStorageInterface::getOptions
-      $options = $this->fieldDefinition
-        ->getFieldStorageDefinition()
-        ->getOptionsProvider($this->column, $entity)
-        ->getSettableOptions(\Drupal::currentUser());
+      $webform_ids = $this->getSetting('webforms');
+      if ($webform_ids) {
+        $webforms = Webform::loadMultiple($webform_ids);
+        $options = [];
+        foreach ($webforms as $webform) {
+          $options[$webform->id()] = $webform->label();
+        }
+        asort($options);
+      }
+      else {
+        // Limit the settable options for the current user account.
+        // Note: All active webforms are returned and grouped by category.
+        // @see \Drupal\webform\Plugin\Field\FieldType\WebformEntityReferenceItem::getSettableOptions
+        // @see \Drupal\webform\WebformEntityStorageInterface::getOptions
+        $options = $this->fieldDefinition
+          ->getFieldStorageDefinition()
+          ->getOptionsProvider($this->column, $entity)
+          ->getSettableOptions(\Drupal::currentUser());
+
+      }
 
       $module_handler = \Drupal::moduleHandler();
       $context = [

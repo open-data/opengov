@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for webform element multiple property.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementMultiplePropertyTest extends WebformElementBrowserTestBase {
 
@@ -21,7 +21,7 @@ class WebformElementMultiplePropertyTest extends WebformElementBrowserTestBase {
    */
   public function testMultipleProperty() {
     // Check processing.
-    $this->drupalPostForm('/webform/test_element_multiple_property', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_element_multiple_property', [], 'Submit');
     $this->assertRaw('webform_element_multiple: false
 webform_element_multiple_true: true
 webform_element_multiple_false: false

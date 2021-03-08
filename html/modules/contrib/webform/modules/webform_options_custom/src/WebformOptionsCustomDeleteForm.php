@@ -39,7 +39,7 @@ class WebformOptionsCustomDeleteForm extends WebformConfigEntityDeleteFormBase {
 
     $t_args = [
       '%label' => $this->getEntity()->label(),
-      '@entity-type' => $this->getEntity()->getEntityType()->getLowercaseLabel(),
+      '@entity-type' => $this->getEntity()->getEntityType()->getSingularLabel(),
     ];
 
     $details = [];

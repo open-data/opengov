@@ -89,21 +89,21 @@ class WebformHelpManager implements WebformHelpManagerInterface {
   protected $pathMatcher;
 
   /**
-   * The Webform add-ons manager.
+   * The webform add-ons manager.
    *
    * @var \Drupal\webform\WebformAddonsManagerInterface
    */
   protected $addOnsManager;
 
   /**
-   * The Webform libraries manager.
+   * The webform libraries manager.
    *
    * @var \Drupal\webform\WebformLibrariesManagerInterface
    */
   protected $librariesManager;
 
   /**
-   * Webform element manager.
+   * The webform element manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
@@ -1296,7 +1296,18 @@ class WebformHelpManager implements WebformHelpManagerInterface {
         'youtube_id' => '7cVIqySy5fs',
         'presentation_id' => '1R13ZGkNgTkxjlN-BT05zrwW2JKhOcvGiByNYl7qtywg',
       ],
-
+      'sharing' => [
+        'title' => $this->t('Sharing Webforms'),
+        'content' => $this->t('This screencast walks through how to share a webform with any website, webpage, or application.'),
+        'youtube_id' => 'oMgOprfJTWA',
+        'presentation_id' => '1ZYPW5BWh9gm7APrYKAuMdQKksFN2yWqaeN0C4iK127M',
+      ],
+      'cards' => [
+        'title' => $this->t('Webform Cards'),
+        'content' => $this->t('This screencast walks through how to create faster and better multistep form user experiences using the Webform Cards module.'),
+        'youtube_id' => 'bDugc2gWQnw',
+        'presentation_id' => '1N7gaq8jDyrGQUawBr8hvegQUfqESaBUEI3WYNpVfTKw',
+      ],
       'webform' => [
         'title' => $this->t('Webform: There is this for that'),
         'content' => $this->t('One of the key mantras in the Drupal is “there is a module for that, “ and Webform is the module for building forms for Drupal 8.'),
@@ -1352,6 +1363,12 @@ class WebformHelpManager implements WebformHelpManagerInterface {
         'content' => $this->t('This screencast will explore how governments can leverage the Webform module for Drupal 8 to build accessible forms that securely collective massive amounts of data.'),
         'youtube_id' => 'WQG6163r9Rs',
         'presentation_id' => '1Mn7qlSR_njTZcGAM3PNQZR8Tvg7qtPhZFQja7Mj5uzI',
+      ],
+      'everyone' => [
+        'title' => $this->t('Webforms for Everyone'),
+        'content' => $this->t('This presentation explores how site owners, site builders, and developers can leverage the Webform module for Drupal 8 to build complex and robust forms for their end-users.'),
+        'youtube_id' => 'zvilAbrczGM',
+        'presentation_id' => '1APpt-55Ht_WLZc656KfQUXUoIAb-PTOmbMwSYSAw6G4',
       ],
     ];
 
@@ -1758,7 +1775,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'group' => 'configuration',
       'title' => $this->t('Configuration: Libraries: Help'),
       'content' => '<p>' . $this->t('The Webform module utilizes third-party Open Source libraries to enhance webform elements and to provide additional functionality.') . ' ' .
-        $this->t('It is recommended that these libraries are installed in your Drupal installations /libraries or /web/libraries directory.') . ' ' .
+        $this->t("It is recommended that these libraries are installed in your Drupal installation's /libraries or /web/libraries directory.") . ' ' .
         $this->t('If these libraries are not installed, they will be automatically loaded from a CDN.') . ' ' .
         $this->t('All libraries are optional and can be excluded via the admin settings form.') .
         '</p>' .
@@ -1772,7 +1789,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
         '<li>' . $this->t('Generate a *.make.yml or composer.json file using <code>drush @webform-libraries-make</code> or <code>drush @webform-libraries-composer</code>.', $t_args) . '</li>' .
         '<li>' . $this->t('Execute <code>drush @webform-libraries-download</code>, to download third-party libraries required by the Webform module. (OSX/Linux)', $t_args) . '</li>' .
         '<li>' . $this->t("Execute <code>drush @webform-composer-update</code>, to update your Drupal installation's composer.json to include the Webform module's selected libraries as repositories.", $t_args) . '</li>' .
-        '<li>' . $this->t('Download and extract a <a href=":href">zipped archive containing all webform libraries</a> and extract the directories and files to /libraries or /web/libraries', [':href' => 'https://git.drupalcode.org/sandbox/jrockowitz-2941983/raw/8.x-1.x/libraries.zip']) . '</li>' .
+        '<li>' . $this->t('Download and extract a <a href=":href">zipped archive containing all webform libraries</a> and extract the directories and files to /libraries or /web/libraries', [':href' => 'https://git.drupalcode.org/sandbox/jrockowitz-2941983/raw/8.x-5.x/libraries.zip']) . '</li>' .
         '</ul>',
       'message_type' => 'info',
       'message_close' => TRUE,
@@ -2093,9 +2110,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => $this->t("The <strong>View</strong> page displays a submission's general information and data."),
       'video_id' => 'submission',
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}
         'entity.webform_submission.canonical',
-        // @see /node/{node}/webform/submission/{webform_submisssion}
+        // @see /node/{node}/webform/submission/{webform_submission}
         'entity.node.webform_submission.canonical',
       ],
     ];
@@ -2106,9 +2123,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => $this->t("The <strong>Table</strong> page displays a submission's general information and data using tabular layout."),
       'video_id' => 'submission',
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/table
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/table
         'entity.webform_submission.table',
-        // @see /node/{node}/webform/submission/{webform_submisssion}/table
+        // @see /node/{node}/webform/submission/{webform_submission}/table
         'entity.node.webform_submission.table',
       ],
     ];
@@ -2119,9 +2136,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => $this->t("The <strong>Plain text</strong> page displays a submission's general information and data as plain text."),
       'video_id' => 'submission',
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/text
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/text
         'entity.webform_submission.text',
-        // @see /node/{node}/webform/submission/{webform_submisssion}/text
+        // @see /node/{node}/webform/submission/{webform_submission}/text
         'entity.node.webform_submission.text',
       ],
     ];
@@ -2132,9 +2149,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => $this->t("The <strong>Data (YAML)</strong> page displays a submission's raw data as YAML."),
       'video_id' => 'submission',
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/yaml
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/yaml
         'entity.webform_submission.yaml',
-        // @see /node/{node}/webform/submission/{webform_submisssion}/yaml
+        // @see /node/{node}/webform/submission/{webform_submission}/yaml
         'entity.node.webform_submission.yaml',
       ],
     ];
@@ -2145,9 +2162,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => $this->t("The <strong>Edit</strong> form allows the administrator to update a submission."),
       'video_id' => 'submission',
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/edit
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/edit
         'entity.webform_submission.edit_form',
-        // @see /node/{node}/webform/submission/{webform_submisssion}/edit
+        // @see /node/{node}/webform/submission/{webform_submission}/edit
         'entity.node.webform_submission.edit_form',
       ],
     ];
@@ -2158,9 +2175,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => $this->t("The <strong>Edit all</strong> form allows administrator to update all values for submission create from a multi-step form."),
       'video_id' => 'submission',
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/edit_all
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/edit_all
         'entity.webform_submission.edit_all',
-        // @see /node/{node}/webform/submission/{webform_submisssion}/edit_all
+        // @see /node/{node}/webform/submission/{webform_submission}/edit_all
         'entity.node.webform_submission.edit_all',
       ],
     ];
@@ -2171,9 +2188,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => $this->t("The <strong>Resend</strong> form allows administrator to preview and resend emails and messages."),
       'video_id' => 'submission',
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/resend
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/resend
         'entity.webform_submission.resend_form',
-        // @see /node/{node}/webform/submission/{webform_submisssion}/resend
+        // @see /node/{node}/webform/submission/{webform_submission}/resend
         'entity.node.webform_submission.resend_form',
       ],
     ];
@@ -2183,9 +2200,9 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'title' => $this->t('Submission: Notes'),
       'content' => $this->t("The <strong>Notes</strong> form allows administrator to flag and annotate a submission."),
       'routes' => [
-        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submisssion}/notes
+        // @see /admin/structure/webform/manage/{webform}/submission/{webform_submission}/notes
         'entity.webform_submission.notes_form',
-        // @see /node/{node}/webform/submission/{webform_submisssion}/notes
+        // @see /node/{node}/webform/submission/{webform_submission}/notes
         'entity.node.webform_submission.notes_form',
       ],
     ];

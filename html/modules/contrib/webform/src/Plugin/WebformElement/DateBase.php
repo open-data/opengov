@@ -50,7 +50,7 @@ abstract class DateBase extends WebformElementBase {
     $element['#theme_wrappers'] = ['form_element'];
 
     // Must manually process #states.
-    // @see drupal_process_states().
+    // @see \Drupal\Core\Form\FormHelper::processStates
     if (!empty($element['#states'])) {
       $element['#attached']['library'][] = 'core/drupal.states';
       $element['#wrapper_attributes']['data-drupal-states'] = Json::encode($element['#states']);
@@ -666,7 +666,7 @@ abstract class DateBase extends WebformElementBase {
   protected static function formatDate($custom_format, $timestamp = NULL) {
     /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
     $date_formatter = \Drupal::service('date.formatter');
-    return $date_formatter->format($timestamp ?: time(), 'custom', $custom_format);
+    return $date_formatter->format($timestamp ?: \Drupal::time()->getRequestTime(), 'custom', $custom_format);
   }
 
 }

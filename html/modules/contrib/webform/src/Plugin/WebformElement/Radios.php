@@ -2,8 +2,6 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
-use Drupal\webform\WebformSubmissionInterface;
-
 /**
  * Provides a 'radios' element.
  *
@@ -42,23 +40,11 @@ class Radios extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
-    parent::prepare($element, $webform_submission);
-
-    // Issue #2856795: If radio buttons are required but not filled form is
-    // nevertheless submitted.
-    // Issue #2856315: Conditional Logic - Requiring Radios in a Fieldset.
-    $element['#attached']['library'][] = 'webform/webform.element.radios';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function setDefaultValue(array &$element) {
     // Unset empty string as default option to prevent '' === '0' issue.
     // @see \Drupal\Core\Render\Element\Radio::preRenderRadio
     if (isset($element['#default_value'])
-      && $element['#default_value'] == ''
+      && $element['#default_value'] === ''
       && !isset($element['#options'][$element['#default_value']])) {
       unset($element['#default_value']);
     }

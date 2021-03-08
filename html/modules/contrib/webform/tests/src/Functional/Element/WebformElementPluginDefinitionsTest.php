@@ -8,7 +8,7 @@ use Drupal\webform\Utility\WebformElementHelper;
 /**
  * Tests for webform element definitions.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase {
 
@@ -24,7 +24,11 @@ class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase 
     'taxonomy',
     'webform',
     'webform_attachment',
-    'webform_entity_print_attachment',
+    'webform_cards',
+    // Issue #3110478: [Webform 8.x-6.x] Track the D9 readiness state of the
+    // Webform module's (optional) dependencies
+    // @see https://www.drupal.org/project/webform/issues/3110478
+    // 'webform_entity_print_attachment',
     'webform_image_select',
     'webform_location_geocomplete',
     'webform_options_custom',
@@ -45,10 +49,16 @@ class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase 
     // Comparing all element's expected and actual definitions ensures
     // that there are not unexpected changes to any element's definitions.
     $expected_definitions = $this->getExpectedElementDefinitions();
+
+    // Issue #3110478: [Webform 8.x-6.x] Track the D9 readiness state of the
+    // Webform module's (optional) dependencies
+    // @see https://www.drupal.org/project/webform/issues/3110478
+    unset($expected_definitions['webform_entity_print_attachment:pdf']);
+
     $actual_definitions = $this->getActualElementDefinitions();
     $this->htmlOutput('<pre>' . htmlentities(Yaml::encode($actual_definitions)) . '</pre>');
     foreach ($actual_definitions as $key => $actual_definition) {
-      if ($expected_definitions[$key] != $actual_definition) {
+      if ($expected_definitions[$key] !== $actual_definition) {
         $this->htmlOutput('<pre>' . Yaml::encode([$key => $actual_definition]) . '</pre>');
       }
       $this->assertEquals($expected_definitions[$key], $actual_definition, "Expected and actual '$key' element definitions match.");
@@ -638,7 +648,7 @@ tel:
   dependencies: {  }
   default_key: ''
   category: 'Advanced elements'
-  description: "Provides a form element for entering a telephone number."
+  description: 'Provides a form element for entering a telephone number.'
   hidden: false
   multiline: false
   composite: false
@@ -751,6 +761,25 @@ value:
   class: Drupal\webform\Plugin\WebformElement\Value
   provider: webform
   input: true
+  container: false
+  root: false
+  multiple: false
+vertical_tabs:
+  dependencies: {  }
+  default_key: ''
+  category: 'Markup elements'
+  description: 'Provides a vertical tabs element.'
+  hidden: true
+  multiline: false
+  composite: false
+  states_wrapper: false
+  deprecated: false
+  deprecated_message: ''
+  id: vertical_tabs
+  label: 'Vertical tabs'
+  class: Drupal\webform\Plugin\WebformElement\VerticalTabs
+  provider: webform
+  input: false
   container: false
   root: false
   multiple: false
@@ -907,6 +936,25 @@ webform_autocomplete:
   container: false
   root: false
   multiple: true
+webform_card:
+  dependencies: {  }
+  default_key: ''
+  category: Cards
+  description: 'Provides an element for a fast clientside pagination.'
+  hidden: true
+  multiline: false
+  composite: false
+  states_wrapper: false
+  deprecated: false
+  deprecated_message: ''
+  id: webform_card
+  label: Card
+  class: Drupal\webform_cards\Plugin\WebformElement\WebformCard
+  provider: webform_cards
+  input: false
+  container: true
+  root: true
+  multiple: false
 webform_checkboxes_other:
   dependencies: {  }
   default_key: ''
@@ -1046,7 +1094,7 @@ webform_element:
   default_key: ''
   category: ''
   description: 'Provides a generic form element.'
-  hidden: false
+  hidden: true
   multiline: false
   composite: false
   states_wrapper: false
@@ -1117,26 +1165,6 @@ webform_entity_checkboxes:
   container: false
   root: false
   multiple: true
-'webform_entity_print_attachment:pdf':
-  dependencies: {  }
-  default_key: ''
-  category: 'File attachment elements'
-  description: 'Generates a PDF attachment.'
-  hidden: false
-  multiline: false
-  composite: false
-  states_wrapper: false
-  deprecated: false
-  deprecated_message: ''
-  id: webform_entity_print_attachment
-  label: 'Attachment PDF'
-  deriver: \Drupal\webform_entity_print_attachment\Plugin\Derivative\WebformEntityPrintAttachmentDeriver
-  class: Drupal\webform_entity_print_attachment\Plugin\WebformElement\WebformEntityPrintAttachment
-  provider: webform_entity_print_attachment
-  input: true
-  container: false
-  root: false
-  multiple: false
 webform_entity_radios:
   dependencies: {  }
   default_key: ''
@@ -1195,6 +1223,25 @@ webform_flexbox:
   container: true
   root: false
   multiple: false
+webform_height:
+  dependencies: {  }
+  default_key: ''
+  category: 'Advanced elements'
+  description: 'Provides a form element to collect height in feet and inches.'
+  hidden: false
+  multiline: false
+  composite: false
+  states_wrapper: false
+  deprecated: false
+  deprecated_message: ''
+  id: webform_height
+  label: 'Height (feet/inches)'
+  class: Drupal\webform\Plugin\WebformElement\WebformHeight
+  provider: webform
+  input: true
+  container: false
+  root: false
+  multiple: true
 webform_horizontal_rule:
   dependencies: {  }
   default_key: horizontal_rule
@@ -1521,6 +1568,25 @@ webform_same:
   container: false
   root: false
   multiple: false
+webform_scale:
+  dependencies: {  }
+  default_key: ''
+  category: 'Advanced elements'
+  description: 'Provides a form element for input of a numeric scale.'
+  hidden: false
+  multiline: false
+  composite: false
+  states_wrapper: false
+  deprecated: false
+  deprecated_message: ''
+  id: webform_scale
+  label: Scale
+  class: Drupal\webform\Plugin\WebformElement\WebformScale
+  provider: webform
+  input: true
+  container: false
+  root: false
+  multiple: false
 webform_section:
   dependencies: {  }
   default_key: ''
@@ -1576,6 +1642,44 @@ webform_signature:
   provider: webform
   input: true
   container: false
+  root: false
+  multiple: false
+webform_table:
+  dependencies: {  }
+  default_key: ''
+  category: Containers
+  description: 'Provides an element to render a table.'
+  hidden: false
+  multiline: false
+  composite: false
+  states_wrapper: false
+  deprecated: false
+  deprecated_message: ''
+  id: webform_table
+  label: Table
+  class: Drupal\webform\Plugin\WebformElement\WebformTable
+  provider: webform
+  input: false
+  container: true
+  root: false
+  multiple: false
+webform_table_row:
+  dependencies: {  }
+  default_key: ''
+  category: Containers
+  description: 'Provides an element to render a table row.'
+  hidden: true
+  multiline: false
+  composite: false
+  states_wrapper: false
+  deprecated: false
+  deprecated_message: ''
+  id: webform_table_row
+  label: 'Table row'
+  class: Drupal\webform\Plugin\WebformElement\WebformTableRow
+  provider: webform
+  input: false
+  container: true
   root: false
   multiple: false
 webform_table_sort:
@@ -1764,7 +1868,7 @@ webform_variant:
   deprecated: false
   deprecated_message: ''
   id: webform_variant
-  label: 'Variant [EXPERIMENTAL]'
+  label: 'Variant'
   class: Drupal\webform\Plugin\WebformElement\WebformVariant
   provider: webform
   input: true
@@ -1796,7 +1900,7 @@ webform_wizard_page:
   default_key: ''
   category: Wizard
   description: 'Provides an element to display multiple form elements as a page in a multi-step form wizard.'
-  hidden: false
+  hidden: true
   multiline: false
   composite: false
   states_wrapper: false
@@ -1810,65 +1914,7 @@ webform_wizard_page:
   container: true
   root: true
   multiple: false
-webform_table:
-  dependencies: {  }
-  default_key: ''
-  category: Containers
-  description: 'Provides an element to render a table.'
-  hidden: false
-  multiline: false
-  composite: false
-  states_wrapper: false
-  deprecated: false
-  deprecated_message: ''
-  id: webform_table
-  label: Table
-  class: Drupal\webform\Plugin\WebformElement\WebformTable
-  provider: webform
-  input: false
-  container: true
-  root: false
-  multiple: false
-webform_table_row:
-  dependencies: {  }
-  default_key: ''
-  category: 'Containers'
-  description: 'Provides an element to render a table row.'
-  hidden: true
-  multiline: false
-  composite: false
-  states_wrapper: false
-  deprecated: false
-  deprecated_message: ''
-  id: webform_table_row
-  label: 'Table row'
-  class: Drupal\webform\Plugin\WebformElement\WebformTableRow
-  provider: webform
-  input: false
-  container: true
-  root: false
-  multiple: false
-webform_scale:
-  dependencies: {  }
-  default_key: ''
-  category: 'Advanced elements'
-  description: 'Provides a form element for input of a numeric scale.'
-  id: webform_scale
-  label: Scale
-  class: Drupal\webform\Plugin\WebformElement\WebformScale
-  provider: webform
-  input: true
-  container: false
-  root: false
-  multiple: false
-  hidden: false
-  multiline: false
-  composite: false
-  states_wrapper: false
-  deprecated: false
-  deprecated_message: ''
 YAML;
-
     return Yaml::decode($yaml);
   }
 

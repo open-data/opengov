@@ -42,6 +42,12 @@ abstract class NumericBase extends WebformElementBase {
    */
   public function getTestValues(array $element, WebformInterface $webform, array $options = []) {
     $element += ['#min' => 1, '#max' => 10];
+    if (is_string($element['#min'])) {
+      $element['#min'] = $this->tokenManager->replace($element['#min'], $webform);
+    }
+    if (is_string($element['#max'])) {
+      $element['#max'] = $this->tokenManager->replace($element['#max'], $webform);
+    }
     return [
       $element['#min'],
       floor((($element['#max'] - $element['#min']) / 2) + $element['#min']),

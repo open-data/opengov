@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for table elements.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementTableTest extends WebformElementBrowserTestBase {
 
@@ -43,13 +43,13 @@ class WebformElementTableTest extends WebformElementBrowserTestBase {
     // Check default table rendering.
     $this->assertRaw('<table class="js-form-wrapper responsive-enabled" data-drupal-selector="edit-table" id="edit-table" data-striping="1">');
     $this->assertPattern('#<th>First Name</th>\s+<th>Last Name</th>\s+<th>Gender</th>#');
-    $this->assertRaw('<tr data-drupal-selector="edit-table-1" class="odd">');
-    $this->assertRaw('<td><div class="js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-table__1__first-name form-item-table__1__first-name form-no-label">');
+    $this->assertRaw('<tr data-drupal-selector="edit-table-1">');
+    $this->assertRaw('<td><div class="js-form-item form-item js-form-type-textfield form-item-table__1__first-name js-form-item-table__1__first-name form-no-label">');
     $this->assertRaw('<input data-drupal-selector="edit-table-1-first-name" type="text" id="edit-table-1-first-name" name="table__1__first_name" value="John" size="20" maxlength="255" class="form-text" />');
 
     // Check webform table basic rendering.
     $this->assertRaw('<table data-drupal-selector="edit-table-basic" class="webform-table responsive-enabled" id="edit-table-basic" data-striping="1">');
-    $this->assertRaw('<tr data-drupal-selector="edit-table-basic-01" class="webform-table-row odd">');
+    $this->assertRaw('<tr data-drupal-selector="edit-table-basic-01" class="webform-table-row">');
     $this->assertRaw('<input data-drupal-selector="edit-table-basic-01-first-name" type="text" id="edit-table-basic-01-first-name" name="table_basic_01_first_name" value="" size="60" maxlength="255" class="form-text" />');
 
     // Check webform table advanced rendering.
@@ -58,7 +58,7 @@ class WebformElementTableTest extends WebformElementBrowserTestBase {
 
     // Check webform table states rendering.
     $this->assertRaw('<table data-drupal-selector="edit-table-states" class="webform-table responsive-enabled" id="edit-table-states" data-drupal-states="{&quot;invisible&quot;:{&quot;.webform-submission-test-element-table-add-form :input[name=\u0022table_rows\u0022]&quot;:{&quot;value&quot;:&quot;&quot;}}}" data-striping="1">');
-    $this->assertRaw('<tr data-drupal-selector="edit-table-states-01" class="webform-table-row js-form-item odd" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-element-table-add-form :input[name=\u0022table_rows\u0022]&quot;:{&quot;value&quot;:{&quot;greater&quot;:&quot;0&quot;}}}}">');
+    $this->assertRaw('<tr data-drupal-selector="edit-table-states-01" class="webform-table-row js-form-item" data-drupal-states="{&quot;visible&quot;:{&quot;.webform-submission-test-element-table-add-form :input[name=\u0022table_rows\u0022]&quot;:{&quot;value&quot;:{&quot;greater&quot;:&quot;0&quot;}}}}">');
 
     /**************************************************************************/
     // Display.
@@ -72,7 +72,7 @@ class WebformElementTableTest extends WebformElementBrowserTestBase {
       'table_advanced_01_last_name' => 'Lennon',
       'table_advanced_01_gender' => 'Male',
     ];
-    $this->drupalPostForm('/webform/test_element_table', $edit, t('Preview'));
+    $this->drupalPostForm('/webform/test_element_table', $edit, 'Preview');
 
     // Check data.
     $this->assertRaw("table__1__first_name: John
@@ -102,14 +102,14 @@ table_advanced_04_textfield: ''");
 
     // Check basic table display.
     $this->assertPattern('#<label>table_basic</label>\s+<table class="responsive-enabled" data-striping="1">#');
-    $this->assertPattern('#<tr class="odd">\s+<td>Ringo</td>\s+<td>Starr</td>\s+<td>Male</td>\s+<td>{markup_1}</td>\s+</tr>#');
+    $this->assertPattern('#<tr>\s+<td>Ringo</td>\s+<td>Starr</td>\s+<td>Male</td>\s+<td>{markup_1}</td>\s+</tr>#');
 
     // Check advanced table display.
     $this->assertPattern('#<label>table_advanced</label>\s+<div><details class="webform-container webform-container-type-details#');
-    $this->assertPattern('<section class="js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_element_table--table_advanced_01_container">');
+    $this->assertRaw('<section class="js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_element_table--table_advanced_01_container">');
 
     // Check states table display.
-    $this->assertPattern('<div class="webform-element webform-element-type-webform-table js-form-item form-item js-form-type-item form-type-item js-form-item-table-states form-item-table-states" id="test_element_table--table_states">');
+    $this->assertPattern('<div class="webform-element webform-element-type-webform-table js-form-item form-item js-form-type-item form-item-table-states js-form-item-table-states" id="test_element_table--table_states">');
 
     /**************************************************************************/
     // User interface.
@@ -140,7 +140,7 @@ table_advanced_04_textfield: ''");
     $this->assertFieldByName('properties[duplicate]', TRUE);
 
     // Check table row element sub elements are duplicated.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_table/element/add/webform_table_row', [], t('Save'), ['query' => ['parent' => 'table_basic']]);
+    $this->drupalPostForm('/admin/structure/webform/manage/test_element_table/element/add/webform_table_row', [], 'Save', ['query' => ['parent' => 'table_basic']]);
     $this->assertRaw('>table_basic_02<');
     $this->assertRaw('>table_basic_02_first_name<');
     $this->assertRaw('>table_basic_02_last_name<');
@@ -148,7 +148,7 @@ table_advanced_04_textfield: ''");
     $this->assertRaw('>table_basic_02_markup<');
 
     // Check table row element sub elements are NOT duplicated.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_table/element/add/webform_table_row', ['properties[duplicate]' => FALSE], t('Save'), ['query' => ['parent' => 'table_basic']]);
+    $this->drupalPostForm('/admin/structure/webform/manage/test_element_table/element/add/webform_table_row', ['properties[duplicate]' => FALSE], 'Save', ['query' => ['parent' => 'table_basic']]);
     $this->assertRaw('>table_basic_03<');
     $this->assertNoRaw('>table_basic_03_first_name<');
     $this->assertNoRaw('>table_basic_03_last_name<');
@@ -166,7 +166,7 @@ table_advanced_04_textfield: ''");
       'properties[title]' => 'Testing',
     ];
     $options = ['query' => ['parent' => 'table_basic_01']];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_table/element/add/textfield', $edit, t('Save'), $options);
+    $this->drupalPostForm('/admin/structure/webform/manage/test_element_table/element/add/textfield', $edit, 'Save', $options);
     $this->assertRaw('>table_basic_01_testing<');
 
     // Check table row element can NOT duplicate sub elements from the

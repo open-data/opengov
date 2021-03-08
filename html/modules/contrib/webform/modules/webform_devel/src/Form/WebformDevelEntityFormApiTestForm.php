@@ -92,7 +92,7 @@ class WebformDevelEntityFormApiTestForm extends WebformDevelEntityFormApiBaseFor
   /****************************************************************************/
 
   /**
-   * Set webform elements default values using test data..
+   * Set webform elements default values using test data.
    *
    * @param array $elements
    *   An render array representing elements.

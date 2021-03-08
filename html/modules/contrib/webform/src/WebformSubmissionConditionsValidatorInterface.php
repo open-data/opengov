@@ -86,7 +86,7 @@ interface WebformSubmissionConditionsValidatorInterface {
    *   processed. NULL is returned when there is an invalid selector or a
    *   missing element in the conditions.
    *
-   * @see drupal_process_states()
+   * @see \Drupal\Core\Form\FormHelper::processStates
    */
   public function validateConditions(array $conditions, WebformSubmissionInterface $webform_submission);
 

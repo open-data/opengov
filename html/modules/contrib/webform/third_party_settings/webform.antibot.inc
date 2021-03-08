@@ -59,17 +59,17 @@ function _webform_antibot_form(array &$form, FormStateInterface $form_state, $an
     '#return_value' => TRUE,
   ];
 
-  if ($antibot_state != WEBFORM_ANTIBOT_NEUTRAL) {
+  $antibot_state = (int) $antibot_state;
+  if ($antibot_state !== WEBFORM_ANTIBOT_NEUTRAL) {
     $form['third_party_settings']['antibot']['antibot']['#attributes']['disabled'] = 'disabled';
     $form_state->set('antibot_disabled', TRUE);
-    if ($antibot_state == WEBFORM_ANTIBOT_ENABLED_WEBFORM) {
+    if ($antibot_state === WEBFORM_ANTIBOT_ENABLED_WEBFORM) {
       $form['third_party_settings']['antibot']['antibot']['#default_value'] = 1;
       $form['third_party_settings']['antibot']['antibot']['#description'] = t('<a href=":href_webform">Antibot protection</a> is enabled for all webforms.', $t_args);
     }
   }
 
   $form['#validate'][] = '_webform_antibot_form_validate';
-
 }
 
 /**
@@ -79,9 +79,6 @@ function _webform_antibot_form_validate(&$form, FormStateInterface $form_state) 
   $third_party_settings = $form_state->getValue('third_party_settings');
   if ($form_state->get('antibot_disabled') || empty($third_party_settings['antibot']['antibot'])) {
     unset($third_party_settings['antibot']['antibot']);
-  }
-  if (empty($third_party_settings['antibot'])) {
-    unset($third_party_settings['antibot']);
   }
   $form_state->setValue('third_party_settings', $third_party_settings);
 }

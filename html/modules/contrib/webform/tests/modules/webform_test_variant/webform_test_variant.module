@@ -13,5 +13,8 @@ function webform_test_variant_theme() {
     'webform_variant_test_summary' => [
       'variables' => ['settings' => NULL, 'variant' => []],
     ],
+    'webform_variant_test_offcanvas_width' => [
+      'variables' => ['settings' => NULL, 'variant' => []],
+    ],
   ];
 }

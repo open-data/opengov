@@ -28,18 +28,43 @@
         "docs": "https://www.drupal.org/docs/8/modules/webform",
         "forum": "https://drupal.stackexchange.com/questions/tagged/webform"
     },
+    "require": {
+        "algolia/places": "*",
+        "choices/choices": "*",
+        "ckeditor/autogrow": "*",
+        "ckeditor/codemirror": "*",
+        "ckeditor/fakeobjects": "*",
+        "ckeditor/image": "*",
+        "ckeditor/link": "*",
+        "codemirror/codemirror": "*",
+        "jquery/chosen": "*",
+        "jquery/geocomplete": "*",
+        "jquery/hotkeys": "*",
+        "jquery/icheck": "*",
+        "jquery/image-picker": "*",
+        "jquery/inputmask": "*",
+        "jquery/intl-tel-input": "*",
+        "jquery/rateit": "*",
+        "jquery/select2": "*",
+        "jquery/textcounter": "*",
+        "jquery/timepicker": "*",
+        "jquery/toggles": "*",
+        "progress-tracker/progress-tracker": "*",
+        "signature_pad/signature_pad": "*",
+        "svg-pan-zoom/svg-pan-zoom": "*"
+    },
     "repositories": {
         "algolia.places": {
             "type": "package",
             "package": {
                 "name": "algolia/places",
-                "version": "1.17.1",
+                "version": "1.19.0",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "algolia.places"
                 },
                 "dist": {
-                    "url": "https://registry.npmjs.org/places.js/-/places.js-1.17.1.tgz",
+                    "url": "https://registry.npmjs.org/places.js/-/places.js-1.19.0.tgz",
                     "type": "tar"
                 },
                 "require": {
@@ -69,13 +94,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/autogrow",
-                "version": "4.14.0",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.autogrow"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/autogrow/releases/autogrow_4.14.0.zip",
+                    "url": "https://download.ckeditor.com/autogrow/releases/autogrow_4.14.1.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -105,13 +130,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/fakeobjects",
-                "version": "4.14.0",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.fakeobjects"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/fakeobjects/releases/fakeobjects_4.14.0.zip",
+                    "url": "https://download.ckeditor.com/fakeobjects/releases/fakeobjects_4.14.1.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -123,13 +148,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/image",
-                "version": "4.14.0",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.image"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/image/releases/image_4.14.0.zip",
+                    "url": "https://download.ckeditor.com/image/releases/image_4.14.1.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -141,13 +166,13 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/link",
-                "version": "4.14.0",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.link"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/link/releases/link_4.14.0.zip",
+                    "url": "https://download.ckeditor.com/link/releases/link_4.14.1.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -159,13 +184,13 @@
             "type": "package",
             "package": {
                 "name": "codemirror/codemirror",
-                "version": "5.51.0",
+                "version": "5.53.2",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "codemirror"
                 },
                 "dist": {
-                    "url": "https://github.com/components/codemirror/archive/5.51.0.zip",
+                    "url": "https://github.com/components/codemirror/archive/5.53.2.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -249,13 +274,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/image-picker",
-                "version": "0.3.0",
+                "version": "0.3.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.image-picker"
                 },
                 "dist": {
-                    "url": "https://github.com/rvera/image-picker/archive/0.3.0.zip",
+                    "url": "https://github.com/rvera/image-picker/archive/0.3.1.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -267,13 +292,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/inputmask",
-                "version": "5.0.3",
+                "version": "5.0.5",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.inputmask"
                 },
                 "dist": {
-                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/5.0.3.zip",
+                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/5.0.5.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -321,13 +346,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/select2",
-                "version": "4.0.12",
+                "version": "4.0.13",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.select2"
                 },
                 "dist": {
-                    "url": "https://github.com/select2/select2/archive/4.0.12.zip",
+                    "url": "https://github.com/select2/select2/archive/4.0.13.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -339,13 +364,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/textcounter",
-                "version": "0.8.0",
+                "version": "0.9.0",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.textcounter"
                 },
                 "dist": {
-                    "url": "https://github.com/ractoon/jQuery-Text-Counter/archive/0.8.0.zip",
+                    "url": "https://github.com/ractoon/jQuery-Text-Counter/archive/0.9.0.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -357,13 +382,13 @@
             "type": "package",
             "package": {
                 "name": "jquery/timepicker",
-                "version": "1.13.0",
+                "version": "1.13.14",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.timepicker"
                 },
                 "dist": {
-                    "url": "https://github.com/jonthornton/jquery-timepicker/archive/1.13.0.zip",
+                    "url": "https://github.com/jonthornton/jquery-timepicker/archive/1.13.14.zip",
                     "type": "zip"
                 },
                 "require": {
@@ -443,30 +468,5 @@
                 }
             }
         }
-    },
-    "require": {
-        "algolia/places": "*",
-        "choices/choices": "*",
-        "ckeditor/autogrow": "*",
-        "ckeditor/codemirror": "*",
-        "ckeditor/fakeobjects": "*",
-        "ckeditor/image": "*",
-        "ckeditor/link": "*",
-        "codemirror/codemirror": "*",
-        "jquery/chosen": "*",
-        "jquery/geocomplete": "*",
-        "jquery/hotkeys": "*",
-        "jquery/icheck": "*",
-        "jquery/image-picker": "*",
-        "jquery/inputmask": "*",
-        "jquery/intl-tel-input": "*",
-        "jquery/rateit": "*",
-        "jquery/select2": "*",
-        "jquery/textcounter": "*",
-        "jquery/timepicker": "*",
-        "jquery/toggles": "*",
-        "progress-tracker/progress-tracker": "*",
-        "signature_pad/signature_pad": "*",
-        "svg-pan-zoom/svg-pan-zoom": "*"
     }
 }

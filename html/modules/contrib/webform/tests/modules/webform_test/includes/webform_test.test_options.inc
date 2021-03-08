@@ -50,7 +50,7 @@ function webform_test_test_options() {
   $webform_options = WebformOptions::loadMultiple();
   ksort($webform_options);
   foreach ($webform_options as $id => $webform_option) {
-    if ($id == 'test_translation') {
+    if ($id === 'test_translation') {
       continue;
     }
 
@@ -77,7 +77,7 @@ function webform_test_test_options() {
       elseif (preg_match('/(time_zones|yes_no|days|size)/', $id)) {
         $group = 'general_options';
       }
-      elseif ($id == 'test') {
+      elseif ($id === 'test') {
         $group = 'test_options';
       }
       else {

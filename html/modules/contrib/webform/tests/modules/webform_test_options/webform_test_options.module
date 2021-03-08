@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_webform_options_WEBFORM_OPTIONS_ID_alter().
+ * Implements hook_webform_options_WEBFORM_OPTIONS_ID_alter() for webform options test.
  */
 function webform_test_options_webform_options_test_alter(array &$options, array &$element) {
   $options += [

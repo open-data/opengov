@@ -11,7 +11,7 @@ use Drupal\webform\Utility\WebformElementHelper;
 /**
  * Webform submission export/import test.
  *
- * @group webform_browser
+ * @group webform_submission_import_export
  */
 class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase {
 
@@ -50,7 +50,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     ];
 
     // Create CSV export.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_submission_export_import/results/download', ['exporter' => 'webform_submission_export_import'], t('Download'));
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submission_export_import/results/download', ['exporter' => 'webform_submission_export_import'], 'Download');
     file_put_contents($export_csv_uri, $this->getRawContent());
 
     /**************************************************************************/
@@ -167,7 +167,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $this->drupalPostForm(
       '/admin/structure/webform/manage/test_submission_export_import/results/upload',
       ['import_url' => $webform_csv_url],
-      t('Continue')
+      'Continue'
     );
 
     // Check submission count.
@@ -177,7 +177,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $this->drupalPostForm(
       NULL,
       ['import_options[treat_warnings_as_errors]' => TRUE, 'confirm' => TRUE],
-      t('Import')
+      'Import'
     );
 
     // Check import stats.
@@ -364,7 +364,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $this->drupalPostForm(
       '/admin/structure/webform/manage/test_submission_export_import/results/upload',
       ['import_url' => $webform_csv_url],
-      t('Continue')
+      'Continue'
     );
 
     $this->drupalPostForm(
@@ -374,7 +374,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
         'import_options[mapping][not_mapped]' => 'summary',
         'confirm' => TRUE,
       ],
-      t('Import')
+      'Import'
     );
 
     // Check that submission summary now is set to not mapped.
@@ -385,14 +385,14 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $this->drupalPostForm(
       '/admin/structure/webform/manage/test_submission_export_import/results/upload',
       ['import_url' => $external_csv_url],
-      t('Continue')
+      'Continue'
     );
 
     // Check that UUID warning is displayed.
     $this->assertRaw('No UUID or token was found in the source (CSV). A unique hash will be generated for the each CSV record. Any changes to already an imported record in the source (CSV) will create a new submission.');
 
     // Import the external.csv.
-    $this->drupalPostForm(NULL, ['confirm' => TRUE], t('Import'));
+    $this->drupalPostForm(NULL, ['confirm' => TRUE], 'Import');
 
     // Check that 1 external submission created.
     $this->assertRaw('Submission import completed. (total: 1; created: 1; updated: 0; skipped: 0)');
@@ -405,11 +405,11 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $this->drupalPostForm(
       '/admin/structure/webform/manage/test_submission_export_import/results/upload',
       ['import_url' => $external_csv_url],
-      t('Continue')
+      'Continue'
     );
 
     // Re-import the external.csv.
-    $this->drupalPostForm(NULL, ['confirm' => TRUE], t('Import'));
+    $this->drupalPostForm(NULL, ['confirm' => TRUE], 'Import');
 
     // Check that 1 external submission updated.
     $this->assertRaw('Submission import completed. (total: 1; created: 0; updated: 1; skipped: 0)');

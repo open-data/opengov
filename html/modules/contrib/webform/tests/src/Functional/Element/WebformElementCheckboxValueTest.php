@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform checkbox value element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementCheckboxValueTest extends WebformElementBrowserTestBase {
 

@@ -180,7 +180,9 @@ class WebformImageFile extends WebformManagedFileBase {
         'filecontent' => file_get_contents($file_uri),
         'filename' => $file->getFilename(),
         'filemime' => $file->getMimeType(),
-        'filepath' => \Drupal::service('file_system')->realpath($file_uri),
+        // File URIs that are not supported return FALSE, when this happens
+        // still use the file's URI as the file's path.
+        'filepath' => \Drupal::service('file_system')->realpath($file->getFileUri()) ?: $file->getFileUri(),
         // URL is used when debugging or resending messages.
         // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::buildAttachments
         '_fileurl' => $file_url,

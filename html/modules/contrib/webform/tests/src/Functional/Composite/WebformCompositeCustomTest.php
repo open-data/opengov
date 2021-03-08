@@ -7,7 +7,7 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 /**
  * Tests for custom composite element.
  *
- * @group Webform
+ * @group webform
  */
 class WebformCompositeCustomTest extends WebformBrowserTestBase {
 
@@ -42,7 +42,7 @@ class WebformCompositeCustomTest extends WebformBrowserTestBase {
     /* Processing */
 
     // Check contact composite value.
-    $this->drupalPostForm('/webform/test_composite_custom', [], t('Submit'));
+    $this->drupalPostForm('/webform/test_composite_custom', [], 'Submit');
     $this->assertRaw("webform_custom_composite_basic:
   - first_name: John
     last_name: Smith

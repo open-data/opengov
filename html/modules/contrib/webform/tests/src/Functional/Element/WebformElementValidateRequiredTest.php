@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for webform required validation.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementValidateRequiredTest extends WebformElementBrowserTestBase {
 
@@ -25,8 +25,8 @@ class WebformElementValidateRequiredTest extends WebformElementBrowserTestBase {
     $this->assertRaw(' <input data-webform-required-error="This is a custom required message" data-drupal-selector="edit-required-textfield-html" type="text" id="edit-required-textfield-html" name="required_textfield_html" value="" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
 
     // Check that HTML tags are rendered in validation message.
-    $this->drupalPostForm('/webform/test_element_validate_required', [], t('Submit'));
-    $this->assertRaw('<li class="messages__item">This is a <em>custom required message</em></li>');
+    $this->drupalPostForm('/webform/test_element_validate_required', [], 'Submit');
+    $this->assertRaw('<li>This is a <em>custom required message</em></li>');
   }
 
 }

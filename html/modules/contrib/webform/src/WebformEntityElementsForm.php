@@ -6,7 +6,6 @@ use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
-use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Form\WebformDialogFormTrait;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformYaml;
@@ -20,21 +19,21 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
   use WebformDialogFormTrait;
 
   /**
-   * Element info manager.
+   * The element info manager.
    *
    * @var \Drupal\Core\Render\ElementInfoManagerInterface
    */
   protected $elementInfo;
 
   /**
-   * Webform element manager.
+   * The webform element manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
   protected $elementManager;
 
   /**
-   * Webform element validator.
+   * The webform element validator.
    *
    * @var \Drupal\webform\WebformEntityElementsValidatorInterface
    */
@@ -194,7 +193,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
    *   Elements (YAML) without 'webform_' #type prefix.
    */
   protected function getElementsWithoutWebformTypePrefix($value) {
-    $elements = Yaml::decode($value);
+    $elements = WebformYaml::decode($value);
     if (!is_array($elements)) {
       return $value;
     }
@@ -231,7 +230,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
    *   Elements (YAML) with 'webform_' #type prefix.
    */
   protected function getElementsWithWebformTypePrefix($value) {
-    $elements = Yaml::decode($value);
+    $elements = WebformYaml::decode($value);
     if (!is_array($elements)) {
       return $value;
     }

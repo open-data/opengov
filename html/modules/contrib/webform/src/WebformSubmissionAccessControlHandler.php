@@ -81,15 +81,14 @@ class WebformSubmissionAccessControlHandler extends EntityAccessControlHandler i
       return WebformAccessResult::allowed($entity, TRUE);
     }
 
-    // Check view operation token access.
-    if ($operation === 'view'
-      && $entity->getWebform()->getSetting('token_view')) {
+    // Check view and delete operations token access.
+    if (($operation === 'view' || $operation === 'delete')
+      && $entity->getWebform()->getSetting('token_' . $operation)) {
       $token = $this->request->query->get('token');
       if ($token === $entity->getToken()) {
         return WebformAccessResult::allowed($entity)
           ->addCacheContexts(['url.query_args:token']);
       }
-
     }
 
     // Check 'any' or 'own' webform submission permissions.

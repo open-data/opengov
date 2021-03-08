@@ -9,7 +9,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Webform options custom entity test.
  *
- * @group webform_browser
+ * @group webform_options_custom
  */
 class WebformOptionsCustomEntityTest extends WebformBrowserTestBase {
 

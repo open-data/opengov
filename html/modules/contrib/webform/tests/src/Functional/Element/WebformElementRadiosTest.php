@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform\Functional\Element;
 /**
  * Tests for webform element radios.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementRadiosTest extends WebformElementBrowserTestBase {
 
@@ -31,18 +31,24 @@ class WebformElementRadiosTest extends WebformElementBrowserTestBase {
 
     // Check radios with help text display.
     $this->assertRaw('<input data-drupal-selector="edit-radios-help-one" type="radio" id="edit-radios-help-one" name="radios_help" value="one" class="form-radio" />');
-    $this->assertRaw('<label for="edit-radios-help-one" class="option">One<span class="webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;One&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is a description&lt;/div&gt;"><span aria-hidden="true">?</span></span>');
+    $this->assertRaw('<label for="edit-radios-help-one" class="option">One<span class="webform-element-help js-webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;One&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is a description&lt;/div&gt;"><span aria-hidden="true">?</span></span>');
 
     // Check radios displayed as buttons.
-    $this->assertRaw('<div id="edit-radios-buttons" class="js-webform-radios webform-options-display-buttons form-radios"><div class="webform-options-display-buttons-wrapper">');
+    $this->assertRaw('<div id="edit-radios-buttons" class="js-webform-radios webform-options-display-buttons"><div class="webform-options-display-buttons-wrapper">');
     $this->assertRaw('<input data-drupal-selector="edit-radios-buttons-yes" class="visually-hidden form-radio" type="radio" id="edit-radios-buttons-yes" name="radios_buttons" value="Yes" />');
     $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-radios-buttons-yes">Yes</label>');
+
+    // Check radios displayed as buttons_horizontal.
+    $this->assertRaw('<div id="edit-radios-buttons-horizontal" class="js-webform-radios webform-options-display-buttons webform-options-display-buttons-horizontal"><div class="webform-options-display-buttons-wrapper">');
+
+    // Check radios displayed as buttons_vertical.
+    $this->assertRaw('<div id="edit-radios-buttons-vertical" class="js-webform-radios webform-options-display-buttons webform-options-display-buttons-vertical"><div class="webform-options-display-buttons-wrapper">');
 
     // Check radios displayed as buttons with description.
     $this->assertRaw('<label class="webform-options-display-buttons-label option" for="edit-radios-buttons-description-one"><div class="webform-options-display-buttons-title">One</div><div class="webform-options-display-buttons-description description">This is a description</div></label>');
 
     // Check options (custom) properties wrapper attributes.
-    $this->assertRaw('<div data-custom="custom wrapper data" style="border: red 1px solid" class="one-custom-wrapper-class js-form-item form-item js-form-type-radio form-type-radio js-form-item-radios-options-properties form-item-radios-options-properties">');
+    $this->assertRaw('<div data-custom="custom wrapper data" style="border: red 1px solid" class="one-custom-wrapper-class js-form-item form-item js-form-type-radio form-item-radios-options-properties js-form-item-radios-options-properties">');
 
     // Check options (custom) properties label attributes.
     $this->assertRaw('<label data-custom="custom label data" style="border: blue 1px solid" class="one-custom-label-class option" for="edit-radios-options-properties-two">Two</label>');
@@ -61,7 +67,7 @@ class WebformElementRadiosTest extends WebformElementBrowserTestBase {
       'radios_description' => 'one',
       'radios_help' => 'two',
     ];
-    $this->drupalPostForm('/webform/test_element_radios', $edit, t('Preview'));
+    $this->drupalPostForm('/webform/test_element_radios', $edit, 'Preview');
     $this->assertPattern('#<label>radios_description</label>\s+One#');
     $this->assertPattern('#<label>radios_help</label>\s+Two#');
   }

@@ -183,7 +183,7 @@ class WebformArrayHelper {
   public static function addPrefix(array $array, $prefix = '#') {
     $prefixed_array = [];
     foreach ($array as $key => $value) {
-      if ($key[0] != $prefix) {
+      if ($key[0] !== $prefix) {
         $key = $prefix . $key;
       }
       $prefixed_array[$key] = $value;
@@ -205,7 +205,7 @@ class WebformArrayHelper {
   public static function removePrefix(array $array, $prefix = '#') {
     $unprefixed_array = [];
     foreach ($array as $key => $value) {
-      if ($key[0] == $prefix) {
+      if ($key[0] === $prefix) {
         $key = preg_replace('/^' . $prefix . '/', '', $key);
       }
       $unprefixed_array[$key] = $value;

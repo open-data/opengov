@@ -8,7 +8,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform UI element properties.
  *
- * @group WebformUi
+ * @group webform_ui
  */
 class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
 
@@ -37,7 +37,7 @@ class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create filters.
@@ -59,7 +59,7 @@ class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
       $webform_elements = Webform::load($webform_id);
       $original_elements = $webform_elements->getElementsDecodedAndFlattened();
       foreach ($original_elements as $key => $original_element) {
-        $this->drupalPostForm('/admin/structure/webform/manage/' . $webform_elements->id() . '/element/' . $key . '/edit', [], t('Save'));
+        $this->drupalPostForm('/admin/structure/webform/manage/' . $webform_elements->id() . '/element/' . $key . '/edit', [], 'Save');
 
         // Must reset the webform entity cache so that the update elements can
         // be loaded.

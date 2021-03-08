@@ -10,7 +10,7 @@ use Drupal\webform\WebformInterface;
 /**
  * Tests for webform path and page.
  *
- * @group Webform
+ * @group webform
  */
 class WebformSettingsPathTest extends WebformBrowserTestBase {
 
@@ -20,8 +20,8 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
    * Tests YAML page and title.
    */
   public function testPaths() {
-    /** @var \Drupal\Core\Path\AliasStorageInterface $alias_storage */
-    $alias_storage = $this->container->get('path.alias_storage');
+    /** @var \Drupal\path_alias\AliasRepositoryInterface $path_alias_repository */
+    $path_alias_repository = $this->container->get('path_alias.repository');
 
     $node = $this->drupalCreateNode();
 
@@ -47,10 +47,10 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
     $this->drupalLogin($this->rootUser);
 
     // Check that aliases exist.
-    $this->assertIsArray($alias_storage->load(['alias' => $form_path]));
-    $this->assertIsArray($alias_storage->load(['alias' => "$form_path/confirmation"]));
-    $this->assertIsArray($alias_storage->load(['alias' => "$form_path/drafts"]));
-    $this->assertIsArray($alias_storage->load(['alias' => "$form_path/submissions"]));
+    $this->assertIsArray($path_alias_repository->lookupByAlias($form_path, 'en'));
+    $this->assertIsArray($path_alias_repository->lookupByAlias("$form_path/confirmation", 'en'));
+    $this->assertIsArray($path_alias_repository->lookupByAlias("$form_path/drafts", 'en'));
+    $this->assertIsArray($path_alias_repository->lookupByAlias("$form_path/submissions", 'en'));
 
     // Check default system submit path.
     $this->drupalGet($webform_path);
@@ -78,10 +78,10 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
     $webform->setSettings(['page' => FALSE])->save();
 
     // Check that aliases do not exist.
-    $this->assertFalse($alias_storage->load(['alias' => $form_path]));
-    $this->assertFalse($alias_storage->load(['alias' => "$form_path/confirmation"]));
-    $this->assertFalse($alias_storage->load(['alias' => "$form_path/drafts"]));
-    $this->assertFalse($alias_storage->load(['alias' => "$form_path/submissions"]));
+    $this->assertNull($path_alias_repository->lookupByAlias($form_path, 'en'));
+    $this->assertNull($path_alias_repository->lookupByAlias("$form_path/confirmation", 'en'));
+    $this->assertNull($path_alias_repository->lookupByAlias("$form_path/drafts", 'en'));
+    $this->assertNull($path_alias_repository->lookupByAlias("$form_path/submissions", 'en'));
 
     // Check page hidden (i.e. access denied).
     $this->drupalGet($webform_path);
@@ -116,7 +116,7 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
     // Check custom base path.
     $webform->setSettings(['page_submit_path' => '', 'page_confirm_path' => ''])->save();
     $this->drupalLogin($this->rootUser);
-    $this->drupalPostForm('/admin/structure/webform/config', ['page_settings[default_page_base_path]' => 'base/path'], t('Save configuration'));
+    $this->drupalPostForm('/admin/structure/webform/config', ['page_settings[default_page_base_path]' => 'base/path'], 'Save configuration');
     $this->drupalGet('/base/path/' . str_replace('_', '-', $webform->id()));
     $this->assertResponse(200, 'Submit URL alias with custom base path exists');
     $this->drupalGet('/base/path/' . str_replace('_', '-', $webform->id()) . '/confirmation');
@@ -160,7 +160,7 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
     $this->assertResponse(404, 'Submit URL alias does not exist');
 
     /**************************************************************************/
-    // Admin theme.
+    // Page theme.
     /**************************************************************************/
 
     $this->drupalLogin($this->rootUser);
@@ -181,14 +181,14 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
     $this->assertNoRaw('seven');
 
     // Install Seven and set it as the default admin theme.
-    \Drupal::service('theme_handler')->install(['seven']);
+    \Drupal::service('theme_installer')->install(['seven']);
 
     $edit = [
       'admin_theme' => 'seven',
       'use_admin_theme' => TRUE,
     ];
-    $this->drupalPostForm('/admin/appearance', $edit, t('Save configuration'));
-    $webform->setSetting('page_admin_theme', TRUE)->save();
+    $this->drupalPostForm('/admin/appearance', $edit, 'Save configuration');
+    $webform->setSetting('page_theme_name', 'seven')->save();
 
     // Check that admin theme is applied.
     $this->drupalGet('/webform/test_admin_theme');

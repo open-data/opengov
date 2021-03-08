@@ -228,7 +228,7 @@ class WebformSignature extends WebformElementBase {
    * {@inheritdoc}
    */
   public function buildExportRecord(array $element, WebformSubmissionInterface $webform_submission, array $export_options) {
-    $element['#format'] = ($export_options['signature_format'] == 'status') ? 'image' : 'raw';
+    $element['#format'] = ($export_options['signature_format'] === 'status') ? 'image' : 'raw';
     return [$this->formatText($element, $webform_submission, $export_options)];
   }
 
@@ -322,7 +322,9 @@ class WebformSignature extends WebformElementBase {
     }
 
     $webform = $webform_submission->getWebform();
-    $element_key = $element['#webform_key'];
+    $element_key = (isset($element['#webform_composite_key']))
+      ? $element['#webform_composite_key']
+      : $element['#webform_key'];
     $sid = $webform_submission->id();
 
     $image_base_directory = 'public://webform/' . $webform->id();

@@ -14,6 +14,10 @@
   Drupal.webform.states.slideUp = Drupal.webform.states.slideUp || {};
   Drupal.webform.states.slideUp.duration = 'fast';
 
+  /* ************************************************************************ */
+  // jQuery functions.
+  /* ************************************************************************ */
+
   /**
    * Check if an element has a specified data attribute.
    *
@@ -34,8 +38,22 @@
    *   TRUE if element is within the webform.
    */
   $.fn.isWebform = function () {
-    return $(this).closest('form[id^="webform"]').length ? true : false;
+    return $(this).closest('form[id^="webform"], form[data-is-webform]').length ? true : false;
   };
+
+  /**
+   * Check if element is to be treated as a webform element.
+   *
+   * @return {boolean}
+   *   TRUE if element is to be treated as a webform element.
+   */
+  $.fn.isWebformElement = function () {
+    return ($(this).isWebform() || $(this).closest('[data-is-webform-element]').length) ? true : false;
+  };
+
+  /* ************************************************************************ */
+  // Trigger.
+  /* ************************************************************************ */
 
   // The change event is triggered by cut-n-paste and select menus.
   // Issue #2445271: #states element empty check not triggered on mouse
@@ -44,6 +62,11 @@
   Drupal.states.Trigger.states.empty.change = function change() {
     return this.val() === '';
   };
+
+  /* ************************************************************************ */
+  // Dependents.
+  /* ************************************************************************ */
+
 
   // Apply solution included in #1962800 patch.
   // Issue #1962800: Form #states not working with literal integers as
@@ -93,40 +116,81 @@
     else if ('less' in reference) {
       return (value !== '' && parseFloat(reference['less']) > parseFloat(value));
     }
+    else if ('less_equal' in reference) {
+      return (value !== '' && parseFloat(reference['less_equal']) >= parseFloat(value));
+    }
     else if ('greater' in reference) {
       return (value !== '' && parseFloat(reference['greater']) < parseFloat(value));
     }
-    else if ('between' in reference) {
+    else if ('greater_equal' in reference) {
+      return (value !== '' && parseFloat(reference['greater_equal']) <= parseFloat(value));
+    }
+    else if ('between' in reference || '!between' in reference) {
       if (value === '') {
         return false;
       }
-      else {
-        var between = reference['between'];
-        var betweenParts = between.split(':');
-        var greater = betweenParts[0];
-        var less = (typeof betweenParts[1] !== 'undefined') ? betweenParts[1] : null;
-        var isGreaterThan = (greater === null || greater === '' || parseFloat(value) >= parseFloat(greater));
-        var isLessThan = (less === null || less === '' || parseFloat(value) <= parseFloat(less));
-        return (isGreaterThan && isLessThan);
-      }
+
+      var between = reference['between'] || reference['!between'];
+      var betweenParts = between.split(':');
+      var greater = betweenParts[0];
+      var less = (typeof betweenParts[1] !== 'undefined') ? betweenParts[1] : null;
+      var isGreaterThan = (greater === null || greater === '' || parseFloat(value) >= parseFloat(greater));
+      var isLessThan = (less === null || less === '' || parseFloat(value) <= parseFloat(less));
+      var result = (isGreaterThan && isLessThan);
+      return (reference['!between']) ? !result : result;
     }
     else {
       return reference.indexOf(value) !== false;
     }
   };
 
+  /* ************************************************************************ */
+  // States events.
+  /* ************************************************************************ */
+
   var $document = $(document);
 
   $document.on('state:required', function (e) {
-    if (e.trigger && $(e.target).isWebform()) {
+    if (e.trigger && $(e.target).isWebformElement()) {
       var $target = $(e.target);
       // Fix #required file upload.
       // @see Issue #2860529: Conditional required File upload field don't work.
-      if (e.value) {
-        $target.find('input[type="file"]').attr({'required': 'required', 'aria-required': 'true'});
+      toggleRequired($target.find('input[type="file"]'), e.value);
+
+      // Fix #required for radios.
+      // @see Issue #2856795: If radio buttons are required but not filled form is nevertheless submitted.
+      if ($target.is('.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other')) {
+        toggleRequired($target.find('input[type="radio"]'), e.value);
       }
-      else {
-        $target.find('input[type="file"]').removeAttr('required aria-required');
+
+      // Fix #required for checkboxes.
+      // @see Issue #2938414: Checkboxes don't support #states required.
+      // @see checkboxRequiredhandler
+      if ($target.is('.js-form-type-checkboxes, .js-form-type-webform-checkboxes-other, .js-webform-type-checkboxes, .js-webform-type-webform-checkboxes-other')) {
+        var $checkboxes = $target.find('input[type="checkbox"]');
+        if (e.value) {
+          // Add event handler.
+          $checkboxes.on('click', statesCheckboxesRequiredEventHandler);
+          // Initialize and add required attribute.
+          checkboxesRequired($target);
+        }
+        else {
+          // Remove event handler.
+          $checkboxes.off('click', statesCheckboxesRequiredEventHandler);
+          // Remove required attribute.
+          toggleRequired($checkboxes, false);
+        }
+      }
+
+      // Fix required label for elements without the for attribute.
+      // @see Issue #3145300: Conditional Visible Select Other not working.
+      if ($target.is('.js-form-type-webform-select-other, .js-webform-type-webform-select-other')) {
+        var $select = $target.find('select');
+        toggleRequired($select, e.value);
+        copyRequireMessage($target, $select);
+      }
+      if ($target.find('> label:not([for])').length) {
+        $target.find('> label').toggleClass('js-form-required form-required', e.value);
       }
 
       // Fix required label for checkboxes and radios.
@@ -136,45 +200,7 @@
       // Fix #required for fieldsets.
       // @see Issue #2977569: Hidden fieldsets that become visible with conditional logic cannot be made required.
       if ($target.is('.js-webform-type-radios, .js-webform-type-checkboxes, fieldset')) {
-        if (e.value) {
-          $target.find('legend span.fieldset-legend:not(.visually-hidden)').addClass('js-form-required form-required');
-        }
-        else {
-          $target.find('legend span.fieldset-legend:not(.visually-hidden)').removeClass('js-form-required form-required');
-        }
-      }
-
-      // Fix #required for radios.
-      // @see Issue #2856795: If radio buttons are required but not filled form is nevertheless submitted.
-      if ($target.is('.js-webform-type-radios, .js-form-type-webform-radios-other')) {
-        if (e.value) {
-          $target.find('input[type="radio"]').attr({'required': 'required', 'aria-required': 'true'});
-        }
-        else {
-          $target.find('input[type="radio"]').removeAttr('required aria-required');
-        }
-      }
-
-      // Fix #required for checkboxes.
-      // @see Issue #2938414: Checkboxes don't support #states required.
-      // @see checkboxRequiredhandler
-      if ($target.is('.js-webform-type-checkboxes, .js-form-type-webform-checkboxes-other')) {
-        var $checkboxes = $target.find('input[type="checkbox"]');
-        if (e.value) {
-          // Bind the event handler and add custom HTML5 required validation
-          // to all checkboxes.
-          $checkboxes.bind('click', checkboxRequiredhandler);
-          if (!$checkboxes.is(':checked')) {
-            $checkboxes.attr({'required': 'required', 'aria-required': 'true'});
-          }
-        }
-        else {
-          // Remove custom HTML5 required validation from all checkboxes
-          // and unbind the event handler.
-          $checkboxes
-            .removeAttr('required aria-required')
-            .unbind('click', checkboxRequiredhandler);
-        }
+        $target.find('legend span.fieldset-legend:not(.visually-hidden)').toggleClass('js-form-required form-required', e.value);
       }
 
       // Issue #2986017: Fieldsets shouldn't have required attribute.
@@ -182,17 +208,16 @@
         $target.removeAttr('required aria-required');
       }
     }
-
   });
 
   $document.on('state:checked', function (e) {
     if (e.trigger) {
-      $(e.target).change();
+      $(e.target).trigger('change');
     }
   });
 
   $document.on('state:readonly', function (e) {
-    if (e.trigger && $(e.target).isWebform()) {
+    if (e.trigger && $(e.target).isWebformElement()) {
       $(e.target).prop('readonly', e.value).closest('.js-form-item, .js-form-wrapper').toggleClass('webform-readonly', e.value).find('input, textarea').prop('readonly', e.value);
 
       // Trigger webform:readonly.
@@ -202,7 +227,7 @@
   });
 
   $document.on('state:visible state:visible-slide', function (e) {
-    if (e.trigger && $(e.target).isWebform()) {
+    if (e.trigger && $(e.target).isWebformElement()) {
       if (e.value) {
         $(':input', e.target).addBack().each(function () {
           restoreValueAndRequired(this);
@@ -220,8 +245,8 @@
     }
   });
 
-  $document.bind('state:visible-slide', function (e) {
-    if (e.trigger && $(e.target).isWebform()) {
+  $document.on('state:visible-slide', function (e) {
+    if (e.trigger && $(e.target).isWebformElement()) {
       var effect = e.value ? 'slideDown' : 'slideUp';
       var duration = Drupal.webform.states[effect].duration;
       $(e.target).closest('.js-form-item, .js-form-submit, .js-form-wrapper')[effect](duration);
@@ -230,7 +255,7 @@
   Drupal.states.State.aliases['invisible-slide'] = '!visible-slide';
 
   $document.on('state:disabled', function (e) {
-    if (e.trigger && $(e.target).isWebform()) {
+    if (e.trigger && $(e.target).isWebformElement()) {
       // Make sure disabled property is set before triggering webform:disabled.
       // Copied from: core/misc/states.js
       $(e.target)
@@ -257,19 +282,89 @@
     }
   });
 
+  /* ************************************************************************ */
+  // Behaviors.
+  /* ************************************************************************ */
+
   /**
-   * Trigger custom HTML5 multiple checkboxes validation.
+   * Adds HTML5 validation to required checkboxes.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @see https://www.drupal.org/project/webform/issues/3068998
+   */
+  Drupal.behaviors.webformCheckboxesRequired = {
+    attach: function (context) {
+      $('.js-form-type-checkboxes.required, .js-form-type-webform-checkboxes-other.required, .js-webform-type-checkboxes.required, .js-webform-type-webform-checkboxes-other.required, .js-webform-type-webform-radios-other.checkboxes', context)
+        .once('webform-checkboxes-required')
+        .each(function () {
+          var $element = $(this);
+          $element.find('input[type="checkbox"]').on('click', statesCheckboxesRequiredEventHandler);
+          setTimeout(function () {checkboxesRequired($element);});
+        });
+    }
+  };
+
+  /**
+   * Adds HTML5 validation to required radios.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @see https://www.drupal.org/project/webform/issues/2856795
+   */
+  Drupal.behaviors.webformRadiosRequired = {
+    attach: function (context) {
+      $('.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other', context)
+        .once('webform-radios-required')
+        .each(function () {
+          var $element = $(this);
+          setTimeout(function () {radiosRequired($element);});
+        });
+    }
+  };
+
+  /**
+   * Add HTML5 multiple checkboxes required validation.
+   *
+   * @param {jQuery} $element
+   *   An jQuery object containing HTML5 radios.
    *
    * @see https://stackoverflow.com/a/37825072/145846
    */
-  function checkboxRequiredhandler() {
-    var $checkboxes = $(this).closest('.js-webform-type-checkboxes, .js-form-type-webform-checkboxes-other').find('input[type="checkbox"]');
-    if ($checkboxes.is(':checked')) {
-      $checkboxes.removeAttr('required aria-required');
-    }
-    else {
-      $checkboxes.attr({'required': 'required', 'aria-required': 'true'});
-    }
+  function checkboxesRequired($element) {
+    var $firstCheckbox = $element.find('input[type="checkbox"]').first();
+    var isChecked = $element.find('input[type="checkbox"]').is(':checked');
+    toggleRequired($firstCheckbox, !isChecked);
+    copyRequireMessage($element, $firstCheckbox);
+  }
+
+  /**
+   * Add HTML5 radios required validation.
+   *
+   * @param {jQuery} $element
+   *   An jQuery object containing HTML5 radios.
+   *
+   * @see https://www.drupal.org/project/webform/issues/2856795
+   */
+  function radiosRequired($element) {
+    var $radios = $element.find('input[type="radio"]');
+    var isRequired = $element.hasClass('required');
+    toggleRequired($radios, isRequired);
+    copyRequireMessage($element, $radios);
+  }
+
+  /* ************************************************************************ */
+  // Event handlers.
+  /* ************************************************************************ */
+
+  /**
+   * Trigger #states API HTML5 multiple checkboxes required validation.
+   *
+   * @see https://stackoverflow.com/a/37825072/145846
+   */
+  function statesCheckboxesRequiredEventHandler() {
+    var $element = $(this).closest('.js-webform-type-checkboxes, .js-webform-type-webform-checkboxes-other');
+    checkboxesRequired($element);
   }
 
   /**
@@ -310,6 +405,10 @@
       }
     }
   }
+
+  /* ************************************************************************ */
+  // Backup and restore value functions.
+  /* ************************************************************************ */
 
   /**
    * Backup an input's current value and required attribute
@@ -419,6 +518,41 @@
 
     // Clear required.
     $input.prop('required', false);
+  }
+
+  /* ************************************************************************ */
+  // Helper functions.
+  /* ************************************************************************ */
+
+  /**
+   * Toggle an input's required attributes.
+   *
+   * @param {element} $input
+   *   An input.
+   * @param {boolean} required
+   *   Is input required.
+   */
+  function toggleRequired($input, required) {
+    if (required) {
+      $input.attr({'required': 'required', 'aria-required': 'true'});
+    }
+    else {
+      $input.removeAttr('required aria-required');
+    }
+  }
+
+  /**
+   * Copy the clientside_validation.module's message.
+   *
+   * @param {jQuery} $source
+   *   The source element.
+   * @param {jQuery} $destination
+   *   The destination element.
+   */
+  function copyRequireMessage($source, $destination) {
+    if ($source.attr('data-msg-required')) {
+      $destination.attr('data-msg-required', $source.attr('data-msg-required'));
+    }
   }
 
 })(jQuery, Drupal);

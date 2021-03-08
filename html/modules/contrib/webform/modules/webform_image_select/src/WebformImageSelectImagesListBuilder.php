@@ -188,7 +188,7 @@ class WebformImageSelectImagesListBuilder extends ConfigEntityListBuilder {
 
     $build = [];
     foreach ($images as $key => $image) {
-      $title = $image['text'] . ($key != $image ? ' (' . $key . ')' : '');
+      $title = $image['text'] . ($key !== $image ? ' (' . $key . ')' : '');
       $build[] = [
         '#type' => 'html_tag',
         '#tag' => 'img',

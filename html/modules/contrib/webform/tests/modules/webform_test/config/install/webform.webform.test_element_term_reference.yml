@@ -1,3 +1,4 @@
+uuid: null
 langcode: en
 status: open
 dependencies:
@@ -27,6 +28,11 @@ elements: |
         '#type': webform_term_checkboxes
         '#title': webform_term_checkboxes_tree_default
         '#vocabulary': tags
+      webform_term_checkboxes_tree_depth:
+        '#type': webform_term_checkboxes
+        '#title': webform_term_checkboxes_tree_depth
+        '#vocabulary': tags
+        '#depth': 1
       webform_term_checkboxes_tree_advanced:
         '#type': webform_term_checkboxes
         '#title': webform_term_checkboxes_tree_advanced
@@ -46,6 +52,13 @@ elements: |
         '#vocabulary': tags
         '#breadcrumb': true
         '#format': breadcrumb
+      webform_term_checkboxes_breadcrumb_depth:
+        '#type': webform_term_checkboxes
+        '#title': webform_term_checkboxes_breadcrumb_depth
+        '#vocabulary': tags
+        '#breadcrumb': true
+        '#format': breadcrumb
+        '#depth': 1
       webform_term_checkboxes_breadcrumb_advanced:
         '#type': webform_term_checkboxes
         '#title': webform_term_checkboxes_breadcrumb_advanced
@@ -68,6 +81,11 @@ elements: |
         '#type': webform_term_select
         '#title': webform_term_select_tree_default
         '#vocabulary': tags
+      webform_term_select_tree_depth:
+        '#type': webform_term_select
+        '#title': webform_term_select_tree_depth
+        '#vocabulary': tags
+        '#depth': 1
       webform_term_select_tree_advanced:
         '#type': webform_term_select
         '#title': webform_term_select_tree_advanced
@@ -86,6 +104,13 @@ elements: |
         '#vocabulary': tags
         '#breadcrumb': true
         '#format': breadcrumb
+      webform_term_select_breadcrumb_depth:
+        '#type': webform_term_select
+        '#title': webform_term_select_breadcrumb_depth
+        '#vocabulary': tags
+        '#breadcrumb': true
+        '#format': breadcrumb
+        '#depth': 1
       webform_term_select_breadcrumb_advanced:
         '#type': webform_term_select
         '#title': webform_term_select_breadcrumb_advanced
@@ -96,7 +121,7 @@ elements: |
         '#breadcrumb_delimiter': ' » '
         '#format': breadcrumb
         '#format_items': ul
-  
+
 css: ''
 javascript: ''
 settings:
@@ -108,7 +133,7 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -138,6 +163,11 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
   submission_views: {  }
@@ -163,11 +193,19 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 1
   preview_label: ''
   preview_title: ''
@@ -213,6 +251,8 @@ settings:
   results_customize: false
   token_view: false
   token_update: false
+  token_delete: false
+  serial_disabled: false
 access:
   create:
     roles:

@@ -332,6 +332,26 @@ function hook_webform_options_WEBFORM_OPTIONS_ID_alter(array &$options, array &$
 }
 
 /**
+ * Respond before webform submissions are purged (before they are deleted).
+ *
+ * @param \Drupal\webform\WebformSubmissionInterface[] $webform_submissions
+ *   The webform submissions being purged.
+ */
+function hook_webform_submissions_pre_purge(array $webform_submissions) {
+
+}
+
+/**
+ * Respond to webform submissions being purged (after they are deleted).
+ *
+ * @param \Drupal\webform\WebformSubmissionInterface[] $webform_submissions
+ *   The webform submissions that were purged.
+ */
+function hook_webform_submissions_post_purge(array $webform_submissions) {
+
+}
+
+/**
  * Perform alterations before a webform submission form is rendered.
  *
  * This hook is identical to hook_form_alter() but allows the
@@ -509,7 +529,7 @@ function hook_webform_libraries_info_alter(&$libraries) {
  *   - message_id: (string) Optional message ID that will be supplied into
  *     'webform_message' element. You are free to use 'message_*' keys if you
  *     want to additionally display a message when your help is displayed. These
- *     keyes will be supplied into 'webform_message' element. Refer to the docs
+ *     keys will be supplied into 'webform_message' element. Refer to the docs
  *     of this element for their meaning.
  *   - message_type: (string) Will be supplied into 'webform_message' element.
  *   - message_close: (bool) Will be supplied into 'webform_message' element.
@@ -605,8 +625,8 @@ function hook_webform_access_rules() {
     // The below 2 operations can be queried together as following:
     //
     // \Drupal::entityTypeManager()
-    //  ->getAccessControlHandler('webform_submission')
-    //  ->access($webform_submission, 'some_operation', $account);
+    //   ->getAccessControlHandler('webform_submission')
+    //   ->access($webform_submission, 'some_operation', $account);
     //
     // This will return TRUE as long as the $account is has either
     // 'some_operation_any' or has 'some_operation_own' and is author of

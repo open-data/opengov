@@ -75,7 +75,7 @@ trait WebformCompositeFormElementTrait {
     switch ($wrapper_type) {
       case 'fieldset':
         // Set the element's title attribute to show #title as a tooltip, if needed.
-        if (isset($element['#title']) && $element['#title_display'] == 'attribute') {
+        if (isset($element['#title']) && $element['#title_display'] === 'attribute') {
           $element['#attributes']['title'] = $element['#title'];
           if (!empty($element['#required'])) {
             // Append an indication that this fieldset is required.

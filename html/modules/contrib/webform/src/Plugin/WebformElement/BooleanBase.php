@@ -66,7 +66,7 @@ abstract class BooleanBase extends WebformElementBase {
       '#type' => 'textfield',
       '#title' => $this->t('Return value'),
       '#description' => $this->t('The return value is what is submitted to the server and stored in the database when the element is checked. The default value and recommended return value is a TRUE boolean value.')
-        . $this->t('<br/><br/>')
+        . '<br/><br/>'
         . $this->t('<strong>The return value should only be customized when an external system or service expects a custom string value. (i.e. yes, checked, accepted, etc…)</strong>'),
       '#weight' => -20,
     ];

@@ -21,7 +21,7 @@ class WebformTestHandlerRemotePostClient extends Client {
       return parent::request($method, $uri, $options);
     }
 
-    if ($method == 'get') {
+    if ($method === 'get') {
       parse_str(parse_url($uri, PHP_URL_QUERY), $params);
     }
     else {

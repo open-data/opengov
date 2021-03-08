@@ -8,7 +8,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Test for webform element managed file image handling.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementManagedFileImageTest extends WebformElementManagedFileTestBase {
 

@@ -189,19 +189,19 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
     $row['type'] = $entity->getTypeLabel();
 
     // Users.
-    $row['users'] = ['data' => self::buildUserAccounts($entity->getUserIds())];
+    $row['users'] = ['data' => static::buildUserAccounts($entity->getUserIds())];
 
     // Entities.
-    $row['entities'] = ['data' => self::buildEntities($entity->getEntityIds())];
+    $row['entities'] = ['data' => static::buildEntities($entity->getEntityIds())];
 
     // Permissions.
-    $row['permissions'] = ['data' => self::buildPermissions($entity->get('permissions'))];
+    $row['permissions'] = ['data' => static::buildPermissions($entity->get('permissions'))];
 
     // Admins.
-    $row['admins'] = ['data' => self::buildUserAccounts($entity->getAdminIds())];
+    $row['admins'] = ['data' => static::buildUserAccounts($entity->getAdminIds())];
 
     // Emails.
-    $row['emails'] = ['data' => self::buildEmails($entity->getEmails())];
+    $row['emails'] = ['data' => static::buildEmails($entity->getEmails())];
 
     $row = $row + parent::buildRow($entity);
 

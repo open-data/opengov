@@ -156,7 +156,7 @@ function webform_access_menu_local_tasks_alter(&$data, $route_name) {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_access().
+ * Implements hook_ENTITY_TYPE_access() for webform entities.
  */
 function webform_access_webform_access(WebformInterface $webform, $operation, AccountInterface $account) {
   // Prevent recursion when a webform is being passed as the source entity
@@ -199,7 +199,7 @@ function webform_access_webform_access(WebformInterface $webform, $operation, Ac
 }
 
 /**
- * Implements hook_ENTITY_TYPE_access().
+ * Implements hook_ENTITY_TYPE_access() for webform_submission entities.
  */
 function webform_access_webform_submission_access(WebformSubmissionInterface $webform_submission, $operation, AccountInterface $account) {
   if (!in_array($operation, ['view', 'update', 'delete'])) {
@@ -227,7 +227,7 @@ function webform_access_webform_submission_access(WebformSubmissionInterface $we
       // Is operation any.
       (in_array($operation . '_any', $permissions)) ||
       // Is operation own.
-      (in_array($operation . '_own', $permissions) && $webform_submission->getOwnerId() == $account->id())
+      (in_array($operation . '_own', $permissions) && $webform_submission->getOwnerId() === $account->id())
     ) {
       return AccessResult::allowed()
         ->cachePerUser()
@@ -398,7 +398,7 @@ function _webform_access_form_node_form_submit(&$form, FormStateInterface $form_
 /******************************************************************************/
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for user form.
  *
  * Add the webform access group to an individual user's account page.
  */

@@ -8,7 +8,7 @@ use Drupal\webform\Utility\WebformElementHelper;
 /**
  * Tests for element ignored properties.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementIgnoredPropertiesTest extends WebformElementBrowserTestBase {
 

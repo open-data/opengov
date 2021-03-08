@@ -177,7 +177,7 @@ class WebformNodeAccess {
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  protected static function checkAccess($operation, $entity_access, NodeInterface $node, WebformSubmissionInterface $webform_submission = NULL, AccountInterface $account = NULL) {
+  public static function checkAccess($operation, $entity_access, NodeInterface $node, WebformSubmissionInterface $webform_submission = NULL, AccountInterface $account = NULL) {
     /** @var \Drupal\webform\WebformEntityReferenceManagerInterface $entity_reference_manager */
     $entity_reference_manager = \Drupal::service('webform.entity_reference_manager');
 
@@ -195,8 +195,25 @@ class WebformNodeAccess {
       }
     }
 
+    // Determine if this is a group node.
+    $is_group_node = \Drupal::moduleHandler()->moduleExists('webform_group')
+      && \Drupal::entityTypeManager()->getStorage('group_content')->loadByEntity($node);
+
     // Check the node operation.
-    $result = $operation ? $node->access($operation, $account, TRUE) : AccessResult::neutral();
+    if (!$operation) {
+      $result = AccessResult::neutral();
+    }
+    elseif ($is_group_node && strpos($operation, 'webform_submission_') === 0) {
+      // For group nodes, we need to bypass node access checking for
+      // 'webform_submission_*' operations which trigger access forbidden.
+      // @see group_entity_access()
+      // @see https://www.drupal.org/project/webform/issues/3132204
+      // @todo Add Webform node group permission provider w/ submission perms.
+      $result = webform_node_node_access($node, $operation, $account);
+    }
+    else {
+      $result = $node->access($operation, $account, TRUE);
+    }
 
     // Check entity access.
     if ($entity_access) {

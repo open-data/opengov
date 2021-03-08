@@ -4,6 +4,7 @@ namespace Drupal\webform\Element;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
@@ -32,6 +33,7 @@ class WebformMapping extends FormElement {
         [$class, 'processAjaxForm'],
       ],
       '#theme_wrappers' => ['form_element'],
+      '#filter' => TRUE,
       '#required' => FALSE,
       '#source' => [],
       '#source__description_display' => 'description',
@@ -57,14 +59,14 @@ class WebformMapping extends FormElement {
     $sources = [];
     foreach ($element['#source'] as $source_key => $source) {
       $source = (string) $source;
-      if (strpos($source, WebformOptionsHelper::DESCRIPTION_DELIMITER) === FALSE) {
+      if (!WebformOptionsHelper::hasOptionDescription($source)) {
         $source_description_property_name = NULL;
         $source_title = $source;
         $source_description = '';
       }
       else {
-        $source_description_property_name = ($element['#source__description_display'] == 'help') ? 'help' : 'description';
-        list($source_title, $source_description) = explode(WebformOptionsHelper::DESCRIPTION_DELIMITER, $source);
+        $source_description_property_name = ($element['#source__description_display'] === 'help') ? 'help' : 'description';
+        list($source_title, $source_description) = WebformOptionsHelper::splitOption($source);
       }
       $sources[$source_key] = [
         'description_property_name' => $source_description_property_name,
@@ -81,8 +83,8 @@ class WebformMapping extends FormElement {
     // Set base destination element.
     $destination_element_base = [
       '#title_display' => 'invisible',
-      '#required' => ($element['#required'] === self::REQUIRED_ALL) ? TRUE : FALSE,
-      '#error_no_message'  => ($element['#required'] !== self::REQUIRED_ALL) ? TRUE : FALSE,
+      '#required' => ($element['#required'] === static::REQUIRED_ALL) ? TRUE : FALSE,
+      '#error_no_message'  => ($element['#required'] !== static::REQUIRED_ALL) ? TRUE : FALSE,
     ];
 
     // Get base #destination__* properties.
@@ -185,12 +187,18 @@ class WebformMapping extends FormElement {
    */
   public static function validateWebformMapping(&$element, FormStateInterface $form_state, &$complete_form) {
     $value = NestedArray::getValue($form_state->getValues(), $element['#parents']);
-    $value = array_filter($value);
+
+    // Filter values.
+    if ($element['#filter']) {
+      $value = array_filter($value);
+    }
 
     // Note: Not validating REQUIRED_ALL because each destination element is
     // already required.
-    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
-    if ($element['#required'] && $element['#required'] !== self::REQUIRED_ALL && empty($value) && $has_access) {
+    if (Element::isVisibleElement($element)
+      && $element['#required']
+      && $element['#required'] !== static::REQUIRED_ALL
+      && empty($value)) {
       WebformElementHelper::setRequiredError($element, $form_state);
     }
 

@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform basic wizard.
  *
- * @group Webform
+ * @group webform
  */
 class WebformWizardBasicTest extends WebformWizardTestBase {
 
@@ -26,16 +26,16 @@ class WebformWizardBasicTest extends WebformWizardTestBase {
 
     // Create a wizard submission.
     $wizard_webform = Webform::load('test_form_wizard_basic');
-    $this->drupalPostForm('/webform/test_form_wizard_basic', [], t('Next Page >'));
-    $this->drupalPostForm(NULL, [], t('Submit'));
+    $this->drupalPostForm('/webform/test_form_wizard_basic', [], 'Next >');
+    $this->drupalPostForm(NULL, [], 'Submit');
     $sid = $this->getLastSubmissionId($wizard_webform);
 
     // Check confirmation message for wizard form.
     $this->drupalGet("admin/structure/webform/manage/test_form_wizard_basic/submission/$sid/edit");
     $this->assertCurrentPage('Page 1', 'page_1');
-    $this->drupalPostForm(NULL, [], t('Next Page >'));
+    $this->drupalPostForm(NULL, [], 'Next >');
     $this->assertCurrentPage('Page 2', 'page_2');
-    $this->drupalPostForm(NULL, [], t('Save'));
+    $this->drupalPostForm(NULL, [], 'Save');
     $this->assertRaw('Submission updated in <em class="placeholder">Test: Webform: Wizard basic</em>.');
     $this->assertCurrentPage('Page 1', 'page_1');
 
@@ -67,17 +67,17 @@ class WebformWizardBasicTest extends WebformWizardTestBase {
     $this->assertRaw('data-webform-wizard-page="page_2" data-drupal-selector="edit-wizard-next"');
 
     // Check next and previous page.
-    $this->drupalPostForm('/webform/test_form_wizard_basic', [], t('Next Page >'));
+    $this->drupalPostForm('/webform/test_form_wizard_basic', [], 'Next >');
     $this->assertRaw('data-webform-wizard-current-page="page_2"');
     $this->assertRaw('data-webform-wizard-page="page_1" data-drupal-selector="edit-wizard-prev"');
     $this->assertRaw('data-webform-wizard-page="webform_preview" data-drupal-selector="edit-preview-next"');
 
-    $this->drupalPostForm(NULL, [], t('Preview'));
+    $this->drupalPostForm(NULL, [], 'Preview');
     $this->assertRaw('data-webform-wizard-current-page="webform_preview"');
     $this->assertRaw('data-webform-wizard-page="page_2" data-drupal-selector="edit-preview-prev"');
     $this->assertRaw('data-webform-wizard-page="webform_confirmation" data-drupal-selector="edit-submit"');
 
-    $this->drupalPostForm(NULL, [], t('Submit'));
+    $this->drupalPostForm(NULL, [], 'Submit');
     $this->assertRaw('data-webform-wizard-current-page="webform_confirmation"');
 
     // Enable tracking by index.
@@ -88,17 +88,17 @@ class WebformWizardBasicTest extends WebformWizardTestBase {
     $this->assertRaw('data-webform-wizard-page="2" data-drupal-selector="edit-wizard-next"');
 
     // Check next and previous page.
-    $this->drupalPostForm('/webform/test_form_wizard_basic', [], t('Next Page >'));
+    $this->drupalPostForm('/webform/test_form_wizard_basic', [], 'Next >');
     $this->assertRaw('data-webform-wizard-current-page="2"');
     $this->assertRaw('data-webform-wizard-page="1" data-drupal-selector="edit-wizard-prev"');
     $this->assertRaw('data-webform-wizard-page="3" data-drupal-selector="edit-preview-next"');
 
-    $this->drupalPostForm(NULL, [], t('Preview'));
+    $this->drupalPostForm(NULL, [], 'Preview');
     $this->assertRaw('data-webform-wizard-current-page="3"');
     $this->assertRaw('data-webform-wizard-page="2" data-drupal-selector="edit-preview-prev"');
     $this->assertRaw('data-webform-wizard-page="4" data-drupal-selector="edit-submit"');
 
-    $this->drupalPostForm(NULL, [], t('Submit'));
+    $this->drupalPostForm(NULL, [], 'Submit');
     $this->assertRaw('data-webform-wizard-current-page="4"');
   }
 

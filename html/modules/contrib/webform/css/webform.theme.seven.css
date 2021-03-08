@@ -20,6 +20,12 @@ tr.even .form-item:last-of-type {
   margin-bottom: 0;
 }
 
+tr.odd .form--inline > .form-item,
+tr.even .form--inline > .form-item {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 /* Add margin around HR tags */
 table hr {
   margin: 0.5em 0;

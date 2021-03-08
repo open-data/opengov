@@ -2,6 +2,8 @@
 
 namespace VariableAnalysis\Lib;
 
+use VariableAnalysis\Lib\ScopeType;
+
 /**
  * Holds details of a variable within a scope.
  */
@@ -24,17 +26,23 @@ class VariableInfo {
   public $typeHint;
 
   /**
-   * @var bool
+   * @var int | null
    */
-  public $passByReference = false;
+  public $referencedVariableScope;
 
   /**
+   * True if the variable is a reference but one created at runtime
+   *
    * @var bool
    */
-  public $isReference = false;
+  public $isDynamicReference = false;
 
   /**
    * Stack pointer of first declaration
+   *
+   * Declaration is when a variable is created but has no value assigned.
+   *
+   * Assignment by reference is also a declaration and not an initialization.
    *
    * @var int
    */
@@ -55,6 +63,16 @@ class VariableInfo {
   public $firstRead;
 
   /**
+   * Stack pointers of all assignments
+   *
+   * This includes both declarations and initializations and may contain
+   * duplicates!
+   *
+   * @var int[]
+   */
+  public $allAssignments = [];
+
+  /**
    * @var bool
    */
   public $ignoreUnused = false;
@@ -73,11 +91,11 @@ class VariableInfo {
    * @var string[]
    */
   public static $scopeTypeDescriptions = array(
-    'local'  => 'variable',
-    'param'  => 'function parameter',
-    'static' => 'static variable',
-    'global' => 'global variable',
-    'bound'  => 'bound variable',
+    ScopeType::LOCAL  => 'variable',
+    ScopeType::PARAM  => 'function parameter',
+    ScopeType::STATICSCOPE => 'static variable',
+    ScopeType::GLOBALSCOPE => 'global variable',
+    ScopeType::BOUND  => 'bound variable',
   );
 
   public function __construct($varName) {

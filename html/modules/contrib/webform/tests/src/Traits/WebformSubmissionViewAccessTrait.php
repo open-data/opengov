@@ -41,7 +41,7 @@ trait WebformSubmissionViewAccessTrait {
       $this->drupalGet('/admin/structure/webform/test/views_access');
 
       $views_sids = [];
-      foreach ($this->cssSelect('.view .view-content tbody .views-field-sid') as $node) {
+      foreach ($this->cssSelect('td.views-field-sid') as $node) {
         $views_sids[] = $node->getText();
       }
       sort($views_sids);

@@ -31,6 +31,7 @@ class WebformSelectOther extends WebformOtherBase {
     '#multiple',
     '#empty_value',
     '#empty_option',
+    '#sort_options',
 
     '#ajax',
   ];

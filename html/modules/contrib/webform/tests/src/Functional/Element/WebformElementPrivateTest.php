@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform element private.
  *
- * @group Webform
+ * @group webform
  */
 class WebformElementPrivateTest extends WebformElementBrowserTestBase {
 

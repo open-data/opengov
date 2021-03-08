@@ -40,7 +40,7 @@ class WebformTranslationManager implements WebformTranslationManagerInterface {
   protected $configFactory;
 
   /**
-   * Webform element manager.
+   * The webform element manager.
    *
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
@@ -177,7 +177,7 @@ class WebformTranslationManager implements WebformTranslationManagerInterface {
   public function getTranslationElements(WebformInterface $webform, $langcode) {
     $elements = $this->getSourceElements($webform);
     $translation_elements = $this->getElements($webform, $langcode);
-    if ($elements == $translation_elements) {
+    if ($elements === $translation_elements) {
       return $elements;
     }
     WebformElementHelper::merge($elements, $translation_elements);

@@ -19,7 +19,7 @@
     attach: function (context) {
       $('[data-webform-trigger-submit]').once('webform-trigger-submit').on('change', function () {
         var submit = $(this).attr('data-webform-trigger-submit');
-        $(submit).mousedown();
+        $(submit).trigger('mousedown');
       });
     }
   };

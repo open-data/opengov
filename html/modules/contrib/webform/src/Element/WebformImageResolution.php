@@ -67,24 +67,28 @@ class WebformImageResolution extends FormElement {
       '#description' => t('The maximum allowed image size expressed as WIDTH×HEIGHT (e.g. 640×480). Leave blank for no restriction. If a larger image is uploaded, it will be resized to reflect the given width and height. Resizing images on upload will cause the loss of <a href="http://wikipedia.org/wiki/Exchangeable_image_file_format">EXIF data</a> in the image.'),
       '#height_title' => t('Maximum height'),
       '#width_title' => t('Maximum width'),
-      '#field_prefix' => '<div class="container-inline">',
-      '#field_suffix' => '</div>',
     ];
-    $element['x'] = [
+    $element['container'] = [
+      '#prefix' => '<div class="container-inline">',
+      '#suffix' => '</div>',
+    ];
+    $element['container']['x'] = [
       '#type' => 'number',
       '#title' => $element['#width_title'],
       '#title_display' => 'invisible',
       '#value' => empty($element['#value']) ? NULL : $element['#value']['x'],
       '#min' => 1,
       '#field_suffix' => ' × ',
+      '#parents' => array_merge($element['#parents'], ['x']),
     ];
-    $element['y'] = [
+    $element['container']['y'] = [
       '#type' => 'number',
       '#title' => $element['#height_title'],
       '#title_display' => 'invisible',
       '#value' => empty($element['#value']) ? NULL : $element['#value']['y'],
       '#min' => 1,
       '#field_suffix' => ' ' . t('pixels'),
+      '#parents' => array_merge($element['#parents'], ['y']),
     ];
 
     // Add validate callback.
@@ -100,16 +104,16 @@ class WebformImageResolution extends FormElement {
    * @see \Drupal\image\Plugin\Field\FieldType\ImageItem::validateResolution
    */
   public static function validateWebformImageResolution(&$element, FormStateInterface $form_state, &$complete_form) {
-    if (!empty($element['x']['#value']) || !empty($element['y']['#value'])) {
+    if (!empty($element['container']['x']['#value']) || !empty($element['container']['y']['#value'])) {
       foreach (['x', 'y'] as $dimension) {
-        if (!$element[$dimension]['#value']) {
+        if (!$element['container'][$dimension]['#value']) {
           // We expect the field name placeholder value to be wrapped in t()
           // here, so it won't be escaped again as it's already marked safe.
-          $form_state->setError($element[$dimension], t('Both a height and width value must be specified in the @name field.', ['@name' => $element['#title']]));
+          $form_state->setError($element['container'][$dimension], t('Both a height and width value must be specified in the @name field.', ['@name' => $element['#title']]));
           return;
         }
       }
-      $form_state->setValueForElement($element, $element['x']['#value'] . 'x' . $element['y']['#value']);
+      $form_state->setValueForElement($element, $element['container']['x']['#value'] . 'x' . $element['container']['y']['#value']);
     }
     else {
       $form_state->setValueForElement($element, '');

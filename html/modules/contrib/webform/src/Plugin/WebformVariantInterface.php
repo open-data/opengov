@@ -201,6 +201,19 @@ interface WebformVariantInterface extends PluginInspectionInterface, Configurabl
   public function isApplicable(WebformInterface $webform);
 
   /**
+   * Get configuration form's off-canvas width.
+   *
+   * @return string
+   *   The off-canvas width.
+   *
+   * @see WebformDialogHelper::DIALOG_NARROW
+   * @see WebformDialogHelper::DIALOG_NORMAL
+   * @see WebformDialogHelper::DIALOG_WIDE
+   * @see WebformDialogHelper::DIALOG_NONE
+   */
+  public function getOffCanvasWidth();
+
+  /**
    * Apply variant to the webform.
    *
    * @return bool

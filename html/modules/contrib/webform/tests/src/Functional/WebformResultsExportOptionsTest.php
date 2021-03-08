@@ -7,7 +7,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform results export.
  *
- * @group Webform
+ * @group webform
  */
 class WebformResultsExportOptionsTest extends WebformBrowserTestBase {
 
@@ -195,7 +195,7 @@ class WebformResultsExportOptionsTest extends WebformBrowserTestBase {
     $edit = [
       'exporter' => 'table',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', $edit, t('Download'));
+    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', $edit, 'Download');
     $this->assertRaw('<body><table border="1"><thead><tr bgcolor="#cccccc" valign="top"><th>Serial number</th>');
     $this->assertPattern('#<td>George</td>\s+<td>Washington</td>\s+<td>Male</td>#ms');
 
@@ -204,8 +204,8 @@ class WebformResultsExportOptionsTest extends WebformBrowserTestBase {
       'exporter' => 'delimited',
       'exporters[delimited][delimiter]' => '|',
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/exporters', $edit, t('Save configuration'));
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], t('Download'));
+    $this->drupalPostForm('/admin/structure/webform/config/exporters', $edit, 'Save configuration');
+    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], 'Download');
     $this->assertRaw('"Submission ID"|"Submission URI"');
 
     // Check saved webform export (delimiter) settings.
@@ -213,13 +213,13 @@ class WebformResultsExportOptionsTest extends WebformBrowserTestBase {
       'exporter' => 'delimited',
       'exporters[delimited][delimiter]' => '.',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', $edit, t('Save settings'));
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], t('Download'));
+    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', $edit, 'Save settings');
+    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], 'Download');
     $this->assertRaw('"Submission ID"."Submission URI"');
 
     // Check delete webform export (delimiter) settings.
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], t('Reset settings'));
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], t('Download'));
+    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], 'Reset settings');
+    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/download', [], 'Download');
     $this->assertRaw('"Submission ID"|"Submission URI"');
   }
 
