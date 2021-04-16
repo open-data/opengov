@@ -6,7 +6,7 @@ display:
           label: Année
         request_number:
           label: 'Numéro de la demande'
-        number_of_pages:
+        pages:
           label: 'Nombre de pages'
       title: 'Demande d''accès à l''information informelle dossiers précédemment publiés'
       footer:

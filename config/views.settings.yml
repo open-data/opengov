@@ -3,13 +3,13 @@ skip_cache: false
 sql_signature: false
 ui:
   show:
-    additional_queries: false
+    additional_queries: true
     advanced_column: false
-    master_display: false
-    performance_statistics: false
-    preview_information: true
+    master_display: true
+    performance_statistics: true
+    preview_information: false
     sql_query:
-      enabled: false
+      enabled: true
       where: above
     display_embed: false
   always_live_preview: true

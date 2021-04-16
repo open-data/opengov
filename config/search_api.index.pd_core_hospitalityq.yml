@@ -1,6 +1,6 @@
 uuid: c3c87eb7-1197-46c5-8867-6f9379c6d40f
 langcode: en
-status: true
+status: false
 dependencies:
   module:
     - search_api_solr
@@ -213,6 +213,7 @@ datasource_settings:
 processor_settings:
   add_url: {  }
   aggregated_field: {  }
+  language_with_fallback: {  }
   rendered_item: {  }
   solr_date_range: {  }
 tracker_settings:

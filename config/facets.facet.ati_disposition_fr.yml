@@ -1,4 +1,4 @@
-uuid: f123dfdd-4811-4675-853d-44bcd1c2c31d
+uuid: 87adaee9-59df-4761-bbe2-cf687a93a3fe
 langcode: en
 status: true
 dependencies:
@@ -7,13 +7,13 @@ dependencies:
     - views.view.pd_core_ati
   module:
     - search_api
-id: ati_organization_fr
-name: 'PD ATI - Organisation'
-url_alias: ati_organization_fr
-weight: -5
+id: ati_disposition_fr
+name: 'PD ATI - Disposition'
+url_alias: ati_disposition_fr
+weight: 3
 min_count: 1
 show_only_one_result: false
-field_identifier: org_name_fr
+field_identifier: disposition_fr
 facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
 widget:
   type: checkbox

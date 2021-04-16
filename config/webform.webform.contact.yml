@@ -1,3 +1,4 @@
+uuid: d553f7a9-bebe-433e-a683-6185a3908d41
 langcode: en
 status: open
 dependencies:
@@ -7,6 +8,10 @@ dependencies:
       - webform
   module:
     - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
 open: null
 close: null
 weight: 0
@@ -17,7 +22,7 @@ id: contact
 title: Contact
 description: '&quot;Contact&quot; webform.'
 category: ''
-elements: "subject:\n  '#title': Subject\n  '#type': textfield\n  '#required': true\n  '#test': 'Testing contact webform from [site:name]'\ncomments_and_feedback:\n  '#type': textarea\n  '#title': 'Comments and Feedback'\n  '#required': true\n  '#counter_type': character\n  '#counter_maximum': 2000\n  '#counter_message': 'character(s) left'\n  '#smart_description': false\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'Your Email'\ntelephone:\n  '#type': tel\n  '#title': Telephone\n  '#pattern': '^\\+?\\d{0,}?(\\s|-|\\.){0,}?\\(?\\d{3}\\)?(\\s|-|\\.){0,}?\\d{3}(\\s|-|\\.){0,}?\\d{4}(\\s|-|\\.){0,}?(ex?t?|extension|x)?(\\s|-|\\.){0,}?\\d{0,}'\nconsent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)\n"
+elements: "subject:\n  '#title': Subject\n  '#type': textfield\n  '#required': true\n  '#test': 'Testing contact webform from [site:name]'\ncomments_and_feedback:\n  '#type': textarea\n  '#title': 'Comments and Feedback'\n  '#required': true\n  '#counter_type': character\n  '#counter_maximum': 2000\n  '#counter_message': 'character(s) left'\n  '#smart_description': false\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'Your Email'\ntelephone:\n  '#type': tel\n  '#title': Telephone\n  '#pattern': '^\\+?\\d{0,}?(\\s|-|\\.){0,}?\\(?\\d{3}\\)?(\\s|-|\\.){0,}?\\d{3}(\\s|-|\\.){0,}?\\d{4}(\\s|-|\\.){0,}?(ex?t?|extension|x)?(\\s|-|\\.){0,}?\\d{0,}'\nconsent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)\nspam_flag:\n  '#type': checkbox\n  '#title': spam_flag\n  '#disabled': true\n  '#wrapper_attributes':\n    class:\n      - hidden"
 css: ''
 javascript: ''
 settings:
@@ -29,7 +34,7 @@ settings:
   page: false
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: both
   form_submit_once: false
   form_exception_message: ''
@@ -59,6 +64,11 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
   submission_views:
@@ -107,11 +117,19 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -157,6 +175,8 @@ settings:
   results_customize: false
   token_view: false
   token_update: false
+  token_delete: false
+  serial_disabled: false
   form_login: false
   form_login_message: ''
   submission_login: false
@@ -166,9 +186,7 @@ settings:
   form_submit_label: 'Send message'
   form_submit_attributes: {  }
   form_closed_message: ''
-  wizard_next_button_label: ''
   wizard_next_button_attributes: {  }
-  wizard_prev_button_label: ''
   wizard_prev_button_attributes: {  }
   preview_next_button_label: ''
   preview_next_button_attributes: {  }
@@ -229,9 +247,13 @@ handlers:
   email_confirmation:
     id: email
     label: 'Email confirmation'
+    notes: ''
     handler_id: email_confirmation
     status: true
-    conditions: {  }
+    conditions:
+      disabled:
+        ':input[name="spam_flag"]':
+          checked: true
     weight: 1
     settings:
       states:
@@ -265,9 +287,13 @@ handlers:
   email_notification:
     id: email
     label: 'Email notification'
+    notes: ''
     handler_id: email_notification
     status: true
-    conditions: {  }
+    conditions:
+      disabled:
+        ':input[name="spam_flag"]':
+          checked: true
     weight: 1
     settings:
       states:
@@ -299,10 +325,5 @@ handlers:
       theme_name: ''
       parameters: {  }
 variants: {  }
-uuid: d553f7a9-bebe-433e-a683-6185a3908d41
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
 _core:
   default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU

@@ -37,6 +37,21 @@ name: 'Proactive Disclosure: ATI Index'
 description: 'Read-only search index for Solr core_ati'
 read_only: true
 field_settings:
+  ati_email:
+    label: 'Ati email'
+    datasource_id: solr_document
+    property_path: ati_email
+    type: string
+  comments_en:
+    label: 'Comments en'
+    datasource_id: solr_document
+    property_path: comments_en
+    type: string
+  comments_fr:
+    label: 'Comments fr'
+    datasource_id: solr_document
+    property_path: comments_fr
+    type: string
   disposition_en:
     label: 'Disposition en'
     datasource_id: solr_document
@@ -47,11 +62,6 @@ field_settings:
     datasource_id: solr_document
     property_path: disposition_fr
     type: string
-  e_mail_ati_recipient:
-    label: 'E mail ati recipient'
-    datasource_id: solr_document
-    property_path: e_mail_ati_recipient
-    type: string
   id:
     label: Id
     datasource_id: solr_document
@@ -61,7 +71,7 @@ field_settings:
     label: Month
     datasource_id: solr_document
     property_path: month
-    type: string
+    type: integer
   month_name_en:
     label: 'Month name en'
     datasource_id: solr_document
@@ -82,20 +92,20 @@ field_settings:
     datasource_id: solr_document
     property_path: nothing_to_report_fr
     type: string
-  number_of_pages:
-    label: 'Number of pages'
+  org_name_en:
+    label: 'Org name en'
     datasource_id: solr_document
-    property_path: number_of_pages
+    property_path: org_name_en
     type: string
-  organization_en:
-    label: 'Organization en'
+  org_name_fr:
+    label: 'Org name fr'
     datasource_id: solr_document
-    property_path: organization_en
+    property_path: org_name_fr
     type: string
-  organization_fr:
-    label: 'Organization fr'
+  pages:
+    label: Pages
     datasource_id: solr_document
-    property_path: organization_fr
+    property_path: pages
     type: string
   report_type_en:
     label: 'Report type en'
@@ -112,15 +122,15 @@ field_settings:
     datasource_id: solr_document
     property_path: request_number
     type: text
-  request_summary_en:
-    label: 'Request summary en'
+  summary_en:
+    label: 'Summary en'
     datasource_id: solr_document
-    property_path: request_summary_en
+    property_path: summary_en
     type: string
-  request_summary_fr:
-    label: 'Request summary fr'
+  summary_fr:
+    label: 'Summary fr'
     datasource_id: solr_document
-    property_path: request_summary_fr
+    property_path: summary_fr
     type: string
   text:
     label: Text
@@ -131,7 +141,7 @@ field_settings:
     label: Year
     datasource_id: solr_document
     property_path: year
-    type: string
+    type: integer
 datasource_settings:
   solr_document:
     id_field: id
