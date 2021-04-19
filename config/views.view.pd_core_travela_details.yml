@@ -324,8 +324,8 @@ display:
           label: Mandate
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: "{% set p1 = mandate_description_en|split('[', 2) %}\r\n{% set p2 = p1[1]|split(']', 2) %}\r\n{% set p3 = p2[1]|split('(') %} \r\n{% set p4 = p3[1]|split(')') %}\r\n{{ p1[0]|raw }} <a href={{p4[0] }} target=\"_blank\">{{ p2[0] }}</a>{{ p4[1]|raw }}\r\n"
             make_link: false
             path: ''
             absolute: false
@@ -377,8 +377,8 @@ display:
           label: Mandat
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: "{% set p1 = mandate_description_fr|split('[', 2) %}\r\n{% set p2 = p1[1]|split(']', 2) %}\r\n{% set p3 = p2[1]|split('(') %} \r\n{% set p4 = p3[1]|split(')') %}\r\n{{ p1[0]|raw }} <a href={{p4[0] }} target=\"_blank\">{{ p2[0] }}</a>{{ p4[1]|raw }}\r\n"
             make_link: false
             path: ''
             absolute: false

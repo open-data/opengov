@@ -10,7 +10,7 @@ dependencies:
 id: ati_year_fr
 name: 'PD ATI - Année'
 url_alias: ati_year_fr
-weight: -3
+weight: -2
 min_count: 1
 show_only_one_result: false
 field_identifier: year

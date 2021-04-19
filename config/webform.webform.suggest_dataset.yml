@@ -8,8 +8,6 @@ third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
-_core:
-  default_config_hash: XMXyI2hAGIOAFbxkyKuNuVPqPlXX_LzNOmyXJ7IWfco
 open: null
 close: null
 weight: 0
@@ -32,7 +30,7 @@ settings:
   page: false
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
   form_exception_message: ''
@@ -62,6 +60,11 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
   submission_views: {  }
@@ -87,11 +90,19 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -137,6 +148,8 @@ settings:
   results_customize: false
   token_view: false
   token_update: false
+  token_delete: false
+  serial_disabled: false
   form_login: false
   form_login_message: ''
   submission_login: false
@@ -144,9 +157,7 @@ settings:
   form_submit_label: ''
   form_submit_attributes: {  }
   form_closed_message: ''
-  wizard_next_button_label: ''
   wizard_next_button_attributes: {  }
-  wizard_prev_button_label: ''
   wizard_prev_button_attributes: {  }
   wizard_complete: true
   wizard_complete_label: ''
@@ -209,6 +220,7 @@ handlers:
   email:
     id: email
     label: Email
+    notes: ''
     handler_id: email
     status: true
     conditions: {  }
@@ -243,3 +255,5 @@ handlers:
       theme_name: ''
       parameters: {  }
 variants: {  }
+_core:
+  default_config_hash: XMXyI2hAGIOAFbxkyKuNuVPqPlXX_LzNOmyXJ7IWfco

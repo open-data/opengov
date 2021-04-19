@@ -28,6 +28,8 @@ display:
         combine:
           expose:
             label: Recherche
+          group_info:
+            description: ''
         field_blog_author_name_target_id:
           expose:
             label: Auteur
@@ -45,7 +47,7 @@ display:
       fields:
         nothing:
           alter:
-            text: "<div class=\"row\">\r\n  <div class=\"col-lg-10 col-md-9 col-sm-9\">\r\n    <h2 class=\"h3 mrgn-tp-0\">{{ title }}</h2>\r\n    <p>par {{ field_blog_author_name }} le {{ created }}</p> \r\n    <p class=\"excerpt\">{{ body }}</p>\r\n  </div>\r\n  <div class=\"col-lg-2 col-md-3 col-sm-3\">\r\n    <a href=\"{{ view_node }}\">{{ field_media }}</a>  \r\n  </div>\r\n</div>"
+            text: "<div class=\"row\">\r\n  <div class=\"col-lg-10 col-md-9 col-sm-9\">\r\n    <h2 class=\"h3 mrgn-tp-0\">{{ title }}</h2>\r\n    <p>par {{ field_blog_author_name }} {{ created }}</p> \r\n    <p class=\"excerpt\">{{ body }}</p>\r\n  </div>\r\n  <div class=\"col-lg-2 col-md-3 col-sm-3\">\r\n    <a href=\"{{ view_node }}\">{{ field_media }}</a>  \r\n  </div>\r\n</div>"
         field_blog_author_name:
           alter:
             text: '<a href="/fr/taxonomy/term/{{ field_blog_author_name__target_id }}" title="Lire plus de blogs par {{ field_blog_author_name }}">{{ field_blog_author_name }}</a>'

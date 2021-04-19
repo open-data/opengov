@@ -10,10 +10,10 @@ dependencies:
 id: ati_organization_fr
 name: 'PD ATI - Organisation'
 url_alias: ati_organization_fr
-weight: -5
+weight: -4
 min_count: 1
 show_only_one_result: false
-field_identifier: org_name_fr
+field_identifier: organization_fr
 facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
 widget:
   type: checkbox

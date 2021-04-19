@@ -53,6 +53,7 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           48ef1aff-2ea8-41c6-b506-8e46e7d39367:
             uuid: 48ef1aff-2ea8-41c6-b506-8e46e7d39367
@@ -98,12 +99,13 @@ third_party_settings:
                 label: hidden
                 type: timestamp
                 settings:
-                  date_format: custom
+                  date_format: blog_date
                   custom_date_format: 'F j, Y'
                   timezone: ''
                 third_party_settings: {  }
               context_mapping:
                 entity: layout_builder.entity
+                view_mode: view_mode
             additional: {  }
             weight: -9
         third_party_settings: {  }
@@ -129,6 +131,7 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           414b1588-f28a-465d-a97a-f2fb6103c6e9:
             uuid: 414b1588-f28a-465d-a97a-f2fb6103c6e9
@@ -194,6 +197,7 @@ third_party_settings:
                 col-sm-12: col-sm-12
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           d31533d9-32b0-463b-9f2a-aa11e5d47e21:
             uuid: d31533d9-32b0-463b-9f2a-aa11e5d47e21
