@@ -10,7 +10,7 @@ dependencies:
 id: ati_month_fr
 name: 'PD ATI - Mois'
 url_alias: ati_month_fr
-weight: 0
+weight: -1
 min_count: 1
 show_only_one_result: false
 field_identifier: month_name_fr
