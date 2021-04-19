@@ -8,9 +8,9 @@ dependencies:
   module:
     - search_api
 id: ati_nil_fr
-name: 'Report type fr'
+name: 'PD ATI - Rapport nul'
 url_alias: ati_nil_fr
-weight: 2
+weight: 1
 min_count: 1
 show_only_one_result: false
 field_identifier: report_type_fr

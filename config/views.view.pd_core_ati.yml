@@ -289,218 +289,6 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        request_summary_en:
-          id: request_summary_en
-          table: search_api_index_pd_core_ati
-          field: request_summary_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        request_summary_fr:
-          id: request_summary_fr
-          table: search_api_index_pd_core_ati
-          field: request_summary_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        organization_en:
-          id: organization_en
-          table: search_api_index_pd_core_ati
-          field: organization_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        organization_fr:
-          id: organization_fr
-          table: search_api_index_pd_core_ati
-          field: organization_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
         month_name_en:
           id: month_name_en
           table: search_api_index_pd_core_ati
@@ -607,10 +395,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        number_of_pages:
-          id: number_of_pages
+        year:
+          id: year
           table: search_api_index_pd_core_ati
-          field: number_of_pages
+          field: year
           relationship: none
           group_type: group
           admin_label: ''
@@ -660,15 +448,227 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        year:
-          id: year
+        month_name_en_1:
+          id: month_name_en_1
           table: search_api_index_pd_core_ati
-          field: year
+          field: month_name_en
           relationship: none
           group_type: group
           admin_label: ''
           label: ''
-          exclude: false
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        month_name_fr_1:
+          id: month_name_fr_1
+          table: search_api_index_pd_core_ati
+          field: month_name_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        org_name_en:
+          id: org_name_en
+          table: search_api_index_pd_core_ati
+          field: org_name_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        org_name_fr:
+          id: org_name_fr
+          table: search_api_index_pd_core_ati
+          field: org_name_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        pages:
+          id: pages
+          table: search_api_index_pd_core_ati
+          field: pages
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
           alter:
             alter_text: false
             text: ''
@@ -724,7 +724,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_en %}{{ nothing_to_report_en }}{% else %}<a href=\"/search/ati/reference/{{ id }}\">Req # {{ request_number }}</a>{%endif%}</h4>\r\n{{ request_summary_en }}\r\n<p><small><strong>Organization:</strong> {{ organization_en}}</small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if number_of_pages %}<span class=\"h3 mrgn-tp-0\">{{ number_of_pages }} <small>page(s)</small></span><br />{% endif %}\r\n<small>{{ month_name_en }} {{ year }}</small>\r\n</div>\r\n</div>"
+            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_en %}{{ nothing_to_report_en }}{% else %}<a href=\"/search/ati/reference/{{ id }}\">Req # {{ request_number }}</a>{%endif%}</h4>\r\n{{ request_summary_en }}\r\n<p><small><strong>Organization:</strong> {{ org_name_en}}</small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if number_of_pages %}<span class=\"h3 mrgn-tp-0\">{{ pages }} <small>page(s)</small></span><br />{% endif %}\r\n<small>{{ month_name_en }} {{ year }}</small>\r\n</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -798,112 +798,6 @@ display:
         metatag_display_extender: {  }
       display_description: ''
       fields:
-        nothing_to_report_en:
-          id: nothing_to_report_en
-          table: search_api_index_pd_core_ati
-          field: nothing_to_report_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        nothing_to_report_fr:
-          id: nothing_to_report_fr
-          table: search_api_index_pd_core_ati
-          field: nothing_to_report_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
         id:
           id: id
           table: search_api_index_pd_core_ati
@@ -1010,218 +904,6 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        request_summary_en:
-          id: request_summary_en
-          table: search_api_index_pd_core_ati
-          field: request_summary_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        request_summary_fr:
-          id: request_summary_fr
-          table: search_api_index_pd_core_ati
-          field: request_summary_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        organization_en:
-          id: organization_en
-          table: search_api_index_pd_core_ati
-          field: organization_en
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
-        organization_fr:
-          id: organization_fr
-          table: search_api_index_pd_core_ati
-          field: organization_fr
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: ''
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          plugin_id: search_api
         month_name_en:
           id: month_name_en
           table: search_api_index_pd_core_ati
@@ -1328,10 +1010,72 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        number_of_pages:
-          id: number_of_pages
+        year:
+          id: year
           table: search_api_index_pd_core_ati
-          field: number_of_pages
+          field: year
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ''
+          format_plural: 0
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          format_plural_values: {  }
+          plugin_id: search_api
+        org_name_en:
+          id: org_name_en
+          table: search_api_index_pd_core_ati
+          field: org_name_en
           relationship: none
           group_type: group
           admin_label: ''
@@ -1381,10 +1125,275 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        year:
-          id: year
+        org_name_fr:
+          id: org_name_fr
           table: search_api_index_pd_core_ati
-          field: year
+          field: org_name_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        pages:
+          id: pages
+          table: search_api_index_pd_core_ati
+          field: pages
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        summary_en:
+          id: summary_en
+          table: search_api_index_pd_core_ati
+          field: summary_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        summary_fr:
+          id: summary_fr
+          table: search_api_index_pd_core_ati
+          field: summary_fr
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        nothing_to_report_en:
+          id: nothing_to_report_en
+          table: search_api_index_pd_core_ati
+          field: nothing_to_report_en
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
+          plugin_id: search_api
+        nothing_to_report_fr:
+          id: nothing_to_report_fr
+          table: search_api_index_pd_core_ati
+          field: nothing_to_report_fr
           relationship: none
           group_type: group
           admin_label: ''
@@ -1445,7 +1454,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_en %}<span class=\"hgl\">{{ nothing_to_report_en }}</span>{% else %}<a href=\"/search/ati/reference/{{ id }}\">Req # <span class=\"hgl\">{{ request_number }}</span></a>{%endif%}</h4>\r\n<span class=\"hgl\">{{ request_summary_en }}</span>\r\n<p><small><strong>Organization:</strong> <span class=\"hgl\">{{ organization_en}}</span></small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if number_of_pages %}<span class=\"h3 mrgn-tp-0\">{{ number_of_pages }} <small>page(s)</small></span><br />{% endif %}\r\n<small>{{ month_name_en }} {{ year }}</small>\r\n</div>\r\n</div>"
+            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_en %}<span class=\"hgl\">{{ nothing_to_report_en }}</span>{% else %}<a href=\"/en/search/ati/reference/{{ id }}\">Req # <span class=\"hgl\">{{ request_number }}</span></a>{% endif %}</h4>\r\n<span class=\"hgl\">{{ summary_en }}</span>\r\n<p><small><strong>Organization:</strong> <span class=\"hgl\">{{ org_name_en}}</span></small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if pages %}<span class=\"h3 mrgn-tp-0\">{{ pages }} <small>page(s)</small></span><br />{% endif %}\r\n<small>{{ month_name_en }} {{ year }}</small>\r\n</div>\r\n</div>"
             make_link: false
             path: ''
             absolute: false
@@ -1493,7 +1502,6 @@ display:
         cache: false
         header: false
         pager: false
-        title: false
       sorts:
         year:
           id: year
@@ -1519,10 +1527,10 @@ display:
           expose:
             label: ''
           plugin_id: search_api
-        organization_en:
-          id: organization_en
+        org_name_en:
+          id: org_name_en
           table: search_api_index_pd_core_ati
-          field: organization_en
+          field: org_name_en
           relationship: none
           group_type: group
           admin_label: ''
@@ -1531,10 +1539,10 @@ display:
           expose:
             label: Organization
           plugin_id: search_api
-        organization_fr:
-          id: organization_fr
+        org_name_fr:
+          id: org_name_fr
           table: search_api_index_pd_core_ati
-          field: organization_fr
+          field: org_name_fr
           relationship: none
           group_type: group
           admin_label: ''
@@ -1641,7 +1649,6 @@ display:
             offset: false
             offset_label: Offset
           quantity: 9
-      title: 'Proactive Disclosure: ATI'
     cache_metadata:
       max-age: -1
       contexts:
@@ -1742,10 +1749,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        request_summary_en:
-          id: request_summary_en
+        summary_en:
+          id: summary_en
           table: search_api_index_pd_core_ati
-          field: request_summary_en
+          field: summary_en
           relationship: none
           group_type: group
           admin_label: ''
@@ -1753,7 +1760,7 @@ display:
           exclude: true
           alter:
             alter_text: false
-            text: '<a href="/search/ati/reference/{{ id }}">{{ request_summary_en|trim }}</a>'
+            text: ''
             make_link: false
             path: ''
             absolute: false
@@ -1768,14 +1775,14 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: 150
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
             more_link_text: ''
             more_link_path: ''
             strip_tags: false
-            trim: true
+            trim: false
             preserve_tags: ''
             html: false
           element_type: ''
@@ -1787,7 +1794,7 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: false
+          hide_empty: true
           empty_zero: false
           hide_alter_empty: true
           link_to_item: false
@@ -1795,10 +1802,10 @@ display:
           multi_type: separator
           multi_separator: ', '
           plugin_id: search_api
-        request_summary_fr:
-          id: request_summary_fr
+        summary_fr:
+          id: summary_fr
           table: search_api_index_pd_core_ati
-          field: request_summary_fr
+          field: summary_fr
           relationship: none
           group_type: group
           admin_label: ''
@@ -1806,7 +1813,7 @@ display:
           exclude: true
           alter:
             alter_text: false
-            text: '<a href="/fr/search/ati/reference/{{ id }}">{{ request_summary_fr|trim }}</a>'
+            text: ''
             make_link: false
             path: ''
             absolute: false
@@ -1821,14 +1828,14 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: 150
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
             more_link_text: ''
             more_link_path: ''
             strip_tags: false
-            trim: true
+            trim: false
             preserve_tags: ''
             html: false
           element_type: ''
@@ -1840,10 +1847,10 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: false
+          hide_empty: true
           empty_zero: false
           hide_alter_empty: true
-          link_to_item: true
+          link_to_item: false
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
@@ -1859,7 +1866,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: '<a href="/search/ati/reference/{{ id }}">{{ request_summary_en }}</a>'
+            text: '<a href="/en/search/ati/reference/{{ id }}">{{ summary_en }}</a>'
             make_link: false
             path: ''
             absolute: false
@@ -1918,6 +1925,8 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
@@ -1927,8 +1936,6 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1962,6 +1969,8 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
@@ -1971,8 +1980,6 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
