@@ -24,6 +24,10 @@ display:
             next: 'suivant ›'
             first: '‹‹ première'
             last: 'dernière ››'
+      sorts:
+        year:
+          expose:
+            label: Année
   default:
     display_options:
       exposed_form:
@@ -39,6 +43,10 @@ display:
       empty:
         area_text_custom:
           content: "<p><strong>Aucun résultat trouvé.</strong></p> \r\n<p>Veuillez entrer un nouveau mot-clé.</p>\r\n<br/><br/>\r\n"
+      fields:
+        nothing:
+          alter:
+            text: "<div class=\"row\">\r\n<div class=\"col-sm-8\">\r\n<h4 class=\"mrgn-tp-0 mrgn-bttm-sm\">{% if nothing_to_report_fr %}<span class=\"hgl\">{{ nothing_to_report_fr }}</span>{% else %}<a href=\"/fr/search/ati/reference/{{ id }}\">Req # <span class=\"hgl\">{{ request_number }}</span></a>{% endif %}</h4>\r\n<span class=\"hgl\">{{ summary_fr }}</span>\r\n<p><small><strong>Organisation:</strong> <span class=\"hgl\">{{ org_name_fr}}</span></small></p>\r\n</div>\r\n<div class=\"col-sm-4 text-right\">\r\n{% if pages %}<span class=\"h3 mrgn-tp-0\">{{ pages }} <small>page(s)</small></span><br />{% endif %}\r\n<small>{{ month_name_fr }} {{ year }}</small>\r\n</div>\r\n</div>"
   block_2:
     display_title: 'Demandes d’accès à l’information récentes'
     display_options:

@@ -17,7 +17,7 @@ backend_config:
     host: tbs-solrdb01.t1.tbs-sct.gc.ca
     port: '8983'
     path: /
-    core: core_ati
+    core: core_ati_v2
     timeout: 5
     index_timeout: 5
     optimize_timeout: 10
