@@ -57,4 +57,4 @@ display:
       fields:
         nothing:
           alter:
-            text: '<a href="/fr/search/ati/reference/{{ id }}">{{ request_summary_fr }}</a>'
+            text: '<a href="/fr/search/ati/reference/{{ id }}">{{ summary_fr }}</a>'

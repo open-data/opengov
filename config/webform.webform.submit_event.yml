@@ -8,6 +8,8 @@ third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
+_core:
+  default_config_hash: jn1mOzzxA8PWcnp73NWo4GDT6kqtfXZXxOSk4aSvfqU
 open: null
 close: null
 weight: 0
@@ -173,27 +175,36 @@ access:
       - anonymous
       - authenticated
     users: {  }
+    permissions: {  }
   view_any:
-    roles: {  }
+    roles:
+      - comment_moderator
     users: {  }
+    permissions: {  }
   update_any:
     roles: {  }
     users: {  }
+    permissions: {  }
   delete_any:
     roles: {  }
     users: {  }
+    permissions: {  }
   purge_any:
     roles: {  }
     users: {  }
+    permissions: {  }
   view_own:
     roles: {  }
     users: {  }
+    permissions: {  }
   update_own:
     roles: {  }
     users: {  }
+    permissions: {  }
   delete_own:
     roles: {  }
     users: {  }
+    permissions: {  }
   administer:
     roles: {  }
     users: {  }
@@ -245,5 +256,3 @@ handlers:
       theme_name: ''
       parameters: {  }
 variants: {  }
-_core:
-  default_config_hash: jn1mOzzxA8PWcnp73NWo4GDT6kqtfXZXxOSk4aSvfqU

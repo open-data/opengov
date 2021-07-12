@@ -9,6 +9,8 @@ third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
+_core:
+  default_config_hash: 3KMfwnJX9MY_3tJmNyqT_XDU5kCN089MDHRQe6cdXDo
 open: null
 close: null
 weight: 0
@@ -311,5 +313,3 @@ handlers:
     weight: 0
     settings: {  }
 variants: {  }
-_core:
-  default_config_hash: 3KMfwnJX9MY_3tJmNyqT_XDU5kCN089MDHRQe6cdXDo

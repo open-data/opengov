@@ -791,7 +791,7 @@ display:
   block_1:
     display_plugin: block
     id: block_1
-    display_title: List
+    display_title: 'ATI Search'
     position: 1
     display_options:
       display_extenders:
@@ -1502,6 +1502,7 @@ display:
         cache: false
         header: false
         pager: false
+        title: false
       sorts:
         year:
           id: year
@@ -1649,6 +1650,7 @@ display:
             offset: false
             offset_label: Offset
           quantity: 9
+      title: 'Access to Information Search'
     cache_metadata:
       max-age: -1
       contexts:

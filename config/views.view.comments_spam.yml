@@ -681,7 +681,20 @@ display:
           entity_field: changed
           plugin_id: date
       title: 'Spam comments'
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content:
+            value: "<div data-drupal-messages=\"\">\r\n    <div role=\"contentinfo\" aria-label=\"Status message\" class=\"messages messages--warning\">\r\n                  Comments in Spam folder will be automatically deleted after 30 days.\r\n    </div>\r\n</div>"
+            format: full_html
+          plugin_id: text
       footer: {  }
       empty:
         area_text_custom:
