@@ -1,0 +1,38 @@
+uuid: d02de47b-5b24-4bb7-909c-ee685193e7f3
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.theme_and_topic_page.body
+    - field.field.node.theme_and_topic_page.field_media
+    - field.field.node.theme_and_topic_page.field_meta_tags
+    - field.field.node.theme_and_topic_page.layout_builder__layout
+    - node.type.theme_and_topic_page
+  module:
+    - text
+    - user
+id: node.theme_and_topic_page.teaser
+targetEntityType: node
+bundle: theme_and_topic_page
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_media: true
+  field_meta_tags: true
+  langcode: true
+  layout_builder__layout: true
+  search_api_excerpt: true
