@@ -13,7 +13,6 @@
 #drupal-off-canvas *:not(svg *),
 #drupal-off-canvas *:after,
 #drupal-off-canvas *:before {
-  all: initial;
   box-sizing: border-box;
   text-shadow: none;
   -webkit-font-smoothing: antialiased;

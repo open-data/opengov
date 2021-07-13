@@ -1,7 +1,7 @@
 /*!
  * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
  * wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * v4.0.32 - 2019-11-13
+ * v4.0.43 - 2021-06-03
  *
  *//**
  * @title WET-BOEW JQuery Helper Methods
@@ -77,6 +77,97 @@ wb.download = function( blob, filename, title ) {
 
 };
 
+/* ---------------------------------
+@extension: shuffleDOM
+@returns: [list] shuffles a list of items randomly
+-------------------------------- */
+wb.shuffleDOM = function( $elm ) {
+	var allElems = $elm.get(),
+		shuffled = $.map( allElems, function() {
+			var random = Math.floor( Math.random() * allElems.length ),
+				randEl = $( allElems[ random ] ).clone( true )[ 0 ];
+			allElems.splice( random, 1 );
+			return randEl;
+		} ),
+		elm_len = $elm.length,
+		i;
+
+	for ( i = 0; i < elm_len; i++ ) {
+		$( $elm[ i ] ).replaceWith( $( shuffled[ i ] ) );
+	}
+
+	return $( shuffled );
+};
+
+/* ---------------------------------
+@extension: pickElements
+@returns: [collection] of randoms elements
+-------------------------------- */
+wb.pickElements = function( $elm, numOfElm ) {
+	var nbElm = $elm.size(),
+		elmCopies,
+		i, swap;
+
+	numOfElm = numOfElm || 1;
+
+	// Special cases
+	if ( numOfElm > nbElm ) {
+		return $elm.pushStack( $elm );
+	} else if ( numOfElm === 1 ) {
+		return $elm.filter( ":eq(" + Math.floor( Math.random() * nbElm ) + ")" );
+	}
+
+	// Create a randomized copy of the set of elements,
+	// using Fisher-Yates sorting
+	elmCopies = $elm.get();
+
+	for ( i = 0; i < nbElm - 1; i++ ) {
+		swap = Math.floor( Math.random() * ( nbElm - i ) ) + i;
+		elmCopies[ swap ] = elmCopies.splice( i, 1, elmCopies[ swap ] )[ 0 ];
+	}
+	elmCopies = elmCopies.slice( 0, numOfElm );
+
+	// Finally, filter jQuery stack
+	return $elm.filter( function( idx ) {
+		return $.inArray( $elm.get( idx ), elmCopies ) > -1;
+	} );
+};
+
+/* ---------------------------------
+Adds a link to the Skip links navigation
+@param text: Text to display in the anchor or button
+@param attr: JSO with { attribute: value, ... } to add attributes to the anchor or button. Minimum is { href: "#your-anchor" } for the anchor tag
+@param isBtn: (Optional) Bool if true element is a button, otherwise it is an anchor by default
+@param isLast: (Optional) Bool if true element will be inserted last in the list
+-------------------------------- */
+wb.addSkipLink = function( text, attr, isBtn, isLast ) {
+	var list = document.getElementById( "wb-tphp" ),
+		li = document.createElement( "li" ),
+		elm = document.createElement( ( isBtn ? "button" : "a" ) ),
+		key;
+
+	// Add skip link's proprietary classes to new element
+	li.className = "wb-slc";
+	elm.className = "wb-sl";
+
+	// Add given attributes to element
+	for ( key in attr ) {
+		elm.setAttribute( key, attr[ key ] );
+	}
+
+	// Append text and new element to the skip link list (after main content)
+	elm.appendChild( document.createTextNode( text ) );
+	li.appendChild( elm );
+
+	if ( isLast ) {
+		list.appendChild( li );
+	} else {
+		list.insertBefore( li, list.childNodes[ 2 ] );
+	}
+
+	return true;
+};
+
 } )( jQuery, wb );
 
 ( function( wb ) {
@@ -86,11 +177,12 @@ wb.download = function( blob, filename, title ) {
 // Escapes the characters in a string for use in a jQuery selector
 // Based on https://totaldev.com/content/escaping-characters-get-valid-jquery-id
 wb.jqEscape = function( selector ) {
+	// eslint-disable-next-line no-useless-escape
 	return selector.replace( /([;&,\.\+\*\~':"\\\!\^\/#$%@\[\]\(\)=>\|])/g, "\\$1" );
 };
 
 // RegEx used by formattedNumCompare
-wb.formattedNumCompareRegEx = /(<[^>]*>|[^\d\.])/g;
+wb.formattedNumCompareRegEx = /(<[^>]*>|[^\d.])/g;
 
 // Compares two formatted numbers (e.g., 1.2.12 or 1,000,345)
 wb.formattedNumCompare = function( a, b ) {
@@ -1024,7 +1116,7 @@ wb.normalizeDiacritics = function( str ) {
 		i, character;
 	for ( i = 0; i !== len; i += 1 ) {
 		character = chars[ i ];
-		if ( diacritics.hasOwnProperty( character ) ) {
+		if ( Object.prototype.hasOwnProperty.call( diacritics, character ) ) {
 			chars[ i ] = diacritics[ character ];
 			normalized = true;
 		}
@@ -1242,14 +1334,14 @@ function focusable( element, isTabIndexNotNaN, visibility ) {
 	if ( visibility ) {
 		return ( /input|select|textarea|button|object/.test( nodeName ) ? !element.disabled :
 			nodeName === "a" ?
-			element.href || isTabIndexNotNaN :
-			isTabIndexNotNaN ) &&
+				element.href || isTabIndexNotNaN :
+				isTabIndexNotNaN ) &&
 		visible( element ); /* the element and all of its ancestors must be visible */
 	} else {
 		return ( /input|select|textarea|button|object/.test( nodeName ) ? !element.disabled :
 			nodeName === "a" ?
-			element.href || isTabIndexNotNaN :
-			isTabIndexNotNaN );
+				element.href || isTabIndexNotNaN :
+				isTabIndexNotNaN );
 	}
 }
 
@@ -1272,9 +1364,9 @@ $.extend( $.expr[ ":" ], {
 
 	// support: jQuery <1.8
 
-	function( elem, i, match ) {
-		return !!$.data( elem, match[ 3 ] );
-	},
+		function( elem, i, match ) {
+			return !!$.data( elem, match[ 3 ] );
+		},
 	focusable: function( element ) {
 		return focusable( element, !isNaN( $.attr( element, "tabindex" ) ), true );
 	},
@@ -1289,6 +1381,172 @@ $.extend( $.expr[ ":" ], {
 } );
 
 } )( jQuery );
+
+/**
+ * @title WET-BOEW Add to calendar
+ * @overview Create an add to calendar button for an event
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @ricokola
+ */
+( function( $, wb ) {
+"use strict";
+
+/*
+ * Variable and function definitions.
+ * These are global to the plugin - meaning that they will be initialized once per page,
+ * not once per instance of plugin on the page. So, this is a good place to define
+ * variables that are common to all instances of the plugin on a page.
+ */
+var componentName = "wb-addcal",
+	selector = ".provisional." + componentName,
+	initEvent = "wb-init." + componentName,
+	$document = wb.doc,
+
+	/**
+	* @method init
+	* @param {jQuery Event} event Event that triggered the function call
+	*/
+	init = function( event ) {
+
+		// Start initialization
+		// returns DOM object = proceed with init
+		// returns undefined = do not proceed with init (e.g., already initialized)
+		var elm = wb.init( event, componentName, selector ),
+			$elm = $( elm );
+
+		if ( elm ) {
+
+			wb.ready( $( elm ), componentName );
+
+			var properties = elm.querySelectorAll( "[property]" ),
+				event_details = new Object(),
+				place_details = [],
+				i,
+				i_len,
+				prop_cache,
+				googleLink,
+				icsFile,
+				i18nDict = {
+					en: {
+						"addcal-addto": "Add to",
+						"addcal-calendar": "calendar",
+						"addcal-ical": "iCal format (iPhone, Outlook...)"
+					},
+					fr: {
+						"addcal-addto": "Ajouter au",
+						"addcal-calendar": "calendrier",
+						"addcal-ical": "Format iCal (iPhone, Outlook....)"
+					}
+				};
+
+			// Initiate dictionary
+			i18nDict = i18nDict[ $( "html" ).attr( "lang" ) || "en" ];
+			i18nDict = {
+				addto: i18nDict[ "addcal-addto" ],
+				calendar: i18nDict[ "addcal-calendar" ],
+				ical: i18nDict[ "addcal-ical" ]
+			};
+
+			// Set date stamp with the date modified
+			event_details.dtStamp = dtToISOString( $( "time[property='dateModified']" ) );
+
+			i_len = properties.length;
+			for ( i = 0; i < i_len; i++ ) {
+				prop_cache = properties[ i ];
+				switch ( prop_cache.getAttribute( "property" ) ) {
+				case "name":
+					if ( $( prop_cache ).parentsUntil( ( "." + componentName ), "[typeof=Place]" ).length ) {
+						event_details.placeName = prop_cache.textContent;
+					} else {
+						event_details.name = prop_cache.textContent;
+					}
+					break;
+				case "description":
+					event_details.description = prop_cache.textContent.replace( /(\r\n|\n|\r)/gm, " " );
+					break;
+				case "startDate":
+					event_details.sDate = dtToISOString( $( "time[property='startDate']" ) );
+					break;
+				case "endDate":
+					event_details.eDate = dtToISOString( $( "time[property='endDate']" ) );
+					break;
+				case "location":
+					if ( !prop_cache.getAttribute( "typeof" ) ) {
+						event_details.placeName = prop_cache.textContent;
+					}
+					break;
+				case "streetAddress":
+					event_details.placeAddress = prop_cache.textContent;
+					break;
+				case "addressLocality":
+					event_details.placeLocality = prop_cache.textContent;
+					break;
+				case "addressRegion":
+					event_details.placeRegion = prop_cache.textContent;
+					break;
+				case "postalCode":
+					event_details.placePostalCode = prop_cache.textContent;
+					break;
+				}
+			}
+
+			place_details.push( ( event_details.placeName || "" ), ( event_details.placeAddress || "" ), ( event_details.placeLocality || "" ), ( event_details.placeRegion || "" ), ( event_details.placePostalCode || "" ) );
+
+			// Error handling
+			if ( !event_details.name ) {
+				throw componentName + ": Event title is missing.";
+			} else if ( !event_details.sDate ) {
+				throw componentName + ": Start date is missing.";
+			} else if ( !event_details.eDate ) {
+				throw componentName + ": End date is missing.";
+			}
+
+			// Set Unique Identifier (UID) and Date Stamp (DSTAMP)
+			event_details.uid = window.location.href.replace( /\.|-|\/|:|[G-Zg-z]/g, "" ).toUpperCase().substr( -10 ) + "-" + event_details.sDate + "-" + event_details.dtStamp;
+
+			// Set google calendar link
+			googleLink = encodeURI( "https://www.google.com/calendar/render?action=TEMPLATE" +  "&text=" + event_details.name +  "&details=" +
+			event_details.description +  "&dates=" + event_details.sDate + "/" + event_details.eDate + "&location=" + place_details.join( " " ) );
+
+			// Set ICS file for Outlook, Apple and other calendars
+			icsFile = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//WET-BOEW//Add to Calendar v4.0//\nBEGIN:VEVENT\nDTSTAMP:" + event_details.dtStamp + "\nSUMMARY:" + event_details.name +  "\nDESCRIPTION:" + event_details.description + "\nUID:" + event_details.uid + "\nDTSTART:" + event_details.sDate + "\nDTEND:" + event_details.eDate + "\nLOCATION:" + place_details.join( " " ) + "\nEND:VEVENT\nEND:VCALENDAR";
+
+			elm.dataset.icsFile = icsFile;
+
+			// Create and add details summary to the wb-addcal event and initiate the unordered list
+			$elm.append( "<details class='max-content " + componentName + "-buttons'><summary>" + i18nDict.addto + " " + i18nDict.calendar +
+			"</summary><ul class='list-unstyled mrgn-bttm-0 mrgn-tp-sm'><li><a class='btn btn-link btn-lg mrgn-top-lg' href='" + googleLink.replace( /'/g, "%27" ) + "'>Google<span class='sr-only'>" + i18nDict.calendar + "</span></a></li><li><button class='btn btn-link btn-lg download-ics'>" + i18nDict.ical +
+			"<span class='sr-only'>Calendar</span></button></li></ul></details>" );
+		}
+
+		wb.ready( $( elm ), componentName );
+
+	};
+
+// Convert date to ISO string and formating for ICS file
+var dtToISOString = function( date ) {
+	if ( date.is( "[datetime]" ) ) {
+		date = date.attr( "datetime" );
+	} else {
+		date = date.text();
+	}
+
+	return new Date( date ).toISOString().replace( /\..*[0-9]/g, "" ).replace( /-|:|\./g, "" );
+};
+
+$document.on( "click", ".download-ics", function( event ) {
+	var icsFile = $( event.currentTarget ).parentsUntil( "." + componentName ).parent()[ 0 ];
+	icsFile =  $( icsFile ).attr( "data-ics-file" );
+	wb.download( new Blob( [ icsFile ], { type: "text/calendar;charset=utf-8" } ), "evenement-gc-event.ics" );
+} );
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+// Add the timer poke to initialize the plugin
+wb.add( selector );
+
+} )( jQuery, wb );
 
 /**
  * @title WET-BOEW Ajax Fetch [ ajax-fetch ]
@@ -1368,7 +1626,7 @@ $document.on( "ajax-fetch.wb", function( event ) {
 				};
 
 				fetchData.pointer = $( "<div id='" + wb.getId() + "' data-type='" + responseType + "' />" )
-										.append( responseType === "string" ? response : "" );
+					.append( responseType === "string" ? response : "" );
 
 				$( "#" + callerId ).trigger( {
 					type: "ajax-fetched.wb",
@@ -1387,6 +1645,130 @@ $document.on( "ajax-fetch.wb", function( event ) {
 			}, this );
 	}
 } );
+
+} )( jQuery, wb );
+
+/**
+ * @title WET-BOEW Set background image
+ * @overview Apply a background image or detects the change in screen width and replace the background image accordingly
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @namjohn920, @duboisp
+ */
+( function( $, wb ) {
+"use strict";
+
+/*
+ * Variable and function definitions.
+ * These are global to the plugin - meaning that they will be initialized once per page,
+ * not once per instance of plugin on the page. So, this is a good place to define
+ * variables that are common to all instances of the plugin on a page.
+ */
+var $document = wb.doc,
+	$window = wb.win,
+	componentName = "wb-bgimg",
+	selector = "[data-bgimg-srcset], [data-bgimg]",
+	bgViews = {},
+	ids = [],
+
+	init = function( event ) {
+
+		var elm, elmId,
+			bgImg, bgimgSrcset, bgRawViews,
+			i, i_len, i_views,
+			imgSrc, imgSize;
+
+		// Start initialization
+		// returns DOM object = proceed with init
+		// returns undefined = do not proceed with init (e.g., already initialized)
+		elm = wb.init( event, componentName, selector );
+
+		if ( elm ) {
+
+			// Ensure the feature have an ID.
+			if ( !elm.id ) {
+				elm.id = wb.getId();
+			}
+			elmId = elm.id;
+
+			// Apply default background image
+			bgImg = elm.dataset.bgimg;
+			if ( bgImg ) {
+				elm.style.backgroundImage = "url(" + bgImg + ")";
+			}
+
+			// Apply background image set if defined
+			bgimgSrcset = elm.dataset.bgimgSrcset;
+			if ( bgimgSrcset ) {
+				ids.push( elm.id );
+				bgRawViews = elm.dataset.bgimgSrcset.split( "," );
+				i_len = bgRawViews.length;
+				bgViews[ elmId ] = [];
+
+				for ( i = 0; i < i_len; i++ ) {
+					i_views = bgRawViews[ i ].trim().split( " " );
+
+					imgSrc = i_views[ 0 ];
+					imgSize =  i_views[ i_views.length - 1 ];
+
+					imgSize = parseInt( imgSize.substring( 0, imgSize.length - 1 ) );
+					bgViews[ elmId ].push( [ imgSrc, imgSize ] );
+				}
+
+				bgViews[ elmId ].sort(
+					function( a, b ) {
+						return a[ 1 ] > b[ 1 ] ? 1 : -1;
+					}
+				);
+
+				selectImage();
+
+				// Add the resize listener
+				$window.on( "resize", selectImage );
+			}
+
+			// Identify that initialization has completed
+			wb.ready( $( elm ), componentName );
+		}
+	},
+
+	selectImage = function() {
+		var screenWidth = window.innerWidth,
+			optimizedLink = {},
+			i, i_len = ids.length, j,
+			optimizedSize, currentId, currentId_len,
+			currentInput,
+			link, elm;
+
+		for ( i = 0; i < i_len; i++ ) {
+			optimizedSize = Infinity;
+			currentId = bgViews[ ids[ i ] ];
+			currentId_len = currentId.length;
+
+			for ( j = 0; j < currentId_len; j++ ) {
+				currentInput = currentId[ j ];
+				if ( currentInput[ 1 ] >= screenWidth ) {
+					if ( optimizedSize > currentInput[ 1 ] ) {
+						optimizedSize = currentInput[ 1 ];
+						optimizedLink[ ids[ i ] ] = currentInput[ 0 ];
+					}
+				}
+			}
+			if ( optimizedSize === Infinity ) {
+				optimizedLink[ ids[ i ] ] = currentId[ currentId_len - 1 ][ 0 ];
+			}
+		}
+
+		for ( link in optimizedLink ) {
+			elm = document.getElementById( link );
+			elm.style.backgroundImage = "url(" + optimizedLink[ link ] + ")";
+		}
+	};
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb wb-init." + componentName, selector, init );
+
+// Add the timer poke to initialize the plugin
+wb.add( selector );
 
 } )( jQuery, wb );
 
@@ -1562,7 +1944,7 @@ var componentName = "wb-calevt",
 			},
 			objEventsList = obj.find( "ol > li, ul > li" ),
 			iLen = objEventsList.length,
-			dateTimeRegExp = /datetime\s+\{date\:\s*(\d+-\d+-\d+)\}/,
+			dateTimeRegExp = /datetime\s+\{date:\s*(\d+-\d+-\d+)\}/,
 			i, $event, event, $objTitle, title, link, href, target,
 			linkId, date, tCollection, tCollectionTemp,	strDate1,
 			strDate2, z, zLen, className, dateClass;
@@ -2186,9 +2568,8 @@ $document.on( "keydown", selector, function( event ) {
 		case 33:
 			date.setDate( minDate.getDate() );
 
+			//page down
 			/* falls through */
-
-		//page down
 		case 34:
 			modifier = ( which === 33 ? -1 : 1 );
 
@@ -2342,7 +2723,7 @@ var componentName = "wb-charts",
 			captionHtml = $caption.html() || "",
 			captionText = $caption.text() || "",
 			valuePoint = 0,
-			dataCellUnitRegExp = /[^\+\-\.\, 0-9]+[^\-\+0-9]*/,
+			dataCellUnitRegExp = /[^+\-., 0-9]+[^\-+0-9]*/,
 			lowestFlotDelta, $imgContainer, $placeHolder,
 			$wetChartContainer, htmlPlaceHolder, figurehtml,
 			cellValue, datacolgroupfound, dataGroup, header,
@@ -2539,7 +2920,7 @@ var componentName = "wb-charts",
 				return target;
 			}
 			for ( key in cachedObj ) {
-				if ( !cachedObj.hasOwnProperty( key ) ) {
+				if ( !Object.prototype.hasOwnProperty.call( cachedObj, key ) ) {
 					continue;
 				}
 				target[ scopekey ][ key ] = cachedObj[ key ];
@@ -2626,7 +3007,7 @@ var componentName = "wb-charts",
 
 			// Merge and override the function.
 			for ( key in fn ) {
-				if ( !fn.hasOwnProperty( key ) ) {
+				if ( !Object.prototype.hasOwnProperty.call( fn, key ) ) {
 					continue;
 				}
 				tblFn = key.split( "/" );
@@ -3541,7 +3922,8 @@ var componentName = "wb-collapsible",
 					}
 
 				}
-			} catch ( e ) {}
+			} catch ( e ) {
+				/* swallow error */}
 
 			// Identify that initialization has completed
 			wb.ready( $details, componentName );
@@ -3573,11 +3955,13 @@ if ( Modernizr.details ) {
 			if ( isClosed ) {
 				try {
 					localStorage.setItem( key, "open" );
-				} catch ( e ) {}
+				} catch ( e ) {
+					/* swallow error */}
 			} else {
 				try {
 					localStorage.setItem( key, "closed" );
-				} catch ( e ) {}
+				} catch ( e ) {
+					/* swallow error */}
 			}
 		} else if ( which === 13 || which === 32 ) {
 			event.preventDefault();
@@ -3599,7 +3983,7 @@ wb.add( selector );
 
 /**
  * @title WET-BOEW Country Content
- * @overview A basic AjaxLoader wrapper that inserts AJAXed in content based on a visitors country as resolved by https://freegeoip.net
+ * @overview A basic AjaxLoader wrapper that inserts AJAXed in content based on a visitors country as resolved by freegeoip.app
  * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
  * @author @nschonni
  */
@@ -3664,7 +4048,7 @@ var componentName = "wb-ctrycnt",
 
 			// From https://github.com/aFarkas/webshim/blob/master/src/shims/geolocation.js#L89-L127
 			$.ajax( {
-				url: "https://freegeoip.net/json/",
+				url: "https://freegeoip.app/json/",
 				dataType: "jsonp",
 				cache: true,
 				jsonp: "callback",
@@ -3674,6 +4058,8 @@ var componentName = "wb-ctrycnt",
 						try {
 							localStorage.setItem( "countryCode", countryCode );
 						} catch ( error ) {
+
+							/* swallow error */
 						}
 					}
 
@@ -4373,6 +4759,58 @@ wb.add( selector );
 } )( jQuery, window, wb );
 
 /**
+ * @title eqht
+ * @overview Provide ability to have equal height containers and nested containers inside a WET-BOEW grid
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @luc-bertrand-hrsdc
+ */
+( function( $, window, wb ) {
+"use strict";
+
+/*
+ * Variable and function definitions.
+ * These are global to the plugin - meaning that they will be initialized once per page,
+ * not once per instance of plugin on the page. So, this is a good place to define
+ * variables that are common to all instances of the plugin on a page.
+ */
+var componentName = "wb-eqht-grd",
+	selector = "." + componentName + " .eqht-trgt",
+	initEvent = "wb-init" + selector,
+	$document = wb.doc,
+
+	/**
+	 * @method init
+	 * @param {jQuery Event} event Event that triggered the function call
+	 */
+	init = function( event ) {
+
+		// Start initialization
+		// returns DOM object = proceed with init
+		// returns undefined = do not proceed with init (e.g., already initialized)
+		var elm = wb.init( event, componentName, selector ),
+			$elm,
+			$eqhtParents;
+
+		if ( elm ) {
+			$elm = $( elm );
+			$elm.addClass( "hght-inhrt" );
+			$eqhtParents = $elm.parentsUntil( "[class*='" + componentName + "']" );
+			$eqhtParents.addClass( "hght-inhrt" );
+
+			// Identify that initialization has completed
+			wb.ready( $elm, componentName );
+		}
+	};
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+// Add the timer poke to initialize the plugin
+wb.add( selector );
+
+} )( jQuery, window, wb );
+
+/**
  * @title WET-BOEW Responsive equal height
  * @overview Sets the same height for all elements in a container that are rendered on the same baseline (row). Adapted from https://codepen.io/micahgodbolt/pen/FgqLc.
  * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
@@ -4589,6 +5027,157 @@ wb.add( selector );
 } )( jQuery, window, wb );
 
 /**
+* @title WET-BOEW Exit script plugin
+* @overview Plugin redirects users to non secure site
+* @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+* @author @ipaksc
+*/
+( function( $, window, wb ) {
+"use strict";
+var componentName = "wb-exitscript",
+	selector = "." + componentName,
+	initEvent = "wb-init" + selector,
+	$document = wb.doc,
+	exiturlparam = componentName + "-urlparam",
+	moDalId = componentName + "-modal",
+	i18n,
+	i18nDict = {
+		en: {
+			"msgboxHeader": "Warning",
+			"exitMsg": "You are about to leave a secure site, do you wish to continue?",
+			"targetWarning": "The link will open in a new browser window.",
+			"yesBtn": "Yes",
+			"cancelBtn": "Cancel"
+
+		},
+		fr: {
+			"msgboxHeader": "Avertissement",
+			"exitMsg": "Vous êtes sur le point de quitter un site sécurisé. Voulez-vous continuer?",
+			"targetWarning": "Le lien s'ouvrira dans une nouvelle fenêtre de navigateur.",
+			"yesBtn": "Oui",
+			"cancelBtn": "Annuler"
+
+		}
+	},
+
+	/**
+	 * @method init
+	 * @param {jQuery Event} event Event that triggered the function call
+	 */
+	init = function( event ) {
+		var elm = wb.init( event, componentName, selector ),
+			settings,
+			queryString = window.location.search,
+			urlParams = new URLSearchParams( queryString ),
+			originalURL = urlParams.get( "exturl" ),
+			$elm;
+		if ( elm ) {
+			$elm = $( elm );
+			settings = $.extend(
+				true,
+				window[ componentName ],
+				wb.getData( $elm, componentName )
+
+			);
+
+			$elm.data( componentName, settings );
+
+			if ( settings.url ) {
+				$( this ).attr( "href", settings.url + "?exturl=" +  encodeURIComponent( this.href ) );
+			}
+
+			i18n = i18nDict[ wb.lang || "en" ];
+
+			// This conditional statement for a middle static exit page, to retrieve the URL to the non-secure site.
+			if ( $elm.hasClass( exiturlparam ) ) {
+				this.outerHTML = "<a href='" + originalURL + "'>" + originalURL + "</a>";
+			}
+			wb.ready( $elm, componentName );
+		}
+	};
+
+$document.on( "click", selector, function( event ) {
+
+	var elm = event.currentTarget,
+		$elm = $( elm ),
+		wrapper,
+		targetAttribute = "",
+		moDal = document.createDocumentFragment(),
+		tpl = document.createElement( "div" ),
+		settings =  $elm.data( componentName ),
+		msgboxHeader = i18n.msgboxHeader,
+		yesBtn = i18n.yesBtn,
+		cancelBtn = i18n.cancelBtn,
+		exitMsg = i18n.exitMsg,
+		targetWarning = i18n.targetWarning;
+
+	if ( settings.i18n ) {
+		msgboxHeader =  settings.i18n.msgboxHeader || i18n.msgboxHeader;
+		yesBtn = settings.i18n.yesBtn || i18n.yesBtn;
+		cancelBtn = settings.i18n.cancelBtn || i18n.cancelBtn;
+		exitMsg = settings.i18n.exitMsg || i18n.exitMsg;
+		targetWarning = settings.i18n.targetWarning || i18n.targetWarning;
+	}
+
+	if ( !settings.url ) {
+
+		event.preventDefault();
+	}
+
+	if ( this.hasAttribute( "target" ) ) {
+		targetAttribute = "target='" + this.getAttribute( "target" ) + "'";
+	} else {
+		targetAttribute = "target='" + targetAttribute + "'";
+	}
+
+	if ( this.getAttribute( "target" ) === "_blank" ) {
+		exitMsg = exitMsg  + " " + targetWarning;
+	}
+
+	if ( document.getElementById( moDalId ) ) {
+		document.getElementById( moDalId ).remove();
+
+	}
+
+	if ( !settings.url ) {
+		tpl.innerHTML = "<section id='" + moDalId + "' " + "class='mfp-hide modal-dialog modal-content overlay-def'>" +
+			"<header class='modal-header'><h2 class='modal-title'>" + msgboxHeader + "</h2></header>" +
+			"<div class='modal-body'>" +
+			"<p>" + exitMsg + "</p>" +
+			"</div>" +
+			"<div class='modal-footer'>" +
+			"<ul class='list-inline text-center'>" +
+			"<li><a class='btn btn-default pull-right popup-modal-dismiss'" + targetAttribute + " href='" + this.getAttribute( "href" ) + "'>" + yesBtn + "</a></li>" +
+			"<li><button class='btn btn-primary popup-modal-dismiss pull-left'>" + cancelBtn + "</button></li>" +
+			"</ul></div></section>";
+		moDal.appendChild( tpl );
+		wrapper = moDal.firstChild;
+		wrapper = wrapper.firstChild;
+		document.body.appendChild( wrapper );
+
+		$( wrapper ).trigger( "open.wb-lbx", [
+			[ {
+				src: "#" + moDalId,
+				type: "inline"
+			} ],
+
+			true
+
+		] );
+
+	}
+
+} );
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+// Add the timer poke to initialize the plugin
+wb.add( selector );
+
+} )( jQuery, window, wb );
+
+/**
 * @title WET-BOEW Facebook embedded page
 * @overview Helps with implementing Facebook embedded pages.
 * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
@@ -4597,12 +5186,12 @@ wb.add( selector );
 ( function( $, window, wb ) {
 "use strict";
 
-	/*
-	* Variable and function definitions.
-	* These are global to the plugin - meaning that they will be initialized once per page,
-	* not once per instance of plugin on the page. So, this is a good place to define
-	* variables that are common to all instances of the plugin on a page.
-	*/
+/*
+* Variable and function definitions.
+* These are global to the plugin - meaning that they will be initialized once per page,
+* not once per instance of plugin on the page. So, this is a good place to define
+* variables that are common to all instances of the plugin on a page.
+*/
 var componentName = "wb-facebook",
 	selector = "." + componentName,
 	initEvent = "wb-init" + selector,
@@ -4968,8 +5557,8 @@ var componentName = "wb-feeds",
 			// Lets bind some variables to the node to ensure safe ajax thread counting
 
 			$content.data( "toProcess", feeds.length )
-					.data( "feedLimit", limit )
-					.data( "entries", [] );
+				.data( "feedLimit", limit )
+				.data( "entries", [] );
 
 			for ( i = last; i !== -1; i -= 1 ) {
 				fElem = feeds.eq( i );
@@ -5047,7 +5636,6 @@ var componentName = "wb-feeds",
 	 */
 	corsEntry = function( xmlDoc, limit ) {
 		var entries = xmlDoc.getElementsByTagName( "entry" ).length,
-			limit = limit,
 			arr_entry = [],
 			corsObj = {},
 			jsonString = JSON.stringify( xmlToJson( xmlDoc ) ),
@@ -5227,10 +5815,10 @@ var componentName = "wb-feeds",
 				$elm.empty().addClass( "waiting" );
 				$details
 					.children( "summary" )
-						.on( "click.wb-feeds", function( event ) {
-							var $summary = $( event.currentTarget ).off( "click.wb-feeds" );
-							activateFeed( $summary.parent().find( feedContSelector ) );
-						} );
+					.on( "click.wb-feeds", function( event ) {
+						var $summary = $( event.currentTarget ).off( "click.wb-feeds" );
+						activateFeed( $summary.parent().find( feedContSelector ) );
+					} );
 			}
 		}
 
@@ -5411,10 +5999,11 @@ var componentName = "wb-filter",
 			$elm, elmTagName, filterUI, prependUI,
 			settings, setDefault,
 			inptId, totalEntries;
+
 		if ( elm ) {
 			$elm = $( elm );
-
 			elmTagName = elm.nodeName;
+
 			if ( [ "DIV", "SECTION", "ARTICLE" ].indexOf( elm.nodeName ) >= 0 ) {
 				setDefault = defaults.grp;
 				prependUI = true;
@@ -5631,7 +6220,7 @@ var componentName = "wb-fnote",
 		// returns DOM object = proceed with init
 		// returns undefined = do not proceed with init (e.g., already initialized)
 		var elm = wb.init( event, componentName, selector ),
-			$elm, footnoteDd, footnoteDt, i, len, dd, dt, dtId;
+			$elm, footnoteDd, footnoteDt, i, len, dd, dt;
 
 		if ( elm ) {
 			$elm = $( elm );
@@ -5643,10 +6232,8 @@ var componentName = "wb-fnote",
 			for ( i = 0; i !== len; i += 1 ) {
 				dd = footnoteDd[ i ];
 				dt = footnoteDt[ i ];
-				dtId = dd.id + "-dt";
 				dd.setAttribute( "tabindex", "-1" );
-				dd.setAttribute( "aria-labelledby", dtId );
-				dt.id = dtId;
+				dt.id = dd.id + "-dt";
 			}
 
 			// Remove "first/premier/etc"-style text from certain footnote return links (via the child spans that hold those bits of text)
@@ -5664,7 +6251,7 @@ var componentName = "wb-fnote",
 					$refLinkDest = $document.find( refId );
 
 					$refLinkDest.find( "p.fn-rtn a" )
-								.attr( "href", "#" + eventTarget.parentNode.id );
+						.attr( "href", "#" + eventTarget.parentNode.id );
 
 					// Assign focus to $refLinkDest
 					$refLinkDest.trigger( setFocusEvent );
@@ -5789,11 +6376,7 @@ var componentName = "wb-frmvld",
 						formDOM = $form.get( 0 ),
 						formId = $form.attr( "id" ),
 						labels = formDOM.getElementsByTagName( "label" ),
-						$formElms = $form.find( "input, select, textarea" ),
-						$inputs = $formElms.filter( "input" ),
-						$pattern = $inputs.filter( "[pattern]" ),
 						submitted = false,
-						$required = $formElms.filter( "[required], [data-rule-required], .required" ),
 						errorFormId = "errors-" + ( !formId ? "default" : formId ),
 						settings = $.extend(
 							true,
@@ -5812,29 +6395,6 @@ var componentName = "wb-frmvld",
 					len = labels.length;
 					for ( i = 0; i !== len; i += 1 ) {
 						labels[ i ].innerHTML += " ";
-					}
-
-					// Remove the pattern attribute until it is safe to use with jQuery Validation
-					len = $pattern.length;
-					for ( i = 0; i !== len; i += 1 ) {
-						$pattern.eq( i ).removeAttr( "pattern" );
-					}
-
-					// Change form attributes and values that interfere with validation in IE7/8
-					// TODO: Need better way of dealing with this rather than browser sniffing
-					if ( wb.ieVersion > 0 && wb.ieVersion < 9 ) {
-						len = $required.length;
-						$required.removeAttr( "required" );
-						for ( i = 0; i !== len; i += 1 ) {
-							$required[ i ].setAttribute( "data-rule-required", "true" );
-						}
-						$inputs.filter( "[type=date]" ).each( function() {
-							var $this = $( this ),
-								$parent = $this.wrap( "<div/>" ).parent(),
-								newElm = $( $parent.html().replace( "type=date", "type=text" ) );
-							$parent.replaceWith( newElm );
-						} );
-						$formElms = $form.find( "input, select, textarea" );
 					}
 
 					// The jQuery validation plug-in in action
@@ -5931,8 +6491,8 @@ var componentName = "wb-frmvld",
 									i18nText.formNotSubmitted + $errors.length +
 									(
 										$errors.length !== 1 ?
-										i18nText.errorsFound :
-										i18nText.errorFound
+											i18nText.errorsFound :
+											i18nText.errorFound
 									) + "</" + summaryHeading + "><ul>";
 								$errorfields
 									.closest( ".form-group" )
@@ -5988,7 +6548,7 @@ var componentName = "wb-frmvld",
 									// Update the aria-live region as necessary
 									i = 0;
 									for ( key in errorMap ) {
-										if ( errorMap.hasOwnProperty( key ) ) {
+										if ( Object.prototype.hasOwnProperty.call( errorMap, key ) ) {
 											i += 1;
 											break;
 										}
@@ -6044,11 +6604,6 @@ var componentName = "wb-frmvld",
 
 						invalidHandler: function() {
 							submitted = true;
-						},
-
-						/* adds on tab validation */
-						onfocusout: function( element ) {
-							this.element( element );
 						}
 
 					} ); /* end of validate() */
@@ -6340,11 +6895,9 @@ var componentName = "wb-lbx",
 						$content.attr( "role", "document" );
 					}
 
-					$wrap.append( "<span tabindex='0' class='lbx-end wb-inv'></span>" )
-						.find( ".activate-open" )
-						.trigger( "wb-activate" );
-
 					this.contentContainer.attr( "data-pgtitle", document.getElementsByTagName( "H1" )[ 0 ].textContent );
+
+					trapTabbing( $wrap );
 				},
 				close: function() {
 					$document.find( "body" ).removeClass( "wb-modal" );
@@ -6417,10 +6970,13 @@ var componentName = "wb-lbx",
 
 					$response
 						.find( ".modal-title, h1" )
-							.first()
-								.attr( "id", "lbx-title" );
+						.first()
+						.attr( "id", "lbx-title" );
 
 					mfpResponse.data = $response;
+				},
+				ajaxContentAdded: function() {
+					trapTabbing( this.wrap );
 				}
 			};
 		}
@@ -6463,10 +7019,29 @@ var componentName = "wb-lbx",
 
 				$( footer ).append( overlayCloseFtr );
 				if ( !hasFooter ) {
-					$modal.append( footer );
+					$( footer ).insertAfter( $modal.find( ".modal-body" ) );
 				}
 			}
 		}
+	},
+	trapTabbing = function( $wrap ) {
+
+		$wrap.on( "keydown", function( e ) {
+			if ( e.which === 9 ) {
+				var tabbable = $wrap.find( ".mfp-container :tabbable:visible" ),
+					firstTabbable = tabbable.first()[ 0 ],
+					lastTabbable = tabbable.last()[ 0 ],
+					currentFocus = $( document.activeElement )[ 0 ];
+
+				if ( !e.shiftKey && currentFocus === lastTabbable ) {
+					e.preventDefault();
+					firstTabbable.focus();
+				} else if ( e.shiftKey && ( currentFocus === firstTabbable || currentFocus === $wrap[ 0 ] ) ) {
+					e.preventDefault();
+					lastTabbable.focus();
+				}
+			}
+		} );
 	};
 
 // Bind the init event of the plugin
@@ -6475,7 +7050,7 @@ $document.on( "timerpoke.wb " + initEvent, selector, init );
 // Handler for clicking on a same page link within the overlay to outside the overlay
 $document.on( "click vclick", ".mfp-wrap a[href^='#']", function( event ) {
 	var which = event.which,
-		eventTarget = event.target,
+		eventTarget = event.currentTarget,
 		$lightbox, linkTarget;
 
 	// Ignore middle/right mouse buttons
@@ -6502,7 +7077,10 @@ $document.on( "click vclick", ".mfp-wrap a[href^='#']", function( event ) {
 
 // Event handler for closing a modal popup
 $( document ).on( "click", ".popup-modal-dismiss", function( event ) {
-	event.preventDefault();
+	if ( !this.hasAttribute( "target" ) ) {
+		event.preventDefault();
+	}
+
 	$.magnificPopup.close();
 } );
 
@@ -6680,11 +7258,11 @@ var componentName = "wb-menu",
 
 			if ( elm && subItemsLength === 0 && elm.nodeName.toLowerCase() === "a" ) {
 				sectionHtml += "<li>" + $item[ 0 ].innerHTML.replace(
-						/(<a\s)/,
-						"$1" + menuitem + itemsLength +
+					/(<a\s)/,
+					"$1" + menuitem + itemsLength +
 							posinset + ( k + 1 ) +
 							"' tabindex='-1' "
-					) + "</li>";
+				) + "</li>";
 			} else {
 				sectionHtml += createCollapsibleSection( elm, k, itemsLength, $subItems, $subItems.length );
 			}
@@ -6861,7 +7439,7 @@ var componentName = "wb-menu",
 				panelDOM.innerHTML = "<header class='modal-header'><div class='modal-title'>" +
 						document.getElementById( "wb-glb-mn" )
 							.getElementsByTagName( "h2" )[ 0 ]
-								.innerHTML +
+							.innerHTML +
 						"</div></header><div class='modal-body'>" + panel + "</div>";
 				panelDOM.className += " wb-overlay modal-content overlay-def wb-panel-r";
 
@@ -6879,14 +7457,14 @@ var componentName = "wb-menu",
 				 */
 				$ajaxed
 					.find( ":discoverable" )
-						.attr( "tabindex", "-1" );
+					.attr( "tabindex", "-1" );
 
 				if ( $menu.length !== 0 ) {
 					$menu[ 0 ].setAttribute( "tabindex", "0" );
 					drizzleAria( $menu );
 					$menu
 						.filter( "[aria-haspopup=true]" )
-							.append( "<span class='expicon glyphicon glyphicon-chevron-down'></span>" );
+						.append( "<span class='expicon glyphicon glyphicon-chevron-down'></span>" );
 				}
 
 				// Replace elements
@@ -6906,9 +7484,9 @@ var componentName = "wb-menu",
 						// If not at the top level, then add wb-navcurr to the top level
 						if ( !$menuItem.hasClass( ".mb-item" ) ) {
 							$menuItem = $menuItem
-											.closest( "details" )
-												.children( "summary" )
-													.addClass( "wb-navcurr" );
+								.closest( "details" )
+								.children( "summary" )
+								.addClass( "wb-navcurr" );
 						}
 					}
 
@@ -6918,7 +7496,7 @@ var componentName = "wb-menu",
 						$menuItem
 							.trigger( "click" )
 							.parent()
-								.prop( "open", "open" );
+							.prop( "open", "open" );
 					}
 
 					// Identify that initialization has completed
@@ -6985,20 +7563,20 @@ var componentName = "wb-menu",
 		$elm
 			.removeClass( "sm-open" )
 			.children( ".open" )
-				.removeClass( "open" )
-				.attr( {
-					"aria-hidden": "true",
-					"aria-expanded": "false"
-				} )
+			.removeClass( "open" )
+			.attr( {
+				"aria-hidden": "true",
+				"aria-expanded": "false"
+			} )
 
-				// Close nested submenus
-				.find( "details" )
-					.removeAttr( "open" )
-					.children( "ul" )
-						.attr( {
-							"aria-hidden": "true",
-							"aria-expanded": "false"
-						} );
+		// Close nested submenus
+			.find( "details" )
+			.removeAttr( "open" )
+			.children( "ul" )
+			.attr( {
+				"aria-hidden": "true",
+				"aria-expanded": "false"
+			} );
 
 		if ( removeActive ) {
 			$elm.removeClass( "active" );
@@ -7024,11 +7602,11 @@ var componentName = "wb-menu",
 			menu
 				.addClass( "sm-open" )
 				.children( ".sm" )
-					.addClass( "open" )
-					.attr( {
-						"aria-hidden": "false",
-						"aria-expanded": "true"
-					} );
+				.addClass( "open" )
+				.attr( {
+					"aria-hidden": "false",
+					"aria-expanded": "true"
+				} );
 		}
 	},
 
@@ -7143,11 +7721,11 @@ $document.on( "click", selector + " [role=menu] [aria-haspopup=true]", function(
 	if ( !isOpen ) {
 		$( parent )
 			.closest( "[role^='menu']" )
-				.find( "[aria-hidden=false]" )
-					.parent()
-						.find( "[aria-haspopup=true]" )
-							.not( menuItem )
-								.trigger( "click" );
+			.find( "[aria-hidden=false]" )
+			.parent()
+			.find( "[aria-haspopup=true]" )
+			.not( menuItem )
+			.trigger( "click" );
 
 		// Ensure the opened menu is in view if in a mobile panel
 		menuContainer = document.getElementById( "mb-pnl" );
@@ -7302,11 +7880,11 @@ $document.on( "keydown", selector + " [role=menuitem]", function( event ) {
 					if ( !isOpen ) {
 						$( parent )
 							.closest( "[role^='menu']" )
-								.find( "[aria-hidden=false]" )
-									.parent()
-										.find( "[aria-haspopup=true]" )
-											.not( menuItem )
-												.trigger( "click" );
+							.find( "[aria-hidden=false]" )
+							.parent()
+							.find( "[aria-haspopup=true]" )
+							.not( menuItem )
+							.trigger( "click" );
 
 						// Ensure the opened menu is in view if in a mobile panel
 						menuContainer = document.getElementById( "mb-pnl" );
@@ -7329,7 +7907,7 @@ $document.on( "keydown", selector + " [role=menuitem]", function( event ) {
 							"aria-hidden": "false"
 						} )
 						.find( "[role=menuitem]:first" )
-							.trigger( "setfocus.wb" );
+						.trigger( "setfocus.wb" );
 				}
 
 			// Escape, left / right arrow without a submenu
@@ -7373,8 +7951,8 @@ $document.on( "keydown", selector + " [role=menuitem]", function( event ) {
 						event.preventDefault();
 						$menu.closest( "li" )
 							.find( menuitemSelector )
-								.trigger( "click" )
-								.trigger( "setfocus.wb" );
+							.trigger( "click" )
+							.trigger( "setfocus.wb" );
 
 					// No higher-level menu but the current submenu is open
 					} else if ( $menuItem.parent().children( "ul" ).attr( "aria-hidden" ) === "false" ) {
@@ -7465,6 +8043,7 @@ var componentName = "wb-mltmd",
 		"timeupdate",
 		"waiting",
 		"canplay",
+		"seeked",
 		"progress",
 		captionsLoadedEvent,
 		captionsLoadFailedEvent,
@@ -7523,7 +8102,10 @@ var componentName = "wb-mltmd",
 								}
 							}
 						}
-					} catch ( err ) { }
+					} catch ( err ) {
+
+						/* swallow error */
+					}
 				} );
 
 				//
@@ -7762,12 +8344,20 @@ var componentName = "wb-mltmd",
 				return data.replace( /<img|object [^>]*>/g, "" );
 			},
 			success: function( data ) {
-				elm.trigger( {
-					type: captionsLoadedEvent,
-					captions: data.indexOf( "<html" ) !== -1 ?
-						parseHtml( $( data ) ) :
-						parseXml( $( data ) )
-				} );
+				var captionItems = data.indexOf( "<html" ) !== -1 ?
+					parseHtml( $( data ) ) :
+					parseXml( $( data ) );
+
+				if ( captionItems.length ) {
+					elm.trigger( {
+						type: captionsLoadedEvent,
+						captions: captionItems
+					} );
+				} else {
+					elm.trigger( {
+						type: captionsLoadFailedEvent
+					} );
+				}
 			},
 			error: function( response, textStatus, errorThrown ) {
 				elm.trigger( {
@@ -7786,10 +8376,18 @@ var componentName = "wb-mltmd",
 	 * @fires ccloaded.wb-mltmd
 	 */
 	loadCaptionsInternal = function( elm, obj ) {
-		elm.trigger( {
-			type: captionsLoadedEvent,
-			captions: parseHtml( obj )
-		} );
+		var captionItems = parseHtml( obj );
+
+		if ( captionItems.length ) {
+			elm.trigger( {
+				type: captionsLoadedEvent,
+				captions: captionItems
+			} );
+		} else {
+			elm.trigger( {
+				type: captionsLoadFailedEvent
+			} );
+		}
 	},
 
 	/**
@@ -8194,10 +8792,10 @@ $document.on( renderUIEvent, selector, function( event, type, data ) {
 
 		// Create the share widgets if needed
 		if ( data.shareUrl !== undef ) {
-			$( "<div class='wb-share' data-wb-share=\'{\"type\": \"" +
+			$( "<div class='wb-share' data-wb-share='{\"type\": \"" +
 				( type === "audio" ? type : "video" ) + "\", \"title\": \"" +
 				data.title.replace( /'/g, "&apos;" ) + "\", \"url\": \"" + data.shareUrl +
-				"\", \"pnlId\": \"" + data.id + "-shr\"}\'></div>" )
+				"\", \"pnlId\": \"" + data.id + "-shr\"}'></div>" )
 				.insertBefore( $media.parent() )
 				.trigger( "wb-init.wb-share" );
 		}
@@ -8233,7 +8831,7 @@ $document.on( "click", selector, function( event ) {
 	// JSPerf for multiple class matching https://jsperf.com/hasclass-vs-is-stackoverflow/7
 	if ( className.match( /playpause|-play|-pause|display/ ) || $target.is( "object" ) || $target.is( "video" ) ) {
 		this.player( "getPaused" ) || this.player( "getEnded" ) ? this.player( "play" ) : this.player( "pause" );
-	} else if ( className.match( /\bcc\b|-subtitles/ )  ) {
+	} else if ( className.match( /(^|\s)cc\b|-subtitles/ ) && !$target.attr( "disabled" ) && !$target.parent().attr( "disabled" ) ) {
 		this.player( "setCaptionsVisible", !this.player( "getCaptionsVisible" ) );
 	} else if ( className.match( /\bmute\b|-volume-(up|off)/ ) ) {
 		this.player( "setMuted", !this.player( "getMuted" ) );
@@ -8353,9 +8951,9 @@ $document.on( multimediaEvents, selector, function( event, simulated ) {
 		$button
 			.attr( "title", buttonData )
 			.children( "span" )
-				.toggleClass( "glyphicon-play", !isPlay )
-				.toggleClass( "glyphicon-pause", isPlay )
-				.html( invStart + buttonData + invEnd );
+			.toggleClass( "glyphicon-play", !isPlay )
+			.toggleClass( "glyphicon-pause", isPlay )
+			.html( invStart + buttonData + invEnd );
 		break;
 
 	case "volumechange":
@@ -8369,9 +8967,9 @@ $document.on( multimediaEvents, selector, function( event, simulated ) {
 				"aria-pressed": isMuted
 			} )
 			.children( "span" )
-				.toggleClass( "glyphicon-volume-up", !isMuted )
-				.toggleClass( "glyphicon-volume-off", isMuted )
-				.html( invStart + buttonData + invEnd );
+			.toggleClass( "glyphicon-volume-up", !isMuted )
+			.toggleClass( "glyphicon-volume-off", isMuted )
+			.html( invStart + buttonData + invEnd );
 		$slider = $this.find( "input[type='range']" );
 		$slider[ 0 ].value = isMuted ? 0 : volume;
 		$slider.trigger( "wb-update.wb-slider" );
@@ -8417,11 +9015,15 @@ $document.on( multimediaEvents, selector, function( event, simulated ) {
 
 	case "ccloadfail":
 		if ( eventNamespace === componentName ) {
-			$this.find( ".wb-mm-cc" )
-				.append( "<p class='errmsg'><span>" + i18nText.cc_error + "</span></p>" )
-				.end()
-				.find( ".cc" )
-				.attr( "disabled", "" );
+			if ( !$this.hasClass( "errmsg" ) ) {
+				$this.addClass( "cc_on errmsg" )
+					.find( ".wb-mm-cc" )
+					.append( "<div>" + i18nText.cc_error + "</div>" )
+					.end()
+					.find( ".cc" )
+					.attr( "disabled", "" )
+					.removeAttr( "aria-pressed" );
+			}
 		}
 		break;
 
@@ -8447,6 +9049,7 @@ $document.on( multimediaEvents, selector, function( event, simulated ) {
 		break;
 
 	case "canplay":
+	case "seeked":
 		this.loading = clearTimeout( this.loading );
 		$this.removeClass( "waiting" );
 		break;
@@ -8544,7 +9147,7 @@ var componentName = "wb-navcurr",
 				menuLinksArray = [],
 				menuLinksUrlArray = [],
 				windowLocation = window.location,
-				pageUrl = windowLocation.hostname + windowLocation.pathname.replace( /^([^\/])/, "/$1" ),
+				pageUrl = windowLocation.hostname + windowLocation.pathname.replace( /^([^/])/, "/$1" ),
 				pageUrlQuery = windowLocation.search,
 				match = false,
 				className = classNameOverride ? classNameOverride : componentName,
@@ -8561,7 +9164,7 @@ var componentName = "wb-navcurr",
 					linkHref = link.getAttribute( "href" );
 					if ( linkHref !== null ) {
 						if ( linkHref.length !== 0 && linkHref.charAt( 0 ) !== "#" ) {
-							linkUrl = link.hostname + link.pathname.replace( /^([^\/])/, "/$1" );
+							linkUrl = link.hostname + link.pathname.replace( /^([^/])/, "/$1" );
 							linkQuery = link.search;
 							linkQueryLen = linkQuery.length;
 							if ( pageUrl.slice( -linkUrl.length ) === linkUrl && ( linkQueryLen === 0 || pageUrlQuery.slice( -linkQueryLen ) === linkQuery ) ) {
@@ -8591,7 +9194,7 @@ var componentName = "wb-navcurr",
 							linkHref = ( child && child.nodeName === "A" ) ? child.getAttribute( "href" ) : "";
 							if ( linkHref && linkHref.charAt( 0 ) !== "#" ) {
 								localBreadcrumbLinksArray.push( child );
-								localBreadcrumbLinksUrlArray.push( child.hostname + child.pathname.replace( /^([^\/])/, "/$1" ) );
+								localBreadcrumbLinksUrlArray.push( child.hostname + child.pathname.replace( /^([^/])/, "/$1" ) );
 							}
 						}
 
@@ -9518,7 +10121,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 							body: "<p>" + i18nText.timeoutAlready + "</p>",
 							buttons: $( "<button type='button' class='" + confirmClass +
 								" btn btn-primary popup-modal-dismiss'>" + i18nText.buttonSignin + "</button>" )
-									.data( "logouturl", settings.logouturl )
+								.data( "logouturl", settings.logouturl )
 						} );
 					}
 				}
@@ -9546,11 +10149,11 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 
 		$buttonContinue = $( buttonStart + confirmClass +
 			" btn btn-primary popup-modal-dismiss'>" + i18nText.buttonContinue + buttonEnd )
-				.data( settings )
-				.data( "start", getCurrentTime() );
+			.data( settings )
+			.data( "start", getCurrentTime() );
 		$buttonEnd = $( buttonStart + confirmClass + " btn btn-default'>" +
 			i18nText.buttonEnd + buttonEnd )
-				.data( "logouturl", settings.logouturl );
+			.data( "logouturl", settings.logouturl );
 
 		openModal( {
 			body: "<p>" + timeoutBegin + "<br />" + i18nText.timeoutEnd + "</p>",
@@ -9805,17 +10408,9 @@ var componentName = "wb-share",
 
 			// The definitions of the available bookmarking sites, in URL use
 			// '{u}' for the page URL, '{t}' for the page title, {i} for the image, and '{d}' for the description
-			bitly: {
-				name: "bitly",
-				url: "https://bitly.com/a/bitmarklet?u={u}"
-			},
 			blogger: {
 				name: "Blogger",
 				url: "https://www.blogger.com/blog_this.pyra?t=&amp;u={u}&amp;n={t}"
-			},
-			digg: {
-				name: "Digg",
-				url: "http://digg.com/submit?phase=2&amp;url={u}&amp;title={t}"
 			},
 			diigo: {
 				name: "Diigo",
@@ -9845,6 +10440,10 @@ var componentName = "wb-share",
 				name: "reddit",
 				url: "https://reddit.com/submit?url={u}&amp;title={t}"
 			},
+			tinyurl: {
+				name: "TinyURL",
+				url: "https://tinyurl.com/create.php?url={u}"
+			},
 			tumblr: {
 				name: "tumblr",
 				url: "https://www.tumblr.com/share/link?url={u}&amp;name={t}&amp;description={d}"
@@ -9856,6 +10455,10 @@ var componentName = "wb-share",
 			yahoomail: {
 				name: "Yahoo! Mail",
 				url: "https://compose.mail.yahoo.com/?to=&subject={t}&body={u}%0A{d}"
+			},
+			whatsapp: {
+				name: "Whatsapp",
+				url: "https://api.whatsapp.com/send?text={t}%0A{d}%0A{u}"
 			}
 		}
 	},
@@ -9914,12 +10517,12 @@ var componentName = "wb-share",
 			id = "shr-pg" + ( pnlId.length !== 0 ? "-" + pnlId : panelCount );
 			pageHref = encodeURIComponent( settings.url );
 
-			regex = /\'|&#39;|&apos;/g;
+			regex = /'|&#39;|&apos;/g;
 			pageTitle = encodeURIComponent( settings.title )
-							.replace( regex, "%27" );
+				.replace( regex, "%27" );
 			pageImage = encodeURIComponent( settings.img );
 			pageDescription = encodeURIComponent( settings.desc )
-								.replace( regex, "%27" );
+				.replace( regex, "%27" );
 
 			// Don't create the panel for the second link (class="link-only")
 			if ( elm.className.indexOf( "link-only" ) === -1 ) {
@@ -9932,7 +10535,7 @@ var componentName = "wb-share",
 				if ( !filter || filter.length === 0 ) {
 					keys = [];
 					for ( key in sites ) {
-						if ( sites.hasOwnProperty( key ) ) {
+						if ( Object.prototype.hasOwnProperty.call( sites, key ) ) {
 							keys.push( key );
 						}
 					}
@@ -9951,10 +10554,10 @@ var componentName = "wb-share",
 					key = keys[ i ];
 					siteProperties = sites[ key ];
 					url = siteProperties.url
-							.replace( /\{u\}/, pageHref )
-							.replace( /\{t\}/, pageTitle )
-							.replace( /\{i\}/, pageImage )
-							.replace( /\{d\}/, pageDescription );
+						.replace( /\{u\}/, pageHref )
+						.replace( /\{t\}/, pageTitle )
+						.replace( /\{i\}/, pageImage )
+						.replace( /\{d\}/, pageDescription );
 					panel += "<li><a href='" + url + "' class='" + shareLink +
 						" " + ( siteProperties.isMailto ? "email" : key ) +
 						" btn btn-default' target='_blank' rel='noreferrer noopener'>" +
@@ -9979,6 +10582,235 @@ var componentName = "wb-share",
 
 			// Identify that initialization has completed
 			wb.ready( $elm, componentName );
+		}
+	};
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+// Add the timer poke to initialize the plugin
+wb.add( selector );
+
+} )( jQuery, window, document, wb );
+
+/**
+ * @title WET-BOEW step form
+ * @overview Provide ability for a form to be broken into steps.
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @kodecount
+ */
+( function( $, window, document, wb ) {
+"use strict";
+
+/*
+ * Variable and function definitions.
+ * These are global to the plugin - meaning that they will be initialized once per page,
+ * not once per instance of plugin on the page. So, this is a good place to define
+ * variables that are common to all instances of the plugin on a page.
+ */
+var componentName = "wb-steps",
+	selector = ".provisional." + componentName,
+	initEvent = "wb-init" + selector,
+	$document = wb.doc,
+	i18n, i18nText,
+	btnPrevious, btnNext, btnSubmit,
+
+	/**
+	 * @method init
+	 * @param {jQuery Event} evt Event that triggered the function call
+	 */
+	init = function( evt ) {
+
+		// Start initialization
+		// returns DOM object = proceed with init
+		// returns undefined = do not proceed with init (e.g., already initialized)
+		var elm = wb.init( evt, componentName, selector );
+
+		if ( elm ) {
+
+			// Ensure there is a unique id on the element
+			if ( !elm.id ) {
+				elm.id = wb.getId();
+			}
+
+			// Only initialize the i18nText once
+			if ( !i18nText ) {
+				i18n = wb.i18n;
+				i18nText = {
+					prv: i18n( "prv" ),
+					nxt: i18n( "nxt" )
+				};
+			}
+
+			/*
+			 * Variable and function definitions
+			 * These will be initialized once per instance of plugin.
+			 */
+			var form = elm.getElementsByTagName( "FORM" )[ 0 ],
+				fieldsets = ( form ) ? $( form ).children( "fieldset" ) : 0,
+				hasStepsInitialized;
+
+			// Initialize navigation buttons
+			btnPrevious = createStepsButton( "prev", "mrgn-rght-sm mrgn-bttm-md", i18nText.prv );
+			btnNext = createStepsButton( "next", "mrgn-bttm-md", i18nText.nxt );
+			btnSubmit = form.querySelector( "input[type=submit], button[type=submit]" );
+			btnSubmit.classList.add( "mrgn-bttm-md" );
+
+			/*
+			 * Determines if html is correctly formatted and initialize all fieldsets/legend combinations into steps.
+			 */
+			for ( var i = 0, len = fieldsets.length; i < len; i++ ) {
+
+				/*
+				 * Variable and function definitions
+				 * These well be initialized once per instance of each fieldset.
+				 * Determines the following business rules:
+				 *  -Only allow steps if elements are in proper order fieldset -> legend -> div
+				 *  -Only allow NEXT button on first step
+				 *  -Only allow final SUBMIT button on last step
+				 */
+				var fieldset = fieldsets[ i ],
+					isFirstFieldset = ( i === 0 ) ? true : false,
+					isLastFieldset = ( i === ( len - 1 ) ) ? true : false,
+					legend = fieldset.firstElementChild,
+					div = ( legend && legend.tagName === "LEGEND" ) ? legend.nextElementSibling : false,
+					buttonGroup = document.createElement( "div" ),
+					wrapper = document.createElement( "div" ),
+					buttonGroupClassList = buttonGroup.classList,
+					divClassList = div.classList;
+
+				buttonGroupClassList.add( "buttons" );
+				fieldset.parentNode.insertBefore( wrapper, fieldset );
+				wrapper.appendChild( fieldset );
+				wrapper.classList.add( "steps-wrapper" );
+
+				if ( div && div.tagName === "DIV" ) {
+					var btnClone;
+					hasStepsInitialized = true;
+
+					if ( !isFirstFieldset ) {
+						btnClone = btnPrevious.cloneNode( true );
+						setStepsBtnEvent( btnClone );
+						buttonGroup.appendChild( btnClone );
+						wrapper.appendChild( buttonGroup );
+					}
+
+					if ( !isLastFieldset ) {
+						btnClone = btnNext.cloneNode( true );
+						setStepsBtnEvent( btnClone );
+						buttonGroup.appendChild( btnClone );
+					} else {
+						buttonGroup.appendChild( btnSubmit );
+					}
+
+					wrapper.appendChild( buttonGroup );
+
+					fieldset.classList.add( "wb-tggle-fildst" );
+					divClassList.add( "hidden" );
+					buttonGroupClassList.add( "hidden" );
+
+					if ( isFirstFieldset ) {
+						legend.classList.add( "wb-steps-active" );
+						btnClone.classList.remove( "hidden" );
+						divClassList.remove( "hidden" );
+						buttonGroupClassList.remove( "hidden" );
+					}
+				}
+			}
+
+			/*
+			 * if steps has initialized hide any precreated submit or reset buttons
+			 */
+			if ( form && hasStepsInitialized ) {
+				$( form ).children( "input" ).hide();
+				wb.ready( $( elm ), componentName );
+			}
+		}
+	},
+
+	/**
+	 * @method createStepsButton
+	 * @param {string var} tagName, {string var} type, {boolean var} isPrimary, {string var} style, {string var} text
+	 * @returns {Object} A ready-to-use button element
+	 */
+	createStepsButton = function( type, style, text ) {
+		var control = document.createElement( "BUTTON" );
+
+		// set default attributes
+		control.className = ( type === "prev" ? "btn btn-md btn-default" : "btn btn-md btn-primary" ) + " " + style;
+		control.innerHTML = text;
+
+		return control;
+	},
+
+	/**
+	 * @method setStepsBtnEvent
+	 * @param {JavaScript element} elm
+	 */
+	setStepsBtnEvent = function( elm ) {
+		elm.addEventListener( "click", function( evt ) {
+			evt.preventDefault();
+			var classes = ( this.className ) ? this.className : false,
+				isNext = ( classes && classes.indexOf( "btn-primary" ) > -1 ),
+				isFormValid = true,
+				parentElement = this.parentElement,
+				parentParentElement = parentElement.parentElement,
+				parentPreviousClassList = parentElement.previousElementSibling.classList;
+
+			// confirm if form is valid
+			if ( isNext && jQuery.validator && jQuery.validator !== "undefined" ) {
+				isFormValid =  $( "#" + parentParentElement.parentElement.id ).valid();
+			}
+
+			// continue if valid
+			if ( isFormValid ) {
+				showSteps( parentParentElement, isNext );
+				if ( isNext ) {
+					parentPreviousClassList.remove( "wb-steps-error" );
+				}
+			} else if ( isNext && !isFormValid ) {
+				parentPreviousClassList.add( "wb-steps-error" );
+			}
+		} );
+	},
+
+	/**
+	 * @method showSteps
+	 * @param {JavaScript element} elm and {boolean var} isNext
+	 */
+	showSteps = function( elm, isNext ) {
+		var fieldsetElement = elm.getElementsByTagName( "FIELDSET" )[ 0 ],
+			fields = fieldsetElement.getElementsByTagName( "div" )[ 0 ],
+			legend = fieldsetElement.getElementsByTagName( "legend" )[ 0 ],
+			buttonGroup = elm.querySelector( "div.buttons" ),
+			fieldset;
+
+		if ( elm ) {
+			fields.classList.add( "hidden" );
+			buttonGroup.classList.add( "hidden" );
+
+			if ( legend ) {
+				legend.classList.remove( "wb-steps-active" );
+			}
+
+			fieldset = ( !isNext ) ? elm.previousElementSibling : elm.nextElementSibling;
+			if ( fieldset ) {
+				legend = fieldset.getElementsByTagName( "LEGEND" )[ 0 ];
+				elm = fieldset.getElementsByTagName( "DIV" )[ 0 ];
+				buttonGroup = fieldset.querySelector( "div.buttons" );
+				if ( legend ) {
+					legend.classList.add( "wb-steps-active" );
+					legend.tabIndex = 0;
+					legend.focus();
+					legend.tabIndex = -1;
+				}
+				if ( elm ) {
+					elm.classList.remove( "hidden" );
+				}
+				if ( buttonGroup ) {
+					buttonGroup.classList.remove( "hidden" );
+				}
+			}
 		}
 	};
 
@@ -10124,11 +10956,28 @@ $document.on( "draw.dt", selector, function( event, settings ) {
 	var $elm = $( event.target ),
 		pagination = $elm.next( ".bottom" ).find( "div:first-child" ),
 		paginate_buttons = $elm.next( ".bottom" ).find( ".paginate_button" ),
+		pbLength = paginate_buttons.length,
+		pHasLF = pagination.find( ".last, .first" ).length === 2,
+		pHasPN = pagination.find( ".previous, .next" ).length === 2,
 		ol = document.createElement( "OL" ),
 		li = document.createElement( "LI" );
 
 	// Determine if Pagination required
-	if ( paginate_buttons.length === 1 || ( pagination.find( ".previous, .next" ).length === 2 && paginate_buttons.length < 4 ) ) {
+	if (
+		pbLength === 1 ||
+		(
+			pbLength === 3 &&
+			(
+				pHasLF ||
+				pHasPN
+			)
+		) ||
+		(
+			pbLength === 5 &&
+			pHasLF &&
+			pHasPN
+		)
+	) {
 		pagination.addClass( "hidden" );
 	} else {
 
@@ -10150,7 +10999,7 @@ $document.on( "draw.dt", selector, function( event, settings ) {
 		// Should be pushed upstream to DataTables
 		$elm.next( ".bottom" ).find( ".paginate_button" )
 			.attr( {
-				"href": "#" + $elm.context.id
+				"href": "#" + $elm.get( 0 ).id
 			} )
 
 			// This is required to override the datatable.js (v1.10.13) behavior to cancel the event propagation on anchor element.
@@ -10161,12 +11010,12 @@ $document.on( "draw.dt", selector, function( event, settings ) {
 			} )
 
 			.not( ".previous, .next" )
-				.attr( "aria-pressed", "false" )
-				.html( function( index, oldHtml ) {
-					return "<span class='wb-inv'>" + i18nText.paginate.page + " </span>" + oldHtml;
-				} )
-				.filter( ".current" )
-					.attr( "aria-pressed", "true" );
+			.attr( "aria-pressed", "false" )
+			.html( function( index, oldHtml ) {
+				return "<span class='wb-inv'>" + i18nText.paginate.page + " </span>" + oldHtml;
+			} )
+			.filter( ".current" )
+			.attr( "aria-pressed", "true" );
 	}
 
 	// Identify that the table has been updated
@@ -10184,50 +11033,135 @@ $document.on( "submit", ".wb-tables-filter", function( event ) {
 	event.preventDefault();
 
 	var $form = $( this ),
-		$datatable = $( "#" + $form.data( "bind-to" ) ).dataTable( { "retrieve": true } ).api();
+		$datatable = $( "#" + $form.data( "bind-to" ) ).dataTable( { "retrieve": true } ).api(),
+		$toNumber = function stringToNumber( number ) {
+			number = number.replace( /[^0-9\-,.]+/g, "" );
+			if ( /[,]\d{1,2}$/.test( number ) ) {
+				number = number.replace( /(\d{2})$/, ".$1" );
+			}
+			number = number.replace( /,/g, "" );
+			return parseFloat( number );
+		},
+		$isDate = function isDate( date ) {
+			return date instanceof Date && !isNaN( date );
+		};
 
 	// Lets reset the search
 	$datatable.search( "" ).columns().search( "" ).draw();
 
 	// Lets loop throug all options
-	var $lastColumn = -1, $cbVal = "";
+	var $prevCol = -1, $cachedVal = "";
 	$form.find( "[name]" ).each( function() {
 		var $elm = $( this ),
 			$value = "",
 			$regex = "",
+			$column = parseInt( $elm.attr( "data-column" ), 10 ),
 			$isAopts = $elm.data( "aopts" ),
-			$column = parseInt( $elm.attr( "data-column" ), 10 );
+			$aoptsSelector = "[data-aopts*='\"column\": \"" + $column + "\"']:checked",
+			$aopts = $( $aoptsSelector ),
+			$aoType = ( $aopts && $aopts.data( "aopts" ) ) ? $aopts.data( "aopts" ).type.toLowerCase() : "",
+			$fData;
 
 		// Ignore the advanced options fields
 		if ( $isAopts ) {
 			return;
 		}
 
+		// Verifies if filtering the same column
+		if ( $column !== $prevCol || $prevCol === -1 ) {
+			$cachedVal = "";
+		}
+		$prevCol = $column;
+
 		// Filters based on input type
 		if ( $elm.is( "select" ) ) {
 			$value = $elm.find( "option:selected" ).val();
-		} else if ( $elm.is( ":checkbox" ) ) {
+		} else if ( $elm.is( "input[type='number']" ) ) {
+			var $val = $elm.val(), $minNum, $maxNum;
 
-			// Verifies if using same checkbox list
-			if ( $column !== $lastColumn || $lastColumn === -1 ) {
-				$cbVal = "";
+			// Retain minimum number (always the first number input)
+			if ( $cachedVal === "" ) {
+				$cachedVal = parseFloat( $val );
+				$cachedVal = ( $cachedVal ) ? $cachedVal : "-0";
 			}
-			$lastColumn = $column;
+			$minNum = $cachedVal;
+
+			// Maximum number is always the current selected number
+			$maxNum = parseFloat( $val );
+
+			// Generates a list of numbers (within the min and max number)
+			if ( !isNaN( $minNum ) && !isNaN( $maxNum ) ) {
+				$fData = $datatable.column( $column ).data().filter( function( obj ) {
+					var $num = $toNumber( obj.toString() );
+
+					if ( !isNaN( $num ) ) {
+						if ( $aoType === "and" ) {
+							if ( $cachedVal !== $maxNum && $cachedVal !== "-0" && $num >= $minNum && $num <= $maxNum ) {
+								return true;
+							}
+						} else {
+							if ( $cachedVal === $maxNum && $num >= $minNum ) {
+								return true;
+							} else if ( $cachedVal === "-0" && $num <= $maxNum ) {
+								return true;
+							} else if ( $cachedVal !== "-0" && $num >= $minNum && $num <= $maxNum ) {
+								return true;
+							}
+						}
+					}
+					return false;
+				} );
+				$fData = $fData.join( "|" );
+
+				// If no numbers match set as -0, so no results return
+				$value = ( $fData ) ? $fData : "-0";
+				$regex = "(" + $value.replace( /&nbsp;|\s/g, "\\s" ).replace( /\$/g, "\\$" ) + ")";
+			}
+		} else if ( $elm.is( "input[type='date']" ) && $elm.val() ) {
+			var $minDate, $maxDate;
+
+			// Retain minimum date (always the first date input)
+			if ( $cachedVal === "" ) {
+				$cachedVal = new Date( $elm.val() );
+				$cachedVal.setDate( $cachedVal.getDate() + 1 );
+				$cachedVal.setHours( 0, 0, 0, 0 );
+			}
+			$minDate = $cachedVal;
+
+			// Maximum date is always the current selected date
+			$maxDate = new Date( $elm.val() );
+			$maxDate.setDate( $maxDate.getDate() + 1 );
+			$maxDate.setHours( 23, 59, 59, 999 );
+
+			// Generates a list of date strings (within the min and max date)
+			$fData = $datatable.column( $column ).data().filter( function( obj ) {
+				var $date = obj.replace( /[0-9]{2}\s[0-9]{2}:/g, function( e ) {
+					return e.replace( /\s/g, "T" );
+				} );
+				$date = new Date( $date );
+				$date.setHours( 0, 0, 0, 0 );
+
+				if ( !$isDate( $minDate ) || !$isDate( $maxDate ) || !$isDate( $date ) ) {
+					return;
+				}
+				return ( $date >= $minDate && $date <= $maxDate );
+			} );
+			$fData = $fData.join( "|" );
+
+			// If no dates match set as -1, so no results return
+			$value = ( $fData ) ? $fData : "-1";
+		} else if ( $elm.is( ":checkbox" ) ) {
 
 			// Verifies if checkbox is checked before setting value
 			if ( $elm.is( ":checked" ) ) {
-				var $aoptsSelector = "[data-aopts*='\"column\": \"" + $column + "\"']:checked",
-					$aopts = $( $aoptsSelector ),
-					$aoType = ( $aopts && $aopts.data( "aopts" ) ) ? $aopts.data( "aopts" ).type.toLowerCase() : "";
-
 				if ( $aoType === "both" ) {
-					$cbVal += "(?=.*\\b" + $elm.val() + "\\b)";
+					$cachedVal += "(?=.*\\b" + $elm.val() + "\\b)";
 				} else {
-					$cbVal += ( $cbVal.length > 0 ) ? "|" : "";
-					$cbVal += $elm.val();
+					$cachedVal += ( $cachedVal.length > 0 ) ? "|" : "";
+					$cachedVal += $elm.val();
 				}
 
-				$value = $cbVal;
+				$value = $cachedVal;
 				$value = $value.replace( /\s/g, "\\s*" );
 
 				// Adjust regex based on advanced options
@@ -10378,8 +11312,8 @@ var componentName = "wb-tabs",
 				defaults,
 				{
 					interval: $elm.hasClass( "slow" ) ?
-								9 : $elm.hasClass( "fast" ) ?
-									3 : defaults.interval,
+						9 : $elm.hasClass( "fast" ) ?
+							3 : defaults.interval,
 					excludeControls: $elm.hasClass( "exclude-controls" ),
 					excludePlay: $elm.hasClass( "exclude-play" ),
 					updateHash: $elm.hasClass( "update-hash" ),
@@ -10420,10 +11354,14 @@ var componentName = "wb-tabs",
 						try {
 							sessionStorage.setItem( pagePath + elmId + activePanel, activeId );
 						} catch ( error ) {
+
+							/* swallow error */
 						}
 					}
 				}
 			} catch ( error ) {
+
+				/* swallow error */
 			}
 
 			// Determine the current view
@@ -10526,7 +11464,7 @@ var componentName = "wb-tabs",
 				$tablist.find( "a" )
 					.filter( "[href$='" + activeId + "']" )
 					.parent()
-						.addClass( "active" );
+					.addClass( "active" );
 			}
 
 			drizzleAria( $panels, $tablist );
@@ -10772,17 +11710,17 @@ var componentName = "wb-tabs",
 
 		$controls
 			.find( ".active" )
-				.removeClass( "active" )
-				.children( "a" )
-					.attr( {
-						"aria-selected": "false",
-						tabindex: "-1"
-					} );
+			.removeClass( "active" )
+			.children( "a" )
+			.attr( {
+				"aria-selected": "false",
+				tabindex: "-1"
+			} );
 
 		// Update the Item x of n
 		$controls
 			.find( ".curr-index" )
-				.html( newIndex );
+			.html( newIndex );
 
 		$control
 			.attr( {
@@ -10790,7 +11728,7 @@ var componentName = "wb-tabs",
 				tabindex: "0"
 			} )
 			.parent()
-				.addClass( "active" );
+			.addClass( "active" );
 
 		// Update sessionStorage with the current active panel
 		if ( !tabSettings.ignoreSession ) {
@@ -10800,6 +11738,8 @@ var componentName = "wb-tabs",
 					$next.attr( "id" )
 				);
 			} catch ( error ) {
+
+				/* swallow error */
 			}
 		}
 
@@ -10937,10 +11877,10 @@ var componentName = "wb-tabs",
 								if ( !isInit ) {
 									$detailsElm
 										.children( "summary" )
-											.attr( {
-												"aria-expanded": isActive,
-												"aria-selected": isActive
-											} );
+										.attr( {
+											"aria-expanded": isActive,
+											"aria-selected": isActive
+										} );
 								}
 							}
 						} else if ( oldIsSmallView ) {
@@ -10957,11 +11897,11 @@ var componentName = "wb-tabs",
 									open: "open"
 								} )
 								.not( $openDetails )
-									.addClass( "fade out noheight wb-inv" )
-									.attr( {
-										"aria-hidden": "true",
-										"aria-expanded": "false"
-									} );
+								.addClass( "fade out noheight wb-inv" )
+								.attr( {
+									"aria-hidden": "true",
+									"aria-expanded": "false"
+								} );
 
 							$details.children( ".tgl-panel" ).removeAttr( "role" );
 
@@ -11175,8 +12115,8 @@ $document.on( activateEvent, selector + " [role=tabpanel]", function( event ) {
 		} else {
 			$( currentTarget )
 				.closest( selector )
-					.find( "[href$='#" + currentTarget.id + "']" )
-						.trigger( setFocusEvent );
+				.find( "[href$='#" + currentTarget.id + "']" )
+				.trigger( setFocusEvent );
 		}
 
 	// Left mouse button click or escape key
@@ -11236,6 +12176,8 @@ $document.on( activateEvent, selector + " > .tabpanels > details > summary", fun
 					details.id
 				);
 			} catch ( error ) {
+
+				/* swallow error */
 			}
 		}
 
@@ -11307,7 +12249,7 @@ var componentName = "wb-txthl",
 			} else if ( params && params.txthl ) {
 				searchCriteria = decodeURIComponent(
 					wb.pageUrlParts.params.txthl
-						.replace( /^\s+|\s+$|\|+|\"|\(|\)/g, "" ).replace( /\++/g, "|" )
+						.replace( /^\s+|\s+$|\|+|"|\(|\)/g, "" ).replace( /\++/g, "|" )
 				);
 			}
 
@@ -11323,7 +12265,7 @@ var componentName = "wb-txthl",
 				searchCriteria = "(?=([^>]*<))([\\s'])?(" + searchCriteria + ")(?!>)";
 
 				newText = elm.innerHTML.replace( new RegExp( searchCriteria, "gi" ), function( match, group1, group2, group3 ) {
-					return ( !group2 ? "" : group2 ) + "<mark class='txthl'>" + group3 + "</mark>";
+					return ( !group2 ? "" : group2 ) + "<mark>" + group3 + "</mark>";
 				} );
 				elm.innerHTML = newText;
 			}
@@ -11422,7 +12364,7 @@ var componentName = "wb-toggle",
 	 * @param {Object} data Simple key/value data object passed when the event was triggered
 	 */
 	initAria = function( link, data ) {
-		var i, len, elm, elms, parent, tabs, tab, panel, isOpen,
+		var i, len, elm, elms, parent, tabs, tab, panel, isOpen, wrapper,
 			ariaControls = "",
 			hasOpen = false;
 
@@ -11461,12 +12403,25 @@ var componentName = "wb-toggle",
 					if ( !tab.getAttribute( "id" ) ) {
 						tab.setAttribute( "id", wb.getId() );
 					}
-					tab.setAttribute( "role", "tab" );
-					tab.setAttribute( "aria-selected", isOpen );
-					tab.setAttribute( "tabindex", isOpen ? "0" : "-1" );
-					tab.setAttribute( "aria-posinset", i + 1 );
-					tab.setAttribute( "aria-setsize", len );
 
+					//Details and summary don't support aria roles and some aria attribute that is why they are wrapped in a div
+					if ( elm.nodeName.toLowerCase() === "details" && elm.parentNode.className.toLowerCase().indexOf( "accordion" ) > -1 ) {
+						wrapper = document.createElement( "div" );
+						wrapper.classList.add( "tgl-tab" );
+						wrapper.setAttribute( "role", "tab" );
+						wrapper.setAttribute( "aria-selected", isOpen );
+						wrapper.setAttribute( "tabindex", isOpen ? "0" : "-1" );
+						wrapper.setAttribute( "aria-posinset", i + 1 );
+						wrapper.setAttribute( "aria-setsize", len );
+						parent.replaceChild( wrapper, elm );
+						wrapper.appendChild( elm );
+					} else {
+						tab.setAttribute( "role", "tab" );
+						tab.setAttribute( "aria-selected", isOpen );
+						tab.setAttribute( "tabindex", isOpen ? "0" : "-1" );
+						tab.setAttribute( "aria-posinset", i + 1 );
+						tab.setAttribute( "aria-setsize", len );
+					}
 					panel.setAttribute( "role", "tabpanel" );
 					panel.setAttribute( "aria-labelledby", tab.getAttribute( "id" ) );
 					panel.setAttribute( "aria-expanded", isOpen );
@@ -11627,6 +12582,8 @@ var componentName = "wb-toggle",
 				try {
 					data.persist.setItem( data.persistKey, stateTo );
 				} catch ( error ) {
+
+					/* swallow error */
 				}
 			}
 		}
@@ -11657,7 +12614,7 @@ var componentName = "wb-toggle",
 			if ( data.isTablist ) {
 
 				// Set the required aria attributes
-				$elms.find( selectorTab ).attr( {
+				$elms.find( selectorTab ).parents( selectorTab ).attr( {
 					"aria-selected": isOn,
 					tabindex: isOn ? "0" : "-1"
 				} );
@@ -11724,8 +12681,8 @@ var componentName = "wb-toggle",
 			return anyCollapsed ? data.stateOff : data.stateOn;
 
 		// Get the current on/off state of the elements specified by the selector and parent
-		} else if ( states.hasOwnProperty( selector ) ) {
-			return states[ selector ].hasOwnProperty( parent ) ?
+		} else if ( Object.prototype.hasOwnProperty.call( states, selector ) ) {
+			return Object.prototype.hasOwnProperty.call( states[ selector ], parent ) ?
 				states[ selector ][ parent ] :
 				states[ selector ].all;
 		}
@@ -11761,7 +12718,7 @@ var componentName = "wb-toggle",
 			// links that are restricted by parent.
 			} else {
 				for ( prop in elmsState ) {
-					if ( elmsState.hasOwnProperty( prop ) ) {
+					if ( Object.prototype.hasOwnProperty.call( elmsState, prop ) ) {
 						elmsState[ prop ] = state;
 					}
 				}
@@ -11844,7 +12801,7 @@ $document.on( "keydown", selectorTab, function( event ) {
 
 		$newPanel
 			.children( "summary" )
-				.trigger( setFocusEvent );
+			.trigger( setFocusEvent );
 	}
 } );
 
@@ -11856,7 +12813,7 @@ $document.on( "keydown", selectorPanel, function( event ) {
 		// Move focus to the summary element
 		$( event.currentTarget )
 			.prev()
-				.trigger( setFocusEvent );
+			.trigger( setFocusEvent );
 	}
 } );
 
@@ -11948,19 +12905,17 @@ var componentName = "wb-disable",
 			$html = wb.html,
 			i18n = wb.i18n,
 			pageUrl = wb.pageUrlParts,
-			li, param,
+			param,
 			noticeHeader = i18n( "disable-notice-h" ),
 			noticeBody = i18n( "disable-notice" ),
 			noticehtml = "<section",
 			noticehtmlend = "</a>.</p></section>";
 
 		if ( elm ) {
-			li = document.createElement( "li" );
-			li.className = "wb-slc";
 
 			// Rebuild the query string
 			for ( param in pageUrl.params ) {
-				if ( param && pageUrl.params.hasOwnProperty( param ) && param !== "wbdisable" ) {
+				if ( param && Object.prototype.hasOwnProperty.call( pageUrl.params, param ) && param !== "wbdisable" ) {
 					nQuery += param + "=" + pageUrl.params[ param ] + "&#38;";
 				}
 			}
@@ -11973,7 +12928,10 @@ var componentName = "wb-disable",
 
 						// Store preference for WET plugins and polyfills to be disabled in localStorage
 						localStorage.setItem( "wbdisable", "true" );
-					} catch ( e ) {}
+					} catch ( e ) {
+
+						/* swallow error */
+					}
 
 					// Add notice and link to re-enable WET plugins and polyfills
 					noticehtml = noticehtml + " class='alert alert-warning text-center'><h2>" + noticeHeader + "</h2><p>" + noticeBody + "</p><p><a rel='alternate' property='significantLink' href='" + nQuery + "wbdisable=false'>" + i18n( "wb-enable" ) + noticehtmlend;
@@ -11996,13 +12954,16 @@ var componentName = "wb-disable",
 					window.history.replaceState( "", "", lc );
 				}
 			} catch ( error ) {
+
+				/* swallow error */
 			}
 
 			// Append the Basic HTML version link version
-			li.innerHTML = "<a class='wb-sl' rel='alternate' href='" + nQuery + "wbdisable=true'>" + i18n( "wb-disable" ) + "</a>";
-
 			// Add link to disable WET plugins and polyfills
-			elm.appendChild( li );
+			wb.addSkipLink( i18n( "wb-disable" ), {
+				href: nQuery + "wbdisable=true",
+				rel: "alternate"
+			}, false, true );
 
 			// Identify that initialization has completed
 			wb.ready( $document, componentName );
@@ -12063,14 +13024,14 @@ $document.on( setFocusEvent, function( event ) {
 				$closedPanel = $closedPanels.eq( i );
 				$closedPanel.closest( ".wb-tabs" )
 					.find( "#" + $closedPanel.attr( "aria-labelledby" ) )
-						.trigger( "click" );
+					.trigger( "click" );
 			}
 		}
 
 		// Set the tabindex to -1 (as needed) to ensure the element is focusable
 		$elm
 			.filter( ":not([tabindex], a[href], button, input, textarea, select)" )
-				.attr( "tabindex", "-1" );
+			.attr( "tabindex", "-1" );
 
 		// Assigns focus to an element (delay allows for revealing of hidden content)
 		setTimeout( function() {
@@ -12113,6 +13074,156 @@ $document.on( clickEvents, linkSelector, function( event ) {
 } );
 
 } )( jQuery, wb );
+
+/**
+ * @title WET-BOEW wb-postback
+ * @overview This plugin implements AJAX request for form data to submit on same page without refresh
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @masterbee, @namjohn920, @GormFrank
+ **/
+( function( $, wb ) {
+"use strict";
+
+var $document = wb.doc,
+	componentName = "wb-postback",
+	selector = "." + componentName,
+	initEvent = "wb-init" + selector,
+	defaults = {},
+
+	init = function( event ) {
+		var elm = wb.init( event, componentName, selector );
+
+		if ( elm ) {
+			var $elm = $( elm ),
+				settings = $.extend(
+					true,
+					{},
+					defaults,
+					wb.getData( $elm, componentName )
+				),
+				attrEngaged = "data-wb-engaged",
+				$buttons = $( "[type=submit]", $elm ),
+				multiple = typeof $elm.data( componentName + "-multiple" ) !== "undefined",
+				classToggle = settings.toggle || "hide",
+				selectorSuccess = settings.success,
+				selectorFailure = settings.failure || selectorSuccess;
+
+			// Set "clicked" attribute on element that initiated the form submit
+			$buttons.on( "click", function() {
+				$buttons.removeAttr( attrEngaged );
+				$( this ).attr( attrEngaged, "" );
+			} );
+
+			elm.addEventListener( "submit", function( e ) {
+
+				// Prevent regular form submit
+				e.preventDefault();
+
+				if ( !$( this ).attr( attrEngaged ) ) {
+					var data = $elm.serializeArray(),
+						$btn = $( "[type=submit][" + attrEngaged + "]", $elm ),
+						$selectorSuccess = $( selectorSuccess ),
+						$selectorFailure = $( selectorFailure );
+
+					if ( $btn ) {
+						data.push( { name: $btn.attr( "name" ), value: $btn.val() } );
+					}
+					$( this ).attr( attrEngaged, true );
+
+					// Hide feedback messages
+					$selectorFailure.addClass( classToggle );
+					$selectorSuccess.addClass( classToggle );
+
+					$.ajax( {
+						type: this.method,
+						url: this.action,
+						data: $.param( data )
+					} )
+						.done( function() {
+							$selectorSuccess.removeClass( classToggle );
+						} )
+						.fail( function() {
+							$selectorFailure.removeClass( classToggle );
+						} )
+						.always( function() {
+
+							// Make the form submittable again if multiple submits are allowed or hide
+							if ( multiple ) {
+								$elm.removeAttr( attrEngaged );
+							} else {
+								$elm.addClass( classToggle );
+							}
+						} );
+				}
+			} );
+
+			wb.ready( $( elm ), componentName );
+		}
+	};
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+// Add the timer poke to initialize the plugin
+wb.add( selector );
+
+} )( jQuery, wb );
+
+/**
+ * @title WET-BOEW Randomize
+ * @overview This plugin randomly picks one of the child component to be shown on the browser.
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @masterbee @namjohn920
+ */
+( function( $, window, wb ) {
+"use strict";
+
+var $document = wb.doc,
+	componentName = "wb-randomize",
+	selector = "[data-wb-randomize]",
+	initEvent = "wb-init" + selector,
+	defaults = {},
+
+	init = function( event ) {
+		var elm = wb.init( event, componentName, selector ),
+			$elm, settings, $selectedElm;
+
+		if ( elm ) {
+			$elm = $( elm );
+			settings = $.extend(
+				true,
+				{},
+				defaults,
+				window[ componentName ],
+				wb.getData( $elm, componentName )
+			);
+
+			$selectedElm = settings.selector ? $( settings.selector, $elm ) : $elm.children();
+
+			if ( !$selectedElm.length ) {
+				throw componentName + " selector setting is invalid or no children";
+			}
+
+			if ( settings.shuffle ) {
+				$selectedElm = wb.shuffleDOM( $selectedElm );
+			}
+
+			if ( settings.toggle ) {
+				$selectedElm = wb.pickElements( $selectedElm, settings.number );
+				$selectedElm.toggleClass( settings.toggle );
+			}
+
+			wb.ready( $elm, componentName );
+		}
+	};
+
+// Bind the init event of the plugin
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+// Add the timer poke to initialize the plugin
+wb.add( selector );
+
+} )( jQuery, window, wb );
 
 /**
  * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)

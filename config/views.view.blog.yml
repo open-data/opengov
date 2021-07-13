@@ -696,7 +696,7 @@ display:
           click_sort_column: value
           type: timestamp
           settings:
-            date_format: custom
+            date_format: blog_date
             custom_date_format: 'F j, Y'
             timezone: ''
           group_column: value

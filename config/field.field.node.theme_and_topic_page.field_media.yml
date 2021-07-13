@@ -1,0 +1,32 @@
+uuid: 7921cecc-5184-46a8-9c3c-bd061fc42279
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_media
+    - media.type.image
+    - node.type.theme_and_topic_page
+  content:
+    - 'media:image:d2e4b29e-3d99-47c3-a477-89a006917f0f'
+id: node.theme_and_topic_page.field_media
+field_name: field_media
+entity_type: node
+bundle: theme_and_topic_page
+label: 'Topic Image'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    target_uuid: d2e4b29e-3d99-47c3-a477-89a006917f0f
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      image: image
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

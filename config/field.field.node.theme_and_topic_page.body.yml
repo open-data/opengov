@@ -1,0 +1,27 @@
+uuid: d7ecf112-81b5-441d-a7e9-f66bccbdd303
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.theme_and_topic_page
+  module:
+    - text
+id: node.theme_and_topic_page.body
+field_name: body
+entity_type: node
+bundle: theme_and_topic_page
+label: Description
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    summary: ''
+    value: "<p>1-2 sentences that describe the topics and top tasks that can be accessed on this page.</p>\r\n"
+    format: rich_text
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary

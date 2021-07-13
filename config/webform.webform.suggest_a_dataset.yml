@@ -118,12 +118,12 @@ settings:
   draft_loaded_message: ''
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
-  confirmation_type: url_message
+  confirmation_type: inline
   confirmation_title: ''
   confirmation_message: 'Thank you for your submission. Your request will be processed and added to the Suggested Dataset Catalogue as soon as possible.'
   confirmation_url: '[site:url]/node/11'
   confirmation_attributes: {  }
-  confirmation_back: true
+  confirmation_back: false
   confirmation_back_label: ''
   confirmation_back_attributes: {  }
   confirmation_exclude_query: false
