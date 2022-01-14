@@ -146,9 +146,9 @@ NGINX is the webserver we will be using. To install and run nginx
 
 ### 7. Solr
 ```
-	$ wget http://apache.org/dist/lucene/solr/8.2.0/solr-8.2.0.tgz
-	$ tar xzf solr-8.2.0.tgz solr-8.2.0/bin/install_solr_service.sh --strip-components=2
-	$ sudo bash ./install_solr_service.sh solr-8.2.0.tgz
+	$ wget https://downloads.apache.org/lucene/solr/8.11.1/solr-8.11.1.tgz
+	$ tar xzf solr-8.11.1.tgz solr-8.11.1/bin/install_solr_service.sh --strip-components=2
+	$ sudo bash ./install_solr_service.sh solr-8.11.1.tgz
 ```
 This will automatically start the solr service on port 8983. However, for some reason this process
 can't be controlled using the systemctl commands. To fix that, terminate the process and restart
