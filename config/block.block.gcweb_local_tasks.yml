@@ -9,7 +9,7 @@ _core:
 id: gcweb_local_tasks
 theme: gcweb
 region: header
-weight: -5
+weight: -4
 provider: null
 plugin: local_tasks_block
 settings:

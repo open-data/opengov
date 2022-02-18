@@ -1,6 +1,6 @@
 uuid: 90091a59-1186-4ed1-b12d-8947597e119a
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - search_api.index.pd_core_travelq

@@ -11,6 +11,7 @@ dependencies:
   content:
     - 'block_content:basic:33e680ed-4338-4ee8-ae70-a09d043e356a'
     - 'block_content:basic:ae1faf68-83e2-4433-89dd-9da4ac1c1d26'
+    - 'block_content:basic:ba7be731-2b4a-4460-96d0-c554eff3ad57'
     - 'block_content:basic:e4fa37b6-b447-4bf1-9829-497498dd8327'
     - 'block_content:basic:e8479cb2-4e8b-4747-b5df-dbc3fb06254d'
     - 'block_content:basic:f0445d0f-40ef-41a7-b496-aad01b39ebce'
@@ -116,7 +117,7 @@ third_party_settings:
                 entity: layout_builder.entity
                 view_mode: view_mode
             additional: {  }
-            weight: 0
+            weight: -10
           c041ec6a-72c8-4750-9087-f6a94850e4c3:
             uuid: c041ec6a-72c8-4750-9087-f6a94850e4c3
             region: right
@@ -136,6 +137,20 @@ third_party_settings:
                 view_mode: view_mode
             additional: {  }
             weight: 0
+          8edd4f31-8217-402b-b699-4c438a8eb1e9:
+            uuid: 8edd4f31-8217-402b-b699-4c438a8eb1e9
+            region: left
+            configuration:
+              id: 'block_content:ba7be731-2b4a-4460-96d0-c554eff3ad57'
+              label: 'Technical notice'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: -9
           af0bd20b-9e2d-42a5-a7de-a9630236099a:
             uuid: af0bd20b-9e2d-42a5-a7de-a9630236099a
             region: left
@@ -150,7 +165,7 @@ third_party_settings:
                 settings: {  }
                 third_party_settings: {  }
             additional: {  }
-            weight: 1
+            weight: -8
         third_party_settings: {  }
       -
         layout_id: bs_1col

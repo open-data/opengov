@@ -40,17 +40,17 @@ processor_configs:
       sort: 20
     settings:
       sort: ASC
-  count_widget_order:
-    processor_id: count_widget_order
-    weights:
-      sort: 30
-    settings:
-      sort: DESC
   hide_non_narrowing_result_processor:
     processor_id: hide_non_narrowing_result_processor
     weights:
       build: 40
     settings: {  }
+  month_order:
+    processor_id: month_order
+    weights:
+      sort: 30
+    settings:
+      sort: ASC
   url_processor_handler:
     processor_id: url_processor_handler
     weights:

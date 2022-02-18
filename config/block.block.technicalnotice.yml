@@ -10,8 +10,8 @@ dependencies:
     - gcweb
 id: technicalnotice
 theme: gcweb
-region: breadcrumb
-weight: 0
+region: header
+weight: -5
 provider: null
 plugin: 'block_content:ba7be731-2b4a-4460-96d0-c554eff3ad57'
 settings:
