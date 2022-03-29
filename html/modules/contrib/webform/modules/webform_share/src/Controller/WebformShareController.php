@@ -4,11 +4,9 @@ namespace Drupal\webform_share\Controller;
 
 use Drupal\Core\Cache\CacheableResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\WebformMessageManagerInterface;
-use Drupal\webform\WebformRequestInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -39,30 +37,14 @@ class WebformShareController extends ControllerBase {
   protected $requestHandler;
 
   /**
-   * Constructs a WebformShareController object.
-   *
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer.
-   * @param \Drupal\webform\WebformMessageManagerInterface $message_manager
-   *   The webform message manager.
-   * @param \Drupal\webform\WebformRequestInterface $request_handler
-   *   The webform request handler.
-   */
-  public function __construct(RendererInterface $renderer, WebformMessageManagerInterface $message_manager, WebformRequestInterface $request_handler) {
-    $this->renderer = $renderer;
-    $this->messageManager = $message_manager;
-    $this->requestHandler = $request_handler;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('renderer'),
-      $container->get('webform.message_manager'),
-      $container->get('webform.request')
-    );
+    $instance = parent::create($container);
+    $instance->renderer = $container->get('renderer');
+    $instance->messageManager = $container->get('webform.message_manager');
+    $instance->requestHandler = $container->get('webform.request');
+    return $instance;
   }
 
   /**

@@ -32,25 +32,25 @@ class WebformHandlerEmailBasicTest extends WebformBrowserTestBase {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_email');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Create a submission using the test webform's default values.
     $this->postSubmission($webform);
 
     // Check sending a basic email via a submission.
     $sent_email = $this->getLastEmail();
-    $this->assertEqual($sent_email['key'], 'test_handler_email_email');
-    $this->assertEqual($sent_email['reply-to'], "John Smith <from@example.com>");
+    $this->assertEquals($sent_email['key'], 'test_handler_email_email');
+    $this->assertEquals($sent_email['reply-to'], "John Smith <from@example.com>");
     $this->assertStringContainsString('Submitted by: Anonymous', $sent_email['body']);
     $this->assertStringContainsString('First name: John', $sent_email['body']);
     $this->assertStringContainsString('Last name: Smith', $sent_email['body']);
-    $this->assertEqual($sent_email['headers']['From'], 'John Smith <from@example.com>');
-    $this->assertEqual($sent_email['headers']['Cc'], 'cc@example.com');
-    $this->assertEqual($sent_email['headers']['Bcc'], 'bcc@example.com');
+    $this->assertEquals($sent_email['headers']['From'], 'John Smith <from@example.com>');
+    $this->assertEquals($sent_email['headers']['Cc'], 'cc@example.com');
+    $this->assertEquals($sent_email['headers']['Bcc'], 'bcc@example.com');
 
     // Check sending a basic email via a submission.
     $sent_email = $this->getLastEmail();
-    $this->assertEqual($sent_email['reply-to'], "John Smith <from@example.com>");
+    $this->assertEquals($sent_email['reply-to'], "John Smith <from@example.com>");
 
     // Check sending with the saving of results disabled.
     $webform->setSetting('results_disabled', TRUE)->save();
@@ -74,7 +74,9 @@ class WebformHandlerEmailBasicTest extends WebformBrowserTestBase {
       'Test that "double quotes" are not encoded.',
     ]);
 
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_email/handlers/email/edit', ['settings[body]' => WebformSelectOther::OTHER_OPTION, 'settings[body_custom_text]' => $body], 'Save');
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_email/handlers/email/edit');
+    $edit = ['settings[body]' => WebformSelectOther::OTHER_OPTION, 'settings[body_custom_text]' => $body];
+    $this->submitForm($edit, 'Save');
 
     $sid = $this->postSubmission($webform);
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
@@ -97,12 +99,13 @@ class WebformHandlerEmailBasicTest extends WebformBrowserTestBase {
     $this->assertStringContainsString('Test that "double quotes" are not encoded.', $sent_email['body']);
 
     // Create a submission using HTML is subject and message.
+    $this->drupalGet('/admin/structure/webform/manage/test_handler_email/handlers/email/edit');
     $edit = [
       'settings[subject][select]' => '[webform_submission:values:subject:raw]',
       'settings[body]' => '_other_',
       'settings[body_custom_text]' => '[webform_submission:values][webform_submission:values:message:value]',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_handler_email/handlers/email/edit', $edit, 'Save');
+    $this->submitForm($edit, 'Save');
 
     // Check special characters in message value.
     $edit = [
@@ -116,8 +119,13 @@ class WebformHandlerEmailBasicTest extends WebformBrowserTestBase {
     ];
     $this->postSubmission($webform, $edit);
     $sent_email = $this->getLastEmail();
-    $this->assertEqual($sent_email['reply-to'], '"first_name\\" \\"last_name" <from@example.com>');
-    $this->assertEqual($sent_email['subject'], 'This has  & "special" \'characters\'');
+    if (class_exists('\Symfony\Component\Mime\Address')) {
+      $this->assertEquals($sent_email['reply-to'], '"first_name" "last_name" <from@example.com>');
+    }
+    else {
+      $this->assertEquals($sent_email['reply-to'], '"first_name\" \"last_name" <from@example.com>');
+    }
+    $this->assertEquals($sent_email['subject'], 'This has  & "special" \'characters\'');
     // NOTE:
     // Drupal's PhpMail::format function calls
     // MailFormatHelper::htmlToText which strips out all unrecognized HTML tags.
@@ -126,7 +134,7 @@ class WebformHandlerEmailBasicTest extends WebformBrowserTestBase {
     // The Webform module provides its own Mail handler which does
     // convert and strip HTML tags.
     // @see \Drupal\webform\Plugin\Mail\WebformPhpMail
-    $this->assertEqual($sent_email['body'], 'First name: ""
+    $this->assertEquals($sent_email['body'], 'First name: ""
 Last name: ""
 Email: from@example.com
 Subject: This has  & "special" \'characters\'
@@ -136,7 +144,7 @@ This has  & "special" \'characters\'
 This has  & "special" \'characters\'
 ');
     // Instead we are going to check params body.
-    $this->assertEqual($sent_email['params']['body'], 'First name: "<first_name>"
+    $this->assertEquals($sent_email['params']['body'], 'First name: "<first_name>"
 Last name: "<last_name>"
 Email: from@example.com
 Subject: This has <removed> & "special" \'characters\'

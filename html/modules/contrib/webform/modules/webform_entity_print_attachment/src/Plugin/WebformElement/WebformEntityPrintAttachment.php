@@ -7,6 +7,7 @@ use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform_attachment\Plugin\WebformElement\WebformAttachmentBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'webform_entity_print_attachment' element.
@@ -22,6 +23,22 @@ use Drupal\webform_attachment\Plugin\WebformElement\WebformAttachmentBase;
 class WebformEntityPrintAttachment extends WebformAttachmentBase {
 
   /**
+   * The export type manager.
+   *
+   * @var \Drupal\entity_print\Plugin\ExportTypeManagerInterface
+   */
+  protected $exportTypeManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->exportTypeManager = $container->get('plugin.manager.entity_print.export_type');
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function defineDefaultProperties() {
@@ -34,7 +51,7 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -43,7 +60,7 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
     parent::finalize($element, $webform_submission);
     // Explode element_type:export_type.
     // @see \Drupal\webform_entity_print_attachment\Element\WebformEntityPrintAttachment::getExportTypeId
-    list($element['#type'], $element['#export_type']) = explode(':', $element['#type']);
+    [$element['#type'], $element['#export_type']] = explode(':', $element['#type']);
   }
 
   /**
@@ -101,11 +118,16 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
    *   An export type file extension.
    */
   protected function getExportTypeFileExtension() {
-    /** @var \Drupal\entity_print\Plugin\ExportTypeManagerInterface $export_type_manager */
-    $export_type_manager = \Drupal::service('plugin.manager.entity_print.export_type');
-    list(, $export_type_id) = explode(':', $this->getPluginId());
-    $definition = $export_type_manager->getDefinition($export_type_id);
+    [, $export_type_id] = explode(':', $this->getPluginId());
+    $definition = $this->exportTypeManager->getDefinition($export_type_id);
     return $definition['file_extension'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExportAttachmentsBatchLimit() {
+    return 10;
   }
 
 }

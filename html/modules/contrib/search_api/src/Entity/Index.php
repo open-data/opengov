@@ -97,6 +97,13 @@ class Index extends ConfigEntityBase implements IndexInterface {
   use LoggerTrait;
 
   /**
+   * The number of currently active "batch tracking" modes for each index.
+   *
+   * @var int[]
+   */
+  protected static $batchTrackingIndexes = [];
+
+  /**
    * The ID of the index.
    *
    * @var string
@@ -273,13 +280,6 @@ class Index extends ConfigEntityBase implements IndexInterface {
   protected $properties = [];
 
   /**
-   * The number of currently active "batch tracking" modes.
-   *
-   * @var int
-   */
-  protected $batchTracking = 0;
-
-  /**
    * {@inheritdoc}
    */
   public function id() {
@@ -304,7 +304,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
    * {@inheritdoc}
    */
   public function getOption($name, $default = NULL) {
-    return isset($this->options[$name]) ? $this->options[$name] : $default;
+    return $this->options[$name] ?? $default;
   }
 
   /**
@@ -773,7 +773,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
    */
   public function getField($field_id) {
     $fields = $this->getFields();
-    return isset($fields[$field_id]) ? $fields[$field_id] : NULL;
+    return $fields[$field_id] ?? NULL;
   }
 
   /**
@@ -964,11 +964,12 @@ class Index extends ConfigEntityBase implements IndexInterface {
 
     // Preprocess the indexed items.
     $this->alterIndexedItems($items);
-    $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.indexing_items" event instead. See https://www.drupal.org/node/3059866';
+    $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.indexing_items" event instead. See https://www.drupal.org/node/3059866';
     \Drupal::moduleHandler()->alterDeprecated($description, 'search_api_index_items', $this, $items);
     $event = new IndexingItemsEvent($this, $items);
     \Drupal::getContainer()->get('event_dispatcher')
       ->dispatch(SearchApiEvents::INDEXING_ITEMS, $event);
+    $items = $event->getItems();
     foreach ($items as $item) {
       // This will cache the extracted fields so processors, etc., can retrieve
       // them directly.
@@ -1005,15 +1006,21 @@ class Index extends ConfigEntityBase implements IndexInterface {
       // effect again. Therefore, we reset the flag.
       $this->setHasReindexed(FALSE);
 
-      $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.items_indexed" event instead. See https://www.drupal.org/node/3059866';
+      $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.items_indexed" event instead. See https://www.drupal.org/node/3059866';
       \Drupal::moduleHandler()->invokeAllDeprecated($description, 'search_api_items_indexed', [$this, $processed_ids]);
 
-      /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
       $dispatcher = \Drupal::getContainer()->get('event_dispatcher');
       $dispatcher->dispatch(SearchApiEvents::ITEMS_INDEXED, new ItemsIndexedEvent($this, $processed_ids));
 
       // Clear search api list caches.
       Cache::invalidateTags(['search_api_list:' . $this->id]);
+    }
+
+    // When indexing via Drush, multiple iterations of a batch will happen in
+    // the same PHP process, so the static cache will quickly fill up. To
+    // prevent this, clear it after each batch of items gets indexed.
+    if (function_exists('drush_backend_batch_process') && batch_get()) {
+      \Drupal::getContainer()->get('entity.memory_cache')->deleteAll();
     }
 
     return $processed_ids;
@@ -1023,14 +1030,15 @@ class Index extends ConfigEntityBase implements IndexInterface {
    * {@inheritdoc}
    */
   public function isBatchTracking() {
-    return (bool) $this->batchTracking;
+    return (static::$batchTrackingIndexes[$this->id] ?? 0) > 0;
   }
 
   /**
    * {@inheritdoc}
    */
   public function startBatchTracking() {
-    $this->batchTracking++;
+    static::$batchTrackingIndexes += [$this->id => 0];
+    ++static::$batchTrackingIndexes[$this->id];
     return $this;
   }
 
@@ -1038,10 +1046,10 @@ class Index extends ConfigEntityBase implements IndexInterface {
    * {@inheritdoc}
    */
   public function stopBatchTracking() {
-    if (!$this->batchTracking) {
+    if (!$this->isBatchTracking()) {
       throw new SearchApiException('Trying to leave "batch tracking" mode on index "' . $this->label() . '" which was not entered first.');
     }
-    $this->batchTracking--;
+    --static::$batchTrackingIndexes[$this->id];
     return $this;
   }
 
@@ -1080,7 +1088,8 @@ class Index extends ConfigEntityBase implements IndexInterface {
         $item_ids[] = Utility::createCombinedId($datasource_id, $id);
       }
       $this->getTrackerInstance()->$tracker_method($item_ids);
-      if (!$this->isReadOnly() && $this->getOption('index_directly') && !$this->batchTracking) {
+      if (!$this->isReadOnly() && $this->getOption('index_directly')
+          && !$this->isBatchTracking()) {
         \Drupal::getContainer()->get('search_api.post_request_indexing')
           ->registerIndexingOperation($this->id(), $item_ids);
       }
@@ -1114,7 +1123,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
     if ($this->status() && !$this->isReindexing()) {
       $this->setHasReindexed();
       $this->getTrackerInstance()->trackAllItemsUpdated();
-      $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
+      $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
       \Drupal::moduleHandler()->invokeAllDeprecated($description, 'search_api_index_reindex', [$this, FALSE]);
       /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
       $dispatcher = \Drupal::getContainer()->get('event_dispatcher');
@@ -1142,7 +1151,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
       $this->getServerInstance()->deleteAllIndexItems($this);
     }
     if ($invoke_hook) {
-      $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
+      $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
       \Drupal::moduleHandler()->invokeAllDeprecated($description, 'search_api_index_reindex', [$this, !$this->isReadOnly()]);
 
       /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
@@ -1164,7 +1173,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
     $index_task_manager->stopTracking($this);
     $index_task_manager->startTracking($this);
     $this->setHasReindexed();
-    $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
+    $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
     \Drupal::moduleHandler()
       ->invokeAllDeprecated($description, 'search_api_index_reindex', [$this, FALSE]);
     /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
@@ -1221,6 +1230,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
     $this->options += [
       'cron_limit' => $config->get('default_cron_limit'),
       'index_directly' => TRUE,
+      'track_changes_in_references' => TRUE,
     ];
   }
 
@@ -1263,6 +1273,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
     $this->options += [
       'cron_limit' => $config->get('default_cron_limit'),
       'index_directly' => TRUE,
+      'track_changes_in_references' => TRUE,
     ];
 
     // Reset the static cache for getPropertyDefinitions() to make sure we don't
@@ -1543,7 +1554,7 @@ class Index extends ConfigEntityBase implements IndexInterface {
       // Loop over all original settings and check if one of them has been
       // removed or changed.
       foreach ($old_processors as $key => $old_processor) {
-        $new_processor = isset($new_processors[$key]) ? $new_processors[$key] : NULL;
+        $new_processor = $new_processors[$key] ?? NULL;
         $old_config = $old_processor->getConfiguration();
         $new_config = $new_processor ? $new_processor->getConfiguration() : NULL;
         if (!$new_processor || $old_config != $new_config) {

@@ -83,7 +83,7 @@ class WebformSubmissionAccessTest extends WebformAccessTestBase {
       ->method('getWebform')
       ->will($this->returnValue($webform_wizard));
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check resend (email) message access.
     $this->assertEquals(AccessResult::forbidden(), WebformSubmissionAccess::checkResendAccess($webform_submission, $anonymous_account));
@@ -92,7 +92,6 @@ class WebformSubmissionAccessTest extends WebformAccessTestBase {
     // Check wizard page access.
     $this->assertEquals(AccessResult::neutral(), WebformSubmissionAccess::checkWizardPagesAccess($webform_submission));
     $this->assertEquals(AccessResult::allowed(), WebformSubmissionAccess::checkWizardPagesAccess($webform_wizard_submission));
-
   }
 
 }

@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component;
 
 use Solarium\Component\Facet\FacetInterface;
@@ -35,7 +42,7 @@ trait FacetSetTrait
 
         $key = $facet->getKey();
 
-        if (0 === \strlen($key)) {
+        if (null === $key || 0 === \strlen($key)) {
             throw new InvalidArgumentException('A facet must have a key value');
         }
 
@@ -60,8 +67,8 @@ trait FacetSetTrait
     {
         foreach ($facets as $key => $facet) {
             // in case of a config array: add key to config
-            if (\is_array($facet) && !isset($facet['key'])) {
-                $facet['key'] = $key;
+            if (\is_array($facet) && !isset($facet['local_key'])) {
+                $facet['local_key'] = $key;
             }
 
             $this->addFacet($facet);
@@ -166,7 +173,7 @@ trait FacetSetTrait
         $type = strtolower($type);
 
         if (!isset($this->facetTypes[$type])) {
-            throw new OutOfBoundsException('Facettype unknown: '.$type);
+            throw new OutOfBoundsException(sprintf('Facettype unknown: %s', $type));
         }
 
         $class = $this->facetTypes[$type];
@@ -198,8 +205,8 @@ trait FacetSetTrait
 
         if (isset($this->options['facet'])) {
             foreach ($this->options['facet'] as $key => $config) {
-                if (!isset($config['key'])) {
-                    $config['key'] = (string) $key;
+                if (!isset($config['local_key'])) {
+                    $config['local_key'] = (string) $key;
                 }
 
                 $this->addFacet($config);

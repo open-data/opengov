@@ -29,18 +29,20 @@ class WebformCompositePluginTest extends WebformBrowserTestBase {
    * Test composite plugin.
    */
   public function testPlugin() {
+    $assert_session = $this->assertSession();
 
     /* Display */
 
     $this->drupalGet('/webform/test_element_composite_plugin');
 
     // Check fieldset with nested elements is rendered.
-    $this->assertRaw('<fieldset data-drupal-selector="edit-webform-test-composite-fieldset" id="edit-webform-test-composite-fieldset" class="js-webform-type-fieldset webform-type-fieldset js-form-item form-item js-form-wrapper form-wrapper">');
-    $this->assertRaw('<span class="fieldset-legend">fieldset</span>');
+    $assert_session->responseContains('<fieldset data-drupal-selector="edit-webform-test-composite-fieldset" id="edit-webform-test-composite-fieldset" class="js-webform-type-fieldset webform-type-fieldset js-form-item form-item js-form-wrapper form-wrapper">');
+    $assert_session->responseContains('<span class="fieldset-legend">fieldset</span>');
 
     /* Processing */
 
     // Check processing simple composite.
+    $this->drupalGet('/webform/test_element_composite_plugin');
     $edit = [
       'webform_test_composite[textfield]' => '{textfield}',
       'webform_test_composite[email]' => 'email@email.com',
@@ -63,8 +65,8 @@ class WebformCompositePluginTest extends WebformBrowserTestBase {
       'webform_test_composite[nested_select]' => 'Monday',
       'webform_test_composite[nested_radios]' => 'Monday',
     ];
-    $this->drupalPostForm('/webform/test_element_composite_plugin', $edit, 'Submit');
-    $this->assertRaw("webform_test_composite:
+    $this->submitForm($edit, 'Submit');
+    $assert_session->responseContains("webform_test_composite:
   textfield: '{textfield}'
   email: email@email.com
   webform_email_confirm: email@email.com

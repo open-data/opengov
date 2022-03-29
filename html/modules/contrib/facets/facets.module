@@ -15,7 +15,6 @@ use Drupal\Core\Url;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\Entity\FacetSource;
 use Drupal\facets\FacetInterface;
-use Drupal\search_api\Query\QueryInterface;
 use Drupal\views\Entity\View;
 use Drupal\Core\Entity\EntityInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -69,25 +68,6 @@ function facets_theme($existing, $type, $theme, $path) {
       ],
     ],
   ];
-}
-
-/**
- * Implements hook_search_api_query_alter().
- */
-function facets_search_api_query_alter(QueryInterface &$query) {
-  if ($query->getIndex()->getServerInstance()->supportsFeature('search_api_facets')) {
-    /** @var \Drupal\facets\FacetManager\DefaultFacetManager $facet_manager */
-    $facet_manager = \Drupal::service('facets.manager');
-
-    // It's safe to hardcode this to the search api scheme because this is in a
-    // search_api_query_alter method. If this generated source is not correct,
-    // implementing the same alter and directly calling
-    // $manager->alterQuery($query, $your_facetsource_id); will fix that.
-    $facet_source = 'search_api:' . str_replace(':', '__', $query->getSearchId());
-
-    // Add the active filters.
-    $facet_manager->alterQuery($query, $facet_source);
-  }
 }
 
 /**
@@ -149,6 +129,12 @@ function facets_entity_presave(EntityInterface $entity) {
  */
 function facets_preprocess_block(&$variables) {
   if ($variables['configuration']['provider'] == 'facets') {
+    // Hide the block if it's empty.
+    if (!empty($variables['elements']['content'][0]['#attributes']['class']) && in_array('facet-hidden', $variables['elements']['content'][0]['#attributes']['class'])) {
+      // Add the Drupal class for hiding this for everyone, including screen
+      // readers. See hidden.module.css in the core system module.
+      $variables['attributes']['class'][] = 'hidden';
+    }
     if (!empty($variables['derivative_plugin_id'])) {
       $facet = Facet::load($variables['derivative_plugin_id']);
       $variables['attributes']['class'][] = 'block-facet--' . Html::cleanCssIdentifier($facet->getWidget()['type']);
@@ -352,59 +338,11 @@ function facets_system_breadcrumb_alter(Breadcrumb &$breadcrumb, RouteMatchInter
  * Implements hook_language_switch_links_alter().
  */
 function facets_language_switch_links_alter(array &$links, $type, Url $url) {
-  /** @var \Drupal\Core\Language\LanguageManagerInterface $languageManager */
-  $languageManager = \Drupal::languageManager();
-  $language_interface = $languageManager->getCurrentLanguage();
-  /** @var \Drupal\facets\FacetInterface[] $allFacets */
-  $allFacets = \Drupal::entityTypeManager()
-    ->getStorage('facets_facet')
-    ->loadMultiple();
-
-  /** @var \Drupal\facets\UrlProcessor\UrlProcessorPluginManager $urlProcessorManager */
-  $urlProcessorManager = \Drupal::service('plugin.manager.facets.url_processor');
-  foreach ($links as &$link) {
-    if (empty($link['language']) || !($link['language'] instanceof LanguageInterface) || $link['language']->getId() === $language_interface->getId()) {
-      continue;
-    }
-
-    foreach ($allFacets as $facet) {
-      if (!isset($link['query'][$facet->getFacetSourceConfig()->getFilterKey()])) {
-        continue;
-      }
-
-      $configName = 'facets.facet.' . $facet->id();
-      $untranslatedAlias = $languageManager->getLanguageConfigOverride($language_interface->getId(), $configName)->get('url_alias');
-      $translatedAlias = $languageManager->getLanguageConfigOverride($link['language']->getId(), $configName)->get('url_alias');
-
-      // If we don't have a translated alias, that means we're trying to create
-      // a link to the original language.
-      if ($translatedAlias === NULL) {
-        $translatedAlias = \Drupal::config($configName)->getOriginal('url_alias', FALSE);
-      }
-      // If we don't have an untranslated alias, we're trying to create a link
-      // from the original language.
-      if ($untranslatedAlias === NULL) {
-        $untranslatedAlias = \Drupal::config($configName)->getOriginal('url_alias', FALSE);
-      }
-
-      /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $urlProcessor */
-      $urlProcessor = $urlProcessorManager
-        ->createInstance($facet
-          ->getFacetSourceConfig()
-          ->getUrlProcessorName(), ['facet' => $facet]
-        );
-
-      foreach ($link['query'][$facet->getFacetSourceConfig()->getFilterKey()] as &$filters) {
-        $separator = $urlProcessor->getSeparator();
-        $filters = preg_replace(
-          '/(' . $untranslatedAlias . ")$separator/",
-          $translatedAlias . $separator,
-          $filters
-        );
-      }
-    }
-  }
+  /** @var \Drupal\facets\LanguageSwitcherLinksAlterer $alterer */
+  $alterer = \Drupal::service('facets.language_switcher_links_alterer');
+  $alterer->alter($links, $type, $url);
 }
+
 
 /**
  * Implements hook_form_FORM_ID_alter().

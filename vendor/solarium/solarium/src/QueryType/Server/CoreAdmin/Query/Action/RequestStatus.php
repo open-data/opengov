@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Server\CoreAdmin\Query\Action;
 
 use Solarium\QueryType\Server\CoreAdmin\Query\Query as CoreAdminQuery;
@@ -8,7 +15,7 @@ use Solarium\QueryType\Server\Query\Action\AbstractAction;
 /**
  * Class RequestStatus.
  *
- * @see https://lucene.apache.org/solr/guide/6_6/coreadmin-api.html#CoreAdminAPI-REQUESTSTATUS
+ * @see https://solr.apache.org/guide/coreadmin-api.html#coreadmin-requeststatus
  */
 class RequestStatus extends AbstractAction
 {
@@ -32,6 +39,7 @@ class RequestStatus extends AbstractAction
     public function setRequestId($requestId): self
     {
         $this->setOption('requestid', $requestId);
+
         return $this;
     }
 

@@ -2,11 +2,7 @@
 
 namespace Drupal\webform\Form\AdminConfig;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\Plugin\WebformHandlerManagerInterface;
-use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -43,34 +39,14 @@ class WebformAdminConfigHandlersForm extends WebformAdminConfigBaseForm {
   }
 
   /**
-   * Constructs a WebformAdminConfigHandlersForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   * @param \Drupal\webform\Plugin\WebformHandlerManagerInterface $handler_manager
-   *   The webform handler manager.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, WebformTokenManagerInterface $token_manager, WebformHandlerManagerInterface $handler_manager) {
-    parent::__construct($config_factory);
-    $this->moduleHandler = $module_handler;
-    $this->tokenManager = $token_manager;
-    $this->handlerManager = $handler_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('module_handler'),
-      $container->get('webform.token_manager'),
-      $container->get('plugin.manager.webform.handler')
-    );
+    $instance = parent::create($container);
+    $instance->moduleHandler = $container->get('module_handler');
+    $instance->tokenManager = $container->get('webform.token_manager');
+    $instance->handlerManager = $container->get('plugin.manager.webform.handler');
+    return $instance;
   }
 
   /**

@@ -22,6 +22,18 @@ elements: |
     '#input_mask': '''alias'': ''currency'''
     '#default_value': '$ 1.00'
     '#required': true
+  currency_negative:
+    '#type': textfield
+    '#title': currency_negative
+    '#input_mask': '''alias'': ''currency_negative'''
+    '#default_value': '-$ 1.00'
+    '#required': true
+  currency_positive_negative:
+    '#type': textfield
+    '#title': currency_positive_negative
+    '#input_mask': '''alias'': ''currency_positive_negative'''
+    '#default_value': '$ 1.00'
+    '#required': true
   datetime:
     '#type': textfield
     '#title': datetime
@@ -103,7 +115,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -124,6 +136,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -270,5 +285,7 @@ handlers:
     status: true
     conditions: {  }
     weight: 1
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

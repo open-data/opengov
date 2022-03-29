@@ -78,7 +78,7 @@ function webform_group_token_info() {
 
   $tokens['webform_group'] = $webform_group;
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   return ['types' => $types, 'tokens' => $tokens];
 }
@@ -108,7 +108,7 @@ function webform_group_tokens($type, $tokens, array $data, array $options, Bubbl
 
       if ($token_name === 'role') {
         // Get group role id.
-        $token_role_id = (isset($parts[1])) ? $parts[1] : NULL;
+        $token_role_id = $parts[1] ?? NULL;
         if (!$token_role_id) {
           continue;
         }

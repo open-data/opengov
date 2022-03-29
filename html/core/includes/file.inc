@@ -684,13 +684,13 @@ function file_munge_filename($filename, $extensions, $alerts = TRUE) {
     // http://php.net/manual/security.filesystem.nullbytes.php
     $filename = str_replace(chr(0), '', $filename);
 
-    $whitelist = array_unique(explode(' ', strtolower(trim($extensions))));
+    $allowed_extensions = array_unique(explode(' ', strtolower(trim($extensions))));
 
-    // Remove unsafe extensions from the allowed list.
+    // Remove unsafe extensions from the allowed list of extensions.
     // @todo https://www.drupal.org/project/drupal/issues/3032390 Make the list
     //   of unsafe extensions a constant. The list is copied from
     //   FILE_INSECURE_EXTENSION_REGEX.
-    $whitelist = array_diff($whitelist, explode('|', 'phar|php|pl|py|cgi|asp|js'));
+    $allowed_extensions = array_diff($allowed_extensions, explode('|', 'phar|php|pl|py|cgi|asp|js'));
 
     // Split the filename up by periods. The first part becomes the basename
     // the last part the final extension.
@@ -705,7 +705,7 @@ function file_munge_filename($filename, $extensions, $alerts = TRUE) {
     // of allowed extensions.
     foreach ($filename_parts as $filename_part) {
       $new_filename .= '.' . $filename_part;
-      if (!in_array(strtolower($filename_part), $whitelist) && preg_match("/^[a-zA-Z]{2,5}\d?$/", $filename_part)) {
+      if (!in_array(strtolower($filename_part), $allowed_extensions) && preg_match("/^[a-zA-Z]{2,5}\d?$/", $filename_part)) {
         $new_filename .= '_';
       }
     }

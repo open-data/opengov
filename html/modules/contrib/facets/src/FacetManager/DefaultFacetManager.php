@@ -184,9 +184,12 @@ class DefaultFacetManager {
     $this->updateResults($facetsource_id);
 
     foreach ($unprocessedFacets as $facet) {
+      $processor_configs = $facet->getProcessorConfigs();
       foreach ($facet->getProcessorsByStage(ProcessorInterface::STAGE_POST_QUERY) as $processor) {
+        $processor_config = $processor_configs[$processor->getPluginDefinition()['id']]['settings'];
+        $processor_config['facet'] = $facet;
         /** @var \Drupal\facets\processor\PostQueryProcessorInterface $post_query_processor */
-        $post_query_processor = $this->processorPluginManager->createInstance($processor->getPluginDefinition()['id'], ['facet' => $facet]);
+        $post_query_processor = $this->processorPluginManager->createInstance($processor->getPluginDefinition()['id'], $processor_config);
         if (!$post_query_processor instanceof PostQueryProcessorInterface) {
           throw new InvalidProcessorException("The processor {$processor->getPluginDefinition()['id']} has a post_query definition but doesn't implement the required PostQueryProcessor interface");
         }
@@ -322,7 +325,7 @@ class DefaultFacetManager {
     // settings.
     if (empty($facet->getResults())) {
       $empty_behavior = $facet->getEmptyBehavior();
-      if ($empty_behavior['behavior'] == 'text') {
+      if ($empty_behavior && $empty_behavior['behavior'] === 'text') {
         return [
           [
             $build,
@@ -350,7 +353,7 @@ class DefaultFacetManager {
             '#type' => 'container',
             '#attributes' => [
               'data-drupal-facet-id' => $facet->id(),
-              'class' => ['facet-empty'],
+              'class' => ['facet-empty', 'facet-hidden'],
             ],
           ],
         ];

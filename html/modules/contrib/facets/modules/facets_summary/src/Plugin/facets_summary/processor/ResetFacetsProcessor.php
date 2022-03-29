@@ -30,8 +30,8 @@ class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessor
     $configuration = $facets_summary->getProcessorConfigs()[$this->getPluginId()];
     $hasReset = FALSE;
 
-    // Do nothing if there are no selected facets or reset text is empty.
-    if (empty($build['#items']) || empty($configuration['settings']['link_text'])) {
+    // Do nothing if there are no selected facets.
+    if (empty($build['#items'])) {
       return $build;
     }
 
@@ -43,18 +43,21 @@ class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessor
       $url_alias = $facet->getUrlAlias();
       $filter_key = $facet->getFacetSourceConfig()->getFilterKey() ?: 'f';
 
-      if (isset($query_params[$filter_key])) {
-        foreach ($query_params[$filter_key] as $delta => $param) {
-          if (strpos($param, $url_alias . ':') !== FALSE) {
-            unset($query_params[$filter_key][$delta]);
-            $hasReset = TRUE;
+      if ($facet->getActiveItems()) {
+        // This removes query params when using the query url processor.
+        if(isset($query_params[$filter_key])){
+          foreach ($query_params[$filter_key] as $delta => $param) {
+            if (strpos($param, $url_alias . ':') !== FALSE) {
+              unset($query_params[$filter_key][$delta]);
+            }
+          }
+
+          if (!$query_params[$filter_key]) {
+            unset($query_params[$filter_key]);
           }
         }
 
-        if (!$query_params[$filter_key]) {
-          unset($query_params[$filter_key]);
-          $hasReset = TRUE;
-        }
+        $hasReset = TRUE;
       }
     }
 
@@ -62,10 +65,17 @@ class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessor
       return $build;
     }
 
-    $url = Url::createFromRequest($request);
+    $url = Url::fromUserInput($facets_summary->getFacetSource()->getPath());
     $url->setOptions(['query' => $query_params]);
-
-    $item = (new Link($configuration['settings']['link_text'], $url))->toRenderable();
+    // Check if reset link text is not set or it contains only whitespaces.
+    // Set text from settings or set default text.
+    if (empty($configuration['settings']['link_text']) || strlen(trim($configuration['settings']['link_text'])) === 0) {
+      $itemText = t('Reset');
+    }
+    else {
+      $itemText = $configuration['settings']['link_text'];
+    }
+    $item = (new Link($itemText, $url))->toRenderable();
     $item['#wrapper_attributes'] = [
       'class' => [
         'facet-summary-item--clear',

@@ -19,11 +19,18 @@ abstract class SearchApiBrowserTestBase extends BrowserTestBase {
    *
    * @var string[]
    */
-  public static $modules = [
+  protected static $modules = [
     'node',
     'search_api',
     'search_api_test',
   ];
+
+  /**
+   * The theme to install as the default for testing.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * Set this to TRUE to include "item" and "article" bundles for test entities.
@@ -103,7 +110,7 @@ abstract class SearchApiBrowserTestBase extends BrowserTestBase {
     $this->anonymousUser = $this->drupalCreateUser();
 
     // Get the URL generator.
-    $this->urlGenerator = $this->container->get('url_generator');
+    $this->urlGenerator = \Drupal::getContainer()->get('url_generator');
 
     // Create an article node type, if not already present.
     if (!NodeType::load('article')) {
@@ -141,7 +148,7 @@ abstract class SearchApiBrowserTestBase extends BrowserTestBase {
       $server = Server::create([
         'id' => 'webtest_server',
         'name' => 'WebTest server',
-        'description' => 'WebTest server' . ' description',
+        'description' => 'WebTest server description',
         'backend' => 'search_api_test',
         'backend_config' => [],
       ]);
@@ -164,7 +171,7 @@ abstract class SearchApiBrowserTestBase extends BrowserTestBase {
       $index = Index::create([
         'id' => $this->indexId,
         'name' => 'WebTest index',
-        'description' => 'WebTest index' . ' description',
+        'description' => 'WebTest index description',
         'server' => 'webtest_server',
         'datasource_settings' => [
           'entity:node' => [],

@@ -12,6 +12,13 @@ use Drupal\Tests\BrowserTestBase;
 class PasswordPolicyStatusVisibilityTest extends BrowserTestBase {
 
   /**
+   * Set default theme to stark.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * {@inheritdoc}
    */
   protected static $modules = ['password_policy', 'password_policy_test'];

@@ -40,4 +40,19 @@ interface HierarchyInterface {
    */
   public function getChildIds(array $ids);
 
+  /**
+   * Retrieve the siblings for an array of ids.
+   *
+   * @param array $ids
+   *   An array of ids.
+   * @param array $activeIds
+   *   An array of currently active ids.
+   * @param bool $parentSiblings
+   *   Show parent siblings.
+   *
+   * @return array
+   *   Given sibling ids as key, value is an array of ids.
+   */
+  public function getSiblingIds(array $ids, array $activeIds = [], bool $parentSiblings = TRUE);
+
 }

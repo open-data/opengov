@@ -57,6 +57,8 @@ elements: |
       '#type': captcha
       '#title': 'CAPTCHA | <script>alert(''This markup is not escaped properly!!!'') </script>'
       '#captcha_admin_mode': true
+      '#captcha_info':
+        form_id: ''
       '#captcha_type': image_captcha/Image
     webform_codemirror:
       '#type': webform_codemirror
@@ -78,6 +80,13 @@ elements: |
     webform_email_multiple:
       '#type': webform_email_multiple
       '#title': 'Email multiple | <script>alert(''This markup is not escaped properly!!!'') </script>'
+    webform_height:
+      '#type': webform_height
+      '#title': 'Height (feet/inches) | <script>alert(''This markup is not escaped properly!!!'') </script>'
+    webform_height_multiple:
+      '#type': webform_height
+      '#title': 'Height (feet/inches) multiple | <script>alert(''This markup is not escaped properly!!!'') </script>'
+      '#multiple': true
     number:
       '#type': number
       '#title': 'Number | <script>alert(''This markup is not escaped properly!!!'') </script>'
@@ -107,6 +116,14 @@ elements: |
     webform_rating:
       '#type': webform_rating
       '#title': 'Rating | <script>alert(''This markup is not escaped properly!!!'') </script>'
+    webform_same:
+      '#type': webform_same
+      '#title': 'Billing address is the same as the shipping address | <script>alert(''This markup is not escaped properly!!!'') </script>'
+    webform_scale:
+      '#type': webform_scale
+      '#title': 'Scale | <script>alert(''This markup is not escaped properly!!!'') </script>'
+      '#min': 1
+      '#max': 5
     search:
       '#type': search
       '#title': 'Search | <script>alert(''This markup is not escaped properly!!!'') </script>'
@@ -165,11 +182,15 @@ elements: |
       '#message_type': warning
       '#message_message': 'This is a <strong>warning</strong> message.'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/77245">Issue #77245: A place for JavaScript status messages</a>'
+    webform_more:
+      '#type': webform_more
+      '#title': 'More | <script>alert(''This markup is not escaped properly!!!'') </script>'
+      '#more': 'This is more content'
   file_attachment_elements:
     '#type': details
     '#title': 'File attachment elements | <script>alert(''This markup is not escaped properly!!!'') </script>'
     '#open': true
-    'webform_entity_print_attachment:pdf':
+    webform_entity_print_attachment_pdf:
       '#type': webform_entity_print_attachment
       '#title': 'Attachment PDF | <script>alert(''This markup is not escaped properly!!!'') </script>'
     webform_attachment_token:
@@ -225,20 +246,6 @@ elements: |
     '#type': details
     '#title': 'Options elements | <script>alert(''This markup is not escaped properly!!!'') </script>'
     '#open': true
-    webform_buttons:
-      '#type': webform_buttons
-      '#title': 'Buttons | <script>alert(''This markup is not escaped properly!!!'') </script>'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-    webform_buttons_other:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other | <script>alert(''This markup is not escaped properly!!!'') </script>'
-      '#options':
-        one: One
-        two: Two
-        three: Three
     checkboxes:
       '#type': checkboxes
       '#title': 'Checkboxes | <script>alert(''This markup is not escaped properly!!!'') </script>'
@@ -392,6 +399,21 @@ elements: |
     webform_section:
       '#type': webform_section
       '#title': 'Section | <script>alert(''This markup is not escaped properly!!!'') </script>'
+    webform_table:
+      '#type': table
+      '#header':
+        - 'Header 1'
+        - 'Header 2'
+      '#rows':
+        -
+          - 'Row 1 - Col 1'
+          - 'Row 1 - Col 2'
+        -
+          - 'Row 2 - Col 1'
+          - 'Row 2 - Col 2'
+        -
+          - 'Row 3 - Col 1'
+          - 'Row 3 - Col 2'
   date_time_elements:
     '#type': details
     '#title': 'Date/time elements | <script>alert(''This markup is not escaped properly!!!'') </script>'
@@ -525,7 +547,7 @@ elements: |
     table:
       '#type': table
       '#title': 'Table | <script>alert(''This markup is not escaped properly!!!'') </script>'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -546,7 +568,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -567,6 +589,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

@@ -33,7 +33,7 @@ class WebformElementComputedJavaScriptTest extends WebformWebDriverTestBase {
 
     $webform = Webform::load('test_element_computed_ajax');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check computed Twig element a and b elements exist.
     $this->drupalGet($webform->toUrl());

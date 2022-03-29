@@ -27,7 +27,7 @@ class ViewsPropertyExtractionTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'search_api',
     'user',
   ];
@@ -56,7 +56,7 @@ class ViewsPropertyExtractionTest extends KernelTestBase {
   public function testPropertyExtraction($property_path, $expected, $pre_set = FALSE, $return_fields = TRUE, $set_highlighting = FALSE, $processor_property_value = NULL) {
     $datasource_id = 'entity:user';
 
-    /** @var \Drupal\search_api\IndexInterface|\PHPUnit_Framework_MockObject_MockObject $index */
+    /** @var \Drupal\search_api\IndexInterface|\PHPUnit\Framework\MockObject\MockObject $index */
     $index = $this->createMock(IndexInterface::class);
     $property2 = $this->createMock(ConfigurablePropertyInterface::class);
     $property2->method('getProcessorId')->willReturn('processor2');
@@ -195,7 +195,7 @@ class ViewsPropertyExtractionTest extends KernelTestBase {
 
     $field->preRender($values);
 
-    $this->assertTrue(isset($row->$property_path), "\"$property_path\" property is set on \$row");
+    $this->assertObjectHasAttribute($property_path, $row);
     $this->assertEquals((array) $expected, $row->$property_path);
 
     // Check that $field->propertyReplacements was set correctly (if

@@ -7,6 +7,7 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\node\Entity\NodeType;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
@@ -34,6 +35,7 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     'taxonomy',
     'image',
     'block',
+    'node_access_test',
   ];
 
   /**
@@ -81,7 +83,19 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     $this->drupalPlaceBlock('page_title_block');
 
     // Create a test user.
-    $admin_user = $this->drupalCreateUser(['access content', 'administer content types', 'administer node fields', 'administer node form display', 'administer node display', 'administer taxonomy', 'administer taxonomy_term fields', 'administer taxonomy_term display', 'administer users', 'administer account settings', 'administer user display', 'bypass node access']);
+    $admin_user = $this->drupalCreateUser([
+      'access content',
+      'administer content types',
+      'administer node fields',
+      'administer node form display',
+      'administer node display',
+      'administer taxonomy',
+      'administer taxonomy_term fields',
+      'administer taxonomy_term display',
+      'administer users',
+      'administer account settings',
+      'administer user display',
+    ]);
     $this->drupalLogin($admin_user);
 
     // Create content type, with underscores.
@@ -117,6 +131,12 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
       ->getFormDisplay('node', 'article')
       ->setComponent('field_' . $vocabulary->id())
       ->save();
+
+    // Setup node access testing.
+    node_access_rebuild();
+    node_access_test_add_field(NodeType::load('article'));
+    \Drupal::state()->set('node_access_test.private', TRUE);
+
   }
 
   /**
@@ -158,7 +178,7 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     }
 
     // Test the "Add field" action link.
-    $this->assertLink('Add field');
+    $this->assertSession()->linkExists('Add field');
 
     // Assert entity operations for all fields.
     $number_of_links = 3;
@@ -172,10 +192,12 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
           $this->assertIdentical($url, $link->getAttribute('href'));
           $number_of_links_found++;
           break;
+
         case 'Edit storage settings.':
           $this->assertIdentical("$url/storage", $link->getAttribute('href'));
           $number_of_links_found++;
           break;
+
         case 'Delete field.':
           $this->assertIdentical("$url/delete", $link->getAttribute('href'));
           $number_of_links_found++;
@@ -276,9 +298,9 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     $this->assertFieldByXPath("//input[@name='cardinality_number']", 6);
 
     // Check that tabs displayed.
-    $this->assertLink(t('Edit'));
+    $this->assertSession()->linkExists(t('Edit'));
     $this->assertLinkByHref('admin/structure/types/manage/article/fields/node.article.body');
-    $this->assertLink(t('Field settings'));
+    $this->assertSession()->linkExists(t('Field settings'));
     $this->assertLinkByHref($field_edit_path);
 
     // Add two entries in the body.
@@ -329,6 +351,47 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
       'cardinality_number' => 3,
     ];
     $this->drupalPostForm($field_edit_path, $edit, t('Save field settings'));
+
+    // Test the cardinality validation is not access sensitive.
+
+    // Remove the cardinality limit 4 so we can add a node the user doesn't have
+    // access to.
+    $edit = [
+      'cardinality' => (string) FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+    ];
+    $this->drupalPostForm($field_edit_path, $edit, 'Save field settings');
+    $node = $this->drupalCreateNode([
+      'private' => TRUE,
+      'uid' => 0,
+      'type' => 'article',
+    ]);
+    $node->body->appendItem('body 1');
+    $node->body->appendItem('body 2');
+    $node->body->appendItem('body 3');
+    $node->body->appendItem('body 4');
+    $node->save();
+
+    // Assert that you can't set the cardinality to a lower number than the
+    // highest delta of this field (including inaccessible entities) but can
+    // set it to the same.
+    $this->drupalGet($field_edit_path);
+    $edit = [
+      'cardinality' => 'number',
+      'cardinality_number' => 2,
+    ];
+    $this->drupalPostForm($field_edit_path, $edit, 'Save field settings');
+    $this->assertRaw(t('There are @count entities with @delta or more values in this field.', ['@count' => 2, '@delta' => 3]));
+    $edit = [
+      'cardinality' => 'number',
+      'cardinality_number' => 3,
+    ];
+    $this->drupalPostForm($field_edit_path, $edit, 'Save field settings');
+    $this->assertRaw(t('There is @count entity with @delta or more values in this field.', ['@count' => 1, '@delta' => 4]));
+    $edit = [
+      'cardinality' => 'number',
+      'cardinality_number' => 4,
+    ];
+    $this->drupalPostForm($field_edit_path, $edit, 'Save field settings');
   }
 
   /**
@@ -339,7 +402,7 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     $field_id = 'node.' . $this->contentType . '.' . $this->fieldName;
     $this->drupalGet('admin/structure/types/manage/' . $this->contentType . '/fields/' . $field_id);
     $this->clickLink(t('Delete'));
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
   }
 
   /**
@@ -585,7 +648,7 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     $locked = $this->xpath('//tr[@id=:field_name]/td[4]', [':field_name' => $field_name]);
     $this->assertSame('Locked', $locked[0]->getHtml(), 'Field is marked as Locked in the UI');
     $this->drupalGet('admin/structure/types/manage/' . $this->contentType . '/fields/node.' . $this->contentType . '.' . $field_name . '/delete');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
   }
 
   /**
@@ -615,7 +678,7 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
       ->getFormDisplay('node', $this->contentType)
       ->setComponent($field_name)
       ->save();
-    $this->assertInstanceOf(FieldConfig::class, FieldConfig::load('node.' . $this->contentType . '.' . $field_name), new FormattableMarkup('A field of the field storage %field was created programmatically.', ['%field' => $field_name]));
+    $this->assertInstanceOf(FieldConfig::class, FieldConfig::load('node.' . $this->contentType . '.' . $field_name));
 
     // Check that the newly added field appears on the 'Manage Fields'
     // screen.
@@ -668,7 +731,7 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     $this->drupalPostForm('admin/structure/types/manage/article/fields/node.article.body/storage', [], 'Save field settings', $options);
     // The external redirect should not fire.
     $this->assertUrl('admin/structure/types/manage/article/fields/node.article.body/storage', $options);
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $this->assertRaw('Attempt to update field <em class="placeholder">Body</em> failed: <em class="placeholder">The internal path component &#039;http://example.com&#039; is external. You are not allowed to specify an external URL together with internal:/.</em>.');
   }
 
@@ -782,10 +845,10 @@ class ManageFieldsFunctionalTest extends BrowserTestBase {
     $field_id = 'node.foo.bar';
 
     $this->drupalGet('admin/structure/types/manage/' . $this->contentType . '/fields/' . $field_id);
-    $this->assertResponse(404);
+    $this->assertSession()->statusCodeEquals(404);
 
     $this->drupalGet('admin/structure/types/manage/' . $this->contentType . '/fields/' . $field_id . '/storage');
-    $this->assertResponse(404);
+    $this->assertSession()->statusCodeEquals(404);
   }
 
 }

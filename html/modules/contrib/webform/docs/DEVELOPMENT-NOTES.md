@@ -15,8 +15,8 @@ git checkout -b [issue-number]-[issue-description]
 # Push issue branch to D.O. (optional)
 git push -u origin [issue-number]-[issue-description]
 
-# Create patch by comparing (current) issue branch with 8.x-5.x branch 
-git diff 8.x-5.x > [project_name]-[issue-description]-[issue-number]-[comment-number]-[drupal-version].patch
+# Create patch by comparing (current) issue branch with 6.x branch
+git diff 6.x > [project_name]-[issue-description]-[issue-number]-[comment-number]-[drupal-version].patch
 ```
 
 **Ignoring *.patch, *.diff, and .gitignore files**
@@ -46,12 +46,12 @@ curl https://www.drupal.org/files/[patch-name].patch | git apply -R -
 
 ```bash
 # Merge branch with all commits
-git checkout 8.x-5.x
+git checkout 6.x
 git merge [issue-number]-[issue-description]
 git push
 
 # Merge branch as a single new commit
-git checkout 8.x-5.x
+git checkout 6.x
 git merge --squash [issue-number]-[issue-description]
 git commit -m 'Issue #[issue-number]: [issue-description]'
 git push
@@ -90,7 +90,7 @@ git remote update origin --prune
 
 ```bash
 # Delete local issue branch.
-git branch -d [issue-number]-[issue-description] 
+git branch -d [issue-number]-[issue-description]
 
 # Delete remote issue branch.
 git push origin :[issue-number]-[issue-description]
@@ -105,7 +105,7 @@ interdiff \
   > interdiff-[issue-number]-[old-comment-number]-[new-comment-number].txt
 ```
 
-### Drush 
+### Drush
 
 **Execute Webform update hook **
 
@@ -117,8 +117,8 @@ drush php-eval 'module_load_include('install', 'webform'); webform_update_N();';
 
 ```bash
 drush php-eval 'module_load_include('install', 'webform'); webform_uninstall();'; drush cron;
-drush php-eval 'module_load_include('install', 'webform_node'); webform_node_uninstall();'; drush cron; 
-drush webform-purge --all -y; drush pmu -y webform_test; drush pmu -y webform_devel; drush pmu -y webform_examples; drush pmu -y webform_templates; drush pmu -y webform_ui; drush pmu -y webform_node; drush pmu -y webform; 
+drush php-eval 'module_load_include('install', 'webform_node'); webform_node_uninstall();'; drush cron;
+drush webform-purge --all -y; drush pmu -y webform_test; drush pmu -y webform_devel; drush pmu -y webform_examples; drush pmu -y webform_templates; drush pmu -y webform_ui; drush pmu -y webform_node; drush pmu -y webform;
 drush en -y webform webform_ui webform_devel webform_examples webform_templates webform_node;
 
 # Optional.
@@ -231,7 +231,7 @@ drush role-add-perm authenticated 'access devel information'
 
 **Reinstall**
 
-```bash 
+```bash
 drush -y site-install\
   --account-mail="example@example.com"\
   --account-name="webmaster"\
@@ -274,7 +274,7 @@ drush -y pm-enable\
 
 - Drupal
     - Install Drupal locally.
-    - Remove all blocks in first sidebar.  
+    - Remove all blocks in first sidebar.
       http://localhost/d8_dev/admin/structure/block
 - Desktop
     - Switch to laptop.

@@ -40,7 +40,7 @@ if (class_exists('\Drupal\file\Element\ManagedFile')) {
     public static function preRenderWebformManagedFile($element) {
       // Set accept and capture attributes.
       if (isset($element['upload']) && static::$accept) {
-        $element['upload']['#attributes']['accept'] = static::$accept;;
+        $element['upload']['#attributes']['accept'] = static::$accept;
       }
 
       // Add class name to wrapper attributes.

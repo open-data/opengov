@@ -57,7 +57,8 @@ function webform_test_test_element_help_display() {
       'element_after' => 'element_after',
     ];
 
-    $data[$category_id][$element_type . '_help'] = [
+    $element_key = str_replace(':', '_', $element_type);
+    $data[$category_id][$element_key . '_help'] = [
       '#markup' => (isset($element['#title'])) ? $element['#title'] . ' (' . $element_type . ')' : $element_type,
       '#prefix' => '<h3>',
       '#suffix' => '</h3>',
@@ -72,9 +73,9 @@ function webform_test_test_element_help_display() {
       else {
         $example_element['#help'] .= ' (' . $help_display . ')';
       }
-      $data[$category_id][$element_type . '_' . $help_display] = $example_element;
+      $data[$category_id][$element_key . '_' . $help_display] = $example_element;
     }
-    $data[$category_id][$element_type . '_hr'] = ['#type' => 'webform_horizontal_rule'];
+    $data[$category_id][$element_key . '_hr'] = ['#type' => 'webform_horizontal_rule'];
 
   }
 

@@ -49,6 +49,8 @@ trait BasicAuthTrait {
       '#description' => $this->t('If this field is left blank and the HTTP username is filled out, the current password will not be changed.'),
     ];
 
+    $form_state->set('previous_password', $this->configuration['password']);
+
     return $form;
   }
 
@@ -57,20 +59,18 @@ trait BasicAuthTrait {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    // Since the form is nested into another, we can't simply use #parents for
-    // doing this array restructuring magic. (At least not without creating an
-    // unnecessary dependency on internal implementation.)
-    $values += $values['auth'];
-
-    // For password fields, there is no default value, they're empty by default.
-    // Therefore we ignore empty submissions if the user didn't change either.
-    if ($values['password'] === ''
-      && isset($this->configuration['username'])
-      && $values['username'] === $this->configuration['username']) {
-      $values['password'] = $this->configuration['password'];
-    }
 
     foreach ($values['auth'] as $key => $value) {
+      // For password fields, there is no default value, they're empty by
+      // default. Therefore we ignore empty submissions if the user didn't
+      // change either.
+      if ('password' === $key && '' === $value
+        && isset($this->configuration['auth']['username'])
+        && $values['auth']['username'] === $this->configuration['auth']['username']
+      ) {
+        $value = $form_state->get('previous_password');
+      }
+
       $form_state->setValue($key, $value);
     }
 
@@ -78,43 +78,6 @@ trait BasicAuthTrait {
     $form_state->unsetValue('auth');
 
     parent::submitConfigurationForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function search(Query $query, Endpoint $endpoint = NULL) {
-    $this->connect();
-
-    if (!$endpoint) {
-      $endpoint = $this->solr->getEndpoint();
-    }
-
-    // Use the 'postbigrequest' plugin if no specific http method is
-    // configured. The plugin needs to be loaded before the request is
-    // created.
-    if ($this->configuration['http_method'] === 'AUTO') {
-      $this->solr->getPlugin('postbigrequest');
-    }
-
-    // Use the manual method of creating a Solarium request so we can control
-    // the HTTP method.
-    $request = $this->solr->createRequest($query);
-
-    // Set the configured HTTP method.
-    if ($this->configuration['http_method'] === 'POST') {
-      $request->setMethod(Request::METHOD_POST);
-    }
-    elseif ($this->configuration['http_method'] === 'GET') {
-      $request->setMethod(Request::METHOD_GET);
-    }
-
-    // Set HTTP Basic Authentication parameter, if login data was set.
-    if (strlen($this->configuration['username']) && strlen($this->configuration['password'])) {
-      $request->setAuthentication($this->configuration['username'], $this->configuration['password']);
-    }
-
-    return $this->executeRequest($request, $endpoint);
   }
 
   /**

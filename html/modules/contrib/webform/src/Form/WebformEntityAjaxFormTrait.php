@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Ajax\WebformHtmlCommand;
 
 /**
- * Trait class for Webform Ajax support.
+ * Trait for webform entity ajax support.
  *
  * @todo Issue #2785047: In Outside In mode, messages should appear in the off-canvas tray, not the main page.
  * @see https://www.drupal.org/node/2785047

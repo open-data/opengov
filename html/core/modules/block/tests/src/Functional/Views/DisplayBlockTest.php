@@ -65,7 +65,10 @@ class DisplayBlockTest extends ViewTestBase {
    * Tests default and custom block categories.
    */
   public function testBlockCategory() {
-    $this->drupalLogin($this->drupalCreateUser(['administer views', 'administer blocks']));
+    $this->drupalLogin($this->drupalCreateUser([
+      'administer views',
+      'administer blocks',
+    ]));
 
     // Create a new view in the UI.
     $edit = [];
@@ -297,14 +300,14 @@ class DisplayBlockTest extends ViewTestBase {
 
     $block = $this->drupalPlaceBlock('views_block:test_view_block-block_1', ['label' => 'test_view_block-block_1:1', 'views_label' => 'Custom title']);
     $this->drupalGet('');
-    $this->assertEqual(1, count($this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]')));
+    $this->assertCount(1, $this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]'));
 
     $display = &$view->getDisplay('block_1');
     $display['display_options']['block_hide_empty'] = TRUE;
     $view->save();
 
     $this->drupalGet($url);
-    $this->assertEqual(0, count($this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]')));
+    $this->assertCount(0, $this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]'));
     // Ensure that the view cacheability metadata is propagated even, for an
     // empty block.
     $this->assertCacheTags(array_merge($block->getCacheTags(), ['block_view', 'config:block_list', 'config:views.view.test_view_block', 'http_response', 'rendered']));
@@ -324,7 +327,7 @@ class DisplayBlockTest extends ViewTestBase {
     $view->save();
 
     $this->drupalGet($url);
-    $this->assertEqual(1, count($this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]')));
+    $this->assertCount(1, $this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]'));
     $this->assertCacheTags(array_merge($block->getCacheTags(), ['block_view', 'config:block_list', 'config:views.view.test_view_block', 'http_response', 'rendered']));
     $this->assertCacheContexts(['url.query_args:_wrapper_format']);
 
@@ -342,7 +345,7 @@ class DisplayBlockTest extends ViewTestBase {
     $view->save();
 
     $this->drupalGet($url);
-    $this->assertEqual(0, count($this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]')));
+    $this->assertCount(0, $this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]'));
     $this->assertCacheTags(array_merge($block->getCacheTags(), ['block_view', 'config:block_list', 'config:views.view.test_view_block', 'http_response', 'rendered']));
     $this->assertCacheContexts(['url.query_args:_wrapper_format']);
 
@@ -359,7 +362,7 @@ class DisplayBlockTest extends ViewTestBase {
     $view->save();
 
     $this->drupalGet($url);
-    $this->assertEqual(1, count($this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]')));
+    $this->assertCount(1, $this->xpath('//div[contains(@class, "block-views-blocktest-view-block-block-1")]'));
     $this->assertCacheTags(array_merge($block->getCacheTags(), ['block_view', 'config:block_list', 'config:views.view.test_view_block', 'http_response', 'rendered']));
     $this->assertCacheContexts(['url.query_args:_wrapper_format']);
   }
@@ -368,7 +371,11 @@ class DisplayBlockTest extends ViewTestBase {
    * Tests the contextual links on a Views block.
    */
   public function testBlockContextualLinks() {
-    $this->drupalLogin($this->drupalCreateUser(['administer views', 'access contextual links', 'administer blocks']));
+    $this->drupalLogin($this->drupalCreateUser([
+      'administer views',
+      'access contextual links',
+      'administer blocks',
+    ]));
     $block = $this->drupalPlaceBlock('views_block:test_view_block-block_1');
     $cached_block = $this->drupalPlaceBlock('views_block:test_view_block-block_1');
     $this->drupalGet('test-page');
@@ -386,7 +393,7 @@ class DisplayBlockTest extends ViewTestBase {
     $post = ['ids[0]' => $id, 'ids[1]' => $cached_id, 'tokens[0]' => $id_token, 'tokens[1]' => $cached_id_token];
     $url = 'contextual/render?_format=json,destination=test-page';
     $this->getSession()->getDriver()->getClient()->request('POST', $url, $post);
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $json = Json::decode($this->getSession()->getPage()->getContent());
     $this->assertIdentical($json[$id], '<ul class="contextual-links"><li class="block-configure"><a href="' . base_path() . 'admin/structure/block/manage/' . $block->id() . '">Configure block</a></li><li class="entityviewedit-form"><a href="' . base_path() . 'admin/structure/views/view/test_view_block/edit/block_1">Edit view</a></li></ul>');
     $this->assertIdentical($json[$cached_id], '<ul class="contextual-links"><li class="block-configure"><a href="' . base_path() . 'admin/structure/block/manage/' . $cached_block->id() . '">Configure block</a></li><li class="entityviewedit-form"><a href="' . base_path() . 'admin/structure/views/view/test_view_block/edit/block_1">Edit view</a></li></ul>');

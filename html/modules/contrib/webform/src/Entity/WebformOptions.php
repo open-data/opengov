@@ -6,6 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\Utility\WebformYaml;
 use Drupal\webform\WebformOptionsInterface;
@@ -40,11 +41,11 @@ use Drupal\webform\WebformOptionsInterface;
  *     "label" = "label",
  *   },
  *   links = {
- *     "add-form" = "/admin/structure/webform/config/options/manage/add",
- *     "edit-form" = "/admin/structure/webform/config/options/manage/{webform_options}/edit",
- *     "duplicate-form" = "/admin/structure/webform/config/options/manage/{webform_options}/duplicate",
- *     "delete-form" = "/admin/structure/webform/config/options/manage/{webform_options}/delete",
- *     "collection" = "/admin/structure/webform/config/options/manage",
+ *     "add-form" = "/admin/structure/webform/options/manage/add",
+ *     "edit-form" = "/admin/structure/webform/options/manage/{webform_options}/edit",
+ *     "duplicate-form" = "/admin/structure/webform/options/manage/{webform_options}/duplicate",
+ *     "delete-form" = "/admin/structure/webform/options/manage/{webform_options}/delete",
+ *     "collection" = "/admin/structure/webform/options/manage",
  *   },
  *   config_export = {
  *     "id",
@@ -199,6 +200,20 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
     $a_label = $a->get('category') . $a->label();
     $b_label = $b->get('category') . $b->label();
     return strnatcasecmp($a_label, $b_label);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createDuplicate() {
+    $duplicate = parent::createDuplicate();
+    if (!$this->options) {
+      $element = ['#options' => $this->id()];
+      $options = static::getElementOptions($element);
+      WebformElementHelper::convertRenderMarkupToStrings($options);
+      $duplicate->setOptions($options);
+    }
+    return $duplicate;
   }
 
   /**

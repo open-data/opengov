@@ -42,11 +42,13 @@ class WebformSubmissionViewTest extends WebformBrowserTestBase {
    * Tests view submissions.
    */
   public function testView() {
+    $assert_session = $this->assertSession();
+
     $admin_submission_user = $this->drupalCreateUser([
       'administer webform submission',
     ]);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $account = User::load(1);
 
@@ -86,14 +88,14 @@ class WebformSubmissionViewTest extends WebformBrowserTestBase {
       'language_select' => 'English (en)',
     ];
     foreach ($elements as $label => $value) {
-      $this->assertRaw("<label>$label</label>" . PHP_EOL . "        $value", new FormattableMarkup('Found @label: @value', ['@label' => $label, '@value' => $value]));
+      $assert_session->responseContains("<label>$label</label>" . PHP_EOL . "        $value", new FormattableMarkup('Found @label: @value', ['@label' => $label, '@value' => $value]));
     }
 
     // Check details element.
-    $this->assertRaw('<summary role="button" aria-controls="test_element--standard_elements" aria-expanded="true" aria-pressed="true">Standard Elements</summary>');
+    $assert_session->responseContains('<summary role="button" aria-controls="test_element--standard_elements" aria-expanded="true" aria-pressed="true">Standard Elements</summary>');
 
     // Check empty details element removed.
-    $this->assertNoRaw('Markup Elements');
+    $assert_session->responseNotContains('Markup Elements');
   }
 
 }

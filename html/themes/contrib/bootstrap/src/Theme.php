@@ -344,16 +344,22 @@ class Theme {
     }
 
     // Retrieve cache.
-    $files = $this->getCache('files');
+    $cache = $this->getCache('files');
 
     // Generate a unique hash for all parameters passed as a change in any of
     // them could potentially return different results.
     $hash = Crypt::generateBase64HashIdentifier($options, [$mask, $path]);
 
-    if (!$files->has($hash)) {
-      $files->set($hash, file_scan_directory($path, $mask, $options));
+    if (!$cache->has($hash)) {
+      if ($fileSystem = Bootstrap::fileSystem('scanDirectory')) {
+        $files = $fileSystem->scanDirectory($path, $mask, $options);
+      }
+      else {
+        $files = file_scan_directory($path, $mask, $options);
+      }
+      $cache->set($hash, $files);
     }
-    return $files->get($hash, []);
+    return $cache->get($hash, []);
   }
 
   /**

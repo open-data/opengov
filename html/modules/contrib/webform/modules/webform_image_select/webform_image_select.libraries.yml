@@ -20,6 +20,7 @@ libraries.jquery.image-picker:
     name: MIT
     url: https://github.com/rvera/image-picker/blob/master/LICENSE
     gpl-compatible: true
+  directory: jquery.image-picker
   cdn:
     /libraries/jquery.image-picker/image-picker/: https://cdnjs.cloudflare.com/ajax/libs/image-picker/0.3.1/
   css:

@@ -43,7 +43,7 @@ abstract class ContainerBase extends WebformElementBase {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -118,7 +118,7 @@ abstract class ContainerBase extends WebformElementBase {
    */
   protected function formatHtmlItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     /** @var \Drupal\webform\WebformSubmissionViewBuilderInterface $view_builder */
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder('webform_submission');
+    $view_builder = $this->entityTypeManager->getViewBuilder('webform_submission');
     $children = $view_builder->buildElements($element, $webform_submission, $options, 'html');
     if (empty($children)) {
       return [];
@@ -132,7 +132,7 @@ abstract class ContainerBase extends WebformElementBase {
     }
 
     // Build format attributes.
-    $attributes = (isset($element['#format_attributes'])) ? $element['#format_attributes'] : [];
+    $attributes = $element['#format_attributes'] ?? [];
     $attributes += ['class' => []];
 
     switch ($format) {
@@ -177,7 +177,7 @@ abstract class ContainerBase extends WebformElementBase {
           '#type' => 'webform_section',
           '#id' => $element['#webform_id'],
           '#title' => $element['#title'],
-          '#title_tag' => \Drupal::config('webform.settings')->get('element.default_section_title_tag'),
+          '#title_tag' => $this->configFactory->get('webform.settings')->get('element.default_section_title_tag'),
           '#attributes' => $attributes,
         ] + $children;
     }
@@ -188,7 +188,7 @@ abstract class ContainerBase extends WebformElementBase {
    */
   protected function formatTextItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     /** @var \Drupal\webform\WebformSubmissionViewBuilderInterface $view_builder */
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder('webform_submission');
+    $view_builder = $this->entityTypeManager->getViewBuilder('webform_submission');
     $children = $view_builder->buildElements($element, $webform_submission, $options, 'text');
     if (empty($children)) {
       return [];
@@ -219,7 +219,7 @@ abstract class ContainerBase extends WebformElementBase {
     $template = trim($element['#format_' . $name]);
     if (strpos($template, 'children') !== FALSE) {
       /** @var \Drupal\webform\WebformSubmissionViewBuilderInterface $view_builder */
-      $view_builder = \Drupal::entityTypeManager()->getViewBuilder('webform_submission');
+      $view_builder = $this->entityTypeManager->getViewBuilder('webform_submission');
       $context['children'] = $view_builder->buildElements($element, $webform_submission, $options, $name);
     }
 

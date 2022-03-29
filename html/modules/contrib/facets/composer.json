@@ -16,6 +16,14 @@
   },
   "license": "GPL-2.0+",
   "require-dev": {
-    "drupal/search_api": "~1.5"
+    "drupal/search_api": "~1.14"
+  },
+  "conflict": {
+    "drupal/search_api": "<1.14"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-8.x-1.x": "1.x-dev"
+    }
   }
 }

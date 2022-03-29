@@ -41,6 +41,7 @@ function webform_demo_event_registration_install() {
 function webform_demo_event_registration_uninstall() {
   // Delete all webform:demo_event_registration nodes.
   $entity_ids = \Drupal::entityQuery('node')
+    ->accessCheck(TRUE)
     ->condition('type', 'webform_demo_event')
     ->condition('webform.target_id', 'demo_event_registration')
     ->execute();

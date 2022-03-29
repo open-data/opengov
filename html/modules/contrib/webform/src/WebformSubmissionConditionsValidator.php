@@ -60,9 +60,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     $this->elementManager = $element_manager;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Build pages methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -86,9 +86,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     return $pages;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Build form methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -111,7 +111,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         }
 
         // Process state/negate.
-        list($state, $negate) = $this->processState($original_state);
+        [$state, $negate] = $this->processState($original_state);
 
         // If hide/show we need to make sure that validation is not triggered.
         if (strpos($state, 'visible') === 0) {
@@ -161,6 +161,18 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         switch ($state) {
           case 'required':
             $element['#required'] = $result;
+            break;
+
+          case 'readonly':
+
+            // Set custom readonly attribute and class.
+            // We can't use the custom #readonly property because it is
+            // processed before cross page targets.
+            // @see \Drupal\webform\Plugin\WebformElementBase::prepare
+            if ($result) {
+              $element['#attributes']['readonly'] = 'readonly';
+              $element['#wrapper_attributes']['class'][] = 'webform-readonly';
+            }
             break;
 
           case 'disabled':
@@ -278,9 +290,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     return $cross_page_conditions;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Validate form methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -288,6 +300,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    * @see \Drupal\webform\WebformSubmissionForm::validateForm
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $this->processForm($form, $form_state);
     $this->validateFormRecursive($form, $form_state);
   }
 
@@ -370,14 +383,30 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     }
   }
 
-  /****************************************************************************/
-  // Submit form methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
+  // Submit form method.
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $this->processForm($form, $form_state);
+  }
+
+  /* ************************************************************************ */
+  // Process form methods.
+  /* ************************************************************************ */
+
+  /**
+   * Process form and unset submission data for form elements that are hidden.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  protected function processForm(array &$form, FormStateInterface $form_state) {
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
     $webform_submission = $form_state->getFormObject()->getEntity();
 
@@ -391,7 +420,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
 
     // Recursive through the form and unset unset submission data for
     // form elements that are hidden.
-    $this->submitFormRecursive($form, $webform_submission, $data, $check_access);
+    $this->processFormRecursive($form, $webform_submission, $data, $check_access);
 
     // Set submission data.
     $webform_submission->setData($data);
@@ -407,12 +436,12 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    * @param array $data
    *   A webform submission's data.
    * @param bool $check_access
-   *   Flag that determine if the currrent form element's access
+   *   Flag that determine if the current form element's access
    *   should be checked.
    * @param bool $visible
-   *   Flag that determine if the currrent form elements are visible.
+   *   Flag that determine if the current form elements are visible.
    */
-  protected function submitFormRecursive(array $elements, WebformSubmissionInterface $webform_submission, array &$data, $check_access, $visible = TRUE) {
+  protected function processFormRecursive(array $elements, WebformSubmissionInterface $webform_submission, array &$data, $check_access, $visible = TRUE) {
     foreach ($elements as $key => &$element) {
       if (!WebformElementHelper::isElement($element, $key)) {
         continue;
@@ -437,13 +466,13 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         $data[$key] = (is_array($data[$key])) ? [] : '';
       }
 
-      $this->submitFormRecursive($element, $webform_submission, $data, $check_access, $element_visible);
+      $this->processFormRecursive($element, $webform_submission, $data, $check_access, $element_visible);
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element hide/show validation methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Webform element #after_build callback: Wrap #element_validate so that we suppress element validation errors.
@@ -477,9 +506,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element state methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -494,7 +523,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
       }
 
       // Process state/negate.
-      list($state, $negate) = $this->processState($state);
+      [$state, $negate] = $this->processState($state);
 
       $result = $this->validateConditions($conditions, $webform_submission);
       // Skip invalid conditions.
@@ -527,7 +556,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
       }
 
       // Process state/negate.
-      list($state, $negate) = $this->processState($state);
+      [$state, $negate] = $this->processState($state);
 
       $result = $this->validateConditions($conditions, $webform_submission);
       // Skip invalid conditions.
@@ -547,16 +576,16 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     return $enabled;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Validate state methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
    */
   public function validateState($state, array $conditions, WebformSubmissionInterface $webform_submission) {
     // Process state/negate.
-    list($state, $negate) = $this->processState($state);
+    [$state, $negate] = $this->processState($state);
 
     // Validation conditions.
     $result = $this->validateConditions($conditions, $webform_submission);
@@ -570,9 +599,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     return ($negate) ? !$result : $result;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Validate condition methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -739,7 +768,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     }
 
     // Process trigger state/negate.
-    list($trigger, $trigger_negate) = $this->processState($trigger);
+    [$trigger, $trigger_negate] = $this->processState($trigger);
 
     // Process triggers (aka remote conditions).
     // @see \Drupal\webform\Element\WebformElementStates::processWebformStates
@@ -821,7 +850,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
           $greater = $trigger_value;
         }
         else {
-          list($greater, $less) = explode(':', $trigger_value);
+          [$greater, $less] = explode(':', $trigger_value);
         }
         $is_greater_than = ($greater === NULL || $greater === '' || floatval($element_value) >= floatval($greater));
         $is_less_than = ($less === NULL || $less === '' || floatval($element_value) <= floatval($less));
@@ -832,9 +861,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // State methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Process state by mapping aliases and negation.
@@ -861,9 +890,9 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     return [$state, $negate];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Build and get visible elements from a form.
@@ -875,8 +904,15 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
    *   Visible elements.
    */
   protected function &getBuildElements(array &$form) {
+    if (isset($form['#webform_id']) && isset($form['elements'])) {
+      $form_elements = &$form['elements']; // phpcs:ignore
+    }
+    else {
+      $form_elements = &$form;
+    }
+
     $elements = [];
-    $this->getBuildElementsRecursive($elements, $form);
+    $this->getBuildElementsRecursive($elements, $form_elements);
     return $elements;
   }
 
@@ -1082,10 +1118,10 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     $element[$attributes_property]['class'][] = 'js-webform-states-hidden';
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Static input and selector methods.
   // @see \Drupal\webform\Plugin\WebformElementBase::getElementSelectorInputValue
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get input name from CSS :input[name="*"] selector.
@@ -1119,7 +1155,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
     $name = str_replace(['][', '[', ']'], ['|', '|', ''], $name);
     $array = explode('|', $name);
     if ($index !== NULL) {
-      return isset($array[$index]) ? $array[$index] : NULL;
+      return $array[$index] ?? NULL;
     }
     else {
       return $array;

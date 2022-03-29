@@ -58,7 +58,7 @@ class WebformSourceEntityAccessTest extends WebformAccessTestBase {
       ]));
     $this->container->set('webform.entity_reference_manager', $entity_reference_manager);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check entity results access.
     $this->assertEquals(AccessResult::neutral(), WebformSourceEntityAccess::checkEntityResultsAccess($node, $anonymous_account));

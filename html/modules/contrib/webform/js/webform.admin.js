@@ -43,11 +43,19 @@
       // Only attach the click event handler to the entire table and determine
       // which row triggers the event.
       $('.webform-results-table', context).once('webform-results-table').on('click', function (event) {
-        if (event.target.tagName === 'A' || event.target.tagName === 'BUTTON') {
+        if (event.target.tagName === 'A' || event.target.tagName === 'BUTTON' || event.target.tagName === 'INPUT') {
           return true;
         }
 
         if ($(event.target).parents('a[href]').length || $(event.target).parents('.dropbutton-widget').length) {
+          return true;
+        }
+
+        var $input = $(event.target).closest('td').find('input');
+        if ($input.length) {
+          if ($input.attr('type') === 'checkbox') {
+            $input.click();
+          }
           return true;
         }
 

@@ -23,40 +23,43 @@ class WebformElementTest extends WebformElementBrowserTestBase {
    * Tests webform element.
    */
   public function testWebform() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('contact');
 
     // Check webform render.
     $this->drupalGet('/webform_test_element');
-    $this->assertFieldByName('email', '');
-    $this->assertFieldByName('name', '');
-    $this->assertFieldByName('subject', '');
-    $this->assertFieldByName('message', '');
+    $assert_session->fieldValueEquals('email', '');
+    $assert_session->fieldValueEquals('name', '');
+    $assert_session->fieldValueEquals('subject', '');
+    $assert_session->fieldValueEquals('message', '');
 
     // Check webform default data.
     $this->drupalGet('/webform_test_element', ['query' => ['default_data' => 'email: test']]);
-    $this->assertFieldByName('email', 'test');
+    $assert_session->fieldValueEquals('email', 'test');
 
     // Check webform action.
     $this->drupalGet('/webform_test_element', ['query' => ['action' => 'http://drupal.org']]);
-    $this->assertRaw('action="http://drupal.org"');
+    $assert_session->responseContains('action="http://drupal.org"');
 
     // Check webform submit.
+    $this->drupalGet('/webform_test_element');
     $edit = [
       'email' => 'example@example.com',
       'name' => '{name}',
       'subject' => '{subject}',
       'message' => '{message}',
     ];
-    $this->drupalPostForm('/webform_test_element', $edit, 'Send message');
-    $this->assertUrl('/');
-    $this->assertRaw('Your message has been sent.');
+    $this->submitForm($edit, 'Send message');
+    $assert_session->addressEquals('/');
+    $assert_session->responseContains('Your message has been sent.');
 
     // Get last submission id.
     $sid = $this->getLastSubmissionId($webform);
 
     // Check submission is not render.
     $this->drupalGet('/webform_test_element', ['query' => ['sid' => $sid]]);
-    $this->assertNoFieldByName('email', 'example@example.com');
+    $assert_session->fieldNotExists('email');
 
     // Set webform access denied to display a message, instead of nothing.
     $webform->setSetting('form_access_denied', WebformInterface::ACCESS_DENIED_MESSAGE);
@@ -64,22 +67,22 @@ class WebformElementTest extends WebformElementBrowserTestBase {
 
     // Check submission access denied message is displayed.
     $this->drupalGet('/webform_test_element', ['query' => ['sid' => $sid]]);
-    $this->assertRaw("Please login to access this form.");
+    $assert_session->responseContains("Please login to access this form.");
 
     // Login as root.
     $this->drupalLogin($this->rootUser);
 
     // Check submission can be edited.
     $this->drupalGet('/webform_test_element', ['query' => ['sid' => $sid]]);
-    $this->assertFieldByName('email', 'example@example.com');
-    $this->assertFieldByName('name', '{name}');
-    $this->assertFieldByName('subject', '{subject}');
-    $this->assertFieldByName('message', '{message}');
-    $this->assertRaw('Submission information');
+    $assert_session->fieldValueEquals('email', 'example@example.com');
+    $assert_session->fieldValueEquals('name', '{name}');
+    $assert_session->fieldValueEquals('subject', '{subject}');
+    $assert_session->fieldValueEquals('message', '{message}');
+    $assert_session->responseContains('Submission information');
 
     // Check submission information is hidden.
     $this->drupalGet('/webform_test_element', ['query' => ['sid' => $sid, 'information' => 'false']]);
-    $this->assertNoRaw('Submission information');
+    $assert_session->responseNotContains('Submission information');
   }
 
 }

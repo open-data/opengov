@@ -103,6 +103,13 @@
     var settings = drupalSettings;
     var facets_blocks = facetsBlocks();
 
+    // Remove All Range Input Form Facet Blocks from being updated.
+    if(settings.facets && settings.facets.rangeInput) {
+      $.each(settings.facets.rangeInput, function (index, value){
+        delete facets_blocks[value.facetId];
+      });
+    }
+
     // Update facet blocks.
     var facet_settings = {
       url: Drupal.url('facets-block-ajax'),

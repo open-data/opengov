@@ -22,50 +22,55 @@ class WebformGroupUserInterfaceTest extends WebformGroupBrowserTestBase {
    * Tests webform group user interface.
    */
   public function testGroupUserInterfaceAccess() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Webform.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check 'Webform Access' integration.
     // @see webform_group_form_webform_settings_access_form_alter()
     $this->drupalGet('/admin/structure/webform/manage/contact/access');
-    $this->assertRaw('<label for="edit-access-create-group-roles">Group (node) roles</label>');
-    $this->assertFieldByName('access[create][group_roles][]');
+    $assert_session->responseContains('<label for="edit-access-create-group-roles">Group (node) roles</label>');
+    $assert_session->fieldExists('access[create][group_roles][]');
 
     // Add create access to webform for the member group role.
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/access', ['access[create][group_roles][]' => ['member']], 'Save');
+    $this->drupalGet('/admin/structure/webform/manage/contact/access');
+    $edit = ['access[create][group_roles][]' => ['member']];
+    $this->submitForm($edit, 'Save');
 
     // Check create access to webform for the member group role.
     \Drupal::entityTypeManager()->getStorage('webform')->resetCache();
     $webform = Webform::load('contact');
     $access_rules = $webform->getAccessRules();
     $this->debug($access_rules);
-    $this->assertEqual($access_rules['create']['group_roles'], ['member']);
+    $this->assertEquals($access_rules['create']['group_roles'], ['member']);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Element.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check 'Element' integration.
     // @see webform_group_form_webform_ui_element_form_alter()
     $this->drupalGet('/admin/structure/webform/manage/contact/element/name/edit');
-    $this->assertFieldByName('properties[access_create_group_roles][]');
-    $edit = ['properties[access_create_group_roles][]' => 'member'];
+    $assert_session->fieldExists('properties[access_create_group_roles][]');
 
     // Add create access to name element for the member group role.
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, 'Save');
+    $this->drupalGet('/admin/structure/webform/manage/contact/element/name/edit');
+    $edit = ['properties[access_create_group_roles][]' => 'member'];
+    $this->submitForm($edit, 'Save');
 
     // Check create access to name element for the member group role.
     \Drupal::entityTypeManager()->getStorage('webform')->resetCache();
     $webform = Webform::load('contact');
     $element = $webform->getElement('name');
-    $this->assertEqual($element['#access_create_group_roles'], ['member']);
+    $this->assertEquals($element['#access_create_group_roles'], ['member']);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Handler.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check that group roles must be enabled for 'Email Handler' integration.
     // @see webform_group_form_webform_handler_form_alter()

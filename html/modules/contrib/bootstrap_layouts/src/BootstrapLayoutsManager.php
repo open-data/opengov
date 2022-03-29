@@ -268,11 +268,27 @@ class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
             try {
               $handler->saveInstance($storage_id, $layout);
               if ($display_messages) {
-                \drupal_set_message($this->t('Successfully updated the existing Bootstrap layout found in "@id".', ['@id' => $storage_id]));
+                $message = $this->t('Successfully updated the existing Bootstrap layout found in "@id".', ['@id' => $storage_id]);
               }
-            } catch (\Exception $e) {
-              \drupal_set_message($this->t('Unable to update the existing Bootstrap layout found in "@id":', ['@id' => $storage_id]), 'error');
-              \drupal_set_message($e->getMessage(), 'error');
+            }
+            catch (\Exception $exception) {
+              $message = $this->t('Unable to update the existing Bootstrap layout found in "@id":', ['@id' => $storage_id]);
+            }
+            if (isset($message)) {
+              $error = isset($exception) ? $exception->getMessage() : FALSE;
+              $type = $error ? 'error' : 'status';
+              if (\Drupal::hasService('messenger') && ($messenger = \Drupal::messenger())) {
+                $messenger->addMessage($message, $type);
+                if ($error) {
+                  $messenger->addError($error);
+                }
+              }
+              else {
+                drupal_set_message($message, $type);
+                if ($error) {
+                  drupal_set_message($error, 'error');
+                }
+              }
             }
           }
         }

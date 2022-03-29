@@ -5,7 +5,6 @@ namespace Drupal\webform_node\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\node\NodeInterface;
-use Drupal\webform\WebformEntityReferenceManagerInterface;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,22 +23,12 @@ class WebformNodeEntityReferenceController extends ControllerBase implements Con
   protected $webformEntityReferenceManager;
 
   /**
-   * Constructs a WebformNodeEntityReferenceController object.
-   *
-   * @param \Drupal\webform\WebformEntityReferenceManagerInterface $webform_entity_reference_manager
-   *   The webform entity reference manager.
-   */
-  public function __construct(WebformEntityReferenceManagerInterface $webform_entity_reference_manager) {
-    $this->webformEntityReferenceManager = $webform_entity_reference_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('webform.entity_reference_manager')
-    );
+    $instance = parent::create($container);
+    $instance->webformEntityReferenceManager = $container->get('webform.entity_reference_manager');
+    return $instance;
   }
 
   /**

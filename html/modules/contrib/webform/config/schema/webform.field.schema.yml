@@ -48,6 +48,9 @@ field.widget.settings.webform_entity_reference_autocomplete:
   type: mapping
   label: 'Webform autocomplete display format settings'
   mapping:
+    match_limit:
+      type: integer
+      label: 'Match limit'
     match_operator:
       type: string
       label: 'Autocomplete matching'

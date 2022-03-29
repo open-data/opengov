@@ -40,10 +40,47 @@ class WebformEntityReferenceSelectWidget extends OptionsWidgetBase {
   /**
    * {@inheritdoc}
    */
+  public function settingsForm(array $form, FormStateInterface $form_state) {
+    $element = parent::settingsForm($form, $form_state);
+    $element['default_data'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable default submission data (YAML)'),
+      '#description' => $this->t('If checked, site builders will be able to define default submission data (YAML)'),
+      '#default_value' => $this->getSetting('default_data'),
+    ];
+    $element['webforms'] = [
+      '#type' => 'webform_entity_select',
+      '#title' => $this->t('Select webform'),
+      '#description' => $this->t('If left blank all webforms will be listed in the select menu.'),
+      '#select2' => TRUE,
+      '#multiple' => TRUE,
+      '#target_type' => 'webform',
+      '#selection_handler' => 'default:webform',
+      '#default_value' => $this->getSetting('webforms'),
+    ];
+    $this->elementManager->processElement($element['webforms']);
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary() {
+    $summary = parent::settingsSummary();
+    $summary[] = $this->t('Default submission data: @default_data', ['@default_data' => $this->getSetting('default_data') ? $this->t('Yes') : $this->t('No')]);
+    if ($webform_options = $this->getWebformsAsOptions()) {
+      $summary[] = $this->t('Webforms: @webforms', ['@webforms' => implode('; ', $webform_options)]);
+    }
+    return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTargetIdElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // Get default value (webform ID).
     $referenced_entities = $items->referencedEntities();
-    $default_value = isset($referenced_entities[$delta]) ? $referenced_entities[$delta] : NULL;
+    $default_value = $referenced_entities[$delta] ?? NULL;
     // Convert default_value's Webform to a simple entity_id.
     if ($default_value instanceof WebformInterface) {
       $default_value = $default_value->id();
@@ -99,14 +136,9 @@ class WebformEntityReferenceSelectWidget extends OptionsWidgetBase {
    */
   protected function getOptions(FieldableEntityInterface $entity) {
     if (!isset($this->options)) {
-      $webform_ids = $this->getSetting('webforms');
-      if ($webform_ids) {
-        $webforms = Webform::loadMultiple($webform_ids);
-        $options = [];
-        foreach ($webforms as $webform) {
-          $options[$webform->id()] = $webform->label();
-        }
-        asort($options);
+      $webform_options = $this->getWebformsAsOptions();
+      if ($webform_options) {
+        $options = $webform_options;
       }
       else {
         // Limit the settable options for the current user account.
@@ -117,7 +149,6 @@ class WebformEntityReferenceSelectWidget extends OptionsWidgetBase {
           ->getFieldStorageDefinition()
           ->getOptionsProvider($this->column, $entity)
           ->getSettableOptions(\Drupal::currentUser());
-
       }
 
       $module_handler = \Drupal::moduleHandler();
@@ -131,6 +162,27 @@ class WebformEntityReferenceSelectWidget extends OptionsWidgetBase {
       $this->options = $options;
     }
     return $this->options;
+  }
+
+  /**
+   * Get selected webforms as options.
+   *
+   * @return array
+   *   Webforms as options.
+   */
+  protected function getWebformsAsOptions() {
+    $webform_ids = $this->getSetting('webforms');
+    if (empty($webform_ids)) {
+      return [];
+    }
+
+    $webforms = Webform::loadMultiple($webform_ids);
+    $options = [];
+    foreach ($webforms as $webform) {
+      $options[$webform->id()] = $webform->label();
+    }
+    asort($options);
+    return $options;
   }
 
 }

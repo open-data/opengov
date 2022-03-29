@@ -2,12 +2,11 @@
 
 namespace Drupal\webform\Form;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
-use Drupal\webform\WebformRequestInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -15,6 +14,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  * Webform for webform results custom(ize) webform.
  */
 class WebformResultsCustomForm extends FormBase {
+
+  use WebformEntityStorageTrait;
 
   /**
    * Customize results default type.
@@ -77,13 +78,6 @@ class WebformResultsCustomForm extends FormBase {
   protected $sourceEntity;
 
   /**
-   * The webform submission storage.
-   *
-   * @var \Drupal\webform\WebformSubmissionStorageInterface
-   */
-  protected $submissionStorage;
-
-  /**
    * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
@@ -91,27 +85,14 @@ class WebformResultsCustomForm extends FormBase {
   protected $requestHandler;
 
   /**
-   * Constructs a WebformResultsCustomForm object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\webform\WebformRequestInterface $request_handler
-   *   The webform request handler.
-   */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, WebformRequestInterface $request_handler) {
-    $this->submissionStorage = $entity_type_manager->getStorage('webform_submission');
-    $this->requestHandler = $request_handler;
-    list($this->webform, $this->sourceEntity) = $this->requestHandler->getWebformEntities();
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager'),
-      $container->get('webform.request')
-    );
+    $instance = parent::create($container);
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->requestHandler = $container->get('webform.request');
+    [$instance->webform, $instance->sourceEntity] = $instance->requestHandler->getWebformEntities();
+    return $instance;
   }
 
   /**
@@ -168,7 +149,7 @@ class WebformResultsCustomForm extends FormBase {
     }
 
     // @see \Drupal\webform\WebformEntitySettingsForm::form
-    $available_columns = $this->submissionStorage->getColumns($this->webform, $this->sourceEntity, NULL, TRUE);
+    $available_columns = $this->getSubmissionStorage()->getColumns($this->webform, $this->sourceEntity, NULL, TRUE);
     // Change sid's # to an actual label.
     $available_columns['sid']['title'] = $this->t('Submission ID');
     // Get available columns as option.
@@ -209,7 +190,7 @@ class WebformResultsCustomForm extends FormBase {
     foreach ($sort_columns as $column_name => $column) {
       if (!isset($column['sort']) || $column['sort'] === TRUE) {
         $sort_options[$column_name] = (string) $column['title'];
-      };
+      }
     }
     asort($sort_options);
 
@@ -258,9 +239,9 @@ class WebformResultsCustomForm extends FormBase {
       '#default_value' => ($limit !== NULL) ? $limit : 20,
     ];
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Default settings only.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     if ($this->type === static::CUSTOMIZE_DEFAULT) {
       // Default configuration.
@@ -391,7 +372,7 @@ class WebformResultsCustomForm extends FormBase {
         '#markup' => $column['title'],
       ],
       'key' => [
-        '#markup' => (isset($column['key'])) ? $column['key'] : $column['name'],
+        '#markup' => $column['key'] ?? $column['name'],
       ],
       'weight' => [
         '#type' => 'weight',
@@ -491,9 +472,9 @@ class WebformResultsCustomForm extends FormBase {
     $form_state->setRedirectUrl($redirect_url);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Customize data methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get the data method name depending of the custom type.

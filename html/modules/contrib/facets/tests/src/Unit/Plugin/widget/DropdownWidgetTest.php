@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\facets\Unit\Plugin\widget;
 
-use Drupal\facets\Entity\Facet;
 use Drupal\facets\Plugin\facets\widget\DropdownWidget;
 
 /**
@@ -30,10 +29,10 @@ class DropdownWidgetTest extends WidgetTestBase {
 
     $output = $this->widget->build($facet);
 
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(4, $output['#items']);
 
-    $this->assertEquals(['js-facets-dropdown-links'], $output['#attributes']['class']);
+    $this->assertEquals(['facet-inactive', 'js-facets-dropdown-links'], $output['#attributes']['class']);
 
     $expected_links = [
       $this->buildLinkAssertion('Llama', 'llama', $facet, 10),
@@ -42,9 +41,9 @@ class DropdownWidgetTest extends WidgetTestBase {
       $this->buildLinkAssertion('Alpaca', 'alpaca', $facet, 9),
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertInternalType('array', $output['#items'][$index]);
+      $this->assertSame('array', gettype($output['#items'][$index]));
       $this->assertEquals($value, $output['#items'][$index]['#title']);
-      $this->assertInternalType('array', $output['#items'][$index]['#title']);
+      $this->assertSame('array', gettype($output['#items'][$index]['#title']));
       $this->assertEquals('link', $output['#items'][$index]['#type']);
       $this->assertEquals(['facet-item'], $output['#items'][$index]['#wrapper_attributes']['class']);
     }

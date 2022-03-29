@@ -54,15 +54,16 @@
       var showLessLabel = settings.facets.softLimitSettings[facet_id].showLessLabel;
       var showMoreLabel = settings.facets.softLimitSettings[facet_id].showMoreLabel;
       $('<a href="#" class="facets-soft-limit-link"></a>')
-        .text(showMoreLabel)
+        .text(showMoreLabel).attr("aria-expanded", "false")
         .on('click', function () {
           if (facet.find('li:hidden').length > 0) {
             facet.find('li:gt(' + zero_based_limit + ')').slideDown();
-            $(this).addClass('open').text(showLessLabel);
+            facet.find('li:lt(' + (zero_based_limit + 2) + ') input').focus();
+            $(this).addClass('open').text(showLessLabel).attr("aria-expanded", "true");
           }
           else {
             facet.find('li:gt(' + zero_based_limit + ')').slideUp();
-            $(this).removeClass('open').text(showMoreLabel);
+            $(this).removeClass('open').text(showMoreLabel).attr("aria-expanded", "false");
           }
           return false;
         }).insertAfter($(this));

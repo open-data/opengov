@@ -1,14 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Plugin\BufferedAdd\Event;
 
 use Solarium\Core\Query\DocumentInterface;
-use Symfony\Contracts\EventDispatcher\Event;
+use Solarium\Plugin\AbstractBufferedUpdate\Event\AbstractPreFlush;
 
 /**
- * PreFlush event, see Events for details.
+ * PreFlush event, see {@see Events} for details.
  */
-class PreFlush extends Event
+class PreFlush extends AbstractPreFlush
 {
     /**
      * @var DocumentInterface[]
@@ -16,12 +25,12 @@ class PreFlush extends Event
     protected $buffer;
 
     /**
-     * @var bool
+     * @var bool|null
      */
     protected $overwrite;
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $commitWithin;
 
@@ -29,49 +38,28 @@ class PreFlush extends Event
      * Event constructor.
      *
      * @param DocumentInterface[] $buffer
-     * @param bool                $overwrite
-     * @param int                 $commitWithin
+     * @param bool|null           $overwrite
+     * @param int|null            $commitWithin
      */
     public function __construct(array $buffer, ?bool $overwrite, ?int $commitWithin)
     {
-        $this->buffer = $buffer;
+        parent::__construct($buffer);
+
         $this->overwrite = $overwrite;
         $this->commitWithin = $commitWithin;
     }
 
     /**
-     * Get the buffer for this event.
-     *
-     * @return DocumentInterface[]
-     */
-    public function getBuffer(): array
-    {
-        return $this->buffer;
-    }
-
-    /**
-     * Set the buffer for this event, this way you can alter the buffer before it is committed to Solr.
-     *
-     * @param DocumentInterface[] $buffer
-     *
-     * @return self Provides fluent interface
-     */
-    public function setBuffer(array $buffer): self
-    {
-        $this->buffer = $buffer;
-        return $this;
-    }
-
-    /**
      * Optionally override the value.
      *
-     * @param int $commitWithin
+     * @param int|null $commitWithin
      *
      * @return self Provides fluent interface
      */
-    public function setCommitWithin(int $commitWithin): self
+    public function setCommitWithin(?int $commitWithin): self
     {
         $this->commitWithin = $commitWithin;
+
         return $this;
     }
 
@@ -86,13 +74,14 @@ class PreFlush extends Event
     /**
      * Optionally override the value.
      *
-     * @param bool $overwrite
+     * @param bool|null $overwrite
      *
      * @return self Provides fluent interface
      */
-    public function setOverwrite(bool $overwrite): self
+    public function setOverwrite(?bool $overwrite): self
     {
         $this->overwrite = $overwrite;
+
         return $this;
     }
 

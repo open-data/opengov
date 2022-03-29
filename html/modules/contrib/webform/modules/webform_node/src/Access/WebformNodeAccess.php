@@ -139,7 +139,7 @@ class WebformNodeAccess {
    */
   public static function checkWebformSubmissionAccess($operation, $entity_access, NodeInterface $node, WebformSubmissionInterface $webform_submission, AccountInterface $account) {
     $access_result = static::checkAccess($operation, $entity_access, $node, $webform_submission, $account);
-    if ($access_result->isForbidden()) {
+    if (!$access_result->isAllowed()) {
       return $access_result;
     }
 

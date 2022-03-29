@@ -66,6 +66,7 @@ function webform_demo_application_evaluation_install() {
 function webform_demo_application_evaluation_uninstall() {
   // Delete all webform:demo_application nodes.
   $entity_ids = \Drupal::entityQuery('node')
+    ->accessCheck(TRUE)
     ->condition('webform.target_id', 'demo_application')
     ->execute();
   if ($entity_ids) {

@@ -14,7 +14,7 @@ class WebformEntityViewBuilder extends EntityViewBuilder {
    * {@inheritdoc}
    */
   public function view(EntityInterface $entity, $view_mode = 'full', $langcode = NULL) {
-    /* @var $entity \Drupal\webform\WebformInterface */
+    /** @var \Drupal\webform\WebformInterface $entity  */
     return $entity->getSubmissionForm();
   }
 

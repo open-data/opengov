@@ -9,8 +9,8 @@ label: 'Likert: Comparison'
 category: Likert
 likert: true
 options: |
-  1: Strongly Disagree
-  2: Disagree
-  3: Neutral
-  4: Agree
-  5: Strongly Agree
+  1: Much Worse
+  2: Somewhat Worse
+  3: About the Same
+  4: Somewhat Better
+  5: Much Better

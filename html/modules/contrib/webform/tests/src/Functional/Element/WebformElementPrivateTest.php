@@ -22,11 +22,13 @@ class WebformElementPrivateTest extends WebformElementBrowserTestBase {
    * Test element access.
    */
   public function testElementAccess() {
+    $assert_session = $this->assertSession();
+
     $normal_user = $this->drupalCreateUser(['view own webform submission']);
 
     $webform = Webform::load('test_element_private');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Login as normal user.
     $this->drupalLogin($normal_user);
@@ -37,32 +39,32 @@ class WebformElementPrivateTest extends WebformElementBrowserTestBase {
 
     // Check element with #private property hidden for normal user.
     $this->drupalGet('/webform/test_element_private');
-    $this->assertNoFieldByName('private', '');
+    $assert_session->fieldNotExists('private');
 
     // Check submission data with #private property hidden for normal user.
     $this->drupalGet("/webform/test_element_private/submissions/$sid");
     $this->assertNoCssSelect('#test_element_private--private');
-    $this->assertNoRaw('<label>private</label>');
+    $assert_session->responseNotContains('<label>private</label>');
 
     // Check user submissions columns excludes 'private' column.
     $this->drupalGet('/webform/test_element_private/submissions');
-    $this->assertNoRaw('<th specifier="element__private">');
+    $assert_session->responseNotContains('<th specifier="element__private">');
 
     // Login as root user.
     $this->drupalLogin($this->rootUser);
 
     // Check element with #private property visible for admin user.
     $this->drupalGet('/webform/test_element_private');
-    $this->assertFieldByName('private', '');
+    $assert_session->fieldValueEquals('private', '');
 
     // Check submission data with #private property visible for admin user.
     $this->drupalGet("/webform/test_element_private/submissions/$sid");
     $this->assertCssSelect('#test_element_private--private');
-    $this->assertRaw('<label>private</label>');
+    $assert_session->responseContains('<label>private</label>');
 
     // Check user submissions columns include 'private' column.
     $this->drupalGet('/webform/test_element_private/submissions');
-    $this->assertRaw('<th specifier="element__private">');
+    $assert_session->responseContains('<th specifier="element__private">');
   }
 
 }

@@ -26,7 +26,7 @@ class WebformCardsToggleJavaScriptTest extends WebformWebDriverTestBase {
     $page = $session->getPage();
     $assert_session = $this->assertSession();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalGet('/webform/test_cards_toggle');
     $assert_session->waitForElement('css', 'button.webform-cards-toggle');

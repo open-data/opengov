@@ -14,10 +14,10 @@ interface BuildProcessorInterface extends ProcessorInterface {
    *
    * @param \Drupal\facets\FacetInterface $facet
    *   The facet being changed.
-   * @param \Drupal\facets\Result\Result[] $results
+   * @param \Drupal\facets\Result\ResultInterface[] $results
    *   The results being changed.
    *
-   * @return \Drupal\facets\Result\Result[]
+   * @return \Drupal\facets\Result\ResultInterface[]
    *   The changed results.
    */
   public function build(FacetInterface $facet, array $results);

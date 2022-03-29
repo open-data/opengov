@@ -20,11 +20,13 @@ class WebformElementHorizontalRuleTest extends WebformElementBrowserTestBase {
    * Test horizontal rule element.
    */
   public function testHorizontalRule() {
+    $assert_session = $this->assertSession();
+
     $this->drupalGet('/webform/test_element_horizontal_rule');
 
     // Check rendering.
-    $this->assertRaw('<hr data-drupal-selector="edit-horizontal-rule" id="edit-horizontal-rule" class="webform-horizontal-rule" />');
-    $this->assertRaw('<hr class="webform-horizontal-rule--dotted webform-horizontal-rule" style="border-color: red" data-drupal-selector="edit-horizontal-rule-custom" id="edit-horizontal-rule-custom" />');
+    $assert_session->responseContains('<hr data-drupal-selector="edit-horizontal-rule" id="edit-horizontal-rule" class="webform-horizontal-rule" />');
+    $assert_session->responseContains('<hr class="webform-horizontal-rule--dotted webform-horizontal-rule" style="border-color: red" data-drupal-selector="edit-horizontal-rule-custom" id="edit-horizontal-rule-custom" />');
   }
 
 }

@@ -157,7 +157,7 @@ class SearchApiDate extends QueryTypeRangeBase {
 
     switch ($this->getGranularity()) {
       case static::FACETAPI_DATE_YEAR:
-        $startDate = $dateTime::createFromFormat('Y-m-d\TH:i:s', $value . '-1T00:00:00');
+        $startDate = $dateTime::createFromFormat('Y-m-d\TH:i:s', $value . '-01T00:00:00');
         $stopDate = clone $startDate;
         $stopDate->add(new \DateInterval('P1Y'));
         $stopDate->sub(new \DateInterval('PT1S'));
@@ -275,7 +275,7 @@ class SearchApiDate extends QueryTypeRangeBase {
     $date = new DrupalDateTime();
     $date->setTimestamp($value);
     $now = new DrupalDateTime();
-    $now->setTimestamp(REQUEST_TIME);
+    $now->setTimestamp(\Drupal::time()->getRequestTime());
     $interval = $date->diff($now);
     $future = $date > $now;
 

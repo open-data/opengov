@@ -36,7 +36,7 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -80,7 +80,7 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
 
     if ($this->isContainer($element)) {
       /** @var \Drupal\webform\WebformSubmissionViewBuilderInterface $view_builder */
-      $view_builder = \Drupal::entityTypeManager()->getViewBuilder('webform_submission');
+      $view_builder = $this->entityTypeManager->getViewBuilder('webform_submission');
       $value = $view_builder->buildElements($element, $webform_submission, $options, 'html');
 
       // Since we are not passing this element to the
@@ -108,7 +108,7 @@ abstract class WebformMarkupBase extends WebformElementBase implements WebformEl
       unset($element['#prefix'], $element['#suffix']);
 
       /** @var \Drupal\webform\WebformSubmissionViewBuilderInterface $view_builder */
-      $view_builder = \Drupal::entityTypeManager()->getViewBuilder('webform_submission');
+      $view_builder = $this->entityTypeManager->getViewBuilder('webform_submission');
       $value = $view_builder->buildElements($element, $webform_submission, $options, 'text');
 
       // Since we are not passing this element to the

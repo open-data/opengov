@@ -1,10 +1,18 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\Facet\Query as FacetQuery;
 use Solarium\Component\FacetSetInterface;
 use Solarium\Exception\InvalidArgumentException;
+use Solarium\Exception\OutOfBoundsException;
 
 /**
  * Facet MultiQuery.
@@ -41,7 +49,7 @@ class MultiQuery extends AbstractFacet
      * @param string $query
      * @param array  $excludes
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -66,7 +74,7 @@ class MultiQuery extends AbstractFacet
      *
      * @param Query|array $facetQuery
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      * @throws InvalidArgumentException
      *
      * @return self Provides fluent interface
@@ -79,7 +87,7 @@ class MultiQuery extends AbstractFacet
 
         $key = $facetQuery->getKey();
 
-        if (0 === \strlen($key)) {
+        if (null === $key || 0 === \strlen($key)) {
             throw new InvalidArgumentException('A facetquery must have a key value');
         }
 
@@ -110,8 +118,8 @@ class MultiQuery extends AbstractFacet
     {
         foreach ($facetQueries as $key => $facetQuery) {
             // in case of a config array: add key to config
-            if (\is_array($facetQuery) && !isset($facetQuery['key'])) {
-                $facetQuery['key'] = (string) $key;
+            if (\is_array($facetQuery) && !isset($facetQuery['local_key'])) {
+                $facetQuery['local_key'] = (string) $key;
             }
 
             $this->addQuery($facetQuery);
@@ -203,7 +211,7 @@ class MultiQuery extends AbstractFacet
      *
      * @param string $exclude
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -229,7 +237,7 @@ class MultiQuery extends AbstractFacet
      *
      * @param string $exclude
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -253,7 +261,7 @@ class MultiQuery extends AbstractFacet
      * If you don't want this use the clearExcludes method of a
      * specific FacetQuery instance instead.
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */

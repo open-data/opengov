@@ -25,14 +25,16 @@ class WebformStatesWizardTest extends WebformBrowserTestBase {
    * Tests webform submission conditions (#states) validator wizard cross-page conditions.
    */
   public function testFormStatesValidatorWizard() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_states_server_wizard');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Go to default #states for page 02 with trigger-checkbox unchecked.
     $this->postSubmission($webform, [], 'Next >');
 
-    $this->assertRaw("page_01_trigger_checkbox: 0
+    $assert_session->responseContains("page_01_trigger_checkbox: 0
 page_01_textfield_required: '{default_value}'
 page_01_textfield_optional: '{default_value}'
 page_01_textfield_disabled: ''
@@ -55,7 +57,7 @@ page_03_textfield_required: '{default_value}'
 page_01_trigger_checkbox_computed: 'No'");
 
     // Check trigger-checkbox value is No.
-    $this->assertFieldByName('page_01_trigger_checkbox_computed', 'No');
+    $assert_session->hiddenFieldValueEquals('page_01_trigger_checkbox_computed', 'No');
 
     // Check page_02_textfield_required is not required.
     $this->assertNoCssSelect('[name="page_02_textfield_required"][required]');
@@ -76,16 +78,16 @@ page_01_trigger_checkbox_computed: 'No'");
     $this->assertCssSelect('.form-item-page-02-textfield-visible-slide.js-webform-states-hidden');
 
     // Check page_02_textfield_invisible is visible.
-    $this->assertFieldByName('page_02_textfield_invisible', '{default_value}');
+    $assert_session->fieldValueEquals('page_02_textfield_invisible', '{default_value}');
 
     // Check page_02_textfield_invisible_slide is visible.
-    $this->assertFieldByName('page_02_textfield_invisible_slide', '{default_value}');
+    $assert_session->fieldValueEquals('page_02_textfield_invisible_slide', '{default_value}');
 
     // Check page_02_checkbox_checked is not checked.
-    $this->assertNoFieldChecked('page_02_checkbox_checked');
+    $assert_session->checkboxNotChecked('page_02_checkbox_checked');
 
     // Check page_02_checkbox_unchecked is checked.
-    $this->assertFieldChecked('page_02_checkbox_unchecked');
+    $assert_session->checkboxChecked('page_02_checkbox_unchecked');
 
     // Check page_02_details_expanded is not open.
     $this->assertCssSelect('details[id="edit-page-02-details-expanded"]');
@@ -95,8 +97,8 @@ page_01_trigger_checkbox_computed: 'No'");
     $this->assertCssSelect('details[id="edit-page-02-details-collapsed"][open]');
 
     // Check submission data.
-    $this->drupalPostForm(NULL, [], 'Submit');
-    $this->assertRaw("page_01_trigger_checkbox: 0
+    $this->submitForm([], 'Submit');
+    $assert_session->responseContains("page_01_trigger_checkbox: 0
 page_01_textfield_required: '{default_value}'
 page_01_textfield_optional: '{default_value}'
 page_01_textfield_disabled: ''
@@ -118,12 +120,12 @@ page_02_checkbox_unchecked: 1
 page_03_textfield_required: ''
 page_01_trigger_checkbox_computed: 'No'");
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Go to default #states for page 02 with trigger_checkbox checked.
     $this->postSubmission($webform, ['page_01_trigger_checkbox' => TRUE], 'Next >');
 
-    $this->assertRaw("page_01_trigger_checkbox: 1
+    $assert_session->responseContains("page_01_trigger_checkbox: 1
 page_01_textfield_required: '{default_value}'
 page_01_textfield_optional: '{default_value}'
 page_01_textfield_disabled: ''
@@ -161,26 +163,26 @@ page_01_trigger_checkbox_computed: 'Yes'");
     $this->assertNoCssSelect('[name="page_02_textfield_enabled"][disabled="disabled"]');
 
     // Check page_02_textfield_visible is visible.
-    $this->assertFieldByName('page_02_textfield_visible', '{default_value}');
+    $assert_session->fieldValueEquals('page_02_textfield_visible', '{default_value}');
 
     // Check page_02_textfield_visible_slide is visible.
-    $this->assertFieldByName('page_02_textfield_visible_slide', '{default_value}');
+    $assert_session->fieldValueEquals('page_02_textfield_visible_slide', '{default_value}');
 
     // Check page_02_textfield_invisible is hidden with no default value.
     $this->assertCssSelect('.form-item-page-02-textfield-invisible.js-webform-states-hidden');
-    $this->assertNoFieldByName('page_02_textfield_invisible', '{default_value}');
-    $this->assertFieldByName('page_02_textfield_invisible', '');
+    $assert_session->fieldValueNotEquals('page_02_textfield_invisible', '{default_value}');
+    $assert_session->fieldValueEquals('page_02_textfield_invisible', '');
 
     // Check page_02_textfield_invisible_slides is hidden with no default value.
     $this->assertCssSelect('.form-item-page-02-textfield-invisible-slide.js-webform-states-hidden');
-    $this->assertNoFieldByName('page_02_textfield_invisible_slide', '{default_value}');
-    $this->assertFieldByName('page_02_textfield_invisible_slide', '');
+    $assert_session->fieldValueNotEquals('page_02_textfield_invisible_slide', '{default_value}');
+    $assert_session->fieldValueEquals('page_02_textfield_invisible_slide', '');
 
     // Check page_02_checkbox_checked is checked.
-    $this->assertFieldChecked('page_02_checkbox_checked');
+    $assert_session->checkboxChecked('page_02_checkbox_checked');
 
     // Check page_02_checkbox_unchecked is not checked.
-    $this->assertNoFieldChecked('page_02_checkbox_unchecked');
+    $assert_session->checkboxNotChecked('page_02_checkbox_unchecked');
 
     // Check page_02_details_expanded is open.
     $this->assertCssSelect('details[id="edit-page-02-details-expanded"][open]');
@@ -189,8 +191,8 @@ page_01_trigger_checkbox_computed: 'Yes'");
     $this->assertNoCssSelect('details[id="edit-page-02-details-collapsed"][open]');
 
     // Check third page data.
-    $this->drupalPostForm(NULL, [], 'Next >');
-    $this->assertRaw("page_01_trigger_checkbox: 1
+    $this->submitForm([], 'Next >');
+    $assert_session->responseContains("page_01_trigger_checkbox: 1
 page_01_textfield_required: '{default_value}'
 page_01_textfield_optional: '{default_value}'
 page_01_textfield_disabled: ''
@@ -213,8 +215,8 @@ page_03_textfield_required: '{default_value}'
 page_01_trigger_checkbox_computed: 'Yes'");
 
     // Check submission data.
-    $this->drupalPostForm(NULL, [], 'Submit');
-    $this->assertRaw("page_01_trigger_checkbox: 1
+    $this->submitForm([], 'Submit');
+    $assert_session->responseContains("page_01_trigger_checkbox: 1
 page_01_textfield_required: '{default_value}'
 page_01_textfield_optional: '{default_value}'
 page_01_textfield_disabled: ''

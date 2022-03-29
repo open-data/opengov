@@ -28,7 +28,7 @@ class WebformDialogLocalAction extends LocalActionDefault {
       $attributes = [];
     }
 
-    $options['attributes'] = (isset($this->pluginDefinition['attributes'])) ? $this->pluginDefinition['attributes'] : [];
+    $options['attributes'] = $this->pluginDefinition['attributes'] ?? [];
     $options['attributes'] = NestedArray::mergeDeep($options['attributes'], $attributes);
 
     return $options;

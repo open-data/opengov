@@ -92,9 +92,11 @@ class WebformSubmissionViews extends WebformMultiple {
       $element['#element']['global_routes'] = [
         '#type' => 'checkboxes',
         '#title' => t('Apply to global'),
-          '#help' => t('Display the selected view on the below paths') .
-            '<hr/><b>' . t('Submissions') . ':</b><br/>/admin/structure/webform/submissions/manage' .
-            '<hr/><b>' . t('User') . ':</b><br/>/user/{user}/submissions',
+        // phpcs:disable
+        '#help' => t('Display the selected view on the below paths') .
+          '<hr/><b>' . t('Submissions') . ':</b><br/>/admin/structure/webform/submissions/manage' .
+          '<hr/><b>' . t('User') . ':</b><br/>/user/{user}/submissions',
+        // phpcs:enable
         '#options' => $global_route_options,
         '#element_validate' => [['\Drupal\webform\Utility\WebformElementHelper', 'filterValues']],
         '#error_no_message' => TRUE,
@@ -110,10 +112,12 @@ class WebformSubmissionViews extends WebformMultiple {
     $element['#element']['webform_routes'] = [
       '#type' => 'checkboxes',
       '#title' => t('Apply to webform'),
-        '#help' => t('Display the selected view on the below paths') .
-          '<hr/><b>' . t('Submissions') . ':</b><br/>/admin/structure/webform/manage/{webform}/results/submissions' .
-          '<hr/><b>' . t('User drafts') . ':</b><br/>/webform/{webform}/drafts' .
-          '<hr/><b>' . t('User submissions') . ':</b><br/>/webform/{webform}/submissions',
+      // phpcs:disable
+      '#help' => t('Display the selected view on the below paths') .
+        '<hr/><b>' . t('Submissions') . ':</b><br/>/admin/structure/webform/manage/{webform}/results/submissions' .
+        '<hr/><b>' . t('User drafts') . ':</b><br/>/webform/{webform}/drafts' .
+        '<hr/><b>' . t('User submissions') . ':</b><br/>/webform/{webform}/submissions',
+      // phpcs:enable
       '#options' => $webform_route_options,
       '#element_validate' => [['\Drupal\webform\Utility\WebformElementHelper', 'filterValues']],
       '#error_no_message' => TRUE,
@@ -129,11 +133,13 @@ class WebformSubmissionViews extends WebformMultiple {
       $element['#element']['node_routes'] = [
         '#type' => 'checkboxes',
         '#title' => t('Apply to node'),
+        // phpcs:disable
         '#help' =>
           t('Display the selected view on the below paths') .
           '<hr/><b>' . t('Submissions') . ':</b><br/>/node/{node}/webform/results/submissions' .
           '<hr/>' . '<b>' . t('User drafts') . ':</b><br/>/node/{node}/webform/drafts' .
           '<hr/>' . '<b>' . t('User submissions') . ':</b><br/>/node/{node}/webform/submissions',
+        // phpcs:enable
         '#options' => $node_route_options,
         '#element_validate' => [['\Drupal\webform\Utility\WebformElementHelper', 'filterValues']],
         '#error_no_message' => TRUE,

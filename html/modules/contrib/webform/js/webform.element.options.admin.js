@@ -7,7 +7,6 @@
 
   'use strict';
 
-
   /**
    * Attach handlers to options (admin) element.
    *
@@ -50,6 +49,5 @@
       });
     }
   };
-
 
 })(jQuery, Drupal);

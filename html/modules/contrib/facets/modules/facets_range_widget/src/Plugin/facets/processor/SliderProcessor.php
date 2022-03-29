@@ -49,8 +49,8 @@ class SliderProcessor extends ProcessorPluginBase implements PostQueryProcessorI
       $max = $config['max_value'];
     }
     else {
-      $min = reset($simple_results)['value'];
-      $max = end($simple_results)['value'];
+      $min = reset($simple_results)['value'] ?? 0;
+      $max = end($simple_results)['value'] ?? 0;
       // If max is not divisible by step, we should add the remainder to max to
       // make sure that we don't lose any possible values.
       if ($max % $step !== 0) {

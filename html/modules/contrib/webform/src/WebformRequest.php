@@ -10,6 +10,7 @@ use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Url;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\Plugin\WebformSourceEntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * Handles webform requests.
  */
 class WebformRequest implements WebformRequestInterface {
+
+  use WebformEntityStorageTrait;
 
   /**
    * The route provider.
@@ -45,13 +48,6 @@ class WebformRequest implements WebformRequestInterface {
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
 
   /**
    * The entity type repository.
@@ -141,7 +137,7 @@ class WebformRequest implements WebformRequestInterface {
    * {@inheritdoc}
    */
   public function getCurrentSourceEntity($ignored_types = NULL) {
-    // TODO: Can we refactor this method away altogether and let all its callers
+    // @todo Can we refactor this method away altogether and let all its callers
     // work directly with webform source entity manager?
     return $this->webformSourceEntityManager->getSourceEntity(is_null($ignored_types) ? [] : $ignored_types);
   }
@@ -152,7 +148,7 @@ class WebformRequest implements WebformRequestInterface {
   public function getCurrentWebform() {
     $webform = $this->routeMatch->getParameter('webform');
     if (is_string($webform)) {
-      $webform = $this->entityTypeManager->getStorage('webform')->load($webform);
+      $webform = $this->getWebformStorage()->load($webform);
     }
     if ($webform) {
       return $webform;
@@ -172,7 +168,7 @@ class WebformRequest implements WebformRequestInterface {
   public function getCurrentWebformSubmission() {
     $webform_submission = $this->routeMatch->getParameter('webform_submission');
     if (is_string($webform_submission)) {
-      $webform_submission = $this->entityTypeManager->getStorage('webform_submission')->load($webform_submission);
+      $webform_submission = $this->getSubmissionStorage()->load($webform_submission);
     }
     return $webform_submission;
   }
@@ -210,15 +206,15 @@ class WebformRequest implements WebformRequestInterface {
   public function getWebformSubmissionEntities() {
     $webform_submission = $this->routeMatch->getParameter('webform_submission');
     if (is_string($webform_submission)) {
-      $webform_submission = $this->entityTypeManager->getStorage('webform_submission')->load($webform_submission);
+      $webform_submission = $this->getSubmissionStorage()->load($webform_submission);
     }
     $source_entity = $this->getCurrentSourceEntity('webform_submission');
     return [$webform_submission, $source_entity];
   }
 
-  /****************************************************************************/
-  // Routing helpers
-  /****************************************************************************/
+  /* ************************************************************************ */
+  // Routing helpers.
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

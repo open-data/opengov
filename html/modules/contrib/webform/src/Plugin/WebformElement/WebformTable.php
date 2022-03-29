@@ -52,7 +52,7 @@ class WebformTable extends WebformElementBase {
     return array_merge(parent::defineTranslatableProperties(), ['header']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -90,7 +90,7 @@ class WebformTable extends WebformElementBase {
 
     foreach ($element['#header'] as $index => $header) {
       if (is_array($header) && isset($header['title'])) {
-        $attributes = (isset($header['attributes'])) ? $header['attributes'] : [];
+        $attributes = $header['attributes'] ?? [];
         $element['#header'][$index] = [
           'data' => ['#markup' => $header['title']],
         ] + $attributes;
@@ -262,9 +262,18 @@ class WebformTable extends WebformElementBase {
         $this->t('Header 2'),
       ],
       '#rows' => [
-        ['Row 1 - Col 1', 'Row 1 - Col 2'],
-        ['Row 2 - Col 1', 'Row 2 - Col 2'],
-        ['Row 3 - Col 1', 'Row 3 - Col 2'],
+        [
+          $this->t('Row 1 - Col 1'),
+          $this->t('Row 1 - Col 2'),
+        ],
+        [
+          $this->t('Row 2 - Col 1'),
+          $this->t('Row 2 - Col 2'),
+        ],
+        [
+          $this->t('Row 3 - Col 1'),
+          $this->t('Row 3 - Col 2'),
+        ],
       ],
     ];
   }

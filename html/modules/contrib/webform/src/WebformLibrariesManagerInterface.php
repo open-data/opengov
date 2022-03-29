@@ -16,6 +16,29 @@ interface WebformLibrariesManagerInterface {
   public function requirements();
 
   /**
+   * Determine if a library's directory exist.
+   *
+   * @param string $name
+   *   The library's directory name.
+   *
+   * @return bool
+   *   TRUE if the library's directory exist.
+   */
+  public function exists($name);
+
+  /**
+   * Finds files that are located in the supported 'libraries' directories.
+   *
+   * @param string $name
+   *   The library's directory name.
+   *
+   * @return string|false
+   *   The real path to the library file relative to the root directory. If the
+   *   library cannot be found then FALSE.
+   */
+  public function find($name);
+
+  /**
    * Get library information.
    *
    * @param string $name

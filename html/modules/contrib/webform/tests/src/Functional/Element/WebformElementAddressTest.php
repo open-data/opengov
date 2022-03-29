@@ -32,35 +32,37 @@ class WebformElementAddressTest extends WebformElementBrowserTestBase {
   public function testAddress() {
     $this->drupalLogin($this->rootUser);
 
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_element_address');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Rendering.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalGet('/webform/test_element_address');
 
     // Check basic fieldset wrapper.
-    $this->assertRaw('<fieldset data-drupal-selector="edit-address" id="edit-address--wrapper" class="address--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-address webform-type-address js-form-item form-item js-form-wrapper form-wrapper">');
-    $this->assertRaw('<span class="visually-hidden fieldset-legend">address_basic</span>');
+    $assert_session->responseContains('<fieldset data-drupal-selector="edit-address" id="edit-address--wrapper" class="address--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-address webform-type-address js-form-item form-item js-form-wrapper form-wrapper">');
+    $assert_session->responseContains('<span class="visually-hidden fieldset-legend">address_basic</span>');
 
     // Check advanced fieldset, legend, help, and description.
-    $this->assertRaw('<fieldset data-drupal-selector="edit-address-advanced" aria-describedby="edit-address-advanced--wrapper--description" id="edit-address-advanced--wrapper" class="address--wrapper fieldgroup form-composite webform-composite-visible-title webform-element-help-container--title webform-element-help-container--title-after js-webform-type-address webform-type-address js-form-item form-item js-form-wrapper form-wrapper">');
-    $this->assertRaw('<span class="fieldset-legend">address_advanced<span class="webform-element-help js-webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;address_advanced&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is help text&lt;/div&gt;"><span aria-hidden="true">?</span></span>');
+    $assert_session->responseContains('<fieldset data-drupal-selector="edit-address-advanced" aria-describedby="edit-address-advanced--wrapper--description" id="edit-address-advanced--wrapper" class="address--wrapper fieldgroup form-composite webform-composite-visible-title webform-element-help-container--title webform-element-help-container--title-after js-webform-type-address webform-type-address js-form-item form-item js-form-wrapper form-wrapper">');
+    $assert_session->responseContains('<span class="fieldset-legend">address_advanced<span class="webform-element-help js-webform-element-help" role="tooltip" tabindex="0" aria-label="address_advanced" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;address_advanced&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is help text&lt;/div&gt;"><span aria-hidden="true">?</span></span>');
     if (floatval(\Drupal::VERSION) >= 9) {
-      $this->assertRaw('<div class="description"><div id="edit-address-advanced--wrapper--description" data-drupal-field-elements="description" class="webform-element-description">This is a description</div>');
+      $assert_session->responseContains('<div class="description"><div id="edit-address-advanced--wrapper--description" data-drupal-field-elements="description" class="webform-element-description">This is a description</div>');
     }
     else {
-      $this->assertRaw('<div class="description"><div id="edit-address-advanced--wrapper--description" class="webform-element-description">This is a description</div>');
+      $assert_session->responseContains('<div class="description"><div id="edit-address-advanced--wrapper--description" class="webform-element-description">This is a description</div>');
     }
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Processing.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check submitted value.
     $sid = $this->postSubmission($webform);
-    $this->assertRaw("address:
+    $assert_session->responseContains("address:
   country_code: US
   langcode: en
   given_name: John
@@ -103,7 +105,7 @@ address_multiple:
 
     // Check text formatting.
     $this->drupalGet("/admin/structure/webform/manage/test_element_address/submission/$sid/text");
-    $this->assertRaw('address_basic:
+    $assert_session->responseContains('address_basic:
 John Smith
 Google Inc.
 1098 Alta Ave
@@ -125,9 +127,9 @@ address_multiple:
   Mountain View, CA 94043
   United States');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Schema.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $field_storage = FieldStorageConfig::create([
       'entity_type' => 'node',
@@ -153,7 +155,7 @@ address_multiple:
 
     // Check composite elements maxlength against address schema.
     foreach ($schema['columns'] as $column_name => $column) {
-      $this->assertEqual($composite_elements[$column_name]['#maxlength'], $column['length']);
+      $this->assertEquals($composite_elements[$column_name]['#maxlength'], $column['length']);
     }
   }
 

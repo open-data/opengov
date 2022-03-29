@@ -369,9 +369,9 @@ class CommentForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $comment = $this->entity;
-    $entity = $this->entityManager->getTranslationFromContext($comment->getCommentedEntity());
+    $entity = $this->entityRepository->getTranslationFromContext($comment->getCommentedEntity());
     $field_name = $comment->getFieldName();
-    $uri = $entity->toUrl('canonical', ['language' => \Drupal::languageManager()->getCurrentLanguage()]);
+    $uri = $entity->toUrl();
     $logger = $this->logger('comment');
 
     if ($this->currentUser->hasPermission('post comments') && ($this->currentUser->hasPermission('administer comments') || $entity->{$field_name}->status == CommentItemInterface::OPEN)) {

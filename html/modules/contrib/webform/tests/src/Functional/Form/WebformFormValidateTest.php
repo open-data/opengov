@@ -30,13 +30,15 @@ class WebformFormValidateTest extends WebformBrowserTestBase {
    * Tests form (custom) validation.
    */
   public function testValidate() {
+    $assert_session = $this->assertSession();
+
     /* Test form#validate webform handling */
     $webform_validate = Webform::load('test_form_validate');
     $this->postSubmission($webform_validate, []);
-    $this->assertRaw('Custom element is required.');
+    $assert_session->responseContains('Custom element is required.');
 
     $this->postSubmission($webform_validate, ['custom' => 'value']);
-    $this->assertNoRaw('Custom element is required.');
+    $assert_session->responseNotContains('Custom element is required.');
   }
 
 }

@@ -78,7 +78,7 @@ elements: |
           type: _none
     user_preview:
       '#type': webform_computed_token
-      '#title': 'User'
+      '#title': User
       '#title_display': none
       '#ajax': true
       '#hide_empty': true
@@ -88,6 +88,7 @@ elements: |
         <strong>User: Email:</strong> [webform_submission:values:user:entity:mail:clear]<br/>
         <strong>User: URL:</strong> [webform_submission:values:user:entity:url:clear]<br/>
         <strong>User: Created:</strong> [webform_submission:values:user:entity:created:clear]
+        
       '#display_on': form
     user_uid:
       '#type': webform_computed_token
@@ -120,18 +121,19 @@ elements: |
     '#description': |
       Formula: weight (lb) / [height (in)]2 x 703<br/>
       @see <a href="https://www.cdc.gov/nccdphp/dnpao/growthcharts/training/bmiage/page5_2.html">https://www.cdc.gov/nccdphp/dnpao/growthcharts/training/bmiage/page5_2.html</a>
+      
     weight:
       '#type': number
       '#title': Weight
       '#field_suffix': ' pounds'
       '#default_value': 37.25
-      '#step': .25
+      '#step': 0.25
       '#min': 1
     height:
       '#type': webform_height
       '#title': Height
       '#default_value': 41.5
-      '#inches__step': .5
+      '#inches__step': 0.5
     bmi:
       '#type': webform_computed_twig
       '#title': BMI
@@ -166,7 +168,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -187,6 +189,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

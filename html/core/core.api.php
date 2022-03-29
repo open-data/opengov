@@ -64,10 +64,9 @@
  *
  * @section more_info Further information
  *
- * - @link https://api.drupal.org/api/drupal/groups/8 All topics @endlink
  * - @link https://www.drupal.org/project/examples Examples project (sample modules) @endlink
  * - @link https://www.drupal.org/list-changes API change notices @endlink
- * - @link https://www.drupal.org/developing/api/8 Drupal 8 API longer references @endlink
+ * - @link https://www.drupal.org/docs/drupal-apis Drupal API longer references @endlink
  */
 
 /**
@@ -208,7 +207,7 @@
  * information. See the @link info_types Information types topic @endlink for
  * an overview of the different types of information. The sections below have
  * more information about the configuration API; see
- * https://www.drupal.org/developing/api/8/configuration for more details.
+ * https://www.drupal.org/docs/drupal-apis/configuration-api for more details.
  *
  * @section sec_storage Configuration storage
  * In Drupal, there is a concept of the "active" configuration, which is the
@@ -576,9 +575,9 @@
  *
  * Cache contexts are services tagged with 'cache.context', whose classes
  * implement \Drupal\Core\Cache\Context\CacheContextInterface. See
- * https://www.drupal.org/developing/api/8/cache/contexts for more information
- * on cache contexts, including a list of the contexts that exist in Drupal
- * core, and information on how to define your own contexts. See the
+ * https://www.drupal.org/docs/drupal-apis/cache-api/cache-contexts for more
+ * information on cache contexts, including a list of the contexts that exist in
+ * Drupal core, and information on how to define your own contexts. See the
  * @link container Services and the Dependency Injection Container @endlink
  * topic for more information about services.
  *
@@ -1119,6 +1118,17 @@
  *     subdirectory)
  *   - Directory location: yourmodule/tests/src/FunctionalJavascript (or a
  *     subdirectory)
+ * - Build tests:
+ *   - Purpose: Test building processes and their outcomes, such as whether a
+ *     live update process actually works, or whether a Composer project
+ *     template actually builds a working site. Provides a temporary build
+ *     workspace and a PHP-native HTTP server to send requests to the site
+ *     you've built.
+ *   - Base class: \Drupal\BuildTests\Framework\BuildTestBase
+ *   - Namespace: \Drupal\Tests\yourmodule\Build (or a
+ *     subdirectory)
+ *   - Directory location: yourmodule/tests/src/Build (or a
+ *     subdirectory)
  *
  * Some notes about writing PHP test classes:
  * - The class needs a phpDoc comment block with a description and
@@ -1231,10 +1241,10 @@
  *   site; CSS files, which alter the styling applied to the HTML; and
  *   JavaScript, Flash, images, and other files. For more information, see the
  *   @link theme_render Theme system and render API topic @endlink and
- *   https://www.drupal.org/docs/8/theming
+ *   https://www.drupal.org/docs/theming-drupal
  * - Modules: Modules add to or alter the behavior and functionality of Drupal,
  *   by using one or more of the methods listed below. For more information
- *   about creating modules, see https://www.drupal.org/developing/modules/8
+ *   about creating modules, see https://www.drupal.org/docs/creating-custom-modules
  * - Installation profiles: Installation profiles can be used to
  *   create distributions, which are complete specific-purpose packages of
  *   Drupal including additional modules, themes, and data. For more
@@ -1923,6 +1933,7 @@ function hook_cron() {
     }
   }
   $ids = \Drupal::entityQuery('aggregator_feed')
+    ->accessCheck(FALSE)
     ->condition('queued', REQUEST_TIME - (3600 * 6), '<')
     ->execute();
   if ($ids) {
@@ -2594,5 +2605,29 @@ function hook_validation_constraint_alter(array &$definitions) {
  * within contributed and custom code. Reserved attributes include:
  * - uid: The user ID for an authenticated user. The value of this attribute
  *   cannot be modified.
+ *
+ * @section sec_custom_session_bags Custom session bags
+ * Modules can register custom session bags in order to provide type safe
+ * interfaces on module specific session data. A session bag must implement
+ * \Symfony\Component\HttpFoundation\Session\SessionBagInterface. Custom session
+ * bags are registered using a service entry tagged with the session_bag service
+ * tag. Custom session bags can be accessed through the session retrieved from
+ * the request object.
+ *
+ * Example service definition:
+ * @code
+ * session_test.session_bag:
+ *   class: Drupal\session_test\Session\TestSessionBag
+ *   tags:
+ *     - { name: session_bag }
+ * @endcode
+ *
+ * Example of accessing a custom session bag:
+ * @code
+ * $bag = $request->getSession()->getBag(TestSessionBag::BAG_NAME);
+ * $bag->setFlag();
+ * @endcode
+ * Session data must be deleted from custom session bags as soon as it is no
+ * longer needed (see @ref sec_intro above).
  * @}
  */

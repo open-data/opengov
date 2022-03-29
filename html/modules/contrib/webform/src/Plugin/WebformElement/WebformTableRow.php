@@ -37,7 +37,7 @@ class WebformTableRow extends WebformElementBase {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -82,7 +82,7 @@ class WebformTableRow extends WebformElementBase {
     $webform = $webform_submission->getWebform();
     $parent_key = $element['#webform_parent_key'];
     $parent_element = $webform->getElement($parent_key);
-    $parent_format = (isset($parent_element['#format'])) ? $parent_element['#format'] : 'table';
+    $parent_format = $parent_element['#format'] ?? 'table';
 
     // Remove #states.
     unset($element['#states']);
@@ -106,12 +106,14 @@ class WebformTableRow extends WebformElementBase {
           }
 
           $column_element_plugin = $this->elementManager->getElementInstance($column_element);
-          if ($column_element_plugin->isContainer($column_element)) {
+          if (!$column_element_plugin->isInput($column_element)) {
+            // Ensure that table row elements are always displayed by setting
+            // '#display_on' to 'both'.
+            if ($column_element_plugin->hasProperty('display_on')) {
+              $column_element['#display_on'] = 'both';
+            }
             $column_build = $column_element_plugin->buildHtml($column_element, $webform_submission, $options);
             $element[$column_key] = ['data' => $column_build];
-          }
-          elseif (!$column_element_plugin->isInput($column_element)) {
-            $element[$column_key] = ['data' => $column_element];
           }
           else {
             $column_value = $column_element_plugin->format('html', $column_element, $webform_submission, $options);
@@ -275,6 +277,7 @@ class WebformTableRow extends WebformElementBase {
     }
 
     // This is the only way to get the row key for a new element.
+    // phpcs:ignore DrupalPractice.Variables.GetRequestData.SuperglobalAccessedWithVar
     $key = $_POST['key'];
     $parent_key = \Drupal::request()->query->get('parent');
     if (!$form_object->isNew() || !$parent_key) {
@@ -306,9 +309,9 @@ class WebformTableRow extends WebformElementBase {
     return [];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper function.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get the parent table's next row increment.
@@ -358,6 +361,13 @@ class WebformTableRow extends WebformElementBase {
     }
 
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preview() {
+    return [];
   }
 
   /**

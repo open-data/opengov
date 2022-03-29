@@ -3,10 +3,7 @@
 namespace Drupal\webform\Plugin\WebformSourceEntity;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\webform\Plugin\WebformSourceEntityInterface;
+use Drupal\webform\Plugin\WebformSourceEntityBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,43 +15,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   weight = 100
  * )
  */
-class RouteParametersWebformSourceEntity extends PluginBase implements WebformSourceEntityInterface, ContainerFactoryPluginInterface {
+class RouteParametersWebformSourceEntity extends WebformSourceEntityBase {
 
   /**
-   * Current route match service.
+   * The current route match.
    *
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
 
   /**
-   * RouteParametersWebformSourceEntity constructor.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The "current_route_match" service.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, RouteMatchInterface $route_match) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->routeMatch = $route_match;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('current_route_match')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->routeMatch = $container->get('current_route_match');
+    return $instance;
   }
 
   /**

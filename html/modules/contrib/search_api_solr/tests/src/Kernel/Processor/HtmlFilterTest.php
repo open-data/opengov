@@ -31,17 +31,15 @@ class HtmlFilterTest extends ProcessorTestBase {
    * {@inheritdoc}
    */
   public static $modules = [
-    'devel',
     'filter',
     'search_api_solr',
-    'search_api_solr_devel',
     'search_api_solr_test',
   ];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp($processor = NULL) {
+  public function setUp($processor = NULL): void {
     parent::setUp('html_filter');
     $this->enableSolrServer();
 
@@ -59,6 +57,12 @@ class HtmlFilterTest extends ProcessorTestBase {
    * Tests term boosts.
    */
   public function testBoostTerms() {
+    $solr_major_version = $this->server->getBackend()->getSolrConnector()->getSolrMajorVersion();
+    if (version_compare($solr_major_version, '6', '<')) {
+      $this->markTestSkipped('Term boosting requires Solr >= 6.');
+      return;
+    }
+
     $this->assertArrayHasKey('html_filter', $this->index->getProcessors(), 'HTML filter processor is added.');
 
     $this->createNode([
@@ -82,6 +86,7 @@ class HtmlFilterTest extends ProcessorTestBase {
     $query = new Query($this->index);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
     $query->sort('search_api_id');
+    $query->getParseMode()->setConjunction('OR');
     $result = $query->execute();
     $this->assertEquals([
       'entity:node/1:en',
@@ -93,6 +98,7 @@ class HtmlFilterTest extends ProcessorTestBase {
     $query->keys(['beautiful']);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
     $query->sort('search_api_id');
+    $query->getParseMode()->setConjunction('OR');
     $result = $query->execute();
     $this->assertEquals([
       'entity:node/1:en',
@@ -105,6 +111,7 @@ class HtmlFilterTest extends ProcessorTestBase {
     $query->keys(['page']);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
     $query->sort('search_api_id');
+    $query->getParseMode()->setConjunction('OR');
     $result = $query->execute();
     $this->assertEquals([
       'entity:node/2:en',
@@ -129,12 +136,12 @@ class HtmlFilterTest extends ProcessorTestBase {
 
     $this->createNode([
       'type' => 'page',
-      'title' => '<b>More | strange " characters 😀😎👾<b>',
+      'title' => '<b>More| strange " characters 😀😎👾<b>',
     ]);
 
     $this->createNode([
       'type' => 'page',
-      'title' => 'More | strange " characters 😀😎👾',
+      'title' => 'More| strange " characters 😀😎👾',
     ]);
 
     $this->indexItems();
@@ -143,6 +150,7 @@ class HtmlFilterTest extends ProcessorTestBase {
     $query->keys(["d'avion"]);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
     $query->sort('search_api_id');
+    $query->getParseMode()->setConjunction('OR');
     $result = $query->execute();
     $this->assertEquals([
       'entity:node/5:en',
@@ -153,11 +161,44 @@ class HtmlFilterTest extends ProcessorTestBase {
     $query->keys(['😀😎👾']);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
     $query->sort('search_api_id');
+    $query->getParseMode()->setConjunction('OR');
     $result = $query->execute();
     $this->assertEquals([
       'entity:node/7:en',
       'entity:node/6:en',
       'entity:node/8:en',
+    ], array_keys($result->getResultItems()));
+
+    $this->createNode([
+      'type' => 'page',
+      'title' => "<b>VeryLongStingsWithMoreThanOneHoundredCharactersShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing<b>",
+    ]);
+
+    $this->indexItems();
+
+    $query = new Query($this->index);
+    $query->keys(['VeryLongStingsWithMoreThanOneHoundredCharactersShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing']);
+    $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
+    $query->sort('search_api_id');
+    $query->getParseMode()->setConjunction('OR');
+    $result = $query->execute();
+    $this->assertEquals([
+    ], array_keys($result->getResultItems()));
+
+    $this->createNode([
+      'type' => 'page',
+      'title' => "<b>VeryLongStingsWithMoreThanOneHoundredCharactersShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing<b>",
+    ]);
+
+    $this->indexItems();
+
+    $query = new Query($this->index);
+    $query->keys(['VeryLongStingsWithMoreThanOneHoundredCharactersShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing']);
+    $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
+    $query->sort('search_api_id');
+    $query->getParseMode()->setConjunction('OR');
+    $result = $query->execute();
+    $this->assertEquals([
     ], array_keys($result->getResultItems()));
   }
 

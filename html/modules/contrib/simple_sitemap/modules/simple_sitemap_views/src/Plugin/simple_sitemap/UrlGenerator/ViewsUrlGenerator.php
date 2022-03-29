@@ -2,15 +2,17 @@
 
 namespace Drupal\simple_sitemap_views\Plugin\simple_sitemap\UrlGenerator;
 
+use Drupal\simple_sitemap\Exception\SkipElementException;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGeneratorBase;
+use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
+use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\simple_sitemap_views\SimpleSitemapViews;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
-use Drupal\Core\Database\Query\Condition;
-use Drupal\simple_sitemap\Simplesitemap;
-use Drupal\simple_sitemap\EntityHelper;
+use Drupal\Core\Database\Database;
+use Drupal\simple_sitemap\Entity\EntityHelper;
 use Drupal\simple_sitemap\Logger;
 use Drupal\views\Views;
 use Drupal\Core\Url;
@@ -49,15 +51,15 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\simple_sitemap\Simplesitemap $generator
-   *   The simple_sitemap.generator service.
    * @param \Drupal\simple_sitemap\Logger $logger
    *   The simple_sitemap.logger service.
+   * @param \Drupal\simple_sitemap\Settings $settings
+   *   The simple_sitemap.settings service.
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\simple_sitemap\EntityHelper $entity_helper
+   * @param \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper
    *   The simple_sitemap.entity_helper service.
    * @param \Drupal\simple_sitemap_views\SimpleSitemapViews $sitemap_views
    *   Views sitemap data.
@@ -68,8 +70,8 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    Simplesitemap $generator,
     Logger $logger,
+    Settings $settings,
     LanguageManagerInterface $language_manager,
     EntityTypeManagerInterface $entity_type_manager,
     EntityHelper $entity_helper,
@@ -80,8 +82,8 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $generator,
       $logger,
+      $settings,
       $language_manager,
       $entity_type_manager,
       $entity_helper
@@ -93,13 +95,13 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): SimpleSitemapPluginBase {
     return new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('simple_sitemap.generator'),
       $container->get('simple_sitemap.logger'),
+      $container->get('simple_sitemap.settings'),
       $container->get('language_manager'),
       $container->get('entity_type.manager'),
       $container->get('simple_sitemap.entity_helper'),
@@ -111,14 +113,14 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
   /**
    * {@inheritdoc}
    */
-  public function getDataSets() {
+  public function getDataSets(): array {
     $data_sets = [];
 
     // Get data sets.
     foreach ($this->sitemapViews->getIndexableViews() as $view) {
-      $settings = $this->sitemapViews->getSitemapSettings($view);
-      if ($settings['variant'] != $this->sitemapVariant) {
-        // Destroy a view instance.
+      $settings = $this->sitemapViews->getSitemapSettings($view, $this->sitemap->id());
+
+      if (empty($settings)) {
         $view->destroy();
         continue;
       }
@@ -127,21 +129,29 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
         'view_id' => $view->id(),
         'display_id' => $view->current_display,
       ];
+
+      $extender = $this->sitemapViews->getDisplayExtender($view);
+
       // View path without arguments.
-      $data_sets[] = $base_data_set + ['arguments' => NULL];
+      if (!$extender->hasRequiredArguments()) {
+        $data_sets[] = $base_data_set + ['arguments' => NULL];
+      }
 
       // Process indexed arguments.
-      if ($args_ids = $this->sitemapViews->getIndexableArguments($view)) {
+      if ($args_ids = $this->sitemapViews->getIndexableArguments($view, $this->sitemap->id())) {
+        $args_ids = $this->sitemapViews->getArgumentsStringVariations($args_ids);
+
         // Form the condition according to the variants of the
         // indexable arguments.
-        $args_ids = $this->sitemapViews->getArgumentsStringVariations($args_ids);
-        $condition = new Condition('AND');
+        $condition = Database::getConnection()->condition('AND');
         $condition->condition('view_id', $view->id());
         $condition->condition('display_id', $view->current_display);
         $condition->condition('arguments_ids', $args_ids, 'IN');
+
         // Get the arguments values from the index.
         $max_links = is_numeric($settings['max_links']) ? $settings['max_links'] : NULL;
         $indexed_arguments = $this->sitemapViews->getArgumentsFromIndex($condition, $max_links, TRUE);
+
         // Add the arguments values for processing.
         foreach ($indexed_arguments as $index_id => $arguments_info) {
           $data_sets[] = $base_data_set + [
@@ -150,16 +160,18 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
           ];
         }
       }
+
       // Destroy a view instance.
       $view->destroy();
     }
+
     return $data_sets;
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function processDataSet($data_set) {
+  protected function processDataSet($data_set): array {
     // Get information from data set.
     $view_id = $data_set['view_id'];
     $display_id = $data_set['display_id'];
@@ -168,7 +180,7 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
     try {
       // Trying to get an instance of the view.
       $view = Views::getView($view_id);
-      if (empty($view)) {
+      if ($view === NULL) {
         throw new \UnexpectedValueException('Failed to get an instance of the view.');
       }
 
@@ -179,7 +191,7 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
       }
 
       // Trying to get the sitemap settings.
-      $settings = $this->sitemapViews->getSitemapSettings($view);
+      $settings = $this->sitemapViews->getSitemapSettings($view, $this->sitemap->id());
       if (empty($settings)) {
         throw new \UnexpectedValueException('Failed to get the sitemap settings.');
       }
@@ -191,13 +203,16 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
       if (is_array($args)) {
         $params = array_merge([$view_id, $display_id], $args);
         $view_result = call_user_func_array('views_get_view_result', $params);
+
         // Do not include paths on which the view returns an empty result.
         if (empty($view_result)) {
           throw new \UnexpectedValueException('The view returned an empty result.');
         }
+
         // Remove empty arguments from URL.
         $this->cleanRouteParameters($url, $args);
       }
+
       $path = $url->getInternalPath();
       // Destroy a view instance.
       $view->destroy();
@@ -205,17 +220,17 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
     catch (\Exception $e) {
       // Delete records about arguments that are not added to the sitemap.
       if (!empty($data_set['index_id'])) {
-        $condition = new Condition('AND');
+        $condition = Database::getConnection()->condition('AND');
         $condition->condition('id', $data_set['index_id']);
         $this->sitemapViews->removeArgumentsFromIndex($condition);
       }
-      return FALSE;
+      throw new SkipElementException($e->getMessage());
     }
 
     return [
       'url' => $url,
       'lastmod' => NULL,
-      'priority' => isset($settings['priority']) ? $settings['priority'] : NULL,
+      'priority' => $settings['priority'] ?? NULL,
       'changefreq' => !empty($settings['changefreq']) ? $settings['changefreq'] : NULL,
       'images' => [],
       // Additional info useful in hooks.
@@ -241,13 +256,15 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
    * @throws \UnexpectedValueException.
    *   If this is a URI with no corresponding route.
    */
-  protected function cleanRouteParameters(Url $url, array $args) {
+  protected function cleanRouteParameters(Url $url, array $args): void {
     $parameters = $url->getRouteParameters();
+
     // Check that the number of params does not match the number of arguments.
-    if (count($parameters) != count($args)) {
+    if (count($parameters) !== count($args)) {
       $route_name = $url->getRouteName();
       $route = $this->routeProvider->getRouteByName($route_name);
       $variables = $route->compile()->getVariables();
+
       // Remove params that are not present in the arguments.
       foreach ($variables as $variable_name) {
         if (empty($args)) {
@@ -257,6 +274,7 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
           array_shift($args);
         }
       }
+
       // Set new route params.
       $url->setRouteParameters($parameters);
     }

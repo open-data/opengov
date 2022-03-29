@@ -60,6 +60,7 @@ elements: |
         {# data.select_other_01 #}
         {# data.datelist_01 #}
         <pre>{{ webform_debug(data|without('computed_twig_data_01', 'computed_twig_data_ajax_01', 'computed_twig_data_02', 'computed_twig_data_ajax_02', 'computed_twig_data_03', 'computed_twig_data_ajax_03') ) }}</pre>
+        
       '#ajax': true
   page_02:
     '#type': webform_wizard_page
@@ -105,6 +106,7 @@ elements: |
         {# data.select_other_02 #}
         {# data.datelist_02 #}
         <pre>{{ webform_debug(data|without('computed_twig_data_01', 'computed_twig_data_ajax_01', 'computed_twig_data_02', 'computed_twig_data_ajax_02', 'computed_twig_data_03', 'computed_twig_data_ajax_03') ) }}</pre>
+        
       '#ajax': true
   page_03:
     '#type': webform_wizard_page
@@ -141,7 +143,7 @@ elements: |
       '#type': webform_computed_twig
       '#title': computed_twig_data_03
       '#template': '<pre>{{ webform_debug(data|without(''computed_twig_data_01'', ''computed_twig_data_ajax_01'', ''computed_twig_data_02'', ''computed_twig_data_ajax_02'', ''computed_twig_data_03'', ''computed_twig_data_ajax_03'') ) }}</pre>'
-    computed_twig_data_ajax_01:
+    computed_twig_data_ajax_03:
       '#type': webform_computed_twig
       '#title': computed_twig_data_ajax_03
       '#template': |
@@ -150,6 +152,7 @@ elements: |
         {# data.select_other_03 #}
         {# data.datelist_03 #}
         <pre>{{ webform_debug(data|without('computed_twig_data_01', 'computed_twig_data_ajax_01', 'computed_twig_data_02', 'computed_twig_data_ajax_02', 'computed_twig_data_03', 'computed_twig_data_ajax_03') ) }}</pre>
+        
       '#ajax': true
   
 css: ''
@@ -172,7 +175,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -193,6 +196,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

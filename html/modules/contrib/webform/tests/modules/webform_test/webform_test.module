@@ -12,10 +12,7 @@ use Drupal\webform\Utility\WebformElementHelper;
 /**
  * Test element callback that should be ignored.
  *
- * @param array $element
- *   An element.
- *
- * @return array
+ * @param mixed $element
  *   An element.
  */
 function webform_test_ignored_element_callback($element = NULL) {
@@ -31,14 +28,15 @@ function webform_test_ignored_element_callback($element = NULL) {
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Generate elements.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_preprocess_HOOK().
  */
 function webform_test_preprocess_page(&$variables) {
+  // phpcs:ignore
   if (!isset($_GET['generate'])
     && in_array(\Drupal::routeMatch()->getRouteName(), ['entity.webform.canonical', 'entity.webform.edit_form', 'entity.webform.source_form'])
     && _webform_test_load_include(\Drupal::routeMatch()->getRawParameter('webform'))
@@ -82,6 +80,7 @@ function webform_test_preprocess_webform_confirmation(array &$variables) {
 function webform_test_webform_load(array $entities) {
   // If ?generate is passed to the current pages URL the test webform's elements
   // will get rebuilt.
+  // phpcs:ignore
   if (!isset($_GET['generate'])) {
     return;
   }
@@ -121,7 +120,7 @@ function _webform_test_load_include($id) {
     $id = $match[1];
   }
 
-  $include_base_path = drupal_get_path('module', 'webform_test') . '/includes';
+  $include_base_path = __DIR__ . '/includes';
   if (file_exists("$include_base_path/webform_test.$id.inc")) {
     module_load_include('inc', 'webform_test', 'includes/webform_test.' . $id);
     return $id;
@@ -146,6 +145,7 @@ function _webform_test_get_element_preview($type, array $options = []) {
   static $skipped = [
     'webform_example_element',
     'webform_example_composite',
+    'webform_test_offcanvas_width_element',
   ];
 
   // Skip certain elements that should never be included in test forms.
@@ -163,6 +163,12 @@ function _webform_test_get_element_preview($type, array $options = []) {
 
   $element = $webform_element->preview();
   if (empty($element)) {
+    return FALSE;
+  }
+
+  // Skip custom options.
+  // @see \Drupal\webform_options_custom\Entity\WebformOptionsCustom::getPreview
+  if (isset($element['#type']) && $element['#type'] === 'webform_options_custom') {
     return FALSE;
   }
 

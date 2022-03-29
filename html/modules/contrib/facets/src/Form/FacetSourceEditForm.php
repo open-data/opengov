@@ -6,10 +6,8 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\facets\Entity\FacetSource;
 use Drupal\facets\UrlProcessor\UrlProcessorPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Component\Uuid\UuidInterface;
 
 /**
  * Provides a form for editing facet sources.
@@ -27,21 +25,13 @@ class FacetSourceEditForm extends EntityForm {
   protected $urlProcessorPluginManager;
 
   /**
-   * The UUID generator interface.
-   *
-   * @var \Drupal\Component\Uuid\UuidInterface
-   */
-  protected $uuid;
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.facets.url_processor'),
-      $container->get('module_handler'),
-      $container->get('uuid')
+      $container->get('module_handler')
     );
   }
 
@@ -54,42 +44,10 @@ class FacetSourceEditForm extends EntityForm {
    *   The url processor plugin manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   Drupal's module handler.
-   * @param \Drupal\Component\Uuid\UuidInterface $uuid
-   *   Drupal's uuid generator.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, UrlProcessorPluginManager $url_processor_plugin_manager, ModuleHandlerInterface $moduleHandler, UuidInterface $uuid) {
-    $facet_source_storage = $entity_type_manager->getStorage('facets_facet_source');
-
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, UrlProcessorPluginManager $url_processor_plugin_manager, ModuleHandlerInterface $moduleHandler) {
     $this->urlProcessorPluginManager = $url_processor_plugin_manager;
-    $this->uuid = $uuid;
-
-    // Make sure we remove colons from the source id, those are disallowed in
-    // the entity id.
-    $source_id = $this->getRequest()->get('facets_facet_source');
-    $source_id = str_replace(':', '__', $source_id);
-
-    $facet_source = $facet_source_storage->load($source_id);
-
-    if ($facet_source instanceof FacetSource) {
-      $this->setEntity($facet_source);
-    }
-    else {
-      // We didn't have a facet source config entity yet for this facet source
-      // plugin, so we create it on the fly.
-      // Generate and set an uuid for config export and import to work.
-      $facet_source = new FacetSource(
-        [
-          'id' => $source_id,
-          'name' => $this->getRequest()->get('facets_facet_source'),
-          'is_new' => TRUE,
-          'uuid' => $this->uuid->generate(),
-        ],
-        'facets_facet_source'
-      );
-      $facet_source->save();
-      $this->setEntity($facet_source);
-    }
-
+    $this->setEntityTypeManager($entity_type_manager);
     $this->setModuleHandler($moduleHandler);
   }
 
@@ -177,7 +135,7 @@ class FacetSourceEditForm extends EntityForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
     $facet_source = $this->getEntity();
-    \Drupal::messenger()->addMessage($this->t('Facet source %name has been saved.', ['%name' => $facet_source->label()]));
+    $this->messenger()->addMessage($this->t('Facet source %name has been saved.', ['%name' => $facet_source->label()]));
     $form_state->setRedirect('entity.facets_facet.collection');
   }
 

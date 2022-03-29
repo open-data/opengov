@@ -5,9 +5,7 @@ namespace Drupal\webform;
 use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\webform\Form\WebformDialogFormTrait;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformYaml;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -47,35 +45,15 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
   protected $tokenManager;
 
   /**
-   * Constructs a WebformEntityElementsForm.
-   *
-   * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
-   *   The element manager.
-   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
-   *   The webform element manager.
-   * @param \Drupal\webform\WebformEntityElementsValidatorInterface $elements_validator
-   *   Webform element validator.
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   */
-  public function __construct(ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager, WebformEntityElementsValidatorInterface $elements_validator, WebformTokenManagerInterface $token_manager) {
-    $this->elementInfo = $element_info;
-    $this->elementManager = $element_manager;
-    $this->elementsValidator = $elements_validator;
-    $this->tokenManager = $token_manager;
-
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('plugin.manager.element_info'),
-      $container->get('plugin.manager.webform.element'),
-      $container->get('webform.elements_validator'),
-      $container->get('webform.token_manager')
-    );
+    $instance = parent::create($container);
+    $instance->elementInfo = $container->get('plugin.manager.element_info');
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    $instance->elementsValidator = $container->get('webform.elements_validator');
+    $instance->tokenManager = $container->get('webform.token_manager');
+    return $instance;
   }
 
   /**
@@ -182,9 +160,9 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
     $this->messenger()->addStatus($this->t('Webform %label elements saved.', $t_args));
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Webform type prefix add and remove methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get elements without 'webform_' #type prefix.

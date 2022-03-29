@@ -29,9 +29,9 @@ class WebformCardsProgressJavaScriptTest extends WebformWebDriverTestBase {
 
     $webform = Webform::load('test_cards_progress');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Progress (test_cards_progress).
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Get the webform and load card 1.
     $this->drupalGet('/webform/test_cards_progress');
@@ -71,9 +71,9 @@ class WebformCardsProgressJavaScriptTest extends WebformWebDriverTestBase {
     $this->assertElementVisible('#edit-preview-prev');
     $this->assertElementVisible('#edit-submit');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Progress track.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Enable tracking by name.
     $webform->setSetting('wizard_track', 'name')->save();
@@ -110,9 +110,9 @@ class WebformCardsProgressJavaScriptTest extends WebformWebDriverTestBase {
     $page->pressButton('edit-preview-next');
     $this->assertQuery('custom_param=1&page=webform_preview');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Progress confirmation.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check that confirmation is NOT included in progress.
     $this->drupalGet('/webform/test_cards_progress');
@@ -133,9 +133,9 @@ class WebformCardsProgressJavaScriptTest extends WebformWebDriverTestBase {
     $assert_session->pageTextNotContains('Complete');
     $assert_session->pageTextContains('Done');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Progress bar and links (test_cards_progress_links).
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Get the webform and load card 1.
     $this->drupalGet('/webform/test_cards_progress_links');
@@ -199,7 +199,7 @@ class WebformCardsProgressJavaScriptTest extends WebformWebDriverTestBase {
    * @param string $expected_query
    *   The expected query string.
    */
-  protected function assertQuery($expected_query = '') {
+  protected function assertQuery($expected_query = ''): void {
     $actual_query = parse_url($this->getSession()->getCurrentUrl(), PHP_URL_QUERY) ?: '';
     $this->assertEquals($expected_query, $actual_query);
   }

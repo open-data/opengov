@@ -158,19 +158,19 @@ class Element extends DrupalAttributes {
    */
   public function appendProperty($name, $value) {
     $property = &$this->getProperty($name);
-    $element = Element::create($value);
+    $value = $value instanceof Element ? $value->getArray() : $value;
 
     // If property isn't set, just set it.
     if (!isset($property)) {
-      $property = $element->getArray();
+      $property = $value;
       return $this;
     }
 
     if (is_array($property)) {
-      $property[] = $element->getArray();
+      $property[] = Element::create($value)->getArray();
     }
     else {
-      $property = Element::create($property)->renderPlain() . $element->renderPlain();
+      $property .= (string) $value;
     }
 
     return $this;
@@ -535,19 +535,19 @@ class Element extends DrupalAttributes {
    */
   public function prependProperty($name, $value) {
     $property = &$this->getProperty($name);
-    $element = Element::create($value);
+    $value = $value instanceof Element ? $value->getArray() : $value;
 
     // If property isn't set, just set it.
     if (!isset($property)) {
-      $property = $element->getArray();
+      $property = $value;
       return $this;
     }
 
     if (is_array($property)) {
-      array_unshift($property, $element->getArray());
+      array_unshift($property, Element::create($value)->getArray());
     }
     else {
-      $property = $element->renderPlain() . Element::create($property)->renderPlain();
+      $property = (string) $value . (string) $property;
     }
 
     return $this;

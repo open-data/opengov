@@ -19,6 +19,7 @@ libraries.jquery.toggles:
     name: MIT
     url: http://opensource.org/licenses/mit-license.php
     gpl-compatible: true
+  directory: jquery.toggles
   cdn:
     /libraries/jquery.toggles/: https://cdn.jsdelivr.net/gh/simontabor/jquery-toggles@v4.0.0/
   css:

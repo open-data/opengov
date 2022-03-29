@@ -155,7 +155,7 @@ class BlockTest extends BlockTestBase {
         'theme' => $default_theme,
       ]);
       $links = $this->xpath('//a[contains(@href, :href)]', [':href' => $add_url->toString()]);
-      $this->assertEqual(1, count($links), 'Found one matching link.');
+      $this->assertCount(1, $links, 'Found one matching link.');
       $this->assertEqual(t('Place block'), $links[0]->getText(), 'Found the expected link text.');
 
       list($path, $query_string) = explode('?', $links[0]->getAttribute('href'), 2);
@@ -417,7 +417,7 @@ class BlockTest extends BlockTestBase {
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'HIT');
 
     // Place the "Powered by Drupal" block another time; verify a cache miss.
-    $block_2 = $this->drupalPlaceBlock('system_powered_by_block', ['id' => 'powered-2']);
+    $this->drupalPlaceBlock('system_powered_by_block', ['id' => 'powered-2']);
     $this->drupalGet('<front>');
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'MISS');
 

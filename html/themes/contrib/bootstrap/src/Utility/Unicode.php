@@ -82,9 +82,9 @@ class Unicode extends CoreUnicode {
       $callback = implode('::', $callback);
     }
     if ($callback[0] === '\\') {
-      $callback = self::substr($callback, 1);
+      $callback = static::substr($callback, 1);
     }
-    if ($array && self::strpos($callback, '::') !== FALSE) {
+    if ($array && static::strpos($callback, '::') !== FALSE) {
       $callback = explode('::', $callback);
     }
     return $callback;
@@ -186,6 +186,182 @@ class Unicode extends CoreUnicode {
     return array_map(function ($string) use ($delimiter) {
       return str_replace("\\$delimiter", $delimiter, $string);
     }, $parts);
+  }
+
+  /**
+   * Finds the position of the first occurrence of a string in another string.
+   *
+   * @param string $haystack
+   *   The string to search in.
+   * @param string $needle
+   *   The string to find in $haystack.
+   * @param int $offset
+   *   If specified, start the search at this number of characters from the
+   *   beginning (default 0).
+   *
+   * @return int|false
+   *   The position where $needle occurs in $haystack, always relative to the
+   *   beginning (independent of $offset), or FALSE if not found. Note that
+   *   a return value of 0 is not the same as FALSE.
+   *
+   * @deprecated in bootstrap:8.x-3.22 and is removed from bootstrap:5.0.0.
+   *   Use mb_strpos() instead.
+   * @see https://www.drupal.org/project/bootstrap/issues/3096963
+   *
+   * @see https://www.drupal.org/node/2850048
+   */
+  public static function strpos($haystack, $needle, $offset = 0) {
+    @trigger_error('\Drupal\bootstrap\Utility\Unicode::strpos() is deprecated in bootstrap:8.x-3.22 and will be removed before bootstrap:5.0.0. Use mb_strpos() instead. See https://www.drupal.org/project/bootstrap/issues/3096963.', E_USER_DEPRECATED);
+    if (static::getStatus() == static::STATUS_MULTIBYTE) {
+      return mb_strpos($haystack, $needle, $offset);
+    }
+    else {
+      // Remove Unicode continuation characters, to be compatible with
+      // Unicode::strlen() and Unicode::substr().
+      $haystack = preg_replace("/[\x80-\xBF]/", '', $haystack);
+      $needle = preg_replace("/[\x80-\xBF]/", '', $needle);
+      return strpos($haystack, $needle, $offset);
+    }
+  }
+
+  /**
+   * Converts a UTF-8 string to lowercase.
+   *
+   * @param string $text
+   *   The string to run the operation on.
+   *
+   * @return string
+   *   The string in lowercase.
+   *
+   * @deprecated in bootstrap:8.x-3.22 and is removed from bootstrap:5.0.0.
+   *   Use mb_strtolower() instead.
+   * @see https://www.drupal.org/project/bootstrap/issues/3096963
+   *
+   * @see https://www.drupal.org/node/2850048
+   */
+  public static function strtolower($text) {
+    @trigger_error('\Drupal\bootstrap\Utility\Unicode::strtolower() is deprecated in bootstrap:8.x-3.22 and will be removed before bootstrap:5.0.0. Use mb_strtolower() instead. See https://www.drupal.org/project/bootstrap/issues/3096963.', E_USER_DEPRECATED);
+    if (static::getStatus() == static::STATUS_MULTIBYTE) {
+      return mb_strtolower($text);
+    }
+    else {
+      // Use C-locale for ASCII-only lowercase.
+      $text = strtolower($text);
+      // Case flip Latin-1 accented letters.
+      $text = preg_replace_callback('/\xC3[\x80-\x96\x98-\x9E]/', '\Drupal\Component\Utility\Unicode::caseFlip', $text);
+      return $text;
+    }
+  }
+
+  /**
+   * Cuts off a piece of a string based on character indices and counts.
+   *
+   * Follows the same behavior as PHP's own substr() function. Note that for
+   * cutting off a string at a known character/substring location, the usage of
+   * PHP's normal strpos/substr is safe and much faster.
+   *
+   * @param string $text
+   *   The input string.
+   * @param int $start
+   *   The position at which to start reading.
+   * @param int $length
+   *   The number of characters to read.
+   *
+   * @return string
+   *   The shortened string.
+   *
+   * @deprecated in bootstrap:8.x-3.22 and is removed from bootstrap:5.0.0.
+   *   Use mb_substr() instead.
+   * @see https://www.drupal.org/project/bootstrap/issues/3096963
+   *
+   * @see https://www.drupal.org/node/2850048
+   */
+  public static function substr($text, $start, $length = NULL) {
+    @trigger_error('\Drupal\bootstrap\Utility\Unicode::substr() is deprecated in bootstrap:8.x-3.22 and will be removed before bootstrap:5.0.0. Use mb_substr() instead. See https://www.drupal.org/project/bootstrap/issues/3096963.', E_USER_DEPRECATED);
+    if (static::getStatus() == static::STATUS_MULTIBYTE) {
+      return $length === NULL ? mb_substr($text, $start) : mb_substr($text, $start, $length);
+    }
+    else {
+      $strlen = strlen($text);
+      // Find the starting byte offset.
+      $bytes = 0;
+      if ($start > 0) {
+        // Count all the characters except continuation bytes from the start
+        // until we have found $start characters or the end of the string.
+        $bytes = -1; $chars = -1;
+        while ($bytes < $strlen - 1 && $chars < $start) {
+          $bytes++;
+          $c = ord($text[$bytes]);
+          if ($c < 0x80 || $c >= 0xC0) {
+            $chars++;
+          }
+        }
+      }
+      elseif ($start < 0) {
+        // Count all the characters except continuation bytes from the end
+        // until we have found abs($start) characters.
+        $start = abs($start);
+        $bytes = $strlen; $chars = 0;
+        while ($bytes > 0 && $chars < $start) {
+          $bytes--;
+          $c = ord($text[$bytes]);
+          if ($c < 0x80 || $c >= 0xC0) {
+            $chars++;
+          }
+        }
+      }
+      $istart = $bytes;
+
+      // Find the ending byte offset.
+      if ($length === NULL) {
+        $iend = $strlen;
+      }
+      elseif ($length > 0) {
+        // Count all the characters except continuation bytes from the starting
+        // index until we have found $length characters or reached the end of
+        // the string, then backtrace one byte.
+        $iend = $istart - 1;
+        $chars = -1;
+        $last_real = FALSE;
+        while ($iend < $strlen - 1 && $chars < $length) {
+          $iend++;
+          $c = ord($text[$iend]);
+          $last_real = FALSE;
+          if ($c < 0x80 || $c >= 0xC0) {
+            $chars++;
+            $last_real = TRUE;
+          }
+        }
+        // Backtrace one byte if the last character we found was a real
+        // character and we don't need it.
+        if ($last_real && $chars >= $length) {
+          $iend--;
+        }
+      }
+      elseif ($length < 0) {
+        // Count all the characters except continuation bytes from the end
+        // until we have found abs($start) characters, then backtrace one byte.
+        $length = abs($length);
+        $iend = $strlen; $chars = 0;
+        while ($iend > 0 && $chars < $length) {
+          $iend--;
+          $c = ord($text[$iend]);
+          if ($c < 0x80 || $c >= 0xC0) {
+            $chars++;
+          }
+        }
+        // Backtrace one byte if we are not at the beginning of the string.
+        if ($iend > 0) {
+          $iend--;
+        }
+      }
+      else {
+        // $length == 0, return an empty string.
+        return '';
+      }
+
+      return substr($text, $istart, max(0, $iend - $istart + 1));
+    }
   }
 
 }

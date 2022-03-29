@@ -1,6 +1,6 @@
 *.patch
 interdiff-*.txt
-
+*.diff
 
 # Ignore the HTML and reports directory used for generate Webform documentation.
 /html

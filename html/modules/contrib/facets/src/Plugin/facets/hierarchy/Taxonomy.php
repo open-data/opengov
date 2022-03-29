@@ -115,6 +115,48 @@ class Taxonomy extends HierarchyPluginBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getSiblingIds(array $ids, array $activeIds = [], bool $parentSiblings = TRUE) {
+    if (empty($ids)) {
+      return [];
+    }
+
+    $parentIds = [];
+    $topLevelTerms = [];
+
+    foreach ($ids as $id) {
+      if (!$activeIds || in_array($id, $activeIds)) {
+        $currentParentIds = $this->getParentIds($id);
+        if (!$currentParentIds) {
+          if (!$topLevelTerms) {
+            /** @var \Drupal\taxonomy\Entity\Term $term */
+            $term = $this->termStorage->load($id);
+            $topLevelTerms = array_map(function ($term) {
+              return $term->tid;
+            }, $this->termStorage->loadTree($term->bundle(), 0, 1));
+          }
+        }
+        else {
+          $parentIds[] = $currentParentIds;
+        }
+      }
+    }
+
+    $parentIds = array_unique(array_merge([], ...$parentIds));
+    $childIds = array_merge([], ...$this->getChildIds($parentIds));
+
+    return array_diff(
+      array_merge(
+        $childIds,
+        $topLevelTerms,
+        (!$topLevelTerms && $parentSiblings) ? $this->getSiblingIds($ids, $parentIds) : []
+      ),
+      $ids
+    );
+  }
+
+  /**
    * Returns the parent tid for a given tid, or false if no parent exists.
    *
    * @param int $tid

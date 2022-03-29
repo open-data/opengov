@@ -62,6 +62,35 @@ class ViewsBootstrapAccordion extends StylePluginBase {
         '#description' => $this->t('Select the field that will be used as the accordian panel titles.'),
       ];
     }
+    $options_select = array(
+      '0' => t('Collapsed'),
+      '1' => t('Uncollapsed'),
+    );
+    $form['collapse'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Collapse options'),
+    );
+    $form['collapse']['first'] = array(
+      '#type' => 'select',
+      '#title' => t('First element'),
+      '#options' => $options_select,
+      '#default_value' => $this->options['collapse']['first'],
+      '#description' => t('To collapse/uncollapse the first element of the list. If there is only one item, first element settings prevails than the others (middle, last)'),
+    );
+    $form['collapse']['middle'] = array(
+      '#type' => 'select',
+      '#title' => t('Middle elements'),
+      '#options' => $options_select,
+      '#default_value' => $this->options['collapse']['middle'],
+      '#description' => t('To collapse/uncollapse the middle elements of the list.'),
+    );
+    $form['collapse']['last'] = array(
+      '#type' => 'select',
+      '#title' => t('Last element'),
+      '#options' => $options_select,
+      '#default_value' => $this->options['collapse']['last'],
+      '#description' => t('To collapse/uncollapse the last element of the list.'),
+    );
   }
 
 }

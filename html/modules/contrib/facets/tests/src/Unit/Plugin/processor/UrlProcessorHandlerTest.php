@@ -23,7 +23,8 @@ class UrlProcessorHandlerTest extends UnitTestCase {
    * Tests that the processor correctly throws an exception.
    */
   public function testEmptyProcessorConfiguration() {
-    $this->setExpectedException(InvalidProcessorException::class, "The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
+    $this->expectException(InvalidProcessorException::class);
+    $this->expectExceptionMessage("The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
     new UrlProcessorHandler([], 'test', []);
   }
 
@@ -31,7 +32,8 @@ class UrlProcessorHandlerTest extends UnitTestCase {
    * Tests that the processor correctly throws an exception.
    */
   public function testInvalidProcessorConfiguration() {
-    $this->setExpectedException(InvalidProcessorException::class, "The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
+    $this->expectException(InvalidProcessorException::class);
+    $this->expectExceptionMessage("The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
     new UrlProcessorHandler(['facet' => new \stdClass()], 'test', []);
   }
 
@@ -107,7 +109,7 @@ class UrlProcessorHandlerTest extends UnitTestCase {
       ->method('createInstance')
       ->willReturn($url_processor);
 
-    $storage = $this->getMock(EntityStorageInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
     $em = $this->getMockBuilder(EntityTypeManagerInterface::class)
       ->disableOriginalConstructor()
       ->getMock();
@@ -116,7 +118,6 @@ class UrlProcessorHandlerTest extends UnitTestCase {
       ->willReturn($storage);
 
     $container = new ContainerBuilder();
-    $container->set('entity.manager', $em);
     $container->set('entity_type.manager', $em);
     $container->set('plugin.manager.facets.url_processor', $manager);
     \Drupal::setContainer($container);

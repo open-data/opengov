@@ -23,4 +23,3 @@
   });
 
 })(jQuery, Drupal);
-

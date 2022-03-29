@@ -28,10 +28,8 @@
           // the end user.
           var $output = $('<input class="form-color-output ' + $element.attr('class') + ' js-webform-input-mask" data-inputmask-mask="\\#######" />').uniqueId();
           var $label = $element.parent('.js-form-type-color').find('label').clone();
-          $label.attr({
-            for: $output.attr('id'),
-            class: 'visually-hidden'
-          });
+          var id = $output.attr('id');
+          $label.attr({for: id, class: 'visually-hidden'});
           if ($.fn.inputmask) {
             $output.inputmask();
           }

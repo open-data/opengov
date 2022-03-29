@@ -20,41 +20,44 @@ class WebformElementMappingTest extends WebformElementBrowserTestBase {
    * Test mapping element.
    */
   public function testMappingElement() {
+    $assert_session = $this->assertSession();
+
     $this->drupalGet('/webform/test_element_mapping');
 
     // Check default element.
-    $this->assertRaw('<th>Source &rarr;</th>');
-    $this->assertRaw('<th>Destination</th>');
-    $this->assertRaw('<select data-drupal-selector="edit-webform-mapping-one" id="edit-webform-mapping-one" name="webform_mapping[one]" class="form-select"><option value="" selected="selected">- Select -</option><option value="four">Four</option><option value="five">Five</option><option value="six">Six</option></select>');
+    $assert_session->responseContains('<th>Source &rarr;</th>');
+    $assert_session->responseContains('<th>Destination</th>');
+    $assert_session->responseContains('<select data-drupal-selector="edit-webform-mapping-one" id="edit-webform-mapping-one" name="webform_mapping[one]" class="form-select"><option value="" selected="selected">- Select -</option><option value="four">Four</option><option value="five">Five</option><option value="six">Six</option></select>');
 
     // Check source description.
-    $this->assertRaw('<td>One &rarr;<div class="description js-form-wrapper form-wrapper" data-drupal-selector="edit-table-one-source-data-description" id="edit-table-one-source-data-description">This is a description. This is a <a href="https://google.com">link</a></div>');
+    $assert_session->responseContains('<td>One &rarr;<div class="description js-form-wrapper form-wrapper" data-drupal-selector="edit-table-one-source-data-description" id="edit-table-one-source-data-description">This is a description. This is a <a href="https://google.com">link</a></div>');
 
     // Check source help.
-    $this->assertRaw('<td>One<span data-drupal-selector="edit-table-one-source-data-help" class="webform-element-help js-webform-element-help" role="tooltip" tabindex="0" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;One&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is help. This is a &lt;a href=&quot;https://google.com&quot;&gt;link&lt;/a&gt;&lt;/div&gt;"><span aria-hidden="true">?</span></span> &rarr;</td>');
+    $assert_session->responseContains('<td>One<span data-drupal-selector="edit-table-one-source-data-help" class="webform-element-help js-webform-element-help" role="tooltip" tabindex="0" aria-label="One" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;One&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is help. This is a &lt;a href=&quot;https://google.com&quot;&gt;link&lt;/a&gt;&lt;/div&gt;"><span aria-hidden="true">?</span></span> &rarr;</td>');
 
     // Check custom element.
-    $this->assertRaw('<th>{Custom source} &raquo;</th>');
-    $this->assertRaw('<th>{Destination source}</th>');
-    $this->assertRaw('<select data-drupal-selector="edit-webform-mapping-one" id="edit-webform-mapping-one" name="webform_mapping[one]" class="form-select"><option value="" selected="selected">- Select -</option><option value="four">Four</option><option value="five">Five</option><option value="six">Six</option></select>');
+    $assert_session->responseContains('<th>{Custom source} &raquo;</th>');
+    $assert_session->responseContains('<th>{Destination source}</th>');
+    $assert_session->responseContains('<select data-drupal-selector="edit-webform-mapping-one" id="edit-webform-mapping-one" name="webform_mapping[one]" class="form-select"><option value="" selected="selected">- Select -</option><option value="four">Four</option><option value="five">Five</option><option value="six">Six</option></select>');
 
     // Check custom select other element type.
-    $this->assertRaw('<input data-drupal-selector="edit-webform-mapping-select-other-one-other" type="text" id="edit-webform-mapping-select-other-one-other" name="webform_mapping_select_other[one][other]" value="" size="60" maxlength="255" placeholder="Enter other…" class="form-text" />');
+    $assert_session->responseContains('<input data-drupal-selector="edit-webform-mapping-select-other-one-other" type="text" id="edit-webform-mapping-select-other-one-other" name="webform_mapping_select_other[one][other]" value="" size="60" maxlength="255" placeholder="Enter other…" class="form-text" />');
 
     // Check custom textfield #size property.
-    $this->assertRaw('<input data-drupal-selector="edit-webform-mapping-textfield-one" type="text" id="edit-webform-mapping-textfield-one" name="webform_mapping_textfield[one]" value="" size="10" maxlength="128" class="form-text" />');
+    $assert_session->responseContains('<input data-drupal-selector="edit-webform-mapping-textfield-one" type="text" id="edit-webform-mapping-textfield-one" name="webform_mapping_textfield[one]" value="" size="10" maxlength="128" class="form-text" />');
 
     // Check required.
-    $this->drupalPostForm('/webform/test_element_mapping', [], 'Submit');
-    $this->assertRaw('webform_mapping_required field is required.');
-    $this->assertRaw('One field is required.');
-    $this->assertRaw('Two field is required.');
-    $this->assertRaw('Three field is required.');
+    $this->drupalGet('/webform/test_element_mapping');
+    $this->submitForm([], 'Submit');
+    $assert_session->responseContains('webform_mapping_required field is required.');
+    $assert_session->responseContains('One field is required.');
+    $assert_session->responseContains('Two field is required.');
+    $assert_session->responseContains('Three field is required.');
 
     // Check that required all element does not display error since all the
     // destination elements are required.
     // @see \Drupal\webform\Element\WebformMapping::validateWebformMapping
-    $this->assertNoRaw('webform_mapping_required_all field is required.');
+    $assert_session->responseNotContains('webform_mapping_required_all field is required.');
 
     // Check processing.
     $edit = [
@@ -86,14 +89,16 @@ class WebformElementMappingTest extends WebformElementBrowserTestBase {
     ];
 
     // Check preview.
-    $this->drupalPostForm('/webform/test_element_mapping', $edit, 'Preview');
+    $this->drupalGet('/webform/test_element_mapping');
+    $this->submitForm($edit, 'Preview');
 
     // Check that source description is not displayed.
-    $this->assertRaw('<li>Two &rarr; Five</li>');
+    $assert_session->responseContains('<li>Two &rarr; Five</li>');
 
     // Check submitted values.
-    $this->drupalPostForm('/webform/test_element_mapping', $edit, 'Submit');
-    $this->assertRaw("webform_mapping:
+    $this->drupalGet('/webform/test_element_mapping');
+    $this->submitForm($edit, 'Submit');
+    $assert_session->responseContains("webform_mapping:
   one: four
   three: six
 webform_mapping_description:

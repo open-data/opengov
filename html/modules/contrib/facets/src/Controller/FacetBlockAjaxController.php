@@ -118,20 +118,20 @@ class FacetBlockAjaxController extends ControllerBase {
     $path = $request->request->get('facet_link');
     $facets_blocks = $request->request->get('facets_blocks');
 
-    // Make sure we are not updating blocks multiple times.
-    $facets_blocks = array_unique($facets_blocks);
-
     if (empty($path) || empty($facets_blocks)) {
       throw new NotFoundHttpException('No facet link or facet blocks found.');
     }
 
-    $this->currentRouteMatch->resetRouteMatch();
+    // Make sure we are not updating blocks multiple times.
+    $facets_blocks = array_unique($facets_blocks);
+
     $new_request = Request::create($path);
     $request_stack = new RequestStack();
     $processed = $this->pathProcessor->processInbound($path, $new_request);
 
     $this->currentPath->setPath($processed);
     $request->attributes->add($this->router->matchRequest($new_request));
+    $this->currentRouteMatch->resetRouteMatch();
     $request_stack->push($new_request);
 
     $container = \Drupal::getContainer();

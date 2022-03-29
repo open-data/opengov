@@ -29,7 +29,7 @@ class WebformThirdPartySettingsManager implements WebformThirdPartySettingsManag
   protected $moduleHandler;
 
   /**
-   * The path validator.
+   * The path validator service.
    *
    * @var \Drupal\Core\Path\PathValidatorInterface
    */
@@ -50,14 +50,14 @@ class WebformThirdPartySettingsManager implements WebformThirdPartySettingsManag
   protected $config;
 
   /**
-   * Constructs a WebformThirdPartySettingsManager.
+   * Constructs a WebformThirdPartySettingsManager object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration object factory.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler class to use for loading includes.
    * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
-   *   The path validator.
+   *   The path validator service.
    * @param \Drupal\webform\WebformAddonsManagerInterface $addons_manager
    *   The webform add-ons manager.
    */
@@ -109,7 +109,7 @@ class WebformThirdPartySettingsManager implements WebformThirdPartySettingsManag
    */
   public function getThirdPartySetting($module, $key, $default = NULL) {
     $value = $this->config->get("third_party_settings.$module.$key");
-    return (isset($value)) ? $value : $default;
+    return $value ?? $default;
   }
 
   /**

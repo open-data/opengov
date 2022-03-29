@@ -58,11 +58,11 @@
         // @see http://stackoverflow.com/questions/16702398/convert-a-php-date-format-to-a-jqueryui-datepicker-date-format
         // @see http://php.net/manual/en/function.date.php
         options.dateFormat = dateFormat
-        // Year.
+          // Year.
           .replace('Y', 'yy') // A full numeric representation of a year, 4 digits (1999 or 2003)
           .replace('y', 'y') // A two digit representation of a year (99 or 03)
           // Month.
-          .replace('F', 'MM') // A full textual representation of a month, such as January or March	(January through December)
+          .replace('F', 'MM') // A full textual representation of a month, such as January or March (January through December)
           .replace('m', 'mm') // Numeric representation of a month, with leading zeros (01 through 12)
           .replace('M', 'M') // A short textual representation of a month, three letters (Jan through Dec)
           .replace('n', 'm') // Numeric representation of a month, without leading zeros (1 through 12)

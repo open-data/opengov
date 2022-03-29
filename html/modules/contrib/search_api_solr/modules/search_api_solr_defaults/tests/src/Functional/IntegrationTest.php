@@ -4,6 +4,8 @@ namespace Drupal\Tests\search_api_solr_defaults\Functional;
 
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api\IndexInterface;
+use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\Tests\BrowserTestBase;
 
@@ -62,25 +64,27 @@ class IntegrationTest extends BrowserTestBase {
     $edit_enable = [
       'modules[search_api_solr_defaults][enable]' => TRUE,
     ];
-    $this->drupalPostForm('admin/modules', $edit_enable, 'Install');
+    $this->drupalGet('admin/modules');
+    $this->submitForm($edit_enable, 'Install');
 
     $this->assertSession()->responseContains('Some required modules must be enabled');
 
-    $this->drupalPostForm(NULL, [], 'Continue');
+    $this->submitForm([], 'Continue');
 
     $this->assertSession()->responseContains('modules have been enabled');
 
     $this->rebuildContainer();
     $this->resetAll();
 
-    $this->drupalPostForm('admin/config/search/search-api/server/default_solr_server/edit', [], 'Save');
+    $this->drupalGet('admin/config/search/search-api/server/default_solr_server/edit');
+    $this->submitForm([], 'Save');
     $this->assertSession()->pageTextContains('The server was successfully saved.');
 
     $server = Server::load('default_solr_server');
-    $this->assertTrue($server, 'Server can be loaded');
+    $this->assertInstanceOf(ServerInterface::class, $server, 'Server can be loaded');
 
     $index = Index::load('default_solr_index');
-    $this->assertTrue($index, 'Index can be loaded');
+    $this->assertInstanceOf(IndexInterface::class, $index, 'Index can be loaded');
 
     $this->drupalLogin($this->authenticatedUser);
     $this->drupalGet('solr-search/content');
@@ -92,7 +96,8 @@ class IntegrationTest extends BrowserTestBase {
       'title[0][value]' => $title,
       'body[0][value]' => 'This is test content for the Search API to index.',
     ];
-    $this->drupalPostForm('node/add/article', $edit, 'Save');
+    $this->drupalGet('node/add/article');
+    $this->submitForm($edit, 'Save');
 
     $this->ensureCommit($index);
 
@@ -113,7 +118,8 @@ class IntegrationTest extends BrowserTestBase {
     $edit_disable = [
       'uninstall[search_api_solr_defaults]' => TRUE,
     ];
-    $this->drupalPostForm('admin/modules/uninstall', $edit_disable, 'Uninstall');
+    $this->drupalGet('admin/modules/uninstall');
+    $this->submitForm($edit_disable, 'Uninstall');
     $this->submitForm([], 'Uninstall');
     $this->rebuildContainer();
     $this->assertFalse($this->container->get('module_handler')->moduleExists('search_api_solr_defaults'), 'Solr Search Defaults module uninstalled.');
@@ -141,7 +147,8 @@ class IntegrationTest extends BrowserTestBase {
 
     // Enable the module again. This should fail because the either the index
     // or the server or the view was found.
-    $this->drupalPostForm('admin/modules', $edit_enable, 'Install');
+    $this->drupalGet('admin/modules');
+    $this->submitForm($edit_enable, 'Install');
     $this->assertSession()->pageTextContains('It looks like the default setup provided by this module already exists on your site. Cannot re-install module.');
 
     // Delete all the entities that we would fail on if they exist.
@@ -173,7 +180,8 @@ class IntegrationTest extends BrowserTestBase {
 
     // Try to install search_api_solr_defaults module and test if it failed
     // because there was no content type "article".
-    $this->drupalPostForm('admin/modules', $edit_enable, 'Install');
+    $this->drupalGet('admin/modules');
+    $this->submitForm($edit_enable, 'Install');
     $success_text = t('Content type @content_type not found. Solr Search Defaults module could not be installed.', ['@content_type' => 'article']);
     $this->assertSession()->pageTextContains($success_text);
   }

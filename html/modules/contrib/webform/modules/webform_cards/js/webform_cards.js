@@ -81,10 +81,12 @@
         if ($invalidCards.length) {
           // Hide progress.
           $form.find('.webform-progress').hide();
+          // Hide next and previous and only show the submit button.
+          $previousButton.hide();
+          $nextButton.hide();
           // Show invalid cards and shake'em.
-          $invalidCards
-            .addClass('webform-card--error')
-            .effect('shake', {distance: 10});
+          $invalidCards.addClass('webform-card--error');
+          shake($invalidCards);
           return;
         }
 
@@ -321,7 +323,7 @@
             var $cardStep = $progress.find(cardAttributeName);
 
             // Set card and page step.
-            $cardStep.find('[data-webform-progress-step]').html(card.step);
+            $cardStep.find('[data-webform-progress-step]').attr('data-text', card.step);
             if (card.type === 'page') {
               continue;
             }
@@ -664,7 +666,7 @@
             validator.focusInvalid();
             // Shake the invalid card.
             var $activeCard = $allCards.filter('.webform-card--active');
-            $activeCard.effect('shake', {distance: 10});
+            shake($activeCard);
           }
           else {
             // Get next visible card (not "display: none").
@@ -805,6 +807,27 @@
           var $firstInput = $activeCard.find(':input:visible').first();
           if (!inputHasValue($firstInput)) {
             $firstInput.trigger('focus');
+          }
+        }
+
+        /**
+         * Shake an element.
+         *
+         * @param {jQuery} $element
+         *   A jQuery object containing an element to shake.
+         *
+         * @see https://stackoverflow.com/questions/4399005/implementing-jquerys-shake-effect-with-animate
+         */
+        function shake($element) {
+          var intShakes = 3;
+          var intDistance = 20;
+          var intDuration = 450;
+          $element.css('position', 'relative');
+          for (var x = 1; x <= intShakes; x++) {
+            $element
+              .animate({left: (intDistance * -1)}, ((intDuration / intShakes) / 4))
+              .animate({left: intDistance}, ((intDuration / intShakes) / 2))
+              .animate({left: 0}, ((intDuration / intShakes) / 4));
           }
         }
 

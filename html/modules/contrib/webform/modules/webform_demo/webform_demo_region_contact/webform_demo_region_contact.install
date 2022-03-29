@@ -141,6 +141,7 @@ function webform_demo_region_contact_install() {
 function webform_demo_region_contact_uninstall() {
   // Delete all 'webform:demo_region_contact' nodes.
   $entity_ids = \Drupal::entityQuery('node')
+    ->accessCheck(TRUE)
     ->condition('type', 'webform_demo_region')
     ->condition('webform.target_id', 'demo_region_contact')
     ->execute();

@@ -5,6 +5,7 @@ namespace Drupal\Tests\update\Functional;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\ProjectInfo;
+use Drupal\update\UpdateManagerInterface;
 
 /**
  * Tests how the Update Manager module handles contributed modules and themes in
@@ -506,7 +507,10 @@ class UpdateContribTest extends UpdateTestBase {
    */
   public function testHookUpdateStatusAlter() {
     $update_test_config = $this->config('update_test.settings');
-    $update_admin_user = $this->drupalCreateUser(['administer site configuration', 'administer software updates']);
+    $update_admin_user = $this->drupalCreateUser([
+      'administer site configuration',
+      'administer software updates',
+    ]);
     $this->drupalLogin($update_admin_user);
 
     $system_info = [
@@ -522,7 +526,7 @@ class UpdateContribTest extends UpdateTestBase {
     $update_test_config->set('system_info', $system_info)->save();
     $update_status = [
       'aaa_update_test' => [
-        'status' => UPDATE_NOT_SECURE,
+        'status' => UpdateManagerInterface::NOT_SECURE,
       ],
     ];
     $update_test_config->set('update_status', $update_status)->save();
@@ -856,7 +860,7 @@ class UpdateContribTest extends UpdateTestBase {
     $update_element = $this->findUpdateElementByLabel($expected_release_title);
     $this->assertTrue($update_element->hasLink($version));
     $compatibility_details = $update_element->find('css', '.project-update__compatibility-details details');
-    $this->assertContains("Requires Drupal core: $expected_range", $compatibility_details->getText());
+    $this->assertStringContainsString("Requires Drupal core: $expected_range", $compatibility_details->getText());
     $details_summary_element = $compatibility_details->find('css', 'summary');
     if ($is_compatible) {
       $download_version = str_replace('.', '-', $version);

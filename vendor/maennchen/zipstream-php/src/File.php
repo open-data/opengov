@@ -117,6 +117,7 @@ class File
 
             $stream = new DeflateStream(fopen($path, 'rb'));
             $this->processStream($stream);
+            $stream->close();
         }
     }
 
@@ -303,21 +304,17 @@ class File
     {
 
         if ($this->bits & self::BIT_ZERO_HEADER) {
+            // compressed and uncompressed size
+            $sizeFormat = 'V';
+            if ($this->zip->opt->isEnableZip64()) {
+                $sizeFormat = 'P';
+            }
             $fields = [
                 ['V', ZipStream::DATA_DESCRIPTOR_SIGNATURE],
                 ['V', $this->crc],              // CRC32
-                ['V', $this->zlen],             // Length of compressed data
-                ['V', $this->len],              // Length of original data
+                [$sizeFormat, $this->zlen],     // Length of compressed data
+                [$sizeFormat, $this->len],      // Length of original data
             ];
-
-            if ($this->zip->opt->isEnableZip64()) {
-                $fields = [
-                    ['V', ZipStream::DATA_DESCRIPTOR_SIGNATURE],
-                    ['V', $this->crc],              // CRC32
-                    ['P', $this->zlen],             // Length of compressed data
-                    ['P', $this->len],              // Length of original data
-                ];
-            }
 
             $footer = ZipStream::packFields($fields);
             $this->zip->send($footer);

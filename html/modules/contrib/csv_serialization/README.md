@@ -15,9 +15,9 @@ API. This enables the CSV format to be used for data input and output in various
 circumstances.
 
  * For a full description of the module visit:
-   https://www.drupal.org/project/csv_serialization
+   <https://www.drupal.org/project/csv_serialization>
  * To submit bug reports and feature suggestions, or to track changes visit:
-   https://www.drupal.org/project/issues/csv_serialization
+   <https://www.drupal.org/project/issues/csv_serialization>
 
 Notes about the CSV encoder:
 
@@ -30,12 +30,10 @@ For these reasons, the CSV format is not well-suited for encoding all data
 structures--only data with a specific structure. The provided CSV encoder
 does not support data structures that do not meet these limitations.
 
-
 Requirements
 ------------
 
 You should [use Composer to manage your Drupal site dependencies](https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies#managing-contributed). This may require several modifications to your application's root composer.json. __You must modify your composer.json in accordance with the linked documentation before following the installation instructions__. Please [read the documentation](https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies#managing-contributed) if you are not familiar with the specifics of managing a Drupal site with Composer.
-
 
 Installation
 ------------
@@ -55,11 +53,11 @@ Configuration
 8. Verify that content exists which should be displayed in the view.
 9. Save the view.
 
-Visit the path that you set for the view
+Visit the path that you set for the view and add this additional query string:
+"?_format=csv".
 A CSV file should be automatically downloaded when you visit the URL
-
 
 Maintainers
 -----------
 
- * Matthew Grasmick (grasmash) - https://www.drupal.org/u/grasmash
+ * Matthew Grasmick (grasmash) - <https://www.drupal.org/u/grasmash>

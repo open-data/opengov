@@ -22,6 +22,8 @@ class WebformUiElementActionsTest extends WebformBrowserTestBase {
    * Tests actions element.
    */
   public function testActionsElements() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     $values = ['id' => 'test'];
@@ -35,7 +37,7 @@ class WebformUiElementActionsTest extends WebformBrowserTestBase {
 
     // Check that submit buttons are customizable.
     $this->drupalGet('/admin/structure/webform/manage/test');
-    $this->assertLink('Customize');
+    $assert_session->linkExists('Customize');
 
     // Disable actions element.
     \Drupal::configFactory()->getEditable('webform.settings')
@@ -44,7 +46,7 @@ class WebformUiElementActionsTest extends WebformBrowserTestBase {
 
     // Check that submit buttons are not customizable.
     $this->drupalGet('/admin/structure/webform/manage/test');
-    $this->assertNoLink('Customize');
+    $assert_session->linkNotExists('Customize');
   }
 
 }

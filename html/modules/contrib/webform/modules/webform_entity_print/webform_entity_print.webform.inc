@@ -81,8 +81,8 @@ function _webform_entity_print_form(array &$element, array $template_settings, a
   foreach ($export_types as $export_type => $definition) {
     $t_args = ['@label' => $definition['label']];
     $defaults = ['enabled' => FALSE, 'link_text' => '', 'link_attributes' => []];
-    $default_settings = (isset($default_export_type_settings[$export_type])) ? $default_export_type_settings[$export_type] : $defaults;
-    $settings = (isset($export_type_settings[$export_type])) ? $export_type_settings[$export_type] : [];
+    $default_settings = $default_export_type_settings[$export_type] ?? $defaults;
+    $settings = $export_type_settings[$export_type] ?? [];
     $settings += $defaults;
     $states_trigger = '.js-webform_entity_print-' . $export_type;
     $element['webform_entity_print']['export_types'][$export_type] = [

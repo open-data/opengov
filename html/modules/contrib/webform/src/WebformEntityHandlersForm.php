@@ -9,7 +9,6 @@ use Drupal\Core\Url;
 use Drupal\webform\Ajax\WebformRefreshCommand;
 use Drupal\webform\Form\WebformEntityAjaxFormTrait;
 use Drupal\webform\Plugin\WebformHandlerInterface;
-use Drupal\webform\Plugin\WebformHandlerManagerInterface;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -37,22 +36,12 @@ class WebformEntityHandlersForm extends EntityForm {
   protected $handlerManager;
 
   /**
-   * Constructs a WebformEntityHandlersForm.
-   *
-   * @param \Drupal\webform\Plugin\WebformHandlerManagerInterface $handler_manager
-   *   The webform handler manager.
-   */
-  public function __construct(WebformHandlerManagerInterface $handler_manager) {
-    $this->handlerManager = $handler_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('plugin.manager.webform.handler')
-    );
+    $instance = parent::create($container);
+    $instance->handlerManager = $container->get('plugin.manager.webform.handler');
+    return $instance;
   }
 
   /**

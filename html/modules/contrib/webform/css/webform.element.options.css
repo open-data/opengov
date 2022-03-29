@@ -18,8 +18,6 @@
     display: block;
     max-width: 900px;
     margin-top: 0.4em;
-    -moz-column-count: 2;
-    -webkit-column-count: 2;
     column-count: 2;
   }
 
@@ -27,8 +25,6 @@
     display: block;
     max-width: 900px;
     margin-top: 0.4em;
-    -moz-column-count: 3;
-    -webkit-column-count: 3;
     column-count: 3;
   }
 
@@ -44,6 +40,7 @@
  */
 .webform-options-display-buttons,
 .form-composite.webform-fieldset--title-inline .fieldset-wrapper > div.webform-options-display-buttons {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   margin: 0 -5px;

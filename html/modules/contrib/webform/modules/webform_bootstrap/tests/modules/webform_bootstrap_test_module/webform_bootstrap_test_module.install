@@ -98,7 +98,7 @@ btn-lg';
  */
 function webform_bootstrap_test_module_uninstall() {
   // Restore default container and button classes.
-  $default_config = Yaml::decode(file_get_contents(drupal_get_path('module', 'webform') . '/config/install/webform.settings.yml'));
+  $default_config = Yaml::decode(file_get_contents(__DIR__ . '/../../../../../config/install/webform.settings.yml'));
   \Drupal::configFactory()->getEditable('webform.settings')
     ->set('settings.form_classes', $default_config['settings']['settings']['form_classes'])
     ->set('settings.button_classes', $default_config['settings']['button_classes'])

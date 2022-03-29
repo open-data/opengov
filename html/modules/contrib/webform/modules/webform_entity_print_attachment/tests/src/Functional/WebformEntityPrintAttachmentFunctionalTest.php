@@ -25,7 +25,7 @@ class WebformEntityPrintAttachmentFunctionalTest extends WebformEntityPrintFunct
 
     $this->drupalLogin($this->rootUser);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check that the PDF attachment is added to the sent email.
     $this->postSubmission($webform);

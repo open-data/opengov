@@ -150,13 +150,25 @@ class WebformMessage extends RenderElement {
       ],
     ];
 
+    // Attach message styles and JavaScript.
     $element['#attached']['library'][] = 'webform/webform.element.message';
+
+    // Attach info message styles.
+    // Gin theme declares the message info style, which is not included in core.
+    /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
+    $theme_manager = \Drupal::service('webform.theme_manager');
+    $is_gin_theme = $theme_manager->isActiveTheme('gin');
+    $is_olivero_theme = $theme_manager->isActiveTheme('olivero');
+    if ($message_type === 'info' && !$is_gin_theme && !$is_olivero_theme) {
+      $element['#attached']['library'][] = 'webform/webform.element.message.info';
+    }
+
     return $element;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Manage closed functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Is message closed via User Data, State API, or Custom.

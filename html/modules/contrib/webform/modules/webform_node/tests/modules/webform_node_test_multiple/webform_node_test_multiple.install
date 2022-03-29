@@ -34,6 +34,7 @@ function webform_node_test_multiple_install() {
 function webform_node_test_multiple_uninstall() {
   $entity_ids = \Drupal::entityQuery('node')
     ->condition('field_webform_test_multiple_a.target_id', 'webform_node_test_multiple_a')
+    ->accessCheck(TRUE)
     ->execute();
   if ($entity_ids) {
     /** @var \Drupal\node\Entity\Node[] $nodes */

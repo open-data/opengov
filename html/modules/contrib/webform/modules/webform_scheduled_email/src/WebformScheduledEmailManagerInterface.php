@@ -10,11 +10,11 @@ use Drupal\webform\WebformSubmissionInterface;
  */
 interface WebformScheduledEmailManagerInterface {
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Submission scheduling state constants.
-  /****************************************************************************/
+  /* ************************************************************************ */
   // These constants are used the webform_scheduled_email.state column.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Denote submission to be scheduled. (state = 'schedule' AND send IS NULL)
@@ -37,12 +37,12 @@ interface WebformScheduledEmailManagerInterface {
    */
   const SUBMISSION_UNSCHEDULE = 'unschedule';
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Submission scheduling state constants.
-  /****************************************************************************/
+  /* ************************************************************************ */
   // These constants are used build 'webform_scheduled_email' queries.
   // @see \Drupal\webform_scheduled_email\WebformScheduledEmailManager::addQueryConditions
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Denote submission to be sent. (state = 'send' AND send IS NOT NULL)
@@ -79,9 +79,9 @@ interface WebformScheduledEmailManagerInterface {
    */
   const SUBMISSION_TOTAL = 'total';
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Email tracking constants.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Denote email being scheduled.
@@ -139,9 +139,9 @@ interface WebformScheduledEmailManagerInterface {
    */
   const EMAIL_NOT_SENT = 'not_sent';
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Scheduled message functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get scheduled email date type (date or datetime).
@@ -196,7 +196,7 @@ interface WebformScheduledEmailManagerInterface {
    * @param string $handler_id
    *   The webform handler ID.
    *
-   * @return \stdClass|null
+   * @return object|null
    *   The scheduled email record or NULL
    */
   public function load(WebformSubmissionInterface $webform_submission, $handler_id);
@@ -215,9 +215,9 @@ interface WebformScheduledEmailManagerInterface {
    */
   public function getSendDate(WebformSubmissionInterface $webform_submission, $handler_id);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // State/actions functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Scheduled an email to be send at a later date.
@@ -258,12 +258,14 @@ interface WebformScheduledEmailManagerInterface {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   A webform, webform submission, or source entity.
+   * @param string|null $handler_id
+   *   The webform handler ID.
    */
-  public function delete(EntityInterface $entity);
+  public function delete(EntityInterface $entity, $handler_id = NULL);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Queuing/sending functions (aka the tumbleweed).
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Cron task for scheduling and sending emails.
@@ -291,9 +293,9 @@ interface WebformScheduledEmailManagerInterface {
    */
   public function cron(EntityInterface $entity = NULL, $handler_id = NULL, $schedule_limit = 1000, $send_limit = NULL);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Statistic/tracking functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get all the handler's statistics.

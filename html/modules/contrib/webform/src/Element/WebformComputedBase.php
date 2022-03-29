@@ -8,6 +8,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\Template\Attribute;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\Utility\WebformHtmlHelper;
 use Drupal\webform\Utility\WebformXss;
 use Drupal\webform\WebformSubmissionForm;
@@ -49,16 +51,6 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
 
   /**
    * Processes a Webform computed token element.
-   *
-   * @param array $element
-   *   The element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   * @param array $complete_form
-   *   The complete form structure.
-   *
-   * @return array
-   *   The processed element.
    */
   public static function processWebformComputed(&$element, FormStateInterface $form_state, &$complete_form) {
     $webform_submission = static::getWebformSubmission($element, $form_state, $complete_form);
@@ -75,16 +67,23 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
     }
 
     if (!empty($element['#states'])) {
-      webform_process_states($element, '#wrapper_attributes');
+      if (!empty($element['#ajax'])) {
+        // The element's #states must be place outside the
+        // computed ajax wrapper.
+        WebformElementHelper::fixStatesWrapper($element);
+      }
+      else {
+        WebformFormHelper::processStates($element, '#wrapper_attributes');
+      }
     }
 
     // Add validate callback.
     $element += ['#element_validate' => []];
     array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformComputed']);
 
-    /**************************************************************************/
-    // Ajax support
-    /**************************************************************************/
+    /* ********************************************************************** */
+    // Ajax support.
+    /* ********************************************************************** */
 
     // Enabled Ajax support only for computed elements associated with a
     // webform submission form.
@@ -101,10 +100,12 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
       // Wrapping the computed element is two div tags.
       // div.js-webform-computed is used to initialize the Ajax updates.
       // div#wrapper_id is used to display response from the Ajax updates.
+      $element += ['#prefix' => '', '#suffix' => ''];
+
       $element['#wrapper_id'] = $wrapper_id;
-      $element['#prefix'] = '<div class="js-webform-computed" data-webform-element-keys="' . implode(',', $element_keys) . '">' .
+      $element['#prefix'] .= '<div class="js-webform-computed" data-webform-element-keys="' . implode(',', $element_keys) . '">' .
         '<div class="js-webform-computed-wrapper" id="' . $wrapper_id . '">';
-      $element['#suffix'] = '</div></div>';
+      $element['#suffix'] = '</div></div>' . $element['#suffix'];
 
       // Add hidden update button.
       $element['update'] = [
@@ -161,9 +162,9 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Form/Ajax callbacks.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Set computed element's value.
@@ -284,9 +285,9 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
     return $element;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Form/Ajax helpers and callbacks.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get an element's value mode/type.

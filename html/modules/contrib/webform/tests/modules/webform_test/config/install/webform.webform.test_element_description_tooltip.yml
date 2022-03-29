@@ -13,7 +13,7 @@ template: false
 archive: false
 id: test_element_description_tooltip
 title: 'Test: Element: Description tooltip'
-description: 'Test element eescription tooltip.'
+description: 'Test element description tooltip.'
 category: 'Test: Element'
 elements: |
   basic_elements:
@@ -76,6 +76,11 @@ elements: |
       '#title': 'Email multiple'
       '#description': 'This is a description for the ''webform_email_multiple'' element.'
       '#description_display': tooltip
+    webform_height:
+      '#type': webform_height
+      '#title': 'Height (feet/inches)'
+      '#description': 'This is a description for the ''webform_height'' element.'
+      '#description_display': tooltip
     webform_mapping:
       '#type': webform_mapping
       '#title': Mapping
@@ -117,6 +122,18 @@ elements: |
       '#type': webform_rating
       '#title': Rating
       '#description': 'This is a description for the ''webform_rating'' element.'
+      '#description_display': tooltip
+    webform_same:
+      '#type': webform_same
+      '#title': 'Billing address is the same as the shipping address'
+      '#description': 'This is a description for the ''webform_same'' element.'
+      '#description_display': tooltip
+    webform_scale:
+      '#type': webform_scale
+      '#title': Scale
+      '#min': 1
+      '#max': 5
+      '#description': 'This is a description for the ''webform_scale'' element.'
       '#description_display': tooltip
     search:
       '#type': search
@@ -166,9 +183,9 @@ elements: |
           '#type': textfield
           '#title': Name
           '#title_display': invisible
-        gender:
+        sex:
           '#type': select
-          '#title': Gender
+          '#title': Sex
           '#title_display': invisible
           '#options':
             Male: Male
@@ -228,24 +245,6 @@ elements: |
     '#type': details
     '#title': 'Options elements'
     '#open': true
-    webform_buttons:
-      '#type': webform_buttons
-      '#title': Buttons
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#description': 'This is a description for the ''webform_buttons'' element.'
-      '#description_display': tooltip
-    webform_buttons_other:
-      '#type': webform_buttons_other
-      '#title': 'Buttons other'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-      '#description': 'This is a description for the ''webform_buttons_other'' element.'
-      '#description_display': tooltip
     checkboxes:
       '#type': checkboxes
       '#title': Checkboxes
@@ -332,6 +331,33 @@ elements: |
         two: Two
         three: Three
       '#description': 'This is a description for the ''webform_select_other'' element.'
+      '#description_display': tooltip
+    tableselect:
+      '#type': tableselect
+      '#title': 'Table select'
+      '#options':
+        one: One
+        two: Two
+        three: Three
+      '#description': 'This is a description for the ''tableselect'' element.'
+      '#description_display': tooltip
+    webform_tableselect_sort:
+      '#type': webform_tableselect_sort
+      '#title': 'Tableselect sort'
+      '#options':
+        one: One
+        two: Two
+        three: Three
+      '#description': 'This is a description for the ''webform_tableselect_sort'' element.'
+      '#description_display': tooltip
+    webform_table_sort:
+      '#type': webform_table_sort
+      '#title': 'Table sort'
+      '#options':
+        one: One
+        two: Two
+        three: Three
+      '#description': 'This is a description for the ''webform_table_sort'' element.'
       '#description_display': tooltip
   computed_elements:
     '#type': details
@@ -453,6 +479,28 @@ elements: |
       '#field_suffix': '{field_suffix}'
       '#description': 'This is a description for the ''item'' element.'
       '#description_display': tooltip
+    webform_section:
+      '#type': webform_section
+      '#title': Section
+      '#description': 'This is a description for the ''webform_section'' element.'
+      '#description_display': tooltip
+    webform_table:
+      '#type': table
+      '#header':
+        - 'Header 1'
+        - 'Header 2'
+      '#rows':
+        -
+          - 'Row 1 - Col 1'
+          - 'Row 1 - Col 2'
+        -
+          - 'Row 2 - Col 1'
+          - 'Row 2 - Col 2'
+        -
+          - 'Row 3 - Col 1'
+          - 'Row 3 - Col 2'
+      '#description': 'This is a description for the ''webform_table'' element.'
+      '#description_display': tooltip
   other_elements:
     '#type': details
     '#title': 'Other elements'
@@ -467,7 +515,7 @@ elements: |
       '#title': 'Machine name'
       '#description': 'This is a description for the ''machine_name'' element.'
       '#description_display': tooltip
-
+  
 css: ''
 javascript: ''
 settings:
@@ -488,7 +536,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -509,6 +557,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

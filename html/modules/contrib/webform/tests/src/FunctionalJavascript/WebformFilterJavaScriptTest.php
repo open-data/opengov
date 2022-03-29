@@ -26,7 +26,7 @@ class WebformFilterJavaScriptTest extends WebformWebDriverTestBase {
     /** @var \Drupal\webform\WebformAddonsManagerInterface $addons_manager */
     $addons_manager = \Drupal::service('webform.addons_manager');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalLogin($this->rootUser);
 

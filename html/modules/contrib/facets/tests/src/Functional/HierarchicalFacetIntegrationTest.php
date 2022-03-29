@@ -5,8 +5,8 @@ namespace Drupal\Tests\facets\Functional;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\search_api\Item\Field;
 use Drupal\taxonomy\Entity\Term;
-use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
-use Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait;
+use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
 
 /**
  * Tests the hierarchical facets implementation.
@@ -107,6 +107,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
    */
   public function testHierarchicalFacet() {
     $this->verifyUseHierarchyOption();
+    $this->verifyKeepHierarchyParentsActiveOption();
     $this->verifyExpandHierarchyOption();
     $this->verifyEnableParentWhenChildGetsDisabledOption();
   }
@@ -148,6 +149,50 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
   }
 
   /**
+   * Verify the "Keep parents active" option is working.
+   */
+  protected function verifyKeepHierarchyParentsActiveOption() {
+    // Expand the hierarchy and verify that all items are visible initially.
+    $this->drupalGet($this->facetEditPage);
+    $edit = [
+      'facet_settings[expand_hierarchy]' => FALSE,
+      'facet_settings[keep_hierarchy_parents_active]' => '1',
+      'facet_settings[use_hierarchy]' => '1',
+      'facet_settings[translate_entity][status]' => '1',
+    ];
+    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->drupalGet('search-api-test-fulltext');
+
+    // Click the first parent and make sure its children are visible.
+    $this->clickLink('Parent 1');
+    $this->checkFacetIsActive('Parent 1');
+    $this->checkFacetIsNotActive('Child 1');
+    $this->checkFacetIsNotActive('Child 2');
+    $this->assertFacetLabel('Child 1');
+    $this->assertFacetLabel('Child 2');
+    $this->assertSession()->linkNotExists('Child 3');
+    $this->assertSession()->linkNotExists('Child 4');
+
+    // Click the first child and make sure its parent is still active.
+    $this->clickLink('Child 1');
+    $this->checkFacetIsActive('Parent 1');
+    $this->checkFacetIsActive('Child 1');
+    $this->checkFacetIsNotActive('Child 2');
+    $this->assertFacetLabel('Child 1');
+    $this->assertFacetLabel('Child 2');
+    $this->assertSession()->linkNotExists('Child 3');
+    $this->assertSession()->linkNotExists('Child 4');
+
+    // Click the the parent and make sure its children are not active, too.
+    $this->clickLink('Parent 1');
+    $this->checkFacetIsNotActive('Parent 1');
+    $this->assertSession()->linkNotExists('Child 1');
+    $this->assertSession()->linkNotExists('Child 2');
+    $this->assertSession()->linkNotExists('Child 3');
+    $this->assertSession()->linkNotExists('Child 4');
+  }
+
+  /**
    * Verify the "Always expand hierarchy" option is working.
    */
   protected function verifyExpandHierarchyOption() {
@@ -155,6 +200,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
     $this->drupalGet($this->facetEditPage);
     $edit = [
       'facet_settings[expand_hierarchy]' => '1',
+      'facet_settings[keep_hierarchy_parents_active]' => FALSE,
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
     ];
@@ -176,6 +222,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
     // Expand the hierarchy and verify that all items are visible initially.
     $edit = [
       'facet_settings[expand_hierarchy]' => '1',
+      'facet_settings[keep_hierarchy_parents_active]' => FALSE,
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
       'facet_sorting[display_value_widget_order][status]' => '1',
@@ -240,6 +287,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
     $this->drupalGet($this->facetEditPage);
     $edit = [
       'facet_settings[expand_hierarchy]' => '1',
+      'facet_settings[keep_hierarchy_parents_active]' => FALSE,
       'facet_settings[enable_parent_when_child_gets_disabled]' => FALSE,
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
@@ -261,6 +309,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
     $this->drupalGet($this->facetEditPage);
     $edit = [
       'facet_settings[expand_hierarchy]' => '1',
+      'facet_settings[keep_hierarchy_parents_active]' => FALSE,
       'facet_settings[enable_parent_when_child_gets_disabled]' => '1',
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
@@ -350,6 +399,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
 
     $edit = [
       'facet_settings[expand_hierarchy]' => '1',
+      'facet_settings[keep_hierarchy_parents_active]' => FALSE,
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
       'facet_sorting[display_value_widget_order][status]' => '1',

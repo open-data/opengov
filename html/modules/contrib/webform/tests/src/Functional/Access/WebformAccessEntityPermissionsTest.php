@@ -23,6 +23,8 @@ class WebformAccessEntityPermissionsTest extends WebformBrowserTestBase {
    * Tests webform entity access controls.
    */
   public function testAccessControlHandler() {
+    $assert_session = $this->assertSession();
+
     $own_account = $this->drupalCreateUser([
       'access webform overview',
       'create webform',
@@ -36,47 +38,51 @@ class WebformAccessEntityPermissionsTest extends WebformBrowserTestBase {
       'delete any webform',
     ]);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Login as user who can access own webform.
     $this->drupalLogin($own_account);
 
     // Check create own webform.
-    $this->drupalPostForm('/admin/structure/webform/add', ['id' => 'test_own', 'title' => 'test_own'], 'Save');
+    $this->drupalGet('/admin/structure/webform/add');
+    $edit = ['id' => 'test_own', 'title' => 'test_own'];
+    $this->submitForm($edit, 'Save');
 
     // Check webform submission overview contains own webform.
     $this->drupalGet('/admin/structure/webform');
-    $this->assertRaw('test_own');
+    $assert_session->responseContains('test_own');
 
     // Add test element to own webform.
-    $this->drupalPostForm('/admin/structure/webform/manage/test_own', ['elements' => "test:\n  '#markup': 'test'"], 'Save');
+    $this->drupalGet('/admin/structure/webform/manage/test_own');
+    $edit = ['elements' => "test:\n  '#markup': 'test'"];
+    $this->submitForm($edit, 'Save');
 
     // Check duplicate own webform.
     $this->drupalGet('/admin/structure/webform/manage/test_own/duplicate');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check delete own webform.
     $this->drupalGet('/admin/structure/webform/manage/test_own/delete');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check access own webform submissions.
     $this->drupalGet('/admin/structure/webform/manage/test_own/results/submissions');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Login as user who can access any webform.
     $this->drupalLogin($any_account);
 
     // Check duplicate any webform.
     $this->drupalGet('/admin/structure/webform/manage/test_own/duplicate');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check delete any webform.
     $this->drupalGet('/admin/structure/webform/manage/test_own/delete');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check access any webform submissions.
     $this->drupalGet('/admin/structure/webform/manage/test_own/results/submissions');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Change the owner of the webform to 'any' user.
     $own_webform = Webform::load('test_own');
@@ -87,19 +93,19 @@ class WebformAccessEntityPermissionsTest extends WebformBrowserTestBase {
 
     // Check webform submission overview does not contains any webform.
     $this->drupalGet('/admin/structure/webform');
-    $this->assertNoRaw('test_own');
+    $assert_session->responseNotContains('test_own');
 
     // Check duplicate denied any webform.
     $this->drupalGet('/admin/structure/webform/manage/test_own/duplicate');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Check delete denied any webform.
     $this->drupalGet('/admin/structure/webform/manage/test_own/delete');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Check access denied any webform submissions.
     $this->drupalGet('/admin/structure/webform/manage/test_own/results/submissions');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
   }
 
 }

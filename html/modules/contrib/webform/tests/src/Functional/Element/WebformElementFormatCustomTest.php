@@ -33,6 +33,8 @@ class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
    * Tests element custom format.
    */
   public function testFormatCustom() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     /** @var \Drupal\webform\WebformInterface $webform */
@@ -52,65 +54,68 @@ class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
     $file_size = $file->getSize();
     $file_url = file_create_url($file->getFileUri());
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Custom HTML.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalGet("admin/structure/webform/manage/test_element_format_custom/submission/$sid");
 
     // Check basic custom HTML format.
-    $this->assertRaw('<label>textfield_custom</label>');
-    $this->assertRaw('<em>{textfield_custom}</em>');
+    $assert_session->responseContains('<label>textfield_custom</label>');
+    $assert_session->responseContains('<em>{textfield_custom}</em>');
 
     // Check basic custom token HTML format.
-    $this->assertRaw('<label>textfield_custom_token</label>');
-    $this->assertRaw('<em>{textfield_custom_token}</em>');
+    $assert_session->responseContains('<label>textfield_custom_token</label>');
+    $assert_session->responseContains('<em>{textfield_custom_token}</em>');
 
     // Check caught exception is displayed to users with update access.
     // @see \Drupal\webform\Twig\TwigExtension::renderTwigTemplate
-    $this->assertRaw('(&quot;The &quot;[webform_submission:values:textfield_custom_token_exception]&quot; is being called recursively.&quot;)');
-    $this->assertRaw('<label>textfield_custom_token_exception</label>');
-    $this->assertRaw('<em>EXCEPTION</em>');
+    $assert_session->responseContains('(&quot;The &quot;[webform_submission:values:textfield_custom_token_exception]&quot; is being called recursively.&quot;)');
+    $assert_session->responseContains('<label>textfield_custom_token_exception</label>');
+    $assert_session->responseContains('<em>EXCEPTION</em>');
 
     // Check multiple custom HTML format.
-    $this->assertRaw('<label>textfield_custom</label>');
-    $this->assertRaw('<table>');
-    $this->assertRaw('<tr ><td>One</td></tr>');
-    $this->assertRaw('<tr style="background-color: #ffc"><td>Two</td></tr>');
-    $this->assertRaw('<tr ><td>Three</td></tr>');
-    $this->assertRaw('<tr style="background-color: #ffc"><td>Four</td></tr>');
-    $this->assertRaw('<tr ><td>Five</td></tr>');
-    $this->assertRaw('</table>');
+    $assert_session->responseContains('<label>textfield_custom</label>');
+    $assert_session->responseContains('<table>');
+    $assert_session->responseContains('<tr ><td>One</td></tr>');
+    $assert_session->responseContains('<tr style="background-color: #ffc"><td>Two</td></tr>');
+    $assert_session->responseContains('<tr ><td>Three</td></tr>');
+    $assert_session->responseContains('<tr style="background-color: #ffc"><td>Four</td></tr>');
+    $assert_session->responseContains('<tr ><td>Five</td></tr>');
+    $assert_session->responseContains('</table>');
 
     // Check image custom HTML format.
-    $this->assertRaw('<label>image_custom</label>');
-    $this->assertRaw('value: 1<br/>');
-    $this->assertRaw("item['value']: $file_url<br/>");
-    $this->assertRaw("item['raw']: $file_url<br/>");
-    $this->assertRaw("item['link']:");
+    $assert_session->responseContains('<label>image_custom</label>');
+    $assert_session->responseContains('value: 1<br/>');
+    $assert_session->responseContains("item['value']: $file_url<br/>");
+    $assert_session->responseContains("item['raw']: $file_url<br/>");
+    $assert_session->responseContains("item['link']:");
     // @todo Remove once Drupal 9.1.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 9.1) {
-      $this->assertRaw('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png">' . $file_name . '</a></span>');
+    if (floatval(\Drupal::VERSION) >= 9.3) {
+      $assert_session->responseContains('<span class="file file--mime-image-png file--image"><a href="' . $file->createFileUrl() . '" type="image/png">' . $file_name . '</a></span>');
+    }
+    elseif (floatval(\Drupal::VERSION) >= 9.1) {
+      $assert_session->responseContains('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png">' . $file_name . '</a></span>');
     }
     else {
-      $this->assertRaw('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png; length=' . $file_size . '">' . $file_name . '</a></span>');
+      $assert_session->responseContains('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png; length=' . $file_size . '">' . $file_name . '</a></span>');
     }
-    $this->assertRaw('item[\'id\']: 1<br/>');
-    $this->assertRaw("item['url']: $file_url<br/>");
-    $this->assertRaw('<img class="webform-image-file" alt="' . $file_name . '" title="' . $file_name . '" src="' . $file_url . '" />');
+    $assert_session->responseContains('item[\'id\']: 1<br/>');
+    $assert_session->responseContains("item['url']: $file_url<br/>");
+    $assert_session->responseContains('<img class="webform-image-file" alt="' . $file_name . '" title="' . $file_name . '" src="' . $file_url . '" />');
 
     // Check composite custom HTML format.
-    $this->assertRaw('<label>address_custom</label>');
-    $this->assertRaw('element.address: {address}<br/>');
-    $this->assertRaw('element.address_2: {address_2}<br/>');
-    $this->assertRaw('element.city: {city}<br/>');
-    $this->assertRaw('element.state_province: {state_province}<br/>');
-    $this->assertRaw('element.postal_code: {postal_code}<br/>');
-    $this->assertRaw('element.country: {country}<br/>');
+    $assert_session->responseContains('<label>address_custom</label>');
+    $assert_session->responseContains('element.address: {address}<br/>');
+    $assert_session->responseContains('element.address_2: {address_2}<br/>');
+    $assert_session->responseContains('element.city: {city}<br/>');
+    $assert_session->responseContains('element.state_province: {state_province}<br/>');
+    $assert_session->responseContains('element.postal_code: {postal_code}<br/>');
+    $assert_session->responseContains('element.country: {country}<br/>');
 
     // Check composite multiple custom HTML format.
-    $this->assertRaw('<label>address_multiple_custom</label>');
-    $this->assertRaw('<div>*****</div>
+    $assert_session->responseContains('<label>address_multiple_custom</label>');
+    $assert_session->responseContains('<div>*****</div>
 element.address: {02-address}<br/>
 element.address_2: {02-address_2}<br/>
 element.city: {02-city}<br/>
@@ -120,18 +125,18 @@ element.country: {02-country}<br/>
 <div>*****</div>');
 
     // Check fieldset displayed as details.
-    $this->assertRaw('<details class="webform-container webform-container-type-details js-form-wrapper form-wrapper" data-webform-element-id="test_element_format_custom--fieldset_custom" id="test_element_format_custom--fieldset_custom" open="open">');
-    $this->assertRaw('<summary role="button" aria-controls="test_element_format_custom--fieldset_custom" aria-expanded="true" aria-pressed="true">fieldset_custom</summary>');
+    $assert_session->responseContains('<details class="webform-container webform-container-type-details js-form-wrapper form-wrapper" data-webform-element-id="test_element_format_custom--fieldset_custom" id="test_element_format_custom--fieldset_custom" open="open">');
+    $assert_session->responseContains('<summary role="button" aria-controls="test_element_format_custom--fieldset_custom" aria-expanded="true" aria-pressed="true">fieldset_custom</summary>');
 
     // Check container custom HTML format.
-    $this->assertRaw('<h3>fieldset_custom_children</h3>' . PHP_EOL . '<hr />');
+    $assert_session->responseContains('<h3>fieldset_custom_children</h3>' . PHP_EOL . '<hr />');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Custom Text.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalGet("admin/structure/webform/manage/test_element_format_custom/submission/$sid/text");
-    $this->assertRaw("textfield_custom: /{textfield_custom}/
+    $assert_session->responseContains("textfield_custom: /{textfield_custom}/
 textfield_custom_token: /{textfield_custom_token}/
 textfield_custom_token_exception: /EXCEPTION/
 textfield_custom:

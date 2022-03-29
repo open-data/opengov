@@ -64,7 +64,17 @@ class OptionsFieldUITest extends FieldTestBase {
     parent::setUp();
 
     // Create test user.
-    $admin_user = $this->drupalCreateUser(['access content', 'administer taxonomy', 'access administration pages', 'administer site configuration', 'administer content types', 'administer nodes', 'bypass node access', 'administer node fields', 'administer node display']);
+    $admin_user = $this->drupalCreateUser([
+      'access content',
+      'administer taxonomy',
+      'access administration pages',
+      'administer site configuration',
+      'administer content types',
+      'administer nodes',
+      'bypass node access',
+      'administer node fields',
+      'administer node display',
+    ]);
     $this->drupalLogin($admin_user);
 
     // Create content type, with underscores.
@@ -363,7 +373,7 @@ class OptionsFieldUITest extends FieldTestBase {
       }
 
       $elements = $this->xpath('//div[text()="' . $output . '"]');
-      $this->assertEqual(count($elements), 1, 'Correct options found.');
+      $this->assertCount(1, $elements, 'Correct options found.');
     }
   }
 

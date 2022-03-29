@@ -35,7 +35,7 @@ class WebformHorizontalRule extends WebformElementBase implements WebformElement
     ];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

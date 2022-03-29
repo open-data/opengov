@@ -404,8 +404,8 @@ class FilterKernelTest extends KernelTestBase {
    * @todo It is possible to add script, iframe etc. to allowed tags, but this
    *   makes HTML filter completely ineffective.
    *
-   * @todo Class, id, name and xmlns should be added to disallowed attributes,
-   *   or better a whitelist approach should be used for that too.
+   * @todo Class, id, name and xmlns should be added to the list of forbidden
+   *   attributes, or, better yet, use an allowed attribute list.
    */
   public function testHtmlFilter() {
     // Get FilterHtml object.
@@ -460,11 +460,11 @@ class FilterKernelTest extends KernelTestBase {
     $f = (string) $filter->process('<br />', Language::LANGCODE_NOT_SPECIFIED);
     $this->assertNormalized($f, '<br />', 'HTML filter should allow self-closing line breaks.');
 
-    // All attributes of whitelisted tags are stripped by default.
+    // All attributes of allowed tags are stripped by default.
     $f = (string) $filter->process('<a kitten="cute" llama="awesome">link</a>', Language::LANGCODE_NOT_SPECIFIED);
     $this->assertNormalized($f, '<a>link</a>', 'HTML filter should remove attributes that are not explicitly allowed.');
 
-    // Now whitelist the "llama" attribute on <a>.
+    // Now allow the "llama" attribute on <a>.
     $filter->setConfiguration([
       'settings' => [
         'allowed_html' => '<a href llama> <em> <strong> <cite> <blockquote> <code> <ul> <ol> <li> <dl> <dt> <dd> <br>',
@@ -475,7 +475,7 @@ class FilterKernelTest extends KernelTestBase {
     $f = (string) $filter->process('<a kitten="cute" llama="awesome">link</a>', Language::LANGCODE_NOT_SPECIFIED);
     $this->assertNormalized($f, '<a llama="awesome">link</a>', 'HTML filter keeps explicitly allowed attributes, and removes attributes that are not explicitly allowed.');
 
-    // Restrict the whitelisted "llama" attribute on <a> to only allow the value
+    // Restrict the allowed "llama" attribute on <a> to only allow the value
     // "majestical", or "epic".
     $filter->setConfiguration([
       'settings' => [
@@ -879,27 +879,19 @@ www.example.com with a newline in comments -->
     foreach ($tests as $source => $tasks) {
       $result = $filter->process($source, $filter)->getProcessedText();
       foreach ($tasks as $value => $is_expected) {
-        // Not using assertIdentical, since combination with strpos() is hard to grok.
         if ($is_expected) {
-          $success = $this->assertTrue(strpos($result, $value) !== FALSE, new FormattableMarkup('@source: @value found. Filtered result: @result.', [
+          $this->assertStringContainsString($value, $result, new FormattableMarkup('@source: @value found. Filtered result: @result.', [
             '@source' => var_export($source, TRUE),
             '@value' => var_export($value, TRUE),
             '@result' => var_export($result, TRUE),
           ]));
         }
         else {
-          $success = $this->assertTrue(strpos($result, $value) === FALSE, new FormattableMarkup('@source: @value not found. Filtered result: @result.', [
+          $this->assertStringNotContainsString($value, $result, new FormattableMarkup('@source: @value not found. Filtered result: @result.', [
             '@source' => var_export($source, TRUE),
             '@value' => var_export($value, TRUE),
             '@result' => var_export($result, TRUE),
           ]));
-        }
-        if (!$success) {
-          $this->verbose('Source:<pre>' . Html::escape(var_export($source, TRUE)) . '</pre>'
-            . '<hr />' . 'Result:<pre>' . Html::escape(var_export($result, TRUE)) . '</pre>'
-            . '<hr />' . ($is_expected ? 'Expected:' : 'Not expected:')
-            . '<pre>' . Html::escape(var_export($value, TRUE)) . '</pre>'
-          );
         }
       }
     }
@@ -1151,7 +1143,7 @@ body {color:red}
    *   TRUE on pass, FALSE on fail.
    */
   public function assertNormalized($haystack, $needle, $message = '', $group = 'Other') {
-    return $this->assertTrue(strpos(strtolower(Html::decodeEntities($haystack)), $needle) !== FALSE, $message, $group);
+    return $this->assertStringContainsString($needle, strtolower(Html::decodeEntities($haystack)), $message);
   }
 
   /**
@@ -1176,7 +1168,7 @@ body {color:red}
    *   TRUE on pass, FALSE on fail.
    */
   public function assertNoNormalized($haystack, $needle, $message = '', $group = 'Other') {
-    return $this->assertTrue(strpos(strtolower(Html::decodeEntities($haystack)), $needle) === FALSE, $message, $group);
+    return $this->assertStringNotContainsString($needle, strtolower(Html::decodeEntities($haystack)), $message);
   }
 
 }

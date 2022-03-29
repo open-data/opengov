@@ -3,9 +3,7 @@
 namespace Drupal\webform\Form;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\Plugin\WebformVariantManagerInterface;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -22,26 +20,12 @@ class WebformVariantAddForm extends WebformVariantFormBase {
   protected $webformVariantManager;
 
   /**
-   * Constructs a WebformVariantAddForm.
-   *
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   * @param \Drupal\webform\Plugin\WebformVariantManagerInterface $webform_variant
-   *   The webform variant manager.
-   */
-  public function __construct(WebformTokenManagerInterface $token_manager, WebformVariantManagerInterface $webform_variant) {
-    parent::__construct($token_manager);
-    $this->webformVariantManager = $webform_variant;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('webform.token_manager'),
-      $container->get('plugin.manager.webform.variant')
-    );
+    $instance = parent::create($container);
+    $instance->webformVariantManager = $container->get('plugin.manager.webform.variant');
+    return $instance;
   }
 
   /**

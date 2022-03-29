@@ -77,7 +77,7 @@ class UserPasswordResetTest extends BrowserTestBase {
     // Verify that accessing the password reset form without having the session
     // variables set results in an access denied message.
     $this->drupalGet(Url::fromRoute('user.reset.form', ['uid' => $this->account->id()]));
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
 
     // Try to reset the password for an invalid account.
     $this->drupalGet('user/password');
@@ -109,7 +109,7 @@ class UserPasswordResetTest extends BrowserTestBase {
 
     // Check successful login.
     $this->drupalPostForm(NULL, NULL, t('Log in'));
-    $this->assertLink(t('Log out'));
+    $this->assertSession()->linkExists(t('Log out'));
     $this->assertTitle($this->account->getAccountName() . ' | Drupal');
 
     // Change the forgotten password.
@@ -135,7 +135,7 @@ class UserPasswordResetTest extends BrowserTestBase {
     $edit = ['name' => $this->account->getEmail()];
     $this->drupalPostForm(NULL, $edit, t('Submit'));
     $this->assertValidPasswordReset($edit['name']);
-    $this->assertTrue(count($this->drupalGetMails(['id' => 'user_password_reset'])) === $before + 1, 'Email sent when requesting password reset using email address.');
+    $this->assertCount($before + 1, $this->drupalGetMails(['id' => 'user_password_reset']), 'Email sent when requesting password reset using email address.');
 
     // Visit the user edit page without pass-reset-token and make sure it does
     // not cause an error.
@@ -159,7 +159,7 @@ class UserPasswordResetTest extends BrowserTestBase {
     $blocked_account = $this->drupalCreateUser()->block();
     $blocked_account->save();
     $this->drupalGet("user/reset/" . $blocked_account->id() . "/$timestamp/" . user_pass_rehash($blocked_account, $timestamp));
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
 
     // Verify a blocked user can not request a new password.
     $this->drupalGet('user/password');
@@ -168,7 +168,7 @@ class UserPasswordResetTest extends BrowserTestBase {
     $edit = ['name' => $blocked_account->getAccountName()];
     $this->drupalPostForm(NULL, $edit, t('Submit'));
     $this->assertRaw(t('%name is blocked or has not been activated yet.', ['%name' => $blocked_account->getAccountName()]), 'Notified user blocked accounts can not request a new password');
-    $this->assertTrue(count($this->drupalGetMails(['id' => 'user_password_reset'])) === $before, 'No email was sent when requesting password reset for a blocked account');
+    $this->assertCount($before, $this->drupalGetMails(['id' => 'user_password_reset']), 'No email was sent when requesting password reset for a blocked account');
 
     // Verify a password reset link is invalidated when the user's email address changes.
     $this->drupalGet('user/password');
@@ -188,7 +188,7 @@ class UserPasswordResetTest extends BrowserTestBase {
     $this->drupalPostForm(NULL, $edit, t('Submit'));
     $reset_url = $this->getResetURL();
     $this->drupalGet($reset_url . '/login');
-    $this->assertLink(t('Log out'));
+    $this->assertSession()->linkExists(t('Log out'));
     $this->assertTitle($this->account->getAccountName() . ' | Drupal');
 
     // Ensure blocked and deleted accounts can't access the user.reset.login
@@ -198,11 +198,11 @@ class UserPasswordResetTest extends BrowserTestBase {
     $blocked_account = $this->drupalCreateUser()->block();
     $blocked_account->save();
     $this->drupalGet("user/reset/" . $blocked_account->id() . "/$timestamp/" . user_pass_rehash($blocked_account, $timestamp) . '/login');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
 
     $blocked_account->delete();
     $this->drupalGet("user/reset/" . $blocked_account->id() . "/$timestamp/" . user_pass_rehash($blocked_account, $timestamp) . '/login');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
   }
 
   /**
@@ -263,9 +263,9 @@ class UserPasswordResetTest extends BrowserTestBase {
     // user.reset.form routes.
     $timestamp = REQUEST_TIME - 1;
     $this->drupalGet("user/reset/" . $this->account->id() . "/$timestamp/" . user_pass_rehash($this->account, $timestamp) . '/login');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
     $this->drupalGet("user/reset/" . $this->account->id());
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
   }
 
   /**
@@ -358,7 +358,7 @@ class UserPasswordResetTest extends BrowserTestBase {
     // Use the last password reset URL which was generated.
     $reset_url = $this->getResetURL();
     $this->drupalGet($reset_url . '/login');
-    $this->assertLink(t('Log out'));
+    $this->assertSession()->linkExists(t('Log out'));
     $this->assertTitle($this->account->getAccountName() . ' | Drupal');
     $this->drupalLogout();
 
@@ -387,32 +387,32 @@ class UserPasswordResetTest extends BrowserTestBase {
   public function assertNoValidPasswordReset($name) {
     // Make sure the error text is displayed and no email sent.
     $this->assertText(t('@name is not recognized as a username or an email address.', ['@name' => $name]), 'Validation error message shown when trying to request password for invalid account.');
-    $this->assertEqual(count($this->drupalGetMails(['id' => 'user_password_reset'])), 0, 'No e-mail was sent when requesting a password for an invalid account.');
+    $this->assertCount(0, $this->drupalGetMails(['id' => 'user_password_reset']), 'No e-mail was sent when requesting a password for an invalid account.');
   }
 
   /**
-   * Helper function to make assertions about a password reset triggering user flood cotrol.
+   * Makes assertions about a password reset triggering user flood control.
    */
   public function assertPasswordUserFlood() {
     $this->assertText(t('Too many password recovery requests for this account. It is temporarily blocked. Try again later or contact the site administrator.'), 'User password reset flood error message shown.');
   }
 
   /**
-   * Helper function to make assertions about a password reset not triggering user flood control.
+   * Makes assertions about a password reset not triggering user flood control.
    */
   public function assertNoPasswordUserFlood() {
     $this->assertNoText(t('Too many password recovery requests for this account. It is temporarily blocked. Try again later or contact the site administrator.'), 'User password reset flood error message not shown.');
   }
 
   /**
-   * Helper function to make assertions about a password reset triggering IP flood cotrol.
+   * Makes assertions about a password reset triggering IP flood control.
    */
   public function assertPasswordIpFlood() {
     $this->assertText(t('Too many password recovery requests from your IP address. It is temporarily blocked. Try again later or contact the site administrator.'), 'IP password reset flood error message shown.');
   }
 
   /**
-   * Helper function to make assertions about a password reset not triggering IP flood control.
+   * Makes assertions about a password reset not triggering IP flood control.
    */
   public function assertNoPasswordIpFlood() {
     $this->assertNoText(t('Too many password recovery requests from your IP address. It is temporarily blocked. Try again later or contact the site administrator.'), 'IP password reset flood error message not shown.');

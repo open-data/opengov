@@ -29,11 +29,13 @@ class WebformElementEntityReferenceTest extends WebformElementBrowserTestBase {
    * Test entity reference elements.
    */
   public function testEntityReferenceTest() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_element_entity_reference');
 
     // Check process entity references.
     $this->postSubmission($webform);
-    $this->assertRaw("webform_entity_select_user_default: '1'
+    $assert_session->responseContains("webform_entity_select_user_default: '1'
 webform_entity_select_user_multiple:
   - '1'
 webform_entity_radios_user_default: '1'

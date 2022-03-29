@@ -2,15 +2,16 @@
 
 namespace Drupal\facets\Processor;
 
+use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\FacetInterface;
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 
 /**
  * Describes a processor.
  */
-interface ProcessorInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
+interface ProcessorInterface extends ConfigurableInterface, DependentPluginInterface, PluginInspectionInterface {
 
   /**
    * Processing stage: pre_query.

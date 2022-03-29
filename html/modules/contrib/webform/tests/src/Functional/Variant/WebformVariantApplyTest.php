@@ -25,53 +25,57 @@ class WebformVariantApplyTest extends WebformBrowserTestBase {
    * Test variant apply.
    */
   public function testVariantApply() {
+    $assert_session = $this->assertSession();
+
     $webform = $this->loadWebform('test_variant_randomize');
 
     $this->drupalLogin($this->rootUser);
 
     // Check apply single variant page title.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply');
-    $this->assertRaw('Apply variant to the <em class="placeholder">Test: Variant randomize</em> webform?');
+    $assert_session->responseContains('Apply variant to the <em class="placeholder">Test: Variant randomize</em> webform?');
 
     // Check apply multiple variants page title.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_multiple/variants/apply');
-    $this->assertRaw('>Apply the selected variants to the <em class="placeholder">Test: Variant multiple</em> webform?');
+    $assert_session->responseContains('>Apply the selected variants to the <em class="placeholder">Test: Variant multiple</em> webform?');
 
     // Check that no variant has not been applied.
-    $this->assertEqual(2, $webform->getVariants()->count());
+    $this->assertEquals(2, $webform->getVariants()->count());
     $this->drupalGet('/webform/test_variant_randomize');
-    $this->assertRaw('{X}');
+    $assert_session->responseContains('{X}');
     $this->drupalGet('/webform/test_variant_randomize', ['query' => ['letter' => 'a']]);
-    $this->assertNoRaw('{X}');
-    $this->assertRaw('[A]');
+    $assert_session->responseNotContains('{X}');
+    $assert_session->responseContains('[A]');
 
     // Check access denied error when trying to apply non-existent variant.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply', ['query' => ['variant_id' => 'c']]);
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Check access allowed when trying to apply existing 'a' variant.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply', ['query' => ['variant_id' => 'a']]);
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check variant select menu is not visible when variant is specified.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply', ['query' => ['variant_id' => 'a']]);
-    $this->assertElementNotPresent('#edit-variants-letter');
+    $this->assertNoCssSelect('#edit-variants-letter');
 
     // Check variant select menu is visible when no variant is specified.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply');
-    $this->assertElementPresent('#edit-variants-letter');
+    $this->assertCssSelect('#edit-variants-letter');
 
     // Apply 'a' variant.
+    $options = ['query' => ['variant_id' => 'a']];
+    $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $options);
     $edit = ['delete' => 'none'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'a']]);
+    $this->submitForm($edit, 'Apply');
     $webform = $this->reloadWebform('test_variant_randomize');
 
     // Check that the 'a' variant has been applied and no variants have been deleted.
     $this->drupalGet('/webform/test_variant_randomize');
-    $this->assertNoRaw('{X}');
-    $this->assertRaw('[A]');
+    $assert_session->responseNotContains('{X}');
+    $assert_session->responseContains('[A]');
     $this->assertTrue($webform->getVariants()->has('a'));
-    $this->assertEqual(2, $webform->getVariants()->count());
+    $this->assertEquals(2, $webform->getVariants()->count());
 
     // Disable the 'b' variant.
     $variant = $webform->getVariant('b');
@@ -79,37 +83,43 @@ class WebformVariantApplyTest extends WebformBrowserTestBase {
     $webform->save();
 
     // Apply the 'b' variant which is disabled.
+    $options = ['query' => ['variant_id' => 'b']];
+    $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $options);
     $edit = ['delete' => 'none'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'b']]);
+    $this->submitForm($edit, 'Apply');
     $webform = $this->reloadWebform('test_variant_randomize');
-    $this->assertNoRaw('{X}');
-    $this->assertRaw('[B]');
+    $assert_session->responseNotContains('{X}');
+    $assert_session->responseContains('[B]');
     $this->assertTrue($webform->getVariants()->has('b'));
-    $this->assertEqual(2, $webform->getVariants()->count());
+    $this->assertEquals(2, $webform->getVariants()->count());
 
     // Apply and delete the 'a' variant.
+    $options = ['query' => ['variant_id' => 'a']];
+    $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $options);
     $edit = ['delete' => 'selected'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'a']]);
+    $this->submitForm($edit, 'Apply');
     $webform = $this->reloadWebform('test_variant_randomize');
 
     // Check that the 'a' variant has been applied and no variants have been deleted.
     $this->drupalGet('/webform/test_variant_randomize');
-    $this->assertNoRaw('{X}');
-    $this->assertRaw('[A]');
+    $assert_session->responseNotContains('{X}');
+    $assert_session->responseContains('[A]');
     $this->assertFalse($webform->getVariants()->has('a'));
-    $this->assertEqual(1, $webform->getVariants()->count());
+    $this->assertEquals(1, $webform->getVariants()->count());
 
     // Apply the 'b' variant and delete all variants.
+    $options = ['query' => ['variant_id' => 'b']];
+    $this->drupalGet('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $options);
     $edit = ['delete' => 'all'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_randomize/variants/apply', $edit, 'Apply', ['query' => ['variant_id' => 'b']]);
+    $this->submitForm($edit, 'Apply');
     $webform = $this->reloadWebform('test_variant_randomize');
 
     // Check that the 'b' variant has been applied and all variants have been deleted.
     $this->drupalGet('/webform/test_variant_randomize');
-    $this->assertNoRaw('{X}');
-    $this->assertRaw('[B]');
+    $assert_session->responseNotContains('{X}');
+    $assert_session->responseContains('[B]');
     $this->assertFalse($webform->getVariants()->has('b'));
-    $this->assertEqual(0, $webform->getVariants()->count());
+    $this->assertEquals(0, $webform->getVariants()->count());
   }
 
 }

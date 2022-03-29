@@ -37,17 +37,11 @@ class UpdateManager extends PluginManager {
   /**
    * {@inheritdoc}
    */
-  public function getDefinitions($sorted = TRUE) {
-    $definitions = parent::getDefinitions();
-
+  protected function sortDefinitions(array &$definitions) {
     // Sort by the schema number (a.k.a. plugin ID).
-    if ($sorted) {
-      uasort($definitions, function ($a, $b) {
-        return SortArray::sortByKeyInt($a, $b, 'id');
-      });
-    }
-
-    return $definitions;
+    uasort($definitions, function ($a, $b) {
+      return SortArray::sortByKeyInt($a, $b, 'id');
+    });
   }
 
   /**

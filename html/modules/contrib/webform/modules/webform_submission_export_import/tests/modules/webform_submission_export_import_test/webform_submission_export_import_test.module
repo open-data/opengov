@@ -23,8 +23,8 @@ function webform_submission_export_import_test_form_webform_submission_export_im
     /** @var \Drupal\Core\File\FileSystemInterface $file_system */
     $file_system = \Drupal::service('file_system');
 
-    $webform_path = drupal_get_path('module', 'webform');
-    $files_path = drupal_get_path('module', 'webform_submission_export_import_test') . '/files';
+    $webform_path = \Drupal::service('extension.list.module')->getPath('webform');
+    $files_path = \Drupal::service('extension.list.module')->getPath('webform_submission_export_import_test') . '/files';
     $file_names = [
       // @see https://docs.google.com/spreadsheets/d/e/2PACX-1vTYImRfGbGGCtKq7hrYGkm5jJo_P0fwNrLOBpcSapBkEUPlBToShXcSJAdDAF5hjVupbGFAm1anUtip/pub?gid=646036902&single=true&output=csv
       'webform',
@@ -77,7 +77,7 @@ function webform_submission_export_import_test_form_webform_submission_export_im
     $form['import']['import_url']['#help'] = FALSE;
     $form['#attached']['library'][] = 'webform_submission_export_import_test/webform_submission_export_import_test';
   }
-
+  // phpcs:disable
   /*
   // Get webform.csv and external.csv from Google Sheets.
   file_put_contents(
@@ -89,4 +89,5 @@ function webform_submission_export_import_test_form_webform_submission_export_im
     file_get_contents('https://docs.google.com/spreadsheets/d/e/2PACX-1vTYImRfGbGGCtKq7hrYGkm5jJo_P0fwNrLOBpcSapBkEUPlBToShXcSJAdDAF5hjVupbGFAm1anUtip/pub?gid=173244372&single=true&output=csv')
   );
   */
+  // phpcs:enable
 }

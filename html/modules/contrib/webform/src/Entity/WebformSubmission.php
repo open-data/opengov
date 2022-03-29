@@ -398,7 +398,7 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
    */
   public function getElementData($key) {
     $data = $this->getData();
-    return (isset($data[$key])) ? $data[$key] : NULL;
+    return $data[$key] ?? NULL;
   }
 
   /**
@@ -484,7 +484,7 @@ class WebformSubmission extends ContentEntityBase implements WebformSubmissionIn
    * {@inheritdoc}
    */
   public function getElementOriginalData($key) {
-    return (isset($this->originalData[$key])) ? $this->originalData[$key] : NULL;
+    return $this->originalData[$key] ?? NULL;
   }
 
   /**

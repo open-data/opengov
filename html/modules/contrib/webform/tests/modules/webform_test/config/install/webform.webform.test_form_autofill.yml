@@ -16,13 +16,25 @@ title: 'Test: Webform: Autofill'
 description: 'Test autofill with previous submission data.'
 category: 'Test: Webform'
 elements: |
-  textfield_autofill:
-    '#type': textfield
-    '#title': textfield_autofill
   textfield_excluded:
     '#type': textfield
     '#title': textfield_excluded
-  
+  textfield_autofill:
+    '#type': textfield
+    '#title': textfield_autofill
+  telephone_excluded:
+    '#type': webform_telephone
+    '#title': telephone_excluded
+  telephone_autofill:
+    '#type': webform_telephone
+    '#title': telephone_autofill
+  telephone_autofill_partial:
+    '#type': webform_telephone
+    '#title': telephone_autofill_partial
+  telephone_autofill_partial_multiple:
+    '#type': webform_telephone
+    '#title': telephone_autofill_partial_multiple
+    '#multiple': true
 css: ''
 javascript: ''
 settings:
@@ -43,7 +55,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -64,6 +76,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -90,6 +105,11 @@ settings:
   autofill_message: ''
   autofill_excluded_elements:
     textfield_excluded: textfield_excluded
+    telephone_excluded: telephone_excluded
+    telephone_autofill_partial__phone: telephone_autofill_partial__phone
+    telephone_autofill_partial__ext: telephone_autofill_partial__ext
+    telephone_autofill_partial_multiple__phone: telephone_autofill_partial_multiple__phone
+    telephone_autofill_partial_multiple__ext: telephone_autofill_partial_multiple__ext
   wizard_progress_bar: true
   wizard_progress_pages: false
   wizard_progress_percentage: false

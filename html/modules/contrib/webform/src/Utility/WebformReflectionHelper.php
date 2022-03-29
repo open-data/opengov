@@ -26,7 +26,7 @@ class WebformReflectionHelper {
     }
 
     self::$modules = [];
-    $files = \Drupal::service('file_system')->scanDirectory(drupal_get_path('module', 'webform') . '/modules', '/.*\.info\.yml/');
+    $files = \Drupal::service('file_system')->scanDirectory(__DIR__ . '/../../modules', '/.*\.info\.yml/');
     foreach ($files as $file) {
       $module_name = str_replace('.info.yml', '', $file->filename);
       self::$modules[$module_name] = $module_name;

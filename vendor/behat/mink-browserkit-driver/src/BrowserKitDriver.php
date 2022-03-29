@@ -200,12 +200,14 @@ class BrowserKitDriver extends CoreDriver
     {
         if (false === $user) {
             unset($this->serverParameters['PHP_AUTH_USER'], $this->serverParameters['PHP_AUTH_PW']);
+            unset($this->serverParameters['HTTP_AUTHORIZATION']);
 
             return;
         }
 
         $this->serverParameters['PHP_AUTH_USER'] = $user;
         $this->serverParameters['PHP_AUTH_PW'] = $password;
+        $this->serverParameters['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode($user . ':' . $password);
     }
 
     /**
@@ -273,7 +275,7 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCookiePath()
     {
-        $path = dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
+        $path = parse_url($this->getCurrentUrl(), PHP_URL_PATH);
 
         if ('\\' === DIRECTORY_SEPARATOR) {
             $path = str_replace('\\', '/', $path);

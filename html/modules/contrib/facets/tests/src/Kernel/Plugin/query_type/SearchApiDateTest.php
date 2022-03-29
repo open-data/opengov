@@ -86,7 +86,7 @@ class SearchApiDateTest extends KernelTestBase {
     $this->assertInstanceOf(FacetInterface::class, $built_facet);
 
     $results = $built_facet->getResults();
-    $this->assertInternalType('array', $results);
+    $this->assertSame('array', gettype($results));
 
     foreach ($grouped_results as $k => $result) {
       $this->assertInstanceOf(ResultInterface::class, $results[$k]);
@@ -305,7 +305,7 @@ class SearchApiDateTest extends KernelTestBase {
     $this->assertInstanceOf(FacetInterface::class, $built_facet);
 
     $results = $built_facet->getResults();
-    $this->assertInternalType('array', $results);
+    $this->assertSame('array', gettype($results));
     $this->assertEmpty($results);
   }
 

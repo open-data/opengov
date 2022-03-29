@@ -59,7 +59,7 @@ class BlockContentTypeTest extends BlockContentTestBase {
 
     // Test the page with no block-types.
     $this->drupalGet('block/add');
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $this->assertText('You have not created any block types yet');
     $this->clickLink('block type creation page');
 
@@ -70,7 +70,7 @@ class BlockContentTypeTest extends BlockContentTestBase {
     ];
     $this->drupalPostForm(NULL, $edit, t('Save'));
     $block_type = BlockContentType::load('foo');
-    $this->assertInstanceOf(BlockContentType::class, $block_type, 'The new block type has been created.');
+    $this->assertInstanceOf(BlockContentType::class, $block_type);
 
     $field_definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('block_content', 'foo');
     $this->assertTrue(isset($field_definitions['body']), 'Body field created when using the UI to create block content types.');
@@ -89,10 +89,10 @@ class BlockContentTypeTest extends BlockContentTestBase {
     $this->assertFalse(isset($field_definitions['body']), "Body field for 'other' block type not created when using the testing API to create block content types.");
 
     $block_type = BlockContentType::load('other');
-    $this->assertInstanceOf(BlockContentType::class, $block_type, 'The new block type has been created.');
+    $this->assertInstanceOf(BlockContentType::class, $block_type);
 
     $this->drupalGet('block/add/' . $block_type->id());
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
   }
 
   /**

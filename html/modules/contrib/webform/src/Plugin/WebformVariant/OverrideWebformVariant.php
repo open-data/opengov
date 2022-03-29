@@ -2,10 +2,8 @@
 
 namespace Drupal\webform\Plugin\WebformVariant;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Serialization\Yaml;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Plugin\WebformVariantBase;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -32,35 +30,12 @@ class OverrideWebformVariant extends WebformVariantBase {
   protected $currentUser;
 
   /**
-   * Constructs a OverrideWebformVariant object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration factory.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, AccountInterface $current_user) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $config_factory);
-    $this->currentUser = $current_user;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('config.factory'),
-      $container->get('current_user')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->currentUser = $container->get('current_user');
+    return $instance;
   }
 
   /**
@@ -270,9 +245,9 @@ class OverrideWebformVariant extends WebformVariantBase {
     return TRUE;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Debug and exception handlers.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Display debugging information.

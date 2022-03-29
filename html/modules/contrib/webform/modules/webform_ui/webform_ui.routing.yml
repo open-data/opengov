@@ -11,7 +11,7 @@ entity.webform.source_form:
 # Options.
 
 entity.webform_options.source_form:
-  path: '/admin/structure/webform/config/options/manage/{webform_options}/source'
+  path: '/admin/structure/webform/options/manage/{webform_options}/source'
   defaults:
     _entity_form: 'webform_options.source'
   requirements:

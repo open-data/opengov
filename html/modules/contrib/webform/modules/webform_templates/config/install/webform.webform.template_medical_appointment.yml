@@ -94,7 +94,8 @@ elements: |
       '#description': |
         Please select the best days and times for us to call you.<br/>
         <em>Leave blank if you have no preferences.</em>
-      '#description_display': 'before'
+        
+      '#description_display': before
       '#multiple__min_items': '3'
       '#multiple__sorting': false
       '#multiple__operations': false
@@ -156,7 +157,8 @@ elements: |
       '#description': |
         Please select the best days and times for us to call the patient.<br/>
         <em>Leave blank if the patient has no preferences.</em>'
-      '#description_display': 'before'
+        
+      '#description_display': before
       '#multiple__min_items': '3'
       '#multiple__sorting': false
       '#multiple__operations': false
@@ -227,7 +229,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -248,6 +250,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

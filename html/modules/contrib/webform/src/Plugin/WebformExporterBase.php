@@ -2,13 +2,10 @@
 
 namespace Drupal\webform\Plugin;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\WebformTokenManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,6 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see plugin_api
  */
 abstract class WebformExporterBase extends PluginBase implements WebformExporterInterface {
+
+  use WebformEntityStorageTrait;
 
   /**
    * A logger instance.
@@ -34,20 +33,6 @@ abstract class WebformExporterBase extends PluginBase implements WebformExporter
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The webform submission storage.
-   *
-   * @var \Drupal\webform\WebformSubmissionStorageInterface
-   */
-  protected $entityStorage;
 
   /**
    * The webform element manager.
@@ -71,51 +56,20 @@ abstract class WebformExporterBase extends PluginBase implements WebformExporter
   protected $archive;
 
   /**
-   * Constructs a WebformExporterBase object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Psr\Log\LoggerInterface $logger
-   *   A logger instance.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration factory.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
-   *   The webform element manager.
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerInterface $logger, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, WebformElementManagerInterface $element_manager, WebformTokenManagerInterface $token_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->setConfiguration($configuration);
-    $this->logger = $logger;
-    $this->configFactory = $config_factory;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->entityStorage = $entity_type_manager->getStorage('webform_submission');
-    $this->elementManager = $element_manager;
-    $this->tokenManager = $token_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('logger.factory')->get('webform'),
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('plugin.manager.webform.element'),
-      $container->get('webform.token_manager')
-    );
+    $instance = new static($configuration, $plugin_id, $plugin_definition);
+
+    $instance->logger = $container->get('logger.factory')->get('webform');
+    $instance->configFactory = $container->get('config.factory');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    $instance->tokenManager = $container->get('webform.token_manager');
+
+    $instance->setConfiguration($configuration);
+
+    return $instance;
   }
 
   /**
@@ -373,9 +327,9 @@ abstract class WebformExporterBase extends PluginBase implements WebformExporter
     return $this->configFactory->get('webform.settings')->get('batch.default_batch_export_size') ?: 500;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Archive helper methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Add file, directory, or content to Tar archive.
@@ -392,7 +346,7 @@ abstract class WebformExporterBase extends PluginBase implements WebformExporter
       $this->archive = new \Archive_Tar($this->getArchiveFilePath(), 'gz');
     }
 
-    if (file_exists($path)) {
+    if (@file_exists($path)) {
       if (is_dir($path)) {
         // Add directory to Tar archive.
         $this->archive->addModify((array) $path, $name, $options['remove_path']);
@@ -431,11 +385,11 @@ abstract class WebformExporterBase extends PluginBase implements WebformExporter
       $this->archive->open($this->getArchiveFilePath(), $flags);
     }
 
-    if (file_exists($path)) {
+    if (@file_exists($path)) {
       if (is_dir($path)) {
         // Add directory to ZIP file.
         $options += ['add_path' => $name . '/'];
-        $this->archive->addPattern('/\.[a-z0-9]+$/', $path, $options);
+        $this->archive->addPattern('/\.[a-zA-Z0-9]+$/', $path, $options);
       }
       else {
         // Add file to ZIP file.

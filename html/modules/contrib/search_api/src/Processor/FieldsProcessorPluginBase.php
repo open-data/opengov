@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
@@ -41,7 +42,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - preprocess_index
  * - preprocess_query
  */
-abstract class FieldsProcessorPluginBase extends ProcessorPluginBase implements PluginFormInterface {
+abstract class FieldsProcessorPluginBase extends ProcessorPluginBase implements PluginFormInterface, TrustedCallbackInterface {
 
   use PluginFormTrait;
 
@@ -116,6 +117,13 @@ abstract class FieldsProcessorPluginBase extends ProcessorPluginBase implements 
   public function setElementInfoManager(ElementInfoManagerInterface $element_info_manager) {
     $this->elementInfoManager = $element_info_manager;
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function trustedCallbacks() {
+    return ['preRenderFieldsCheckboxes'];
   }
 
   /**
@@ -500,7 +508,9 @@ abstract class FieldsProcessorPluginBase extends ProcessorPluginBase implements 
    *   The field's data type.
    */
   protected function processFieldValue(&$value, $type) {
-    $this->process($value);
+    if ($this->shouldProcess($value)) {
+      $this->process($value);
+    }
   }
 
   /**
@@ -515,7 +525,9 @@ abstract class FieldsProcessorPluginBase extends ProcessorPluginBase implements 
    *   \Drupal\search_api\ParseMode\ParseModeInterface::parseInput().
    */
   protected function processKey(&$value) {
-    $this->process($value);
+    if ($this->shouldProcess($value)) {
+      $this->process($value);
+    }
   }
 
   /**
@@ -543,9 +555,27 @@ abstract class FieldsProcessorPluginBase extends ProcessorPluginBase implements 
         }
       }
     }
-    else {
+    elseif ($this->shouldProcess($value)) {
       $this->process($value);
     }
+  }
+
+  /**
+   * Determines whether a single value (not an array) should be processed.
+   *
+   * The default implementation returns TRUE if and only if the value is a
+   * string.
+   *
+   * @param mixed $value
+   *   The value. For instance, a field or condition value.
+   *
+   * @return bool
+   *   TRUE if process() should be called on the given value, FALSE otherwise.
+   *
+   * @see \Drupal\search_api\Processor\FieldsProcessorPluginBase::process()
+   */
+  protected function shouldProcess($value): bool {
+    return is_string($value);
   }
 
   /**
@@ -554,10 +584,13 @@ abstract class FieldsProcessorPluginBase extends ProcessorPluginBase implements 
    * This method is ultimately called for all text by the standard
    * implementation, and does nothing by default.
    *
-   * @param string $value
-   *   The string value to preprocess, as a reference. Can be manipulated
-   *   directly, nothing has to be returned. Since this can be called for all
-   *   value types, $value has to remain a string.
+   * @param mixed $value
+   *   The value to preprocess, as a reference. Can be manipulated directly,
+   *   nothing has to be returned. Since this can be called for all value types,
+   *   $value has to remain the same type. The possible types for $value depend
+   *   on shouldProcess().
+   *
+   * @see \Drupal\search_api\Processor\FieldsProcessorPluginBase::shouldProcess()
    */
   protected function process(&$value) {}
 

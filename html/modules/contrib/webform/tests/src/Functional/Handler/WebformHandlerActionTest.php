@@ -25,6 +25,8 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
    * Test action handler.
    */
   public function testActionHandler() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     /** @var \Drupal\webform\WebformInterface $webform */
@@ -48,15 +50,16 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
     $this->assertEmpty($webform_submission->getElementData('notes_add'));
 
     // Flag and add new note to the submission.
+    $this->drupalGet("admin/structure/webform/manage/test_handler_action/submission/$sid/edit");
     $edit = [
       'sticky' => 'flag',
       'notes_add' => 'This is the first note',
     ];
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, 'Save');
+    $this->submitForm($edit, 'Save');
 
     // Check messages.
-    $this->assertRaw('Submission has been flagged.');
-    $this->assertRaw('Submission notes have been updated.');
+    $assert_session->responseContains('Submission has been flagged.');
+    $assert_session->responseContains('Submission notes have been updated.');
 
     // Reload the webform submission.
     \Drupal::entityTypeManager()->getStorage('webform_submission')->resetCache();
@@ -69,19 +72,20 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
     $this->assertEmpty($webform_submission->getElementData('notes_add'));
 
     // Check that notes_last is updated.
-    $this->assertEqual($webform_submission->getElementData('notes_last'), 'This is the first note');
+    $this->assertEquals($webform_submission->getElementData('notes_last'), 'This is the first note');
 
     // Unflag and add new note to the submission.
+    $this->drupalGet("admin/structure/webform/manage/test_handler_action/submission/$sid/edit");
     $edit = [
       'sticky' => 'unflag',
       'notes_add' => 'This is the second note',
     ];
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, 'Save');
+    $this->submitForm($edit, 'Save');
 
     // Check messages.
-    $this->assertRaw('Submission has been unflagged.');
-    // $this->assertRaw('Submission has been unlocked.');
-    $this->assertRaw('Submission notes have been updated.');
+    $assert_session->responseContains('Submission has been unflagged.');
+    // $assert_session->responseContains('Submission has been unlocked.');
+    $assert_session->responseContains('Submission notes have been updated.');
 
     // Reload the webform submission.
     \Drupal::entityTypeManager()->getStorage('webform_submission')->resetCache();
@@ -94,19 +98,18 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
     $this->assertEmpty($webform_submission->getElementData('notes_add'));
 
     // Check that notes updated.
-    $this->assertEqual($webform_submission->getNotes(), 'This is the first note' . PHP_EOL . PHP_EOL . 'This is the second note');
+    $this->assertEquals($webform_submission->getNotes(), 'This is the first note' . PHP_EOL . PHP_EOL . 'This is the second note');
 
     // Check that notes_last is updated with second note.
-    $this->assertEqual($webform_submission->getElementData('notes_last'), 'This is the second note');
+    $this->assertEquals($webform_submission->getElementData('notes_last'), 'This is the second note');
 
     // Lock submission.
-    $edit = [
-      'lock' => 'locked',
-    ];
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_action/submission/$sid/edit", $edit, 'Save');
+    $this->drupalGet("admin/structure/webform/manage/test_handler_action/submission/$sid/edit");
+    $edit = ['lock' => 'locked'];
+    $this->submitForm($edit, 'Save');
 
     // Check locked message.
-    $this->assertRaw('Submission has been locked.');
+    $assert_session->responseContains('Submission has been locked.');
 
     // Reload the webform submission.
     \Drupal::entityTypeManager()->getStorage('webform_submission')->resetCache();
@@ -114,18 +117,18 @@ class WebformHandlerActionTest extends WebformBrowserTestBase {
 
     // Check that submission is locked.
     $this->assertTrue($webform_submission->isLocked());
-    $this->assertEqual(WebformSubmissionInterface::STATE_LOCKED, $webform_submission->getState());
+    $this->assertEquals(WebformSubmissionInterface::STATE_LOCKED, $webform_submission->getState());
 
     // Check that submission is locked.
     $this->drupalGet("admin/structure/webform/manage/test_handler_action/submission/$sid/edit");
-    $this->assertRaw('This is submission was automatically locked.');
+    $assert_session->responseContains('This is submission was automatically locked.');
 
     // Programmatically unlock the submission.
     $webform_submission->setElementData('lock', 'unlocked');
     $webform_submission->save();
 
     $this->assertFalse($webform_submission->isLocked());
-    $this->assertNotEqual(WebformSubmissionInterface::STATE_LOCKED, $webform_submission->getState());
+    $this->assertNotEquals(WebformSubmissionInterface::STATE_LOCKED, $webform_submission->getState());
   }
 
 }

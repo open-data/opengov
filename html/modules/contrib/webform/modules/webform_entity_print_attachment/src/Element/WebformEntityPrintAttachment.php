@@ -40,7 +40,7 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
     // Set view mode or render custom twig.
     // @see \Drupal\webform\WebformSubmissionViewBuilder::view
     // @see webform_entity_print_attachment_webform_submission_view_alter()
-    $view_mode = (isset($element['#view_mode'])) ? $element['#view_mode'] : 'html';
+    $view_mode = $element['#view_mode'] ?? 'html';
     if ($view_mode === 'twig') {
       $webform_submission->_webform_view_mode_twig = $element['#template'];
     }
@@ -96,7 +96,7 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
       return $element['#export_type'];
     }
     else {
-      list(, $export_type_id) = explode(':', $element['#type']);
+      [, $export_type_id] = explode(':', $element['#type']);
       return $export_type_id;
     }
   }

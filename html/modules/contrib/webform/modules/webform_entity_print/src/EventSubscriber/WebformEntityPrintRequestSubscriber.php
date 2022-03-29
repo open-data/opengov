@@ -21,7 +21,7 @@ class WebformEntityPrintRequestSubscriber implements EventSubscriberInterface {
   protected $routeMatch;
 
   /**
-   * Constructs a new WebformEntityPrintRequestSubscriber.
+   * Constructs a WebformEntityPrintRequestSubscriber object.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.

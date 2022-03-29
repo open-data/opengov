@@ -35,6 +35,9 @@ facets.facet.*:
     use_hierarchy:
       type: boolean
       label: 'Use hierarchy'
+    keep_hierarchy_parents_active:
+      type: boolean
+      label: 'Keep hierarchy parents active'
     expand_hierarchy:
       type: boolean
       label: 'Expand hierarchy'
@@ -62,7 +65,7 @@ facets.facet.*:
           type: string
           label: 'Text format'
         text:
-          type: string
+          type: text
           label: 'Text'
     only_visible_when_facet_source_is_visible:
       type: boolean

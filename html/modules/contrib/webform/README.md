@@ -31,10 +31,10 @@ The Webform module is a form builder and submission manager for Drupal 8.
   - Video review of the Webform module:
     http://youtu.be/sQGsfQ_LZJ4
   - Online evaluate by simplytest.me:
-    https://simplytest.me/project/webform/8.x-5.x
+    https://simplytest.me/project/webform/6.x
 
  * Project status:
-   [Webform Project Board] https://contribkanban.com/board/webform/8.x-5.x
+   [Webform Project Board] https://contribkanban.com/board/webform/6.x
 
  * Comparision with other modules:
    https://www.drupal.org/node/2083353
@@ -45,14 +45,15 @@ INSTALLATION
 
 The installation of this module is like other Drupal modules.
 
- 1. Copy/upload the webform module to the modules directory of your Drupal
-   installation.
+ 1. If your site is [managed via Composer](https://www.drupal.org/node/2718229),
+    use Composer to download the webform module running
+    ```composer require "drupal/webform"```. Otherwise copy/upload the webform
+    module to the modules directory of your Drupal installation.
 
  2. Enable the 'Webform' module and desired sub-modules in 'Extend'.
    (/admin/modules)
 
  3. Set up user permissions. (/admin/people/permissions#module-webform)
-
 
 RECOMMENDED MODULES
 -------------------

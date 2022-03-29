@@ -32,7 +32,7 @@ webform.options:
   title: 'Options'
   route_name: entity.webform_options.collection
   base_route: entity.webform.collection
-  weight: 25
+  weight: 30
 
 webform.config.options:
   title: 'Options'
@@ -46,7 +46,7 @@ webform.config:
   title: 'Configuration'
   route_name: webform.config
   base_route: entity.webform.collection
-  weight: 30
+  weight: 40
 
 webform.config.forms:
   title: 'Forms'
@@ -59,7 +59,6 @@ webform.config.elements:
   route_name: webform.config.elements
   parent_id: webform.config
   weight: 20
-
 
 webform.config.submissions:
   title: 'Submissions'
@@ -77,25 +76,25 @@ webform.config.variants:
   title: 'Variants'
   route_name: webform.config.variants
   parent_id: webform.config
-  weight: 55
+  weight: 60
 
 webform.config.exporters:
   title: 'Exporters'
   route_name: webform.config.exporters
   parent_id: webform.config
-  weight: 60
+  weight: 70
 
 webform.config.libraries:
   title: 'Libraries'
   route_name: webform.config.libraries
   parent_id: webform.config
-  weight: 70
+  weight: 80
 
 webform.config.advanced:
   title: 'Advanced'
   route_name: webform.config.advanced
   parent_id: webform.config
-  weight: 100
+  weight: 90
 
 webform.addons:
   title: 'Add-ons'
@@ -197,7 +196,6 @@ entity.webform.settings_handlers:
   parent_id: entity.webform.settings
   weight: 40
 
-
 entity.webform.settings_assets:
   title: 'CSS / JS'
   route_name: entity.webform.settings_assets
@@ -215,7 +213,7 @@ entity.webform.variants:
   title: 'Variants'
   route_name: entity.webform.variants
   base_route: entity.webform.canonical
-  weight: 45
+  weight: 50
 
 # Export
 
@@ -332,13 +330,13 @@ webform.reports_plugins.variants:
   title: 'Variants'
   route_name: webform.reports_plugins.variants
   base_route: webform.reports_plugins.elements
-  weight: 15
+  weight: 20
 
 webform.reports_plugins.exporters:
   title: 'Exporters'
   route_name: webform.reports_plugins.exporters
   base_route: webform.reports_plugins.elements
-  weight: 20
+  weight: 30
 
 # User Submissions.
 

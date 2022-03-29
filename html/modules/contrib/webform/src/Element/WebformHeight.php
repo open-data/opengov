@@ -126,7 +126,7 @@ class WebformHeight extends FormElement {
     // Container.
     $element['container'] = [
       '#type' => 'container',
-      '#attributes' => ['class' => ['form--inline']],
+      '#attributes' => ['class' => ['form--inline', 'clearfix']],
     ];
 
     $t_args = [
@@ -158,13 +158,13 @@ class WebformHeight extends FormElement {
     switch ($element['#height_type']) {
       case 'select':
         $element['container']['feet'] += $select_element_defaults + [
-            '#field_suffix' => $feet_plural,
-            '#options' => $feet_options,
-          ];
+          '#field_suffix' => $feet_plural,
+          '#options' => $feet_options,
+        ];
         $element['container']['inches'] += $select_element_defaults + [
-            '#field_suffix' => $inches_plural,
-            '#options' => $inches_options,
-          ];
+          '#field_suffix' => $inches_plural,
+          '#options' => $inches_options,
+        ];
         break;
 
       case 'select_suffix':
@@ -175,11 +175,11 @@ class WebformHeight extends FormElement {
           $inches_options[$option_value] .= ' ' . ($option_value === 1 ? $inches_singular : $inches_plural);
         }
         $element['container']['feet'] += $select_element_defaults + [
-            '#options' => $feet_options,
-          ];
+          '#options' => $feet_options,
+        ];
         $element['container']['inches'] += $select_element_defaults + [
-            '#options' => $inches_options,
-          ];
+          '#options' => $inches_options,
+        ];
         break;
 
       default:
@@ -203,7 +203,7 @@ class WebformHeight extends FormElement {
     // Apply custom properties to feet and inches elements.
     foreach ($element as $key => $value) {
       if (strpos($key, '__') !== FALSE) {
-        list($element_key, $property_key) = explode('__', ltrim($key, '#'));
+        [$element_key, $property_key] = explode('__', ltrim($key, '#'));
         if (isset($element['container'][$element_key])) {
           $element['container'][$element_key]["#$property_key"] = $value;
         }
@@ -231,7 +231,7 @@ class WebformHeight extends FormElement {
    * Validates an height element.
    */
   public static function validateWebformHeight(&$element, FormStateInterface $form_state, &$complete_form) {
-    $height_element =& $element['container'];
+    $height_element = &$element['container'];
 
     if ($height_element['feet']['#value'] === '' && $height_element['inches']['#value'] === '') {
       $value = '';

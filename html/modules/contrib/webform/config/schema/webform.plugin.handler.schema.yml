@@ -159,6 +159,9 @@ webform.handler.remote_post:
     custom_options:
       label: 'Custom options'
       type: string
+    file_data:
+      type: boolean
+      label: 'Include files as Base64 encoded post data'
     cast:
       type: boolean
       label: 'Cast remote post data'
