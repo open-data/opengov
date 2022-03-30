@@ -3,10 +3,10 @@
 namespace Drupal\webform_access;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
-use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\webform\EntityListBuilder\WebformEntityListBuilderSortLabelTrait;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform_access\Entity\WebformAccessGroup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -18,35 +18,21 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
 
+  use WebformEntityListBuilderSortLabelTrait;
+  use WebformEntityStorageTrait;
+
   /**
    * {@inheritdoc}
    */
   protected $limit = FALSE;
 
   /**
-   * The access group storage.
-   *
-   * @var \Drupal\webform_access\WebformAccessGroupStorageInterface
-   */
-  protected $accessGroupStorage;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, ConfigEntityStorageInterface $access_group_storage) {
-    parent::__construct($entity_type, $storage);
-    $this->accessGroupStorage = $access_group_storage;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    return new static(
-      $entity_type,
-      $container->get('entity.manager')->getStorage($entity_type->id()),
-      $container->get('entity.manager')->getStorage('webform_access_group')
-    );
+    $instance = parent::createInstance($container, $entity_type);
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    return $instance;
   }
 
   /**
@@ -81,7 +67,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
     }
 
     return [
-      '#markup' => $this->formatPlural($total, '@total access type', '@total access types', ['@total' => $total]),
+      '#markup' => $this->formatPlural($total, '@count access type', '@count access types'),
       '#prefix' => '<div>',
       '#suffix' => '</div>',
     ];
@@ -109,7 +95,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
     $row['label'] = $entity->toLink($entity->label(), 'edit-form');
 
     // Groups.
-    $entity_ids = $this->accessGroupStorage->getQuery()
+    $entity_ids = $this->getEntityStorage('webform_access_group')->getQuery()
       ->condition('type', $entity->id())
       ->execute();
     $items = [];

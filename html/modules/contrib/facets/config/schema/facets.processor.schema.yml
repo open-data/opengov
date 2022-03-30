@@ -43,6 +43,9 @@ plugin.plugin_configuration.facets_processor.exclude_specified_items:
     regex:
       type: boolean
       label: Regex
+    invert:
+      type: boolean
+      label: Invert
 
 plugin.plugin_configuration.facets_processor.raw_value_widget_order:
   type: mapping

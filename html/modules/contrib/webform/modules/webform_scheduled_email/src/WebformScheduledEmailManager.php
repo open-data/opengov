@@ -11,6 +11,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
+use Drupal\webform\WebformEntityReferenceManagerInterface;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\WebformTokenManagerInterface;
@@ -23,6 +25,7 @@ use Drupal\webform\WebformTokenManagerInterface;
 class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterface {
 
   use StringTranslationTrait;
+  use WebformEntityStorageTrait;
 
   /**
    * The time service.
@@ -60,25 +63,18 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
   protected $configFactory;
 
   /**
-   * The webform storage.
-   *
-   * @var \Drupal\webform\WebformEntityStorageInterface
-   */
-  protected $webformStorage;
-
-  /**
-   * The webform submission storage.
-   *
-   * @var \Drupal\webform\WebformSubmissionStorageInterface
-   */
-  protected $submissionStorage;
-
-  /**
    * The token manager.
    *
    * @var \Drupal\webform\WebformTokenManagerInterface
    */
   protected $tokenManager;
+
+  /**
+   * The webform entity reference manager.
+   *
+   * @var \Drupal\webform\WebformEntityReferenceManagerInterface
+   */
+  protected $entityReferenceManager;
 
   /**
    * Constructs a WebformScheduledEmailManager object.
@@ -97,21 +93,23 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
    *   The entity type manager.
    * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
    *   The webform token manager.
+   * @param \Drupal\webform\WebformEntityReferenceManagerInterface $entity_reference_manager
+   *   The webform entity reference manager.
    */
-  public function __construct(TimeInterface $time, Connection $database, LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory, EntityTypeManagerInterface $entity_type_manager, WebformTokenManagerInterface $token_manager) {
+  public function __construct(TimeInterface $time, Connection $database, LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory, EntityTypeManagerInterface $entity_type_manager, WebformTokenManagerInterface $token_manager, WebformEntityReferenceManagerInterface $entity_reference_manager) {
     $this->time = $time;
     $this->database = $database;
     $this->languageManager = $language_manager;
     $this->configFactory = $config_factory;
     $this->loggerFactory = $logger_factory;
-    $this->webformStorage = $entity_type_manager->getStorage('webform');
-    $this->submissionStorage = $entity_type_manager->getStorage('webform_submission');
+    $this->entityTypeManager = $entity_type_manager;
     $this->tokenManager = $token_manager;
+    $this->entityReferenceManager = $entity_reference_manager;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Scheduled message functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -167,14 +165,13 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
     /** @var \Drupal\webform_scheduled_email\Plugin\WebformHandler\ScheduleEmailWebformHandler $handler */
     $handler = $webform->getHandler($handler_id);
 
-    $configuration = $handler->getConfiguration();
-    if (empty($configuration['settings']['send'])) {
+    $send = $handler->getSetting('send');
+    if (empty($send)) {
       return FALSE;
     }
 
     // Get send +/- days.
-    $send = $configuration['settings']['send'];
-    $days = (!empty($configuration['settings']['days'])) ? $configuration['settings']['days'] : 0;
+    $days = $handler->getSetting('days') ?: 0;
 
     // ISSUE:
     // [webform_submission:completed:html_date] token is not being replaced
@@ -203,9 +200,9 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
     return date_format($date, $this->getDateFormat());
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // State/actions functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -216,7 +213,7 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
       $webform = $webform_submission->getWebform();
       /** @var \Drupal\webform_scheduled_email\Plugin\WebformHandler\ScheduleEmailWebformHandler $handler */
       $handler = $webform->getHandler($handler_id);
-      $handler_configuration = $handler->getConfiguration();
+      $handler_settings = $handler->getSettings();
 
       // Check send date and set timestamp.
       $send_iso_date = $this->getSendDate($webform_submission, $handler_id);
@@ -228,13 +225,13 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
 
       // Check submission state and unschedule.
       $state = $webform_submission->getState();
-      if (!in_array($state, $handler_configuration['settings']['states']) && $handler_configuration['settings']['unschedule']) {
+      if (!in_array($state, $handler_settings['states']) && $handler_settings['unschedule']) {
         $this->unschedule($webform_submission, $handler_id);
         return WebformScheduledEmailManagerInterface::EMAIL_UNSCHEDULED;
       }
 
       // Check if action should be triggered in the past.
-      if (!empty($handler_configuration['settings']['ignore_past']) && $send_timestamp < $this->time->getRequestTime()) {
+      if (!empty($handler_settings['ignore_past']) && $send_timestamp < $this->time->getRequestTime()) {
         $this->unschedule($webform_submission, $handler_id);
         return WebformScheduledEmailManagerInterface::EMAIL_IGNORED;
       }
@@ -430,29 +427,38 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
   /**
    * {@inheritdoc}
    */
-  public function delete(EntityInterface $entity) {
+  public function delete(EntityInterface $entity, $handler_id = NULL) {
     if ($entity instanceof WebformSubmissionInterface) {
-      $this->database->delete('webform_scheduled_email')
-        ->condition('sid', $entity->id())
-        ->execute();
+      $query = $this->database->delete('webform_scheduled_email')
+        ->condition('sid', $entity->id());
+      if ($handler_id) {
+        $query->condition('handler_id', $handler_id);
+      }
+      $query->execute();
     }
     elseif ($entity instanceof WebformInterface) {
-      $this->database->delete('webform_scheduled_email')
-        ->condition('webform_id', $entity->id())
-        ->execute();
+      $query = $this->database->delete('webform_scheduled_email')
+        ->condition('webform_id', $entity->id());
+      if ($handler_id) {
+        $query->condition('handler_id', $handler_id);
+      }
+      $query->execute();
     }
 
     // Since webform and submissions can also be used as a source entity,
     // include them in deleting.
-    $this->database->delete('webform_scheduled_email')
+    $query = $this->database->delete('webform_scheduled_email')
       ->condition('entity_type', $entity->getEntityTypeId())
-      ->condition('entity_id', $entity->id())
-      ->execute();
+      ->condition('entity_id', $entity->id());
+    if ($handler_id) {
+      $query->condition('handler_id', $handler_id);
+    }
+    $query->execute();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Queuing/sending functions (aka the tumbleweed).
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -496,7 +502,7 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
         $context['@handler'] = $entity->getHandler($handler_id)->label();
         $message = "@entity: Cron task executed '@handler' handler. (@summary)";
       }
-    };
+    }
     $this->getLogger()->notice($message, $context);
     $stats['_message'] = $message;
     $stats['_context'] = $context;
@@ -530,7 +536,7 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
       return $stats;
     }
 
-    list($webform, $webform_submission, $source_entity) = $this->getEntities($entity);
+    [$webform, $webform_submission, $source_entity] = $this->getEntities($entity);
 
     $query = $this->database->select('webform_scheduled_email', 'w')
       ->fields('w', ['eid', 'sid', 'webform_id', 'entity_type', 'entity_id', 'handler_id', 'state', 'send'])
@@ -560,9 +566,9 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
 
     // Bulk load webforms and submission to improve performance.
     if ($webform_ids) {
-      $this->webformStorage->loadMultiple($webform_ids);
+      $this->getWebformStorage()->loadMultiple($webform_ids);
     }
-    $webform_submissions = $sids ? $this->submissionStorage->loadMultiple($sids) : [];
+    $webform_submissions = $sids ? $this->getSubmissionStorage()->loadMultiple($sids) : [];
 
     // Now update all the emails.
     foreach ($records as $record) {
@@ -617,7 +623,7 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
       return $stats;
     }
 
-    list($webform, $webform_submission, $source_entity) = $this->getEntities($entity);
+    [$webform, $webform_submission, $source_entity] = $this->getEntities($entity);
 
     // IMPORTANT: Only scheduled emails with state = ::SUBMISSION_SEND will
     // be sent.
@@ -647,7 +653,7 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
       $eids[] = $record->eid;
 
       /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
-      $webform_submission = $this->submissionStorage->load($sid);
+      $webform_submission = $this->getSubmissionStorage()->load($sid);
       // This should rarely happen and the orphaned record will be deleted.
       if (!$webform_submission) {
         continue;
@@ -675,11 +681,11 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
         if ($switch_languages) {
           $this->languageManager->setConfigOverrideLanguage($webform_submission->language());
           // Reset the webform, submission, and handler.
-          $this->webformStorage->resetCache([$webform_id]);
-          $this->submissionStorage->resetCache([$sid]);
+          $this->getWebformStorage()->resetCache([$webform_id]);
+          $this->getSubmissionStorage()->resetCache([$sid]);
           // Reload the webform, submission, and handler.
-          $webform = $this->webformStorage->load($webform_id);
-          $webform_submission = $this->submissionStorage->load($sid);
+          $webform = $this->getWebformStorage()->load($webform_id);
+          $webform_submission = $this->getSubmissionStorage()->load($sid);
           $handler = $webform->getHandler($handler_id);
         }
 
@@ -691,11 +697,11 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
         if ($switch_languages) {
           $this->languageManager->setConfigOverrideLanguage($original_language);
           // Reset the webform, submission, and handler.
-          $this->webformStorage->resetCache([$webform_id]);
-          $this->submissionStorage->resetCache([$sid]);
+          $this->getWebformStorage()->resetCache([$webform_id]);
+          $this->getSubmissionStorage()->resetCache([$sid]);
           // Reload the webform, submission, and handler.
-          $webform = $this->webformStorage->load($webform_id);
-          $webform_submission = $this->submissionStorage->load($sid);
+          $webform = $this->getWebformStorage()->load($webform_id);
+          $webform_submission = $this->getSubmissionStorage()->load($sid);
           $handler = $webform->getHandler($handler_id);
         }
 
@@ -730,9 +736,9 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
     return $stats;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Statistic/tracking functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -771,16 +777,16 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
    * {@inheritdoc}
    */
   public function total(EntityInterface $entity = NULL, $handler_id = NULL, $state = FALSE) {
-    list($webform, $webform_submission, $source_entity) = $this->getEntities($entity);
+    [$webform, $webform_submission, $source_entity] = $this->getEntities($entity);
 
     $query = $this->database->select('webform_scheduled_email', 'w');
     $this->addQueryConditions($query, $webform, $webform_submission, $source_entity, $handler_id, $state);
     return $query->countQuery()->execute()->fetchField();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get webform or webform_submission logger.
@@ -817,11 +823,8 @@ class WebformScheduledEmailManager implements WebformScheduledEmailManagerInterf
       $webform = $webform_submission->getWebform();
     }
     elseif ($entity instanceof EntityInterface) {
-      /** @var \Drupal\webform\WebformEntityReferenceManagerInterface $entity_reference_manager */
-      $entity_reference_manager = \Drupal::service('webform.entity_reference_manager');
-
       $source_entity = $entity;
-      $webform = $entity_reference_manager->getWebform($source_entity);
+      $webform = $this->entityReferenceManager->getWebform($source_entity);
     }
 
     return [$webform, $webform_submission, $source_entity];

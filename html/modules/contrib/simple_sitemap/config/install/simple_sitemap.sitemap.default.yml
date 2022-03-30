@@ -1,0 +1,8 @@
+id: default
+label: Default
+description: The default hreflang sitemap.
+type: default_hreflang
+weight: 0
+dependencies:
+  config:
+    - simple_sitemap.type.default_hreflang

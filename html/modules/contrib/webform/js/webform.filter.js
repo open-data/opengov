@@ -44,7 +44,7 @@
         var hasDetails = $details.length;
         var totalItems;
         var args = {
-          '@item': $input.data('item-singlular') || Drupal.t('item'),
+          '@item': $input.data('item-singular') || Drupal.t('item'),
           '@items': $input.data('item-plural') || Drupal.t('items'),
           '@total': null
         };
@@ -63,7 +63,6 @@
             setTimeout(function () {$input.trigger('focus');});
           }
         }
-
 
         /**
          * Reset the filtering

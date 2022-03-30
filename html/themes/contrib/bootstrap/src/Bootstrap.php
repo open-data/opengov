@@ -115,9 +115,16 @@ class Bootstrap {
   const PROJECT_PAGE = 'https://www.drupal.org/project/bootstrap';
 
   /**
+   * The File System service, if it exists.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface|false
+   */
+  protected static $fileSystem;
+
+  /**
    * The Messenger service, if it exists.
    *
-   * @var \Drupal\Core\Messenger\MessengerInterface
+   * @var \Drupal\Core\Messenger\MessengerInterface|false
    */
   protected static $messenger;
 
@@ -621,6 +628,31 @@ class Bootstrap {
       'icon_position' => 'before',
       'icon_only' => FALSE,
     ];
+  }
+
+  /**
+   * Retrieves the File System service, if it exists.
+   *
+   * @param string $method
+   *   Optional. A specific method on the file system service to check for
+   *   its existance.
+   *
+   * @return \Drupal\Core\File\FileSystemInterface
+   *   The File System service, if it exists and if $method exists if it was
+   *   passed.
+   *
+   * @deprecated in bootstrap:8.x-3.22 and is removed from bootstrap:5.0.0.
+   *   Use the "file_system" service instead.
+   * @see https://www.drupal.org/project/bootstrap/issues/3096963
+   */
+  public static function fileSystem($method = NULL) {
+    if (!isset(static::$fileSystem)) {
+      static::$fileSystem = \Drupal::hasService('file_system') ? \Drupal::service('file_system') : FALSE;
+    }
+    if ($method) {
+      return static::$fileSystem && method_exists(static::$fileSystem, $method) ? static::$fileSystem : FALSE;
+    }
+    return static::$fileSystem;
   }
 
   /**
@@ -1315,6 +1347,7 @@ class Bootstrap {
    *
    * @deprecated in 8.x-3.18 and will be removed in a future release.
    *   Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead.
+   * @see https://www.drupal.org/project/bootstrap/issues/3096963
    */
   public static function message($message, $type = 'status', $repeat = FALSE) {
     if (!isset(static::$messenger)) {

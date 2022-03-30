@@ -1,29 +1,23 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-var prefix = 'fas';
-var iconName = 'h-square';
-var width = 448;
-var height = 512;
-var ligatures = [];
-var unicode = 'f0fd';
-var svgPathData = 'M448 80v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V80c0-26.51 21.49-48 48-48h352c26.51 0 48 21.49 48 48zm-112 48h-32c-8.837 0-16 7.163-16 16v80H160v-80c0-8.837-7.163-16-16-16h-32c-8.837 0-16 7.163-16 16v224c0 8.837 7.163 16 16 16h32c8.837 0 16-7.163 16-16v-80h128v80c0 8.837 7.163 16 16 16h32c8.837 0 16-7.163 16-16V144c0-8.837-7.163-16-16-16z';
-
+var source = require('./faSquareH');
 exports.definition = {
-  prefix: prefix,
-  iconName: iconName,
+  prefix: source.prefix,
+  iconName: source.iconName,
   icon: [
-    width,
-    height,
-    ligatures,
-    unicode,
-    svgPathData
+    source.width,
+    source.height,
+    source.aliases,
+    source.unicode,
+    source.svgPathData
   ]};
 
 exports.faHSquare = exports.definition;
-exports.prefix = prefix;
-exports.iconName = iconName;
-exports.width = width;
-exports.height = height;
-exports.ligatures = ligatures;
-exports.unicode = unicode;
-exports.svgPathData = svgPathData;
+exports.prefix = source.prefix;
+exports.iconName = source.iconName;
+exports.width = source.width;
+exports.height = source.height;
+exports.ligatures = source.aliases;
+exports.unicode = source.unicode;
+exports.svgPathData = source.svgPathData;
+exports.aliases = source.aliases;

@@ -57,6 +57,8 @@ elements: |
       '#type': captcha
       '#title': CAPTCHA
       '#captcha_admin_mode': true
+      '#captcha_info':
+        form_id: ''
       '#captcha_type': image_captcha/Image
     webform_codemirror:
       '#type': webform_codemirror
@@ -78,6 +80,13 @@ elements: |
     webform_email_multiple:
       '#type': webform_email_multiple
       '#title': 'Email multiple'
+    webform_height:
+      '#type': webform_height
+      '#title': 'Height (feet/inches)'
+    webform_height_multiple:
+      '#type': webform_height
+      '#title': 'Height (feet/inches) multiple'
+      '#multiple': true
     number:
       '#type': number
       '#title': Number
@@ -107,6 +116,14 @@ elements: |
     webform_rating:
       '#type': webform_rating
       '#title': Rating
+    webform_same:
+      '#type': webform_same
+      '#title': 'Billing address is the same as the shipping address'
+    webform_scale:
+      '#type': webform_scale
+      '#title': Scale
+      '#min': 1
+      '#max': 5
     search:
       '#type': search
       '#title': Search
@@ -165,11 +182,15 @@ elements: |
       '#message_type': warning
       '#message_message': 'This is a <strong>warning</strong> message.'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/77245">Issue #77245: A place for JavaScript status messages</a>'
+    webform_more:
+      '#type': webform_more
+      '#title': More
+      '#more': 'This is more content'
   file_attachment_elements:
     '#type': details
     '#title': 'File attachment elements'
     '#open': true
-    'webform_entity_print_attachment:pdf':
+    webform_entity_print_attachment_pdf:
       '#type': webform_entity_print_attachment
       '#title': 'Attachment PDF'
     webform_attachment_token:
@@ -233,7 +254,7 @@ elements: |
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios and checkboxess.</a>'
+      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
     webform_checkboxes_other:
       '#type': webform_checkboxes_other
       '#title': 'Checkboxes other'
@@ -279,7 +300,7 @@ elements: |
         two: Two
         three: Three
       '#options_display': side_by_side
-      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2731991">Issue #2731991: Setting required on radios marks all options required</a><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios and checkboxes.</a>'
+      '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2731991">Issue #2731991: Setting required on radios marks all options required</a><br /><a href="https://www.drupal.org/node/994360">Issue #994360: #states cannot disable/enable radios and checkboxes</a><br /><a href="https://www.drupal.org/node/2836364">Issue #2836364: Wrapper attributes are not supported by composite elements, this includes radios, checkboxes, and buttons.</a>'
     webform_radios_other:
       '#type': webform_radios_other
       '#title': 'Radios other'
@@ -378,6 +399,24 @@ elements: |
     webform_section:
       '#type': webform_section
       '#title': Section
+    webform_table:
+      '#type': table
+      '#header':
+        - 'Header 1'
+        - 'Header 2'
+      '#rows':
+        -
+          - 'Row 1 - Col 1'
+          - 'Row 1 - Col 2'
+        -
+          - 'Row 2 - Col 1'
+          - 'Row 2 - Col 2'
+        -
+          - 'Row 3 - Col 1'
+          - 'Row 3 - Col 2'
+    webform_table_row:
+      '#type': webform_table_row
+      '#title': 'Table row'
   date_time_elements:
     '#type': details
     '#title': 'Date/time elements'
@@ -511,7 +550,7 @@ elements: |
     table:
       '#type': table
       '#title': Table
-
+  
 css: ''
 javascript: ''
 settings:
@@ -532,7 +571,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -553,6 +592,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

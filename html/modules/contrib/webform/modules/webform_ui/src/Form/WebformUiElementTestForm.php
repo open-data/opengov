@@ -133,6 +133,7 @@ class WebformUiElementTestForm extends WebformUiElementFormBase {
       '#value' => '',
     ];
 
+    $form_state->set('element', $this->element);
     $form['properties'] = $webform_element->buildConfigurationForm(['#tabs' => FALSE], $form_state);
     $form['properties']['#tree'] = TRUE;
     $form['properties']['custom']['#open'] = TRUE;

@@ -102,7 +102,7 @@ class FacetTest extends KernelTestBase {
     $entity = new Facet([], 'facets_facet');
     $this->assertNull($entity->getWidget());
 
-    $this->setExpectedException(InvalidProcessorException::class);
+    $this->expectException(InvalidProcessorException::class);
     $entity->getWidgetInstance();
   }
 
@@ -154,7 +154,8 @@ class FacetTest extends KernelTestBase {
   public function testGetQueryTypeWithNoFacetSource() {
     $entity = new Facet([], 'facets_facet');
 
-    $this->setExpectedException(Exception::class, 'No facet source defined for facet.');
+    $this->expectException(Exception::class);
+    $this->expectExceptionMessage('No facet source defined for facet.');
     $entity->getQueryType();
   }
 

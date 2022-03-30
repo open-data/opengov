@@ -5,12 +5,101 @@
  * Provides Entity Print (PDF) integration.
  */
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\Unicode;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Url;
-use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\webform\Entity\Webform;
+use Drupal\webform\WebformSubmissionInterface;
+
+/**
+ * The name of the query parameter for webform entity print image tokens.
+ */
+define('WEBFORM_ENTITY_PRINT_IMAGE_TOKEN', 'webform_entity_print_itok'); // phpcs:ignore
+
+/**
+ * Implements hook_webform_submission_access().
+ */
+function webform_entity_print_webform_submission_access(WebformSubmissionInterface $webform_submission, $operation, AccountInterface $account) {
+  if ($operation !== 'view') {
+    return AccessResult::neutral();
+  }
+
+  // Only override access controls when displaying images.
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if (!in_array($route_name, ['system.files', 'image.style_private'])) {
+    return AccessResult::neutral();
+  }
+
+  // Make sure the webform entity print token is defined.
+  $webform_entity_print_token = \Drupal::request()->query->get(WEBFORM_ENTITY_PRINT_IMAGE_TOKEN);
+  if (!$webform_entity_print_token) {
+    return AccessResult::neutral();
+  }
+
+  // Make sure the URI contains /{webform}/{sid}/.
+  $uri = \Drupal::request()->getUri();
+  $webform_id = $webform_submission->getWebform()->id();
+  $sid = $webform_submission->id();
+  if (!preg_match('#(?:/private|/system/files)/webform/' . $webform_id . '/' . $sid . '#', parse_url($uri, PHP_URL_PATH))) {
+    return AccessResult::neutral();
+  }
+
+  $encrypt_token = _webform_entity_print_token_generate($uri);
+  return AccessResult::allowedIf($webform_entity_print_token === $encrypt_token);
+}
+
+/**
+ * Implements hook_file_download().
+ */
+function webform_entity_print_file_download($uri) {
+  if (!preg_match('#/webform/([^/]+)/#', $uri, $match)) {
+    return NULL;
+  }
+
+  $webform_id = $match[1];
+  $webform = Webform::load($webform_id);
+  if (!$webform) {
+    return NULL;
+  }
+
+  // Get signature elements.
+  $signature_elements = [];
+  $elements = $webform->getElementsDecodedAndFlattened();
+  foreach ($elements as $element_key => $element) {
+    if (isset($element['#type']) && $element['#type'] === 'webform_signature') {
+      $signature_elements[] = $element_key;
+    }
+  }
+
+  // Match signature element.
+  if ($signature_elements && preg_match_all('#/webform/' . $webform_id . '/(' . implode('|', $signature_elements) . ')/#', $uri, $matches)) {
+    $webform_entity_print_token = \Drupal::request()->get('webform_entity_print_itok');
+    $encrypt_token = _webform_entity_print_token_generate(file_create_url($uri));
+    if ($webform_entity_print_token === $encrypt_token) {
+      /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+      $file_system = \Drupal::service('file_system');
+      $filename = $file_system->basename($uri);
+      $filesize = filesize($file_system->realpath($uri));
+      return [
+        'Content-Type' => 'image/png',
+        'Content-Length' => $filesize,
+        'Cache-Control' => 'private',
+        'Content-Disposition' => 'inline; filename="' . Unicode::mimeHeaderEncode($filename) . '"',
+      ];
+    }
+  }
+
+  return NULL;
+}
 
 /**
  * Implements hook_ENTITY_TYPE_view_alter() for webform_submission entities.
@@ -128,6 +217,11 @@ function _webform_entity_print_webform_submission_links(array &$build, EntityInt
       'export_type' => trim($export_type, '_engine'),
     ];
     $route_options = ['query' => ['view_mode' => $view_mode]];
+    // Attach the URL's token query parameter used to grant view permission.
+    $token = \Drupal::request()->get('token');
+    if ($token && $token === $entity->getToken()) {
+      $route_options['query']['token'] = $token;
+    }
 
     $link_attributes = $export_settings['link_attributes'];
     $link_attributes += ['class' => []];
@@ -215,6 +309,61 @@ function webform_entity_print_preprocess_entity_print(array &$variables) {
     implode(PHP_EOL, $css) . PHP_EOL .
     '</style>' . PHP_EOL
   );
+
+  // Append webform entity print image token to all files in the rendered
+  // webform submission data.
+  // NOTE: We are always rendering the webform submission data so that
+  // value is consistent.
+  // @see webform_entity_print_webform_submission_access();
+  $content =& NestedArray::getValue($variables, ['content', 0, 0]);
+  if (!$content) {
+    $content =& NestedArray::getValue($variables, ['content', 0]);
+  }
+
+  // Make absolute sure we are rendering and altering
+  // the webform submission data.
+  if (!$content
+    || !is_array($content)
+    || !isset($content['#theme'])
+    || $content['#theme'] !== 'webform_submission_data') {
+    return;
+  }
+
+  $webform_id = $webform->id();
+  $sid = $webform_submission->id();
+
+  // Render the webform submission data.
+  $html = (string) \Drupal::service('renderer')->render($content);
+
+  // Only matching <img src=""/webform/sid/*>.
+  if (preg_match_all('#(src\s*=\s*")([^"]+(?:/private|/system/files)/webform/' . $webform_id . '/' . $sid . '/[^"]+)#', $html, $matches)) {
+    foreach ($matches[2] as $index => $found_uri) {
+      $token_query = [WEBFORM_ENTITY_PRINT_IMAGE_TOKEN => _webform_entity_print_token_generate($found_uri)];
+      $replace_uri = $found_uri . (strpos($found_uri, '?') !== FALSE ? '&' : '?') . UrlHelper::buildQuery($token_query);
+      $html = str_replace($matches[0][$index], $matches[1][$index] . $replace_uri, $html);
+    }
+  }
+
+  // Only matching <img src=""/webform/signature_element_key/>.
+  $elements = $webform->getElementsDecodedAndFlattened();
+  $signature_elements = [];
+  foreach ($elements as $element_key => $element) {
+    if (isset($element['#type']) && $element['#type'] === 'webform_signature') {
+      $signature_elements[] = $element_key;
+    }
+  }
+  if ($signature_elements && preg_match_all('#(src\s*=\s*")([^"]+(?:/private|/system/files)/webform/' . $webform_id . '/(?:' . implode('|', $signature_elements) . ')/[^"]+)#', $html, $matches)) {
+    foreach ($matches[2] as $index => $found_uri) {
+      $token_query = [WEBFORM_ENTITY_PRINT_IMAGE_TOKEN => _webform_entity_print_token_generate($found_uri)];
+      $replace_uri = $found_uri . (strpos($found_uri, '?') !== FALSE ? '&' : '?') . UrlHelper::buildQuery($token_query);
+      $html = str_replace($matches[0][$index], $matches[1][$index] . $replace_uri, $html);
+    }
+  }
+
+  // The HTML markup is safe because it has already been rendered.
+  $content = [
+    '#markup' => Markup::create($html),
+  ];
 }
 
 /**
@@ -238,4 +387,18 @@ function _webform_entity_print_preprocess_entity_print_get_webform_submission(ar
       return $webform_submission;
     }
   }
+}
+
+/**
+ * Generate a unique and secure token for a URI.
+ *
+ * @param string $uri
+ *   A URI.
+ *
+ * @return string
+ *   A unique and secure token for a URI.
+ */
+function _webform_entity_print_token_generate($uri) {
+  $path = parse_url($uri, PHP_URL_PATH);
+  return Crypt::hmacBase64('webform-entity-print-path-' . $path, Settings::getHashSalt());
 }

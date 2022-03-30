@@ -3,6 +3,7 @@
 namespace Drupal\search_api\Plugin\views\cache;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\views\Plugin\views\cache\Tag;
@@ -78,8 +79,14 @@ class SearchApiTagCache extends Tag {
    */
   public function getCacheTags() {
     $tags = $this->view->storage->getCacheTags();
+    // Add the list cache tag of the search index, so that the view will be
+    // invalidated whenever the index is updated.
     $tag = 'search_api_list:' . $this->getQuery()->getIndex()->id();
     $tags = Cache::mergeTags([$tag], $tags);
+    // Also add the cache tags of the index itself, so that the view will be
+    // invalidated if the configuration of the index changes.
+    $index_tags = $this->getQuery()->getIndex()->getCacheTagsToInvalidate();
+    $tags = Cache::mergeTags($index_tags, $tags);
     return $tags;
   }
 
@@ -107,6 +114,17 @@ class SearchApiTagCache extends Tag {
     }
 
     return $tags;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function alterCacheMetadata(CacheableMetadata $cache_metadata) {
+    // Allow modules that alter the query to add their cache metadata to the
+    // view.
+    $query = $this->getQuery()->getSearchApiQuery();
+    $query->preExecute();
+    $cache_metadata->addCacheableDependency($query);
   }
 
 }

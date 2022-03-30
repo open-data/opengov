@@ -1,8 +1,16 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Query;
 
 use Solarium\Exception\InvalidArgumentException;
+use Solarium\Support\Utility;
 
 /**
  * Query helper.
@@ -56,10 +64,10 @@ class Helper
      * A term is a single word.
      * All characters that have a special meaning in a Solr query are escaped.
      *
-     * If you want to use the input as a phrase please use the {@link phrase()}
-     * method, because a phrase requires much less escaping.\
+     * If you want to use the input as a phrase please use the {@link escapePhrase()}
+     * method, because a phrase requires much less escaping.
      *
-     * @see https://lucene.apache.org/core/7_5_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description
+     * @see https://solr.apache.org/guide/the-standard-query-parser.html#escaping-special-characters
      *
      * @param string $input
      *
@@ -94,14 +102,39 @@ class Helper
     }
 
     /**
-     * Format a date to the expected formatting used in SOLR.
+     * Escape a local parameter value.
      *
-     * This format was derived to be standards compliant (ISO 8601)
-     * A date field shall be of the form 1995-12-31T23:59:59Z The trailing "Z" designates UTC time and is mandatory
+     * This method wraps the value in single quotes if it contains a space,
+     * a single quote, a double quote, or a right curly bracket. It backslash
+     * escapes single quotes and backslashes within that quoted string.
      *
-     * @see http://lucene.apache.org/solr/api/org/apache/solr/schema/DateField.html
+     * A value that doesn't require quoting is returned as is.
      *
-     * @param int|string|\DateTimeInterface $input accepted formats: timestamp, date string, DateTime or
+     * @see https://solr.apache.org/guide/local-parameters-in-queries.html#basic-syntax-of-local-parameters
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    public function escapeLocalParamValue(string $value): string
+    {
+        if (preg_match('/[ \'"}]/', $value)) {
+            $value = "'".preg_replace("/('|\\\\)/", '\\\$1', $value)."'";
+        }
+
+        return $value;
+    }
+
+    /**
+     * Format a date to the expected formatting used in Solr.
+     *
+     * This format was derived to be standards compliant (ISO 8601).
+     * A date field shall be of the form 1995-12-31T23:59:59Z.
+     * The trailing "Z" designates UTC time and is mandatory.
+     *
+     * @see https://solr.apache.org/guide/working-with-dates.html#date-formatting
+     *
+     * @param int|string|\DateTimeInterface $input Accepted formats: timestamp, date string, DateTime or
      *                                             DateTimeImmutable
      *
      * @return string|bool false is returned in case of invalid input
@@ -114,10 +147,10 @@ class Helper
                 $input = clone $input;
                 break;
             // input of timestamp or date/time string
-            case is_string($input) || is_numeric($input):
-
+            case \is_string($input):
+            case is_numeric($input):
                 // if date/time string: convert to timestamp first
-                if (is_string($input)) {
+                if (\is_string($input)) {
                     $input = strtotime($input);
                 }
 
@@ -142,10 +175,8 @@ class Helper
             // when we get here the input is always a datetime object
             $input = $input->setTimezone(new \DateTimeZone('UTC'));
             // Solr seems to require the format PHP erroneously declares as ISO8601.
-            // @todo use DateTimeInterface as soon as we require PHP 7.2 at least:
-            // $iso8601 = $input->format(\DateTimeInterface::ISO8601);
             /** @noinspection DateTimeConstantsUsageInspection */
-            $iso8601 = $input->format(\DateTime::ISO8601);
+            $iso8601 = $input->format(\DateTimeInterface::ISO8601);
             $iso8601 = strstr($iso8601, '+', true); //strip timezone
             $iso8601 .= 'Z';
 
@@ -162,41 +193,44 @@ class Helper
      * From and to can be any type of data. For instance int, string or point.
      * If they are null, then '*' will be used.
      *
-     * Example: rangeQuery('store', '45,-94', '46,-93', true, false)
+     * Example: rangeQuery('store', '45,-94', '46,-93')
      * Returns: store:[45,-94 TO 46,-93]
      *
-     * Example: rangeQuery('store', '5', '*', false)
-     * Returns: store:{"5" TO *}
+     * Example: rangeQuery('store', 5, null, false)
+     * Returns: store:{5 TO *}
      *
-     * @param string      $field
-     * @param string|null $from
-     * @param string|null $to
-     * @param bool        $inclusive TRUE if the the range should include the boundaries, FALSE otherwise
-     * @param bool        $escape    Whether the values should be escaped as phrase or not. Default is TRUE because
-     *                               escaping is correct for security reasons. But for location searches (point values),
-     *                               escaping would break the functionality
+     * Example: rangeQuery('price', 0, 10, [true, false])
+     * Returns: price:[0 TO 10}
+     *
+     * @param string                $field
+     * @param int|float|string|null $from
+     * @param int|float|string|null $to
+     * @param bool|bool[]           $inclusive TRUE or [TRUE, TRUE] for inclusive, FALSE or [FALSE, FALSE] for exclusive,
+     *                                         [TRUE, FALSE] for left-inclusive only, [FALSE, TRUE] for right-inclusive only
      *
      * @return string
      */
-    public function rangeQuery(string $field, ?string $from, ?string $to, bool $inclusive = true, bool $escape = true): string
+    public function rangeQuery(string $field, $from, $to, $inclusive = true): string
     {
         if (null === $from) {
             $from = '*';
-        } elseif ($escape) {
+        } elseif (!\is_int($from) && !\is_float($from) && !Utility::isPointValue($from)) {
             $from = $this->escapePhrase($from);
         }
 
         if (null === $to) {
             $to = '*';
-        } elseif ($escape) {
+        } elseif (!\is_int($to) && !\is_float($to) && !Utility::isPointValue($to)) {
             $to = $this->escapePhrase($to);
         }
 
-        if ($inclusive) {
-            return $field.':['.$from.' TO '.$to.']';
+        if (\is_array($inclusive)) {
+            list($leftInclusive, $rightInclusive) = $inclusive;
+        } else {
+            $leftInclusive = $rightInclusive = $inclusive;
         }
 
-        return $field.':{'.$from.' TO '.$to.'}';
+        return sprintf('%s:%s%s TO %s%s', $field, $leftInclusive ? '[' : '{', $from, $to, $rightInclusive ? ']' : '}');
     }
 
     /**
@@ -282,7 +316,6 @@ class Helper
     /**
      * Render a qparser plugin call.
      *
-     *
      * @param string $name
      * @param array  $params
      * @param bool   $dereferenced
@@ -300,7 +333,7 @@ class Helper
             }
 
             foreach ($params as $paramKey => $paramValue) {
-                if (is_int($paramKey) || $forceKeys) {
+                if (\is_int($paramKey) || $forceKeys) {
                     ++$this->derefencedParamsLastKey;
                     $derefKey = 'deref_'.$this->derefencedParamsLastKey;
                 } else {
@@ -313,8 +346,14 @@ class Helper
 
         $output = '{!'.$name;
         foreach ($params as $key => $value) {
-            if (!$dereferenced || $forceKeys || is_int($key)) {
-                $output .= ' '.$key.'='.$value;
+            if (!$dereferenced || $forceKeys || \is_int($key)) {
+                if (\is_array($value)) {
+                    $value = implode(',', $value);
+                } elseif (\is_bool($value)) {
+                    $value = $value ? 'true' : 'false';
+                }
+
+                $output .= ' '.$key.'='.$this->escapeLocalParamValue($value);
             }
         }
         $output .= '}';
@@ -354,7 +393,7 @@ class Helper
      * %T4% = term-escaped
      *
      * Numbering starts at 1, so number 1 refers to the first entry
-     * of $parts (which has array key 0)
+     * of $parts (which has array key 0).
      * You can use the same part multiple times, even in multiple modes.
      * The mode letters are not case sensitive.
      *
@@ -382,8 +421,7 @@ class Helper
     /**
      * Render join localparams syntax.
      *
-     * @see http://wiki.apache.org/solr/Join
-     * @since 2.4.0
+     * @see https://solr.apache.org/guide/other-parsers.html#join-query-parser
      *
      * @param string $from
      * @param string $to
@@ -404,7 +442,7 @@ class Helper
      *
      * This is a Solr 3.2+ feature.
      *
-     * @see http://wiki.apache.org/solr/SolrQuerySyntax#Other_built-in_useful_query_parsers
+     * @see https://solr.apache.org/guide/other-parsers.html#term-query-parser
      *
      * @param string $field
      * @param float  $weight
@@ -421,7 +459,7 @@ class Helper
      *
      * This is a Solr 3.4+ feature.
      *
-     * @see http://wiki.apache.org/solr/CommonQueryParameters#Caching_of_filters
+     * @see https://solr.apache.org/guide/common-query-parameters.html#cache-parameter
      *
      * @param bool       $useCache
      * @param float|null $cost
@@ -462,8 +500,25 @@ class Helper
     }
 
     /**
-     * Render placeholders in a querystring.
+     * Escape text for use as parsed character data content in an XML element.
      *
+     * This escapes characters that can't appear as character data using their
+     * corresponding entity references. Per the definition of XML, "&" and "<"
+     * MUST be escaped when used in character data, ">" MUST be escaped in the
+     * string "]]>" and MAY be otherwise, so we escape it to be safe.
+     *
+     * @param string $data
+     *
+     * @return string
+     */
+    public function escapeXMLCharacterData(string $data): string
+    {
+        // we don't use htmlspecialchars because it only supports a limited number of character sets
+        return str_replace(['&', '<', '>'], ['&amp;', '&lt;', '&gt;'], $data);
+    }
+
+    /**
+     * Render placeholders in a querystring.
      *
      * @param array $matches
      *
@@ -479,7 +534,7 @@ class Helper
         if (isset($this->assembleParts[$partNumber - 1])) {
             $value = $this->assembleParts[$partNumber - 1];
         } else {
-            throw new InvalidArgumentException('No value supplied for part #'.$partNumber.' in query assembler');
+            throw new InvalidArgumentException(sprintf('No value supplied for part #%d in query assembler', $partNumber));
         }
 
         switch ($partMode) {

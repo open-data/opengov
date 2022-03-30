@@ -17,15 +17,17 @@ class WebformGroupRolesElementTest extends WebformGroupBrowserTestBase {
    * Tests webform group roles element.
    */
   public function testGroupRolesElement() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_element_group_roles');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check default element properties.
     $element = [];
     $options = WebformGroupRoles::getGroupRolesOptions($element);
     WebformElementHelper::convertRenderMarkupToStrings($options);
-    $this->assertEqual([
+    $this->assertEquals([
       'Group role types' => [
         'outsider' => 'Outsider',
         'member' => 'Member',
@@ -50,7 +52,7 @@ class WebformGroupRolesElementTest extends WebformGroupBrowserTestBase {
     ];
     $options = WebformGroupRoles::getGroupRolesOptions($element);
     WebformElementHelper::convertRenderMarkupToStrings($options);
-    $this->assertEqual([
+    $this->assertEquals([
       'Group role types' => [
         'custom' => 'Custom',
       ],
@@ -65,7 +67,7 @@ class WebformGroupRolesElementTest extends WebformGroupBrowserTestBase {
       'webform_group_roles_advanced' => 'custom',
     ];
     $this->postSubmission($webform, $edit);
-    $this->assertRaw('webform_group_roles:
+    $assert_session->responseContains('webform_group_roles:
   - custom
   - member
 webform_group_roles_advanced: custom');

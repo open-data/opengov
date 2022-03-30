@@ -19,7 +19,7 @@ function webform_icheck_webform_libraries_info() {
     'description' => t('Highly customizable checkboxes and radio buttons.'),
     'notes' => t('iCheck is used to optionally enhance checkboxes and radio buttons.'),
     'homepage_url' => Url::fromUri('http://icheck.fronteed.com/'),
-    'download_url' => Url::fromUri('https://github.com/fronteed/icheck/archive/1.0.2.zip'),
+    'download_url' => Url::fromUri('https://github.com/dargullin/icheck/archive/refs/tags/1.0.2.zip'),
     'version' => '1.0.2 ',
     'optional' => FALSE,
     'deprecated' => t('The iCheck library is not being maintained. It has been <a href=":href">deprecated</a> and will be removed in Webform 7.0.', [':href' => 'https://www.drupal.org/project/webform/issues/2931154']),
@@ -70,7 +70,7 @@ function webform_icheck_webform_element_configuration_form_alter(&$form, FormSta
  * Implements hook_webform_element_alter().
  */
 function webform_icheck_webform_element_alter(array &$element, FormStateInterface $form_state, array $context) {
-  $element_type = (isset($element['#type'])) ? $element['#type'] : '';
+  $element_type = $element['#type'] ?? '';
   if (!_webform_icheck_is_supported($element_type)) {
     return;
   }

@@ -14,7 +14,6 @@ use Drupal\jsonapi\JsonApiResource\ResourceObjectData;
 use Drupal\jsonapi\ResourceResponse;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
-use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
@@ -24,7 +23,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * @internal JSON:API maintains no PHP API. The API is the HTTP API. This class
  *   may change at any time and could break any dependencies on it.
  *
- * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see https://www.drupal.org/project/drupal/issues/3032787
  * @see jsonapi.api.php
  */
 class EntryPoint extends ControllerBase {
@@ -104,7 +103,7 @@ class EntryPoint extends ControllerBase {
 
     $meta = [];
     if ($this->user->isAuthenticated()) {
-      $current_user_uuid = User::load($this->user->id())->uuid();
+      $current_user_uuid = $this->entityTypeManager()->getStorage('user')->load($this->user->id())->uuid();
       $meta['links']['me'] = ['meta' => ['id' => $current_user_uuid]];
       $cacheability->addCacheContexts(['user']);
       try {

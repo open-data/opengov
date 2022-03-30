@@ -40,34 +40,6 @@ trait TestCompatibilityTrait {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function assertEquals($expected, $actual, string $message = '', float $delta = 0, int $maxDepth = 10, bool $canonicalize = FALSE, bool $ignoreCase = FALSE): void {
-    // Cast objects implementing MarkupInterface to string instead of
-    // relying on PHP casting them to string depending on what they are being
-    // comparing with.
-    if (method_exists(self::class, 'castSafeStrings')) {
-      $expected = self::castSafeStrings($expected);
-      $actual = self::castSafeStrings($actual);
-    }
-    parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
-  }
-
-  /**
-   * Forward compatibility for assertEqualsCanonicalizing.
-   */
-  public static function assertEqualsCanonicalizing($expected, $actual, string $message = ''): void {
-    static::assertEquals($expected, $actual, $message, 0.0, 10, TRUE);
-  }
-
-  /**
-   * Forward compatibility for assertNotEqualsCanonicalizing.
-   */
-  public static function assertNotEqualsCanonicalizing($expected, $actual, string $message = ''): void {
-    static::assertNotEquals($expected, $actual, $message, 0.0, 10, TRUE);
-  }
-
-  /**
    * Forward compatibility for assertStringContainsString.
    */
   public static function assertStringContainsString(string $needle, string $haystack, string $message = ''): void {
@@ -93,6 +65,20 @@ trait TestCompatibilityTrait {
    */
   public static function assertStringNotContainsStringIgnoringCase(string $needle, string $haystack, string $message = ''): void {
     static::assertNotContains($needle, $haystack, $message, TRUE);
+  }
+
+  /**
+   * Forward compatibility for assertEqualsCanonicalizing.
+   */
+  public static function assertEqualsCanonicalizing($expected, $actual, string $message = ''): void {
+    static::assertEquals($expected, $actual, $message, 0.0, 10, TRUE);
+  }
+
+  /**
+   * Forward compatibility for assertNotEqualsCanonicalizing.
+   */
+  public static function assertNotEqualsCanonicalizing($expected, $actual, string $message = ''): void {
+    static::assertNotEquals($expected, $actual, $message, 0.0, 10, TRUE);
   }
 
   /**

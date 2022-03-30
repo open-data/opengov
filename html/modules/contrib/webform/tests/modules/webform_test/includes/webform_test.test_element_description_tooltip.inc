@@ -42,7 +42,8 @@ function webform_test_test_element_description_tooltip() {
     $element['#description'] = (string) t("This is a description for the '@type' element.", ['@type' => $element_type]);
     $element['#description_display'] = 'tooltip';
 
-    $data[$category_id][$element_type] = $element;
+    $element_key = str_replace(':', '_', $element_type);
+    $data[$category_id][$element_key] = $element;
   }
 
   // Move other elements last.

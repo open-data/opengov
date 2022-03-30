@@ -1,34 +1,46 @@
 CONTENTS OF THIS FILE
 ---------------------
+
  * Requirements
+ * Recommended Modules
  * Installation
  * Configuration
  * Features
  * Extension modules
  * FAQ
+ * Maintainers
 
 
 INTRODUCTION
 ------------
-Todo
+
+The Facets module allows site builders to easily create and manage faceted search
+interfaces.
 
 
 REQUIREMENTS
 ------------
-No other modules required, we're supporting drupal core's search as a source for
-creating facets. Though we recommend using Search API, as that integration is
-better tested.
+
+No other modules required; we're supporting Drupal Core's search as a source for
+creating facets.
+
+
+RECOMMENDED MODULES
+-------------------
+
+ * Search API - https://www.drupal.org/project/search_api
 
 
 INSTALLATION
 ------------
- * Install as you would normally install a contributed drupal module. See:
-   https://drupal.org/documentation/install/modules-themes/modules-7
-   for further information.
+
+ * Install as you would normally install a contributed Drupal module. Visit:
+   https://www.drupal.org/node/1897420 for further information.
 
 
 CONFIGURATION
 -------------
+
 Before adding a facet, there should be a facet source. Facet sources can be:
 - Drupal core's search.
 - A view based on a Search API index with a page display.
@@ -45,13 +57,13 @@ facets for that view.
 
 KNOWN ISSUES
 ------------
+
 When choosing the "Hard limit" option on a search_api_db backend, be aware that
-the limitation is done internally after sorting on the amount of results ("num")
+the limitation is done internally after sorting on the number of results ("num")
 first and then sorting by the raw value of the facet (e.g. entity-id) in the
 second dimension. This can lead to edge cases when there is an equal amount of
 results on facets that are exactly on the threshold of the hard limit. In this
 case the raw facet value with the lower value is preferred:
-
 
 | num | value | label |
 |-----|-------|-------|
@@ -67,12 +79,12 @@ further details see: https://www.drupal.org/node/2834730
 FEATURES
 --------
 
-If you are the developer of a search api backend implementation and want
+If you are the developer of a search API backend implementation and want
 to support facets with your service class, too, you'll have to support the
 "search_api_facets" feature. In short, you'll just have to return facet terms
-and counts according to the query's "search_api_facets" option, when executing a
-query.
-In order for the module to be able to tell that your server supports facets,
+and counts according to the query's "search_api_facets" option, when executing
+a query.
+For the module to be able to tell that your server supports facets,
 you will also have to change your service's supportsFeature() method to
 something like the following:
 
@@ -123,7 +135,7 @@ A filter is a string with one of the following forms:
 - `"VALUE"`: Filter by the literal value VALUE (always include the quotes, not
   only for strings).
 - `[VALUE1 VALUE2]`: Filter for a value between VALUE1 and VALUE2. Use
-  parantheses for excluding the border values and square brackets for including
+  parentheses for excluding the border values and square brackets for including
   them. An asterisk (*) can be used as a wildcard. E.g., (* 0) or [* 0) would be
   a filter for all negative values.
 - `!`: Filter for items without a value for this field (i.e., the "missing"
@@ -134,29 +146,32 @@ EXTENSION MODULES
 -----------------
 
 - https://www.drupal.org/project/entity_reference_facet_link
- Provides a link the a facet trough an entity reference field.
+  Provides a link to a facet through an entity reference field.
 - https://www.drupal.org/project/facets_prefix_suffix
- Provides a plugin to configure a prefix/suffix per result.
+  Provides a plugin to configure a prefix/suffix per result.
 - https://www.drupal.org/project/facets_block
- Provide the facets as drupal block.
+  Provide the facets as a Drupal block.
 - https://www.drupal.org/project/facets_taxonomy_path_processor
- Sets taxonomy facet items active if present in route.
+  Sets taxonomy facet items active if present in route.
 - https://www.drupal.org/project/facets_view_mode_processor
- Provides a processor to render facet entity reference items as view modes.
-
+  Provides a processor to render facet entity reference items as view modes.
+- https://www.drupal.org/project/facets_range_input
+  Provides an input range form (min and max) as a processor and widget.
+- https://www.drupal.org/project/facets_range_dropdowns
+  Provides an dropdown widget that works with the range processor.
 
 FAQ
 ---
 
-Q: Why do the facets disappear after a refresh.
+Q: Why do the facets disappear after a refresh?
 A: We don't support cached views, change the view to disable caching.
 
-Q: Why doesn't chosen (or similar javascript dropdown replacement) not work
-with the dropdown widget.
-A: Because the dropdown we create for the widget is created trough javascript,
+Q: Why doesn't chosen (or similar JavaScript dropdown replacement) not work
+with the dropdown widget?
+A: Because the dropdown we create for the widget is created through JavaScript,
 the chosen module (and others, probably) doesn't find the select element.
-So the library should be attached to the block in custom code, we haven't done
-this in facets because we don't want to support all possible frameworks.
+Though the library can be attached to the block in custom code, we haven't
+done this in facets because we don't want to support all possible frameworks.
 See https://www.drupal.org/node/2853121 for more information.
 
 Q: Why are facets results links from another language showing in the facet
@@ -169,7 +184,7 @@ limits the results to the current language.
 Q: I would like a prefix/suffix for facet result items.
 A: If you just need to show text, use
 https://www.drupal.org/project/facets_prefix_suffix.
-However if you need to include html you can use
+However, if you need to include HTML you can use
 hook_preprocess_facets_result_item().
 
 Q: Why are results shown for inaccessible content?
@@ -179,3 +194,10 @@ the access checks for you.
 This should only happen if you're not using the default node access framework
 provided by Core, though. You need to use a combination of hook_node_grants and
 hook_node_access_records instead of hook_node_access.
+
+MAINTAINERS
+-----------
+
+ * Joris Vercammen (borisson_) - https://www.drupal.org/u/borisson_
+ * Jimmy Henderickx (StryKaizer) - https://www.drupal.org/u/strykaizer
+ * Nick Veenhof (Nick_vh) - https://www.drupal.org/u/nick_vh

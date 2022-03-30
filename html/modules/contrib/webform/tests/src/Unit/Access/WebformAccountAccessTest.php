@@ -35,7 +35,7 @@ class WebformAccountAccessTest extends WebformAccessTestBase {
       'view any webform submission' => TRUE,
     ]);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check admin access.
     $this->assertEquals(AccessResult::neutral()->cachePerPermissions(), WebformAccountAccess::checkAdminAccess($anonymous_account)->setReason(''));

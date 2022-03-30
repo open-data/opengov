@@ -5,6 +5,8 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\MissingDependencyException;
+use Drupal\Core\Extension\ModuleExtensionList;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ModuleInstallerInterface;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drush\Commands\DrushCommands;
@@ -19,14 +21,20 @@ class PmCommands extends DrushCommands
 
     protected $moduleInstaller;
 
+    protected $moduleHandler;
+
     protected $themeHandler;
 
-    public function __construct(ConfigFactoryInterface $configFactory, ModuleInstallerInterface $moduleInstaller, ThemeHandlerInterface $themeHandler)
+    protected $extensionListModule;
+
+    public function __construct(ConfigFactoryInterface $configFactory, ModuleInstallerInterface $moduleInstaller, ModuleHandlerInterface $moduleHandler, ThemeHandlerInterface $themeHandler, ModuleExtensionList $extensionListModule)
     {
         parent::__construct();
         $this->configFactory = $configFactory;
         $this->moduleInstaller = $moduleInstaller;
+        $this->moduleHandler = $moduleHandler;
         $this->themeHandler = $themeHandler;
+        $this->extensionListModule = $extensionListModule;
     }
 
     /**
@@ -46,6 +54,14 @@ class PmCommands extends DrushCommands
     }
 
     /**
+     * @return \Drupal\Core\Extension\ModuleHandlerInterface
+     */
+    public function getModuleHandler()
+    {
+        return $this->moduleHandler;
+    }
+
+    /**
      * @return \Drupal\Core\Extension\ThemeHandlerInterface
      */
     public function getThemeHandler()
@@ -54,11 +70,20 @@ class PmCommands extends DrushCommands
     }
 
     /**
+     * @return \Drupal\Core\Extension\ModuleExtensionList
+     */
+    public function getExtensionListModule()
+    {
+        return $this->extensionListModule;
+    }
+
+    /**
      * Enable one or more modules.
      *
      * @command pm:enable
      * @param $modules A comma delimited list of modules.
      * @aliases en,pm-enable
+     * @bootstrap root
      */
     public function enable(array $modules)
     {
@@ -82,9 +107,54 @@ class PmCommands extends DrushCommands
             drush_backend_batch_process();
         }
         $this->logger()->success(dt('Successfully enabled: !list', $todo_str));
-        // Our logger got blown away during the container rebuild above.
-        $boot = Drush::bootstrapManager()->bootstrap();
-        $boot->addLogger();
+    }
+
+    /**
+     * Run requirements checks on the module installation.
+     *
+     * @hook validate pm:enable
+     *
+     * @throws \Drush\Exceptions\UserAbortException
+     * @throws \Drupal\Core\Extension\MissingDependencyException
+     *
+     * @see \drupal_check_module()
+     */
+    public function validateEnableModules(CommandData $commandData)
+    {
+        $modules = $commandData->input()->getArgument('modules');
+        $modules = StringUtils::csvToArray($modules);
+        $modules = $this->addInstallDependencies($modules);
+        if (empty($modules)) {
+            return;
+        }
+
+        require_once DRUSH_DRUPAL_CORE . '/includes/install.inc';
+        $error = false;
+        foreach ($modules as $module) {
+            module_load_install($module);
+            $requirements = $this->getModuleHandler()->invoke($module, 'requirements', ['install']);
+            if (is_array($requirements) && drupal_requirements_severity($requirements) == REQUIREMENT_ERROR) {
+                $error = true;
+                $reasons = [];
+                foreach ($requirements as $id => $requirement) {
+                    if (isset($requirement['severity']) && $requirement['severity'] == REQUIREMENT_ERROR) {
+                        $message = $requirement['description'];
+                        if (isset($requirement['value']) && $requirement['value']) {
+                            $message = dt('@requirements_message (Currently using @item version @version)', ['@requirements_message' => $requirement['description'], '@item' => $requirement['title'], '@version' => $requirement['value']]);
+                        }
+                        $reasons[$id] = $message;
+                    }
+                }
+                $this->logger()->error(sprintf("Unable to install module '%s' due to unmet requirement(s):%s", $module, "\n  - " . implode("\n  - ", $reasons)));
+            }
+        }
+
+        if ($error) {
+            // Let the user confirm the installation if the requirements are unmet.
+            if (!$this->io()->confirm(dt('The module install requirements failed. Do you wish to continue?'))) {
+                throw new UserAbortException();
+            }
+        }
     }
 
     /**
@@ -108,9 +178,6 @@ class PmCommands extends DrushCommands
             throw new \Exception('Unable to uninstall modules.');
         }
         $this->logger()->success(dt('Successfully uninstalled: !list', ['!list' => implode(', ', $list)]));
-        // Our logger got blown away during the container rebuild above.
-        $boot = Drush::bootstrapManager()->bootstrap();
-        $boot->addLogger();
     }
 
     /**
@@ -142,6 +209,7 @@ class PmCommands extends DrushCommands
      * @option package Only show extensions having a given project packages (e.g. Development).
      * @field-labels
      *   package: Package
+     *   project: Project
      *   display_name: Name
      *   name: Name
      *   type: Type
@@ -156,8 +224,8 @@ class PmCommands extends DrushCommands
     public function pmList($options = ['format' => 'table', 'type' => 'module,theme', 'status' => 'enabled,disabled', 'package' => self::REQ, 'core' => false, 'no-core' => false])
     {
         $rows = [];
-        // @todo Update this and other usages once Drupal 8.5 is unsupported by Drush https://www.drupal.org/node/2709919.
-        $modules = \system_rebuild_module_data();
+
+        $modules = $this->getExtensionListModule()->getList();
         $themes = $this->getThemeHandler()->rebuildThemeData();
         $both = array_merge($modules, $themes);
 
@@ -210,6 +278,7 @@ class PmCommands extends DrushCommands
 
             $row = [
                 'package' => $extension->info['package'],
+                'project' => isset($extension->info['project']) ? $extension->info['project'] : '',
                 'display_name' => $extension->info['name']. ' ('. $extension->getName(). ')',
                 'name' => $extension->getName(),
                 'type' => $extension->getType(),
@@ -240,7 +309,7 @@ class PmCommands extends DrushCommands
 
     public function addInstallDependencies($modules)
     {
-        $module_data = system_rebuild_module_data();
+        $module_data = $this->getExtensionListModule()->reset()->getList();
         $module_list  = array_combine($modules, $modules);
         if ($missing_modules = array_diff_key($module_list, $module_data)) {
             // One or more of the given modules doesn't exist.
@@ -274,7 +343,7 @@ class PmCommands extends DrushCommands
     public function addUninstallDependencies($modules)
     {
         // Get all module data so we can find dependencies and sort.
-        $module_data = system_rebuild_module_data();
+        $module_data = $this->getExtensionListModule()->reset()->getList();
         $module_list = array_combine($modules, $modules);
         if ($diff = array_diff_key($module_list, $module_data)) {
             throw new \Exception(dt('A specified extension does not exist: !diff', ['!diff' => implode(',', $diff)]));
@@ -284,7 +353,7 @@ class PmCommands extends DrushCommands
 
         // Add dependent modules to the list. The new modules will be processed as
         // the while loop continues.
-        $profile = drupal_get_profile();
+        $profile = drush_drupal_get_profile();
         foreach (array_keys($module_list) as $module) {
             foreach (array_keys($module_data[$module]->required_by) as $dependent) {
                 if (!isset($module_data[$dependent])) {

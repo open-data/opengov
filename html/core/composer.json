@@ -17,7 +17,7 @@
         "ext-SPL": "*",
         "ext-tokenizer": "*",
         "ext-xml": "*",
-        "php": ">=7.0.8",
+        "php": "^7.0.8",
         "symfony/class-loader": "~3.4.0",
         "symfony/console": "~3.4.0",
         "symfony/dependency-injection": "~3.4.26",
@@ -38,15 +38,16 @@
         "guzzlehttp/guzzle": "^6.3",
         "symfony-cmf/routing": "^1.4",
         "easyrdf/easyrdf": "^0.9",
-        "zendframework/zend-feed": "^2.12",
+        "laminas/laminas-feed": "^2.12",
         "stack/builder": "^1.0",
         "egulias/email-validator": "^2.0",
         "masterminds/html5": "^2.1",
         "symfony/psr-http-message-bridge": "^1.1.2",
-        "zendframework/zend-diactoros": "^1.8",
+        "laminas/laminas-diactoros": "^1.8",
         "composer/semver": "^1.0",
         "asm89/stack-cors": "^1.1",
-        "pear/archive_tar": "^1.4.11"
+        "pear/archive_tar": "^1.4.14",
+        "psr/log": "^1.0"
     },
     "conflict": {
         "drupal/pathauto": "<1.6",

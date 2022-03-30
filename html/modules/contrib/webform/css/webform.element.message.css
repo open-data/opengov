@@ -6,24 +6,6 @@
  */
 
 /**
- * Add styles to default (info) message,
- */
-.messages.messages--info {
-  color: #31708f;
-  border-color: #0074bd #0074bd #0074bd transparent; /* LTR */
-  background-color: #d9edf7;
-  background-image: url(../images/icons/info.svg);
-  background-repeat: no-repeat;
-  background-position: 10px 17px;
-  box-shadow: -8px 0 0 #0074bd; /* LTR */
-}
-[dir="rtl"] .messages.messages--info {
-  margin-left: 0;
-  border-color: #0074bd transparent #0074bd #0074bd;
-  box-shadow: 8px 0 0 #0074bd;
-}
-
-/**
  * Webform message close container.
  */
 .webform-message--close .messages {
@@ -76,5 +58,12 @@ html[dir="rtl"].js .webform-message--close .webform-message__link {
 }
 
 html.js .js-webform-message--close-storage {
+  display: none;
+}
+
+/**
+ * Hide Gin themes dismiss button even when it appears on the node edit form.
+ */
+.js-webform-message--close .button--dismiss {
   display: none;
 }

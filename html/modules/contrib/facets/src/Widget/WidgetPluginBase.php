@@ -2,6 +2,7 @@
 
 namespace Drupal\facets\Widget;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -77,8 +78,9 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
       '#attributes' => [
         'data-drupal-facet-id' => $facet->id(),
         'data-drupal-facet-alias' => $facet->getUrlAlias(),
+        'class' => [$facet->getActiveItems() ? 'facet-active' : 'facet-inactive'],
       ],
-      '#context' => ['list_style' => $widget['type']],
+      '#context' => !empty($widget['type']) ? ['list_style' => $widget['type']] : [],
       '#cache' => [
         'contexts' => [
           'url.path',
@@ -103,7 +105,8 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
    *   A theme hook name with suggestions, suitable for the #theme property.
    */
   protected function getFacetItemListThemeHook(FacetInterface $facet) {
-    return 'facets_item_list__' . $facet->getWidget()['type'] . '__' . $facet->id();
+    $type = $facet->getWidget()['type'] ?? 'std';
+    return 'facets_item_list__' . $type . '__' . $facet->id();
   }
 
   /**
@@ -202,8 +205,9 @@ abstract class WidgetPluginBase extends PluginBase implements WidgetPluginInterf
     }
 
     $items['#wrapper_attributes'] = ['class' => $classes];
-    $items['#attributes']['data-drupal-facet-item-id'] = $this->facet->getUrlAlias() . '-' . str_replace(' ', '-', $result->getRawValue());
+    $items['#attributes']['data-drupal-facet-item-id'] = Html::getClass($this->facet->getUrlAlias() . '-' . strtr($result->getRawValue(), ' \'\"', '---'));
     $items['#attributes']['data-drupal-facet-item-value'] = $result->getRawValue();
+    $items['#attributes']['data-drupal-facet-item-count'] = $result->getCount();
     return $items;
   }
 

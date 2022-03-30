@@ -41,7 +41,7 @@ class WebformTermSelect extends Select implements WebformElementEntityReferenceI
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

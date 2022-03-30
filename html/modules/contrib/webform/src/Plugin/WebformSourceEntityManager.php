@@ -66,6 +66,7 @@ class WebformSourceEntityManager extends DefaultPluginManager implements Webform
    */
   public static function getMainSourceEntity(EntityInterface $source_entity) {
     if (\Drupal::moduleHandler()->moduleExists('paragraphs')) {
+      // phpcs:ignore Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing
       while ($source_entity instanceof \Drupal\paragraphs\Entity\Paragraph) {
         $source_entity = $source_entity->getParentEntity();
       }

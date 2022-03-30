@@ -26,7 +26,7 @@ class WebformCardsAutoForwardJavaScriptTest extends WebformWebDriverTestBase {
     $page = $session->getPage();
     $assert_session = $this->assertSession();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalGet('/webform/test_cards_auto_forward');
     $assert_session->waitForElement('css', '.webform-card--active[data-webform-key="textfield"]');
@@ -67,7 +67,7 @@ class WebformCardsAutoForwardJavaScriptTest extends WebformWebDriverTestBase {
     $page->pressButton('edit-submit');
     $assert_session->pageTextContains('New submission added to Test: Webform: Cards auto-forward.');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalGet('/webform/test_cards_auto_forward_hide');
 

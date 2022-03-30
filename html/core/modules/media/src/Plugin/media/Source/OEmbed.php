@@ -220,6 +220,11 @@ class OEmbed extends MediaSourceBase implements OEmbedInterface {
    */
   public function getMetadata(MediaInterface $media, $name) {
     $media_url = $this->getSourceFieldValue($media);
+    // The URL may be NULL if the source field is empty, in which case just
+    // return NULL.
+    if (empty($media_url)) {
+      return NULL;
+    }
 
     try {
       $resource_url = $this->urlResolver->getResourceUrl($media_url);
@@ -389,10 +394,14 @@ class OEmbed extends MediaSourceBase implements OEmbedInterface {
     }
     $remote_thumbnail_url = $remote_thumbnail_url->toString();
 
+    // Remove the query string, since we do not want to include it in the local
+    // thumbnail URI.
+    $local_thumbnail_url = parse_url($remote_thumbnail_url, PHP_URL_PATH);
+
     // Compute the local thumbnail URI, regardless of whether or not it exists.
     $configuration = $this->getConfiguration();
     $directory = $configuration['thumbnails_directory'];
-    $local_thumbnail_uri = "$directory/" . Crypt::hashBase64($remote_thumbnail_url) . '.' . pathinfo($remote_thumbnail_url, PATHINFO_EXTENSION);
+    $local_thumbnail_uri = "$directory/" . Crypt::hashBase64($local_thumbnail_url) . '.' . pathinfo($local_thumbnail_url, PATHINFO_EXTENSION);
 
     // If the local thumbnail already exists, return its URI.
     if (file_exists($local_thumbnail_uri)) {

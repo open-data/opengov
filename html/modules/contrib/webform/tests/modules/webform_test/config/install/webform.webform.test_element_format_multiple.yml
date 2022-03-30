@@ -221,6 +221,44 @@ elements: |
           - test@test.com
           - random@random.com
         '#format_items': ul
+    webform_height:
+      '#type': details
+      '#title': 'Height (feet/inches)'
+      webform_height_comma:
+        '#type': webform_height
+        '#title': 'Height (feet/inches) (Comma)'
+        '#multiple': true
+        '#default_value':
+          - 36
+        '#format_items': comma
+      webform_height_semicolon:
+        '#type': webform_height
+        '#title': 'Height (feet/inches) (Semicolon)'
+        '#multiple': true
+        '#default_value':
+          - 36
+        '#format_items': semicolon
+      webform_height_and:
+        '#type': webform_height
+        '#title': 'Height (feet/inches) (And)'
+        '#multiple': true
+        '#default_value':
+          - 36
+        '#format_items': and
+      webform_height_ol:
+        '#type': webform_height
+        '#title': 'Height (feet/inches) (Ordered list)'
+        '#multiple': true
+        '#default_value':
+          - 36
+        '#format_items': ol
+      webform_height_ul:
+        '#type': webform_height
+        '#title': 'Height (feet/inches) (Unordered list)'
+        '#multiple': true
+        '#default_value':
+          - 36
+        '#format_items': ul
     number:
       '#type': details
       '#title': Number
@@ -390,6 +428,7 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
+        '#multiple': true
         '#default_value':
           - one
           - two
@@ -403,6 +442,7 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
+        '#multiple': true
         '#default_value':
           - one
           - two
@@ -416,6 +456,7 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
+        '#multiple': true
         '#default_value':
           - one
           - two
@@ -429,6 +470,7 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
+        '#multiple': true
         '#default_value':
           - one
           - two
@@ -442,23 +484,40 @@ elements: |
           two: Two
           three: Three
         '#options_display': side_by_side
+        '#multiple': true
         '#default_value':
           - one
           - two
           - three
         '#format_items': ul
-      checkboxes_checklist:
+      checkboxes_checklist_boxes:
         '#type': checkboxes
-        '#title': 'Checkboxes (Checklist)'
+        '#title': 'Checkboxes (Checklist (☑/☐))'
         '#options':
           one: One
           two: Two
           three: Three
+        '#options_display': side_by_side
+        '#multiple': true
         '#default_value':
           - one
           - two
           - three
         '#format_items': 'checklist:boxes'
+      checkboxes_checklist_crosses:
+        '#type': checkboxes
+        '#title': 'Checkboxes (Checklist (gi))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:crosses'
     webform_checkboxes_other:
       '#type': details
       '#title': 'Checkboxes other'
@@ -532,6 +591,34 @@ elements: |
           - two
           - three
         '#format_items': ul
+      webform_checkboxes_other_checklist_boxes:
+        '#type': webform_checkboxes_other
+        '#title': 'Checkboxes other (Checklist (☑/☐))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:boxes'
+      webform_checkboxes_other_checklist_crosses:
+        '#type': webform_checkboxes_other
+        '#title': 'Checkboxes other (Checklist (gi))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:crosses'
     webform_image_select:
       '#type': details
       '#title': 'Image select'
@@ -635,6 +722,46 @@ elements: |
           - Oratione
           - Dixisset
         '#format_items': ul
+      webform_image_select_checklist_boxes:
+        '#type': webform_image_select
+        '#title': 'Image select (Checklist (☑/☐))'
+        '#show_label': true
+        '#images':
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
+        '#multiple': true
+        '#default_value':
+          - Loremipsum
+          - Oratione
+          - Dixisset
+        '#format_items': 'checklist:boxes'
+      webform_image_select_checklist_crosses:
+        '#type': webform_image_select
+        '#title': 'Image select (Checklist (gi))'
+        '#show_label': true
+        '#images':
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
+        '#multiple': true
+        '#default_value':
+          - Loremipsum
+          - Oratione
+          - Dixisset
+        '#format_items': 'checklist:crosses'
       webform_image_select_br:
         '#type': webform_image_select
         '#title': 'Image select (Break)'
@@ -743,6 +870,32 @@ elements: |
           - two
           - three
         '#format_items': ul
+      select_checklist_boxes:
+        '#type': select
+        '#title': 'Select (Checklist (☑/☐))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:boxes'
+      select_checklist_crosses:
+        '#type': select
+        '#title': 'Select (Checklist (gi))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:crosses'
     webform_select_other:
       '#type': details
       '#title': 'Select other'
@@ -811,6 +964,32 @@ elements: |
           - two
           - three
         '#format_items': ul
+      webform_select_other_checklist_boxes:
+        '#type': webform_select_other
+        '#title': 'Select other (Checklist (☑/☐))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:boxes'
+      webform_select_other_checklist_crosses:
+        '#type': webform_select_other
+        '#title': 'Select other (Checklist (gi))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:crosses'
     tableselect:
       '#type': details
       '#title': 'Table select'
@@ -879,6 +1058,32 @@ elements: |
           - two
           - three
         '#format_items': ul
+      tableselect_checklist_boxes:
+        '#type': tableselect
+        '#title': 'Table select (Checklist (☑/☐))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:boxes'
+      tableselect_checklist_crosses:
+        '#type': tableselect
+        '#title': 'Table select (Checklist (gi))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:crosses'
     webform_tableselect_sort:
       '#type': details
       '#title': 'Tableselect sort'
@@ -947,6 +1152,32 @@ elements: |
           - two
           - three
         '#format_items': ul
+      webform_tableselect_sort_checklist_boxes:
+        '#type': webform_tableselect_sort
+        '#title': 'Tableselect sort (Checklist (☑/☐))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:boxes'
+      webform_tableselect_sort_checklist_crosses:
+        '#type': webform_tableselect_sort
+        '#title': 'Tableselect sort (Checklist (gi))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#multiple': true
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:crosses'
     webform_table_sort:
       '#type': details
       '#title': 'Table sort'
@@ -1010,6 +1241,30 @@ elements: |
           - two
           - three
         '#format_items': ul
+      webform_table_sort_checklist_boxes:
+        '#type': webform_table_sort
+        '#title': 'Table sort (Checklist (☑/☐))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:boxes'
+      webform_table_sort_checklist_crosses:
+        '#type': webform_table_sort
+        '#title': 'Table sort (Checklist (gi))'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value':
+          - one
+          - two
+          - three
+        '#format_items': 'checklist:crosses'
   date_time_elements:
     '#type': details
     '#title': 'Date/time elements'
@@ -1217,9 +1472,9 @@ elements: |
           include_anonymous: true
         '#multiple': true
         '#default_value':
-          - 8
           - 4
-          - 10
+          - 11
+          - 7
         '#format_items': comma
       entity_autocomplete_semicolon:
         '#type': entity_autocomplete
@@ -1230,9 +1485,9 @@ elements: |
           include_anonymous: true
         '#multiple': true
         '#default_value':
-          - 8
           - 4
-          - 10
+          - 11
+          - 7
         '#format_items': semicolon
       entity_autocomplete_and:
         '#type': entity_autocomplete
@@ -1243,9 +1498,9 @@ elements: |
           include_anonymous: true
         '#multiple': true
         '#default_value':
-          - 8
           - 4
-          - 10
+          - 11
+          - 7
         '#format_items': and
       entity_autocomplete_ol:
         '#type': entity_autocomplete
@@ -1256,9 +1511,9 @@ elements: |
           include_anonymous: true
         '#multiple': true
         '#default_value':
-          - 8
           - 4
-          - 10
+          - 11
+          - 7
         '#format_items': ol
       entity_autocomplete_ul:
         '#type': entity_autocomplete
@@ -1269,9 +1524,9 @@ elements: |
           include_anonymous: true
         '#multiple': true
         '#default_value':
-          - 8
           - 4
-          - 10
+          - 11
+          - 7
         '#format_items': ul
     webform_entity_checkboxes:
       '#type': details
@@ -1351,6 +1606,36 @@ elements: |
         '#default_value':
           - 1
         '#format_items': ul
+      webform_entity_checkboxes_checklist_boxes:
+        '#type': webform_entity_checkboxes
+        '#title': 'Entity checkboxes (Checklist (☑/☐))'
+        '#options_display': side_by_side
+        '#target_type': user
+        '#selection_handler': 'default:user'
+        '#selection_settings':
+          include_anonymous: true
+        '#options':
+          1: Administrator
+          0: Anonymous
+        '#multiple': true
+        '#default_value':
+          - 1
+        '#format_items': 'checklist:boxes'
+      webform_entity_checkboxes_checklist_crosses:
+        '#type': webform_entity_checkboxes
+        '#title': 'Entity checkboxes (Checklist (gi))'
+        '#options_display': side_by_side
+        '#target_type': user
+        '#selection_handler': 'default:user'
+        '#selection_settings':
+          include_anonymous: true
+        '#options':
+          1: Administrator
+          0: Anonymous
+        '#multiple': true
+        '#default_value':
+          - 1
+        '#format_items': 'checklist:crosses'
     webform_entity_select:
       '#type': details
       '#title': 'Entity select'
@@ -1424,6 +1709,34 @@ elements: |
         '#default_value':
           - 1
         '#format_items': ul
+      webform_entity_select_checklist_boxes:
+        '#type': webform_entity_select
+        '#title': 'Entity select (Checklist (☑/☐))'
+        '#target_type': user
+        '#selection_handler': 'default:user'
+        '#selection_settings':
+          include_anonymous: true
+        '#options':
+          1: Administrator
+          0: Anonymous
+        '#multiple': true
+        '#default_value':
+          - 1
+        '#format_items': 'checklist:boxes'
+      webform_entity_select_checklist_crosses:
+        '#type': webform_entity_select
+        '#title': 'Entity select (Checklist (gi))'
+        '#target_type': user
+        '#selection_handler': 'default:user'
+        '#selection_settings':
+          include_anonymous: true
+        '#options':
+          1: Administrator
+          0: Anonymous
+        '#multiple': true
+        '#default_value':
+          - 1
+        '#format_items': 'checklist:crosses'
     webform_term_checkboxes:
       '#type': details
       '#title': 'Term checkboxes'
@@ -1477,6 +1790,26 @@ elements: |
           - Oratione
           - Dixisset
         '#format_items': ul
+      webform_term_checkboxes_checklist_boxes:
+        '#type': webform_term_checkboxes
+        '#title': 'Term checkboxes (Checklist (☑/☐))'
+        '#vocabulary': tags
+        '#multiple': true
+        '#default_value':
+          - Loremipsum
+          - Oratione
+          - Dixisset
+        '#format_items': 'checklist:boxes'
+      webform_term_checkboxes_checklist_crosses:
+        '#type': webform_term_checkboxes
+        '#title': 'Term checkboxes (Checklist (gi))'
+        '#vocabulary': tags
+        '#multiple': true
+        '#default_value':
+          - Loremipsum
+          - Oratione
+          - Dixisset
+        '#format_items': 'checklist:crosses'
     webform_term_select:
       '#type': details
       '#title': 'Term select'
@@ -1530,6 +1863,26 @@ elements: |
           - Oratione
           - Dixisset
         '#format_items': ul
+      webform_term_select_checklist_boxes:
+        '#type': webform_term_select
+        '#title': 'Term select (Checklist (☑/☐))'
+        '#vocabulary': tags
+        '#multiple': true
+        '#default_value':
+          - Loremipsum
+          - Oratione
+          - Dixisset
+        '#format_items': 'checklist:boxes'
+      webform_term_select_checklist_crosses:
+        '#type': webform_term_select
+        '#title': 'Term select (Checklist (gi))'
+        '#vocabulary': tags
+        '#multiple': true
+        '#default_value':
+          - Loremipsum
+          - Oratione
+          - Dixisset
+        '#format_items': 'checklist:crosses'
   file_upload_elements:
     '#type': details
     '#title': 'File upload elements'
@@ -1567,7 +1920,7 @@ elements: |
         '#multiple': true
         '#file_extensions': txt
         '#format_items': ul
-
+  
 css: ''
 javascript: ''
 settings:
@@ -1588,7 +1941,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -1609,6 +1962,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

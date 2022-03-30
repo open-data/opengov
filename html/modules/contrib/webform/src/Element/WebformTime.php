@@ -70,17 +70,6 @@ class WebformTime extends FormElement {
 
   /**
    * Processes a time webform element.
-   *
-   * @param array $element
-   *   The webform element to process. Properties used:
-   *   - #time_format: The time format used in PHP formats.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   * @param array $complete_form
-   *   The complete webform structure.
-   *
-   * @return array
-   *   The processed element.
    */
   public static function processWebformTime(&$element, FormStateInterface $form_state, &$complete_form) {
     // Add validate callback.

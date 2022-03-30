@@ -3,6 +3,7 @@
 namespace Drupal\search_api_db\DatabaseCompatibility;
 
 use Drupal\Core\Database\DatabaseException;
+use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\search_api\SearchApiException;
 
 /**
@@ -34,6 +35,28 @@ class MySql extends GenericDatabase {
       $message = $e->getMessage();
       throw new SearchApiException("$class while trying to change collation of $type search data table '$table': $message", 0, $e);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preprocessIndexValue($value, $type = 'text') {
+    $value = parent::preprocessIndexValue($value, $type);
+    // As MySQL removes trailing whitespace when computing primary keys, we need
+    // to do the same or pseudo-duplicates could cause an exception ("Integrity
+    // constraint violation: Duplicate entry") during indexing.
+    if ($type !== 'text') {
+      $value = rtrim($value);
+    }
+    return $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function orderByRandom(SelectInterface $query) {
+    $alias = $query->addExpression('rand()', 'random_order_field');
+    $query->orderBy($alias);
   }
 
 }

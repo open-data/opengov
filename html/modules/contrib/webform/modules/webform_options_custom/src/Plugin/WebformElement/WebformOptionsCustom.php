@@ -49,7 +49,7 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -120,7 +120,7 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    list(, $webform_options_custom_id) = explode(':', $this->getPluginId());
+    [, $webform_options_custom_id] = explode(':', $this->getPluginId());
     /** @var \Drupal\webform_options_custom\WebformOptionsCustomInterface $webform_options_custom */
     $webform_options_custom = $this->entityTypeManager->getStorage('webform_options_custom')->load($webform_options_custom_id);
     $element = $webform_options_custom->getElement();
@@ -185,7 +185,7 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
    * {@inheritdoc}
    */
   public function preview() {
-    list(, $webform_options_custom_id) = explode(':', $this->getPluginId());
+    [, $webform_options_custom_id] = explode(':', $this->getPluginId());
 
     /** @var \Drupal\webform_options_custom\WebformOptionsCustomInterface $webform_options_custom */
     $webform_options_custom = $this->entityTypeManager->getStorage('webform_options_custom')->load($webform_options_custom_id);
@@ -245,7 +245,7 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
     }
 
     // Set element custom template options.
-    list($type, $options_custom) = explode(':', $this->getPluginId());
+    [$type, $options_custom] = explode(':', $this->getPluginId());
     $element['#type'] = $type;
     $element['#options_custom'] = $options_custom;
 
@@ -261,7 +261,7 @@ class WebformOptionsCustom extends Select implements WebformOptionsCustomInterfa
    *   A webform custom options entity.
    */
   protected function getEntity() {
-    list(, $webform_options_custom_id) = explode(':', $this->getPluginId());
+    [, $webform_options_custom_id] = explode(':', $this->getPluginId());
     return $this->entityTypeManager->getStorage('webform_options_custom')->load($webform_options_custom_id);
   }
 

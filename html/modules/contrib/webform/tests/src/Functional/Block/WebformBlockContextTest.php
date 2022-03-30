@@ -57,19 +57,21 @@ class WebformBlockContextTest extends WebformBrowserTestBase {
    * Tests webform block context.
    */
   public function testBlockContext() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
     $webform = Webform::load('contact');
 
     // Check webform context.
     $this->drupalGet('/webform/contact');
-    $this->assertRaw('{all contexts}');
-    $this->assertRaw('{webform context}');
+    $assert_session->responseContains('{all contexts}');
+    $assert_session->responseContains('{webform context}');
 
     // Check webform submission context.
     $sid = $this->postSubmissionTest($webform);
     $this->drupalGet("/admin/structure/webform/manage/contact/submission/$sid");
-    $this->assertRaw('{all contexts}');
-    $this->assertRaw('{webform_submission context}');
+    $assert_session->responseContains('{all contexts}');
+    $assert_session->responseContains('{webform_submission context}');
 
     // Check webform node context.
     $node = $this->drupalCreateNode(['type' => 'webform']);
@@ -77,8 +79,8 @@ class WebformBlockContextTest extends WebformBrowserTestBase {
     $node->webform->status = 1;
     $node->save();
     $this->drupalGet('/node/' . $node->id());
-    $this->assertRaw('{all contexts}');
-    $this->assertRaw('{node context}');
+    $assert_session->responseContains('{all contexts}');
+    $assert_session->responseContains('{node context}');
   }
 
 }

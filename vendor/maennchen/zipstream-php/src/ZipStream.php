@@ -268,7 +268,7 @@ class ZipStream
      * Add an open stream to the archive.
      *
      * @param String $name - path of file in archive (including directory).
-     * @param Resource $stream - contents of file as a stream resource
+     * @param resource $stream - contents of file as a stream resource
      * @param FileOptions $options
      *
      * File Options:
@@ -462,8 +462,14 @@ class ZipStream
         fwrite($this->opt->getOutputStream(), $str);
 
         if ($this->opt->isFlushOutput()) {
+            // flush output buffer if it is on and flushable
+            $status = ob_get_status();
+            if (isset($status['flags']) && ($status['flags'] & PHP_OUTPUT_HANDLER_FLUSHABLE)) {
+                ob_flush();
+            }
+
+            // Flush system buffers after flushing userspace output buffer
             flush();
-            ob_flush();
         }
     }
 

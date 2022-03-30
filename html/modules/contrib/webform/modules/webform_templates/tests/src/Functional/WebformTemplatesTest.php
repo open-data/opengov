@@ -31,6 +31,8 @@ class WebformTemplatesTest extends WebformBrowserTestBase {
    * Tests webform templates.
    */
   public function testTemplates() {
+    $assert_session = $this->assertSession();
+
     $user_account = $this->drupalCreateUser([
       'access webform overview',
       'administer webform',
@@ -54,32 +56,32 @@ class WebformTemplatesTest extends WebformBrowserTestBase {
 
     // Check template is included in the 'Templates' list display.
     $this->drupalGet('/admin/structure/webform/templates');
-    $this->assertRaw('Test: Webform: Template');
-    $this->assertRaw('Test using a webform as a template.');
+    $assert_session->responseContains('Test: Webform: Template');
+    $assert_session->responseContains('Test using a webform as a template.');
 
     // Check template is accessible to user with create webform access.
     $this->drupalGet('/webform/test_form_template');
-    $this->assertResponse(200);
-    $this->assertRaw('You are previewing the below template,');
+    $assert_session->statusCodeEquals(200);
+    $assert_session->responseContains('You are previewing the below template,');
 
     // Check select template clears the description.
     $this->drupalGet('/admin/structure/webform/manage/test_form_template/duplicate');
-    $this->assertFieldByName('description[value]', '');
+    $assert_session->fieldValueEquals('description[value]', '');
 
     // Check that admin can not access manage templates.
     $this->drupalGet('/admin/structure/webform/templates/manage');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Login the admin.
     $this->drupalLogin($admin_account);
 
     // Check that admin can access manage templates.
     $this->drupalGet('/admin/structure/webform/templates/manage');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check select template clears the description.
     $this->drupalGet('/admin/structure/webform/manage/test_form_template/duplicate', ['query' => ['template' => 1]]);
-    $this->assertFieldByName('description[value]', 'Test using a webform as a template.');
+    $assert_session->fieldValueEquals('description[value]', 'Test using a webform as a template.');
   }
 
 }

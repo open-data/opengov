@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @file
+ */
+
+use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -11,13 +17,13 @@ use Drupal\search_api_solr\Form\IndexSolrMultisiteCloneForm;
 use Drupal\search_api_solr\Form\IndexSolrMultisiteUpdateForm;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Stdlib\ArrayUtils;
 
 /**
  * Implements hook_help().
  */
 function search_api_solr_help($route_name, RouteMatchInterface $route_match) {
-  if ($route_name == 'search_api.overview') {
+  if ($route_name === 'search_api.overview') {
     // Included because we need the REQUIREMENT_* constants.
     include_once DRUPAL_ROOT . '/core/includes/install.inc';
     module_load_include('install', 'search_api_solr');
@@ -46,16 +52,14 @@ function search_api_solr_help($route_name, RouteMatchInterface $route_match) {
  */
 function search_api_solr_cron() {
   $document_counts = [];
-  $optimize = FALSE;
+  $end_of_day = FALSE;
   $request_time = \Drupal::time()->getRequestTime();
   // 86400 seconds are one day. We use slightly less here to allow for some
   // variation in the request time of the cron run, so that the time of day will
   // (more or less) stay the same.
   if ($request_time - \Drupal::state()->get('search_api_solr.last_optimize') > 86340) {
     \Drupal::state()->set('search_api_solr.last_optimize', $request_time);
-    // Delete cached endpoint data once a day.
-    \Drupal::state()->delete('search_api_solr.endpoint.data');
-    $optimize = TRUE;
+    $end_of_day = TRUE;
   }
 
   foreach (search_api_solr_get_servers() as $server) {
@@ -72,9 +76,21 @@ function search_api_solr_cron() {
           }
         }
 
-        if ($optimize && $backend->isOptimizeEnabled()) {
-          $connector->optimize($backend->getCollectionEndpoint($index));
-          $backend->getLogger()->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+        if ($end_of_day) {
+          $endpoint = $backend->getCollectionEndpoint($index);
+
+          // Delete "cached" endpoint data and schema_parts once a day. We keep
+          // theses in states instead of a caches because we might need to
+          // access this data even if Solr is temporarily not reachable and
+          // caches have been cleared or Solr itself is used as caching backend.
+          \Drupal::state()->delete('search_api_solr.endpoint.data');
+          \Drupal::state()->delete('search_api_solr.endpoint.schema_parts');
+
+          if ($backend->isOptimizeEnabled()) {
+            $connector->optimize($endpoint);
+            $backend->getLogger()
+              ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+          }
         }
       }
     }
@@ -136,6 +152,10 @@ function search_api_solr_default_index_third_party_settings() {
       'boost' => FALSE,
       'interestingTerms' => 'none',
     ],
+    'term_modifiers' => [
+      'slop' => 3,
+      'fuzzy' => 1,
+    ],
     'advanced' => [
       'index_prefix' => '',
       'collection' => '',
@@ -184,6 +204,11 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#type' => 'details',
       '#title' => t('Solr specific index options'),
       '#collapsed' => TRUE,
+      '#states' => [
+        'visible' => [
+          ':input[name="server"]' => _search_api_solr_visibility(),
+        ],
+      ],
     ];
 
     $form['third_party_settings']['search_api_solr']['finalize'] = [
@@ -442,6 +467,30 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['mlt']['interestingTerms'],
     ];
 
+    $form['third_party_settings']['search_api_solr']['term_modifiers'] = [
+      '#tree' => TRUE,
+      '#type' => 'details',
+      '#title' => t('Term modifiers'),
+      '#collapsed' => TRUE,
+      '#description' => t('Solr supports a variety of term modifiers that add flexibility or precision, as needed, to searches. The Search API Solr provides additional Search API Parse Mode Plugins that make use of these modifiers.'),
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['slop'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('Proximity search distance (aka "slop")'),
+      '#description' => t('A proximity search looks for terms that are within a specific distance from one another. The distance referred to here is the number of term movements needed to match the specified phrase. Used by the "Phrase search with sloppiness" and "Multiple words with sloppiness" query parsers.'),
+      '#default_value' => $settings['term_modifiers']['slop'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['fuzzy'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#max' => 2,
+      '#title' => t('Fuzzy search distance'),
+      '#description' => t('Fuzzy searches discover terms that are similar to a specified term without necessarily being an exact match. The distance parameter specifies the maximum number of edits allowed, between 0 and 2. Used by the "Multiple words with fuzziness" query parser.'),
+      '#default_value' => $settings['term_modifiers']['fuzzy'],
+    ];
 
     $form['third_party_settings']['search_api_solr']['advanced'] = [
       '#tree' => TRUE,
@@ -503,35 +552,6 @@ function search_api_solr_form_search_api_index_form_validate_server(&$element, F
 }
 
 /**
- * Implements hook_search_api_views_handler_mapping_alter()
- *
- * @param array $mapping
- *   An associative array with data types as the keys and Views field data
- *   definitions as the values. In addition to all normally defined data types,
- *   keys can also be "options" for any field with an options list, "entity" for
- *   general entity-typed fields or "entity:ENTITY_TYPE" (with "ENTITY_TYPE"
- *   being the machine name of an entity type) for entities of that type.
- *
- * @see _search_api_views_handler_mapping()
- */
-function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
-  $mapping['solr_text_omit_norms'] =
-  $mapping['solr_text_suggester'] =
-  $mapping['solr_text_unstemmed'] =
-  $mapping['solr_text_wstoken'] = [
-    'argument' => [
-      'id' => 'search_api',
-    ],
-    'filter' => [
-      'id' => 'search_api_fulltext',
-    ],
-    'sort' => [
-      'id' => 'search_api',
-    ],
-  ];
-}
-
-/**
  * Implements hook_views_data_alter().
  *
  * Remove fields from solr_document datasources from the views data. Datasource
@@ -560,7 +580,7 @@ function search_api_solr_install_missing_field_types() {
  *
  * @param bool $only_active
  *
- * @return ServerInterface[]
+ * @return \Drupal\search_api\ServerInterface[]
  *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -569,7 +589,7 @@ function search_api_solr_install_missing_field_types() {
 function search_api_solr_get_servers($only_active = TRUE) {
   $solr_servers = [];
   $storage = \Drupal::entityTypeManager()->getStorage('search_api_server');
-  /** @var ServerInterface[] $servers */
+  /** @var \Drupal\search_api\ServerInterface[] $servers */
   $servers = $only_active ? $storage->loadByProperties(['status' => TRUE]) :
     $storage->loadMultiple();
   foreach ($servers as $server) {
@@ -577,7 +597,7 @@ function search_api_solr_get_servers($only_active = TRUE) {
       $server->hasValidBackend() &&
       $server->getBackend() instanceof SolrBackendInterface
     ) {
-      $solr_servers[] = $server;
+      $solr_servers[$server->id()] = $server;
     }
   }
   return $solr_servers;
@@ -591,9 +611,10 @@ function search_api_solr_get_servers($only_active = TRUE) {
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *
  * @return array
+ *
  * @throws \Drupal\search_api\SearchApiException
  */
-function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) {
+function search_api_solr_entity_operation(EntityInterface $entity) {
   $operations = [];
   if (
     $entity instanceof ServerInterface &&
@@ -601,7 +622,7 @@ function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $e
   ) {
     $operations['get_config_zip'] = [
       'title' => t('Get config.zip'),
-      'url' => \Drupal\Core\Url::fromRoute('solr_configset.config_zip', ['search_api_server' => $entity->id()]),
+      'url' => Url::fromRoute('solr_configset.config_zip', ['search_api_server' => $entity->id()]),
       'weight' => 50,
     ];
   }
@@ -613,7 +634,7 @@ function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $e
     ) {
       $operations['clone_for_multisite'] = [
         'title' => t('Clone for Multisite'),
-        'url' => \Drupal\Core\Url::fromRoute('entity.search_api_index.solr_multisite_clone_form', ['search_api_index' => $entity->id()]),
+        'url' => Url::fromRoute('entity.search_api_index.solr_multisite_clone_form', ['search_api_index' => $entity->id()]),
         'weight' => 50,
       ];
     }
@@ -621,7 +642,7 @@ function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $e
       $operations['update_for_multisite'] = [
         'title' => t('Update for Multisite'),
         // @todo
-        'url' => \Drupal\Core\Url::fromRoute('entity.search_api_index.solr_multisite_update_form', ['search_api_index' => $entity->id()]),
+        'url' => Url::fromRoute('entity.search_api_index.solr_multisite_update_form', ['search_api_index' => $entity->id()]),
         'weight' => 50,
       ];
     }
@@ -629,8 +650,33 @@ function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $e
   return $operations;
 }
 
+/**
+ *
+ */
 function search_api_solr_entity_type_alter(array &$entity_types) {
   /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
   $entity_types['search_api_index']->setFormClass('solr_multisite_clone', IndexSolrMultisiteCloneForm::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_update', IndexSolrMultisiteUpdateForm::class);
+}
+
+/**
+ * Returns visibility state status values.
+ *
+ * @return array
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ * @throws \Drupal\search_api\SearchApiException
+ *
+ * @see \search_api_solr_form_search_api_index_form_alter
+ */
+function _search_api_solr_visibility() {
+  $valid_option = [];
+  $servers = search_api_solr_get_servers(FALSE);
+  foreach ($servers as $server) {
+    $valid_option[] = [
+      'value' => $server->id(),
+    ];
+  }
+  return $valid_option;
 }

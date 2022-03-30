@@ -5,12 +5,12 @@ Development Cheatsheet
 
 ```bash
 # Create branch
-git checkout 8.x-5.x
+git checkout 6.x
 git checkout -b [issue-number]-[issue-description]
 git push -u origin [issue-number]-[issue-description]
 
 # Create patch
-git diff 8.x-5.x > [project_name]-[issue-description]-[issue-number]-00.patch
+git diff 6.x > [project_name]-[issue-description]-[issue-number]-00.patch
 
 # Apply remote patch
 curl https://www.drupal.org/files/issues/[project_name]-[issue-description]-[issue-number]-00.patch | git apply -
@@ -32,19 +32,19 @@ interdiff \
 cat interdiff-[issue-number]-[old-comment-number]-[new-comment-number].txt
 
 # Commit remove patch
-git checkout 8.x-5.x
+git checkout 6.x
 curl https://www.drupal.org/files/issues/[project_name]-[issue-description]-[issue-number]-00.patch | git apply -
 git add .
 git commit -m 'Issue #[issue-number]: [issue-description]'
 git push
 
 # Merge branch with all commits
-git checkout 8.x-5.x
+git checkout 6.x
 git merge [issue-number]-[issue-description]
 git push
 
 # Merge branch as a single new commit
-git checkout 8.x-5.x
+git checkout 6.x
 git merge --squash [issue-number]-[issue-description]
 git commit -m 'Issue #[issue-number]: [issue-description]'
 git push

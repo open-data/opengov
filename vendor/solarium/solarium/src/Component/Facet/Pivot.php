@@ -1,16 +1,36 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\FacetSetInterface;
+use Solarium\Exception\OutOfBoundsException;
 
 /**
  * Facet pivot.
  *
- * @see http://wiki.apache.org/solr/SimpleFacetParameters#Pivot_.28ie_Decision_Tree.29_Faceting
+ * @see https://solr.apache.org/guide/faceting.html#pivot-decision-tree-faceting
  */
 class Pivot extends AbstractFacet
 {
+    use PivotMinCountTrait;
+
+    /**
+     * Facet sort type count.
+     */
+    public const SORT_COUNT = FieldValueParametersInterface::SORT_COUNT;
+
+    /**
+     * Facet sort type index.
+     */
+    public const SORT_INDEX = FieldValueParametersInterface::SORT_INDEX;
+
     /**
      * Fields to use.
      *
@@ -29,35 +49,16 @@ class Pivot extends AbstractFacet
     }
 
     /**
-     * Set the facet limit.
-     *
-     * @param int $limit
-     *
-     * @return self Provides fluent interface
-     */
-    public function setLimit($limit): self
-    {
-        return $this->setOption('limit', $limit);
-    }
-
-    /**
-     * Get the facet limit.
-     *
-     * @return int
-     */
-    public function getLimit(): ?int
-    {
-        return $this->getOption('limit');
-    }
-
-    /**
-     * Set the facet mincount.
+     * Set the minimum number of documents that need to match in order for the facet to be included in results.
      *
      * @param int $minCount
      *
      * @return self Provides fluent interface
+     *
+     * @deprecated This method no longer has effect. Use {@link Solarium\Component\FacetSet::setPivotMinCount()} to
+     *    set the global minCount or {@link setPivotMinCount()} to set the minCount for specific pivot fields instead.
      */
-    public function setMinCount($minCount): self
+    public function setMinCount(int $minCount): self
     {
         $this->setOption('mincount', $minCount);
 
@@ -65,13 +66,133 @@ class Pivot extends AbstractFacet
     }
 
     /**
-     * Get the facet mincount.
+     * Get the minimum number of documents that need to match in order for the facet to be included in results.
      *
      * @return int|null
+     *
+     * @deprecated
      */
     public function getMinCount(): ?int
     {
         return $this->getOption('mincount');
+    }
+
+    /**
+     * Set the facet limit.
+     *
+     * @param int $limit
+     *
+     * @return self Provides fluent interface
+     */
+    public function setLimit(int $limit): self
+    {
+        $this->setOption('limit', $limit);
+
+        return $this;
+    }
+
+    /**
+     * Get the facet limit.
+     *
+     * @return int|null
+     */
+    public function getLimit(): ?int
+    {
+        return $this->getOption('limit');
+    }
+
+    /**
+     * Set the facet offset.
+     *
+     * @param int $offset
+     *
+     * @return self Provides fluent interface
+     */
+    public function setOffset(int $offset): self
+    {
+        $this->setOption('offset', $offset);
+
+        return $this;
+    }
+
+    /**
+     * Get the facet offset.
+     *
+     * @return int|null
+     */
+    public function getOffset(): ?int
+    {
+        return $this->getOption('offset');
+    }
+
+    /**
+     * Set the facet sort type.
+     *
+     * Use one of the SORT_* constants as the value.
+     *
+     * @param string $sort
+     *
+     * @return self Provides fluent interface
+     */
+    public function setSort(string $sort): self
+    {
+        $this->setOption('sort', $sort);
+
+        return $this;
+    }
+
+    /**
+     * Get the facet sort order.
+     *
+     * @return string|null
+     */
+    public function getSort(): ?string
+    {
+        return $this->getOption('sort');
+    }
+
+    /**
+     * Set the facet overrequest count.
+     *
+     * @param int $count
+     *
+     * @return self Provides fluent interface
+     */
+    public function setOverrequestCount($count): self
+    {
+        return $this->setOption('overrequest.count', $count);
+    }
+
+    /**
+     * Get the facet overrequest count.
+     *
+     * @return int|null
+     */
+    public function getOverrequestCount(): ?int
+    {
+        return $this->getOption('overrequest.count');
+    }
+
+    /**
+     * Set the facet overrequest ratio.
+     *
+     * @param float $ratio
+     *
+     * @return self Provides fluent interface
+     */
+    public function setOverrequestRatio($ratio): self
+    {
+        return $this->setOption('overrequest.ratio', $ratio);
+    }
+
+    /**
+     * Get the facet overrequest ratio.
+     *
+     * @return float|null
+     */
+    public function getOverrequestRatio(): ?float
+    {
+        return $this->getOption('overrequest.ratio');
     }
 
     /**
@@ -171,7 +292,7 @@ class Pivot extends AbstractFacet
      *
      * @param string $stat
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -191,7 +312,7 @@ class Pivot extends AbstractFacet
      * @param string|array $stats can be an array or string with comma
      *                            separated statnames
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -214,7 +335,7 @@ class Pivot extends AbstractFacet
      *
      * @param string $stat
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -231,7 +352,7 @@ class Pivot extends AbstractFacet
     /**
      * Remove all stats from the stats list.
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -248,7 +369,7 @@ class Pivot extends AbstractFacet
     /**
      * Get the list of stats.
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -267,7 +388,7 @@ class Pivot extends AbstractFacet
      *
      * @param array $stats
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return self Provides fluent interface
      */

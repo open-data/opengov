@@ -66,7 +66,7 @@ elements: |
       required:
         ':input[name="trigger"]':
           checked: true
-  'webform_entity_print_attachment:pdf':
+  webform_entity_print_attachment_pdf:
     '#type': webform_entity_print_attachment
     '#title': 'Attachment PDF'
     '#default_value': Loremipsum
@@ -287,7 +287,7 @@ elements: |
   date:
     '#type': date
     '#title': Date
-    '#default_value': '2022-01-23T21:13:17-0500'
+    '#default_value': '2040-04-05T12:19:45-0500'
     '#states':
       disabled:
         ':input[name="trigger"]':
@@ -299,7 +299,7 @@ elements: |
     '#type': datetime
     '#title': Date/time
     '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2419131">Issue #2419131: #states attribute does not work on #type datetime</a>'
-    '#default_value': '2018-11-16T11:10:07-0500'
+    '#default_value': '2020-10-10T04:12:25-0400'
     '#states':
       disabled:
         ':input[name="trigger"]':
@@ -310,7 +310,7 @@ elements: |
   datelist:
     '#type': datelist
     '#title': 'Date list'
-    '#default_value': '2011-05-20T14:49:30-0400'
+    '#default_value': '2013-04-30T18:19:05-0400'
     '#states':
       disabled:
         ':input[name="trigger"]':
@@ -369,7 +369,7 @@ elements: |
     '#selection_settings':
       include_anonymous: true
     '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2826451">Issue #2826451: TermSelection returning HTML characters in select list</a>'
-    '#default_value': 10
+    '#default_value': 9
     '#states':
       disabled:
         ':input[name="trigger"]':
@@ -438,6 +438,17 @@ elements: |
     '#type': managed_file
     '#title': File
     '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2705471">Issue #2705471: Webform states managed file fields</a><br /><a href="https://www.drupal.org/node/2113931">Issue #2113931: File Field design update</a><br /><a href="https://www.drupal.org/node/2346893">Issue #2346893: Duplicate Ajax wrapper around a file field</a><br /><a href="https://www.drupal.org/node/2482783">Issue #2482783: File upload errors not set or shown correctly</a>'
+    '#states':
+      disabled:
+        ':input[name="trigger"]':
+          checked: true
+      required:
+        ':input[name="trigger"]':
+          checked: true
+  webform_height:
+    '#type': webform_height
+    '#title': 'Height (feet/inches)'
+    '#default_value': 59
     '#states':
       disabled:
         ':input[name="trigger"]':
@@ -888,11 +899,11 @@ elements: |
   webform_term_checkboxes:
     '#type': webform_term_checkboxes
     '#title': 'Term checkboxes'
-    '#vocabulary': second
+    '#vocabulary': tags
     '#default_value':
-      - 161
-      - 101
-      - 177
+      - Loremipsum
+      - Oratione
+      - Dixisset
     '#states':
       disabled:
         ':input[name="trigger"]':
@@ -903,8 +914,8 @@ elements: |
   webform_term_select:
     '#type': webform_term_select
     '#title': 'Term select'
-    '#vocabulary': second
-    '#default_value': 161
+    '#vocabulary': tags
+    '#default_value': Loremipsum
     '#states':
       disabled:
         ':input[name="trigger"]':
@@ -996,16 +1007,6 @@ elements: |
       required:
         ':input[name="trigger"]':
           checked: true
-  webform_variant:
-    '#type': webform_variant
-    '#title': 'Variant'
-    '#states':
-      disabled:
-        ':input[name="trigger"]':
-          checked: true
-      required:
-        ':input[name="trigger"]':
-          checked: true
   webform_video_file:
     '#type': webform_video_file
     '#title': 'Video file'
@@ -1016,7 +1017,7 @@ elements: |
       required:
         ':input[name="trigger"]':
           checked: true
-
+  
 css: ''
 javascript: ''
 settings:
@@ -1037,7 +1038,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -1058,6 +1059,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -1204,5 +1208,7 @@ handlers:
     status: true
     conditions: {  }
     weight: 0
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

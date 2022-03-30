@@ -98,5 +98,4 @@
     }
   });
 
-
 })(jQuery, Drupal);

@@ -57,25 +57,6 @@
   };
 
   /**
-   * Skip client-side validation when submit button is pressed.
-   *
-   * @type {Drupal~behavior}
-   *
-   * @prop {Drupal~behaviorAttach} attach
-   *   Attaches the behavior for the skipping client-side validation.
-   *
-   * @deprecated in Webform 8.x-5.x and will be removed in Webform 8.x-6.x.
-   *   Use 'formnovalidate' attribute instead.
-   */
-  Drupal.behaviors.webformSubmitNoValidate = {
-    attach: function (context) {
-      $(context).find(':submit.js-webform-novalidate')
-        .once('webform-novalidate')
-        .attr('formnovalidate', 'formnovalidate');
-    }
-  };
-
-  /**
    * Custom required and pattern validation error messages.
    *
    * @type {Drupal~behavior}

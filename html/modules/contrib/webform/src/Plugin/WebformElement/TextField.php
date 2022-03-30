@@ -34,7 +34,7 @@ class TextField extends TextBase {
     ] + parent::defineDefaultProperties() + $this->defineDefaultMultipleProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

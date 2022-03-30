@@ -41,13 +41,13 @@ class WebformSubmissionTest extends WebformBrowserTestBase {
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
     $webform_submission = reset($submissions);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check create submission.
     $this->assertInstanceOf(WebformSubmission::class, $webform_submission);
 
     // Check get webform.
-    $this->assertEqual($webform_submission->getWebform()->id(), $webform->id());
+    $this->assertEquals($webform_submission->getWebform()->id(), $webform->id());
 
     // Check that source entity is NULL.
     $this->assertNull($webform_submission->getSourceEntity());
@@ -57,14 +57,14 @@ class WebformSubmissionTest extends WebformBrowserTestBase {
     $webform_submission
       ->set('uri', NULL)
       ->save();
-    $this->assertEqual($webform_submission->getSourceUrl()->toString(), $webform->toUrl('canonical', ['absolute' => TRUE])->toString());
+    $this->assertEquals($webform_submission->getSourceUrl()->toString(), $webform->toUrl('canonical', ['absolute' => TRUE])->toString());
 
     // Check get source URL set to user 1.
     $webform_submission
       ->set('entity_type', 'user')
       ->set('entity_id', $normal_user->id())
       ->save();
-    $this->assertEqual($webform_submission->getSourceUrl()->toString(), $normal_user->toUrl('canonical', ['absolute' => TRUE])->toString());
+    $this->assertEquals($webform_submission->getSourceUrl()->toString(), $normal_user->toUrl('canonical', ['absolute' => TRUE])->toString());
 
     // Check missing webform_id exception.
     try {
@@ -72,23 +72,23 @@ class WebformSubmissionTest extends WebformBrowserTestBase {
       $this->fail('Webform id (webform_id) is required to create a webform submission.');
     }
     catch (\Exception $exception) {
-      $this->pass('Webform id (webform_id) is required to create a webform submission.');
+      // Webform id (webform_id) is required to create a webform submission.
     }
 
     // Check creating a submission with default data.
     $webform_submission = WebformSubmission::create(['webform_id' => $webform->id(), 'data' => ['custom' => 'value']]);
-    $this->assertEqual($webform_submission->getData(), ['custom' => 'value']);
+    $this->assertEquals($webform_submission->getData(), ['custom' => 'value']);
 
     // Check submission label.
     $webform_submission->save();
-    $this->assertEqual($webform_submission->label(), $webform->label() . ': Submission #' . $webform_submission->serial());
+    $this->assertEquals($webform_submission->label(), $webform->label() . ': Submission #' . $webform_submission->serial());
 
     // Check test submission URI.
     // @see \Drupal\webform\WebformSubmissionForm::save
     $this->drupalLogin($this->rootUser);
     $sid = $this->postSubmissionTest($webform);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertEqual($webform_submission->getSourceUrl()->toString(), $webform->toUrl('canonical', ['absolute' => TRUE])->toString());
+    $this->assertEquals($webform_submission->getSourceUrl()->toString(), $webform->toUrl('canonical', ['absolute' => TRUE])->toString());
     $this->drupalLogout();
   }
 
@@ -96,11 +96,13 @@ class WebformSubmissionTest extends WebformBrowserTestBase {
    * Tests duplicating webform submission.
    */
   public function testDuplicate() {
+    $assert_session = $this->assertSession();
+
     $admin_submission_user = $this->drupalCreateUser([
       'administer webform submission',
     ]);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalLogin($admin_submission_user);
 
@@ -113,18 +115,19 @@ class WebformSubmissionTest extends WebformBrowserTestBase {
 
     // Check duplicate form title.
     $this->drupalGet("admin/structure/webform/manage/contact/submission/$sid/duplicate");
-    $this->assertRaw('Duplicate Contact: Submission #' . $webform_submission->serial());
+    $assert_session->responseContains('Duplicate Contact: Submission #' . $webform_submission->serial());
 
     // Duplicate submission.
-    $this->drupalPostForm("admin/structure/webform/manage/contact/submission/$sid/duplicate", ['subject' => '{Duplicate Subject}'], 'Send message');
+    $this->drupalGet("admin/structure/webform/manage/contact/submission/$sid/duplicate");
+    $this->submitForm(['subject' => '{Duplicate Subject}'], 'Send message');
     $duplicate_sid = $this->getLastSubmissionId($webform);
     /** @var \Drupal\webform\WebformSubmissionInterface $duplicate_submission */
     $duplicate_submission = WebformSubmission::load($duplicate_sid);
 
     // Check duplicate submission.
-    $this->assertNotEqual($sid, $duplicate_sid);
-    $this->assertEqual($duplicate_submission->getElementData('subject'), '{Duplicate Subject}');
-    $this->assertEqual($duplicate_submission->getElementData('message'), '{Original Message}');
+    $this->assertNotEquals($sid, $duplicate_sid);
+    $this->assertEquals($duplicate_submission->getElementData('subject'), '{Duplicate Subject}');
+    $this->assertEquals($duplicate_submission->getElementData('message'), '{Original Message}');
   }
 
 }

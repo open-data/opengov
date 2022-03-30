@@ -2,12 +2,10 @@
 
 namespace Drupal\webform\Form\AdminConfig;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\TableSelect;
-use Drupal\webform\WebformLibrariesManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,26 +35,12 @@ class WebformAdminConfigLibrariesForm extends WebformAdminConfigBaseForm {
   }
 
   /**
-   * Constructs a WebformAdminConfigLibrariesForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager
-   *   The webform libraries manager.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, WebformLibrariesManagerInterface $libraries_manager) {
-    parent::__construct($config_factory);
-    $this->librariesManager = $libraries_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('webform.libraries_manager')
-    );
+    $instance = parent::create($container);
+    $instance->librariesManager = $container->get('webform.libraries_manager');
+    return $instance;
   }
 
   /**
@@ -74,14 +58,14 @@ class WebformAdminConfigLibrariesForm extends WebformAdminConfigBaseForm {
     ];
     $form['assets']['description'] = [
       '#type' => 'webform_message',
-      '#message_message' => $this->t('The below CSS and JavasScript will be loaded on all webform pages.'),
+      '#message_message' => $this->t('The below CSS and JavaScript will be loaded on all webform pages.'),
       '#message_type' => 'info',
     ];
     $form['assets']['css'] = [
       '#type' => 'webform_codemirror',
       '#mode' => 'css',
       '#title' => $this->t('CSS'),
-      '#description' => $this->t('Enter custom CSS to be attached to the all webforms.') . '<br/>' .
+      '#description' => $this->t('Enter custom CSS to be attached to all webforms.') . '<br/>' .
         $this->t("To customize only webform specific elements, you should use the '.webform-submission-form' selector"),
       '#default_value' => $config->get('assets.css'),
     ];
@@ -244,7 +228,7 @@ class WebformAdminConfigLibrariesForm extends WebformAdminConfigBaseForm {
     $config->set('libraries.excluded_libraries', $excluded_libraries);
     parent::submitForm($form, $form_state);
 
-    // Reset libraries cached.
+    // Reset libraries cache.
     // @see webform_library_info_build()
     \Drupal::service('library.discovery')->clearCachedDefinitions();
   }

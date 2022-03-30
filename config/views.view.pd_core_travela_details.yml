@@ -1,6 +1,6 @@
 uuid: 1ab4c515-9b31-4ff4-a5d6-2328a61d9536
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - search_api.index.pd_core_travela

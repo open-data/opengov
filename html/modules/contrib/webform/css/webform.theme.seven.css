@@ -52,45 +52,6 @@ code {
   font-weight: bold;
 }
 
-/* Add yellow background to tooltips and tabs */
-/* @see core/assets/vendor/jquery.ui/themes/base/tabs.css */
-.ui-tooltip.ui-widget {
-  border: 1px solid #ed5;
-  border-radius: 2px;
-  background: #fe6;
-}
-
-.webform-tabs .ui-tabs-nav .ui-tabs-anchor {
-  text-decoration: inherit;
-}
-
-.webform-tabs .ui-tabs-active.ui-state-active {
-  text-decoration: none;
-  border: 1px solid #ed5;
-  background: #fe6;
-}
-
-.webform-tabs .ui-state-hover {
-  text-decoration: underline !important;
-}
-
-.webform-tabs .ui-state-active.ui-state-hover {
-  text-decoration: none !important;
-}
-
-/** Compress tabs for mobile */
-@media screen and (max-width: 600px) {
-  .webform-tabs.ui-tabs .ui-tabs-nav {
-    padding: 5px 0 4px 0;
-  }
-  .webform-tabs.ui-tabs .ui-tabs-nav li {
-    padding: 0;
-  }
-  .webform-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
-    padding: 0.5em 0.7em;
-  }
-}
-
 /* Accordion icon */
 .ui-accordion-icons .ui-icon {
   display: inline-block;
@@ -123,12 +84,21 @@ pre.webform-codemirror-runmode {
 /**
  * Form action are moved to a dialogs footer and don't need to be visually
  * hidden.
-
+ *
  * @see Drupal.behaviors.dialog.prepareDialogButtons
  */
 .webform-ui-dialog .form-actions input[type=submit],
 .webform-ui-dialog .form-actions a.button {
   display: none !important;
+}
+
+/**
+ * Primary button font color is not white.
+ *
+ * @see https://www.drupal.org/project/webform/issues/3228968
+ */
+.webform-ui-dialog a.button--primary {
+  color: #fff;
 }
 
 /* System tray divider */
@@ -189,26 +159,6 @@ pre.webform-codemirror-runmode {
   color: #840;
   border: solid 1px #ed5;
   background: #fe6;
-}
-
-/* jQuery UI tooltip */
-.ui-tooltip hr {
-  height: 1px;
-  margin: 0.3em 0;
-  background: #666;
-}
-
-.ui-tooltip code {
-  padding: 0.2em;
-  white-space: nowrap;
-  background-color: #f5f5f2;
-  font-size: 0.9em;
-  font-weight: bold;
-}
-
-/* jQuery UI tabs */
-.ui-tabs .ui-tabs-panel {
-  padding: 0;
 }
 
 /* Tweak details toggle state. */

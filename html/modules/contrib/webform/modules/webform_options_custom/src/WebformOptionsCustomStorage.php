@@ -74,7 +74,7 @@ class WebformOptionsCustomStorage extends ConfigEntityStorage implements Webform
     }
 
     $options_id = $webform_options_custom->id();
-    return (isset($this->usedByWebforms[$options_id])) ? $this->usedByWebforms[$options_id] : [];
+    return $this->usedByWebforms[$options_id] ?? [];
   }
 
 }

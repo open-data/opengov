@@ -28,6 +28,11 @@ abstract class FacetSourceResourceTestBase extends EntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
   protected function setUpAuthorization($method) {
     $this->grantPermissionsToTestedRole(['administer facets']);
   }

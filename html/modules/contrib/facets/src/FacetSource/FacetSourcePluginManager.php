@@ -22,7 +22,9 @@ class FacetSourcePluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/facets/facet_source', $namespaces, $module_handler, FacetSourcePluginInterface::class, FacetsFacetSource::class);
+    $this->setCacheBackend($cache_backend, 'facet_source_plugins');
   }
+
 
   /**
    * {@inheritdoc}

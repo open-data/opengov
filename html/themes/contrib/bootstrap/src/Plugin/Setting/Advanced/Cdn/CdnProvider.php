@@ -218,16 +218,36 @@ class CdnProvider extends CdnProviderBase {
   protected function importProviderData(Element $group, FormStateInterface $form_state) {
     if ($form_state->getValue('clicked_button') === t('Save provider data')->render()) {
       $provider_path = ProviderManager::FILE_PATH;
-      file_prepare_directory($provider_path, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+
+      // FILE_CREATE_DIRECTORY = 1 | FILE_MODIFY_PERMISSIONS = 2.
+      $options = 1 | 2;
+      if ($fileSystem = Bootstrap::fileSystem('prepareDirectory')) {
+        $fileSystem->prepareDirectory($provider_path, $options);
+      }
+      else {
+        file_prepare_directory($provider_path, $options);
+      }
 
       $provider = $form_state->getValue('cdn_provider', $this->theme->getSetting('cdn_provider'));
       $file = "$provider_path/$provider.json";
 
       if ($import_data = $form_state->getValue('cdn_provider_import_data', FALSE)) {
-        file_unmanaged_save_data($import_data, $file, FILE_EXISTS_REPLACE);
+        // FILE_EXISTS_REPLACE = 1.
+        $replace = 1;
+        if ($fileSystem = Bootstrap::fileSystem('saveData')) {
+          $fileSystem->saveData($import_data, $file, $replace);
+        }
+        else {
+          file_unmanaged_save_data($import_data, $file, $replace);
+        }
       }
       elseif ($file && file_exists($file)) {
-        file_unmanaged_delete($file);
+        if ($fileSystem = Bootstrap::fileSystem('delete')) {
+          $fileSystem->delete($file);
+        }
+        else {
+          file_unmanaged_delete($file);
+        }
       }
 
       // Clear the cached definitions so they can get rebuilt.

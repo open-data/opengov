@@ -6,15 +6,12 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\user\UserDataInterface;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Form\WebformDialogFormTrait;
 use Drupal\webform\Plugin\WebformElement\WebformManagedFileBase;
 use Drupal\webform\Plugin\WebformElementInterface;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -62,33 +59,16 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
   protected $webformSubmission;
 
   /**
-   * Constructs a WebformUiElementTypeFormBase object.
-   *
-   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
-   *   The webform element manager.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   * @param \Drupal\user\UserDataInterface $user_data
-   *   The user data service.
-   */
-  public function __construct(WebformElementManagerInterface $element_manager, AccountInterface $current_user, UserDataInterface $user_data) {
-    $this->elementManager = $element_manager;
-    $this->currentUser = $current_user;
-    $this->userData = $user_data;
-
-    $this->webform = Webform::create(['id' => '_webform_ui_temp_form']);
-    $this->webformSubmission = WebformSubmission::create(['webform' => $this->webform]);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('plugin.manager.webform.element'),
-      $container->get('current_user'),
-      $container->get('user.data')
-    );
+    $instance = parent::create($container);
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    $instance->currentUser = $container->get('current_user');
+    $instance->userData = $container->get('user.data');
+    $instance->webform = Webform::create(['id' => '_webform_ui_temp_form']);
+    $instance->webformSubmission = WebformSubmission::create(['webform' => $instance->webform]);
+    return $instance;
   }
 
   /**
@@ -193,9 +173,9 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
     return $response;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Table methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get table header.
@@ -285,9 +265,9 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
     return $row;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Preview methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Determine if webform element type preview is enabled.
@@ -472,9 +452,9 @@ abstract class WebformUiElementTypeFormBase extends FormBase {
     ];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Gets the sorted definition of all WebformElement plugins.

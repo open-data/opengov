@@ -22,7 +22,7 @@ abstract class BooleanBase extends WebformElementBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -45,6 +45,15 @@ abstract class BooleanBase extends WebformElementBase {
           return ($value) ? 1 : 0;
         }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getItemFormats() {
+    $formats = parent::getItemFormats();
+    $formats['raw'] = $this->t('Raw/return value');
+    return $formats;
   }
 
   /**

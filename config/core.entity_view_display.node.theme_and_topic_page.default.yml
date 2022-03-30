@@ -9,11 +9,12 @@ dependencies:
     - field.field.node.theme_and_topic_page.layout_builder__layout
     - node.type.theme_and_topic_page
   content:
-    - 'block_content:basic:60b5a0ba-1f4e-470f-b92d-37a30b49ba3e'
-    - 'block_content:basic:6f32f710-1fb4-4daf-9c91-52362d94419f'
-    - 'block_content:basic:8d4a7513-ee36-4145-8cf2-487825b55602'
-    - 'block_content:basic:bb94dc4f-9e1d-44e8-9993-caf59d5b9ff7'
-    - 'block_content:basic:db518a18-716a-42a1-97cc-1c236df0e474'
+    - 'block_content:basic:33e680ed-4338-4ee8-ae70-a09d043e356a'
+    - 'block_content:basic:ae1faf68-83e2-4433-89dd-9da4ac1c1d26'
+    - 'block_content:basic:ba7be731-2b4a-4460-96d0-c554eff3ad57'
+    - 'block_content:basic:e4fa37b6-b447-4bf1-9829-497498dd8327'
+    - 'block_content:basic:e8479cb2-4e8b-4747-b5df-dbc3fb06254d'
+    - 'block_content:basic:f0445d0f-40ef-41a7-b496-aad01b39ebce'
   module:
     - block_content
     - bootstrap_layouts
@@ -116,7 +117,7 @@ third_party_settings:
                 entity: layout_builder.entity
                 view_mode: view_mode
             additional: {  }
-            weight: 0
+            weight: -10
           c041ec6a-72c8-4750-9087-f6a94850e4c3:
             uuid: c041ec6a-72c8-4750-9087-f6a94850e4c3
             region: right
@@ -136,6 +137,20 @@ third_party_settings:
                 view_mode: view_mode
             additional: {  }
             weight: 0
+          8edd4f31-8217-402b-b699-4c438a8eb1e9:
+            uuid: 8edd4f31-8217-402b-b699-4c438a8eb1e9
+            region: left
+            configuration:
+              id: 'block_content:ba7be731-2b4a-4460-96d0-c554eff3ad57'
+              label: 'Technical notice'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: -9
           af0bd20b-9e2d-42a5-a7de-a9630236099a:
             uuid: af0bd20b-9e2d-42a5-a7de-a9630236099a
             region: left
@@ -150,7 +165,7 @@ third_party_settings:
                 settings: {  }
                 third_party_settings: {  }
             additional: {  }
-            weight: 1
+            weight: -8
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -168,11 +183,11 @@ third_party_settings:
               add_region_classes: 0
               attributes: class|container
         components:
-          343c1ffd-20da-49d8-b1e9-174b97593cd7:
-            uuid: 343c1ffd-20da-49d8-b1e9-174b97593cd7
+          d838a288-cabc-45ea-b563-81ae70a9a385:
+            uuid: d838a288-cabc-45ea-b563-81ae70a9a385
             region: main
             configuration:
-              id: 'block_content:db518a18-716a-42a1-97cc-1c236df0e474'
+              id: 'block_content:33e680ed-4338-4ee8-ae70-a09d043e356a'
               label: 'Placeholder-Most requested'
               provider: block_content
               label_display: '0'
@@ -181,7 +196,7 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 0
+            weight: 1
         third_party_settings: {  }
       -
         layout_id: bs_3col
@@ -209,12 +224,12 @@ third_party_settings:
               add_region_classes: 0
               attributes: 'class|col-lg-4 col-md-6'
         components:
-          31f59328-9f42-4c41-a3a9-b50503145498:
-            uuid: 31f59328-9f42-4c41-a3a9-b50503145498
+          2177c0ec-24bd-4f07-841f-059e3b924885:
+            uuid: 2177c0ec-24bd-4f07-841f-059e3b924885
             region: left
             configuration:
-              id: 'block_content:8d4a7513-ee36-4145-8cf2-487825b55602'
-              label: 'Placeholder block'
+              id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
+              label: 'Placeholder doormat block'
               provider: block_content
               label_display: '0'
               status: true
@@ -222,41 +237,13 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 0
-          ed60a6ce-c811-4f72-884f-e063aa6b9979:
-            uuid: ed60a6ce-c811-4f72-884f-e063aa6b9979
-            region: middle
-            configuration:
-              id: 'block_content:8d4a7513-ee36-4145-8cf2-487825b55602'
-              label: 'Placeholder block'
-              provider: block_content
-              label_display: '0'
-              status: true
-              info: ''
-              view_mode: full
-              context_mapping: {  }
-            additional: {  }
-            weight: 0
-          1bab42e7-df86-4bef-989d-a33aedf4ec80:
-            uuid: 1bab42e7-df86-4bef-989d-a33aedf4ec80
-            region: right
-            configuration:
-              id: 'block_content:8d4a7513-ee36-4145-8cf2-487825b55602'
-              label: 'Placeholder block'
-              provider: block_content
-              label_display: '0'
-              status: true
-              info: ''
-              view_mode: full
-              context_mapping: {  }
-            additional: {  }
-            weight: 0
-          dee870f6-584e-4488-a914-63e07d045020:
-            uuid: dee870f6-584e-4488-a914-63e07d045020
+            weight: 2
+          65943dd7-882f-44ff-88e3-05c7c8296aa5:
+            uuid: 65943dd7-882f-44ff-88e3-05c7c8296aa5
             region: left
             configuration:
-              id: 'block_content:8d4a7513-ee36-4145-8cf2-487825b55602'
-              label: 'Placeholder block'
+              id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
+              label: 'Placeholder doormat block'
               provider: block_content
               label_display: '0'
               status: true
@@ -264,13 +251,13 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 1
-          68b38917-dbd6-4925-a635-e9db6af74f64:
-            uuid: 68b38917-dbd6-4925-a635-e9db6af74f64
+            weight: 3
+          5f64dec6-dd0a-458f-8c91-e4bd40ed94da:
+            uuid: 5f64dec6-dd0a-458f-8c91-e4bd40ed94da
             region: middle
             configuration:
-              id: 'block_content:8d4a7513-ee36-4145-8cf2-487825b55602'
-              label: 'Placeholder block'
+              id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
+              label: 'Placeholder doormat block'
               provider: block_content
               label_display: '0'
               status: true
@@ -278,13 +265,27 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 1
-          2c8e2ea6-3b55-4cb2-a7fb-7a6caa74aedd:
-            uuid: 2c8e2ea6-3b55-4cb2-a7fb-7a6caa74aedd
+            weight: 2
+          467d99e3-3dd0-4595-b171-6e96bf460af2:
+            uuid: 467d99e3-3dd0-4595-b171-6e96bf460af2
+            region: middle
+            configuration:
+              id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
+              label: 'Placeholder doormat block'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: 3
+          c53b5e74-3459-4106-b820-8cb4c3aab76a:
+            uuid: c53b5e74-3459-4106-b820-8cb4c3aab76a
             region: right
             configuration:
-              id: 'block_content:8d4a7513-ee36-4145-8cf2-487825b55602'
-              label: 'Placeholder block'
+              id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
+              label: 'Placeholder doormat block'
               provider: block_content
               label_display: '0'
               status: true
@@ -292,7 +293,21 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 1
+            weight: 2
+          16c61f56-1a43-48d9-9b01-012faab22abe:
+            uuid: 16c61f56-1a43-48d9-9b01-012faab22abe
+            region: right
+            configuration:
+              id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
+              label: 'Placeholder doormat block'
+              provider: block_content
+              label_display: '0'
+              status: true
+              info: ''
+              view_mode: full
+              context_mapping: {  }
+            additional: {  }
+            weight: 3
         third_party_settings: {  }
       -
         layout_id: bs_2col
@@ -315,11 +330,11 @@ third_party_settings:
               add_region_classes: 0
               attributes: 'class|col-md-4 mrgn-bttm-sm mrgn-tp-lg'
         components:
-          69725554-e343-40c0-ab80-185be3d81e55:
-            uuid: 69725554-e343-40c0-ab80-185be3d81e55
+          19001e9b-71ad-4cfc-a728-46240e35eed9:
+            uuid: 19001e9b-71ad-4cfc-a728-46240e35eed9
             region: left
             configuration:
-              id: 'block_content:60b5a0ba-1f4e-470f-b92d-37a30b49ba3e'
+              id: 'block_content:f0445d0f-40ef-41a7-b496-aad01b39ebce'
               label: 'Placeholder feature'
               provider: block_content
               label_display: '0'
@@ -328,12 +343,12 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 0
-          e42b1da8-b151-4199-92f3-f317b5072920:
-            uuid: e42b1da8-b151-4199-92f3-f317b5072920
+            weight: 1
+          3cda7299-ba37-4b4c-8cec-b6ce8ff46e15:
+            uuid: 3cda7299-ba37-4b4c-8cec-b6ce8ff46e15
             region: right
             configuration:
-              id: 'block_content:bb94dc4f-9e1d-44e8-9993-caf59d5b9ff7'
+              id: 'block_content:e8479cb2-4e8b-4747-b5df-dbc3fb06254d'
               label: 'Social media'
               provider: block_content
               label_display: '0'
@@ -342,7 +357,7 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 0
+            weight: 1
         third_party_settings: {  }
       -
         layout_id: bs_1col
@@ -360,11 +375,11 @@ third_party_settings:
               add_region_classes: 0
               attributes: class|row
         components:
-          785f4d29-ac99-4312-b9b9-34ae349b5c53:
-            uuid: 785f4d29-ac99-4312-b9b9-34ae349b5c53
+          99e833bd-ec5e-4ea3-89a9-36928bdbc490:
+            uuid: 99e833bd-ec5e-4ea3-89a9-36928bdbc490
             region: main
             configuration:
-              id: 'block_content:6f32f710-1fb4-4daf-9c91-52362d94419f'
+              id: 'block_content:ae1faf68-83e2-4433-89dd-9da4ac1c1d26'
               label: 'Placeholder Contributor'
               provider: block_content
               label_display: '0'
@@ -373,7 +388,7 @@ third_party_settings:
               view_mode: full
               context_mapping: {  }
             additional: {  }
-            weight: 0
+            weight: 1
         third_party_settings: {  }
 id: node.theme_and_topic_page.default
 targetEntityType: node

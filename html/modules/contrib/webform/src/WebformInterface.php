@@ -333,6 +333,29 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
   public function isOverridden();
 
   /**
+   * Sets the webform updating state.
+   *
+   * Setting the updating state to TRUE ensure that translated elements are
+   * not overridden.
+   *
+   * @param bool $updating
+   *   The updating state of the Webform.
+   *
+   * @return $this
+   *
+   * @see \Drupal\webform_ui\WebformUiEntityElementsForm::validateForm
+   */
+  public function setUpdating($updating = TRUE);
+
+  /**
+   * Returns the webform updating status.
+   *
+   * @return bool
+   *   TRUE if the webform is updating.
+   */
+  public function isUpdating();
+
+  /**
    * Sets the status of the configuration entity.
    *
    * @param string|bool|null $status
@@ -432,6 +455,25 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    *   TRUE if submissions are being logged.
    */
   public function hasSubmissionLog();
+
+  /**
+   * Returns the languages the data is translated to.
+   *
+   * @return \Drupal\Core\Language\LanguageInterface[]
+   *   An associative array of language objects, keyed by language codes.
+   */
+  public function getTranslationLanguages();
+
+  /**
+   * Checks there is a translation for the given language code.
+   *
+   * @param string $langcode
+   *   The language code identifying the translation.
+   *
+   * @return bool
+   *   TRUE if the translation exists, FALSE otherwise.
+   */
+  public function hasTranslation($langcode);
 
   /**
    * Determine if the current webform is translated.
@@ -876,9 +918,9 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function deletePaths();
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Handler plugins.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Determine if the webform has any message handlers.
@@ -980,9 +1022,9 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function invokeHandlers($method, &$data, &$context1 = NULL, &$context2 = NULL, &$context3 = NULL);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element plugins.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Invoke elements method.
@@ -998,9 +1040,9 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function invokeElements($method, &$data, &$context1 = NULL, &$context2 = NULL);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Variant plugins.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Determine if a specific webform variant exists.
@@ -1100,9 +1142,9 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function getVariantsData(WebformSubmissionInterface $webform_submission);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Revisions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Required to allow webform which are config entities to have an EntityViewBuilder.
@@ -1120,9 +1162,9 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function isDefaultRevision();
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // State data.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Returns the stored value for a given key in the webform's state.
@@ -1166,9 +1208,9 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function hasState($key);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // User data.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Returns the stored value for a given key in the webform's user data.
@@ -1212,9 +1254,9 @@ interface WebformInterface extends ConfigEntityInterface, EntityWithPluginCollec
    */
   public function hasUserData($key);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Third party settings.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Unsets all third-party settings of a given module.

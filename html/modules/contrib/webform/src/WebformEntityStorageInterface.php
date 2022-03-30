@@ -11,6 +11,14 @@ use Drupal\Core\Config\Entity\ImportableEntityStorageInterface;
 interface WebformEntityStorageInterface extends ConfigEntityStorageInterface, ImportableEntityStorageInterface {
 
   /**
+   * Get all webform ids.
+   *
+   * @return array
+   *   An array containing all webform ids.
+   */
+  public function getWebformIds();
+
+  /**
    * Gets the names of all categories.
    *
    * @param null|bool $template
@@ -22,6 +30,11 @@ interface WebformEntityStorageInterface extends ConfigEntityStorageInterface, Im
    *   An array of translated categories, sorted alphabetically.
    */
   public function getCategories($template = NULL);
+
+  /**
+   * Resets the internal, categories cache.
+   */
+  public function resetCategoriesCache();
 
   /**
    * Get all webforms grouped by category.

@@ -124,7 +124,6 @@ class UnroutedUrlTest extends UnitTestCase {
       // Disallowed characters in the authority (host name) that are valid
       // elsewhere in the path.
       ['base://(:;2&+h^'],
-      ['base://AKI@&hO@'],
     ];
   }
 
@@ -236,7 +235,7 @@ class UnroutedUrlTest extends UnitTestCase {
    */
   public function testGetOptions($uri) {
     $url = Url::fromUri($uri);
-    $this->assertInternalType('array', $url->getOptions());
+    $this->assertIsArray($url->getOptions());
   }
 
 }

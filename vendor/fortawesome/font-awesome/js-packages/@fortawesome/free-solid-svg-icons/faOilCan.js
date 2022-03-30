@@ -4,9 +4,9 @@ var prefix = 'fas';
 var iconName = 'oil-can';
 var width = 640;
 var height = 512;
-var ligatures = [];
+var aliases = [];
 var unicode = 'f613';
-var svgPathData = 'M629.8 160.31L416 224l-50.49-25.24a64.07 64.07 0 0 0-28.62-6.76H280v-48h56c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16H176c-8.84 0-16 7.16-16 16v16c0 8.84 7.16 16 16 16h56v48h-56L37.72 166.86a31.9 31.9 0 0 0-5.79-.53C14.67 166.33 0 180.36 0 198.34v94.95c0 15.46 11.06 28.72 26.28 31.48L96 337.46V384c0 17.67 14.33 32 32 32h274.63c8.55 0 16.75-3.42 22.76-9.51l212.26-214.75c1.5-1.5 2.34-3.54 2.34-5.66V168c.01-5.31-5.08-9.15-10.19-7.69zM96 288.67l-48-8.73v-62.43l48 8.73v62.43zm453.33 84.66c0 23.56 19.1 42.67 42.67 42.67s42.67-19.1 42.67-42.67S592 288 592 288s-42.67 61.77-42.67 85.33z';
+var svgPathData = 'M288 128V160H368.9C378.8 160 388.6 162.3 397.5 166.8L448 192L615 156.2C633.1 152.3 645.7 173.8 633.5 187.7L451.1 394.3C438.1 408.1 421.5 416 403.1 416H144C117.5 416 96 394.5 96 368V346.7L28.51 316.7C11.17 308.1 0 291.8 0 272.8V208C0 181.5 21.49 160 48 160H224V128H192C174.3 128 160 113.7 160 96C160 78.33 174.3 64 192 64H320C337.7 64 352 78.33 352 96C352 113.7 337.7 128 320 128L288 128zM96 208H48V272.8L96 294.1V208z';
 
 exports.definition = {
   prefix: prefix,
@@ -14,7 +14,7 @@ exports.definition = {
   icon: [
     width,
     height,
-    ligatures,
+    aliases,
     unicode,
     svgPathData
   ]};
@@ -24,6 +24,7 @@ exports.prefix = prefix;
 exports.iconName = iconName;
 exports.width = width;
 exports.height = height;
-exports.ligatures = ligatures;
+exports.ligatures = aliases;
 exports.unicode = unicode;
 exports.svgPathData = svgPathData;
+exports.aliases = aliases;

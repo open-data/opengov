@@ -34,36 +34,39 @@ class WebformSubmissionLogNodeTest extends WebformNodeBrowserTestBase {
    */
   public function testSubmissionLog() {
     global $base_path;
+
+    $assert_session = $this->assertSession();
+
     $node = $this->createWebformNode('test_submission_log');
     $nid = $node->id();
 
     $sid = $this->postNodeSubmission($node);
     $submission = WebformSubmission::load($sid);
     $log = $this->getLastSubmissionLog();
-    $this->assertEqual($log->lid, 1);
-    $this->assertEqual($log->sid, 1);
-    $this->assertEqual($log->uid, 0);
-    $this->assertEqual($log->handler_id, '');
-    $this->assertEqual($log->operation, 'submission created');
-    $this->assertEqual($log->message, '@title created.');
-    $this->assertEqual($log->variables, ['@title' => $submission->label()]);
-    $this->assertEqual($log->webform_id, 'test_submission_log');
-    $this->assertEqual($log->entity_type, 'node');
-    $this->assertEqual($log->entity_id, $node->id());
+    $this->assertEquals($log->lid, 1);
+    $this->assertEquals($log->sid, 1);
+    $this->assertEquals($log->uid, 0);
+    $this->assertEquals($log->handler_id, '');
+    $this->assertEquals($log->operation, 'submission created');
+    $this->assertEquals($log->message, '@title created.');
+    $this->assertEquals($log->variables, ['@title' => $submission->label()]);
+    $this->assertEquals($log->webform_id, 'test_submission_log');
+    $this->assertEquals($log->entity_type, 'node');
+    $this->assertEquals($log->entity_id, $node->id());
 
     // Login.
     $this->drupalLogin($this->rootUser);
 
     // Check webform node results log table has record.
     $this->drupalGet("node/$nid/webform/results/log");
-    $this->assertResponse(200);
-    $this->assertNoRaw('No log messages available.');
-    $this->assertRaw('<a href="' . $base_path . 'node/' . $nid . '/webform/submission/' . $sid . '/log">' . $sid . '</a>');
-    $this->assertRaw(t('@title created.', ['@title' => $submission->label()]));
+    $assert_session->statusCodeEquals(200);
+    $assert_session->responseNotContains('No log messages available.');
+    $assert_session->responseContains('<a href="' . $base_path . 'node/' . $nid . '/webform/submission/' . $sid . '/log">' . $sid . '</a>');
+    $assert_session->responseContains($this->t('@title created.', ['@title' => $submission->label()]));
 
     // Check webform node submission log tab.
     $this->drupalGet("node/$nid/webform/submission/$sid/log");
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
   }
 
 }

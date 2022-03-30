@@ -95,9 +95,9 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     $this->entityTypeManager = $entity_type_manager ?: \Drupal::entityTypeManager();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // User data methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -159,9 +159,9 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     $this->userData->delete($module, NULL, $name);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Field methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -240,8 +240,10 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     $field_names = $this->getFieldNames($entity);
     foreach ($field_names as $field_name) {
       foreach ($entity->$field_name as $item) {
-        $sorted_entities[$item->target_id] = (method_exists($item->entity, 'getWeight')) ? $item->entity->getWeight() : 0;
-        $target_entities[$item->target_id] = $item->entity;
+        if ($item->entity) {
+          $sorted_entities[$item->target_id] = (method_exists($item->entity, 'getWeight')) ? $item->entity->getWeight() : 0;
+          $target_entities[$item->target_id] = $item->entity;
+        }
       }
     }
 
@@ -263,9 +265,9 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     return $webforms;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Paragraph methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get webform associate with a paragraph field from entity.
@@ -336,9 +338,9 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
     return $field_names;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Table methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -353,7 +355,7 @@ class WebformEntityReferenceManager implements WebformEntityReferenceManagerInte
         $webform_field_name = $field_storage_config->getName();
         $tables[$webform_field_table . '__' . $webform_field_name] = $webform_field_name;
         $tables[$webform_field_table . '_revision__' . $webform_field_name] = $webform_field_name;
-      };
+      }
     }
     return $tables;
   }

@@ -17,6 +17,7 @@ use Drupal\webform\Element\WebformAjaxElementTrait;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformExporterInterface;
 use Drupal\webform\Plugin\WebformExporterManagerInterface;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 
 /**
  * Webform submission exporter.
@@ -25,6 +26,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
 
   use StringTranslationTrait;
   use WebformAjaxElementTrait;
+  use WebformEntityStorageTrait;
 
   /**
    * The configuration object factory.
@@ -39,13 +41,6 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
    * @var \Drupal\Core\File\FileSystemInterface
    */
   protected $fileSystem;
-
-  /**
-   * The webform submission storage.
-   *
-   * @var \Drupal\webform\WebformSubmissionStorageInterface
-   */
-  protected $entityStorage;
 
   /**
    * The stream wrapper manager.
@@ -111,6 +106,13 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
   protected $elementTypes;
 
   /**
+   * Webform attachment elements.
+   *
+   * @var array
+   */
+  protected $attachmentElements;
+
+  /**
    * Constructs a WebformSubmissionExporter object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -131,7 +133,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
   public function __construct(ConfigFactoryInterface $config_factory, FileSystemInterface $file_system, EntityTypeManagerInterface $entity_type_manager, StreamWrapperManagerInterface $stream_wrapper_manager, ArchiverManager $archiver_manager, WebformElementManagerInterface $element_manager, WebformExporterManagerInterface $exporter_manager) {
     $this->configFactory = $config_factory;
     $this->fileSystem = $file_system;
-    $this->entityStorage = $entity_type_manager->getStorage('webform_submission');
+    $this->entityTypeManager = $entity_type_manager;
     $this->streamWrapperManager = $stream_wrapper_manager;
     $this->archiverManager = $archiver_manager;
     $this->elementManager = $element_manager;
@@ -145,6 +147,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     $this->webform = $webform;
     $this->defaultOptions = NULL;
     $this->elementTypes = NULL;
+    $this->attachmentElements = NULL;
   }
 
   /**
@@ -232,9 +235,9 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     return $this->getExporter()->getConfiguration();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Default options and webform.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -270,18 +273,20 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
       'range_latest' => '',
       'range_start' => '',
       'range_end' => '',
+      'uid' => '',
       'order' => 'asc',
       'state' => 'all',
       'locked' => '',
       'sticky' => '',
       'download' => TRUE,
       'files' => FALSE,
+      'attachments' => FALSE,
     ];
 
     // Append webform exporter default options.
     $exporter_plugins = $this->exporterManager->getInstances();
     foreach ($exporter_plugins as $element_type => $element_plugin) {
-      $this->defaultOptions += $element_plugin->defaultConfiguration();
+      $this->defaultOptions = $element_plugin->defaultConfiguration() + $this->defaultOptions;
     }
 
     // Append webform element default options.
@@ -302,14 +307,13 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
   public function buildExportOptionsForm(array &$form, FormStateInterface $form_state, array $export_options = []) {
     $export_options += $this->getDefaultExportOptions();
     $this->setExporter($export_options);
-
     $webform = $this->getWebform();
 
     // Get exporter plugins.
     $exporter_plugins = $this->exporterManager->getInstances($export_options);
 
     // Determine if the file can be downloaded or displayed in the file browser.
-    $total = $this->entityStorage->getTotal($this->getWebform(), $this->getSourceEntity());
+    $total = $this->getSubmissionStorage()->getTotal($this->getWebform(), $this->getSourceEntity());
     $default_batch_limit = $this->configFactory->get('webform.settings')->get('batch.default_batch_export_size') ?: 500;
     $download_access = ($total > $default_batch_limit) ? FALSE : TRUE;
 
@@ -317,12 +321,17 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     $states_archive = ['invisible' => []];
     $states_options = ['invisible' => []];
     $states_files = ['invisible' => []];
+    $states_attachments = ['invisible' => []];
     if ($webform && $download_access) {
       $states_files['invisible'][] = [':input[name="download"]' => ['checked' => FALSE]];
+      $states_attachments['invisible'][] = [':input[name="download"]' => ['checked' => FALSE]];
     }
     $states_archive_type = ['visible' => []];
-    if ($webform && $webform->hasManagedFile()) {
-      $states_archive_type['visible'][] = [':input[name="files"]' => ['checked' => TRUE]];
+    if ($webform && ($webform->hasManagedFile() || $webform->hasAttachments())) {
+      $states_archive_type['visible'][] = [
+        [':input[name="files"]' => ['checked' => TRUE]],
+        [':input[name="attachments"]' => ['checked' => TRUE]],
+      ];
     }
     foreach ($exporter_plugins as $plugin_id => $exporter_plugin) {
       if ($exporter_plugin->isArchive()) {
@@ -515,10 +524,18 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
         '#access' => $webform->hasManagedFile(),
         '#states' => $states_files,
       ];
-
+      $form['export']['download']['attachments'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Download attachments'),
+        '#description' => $this->t('If checked, the exported file and any attachments files will be download in the archive file.'),
+        '#return_value' => TRUE,
+        '#default_value' => ($this->hasWebformExportAttachmentElements()) ? $export_options['attachments'] : 0,
+        '#access' => $this->hasWebformExportAttachmentElements(),
+        '#states' => $states_attachments,
+      ];
       $source_entity = $this->getSourceEntity();
       if (!$source_entity) {
-        $entity_types = $this->entityStorage->getSourceEntityTypes($webform);
+        $entity_types = $this->getSubmissionStorage()->getSourceEntityTypes($webform);
         if ($entity_types) {
           $form['export']['download']['submitted'] = [
             '#type' => 'item',
@@ -538,7 +555,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
             '#default_value' => $export_options['entity_type'],
           ];
           if ($export_options['entity_type']) {
-            $source_entity_options = $this->entityStorage->getSourceEntityAsOptions($webform, $export_options['entity_type']);
+            $source_entity_options = $this->getSubmissionStorage()->getSourceEntityAsOptions($webform, $export_options['entity_type']);
             if ($source_entity_options) {
               $form['export']['download']['submitted']['container']['entity_id'] = [
                 '#type' => 'select',
@@ -579,6 +596,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
         '#options' => [
           'all' => $this->t('All'),
           'latest' => $this->t('Latest'),
+          'uid' => $this->t('Submitted by'),
           'serial' => $this->t('Submission number'),
           'sid' => $this->t('Submission ID'),
           'date' => $this->t('Created date'),
@@ -600,6 +618,26 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
           '#title' => $this->t('Number of submissions'),
           '#min' => 1,
           '#default_value' => $export_options['range_latest'],
+        ],
+      ];
+      $form['export']['download']['submitted_by'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['container-inline']],
+        '#states' => [
+          'visible' => [
+            ':input[name="range_type"]' => ['value' => 'uid'],
+          ],
+        ],
+        'uid' => [
+          '#type' => 'entity_autocomplete',
+          '#title' => $this->t('User'),
+          '#target_type' => 'user',
+          '#default_value' => $export_options['uid'],
+          '#states' => [
+            'visible' => [
+              ':input[name="range_type"]' => ['value' => 'uid'],
+            ],
+          ],
         ],
       ];
       $ranges = [
@@ -738,9 +776,9 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     $states[$state][] = [':input[name="exporter"]' => ['value' => $plugin_id]];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Generate and write.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -775,7 +813,9 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     $export_options = $this->getExportOptions();
     $webform = $this->getWebform();
 
-    $is_archive = ($this->isArchive() && $export_options['files']);
+    $is_archive = ($this->isArchive() && ($export_options['files'] || $export_options['attachments']));
+
+    // Get files directories.
     $files_directories = [];
     if ($is_archive) {
       $stream_wrappers = array_keys($this->streamWrapperManager->getNames(StreamWrapperInterface::WRITE_VISIBLE));
@@ -785,24 +825,47 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
       }
     }
 
+    // Get attachment elements.
+    $attachment_elements = $this->getWebformExportAttachmentElements();
+
     $this->getExporter()->openExport();
     foreach ($webform_submissions as $webform_submission) {
       if ($is_archive) {
-        foreach ($files_directories as $files_directory) {
-          $submission_directory = $files_directory . '/' . $webform_submission->id();
-          if (file_exists($submission_directory)) {
-            $file_name = $this->getSubmissionBaseName($webform_submission);
-            $this->getExporter()->addToArchive(
-              $submission_directory,
-              $file_name,
-              ['remove_path' => $submission_directory]
-            );
+        $submission_base_name = $this->getSubmissionBaseName($webform_submission);
+
+        // Add managed file uploads to the archive.
+        if ($export_options['files']) {
+          foreach ($files_directories as $files_directory) {
+            $submission_directory = $files_directory . '/' . $webform_submission->id();
+            if (file_exists($submission_directory) && $export_options['files']) {
+              $this->getExporter()->addToArchive(
+                $submission_directory,
+                $submission_base_name,
+                ['remove_path' => $submission_directory]
+              );
+            }
+          }
+        }
+
+        // Add attachment element files to the archive.
+        if ($export_options['attachments']) {
+          foreach ($attachment_elements as $attachment_element) {
+            /** @var \Drupal\webform\Plugin\WebformElementAttachmentInterface $attachment_element_plugin */
+            $attachment_element_plugin = $this->elementManager->getElementInstance($attachment_element);
+            $attachments = $attachment_element_plugin->getExportAttachments($attachment_element, $webform_submission);
+            foreach ($attachments as $attachment) {
+              $this->getExporter()->addToArchive(
+                $attachment['filecontent'],
+                $submission_base_name . '/attachments/' . $attachment['filename']
+              );
+            }
           }
         }
       }
 
       $this->getExporter()->writeSubmission($webform_submission);
     }
+
     $this->getExporter()->closeExport();
   }
 
@@ -839,7 +902,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     $webform = $this->getWebform();
     $source_entity = $this->getSourceEntity();
 
-    $query = $this->entityStorage->getQuery()->condition('webform_id', $webform->id());
+    $query = $this->getSubmissionStorage()->getQuery()->condition('webform_id', $webform->id());
 
     // Filter by source entity or submitted to.
     if ($source_entity) {
@@ -888,6 +951,11 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
         break;
     }
 
+    // Filter by UID.
+    if (!is_null($export_options['uid']) && $export_options['uid'] !== '') {
+      $query->condition('uid', $export_options['uid'], '=');
+    }
+
     // Filter by (completion) state.
     switch ($export_options['state']) {
       case 'draft':
@@ -918,8 +986,8 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     }
     else {
       // Sort by created and sid in ASC or DESC order.
-      $query->sort('created', isset($export_options['order']) ? $export_options['order'] : 'ASC');
-      $query->sort('sid', isset($export_options['order']) ? $export_options['order'] : 'ASC');
+      $query->sort('created', $export_options['order'] ?? 'ASC');
+      $query->sort('sid', $export_options['order'] ?? 'ASC');
     }
 
     // Do not check access to submission since the exporter UI and Drush
@@ -960,9 +1028,44 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     return $this->elementTypes;
   }
 
-  /****************************************************************************/
+  /**
+   * Get attachment elements with files that can be exported.
+   *
+   * @return array
+   *   An associative array of attachment elements with files
+   *   that can be exported.
+   */
+  protected function getWebformExportAttachmentElements() {
+    if (isset($this->attachmentElements)) {
+      return $this->attachmentElements;
+    }
+    $attachment_elements = $this->getWebform()->getElementsAttachments();
+    $this->attachmentElements = [];
+    foreach ($attachment_elements as $attachment_element_key) {
+      $attachment_element = $this->getWebform()->getElement($attachment_element_key);
+      /** @var \Drupal\webform\Plugin\WebformElementAttachmentInterface $attachment_element_plugin */
+      $attachment_element_plugin = $this->elementManager->getElementInstance($attachment_element);
+      if ($attachment_element_plugin->hasExportAttachments()) {
+        $this->attachmentElements[$attachment_element_key] = $attachment_element;
+      }
+    }
+    return $this->attachmentElements;
+  }
+
+  /**
+   * Determin if the webform c elements with files that can be exported.
+   *
+   * @return array
+   *   An associative array of attachment elements with files
+   *   that can be exported.
+   */
+  protected function hasWebformExportAttachmentElements() {
+    return ($this->getWebformExportAttachmentElements()) ? TRUE : FALSE;
+  }
+
+  /* ************************************************************************ */
   // Summary and download.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -975,7 +1078,30 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
    * {@inheritdoc}
    */
   public function getBatchLimit() {
-    return $this->getExporter()->getBatchLimit();
+    $batch_limit = $this->getExporter()->getBatchLimit();
+
+    $export_options = $this->getExportOptions();
+
+    // For file and attachment exports set the batch limit to 100.
+    if (($export_options['files'] || $export_options['attachments']) && $batch_limit > 100) {
+      $batch_limit = 100;
+    }
+
+    // Allow attachment elements to lower the batch limit.
+    // @see \Drupal\webform_entity_print_attachment\Plugin\WebformElement\WebformEntityPrintAttachment::getAttachmentsExportBatchLimit
+    if ($export_options['attachments']) {
+      $attachment_elements = $this->getWebformExportAttachmentElements();
+      foreach ($attachment_elements as $attachment_element) {
+        /** @var \Drupal\webform\Plugin\WebformElementAttachmentInterface $attachment_element_plugin */
+        $attachment_element_plugin = $this->elementManager->getElementInstance($attachment_element);
+        $attachment_batch_limit = $attachment_element_plugin->getExportAttachmentsBatchLimit();
+        if ($attachment_batch_limit && $attachment_batch_limit < $batch_limit) {
+          $batch_limit = $attachment_batch_limit;
+        }
+      }
+    }
+
+    return $batch_limit;
   }
 
   /**
@@ -984,7 +1110,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
   public function requiresBatch() {
     // Get the unfiltered total number of submissions for the webform and
     // source entity.
-    $total = $this->entityStorage->getTotal(
+    $total = $this->getSubmissionStorage()->getTotal(
       $this->getWebform(),
       $this->getSourceEntity()
     );
@@ -1049,7 +1175,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
     }
     else {
       $export_options = $this->getExportOptions();
-      return ($export_options['download'] && $export_options['files']);
+      return ($export_options['download'] && ($export_options['files'] || $export_options['attachments']));
     }
   }
 
@@ -1058,18 +1184,6 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
    */
   public function isBatch() {
     return ($this->isArchive() || ($this->getTotal() >= $this->getBatchLimit()));
-  }
-
-  /**
-   * Construct an instance of archive tar object.
-   *
-   * @return \Archive_Tar
-   *   Archive tar object.
-   *
-   * @deprecated Scheduled for removal in Webform 8.x-6.x
-   */
-  protected function getArchiveTar() {
-    return new \Archive_Tar($this->getArchiveFilePath(), 'gz');
   }
 
 }

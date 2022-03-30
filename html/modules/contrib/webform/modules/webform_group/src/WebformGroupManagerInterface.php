@@ -61,9 +61,9 @@ interface WebformGroupManagerInterface {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   A user account.
    *
-   * @return \Drupal\group\Entity\GroupContentInterface|bool
-   *   The group role  for the webform submission.
-   *   FALSE if no group roles is found for the webform submission.
+   * @return array
+   *   An array of group roles for a webform submission and a specified
+   *   user account.
    */
   public function getWebformSubmissionUserGroupRoles(WebformSubmissionInterface $webform_submission, AccountInterface $account);
 
@@ -86,7 +86,7 @@ interface WebformGroupManagerInterface {
    *   A webform.
    *
    * @return array
-   *   An associative array containiong a webform's access rules
+   *   An associative array containing a webform's access rules
    *   with group roles.
    */
   public function getAccessRules(WebformInterface $webform);

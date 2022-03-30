@@ -36,9 +36,14 @@ abstract class Container extends AbstractWebDriver
     const WEBDRIVER_ELEMENT_ID = 'element-6066-11e4-a52e-4f735466cecf';
 
     /**
+     * @var array
+     */
+    private $strategies;
+
+    /**
      * {@inheritdoc}
      */
-    public function __construct($url = 'http://localhost:4444/wd/hub')
+    public function __construct($url)
     {
         parent::__construct($url);
 

@@ -8,3 +8,8 @@ services:
       - '@plugin.manager.facets.facet_source'
       - '@plugin.manager.facets_summary.processor'
       - '@facets.manager'
+  facets_summary.search_api_subscriber:
+    class: Drupal\facets_summary\EventSubscriber\SearchApiSubscriber
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: event_subscriber }

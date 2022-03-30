@@ -82,6 +82,11 @@ field_settings:
     datasource_id: solr_document
     property_path: language_fr
     type: string
+  org_name_code:
+    label: 'Org name code'
+    datasource_id: solr_document
+    property_path: org_name_code
+    type: string
   org_name_en:
     label: 'Org name en'
     datasource_id: solr_document
@@ -153,6 +158,7 @@ datasource_settings:
 processor_settings:
   add_url: {  }
   aggregated_field: {  }
+  language_with_fallback: {  }
   rendered_item: {  }
   solr_date_range: {  }
 tracker_settings:

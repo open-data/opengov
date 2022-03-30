@@ -27,7 +27,7 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
   /**
    * Drupal configuration service container.
    *
-   * @var Drupal\Core\Config\ConfigFactory
+   * @var \Drupal\Core\Config\ConfigFactory
    */
   protected $configFactory;
 
@@ -118,27 +118,6 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
     // Load the configuration settings.
     $configurationSettings = $this->configFactory->get('fontawesome.settings');
 
-    // Attach the libraries as needed.
-    $fontawesomeLibraries = [];
-    if ($configurationSettings->get('method') == 'webfonts') {
-      // Webfonts method.
-      $fontawesomeLibraries[] = 'fontawesome/fontawesome.webfonts';
-
-      // Attach the shim file if needed.
-      if ($configurationSettings->get('use_shim')) {
-        $fontawesomeLibraries[] = 'fontawesome/fontawesome.webfonts.shim';
-      }
-    }
-    else {
-      // SVG method.
-      $fontawesomeLibraries[] = 'fontawesome/fontawesome.svg';
-
-      // Attach the shim file if needed.
-      if ($configurationSettings->get('use_shim')) {
-        $fontawesomeLibraries[] = 'fontawesome/fontawesome.svg.shim';
-      }
-    }
-
     // Loop over each icon and build data.
     $icons = [];
     foreach ($items as $item) {
@@ -155,13 +134,15 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
 
       // Format power transforms.
       $iconTransforms = [];
-      $powerTransforms = $iconSettings['power_transforms'];
-      foreach ($powerTransforms as $transform) {
-        if (!empty($transform['type'])) {
-          $iconTransforms[] = $transform['type'] . '-' . $transform['value'];
+      if (isset($iconSettings['power_transforms'])) {
+        $powerTransforms = $iconSettings['power_transforms'];
+        foreach ($powerTransforms as $transform) {
+          if (!empty($transform['type'])) {
+            $iconTransforms[] = $transform['type'] . '-' . $transform['value'];
+          }
         }
+        unset($iconSettings['power_transforms']);
       }
-      unset($iconSettings['power_transforms']);
 
       // Move duotone settings into the render.
       if (isset($iconSettings['duotone'])) {
@@ -211,9 +192,6 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
         '#theme' => 'fontawesomeicons',
         '#icons' => $icons,
         '#layers' => $settings['layers'],
-      ],
-      '#attached' => [
-        'library' => $fontawesomeLibraries,
       ],
     ];
   }

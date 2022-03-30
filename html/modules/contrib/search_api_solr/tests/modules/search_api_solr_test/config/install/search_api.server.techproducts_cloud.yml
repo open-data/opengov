@@ -6,7 +6,6 @@ backend_config:
   site_hash: false
   retrieve_data: true
   highlight_data: false
-  skip_schema_check: true
   domain: generic
   server_prefix: ''
   connector: solr_cloud
@@ -24,9 +23,12 @@ backend_config:
     http_method: AUTO
     commit_within: 1000
     jmx: false
+    jts: false
     solr_install_dir: ''
     checkpoints_collection: checkpoints
+    skip_schema_check: true
   optimize: false
+  fallback_multiple: true
 status: true
 langcode: en
 dependencies:

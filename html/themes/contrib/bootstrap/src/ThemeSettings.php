@@ -66,11 +66,13 @@ class ThemeSettings extends Config {
 
     $this->deprecated = [];
     foreach ($deprecated as $deprecatedName => $deprecatedSetting) {
-      $key = $deprecatedSetting->getDeprecatedReplacementSetting()->getPluginId();
-      if (!isset($this->deprecated[$key])) {
-        $this->deprecated[$key] = [];
+      if (!is_null($deprecatedSetting)) {
+        $key = $deprecatedSetting->getDeprecatedReplacementSetting()->getPluginId();
+        if (!isset($this->deprecated[$key])) {
+          $this->deprecated[$key] = [];
+        }
+        $this->deprecated[$key][$deprecatedName] = $deprecatedSetting;
       }
-      $this->deprecated[$key][$deprecatedName] = $deprecatedSetting;
     }
 
     // Retrieve cache.

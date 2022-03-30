@@ -38,6 +38,9 @@ class GitDriver extends VcsDriver
     {
         if (Filesystem::isLocalPath($this->url)) {
             $this->url = preg_replace('{[\\/]\.git/?$}', '', $this->url);
+            if (!is_dir($this->url)) {
+                throw new \RuntimeException('Failed to read package information from '.$this->url.' as the path does not exist');
+            }
             $this->repoDir = $this->url;
             $cacheUrl = realpath($this->url);
         } else {
@@ -224,7 +227,7 @@ class GitDriver extends VcsDriver
 
         try {
             $gitUtil->runCommand(function ($url) {
-                return 'git ls-remote --heads ' . ProcessExecutor::escape($url);
+                return 'git ls-remote --heads -- ' . ProcessExecutor::escape($url);
             }, $url, sys_get_temp_dir());
         } catch (\RuntimeException $e) {
             return false;

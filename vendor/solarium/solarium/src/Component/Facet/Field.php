@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\FacetSetInterface;
@@ -7,19 +14,20 @@ use Solarium\Component\FacetSetInterface;
 /**
  * Facet query.
  *
- * @see http://wiki.apache.org/solr/SimpleFacetParameters#Field_Value_Faceting_Parameters
+ * @see https://solr.apache.org/guide/faceting.html#field-value-faceting-parameters
  */
-class Field extends AbstractField
+class Field extends AbstractFacet implements FieldValueParametersInterface
 {
-    /**
-     * Facet method enum.
-     */
-    const METHOD_ENUM = 'enum';
+    use FieldValueParametersTrait;
 
     /**
-     * Facet method fc.
+     * Default options.
+     *
+     * @var array
      */
-    const METHOD_FC = 'fc';
+    protected $options = [
+        'field' => 'id',
+    ];
 
     /**
      * Get the facet type.
@@ -32,50 +40,26 @@ class Field extends AbstractField
     }
 
     /**
-     * Limit the terms for faceting by a string they must contain. Since Solr 5.1.
+     * Set the name of the field that should be treated as a facet.
      *
-     * @param string $contains
+     * @param string $field
      *
      * @return self Provides fluent interface
      */
-    public function setContains(string $contains): self
+    public function setField(string $field): self
     {
-        $this->setOption('contains', $contains);
+        $this->setOption('field', $field);
 
         return $this;
     }
 
     /**
-     * Get the facet contains.
+     * Get the field name.
      *
      * @return string|null
      */
-    public function getContains(): ?string
+    public function getField(): ?string
     {
-        return $this->getOption('contains');
-    }
-
-    /**
-     * Case sensitivity of matching string that facet terms must contain. Since Solr 5.1.
-     *
-     * @param bool $containsIgnoreCase
-     *
-     * @return self Provides fluent interface
-     */
-    public function setContainsIgnoreCase($containsIgnoreCase): self
-    {
-        $this->setOption('containsignorecase', $containsIgnoreCase);
-
-        return $this;
-    }
-
-    /**
-     * Get the case sensitivity of facet contains.
-     *
-     * @return bool|null
-     */
-    public function getContainsIgnoreCase(): ?bool
-    {
-        return $this->getOption('containsignorecase');
+        return $this->getOption('field');
     }
 }

@@ -13,34 +13,17 @@
         {
             "type"    : "package",
             "package" : {
-                "name"    : "w8tcha/ckeditor-codemirror",
-                "version" : "v1.17",
-                "type"    : "drupal-library",
-                "dist"    : {
-                    "url"  : "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/archive/v1.17.11.tar.gz",
-                    "type" : "tar"
-                },
-                "source"  : {
-                    "url"       : "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git",
-                    "type"      : "git",
-                    "reference" : "v1.17"
-                }
-            }
-        },
-        {
-            "type"    : "package",
-            "package" : {
                 "name"    : "wet-boew/wet-boew",
-                "version" : "v4.0.32",
+                "version" : "v4.0.43",
                 "type"    : "drupal-library",
                 "dist"    : {
-                    "url"  : "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.32.tar.gz",
+                    "url"  : "https://github.com/wet-boew/wet-boew-cdn/archive/v4.0.43.tar.gz",
                     "type" : "tar"
                 },
                 "source"  : {
                     "url"       : "https://github.com/wet-boew/wet-boew-cdn.git",
                     "type"      : "git",
-                    "reference" : "v4.0.32"
+                    "reference" : "v4.0.43"
                 }
             }
         },
@@ -48,16 +31,16 @@
             "type"    : "package",
             "package" : {
                 "name"    : "wet-boew/theme-gcweb",
-                "version" : "v6.0",
+                "version" : "v9.4.0",
                 "type"    : "drupal-library",
                 "dist"    : {
-                    "url"  : "https://github.com/wet-boew/themes-cdn/archive/v6.0-gcweb.tar.gz",
+                    "url"  : "https://github.com/wet-boew/themes-cdn/archive/v9.4.0-gcweb.tar.gz",
                     "type" : "tar"
                 },
                 "source"  : {
                     "url"       : "https://github.com/wet-boew/themes-cdn.git",
                     "type"      : "git",
-                    "reference" : "v6.0-gcweb"
+                    "reference" : "v9.4.0-gcweb"
                 }
             }
         }
@@ -66,51 +49,41 @@
         "php": ">=7.1",
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1.6.5",
-        "drupal-composer/drupal-scaffold": "^2.5",
-        "drupal/console": "^1.9.4",
-        "drupal/core": "^8.8.0",
-        "drush/drush": "^9.0.0",
+        "drupal/core-composer-scaffold": "^8.8.0",
+        "drupal/console": "^1.9.8",
+        "drupal/core": "^8.9.0",
+        "drush/drush": "^10.0.0",
         "opengov/og": "dev-master",
         "symfony/event-dispatcher": "4.3.4 as 3.4.99",
-        "vlucas/phpdotenv": "^2.4",
         "webflo/drupal-finder": "^1.0.0",
-        "webmozart/path-util": "^2.3",
-        "zaporylie/composer-drupal-optimizations": "^1.0"
+        "wikimedia/composer-merge-plugin": "2.0.1",
+        "zaporylie/composer-drupal-optimizations": "^1.2.0"
     },
     "require-dev": {
-        "drupal/core-dev": "^8.8"
+        "drupal/core-dev": "^8.9"
     },
     "conflict": {
         "drupal/drupal": "*",
-        "symfony/http-foundation": "3.4.24"
+        "symfony/http-foundation": "3.4.35",
+        "drush/drush": "<8.1.10"
     },
     "config": {
-        "sort-packages": true
-    },
-    "autoload": {
-        "classmap": [
-            "scripts/composer/ScriptHandler.php"
-        ],
-        "files": ["load.environment.php"]
-    },
-    "scripts": {
-        "pre-install-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
-        "pre-update-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
-        "post-install-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::createRequiredFiles"
-        ],
-        "post-update-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::createRequiredFiles"
-        ]
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "drupal/console-extend-plugin": true,
+            "oomphinc/composer-installers-extender": true,
+            "zaporylie/composer-drupal-optimizations": true,
+            "wikimedia/composer-merge-plugin": true,
+            "drupal/core-composer-scaffold": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "extra": {
         "installer-types": [
-           "bower-asset",
-           "npm-asset"
+            "bower-asset",
+            "npm-asset"
         ],
         "installer-paths": {
             "html/core": [ "type:drupal-core" ],
@@ -134,8 +107,15 @@
             "initial": {
                 ".editorconfig": "../.editorconfig",
                 ".gitattributes": "../.gitattributes"
+            },
+            "locations": {
+                "web-root": "html/"
             }
+        },
+        "merge-plugin": {
+            "include": [
+                "html/modules/contrib/ckeditor_codemirror/composer.libraries.json"
+            ]
         }
     }
 }
-

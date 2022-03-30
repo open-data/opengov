@@ -124,6 +124,13 @@ abstract class AbstractWebDriver
 
         $httpCode = $info['http_code'];
 
+        if ($httpCode === 0) {
+            throw WebDriverException::factory(
+                WebDriverException::CURL_EXEC,
+                $info['error']
+            );
+        }
+
         // According to https://w3c.github.io/webdriver/webdriver-spec.html all 4xx responses are to be considered
         // an error and return plaintext, while 5xx responses are json encoded
         if ($httpCode >= 400 && $httpCode <= 499) {
@@ -142,7 +149,7 @@ abstract class AbstractWebDriver
             );
         }
 
-        if (is_array($result) && !array_key_exists('status', $result)) {
+        if (is_array($result) && ! array_key_exists('status', $result) && ! array_key_exists('value', $result)) {
             throw WebDriverException::factory(
                 WebDriverException::CURL_EXEC,
                 'Payload received from webdriver is valid but unexpected json: ' . substr($rawResult, 0, 1000)
@@ -153,15 +160,35 @@ abstract class AbstractWebDriver
         $message = (is_array($value) && array_key_exists('message', $value)) ? $value['message'] : null;
 
         // if not success, throw exception
-        if ((int) $result['status'] !== 0) {
-            throw WebDriverException::factory($result['status'], $message);
+        if (isset($result['status']) && (int) $result['status'] !== 0) {
+            throw WebDriverException::factory(
+                $result['status'],
+                $message
+            );
+        }
+
+        if (isset($value['error'])) {
+            throw WebDriverException::factory(
+                $value['error'],
+                $message
+            );
+        }
+
+        if (isset($value['ready']) && $value['ready'] !== true) {
+            throw WebDriverException::factory(
+                WebDriverException::CURL_EXEC,
+                $message
+            );
         }
 
         $sessionId = isset($result['sessionId'])
            ? $result['sessionId']
-           : (isset($value['webdriver.remote.sessionid'])
-               ? $value['webdriver.remote.sessionid']
-               : null
+           : (isset($value['sessionId'])
+               ? $value['sessionId']
+               : (isset($value['webdriver.remote.sessionid'])
+                   ? $value['webdriver.remote.sessionid']
+                   : null
+               )
            );
 
         return array(

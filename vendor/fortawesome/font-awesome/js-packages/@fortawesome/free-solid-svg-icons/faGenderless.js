@@ -2,11 +2,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 var prefix = 'fas';
 var iconName = 'genderless';
-var width = 288;
+var width = 384;
 var height = 512;
-var ligatures = [];
+var aliases = [];
 var unicode = 'f22d';
-var svgPathData = 'M144 176c44.1 0 80 35.9 80 80s-35.9 80-80 80-80-35.9-80-80 35.9-80 80-80m0-64C64.5 112 0 176.5 0 256s64.5 144 144 144 144-64.5 144-144-64.5-144-144-144z';
+var svgPathData = 'M192 80C94.83 80 16 158.8 16 256c0 97.17 78.83 176 176 176s176-78.83 176-176C368 158.8 289.2 80 192 80zM192 352c-52.95 0-96-43.05-96-96c0-52.95 43.05-96 96-96s96 43.05 96 96C288 308.9 244.1 352 192 352z';
 
 exports.definition = {
   prefix: prefix,
@@ -14,7 +14,7 @@ exports.definition = {
   icon: [
     width,
     height,
-    ligatures,
+    aliases,
     unicode,
     svgPathData
   ]};
@@ -24,6 +24,7 @@ exports.prefix = prefix;
 exports.iconName = iconName;
 exports.width = width;
 exports.height = height;
-exports.ligatures = ligatures;
+exports.ligatures = aliases;
 exports.unicode = unicode;
 exports.svgPathData = svgPathData;
+exports.aliases = aliases;

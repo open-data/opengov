@@ -31,8 +31,9 @@ class WebformElementEntityAutocompleteTest extends WebformElementBrowserTestBase
    * Test entity reference elements.
    */
   public function testEntityReferenceTest() {
+    $assert_session = $this->assertSession();
+
     $node_1 = $this->drupalCreateNode(['title' => 'node 01']);
-    $node_2 = $this->drupalCreateNode(['title' => 'node 02']);
 
     $vocabulary = Vocabulary::create([
       'vid' => 'tags',
@@ -45,22 +46,22 @@ class WebformElementEntityAutocompleteTest extends WebformElementBrowserTestBase
     ]);
     $term_1->save();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $webform = Webform::load('test_element_entity_autocomplete');
 
     // Check render entity_autocomplete.
     $this->drupalGet('/webform/test_element_entity_autocomplete');
-    $this->assertFieldByName('entity_autocomplete_user_default', 'admin (1)');
-    $this->assertFieldByName('entity_autocomplete_user_tags', 'admin (1)');
-    $this->assertFieldByName('entity_autocomplete_user_multiple[items][0][_item_]', 'admin (1)');
-    $this->assertFieldByName('entity_autocomplete_node_default', $node_1->label() . ' (' . $node_1->id() . ')');
-    $this->assertFieldByName('entity_autocomplete_term_tags_autocreate', $term_1->label() . ' (' . $term_1->id() . ')');
-    $this->assertFieldByName('entity_autocomplete_term_multiple_autocreate[items][0][_item_]', $term_1->label() . ' (' . $term_1->id() . ')');
+    $assert_session->fieldValueEquals('entity_autocomplete_user_default', 'admin (1)');
+    $assert_session->fieldValueEquals('entity_autocomplete_user_tags', 'admin (1)');
+    $assert_session->fieldValueEquals('entity_autocomplete_user_multiple[items][0][_item_]', 'admin (1)');
+    $assert_session->fieldValueEquals('entity_autocomplete_node_default', $node_1->label() . ' (' . $node_1->id() . ')');
+    $assert_session->fieldValueEquals('entity_autocomplete_term_tags_autocreate', $term_1->label() . ' (' . $term_1->id() . ')');
+    $assert_session->fieldValueEquals('entity_autocomplete_term_multiple_autocreate[items][0][_item_]', $term_1->label() . ' (' . $term_1->id() . ')');
 
     // Check process entity_autocomplete.
     $this->postSubmission($webform);
-    $this->assertRaw("entity_autocomplete_user_default: '1'
+    $assert_session->responseContains("entity_autocomplete_user_default: '1'
 entity_autocomplete_user_tags:
   - '1'
 entity_autocomplete_user_multiple:
@@ -78,7 +79,7 @@ entity_autocomplete_term_multiple_autocreate:
       'entity_autocomplete_term_multiple_autocreate[items][1][_item_]' => 'term 04',
     ];
     $this->postSubmission($webform, $edit);
-    $this->assertRaw("entity_autocomplete_term_tags_autocreate:
+    $assert_session->responseContains("entity_autocomplete_term_tags_autocreate:
   - '2'
 entity_autocomplete_term_multiple_autocreate:
   - '3'

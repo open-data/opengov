@@ -4,12 +4,9 @@ namespace Drupal\webform\Controller;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Utility\WebformReflectionHelper;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -39,30 +36,14 @@ class WebformPluginElementController extends ControllerBase implements Container
   protected $elementManager;
 
   /**
-   * Constructs a WebformPluginElementController object.
-   *
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
-   * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
-   *   A element info plugin manager.
-   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
-   *   A webform element plugin manager.
-   */
-  public function __construct(ModuleHandlerInterface $module_handler, ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager) {
-    $this->moduleHandler = $module_handler;
-    $this->elementInfo = $element_info;
-    $this->elementManager = $element_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('module_handler'),
-      $container->get('plugin.manager.element_info'),
-      $container->get('plugin.manager.webform.element')
-    );
+    $instance = parent::create($container);
+    $instance->moduleHandler = $container->get('module_handler');
+    $instance->elementInfo = $container->get('plugin.manager.element_info');
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    return $instance;
   }
 
   /**
@@ -107,7 +88,7 @@ class WebformPluginElementController extends ControllerBase implements Container
       'access_update_users',
       'access_view_roles',
       'access_view_users',
-    ];;
+    ];
     $default_properties = array_combine($default_properties, $default_properties);
 
     // Test element is only enabled if the Webform Devel and UI module are
@@ -195,7 +176,7 @@ class WebformPluginElementController extends ControllerBase implements Container
         // Element info.
         $element_info_definitions = [
           'input' => (empty($webform_element_info['#input'])) ? $this->t('No') : $this->t('Yes'),
-          'theme' => (isset($webform_element_info['#theme'])) ? $webform_element_info['#theme'] : 'N/A',
+          'theme' => $webform_element_info['#theme'] ?? 'N/A',
           'theme_wrappers' => (isset($webform_element_info['#theme_wrappers'])) ? implode('; ', $webform_element_info['#theme_wrappers']) : 'N/A',
         ];
         $element_info = [];

@@ -22,6 +22,8 @@ class WebformWizardLinksTest extends WebformWizardTestBase {
    * Test webform wizard progress and preview links.
    */
   public function testWizardLinks() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     $wizard_webform = Webform::load('test_form_wizard_links');
@@ -29,20 +31,22 @@ class WebformWizardLinksTest extends WebformWizardTestBase {
     // Check that first page has no links.
     $this->drupalGet('/webform/test_form_wizard_links');
     $this->assertCssSelect('.webform-wizard-pages-links');
-    $this->assertNoFieldByName('webform_wizard_page-page_1', 'Edit');
-    $this->assertNoFieldByName('webform_wizard_page-page_2', 'Edit');
+    $assert_session->buttonNotExists('webform_wizard_page-page_1',);
+    $assert_session->buttonNotExists('webform_wizard_page-page_2');
 
     // Check that second page links to first page.
-    $this->drupalPostForm('/webform/test_form_wizard_links', [], 'Next >');
+    $this->drupalGet('/webform/test_form_wizard_links');
+    $this->submitForm([], 'Next >');
     $this->assertCssSelect('.webform-wizard-pages-links');
-    $this->assertFieldByName('webform_wizard_page-page_1', 'Edit');
-    $this->assertNoFieldByName('webform_wizard_page-page_2', 'Edit');
+    $assert_session->buttonExists('webform_wizard_page-page_1');
+    $assert_session->buttonNotExists('webform_wizard_page-page_2');
 
     // Check that preview links to first and second page.
-    $this->drupalPostForm('/webform/test_form_wizard_links', [], 'Preview');
+    $this->drupalGet('/webform/test_form_wizard_links');
+    $this->submitForm([], 'Preview');
     $this->assertCssSelect('.webform-wizard-pages-links');
-    $this->assertFieldByName('webform_wizard_page-page_1', 'Edit');
-    $this->assertFieldByName('webform_wizard_page-page_2', 'Edit');
+    $assert_session->buttonExists('webform_wizard_page-page_1');
+    $assert_session->buttonExists('webform_wizard_page-page_2');
 
     // Check that preview links are not wrapper in .form-actions.
     $this->assertNoCssSelect('.webform-wizard-pages-links.form-actions');

@@ -1,3 +1,25 @@
+1.4.1 / 2021-12-10
+==================
+
+Bug fixes:
+
+* Fixed the basic authentication implementation when using Browserkit clients other than the HttpKernel one.
+
+1.4.0 / 2021-10-12
+==================
+
+Removed:
+
+* Removed support for PHP 5.3
+
+Bug fixes:
+
+* Fixed the removal of cookies in a subpath
+
+Testsuite:
+
+* Added CI jobs running on PHP 7.4, 8.0 and 8.1
+
 1.3.4 / 2020-03-11
 ==================
 

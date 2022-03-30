@@ -3,7 +3,6 @@
 namespace Drupal\webform\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -21,22 +20,12 @@ class WebformPluginExporterController extends ControllerBase implements Containe
   protected $pluginManager;
 
   /**
-   * Constructs a WebformPluginExporterController object.
-   *
-   * @param \Drupal\Component\Plugin\PluginManagerInterface $plugin_manager
-   *   A results exporter plugin manager.
-   */
-  public function __construct(PluginManagerInterface $plugin_manager) {
-    $this->pluginManager = $plugin_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('plugin.manager.webform.exporter')
-    );
+    $instance = parent::create($container);
+    $instance->pluginManager = $container->get('plugin.manager.webform.exporter');
+    return $instance;
   }
 
   /**

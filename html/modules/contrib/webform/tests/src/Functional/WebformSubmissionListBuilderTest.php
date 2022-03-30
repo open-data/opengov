@@ -29,6 +29,8 @@ class WebformSubmissionListBuilderTest extends WebformBrowserTestBase {
    * Tests results.
    */
   public function testResults() {
+    $assert_session = $this->assertSession();
+
     $own_submission_user = $this->drupalCreateUser([
       'view own webform submission',
       'edit own webform submission',
@@ -42,12 +44,11 @@ class WebformSubmissionListBuilderTest extends WebformBrowserTestBase {
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_submissions');
-    $this->webform = $webform;
 
     /** @var \Drupal\webform\WebformSubmissionInterface[] $submissions */
     $submissions = array_values(\Drupal::entityTypeManager()->getStorage('webform_submission')->loadByProperties(['webform_id' => 'test_submissions']));
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Login the own submission user.
     $this->drupalLogin($own_submission_user);
@@ -65,49 +66,57 @@ class WebformSubmissionListBuilderTest extends WebformBrowserTestBase {
     $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions');
 
     // Check state options with totals.
-    $this->assertRaw('<select data-drupal-selector="edit-state" id="edit-state" name="state" class="form-select"><option value="" selected="selected">All [4]</option><option value="starred">Starred [1]</option><option value="unstarred">Unstarred [3]</option><option value="locked">Locked [1]</option><option value="unlocked">Unlocked [3]</option></select>');
+    $assert_session->responseContains('<select data-drupal-selector="edit-state" id="edit-state" name="state" class="form-select"><option value="" selected="selected">All [4]</option><option value="starred">Starred [1]</option><option value="unstarred">Unstarred [3]</option><option value="locked">Locked [1]</option><option value="unlocked">Unlocked [3]</option></select>');
 
     // Check results with no filtering.
-    $this->assertLinkByHref($submissions[0]->toUrl()->toString());
-    $this->assertLinkByHref($submissions[1]->toUrl()->toString());
-    $this->assertLinkByHref($submissions[2]->toUrl()->toString());
-    $this->assertRaw($submissions[0]->getElementData('first_name'));
-    $this->assertRaw($submissions[1]->getElementData('first_name'));
-    $this->assertRaw($submissions[2]->getElementData('first_name'));
-    $this->assertNoFieldById('edit-reset', 'reset');
+    $assert_session->linkByHrefExists($submissions[0]->toUrl()->toString());
+    $assert_session->linkByHrefExists($submissions[1]->toUrl()->toString());
+    $assert_session->linkByHrefExists($submissions[2]->toUrl()->toString());
+    $assert_session->responseContains($submissions[0]->getElementData('first_name'));
+    $assert_session->responseContains($submissions[1]->getElementData('first_name'));
+    $assert_session->responseContains($submissions[2]->getElementData('first_name'));
+    $assert_session->buttonNotExists('reset');
 
     // Check results filtered by uuid.
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions', ['search' => $submissions[0]->get('uuid')->value], 'Filter');
-    $this->assertUrl('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?search=' . $submissions[0]->get('uuid')->value);
-    $this->assertRaw($submissions[0]->getElementData('first_name'));
-    $this->assertNoRaw($submissions[1]->getElementData('first_name'));
-    $this->assertNoRaw($submissions[2]->getElementData('first_name'));
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions');
+    $edit = ['search' => $submissions[0]->get('uuid')->value];
+    $this->submitForm($edit, 'Filter');
+    $assert_session->addressEquals('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?search=' . $submissions[0]->get('uuid')->value);
+    $assert_session->responseContains($submissions[0]->getElementData('first_name'));
+    $assert_session->responseNotContains($submissions[1]->getElementData('first_name'));
+    $assert_session->responseNotContains($submissions[2]->getElementData('first_name'));
 
     // Check results filtered by key(word).
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions', ['search' => $submissions[0]->getElementData('first_name')], 'Filter');
-    $this->assertUrl('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?search=' . $submissions[0]->getElementData('first_name'));
-    $this->assertRaw($submissions[0]->getElementData('first_name'));
-    $this->assertNoRaw($submissions[1]->getElementData('first_name'));
-    $this->assertNoRaw($submissions[2]->getElementData('first_name'));
-    $this->assertFieldById('edit-reset', 'Reset');
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions');
+    $edit = ['search' => $submissions[0]->getElementData('first_name')];
+    $this->submitForm($edit, 'Filter');
+    $assert_session->addressEquals('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?search=' . $submissions[0]->getElementData('first_name'));
+    $assert_session->responseContains($submissions[0]->getElementData('first_name'));
+    $assert_session->responseNotContains($submissions[1]->getElementData('first_name'));
+    $assert_session->responseNotContains($submissions[2]->getElementData('first_name'));
+    $assert_session->buttonExists('Reset');
 
     // Check results filtered by state:starred.
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions', ['state' => 'starred'], 'Filter');
-    $this->assertUrl('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?state=starred');
-    $this->assertRaw('<option value="starred" selected="selected">Starred [1]</option>');
-    $this->assertNoRaw($submissions[0]->getElementData('first_name'));
-    $this->assertRaw($submissions[1]->getElementData('first_name'));
-    $this->assertNoRaw($submissions[2]->getElementData('first_name'));
-    $this->assertFieldById('edit-reset', 'Reset');
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions');
+    $edit = ['state' => 'starred'];
+    $this->submitForm($edit, 'Filter');
+    $assert_session->addressEquals('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?state=starred');
+    $assert_session->responseContains('<option value="starred" selected="selected">Starred [1]</option>');
+    $assert_session->responseNotContains($submissions[0]->getElementData('first_name'));
+    $assert_session->responseContains($submissions[1]->getElementData('first_name'));
+    $assert_session->responseNotContains($submissions[2]->getElementData('first_name'));
+    $assert_session->buttonExists('edit-reset');
 
     // Check results filtered by state:starred.
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions', ['state' => 'locked'], 'Filter');
-    $this->assertUrl('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?state=locked');
-    $this->assertRaw('<option value="locked" selected="selected">Locked [1]</option>');
-    $this->assertNoRaw($submissions[0]->getElementData('first_name'));
-    $this->assertNoRaw($submissions[1]->getElementData('first_name'));
-    $this->assertRaw($submissions[2]->getElementData('first_name'));
-    $this->assertFieldById('edit-reset', 'Reset');
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions');
+    $edit = ['state' => 'locked'];
+    $this->submitForm($edit, 'Filter');
+    $assert_session->addressEquals('admin/structure/webform/manage/' . $webform->id() . '/results/submissions?state=locked');
+    $assert_session->responseContains('<option value="locked" selected="selected">Locked [1]</option>');
+    $assert_session->responseNotContains($submissions[0]->getElementData('first_name'));
+    $assert_session->responseNotContains($submissions[1]->getElementData('first_name'));
+    $assert_session->responseContains($submissions[2]->getElementData('first_name'));
+    $assert_session->buttonExists('edit-reset');
   }
 
 }

@@ -2,7 +2,6 @@
 
 namespace Drupal\webform_submission_export_import\Form;
 
-use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\ConfirmFormHelper;
@@ -13,8 +12,6 @@ use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformRequestInterface;
-use Drupal\webform_submission_export_import\WebformSubmissionExportImportImporterInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -22,6 +19,13 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * Upload webform submission export import CSV.
  */
 class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
+
+  /**
+   * The file system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
 
   /**
    * The date formatter service.
@@ -45,36 +49,28 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
   protected $importer;
 
   /**
-   * Constructs a WebformResultsExportController object.
-   *
-   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
-   *   The date formatter service.
-   * @param \Drupal\webform\WebformRequestInterface $request_handler
-   *   The webform request handler.
-   * @param \Drupal\webform_submission_export_import\WebformSubmissionExportImportImporterInterface $importer
-   *   The webform submission importer.
+   * {@inheritdoc}
    */
-  public function __construct(DateFormatterInterface $date_formatter, WebformRequestInterface $request_handler, WebformSubmissionExportImportImporterInterface $importer) {
-    $this->dateFormatter = $date_formatter;
-    $this->requestHandler = $request_handler;
-    $this->importer = $importer;
+  public static function create(ContainerInterface $container) {
+    /** @var \Drupal\webform_submission_export_import\Form\WebformSubmissionExportImportUploadForm $instance */
+    $instance = parent::create($container);
+    $instance->fileSystem = $container->get('file_system');
+    $instance->dateFormatter = $container->get('date.formatter');
+    $instance->requestHandler = $container->get('webform.request');
+    $instance->importer = $container->get('webform_submission_export_import.importer');
+    $instance->initialize();
+    return $instance;
+  }
 
+  /**
+   * Initialize WebformImageSelectImagesListBuilder object.
+   */
+  protected function initialize() {
     // Initialize the importer.
     $webform = $this->requestHandler->getCurrentWebform();
     $source_entity = $this->requestHandler->getCurrentSourceEntity();
     $this->importer->setWebform($webform);
     $this->importer->setSourceEntity($source_entity);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('date.formatter'),
-      $container->get('webform.request'),
-      $container->get('webform_submission_export_import.importer')
-    );
   }
 
   /**
@@ -113,9 +109,9 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     // @see \Drupal\webform_submission_export_import\Form\WebformSubmissionExportImportUploadForm::buildConfirmForm
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Upload form.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Build upload form.
@@ -154,7 +150,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
           $this->t('File uploads must use publicly access URLs which begin with http:// or https://.'),
           $this->t('Entity references can use UUIDs or entity IDs.'),
           $this->t('Composite (single) values are annotated using double underscores. (e.g. ELEMENT_KEY__SUB_ELEMENT_KEY)'),
-          $this->t('Multiple values are comma delimited with any nested commas URI escaped (%2E).'),
+          $this->t('Multiple values are comma delimited with any nested commas URI escaped (%2C).'),
           $this->t('Multiple composite values are formatted using <a href=":href">inline YAML</a>.', [':href' => 'https://en.wikipedia.org/wiki/YAML#Basic_components']),
           $this->t('Import maximum execution time limit is @time.', ['@time' => $this->dateFormatter->formatInterval($temporary_maximum_age)]),
         ],
@@ -275,7 +271,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
 
       case 'url':
         $import_url = $form_state->getValue('import_url');
-        $file_path = tempnam(\Drupal::service('file_system')->getTempDirectory(), 'webform_submission_export_import_') . '.csv';
+        $file_path = tempnam($this->fileSystem->getTempDirectory(), 'webform_submission_export_import_') . '.csv';
         file_put_contents($file_path, file_get_contents($import_url));
 
         $form_field_name = $this->t('Submission CSV (Comma Separated Values) file');
@@ -288,14 +284,8 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
 
     // If a managed file has been create to the file's id and rebuild the form.
     if ($file) {
-      // Normalize carriage returns.
-      // This prevent issues with CSV files created in Excel.
-      $contents = file_get_contents($file->getFileUri());
-      $contents = preg_replace('~\R~u', "\r\n", $contents);
-      file_put_contents($file->getFileUri(), $contents);
-
       $this->importer->setImportUri($file->getFileUri());
-      if ($this->importer->getTotal()) {
+      if ($this->importer->getTotal() > 0) {
         $form_state->set('import_fid', $file->id());
         $form_state->setRebuild();
       }
@@ -305,9 +295,9 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Confirm form.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Build confirm import form.
@@ -330,7 +320,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     // Warning.
     $total = $this->importer->getTotal();
     $t_args = [
-      '@submissions' => $this->formatPlural($total, '1 submission', '@total submissions', ['@total' => $total]),
+      '@submissions' => $this->formatPlural($total, '@count submission', '@count submissions'),
     ];
     $form['warning'] = [
       '#type' => 'webform_message',
@@ -482,9 +472,9 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     return Url::fromRoute('<current>');
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Set the CSV file URI.
@@ -528,11 +518,11 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     return $options;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Batch functions.
   // Using static method to prevent the service container from being serialized.
-  // "Prevents exception 'AssertionError' with message 'The container was serialized.'."
-  /****************************************************************************/
+  // Prevents 'AssertionError: The container was serialized.' exception.
+  /* ************************************************************************ */
 
   /**
    * Batch API; Initialize batch operations.
@@ -582,7 +572,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
    * @param mixed|array $context
    *   The batch current context.
    */
-  public static function batchProcess(WebformInterface $webform, EntityInterface $source_entity = NULL, $import_uri = '', array $import_options = [], &$context) {
+  public static function batchProcess(WebformInterface $webform, EntityInterface $source_entity = NULL, $import_uri = '', array $import_options = [], &$context = []) {
     /** @var \Drupal\webform_submission_export_import\WebformSubmissionExportImportImporterInterface $importer */
     $importer = \Drupal::service('webform_submission_export_import.importer');
     $importer->setWebform($webform);

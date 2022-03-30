@@ -25,10 +25,42 @@ class WebformEntityReferenceAutocompleteWidget extends EntityReferenceAutocomple
   /**
    * {@inheritdoc}
    */
+  public static function defaultSettings() {
+    return [
+      'default_data' => TRUE,
+    ] + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm(array $form, FormStateInterface $form_state) {
+    $element = parent::settingsForm($form, $form_state);
+    $element['default_data'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable default submission data (YAML)'),
+      '#description' => $this->t('If checked, site builders will be able to define default submission data (YAML)'),
+      '#default_value' => $this->getSetting('default_data'),
+    ];
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary() {
+    $summary = parent::settingsSummary();
+    $summary[] = $this->t('Default submission data: @default_data', ['@default_data' => $this->getSetting('default_data') ? $this->t('Yes') : $this->t('No')]);
+    return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTargetIdElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // Get default value.
     $referenced_entities = $items->referencedEntities();
-    $default_value = isset($referenced_entities[$delta]) ? $referenced_entities[$delta] : NULL;
+    $default_value = $referenced_entities[$delta] ?? NULL;
 
     // Append the match operation to the selection settings.
     $selection_settings = $this->getFieldSetting('handler_settings') + ['match_operator' => $this->getSetting('match_operator')];

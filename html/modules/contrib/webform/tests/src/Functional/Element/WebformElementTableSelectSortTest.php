@@ -22,14 +22,16 @@ class WebformElementTableSelectSortTest extends WebformElementBrowserTestBase {
    * Tests table select and sort elements.
    */
   public function testTableSelectSort() {
+    $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_table_select_sort');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Table select sort.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check processing.
+    $this->drupalGet('/webform/test_element_table_select_sort');
     $edit = [
       'webform_tableselect_sort_custom[one][weight]' => '4',
       'webform_tableselect_sort_custom[two][weight]' => '3',
@@ -42,19 +44,20 @@ class WebformElementTableSelectSortTest extends WebformElementBrowserTestBase {
       'webform_tableselect_sort_custom[four][checkbox]' => TRUE,
       'webform_tableselect_sort_custom[five][checkbox]' => TRUE,
     ];
-    $this->drupalPostForm('/webform/test_element_table_select_sort', $edit, 'Submit');
-    $this->assertRaw("webform_tableselect_sort_custom:
+    $this->submitForm($edit, 'Submit');
+    $assert_session->responseContains("webform_tableselect_sort_custom:
   - five
   - four
   - three
   - two
   - one");
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Table sort.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check processing.
+    $this->drupalGet('/webform/test_element_table_select_sort');
     $edit = [
       'webform_table_sort_custom[one][weight]' => '4',
       'webform_table_sort_custom[two][weight]' => '3',
@@ -62,17 +65,17 @@ class WebformElementTableSelectSortTest extends WebformElementBrowserTestBase {
       'webform_table_sort_custom[four][weight]' => '1',
       'webform_table_sort_custom[five][weight]' => '0',
     ];
-    $this->drupalPostForm('/webform/test_element_table_select_sort', $edit, 'Submit');
-    $this->assertRaw("webform_table_sort_custom:
+    $this->submitForm($edit, 'Submit');
+    $assert_session->responseContains("webform_table_sort_custom:
   - five
   - four
   - three
   - two
   - one");
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Export results.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalLogin($this->rootUser);
 
@@ -80,8 +83,8 @@ class WebformElementTableSelectSortTest extends WebformElementBrowserTestBase {
     unset($excluded_columns['webform_tableselect_sort_custom']);
 
     $this->getExport($webform, ['options_single_format' => 'separate', 'options_multiple_format' => 'separate', 'excluded_columns' => $excluded_columns]);
-    $this->assertRaw('"webform_tableselect_sort (custom): one","webform_tableselect_sort (custom): two","webform_tableselect_sort (custom): three","webform_tableselect_sort (custom): four","webform_tableselect_sort (custom): five"');
-    $this->assertRaw('5,4,3,2,1');
+    $assert_session->responseContains('"webform_tableselect_sort (custom): one","webform_tableselect_sort (custom): two","webform_tableselect_sort (custom): three","webform_tableselect_sort (custom): four","webform_tableselect_sort (custom): five"');
+    $assert_session->responseContains('5,4,3,2,1');
   }
 
 }

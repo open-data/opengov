@@ -30,7 +30,7 @@ elements: |
     '#default_value': |
       <p>This is a <strong>text format</strong> string.</p>
       <p>It contains &quot;double&quot; and 'single' quotes with special characters like &lt;, &gt;, &lt;&gt;, and &gt;&lt;.</p>
-  
+      
   xss:
     '#type': textfield
     '#title': xss
@@ -43,7 +43,7 @@ elements: |
       <b class="webform_computed_token_auto">complex string :</b> [webform_submission:values:complex_string]<br />
       <b class="webform_computed_token_auto">text_format:</b> [webform_submission:values:text_format]<br />
       <b class="webform_computed_token_auto">xss:</b> [webform_submission:values:xss]<br />
-  
+      
   webform_computed_token_html:
     '#type': webform_computed_token
     '#title': webform_computed_token_html
@@ -53,7 +53,7 @@ elements: |
       <b class="webform_computed_token_html">complex string :</b> [webform_submission:values:complex_string]<br />
       <b class="webform_computed_token_html">text_format:</b> [webform_submission:values:text_format]<br />
       <b class="webform_computed_token_html">xss:</b> [webform_submission:values:xss]<br />
-  
+      
   webform_computed_token_text:
     '#type': webform_computed_token
     '#title': webform_computed_token_text
@@ -63,7 +63,7 @@ elements: |
       complex string : [webform_submission:values:complex_string]
       text_format: [webform_submission:values:text_format]
       xss: [webform_submission:values:xss]
-  
+      
   webform_computed_token_store:
     '#type': webform_computed_token
     '#title': webform_computed_token_store
@@ -92,7 +92,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -113,6 +113,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -259,5 +262,7 @@ handlers:
     status: true
     conditions: {  }
     weight: 1
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

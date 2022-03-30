@@ -164,6 +164,7 @@ abstract class EntityCacheTagsTestBase extends PageCacheTagsTestBase {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to be tested, as created by createEntity().
+   *
    * @return array
    *   An array of the additional cache tags.
    *
@@ -662,7 +663,7 @@ abstract class EntityCacheTagsTestBase extends PageCacheTagsTestBase {
   protected function verifyRenderCache($cid, array $tags, $redirected_cid = NULL) {
     // Also verify the existence of an entity render cache entry.
     $cache_entry = \Drupal::cache('render')->get($cid);
-    $this->assertInstanceOf(\stdClass::class, $cache_entry, 'A render cache entry exists.');
+    $this->assertInstanceOf(\stdClass::class, $cache_entry);
     sort($cache_entry->tags);
     sort($tags);
     $this->assertIdentical($cache_entry->tags, $tags);

@@ -42,8 +42,8 @@ class WebformExampleComposite extends WebformCompositeBase {
     $lines = [];
     $lines[] = ($value['first_name'] ? $value['first_name'] : '') .
       ($value['last_name'] ? ' ' . $value['last_name'] : '') .
-      ($value['gender'] || $value['date_of_birth'] ? ' -' : '') .
-      ($value['gender'] ? ' ' . $value['gender'] : '') .
+      ($value['sex'] || $value['date_of_birth'] ? ' -' : '') .
+      ($value['sex'] ? ' ' . $value['sex'] : '') .
       ($value['date_of_birth'] ? ' (' . $value['date_of_birth'] . ')' : '');
     return $lines;
   }

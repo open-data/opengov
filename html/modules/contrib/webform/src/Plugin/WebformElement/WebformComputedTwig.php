@@ -27,7 +27,7 @@ class WebformComputedTwig extends WebformComputedBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

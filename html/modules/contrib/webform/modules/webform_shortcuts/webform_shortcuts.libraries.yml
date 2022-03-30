@@ -15,6 +15,7 @@ libraries.jquery.hotkeys:
     name: MIT
     url: https://github.com/rvera/image-picker/blob/master/LICENSE
     gpl-compatible: true
+  directory: jquery.hotkeys
   cdn:
     /libraries/jquery.hotkeys/: https://cdn.jsdelivr.net/gh/jeresig/jquery.hotkeys@0.2.0/
   js:

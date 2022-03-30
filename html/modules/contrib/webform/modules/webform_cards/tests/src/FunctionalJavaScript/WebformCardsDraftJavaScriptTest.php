@@ -26,7 +26,7 @@ class WebformCardsDraftJavaScriptTest extends WebformWebDriverTestBase {
     $page = $session->getPage();
     $assert_session = $this->assertSession();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Get the webform and load card 1.
     $this->drupalGet('/webform/test_cards_draft');

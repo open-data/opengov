@@ -8,6 +8,7 @@ use Drupal\webform\Plugin\WebformElement\Select;
 use Drupal\webform_image_select\Element\WebformImageSelect as WebformImageSelectElement;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform_image_select\Entity\WebformImageSelectImages;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'image_select' element.
@@ -20,6 +21,30 @@ use Drupal\webform_image_select\Entity\WebformImageSelectImages;
  * )
  */
 class WebformImageSelect extends Select {
+
+  /**
+   * The current request.
+   *
+   * @var null|\Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
+
+  /**
+   * The route match object.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->request = $container->get('request_stack')->getCurrentRequest();
+    $instance->routeMatch = $container->get('current_route_match');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -59,7 +84,7 @@ class WebformImageSelect extends Select {
     ]);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -93,7 +118,7 @@ class WebformImageSelect extends Select {
 
         // Always use absolute URLs for the src so that it will load via e-mail.
         if (strpos($src, '/') === 0) {
-          $src = \Drupal::request()->getSchemeAndHttpHost() . $src;
+          $src = $this->request->getSchemeAndHttpHost() . $src;
         }
 
         $image = [
@@ -119,7 +144,7 @@ class WebformImageSelect extends Select {
         }
 
         // For the Results table always just return the image with tooltip.
-        if (strpos(\Drupal::routeMatch()->getRouteName(), 'webform.results_submissions') !== FALSE) {
+        if (strpos($this->routeMatch->getRouteName(), 'webform.results_submissions') !== FALSE) {
           $image['#attached']['library'][] = 'webform/webform.tooltip';
           $image['#attributes']['class'] = ['js-webform-tooltip-link'];
           return $image;

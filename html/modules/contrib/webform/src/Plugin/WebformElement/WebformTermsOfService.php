@@ -47,7 +47,7 @@ class WebformTermsOfService extends Checkbox {
     return array_merge(parent::defineTranslatableProperties(), ['terms_title', 'terms_content']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

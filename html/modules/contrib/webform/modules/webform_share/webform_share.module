@@ -85,7 +85,7 @@ function webform_share_menu_local_tasks_alter(&$data, $route_name, RefinableCach
     if ($query = \Drupal::request()->query->all()) {
       foreach ($route_names as $route_name) {
         if (isset($data['tabs'][1][$route_name])) {
-          $url =& $data['tabs'][1][$route_name]['#link']['url'];
+          $url = &$data['tabs'][1][$route_name]['#link']['url'];
           $url->setOption('query', $query);
         }
       }
@@ -164,9 +164,9 @@ function webform_share_page_top(array &$page_top) {
   unset($page_top['toolbar']);
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Theme functions.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_theme().

@@ -11,9 +11,15 @@
 }
 
 /**
+ * Bulk form.
+ */
+.webform-bulk-form .form-item {
+  margin-right: 5px;
+}
+
+/**
  * Submission.
  */
-
 .webform-submission-information .button {
   font-size: 1em;
 }
@@ -22,13 +28,18 @@
  * Webform setting button displays a table rows icon.
  * @see /admin/structure/webform/manage/contact/results/submissions
  */
-.button.button-webform-table-setting {
+a.button.button-webform-table-setting {
+  float: right;
   margin: 0 0 1em 0;
 }
 
-.button.button-webform-table-setting:before {
+a.button.button-webform-table-setting:before {
   content: "☷";
   font-size: 1.2em;
+}
+
+[dir="rtl"] a.button.button-webform-table-setting {
+  float: left;
 }
 
 /**

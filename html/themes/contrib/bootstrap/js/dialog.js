@@ -131,13 +131,15 @@
 
     // Merge in trigger data attributes.
     if (options.$trigger && options.$trigger[0]) {
+      /** @var {HTMLElement} trigger */
       var trigger = options.$trigger[0];
-      var data = trigger.getAttributeNames().filter(function (name) {
-        return name.startsWith('data-');
-      }).reduce(function (data, name) {
-        data[name] = trigger.getAttribute(name);
-        return data;
-      }, {});
+      var data = {};
+      for (var i = 0, l = trigger.attributes.length; i < l; i++) {
+        var name = trigger.attributes[i].name;
+        if (name && name.substring(0, 5) === 'data-') {
+          data[name] = trigger.getAttribute(name);
+        }
+      }
       attributes.merge(data);
     }
 

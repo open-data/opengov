@@ -28,7 +28,7 @@ class WebformAnnounceCommand implements CommandInterface {
   protected $priority;
 
   /**
-   * Constructs a \Drupal\webform\Ajax\ScrollTopCommand object.
+   * Constructs a WebformAnnounceCommand object.
    *
    * @param string $text
    *   A string to be read by the UA.

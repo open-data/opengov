@@ -1,18 +1,29 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Server\Collections\Query\Action;
 
 use Solarium\QueryType\Server\Collections\Query\Query as CollectionsQuery;
 use Solarium\QueryType\Server\Collections\Result\CreateResult;
+use Solarium\QueryType\Server\Query\Action\AbstractAsyncAction;
 use Solarium\QueryType\Server\Query\Action\AsyncActionInterface;
+use Solarium\QueryType\Server\Query\Action\NameParameterTrait;
 
 /**
  * Class Create.
  *
- * @see https://lucene.apache.org/solr/guide/collections-api.html#create
+ * @see https://solr.apache.org/guide/collection-management.html#create
  */
-class Create extends AbstractCDRAction
+class Create extends AbstractAsyncAction
 {
+    use NameParameterTrait;
+
     /**
      * Returns the action type of the Collections API action.
      *
@@ -34,6 +45,7 @@ class Create extends AbstractCDRAction
     public function setRouterName(string $routerName): self
     {
         $this->setOption('router.name', $routerName);
+
         return $this;
     }
 
@@ -58,6 +70,7 @@ class Create extends AbstractCDRAction
     public function setNumShards(int $numShards): self
     {
         $this->setOption('numShards', $numShards);
+
         return $this;
     }
 
@@ -82,6 +95,7 @@ class Create extends AbstractCDRAction
     public function setShards(string $shards): self
     {
         $this->setOption('shards', $shards);
+
         return $this;
     }
 
@@ -105,6 +119,7 @@ class Create extends AbstractCDRAction
     public function setReplicationFactor(int $replicationFactor): self
     {
         $this->setOption('replicationFactor', $replicationFactor);
+
         return $this;
     }
 
@@ -118,6 +133,7 @@ class Create extends AbstractCDRAction
     public function setNrtReplicas(int $nrtReplicas): self
     {
         $this->setOption('nrtReplicas', $nrtReplicas);
+
         return $this;
     }
 
@@ -131,6 +147,7 @@ class Create extends AbstractCDRAction
     public function setTlogReplicas(int $tlogReplicas): self
     {
         $this->setOption('tlogReplicas', $tlogReplicas);
+
         return $this;
     }
 
@@ -144,6 +161,7 @@ class Create extends AbstractCDRAction
     public function setPullReplicas(int $pullReplicas): self
     {
         $this->setOption('pullReplicas', $pullReplicas);
+
         return $this;
     }
 
@@ -158,6 +176,7 @@ class Create extends AbstractCDRAction
     public function setMaxShardsPerNode(int $maxShardsPerNode): self
     {
         $this->setOption('maxShardsPerNode', $maxShardsPerNode);
+
         return $this;
     }
 
@@ -172,6 +191,7 @@ class Create extends AbstractCDRAction
     public function setCreateNodeSet(string $createNodeSet): self
     {
         $this->setOption('createNodeSet', $createNodeSet);
+
         return $this;
     }
 
@@ -187,6 +207,7 @@ class Create extends AbstractCDRAction
     public function setCreateNodeSetShuffle(bool $shuffle): self
     {
         $this->setOption('createNodeSet.shuffle', $shuffle);
+
         return $this;
     }
 
@@ -200,6 +221,7 @@ class Create extends AbstractCDRAction
     public function setCollectionConfigName(string $configName): self
     {
         $this->setOption('collection.configName', $configName);
+
         return $this;
     }
 
@@ -225,6 +247,7 @@ class Create extends AbstractCDRAction
     public function setRouterField(string $routerField): self
     {
         $this->setOption('router.field', $routerField);
+
         return $this;
     }
 
@@ -239,6 +262,7 @@ class Create extends AbstractCDRAction
     public function setProperty(string $name, string $value): self
     {
         $this->setOption('property.'.$name, $value);
+
         return $this;
     }
 
@@ -266,6 +290,7 @@ class Create extends AbstractCDRAction
     public function setAutoAddReplicas(bool $autoAddReplicas): self
     {
         $this->setOption('autoAddReplicas', $autoAddReplicas);
+
         return $this;
     }
 
@@ -279,6 +304,7 @@ class Create extends AbstractCDRAction
     public function setAsync(string $id): AsyncActionInterface
     {
         $this->setOption('async', $id);
+
         return $this;
     }
 
@@ -292,6 +318,7 @@ class Create extends AbstractCDRAction
     public function setRule(string $rule): self
     {
         $this->setOption('rule', $rule);
+
         return $this;
     }
 
@@ -305,6 +332,7 @@ class Create extends AbstractCDRAction
     public function setSnitch(string $snitch): self
     {
         $this->setOption('snitch', $snitch);
+
         return $this;
     }
 
@@ -318,6 +346,7 @@ class Create extends AbstractCDRAction
     public function setPolicy(string $policy): self
     {
         $this->setOption('policy', $policy);
+
         return $this;
     }
 
@@ -333,6 +362,7 @@ class Create extends AbstractCDRAction
     public function setWaitForFinalState(bool $waitForFinalState): self
     {
         $this->setOption('waitForFinalState', $waitForFinalState);
+
         return $this;
     }
 
@@ -347,6 +377,7 @@ class Create extends AbstractCDRAction
     public function setWithCollection(string $withCollection): self
     {
         $this->setOption('withCollection', $withCollection);
+
         return $this;
     }
 

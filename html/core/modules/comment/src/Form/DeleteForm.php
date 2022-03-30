@@ -16,7 +16,7 @@ class DeleteForm extends ContentEntityDeleteForm {
    */
   public function getCancelUrl() {
     // Point to the entity of which this comment is a reply.
-    return $this->entity->get('entity_id')->entity->toUrl('canonical', ['language' => \Drupal::languageManager()->getCurrentLanguage()]);
+    return $this->entity->get('entity_id')->entity->toUrl();
   }
 
   /**

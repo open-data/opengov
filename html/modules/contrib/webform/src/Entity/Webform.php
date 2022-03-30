@@ -56,6 +56,7 @@ use Drupal\webform\WebformSubmissionStorageInterface;
  *       "add" = "Drupal\webform\WebformEntityAddForm",
  *       "duplicate" = "Drupal\webform\WebformEntityAddForm",
  *       "delete" = "Drupal\webform\WebformEntityDeleteForm",
+ *       "delete-multiple-confirm" = "Drupal\webform\Form\WebformEntityDeleteMultipleForm",
  *       "edit" = "Drupal\webform\WebformEntityElementsForm",
  *       "export" = "Drupal\webform\WebformEntityExportForm",
  *       "settings" = "Drupal\webform\EntitySettings\WebformEntitySettingsGeneralForm",
@@ -84,6 +85,7 @@ use Drupal\webform\WebformSubmissionStorageInterface;
  *     "test-form" = "/webform/{webform}/test",
  *     "duplicate-form" = "/admin/structure/webform/manage/{webform}/duplicate",
  *     "delete-form" = "/admin/structure/webform/manage/{webform}/delete",
+ *     "delete-multiple-form" = "/admin/structure/webform/delete",
  *     "export-form" = "/admin/structure/webform/manage/{webform}/export",
  *     "settings" = "/admin/structure/webform/manage/{webform}/settings",
  *     "settings-form" = "/admin/structure/webform/manage/{webform}/settings/form",
@@ -169,6 +171,16 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * @var bool
    */
   protected $elementsTranslated = FALSE;
+
+  /**
+   * The webform elements are being updated.
+   *
+   * Set to TRUE the webform elements are being saved and translations should
+   * not be applied.
+   *
+   * @var bool
+   */
+  protected $updating = FALSE;
 
   /**
    * The webform status.
@@ -562,6 +574,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    */
   public function setOverride($override = TRUE) {
     $this->override = $override;
+    return $this;
   }
 
   /**
@@ -569,6 +582,21 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    */
   public function isOverridden() {
     return $this->override || $this->elementsTranslated;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUpdating($updating = TRUE) {
+    $this->updating = $updating;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isUpdating() {
+    return $this->updating;
   }
 
   /**
@@ -682,16 +710,15 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * {@inheritdoc}
    */
   public function hasRemoteAddr() {
-    return (!$this->isConfidential() && $this->getSetting('form_remote_addr')) ? TRUE : FALSE;
+    $disable_remote_addr = $this->getSetting('form_disable_remote_addr', TRUE);
+    return (!$this->isConfidential() && !$disable_remote_addr) ? TRUE : FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
   public function isResultsDisabled() {
-    $elements = $this->getElementsDecoded();
-    $settings = $this->getSettings();
-    return (!empty($settings['results_disabled']) || !empty($elements['#method'])) ? TRUE : FALSE;
+    return ($this->getSetting('results_disabled') || $this->getSetting('form_method')) ? TRUE : FALSE;
   }
 
   /**
@@ -713,29 +740,39 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasTranslations() {
-    if (isset($this->hasTranslations)) {
-      return $this->hasTranslations;
-    }
-
-    // Make sure the config translation module is enabled.
-    if (!\Drupal::moduleHandler()->moduleExists('config_translation')) {
-      $this->hasTranslations = FALSE;
-      return $this->hasTranslations;
-    }
-
-    /** @var \Drupal\locale\LocaleConfigManager $local_config_manager */
-    $local_config_manager = \Drupal::service('locale.config_manager');
+  public function getTranslationLanguages() {
     $languages = \Drupal::languageManager()->getLanguages();
     foreach ($languages as $langcode => $language) {
-      if ($local_config_manager->hasTranslation('webform.webform.' . $this->id(), $langcode)) {
-        $this->hasTranslations = TRUE;
-        return $this->hasTranslations;
+      if (!$this->hasTranslation($langcode)) {
+        unset($languages[$langcode]);
       }
     }
+    return $languages;
+  }
 
-    $this->hasTranslations = FALSE;
-    return $this->hasTranslations;
+  /**
+   * {@inheritdoc}
+   */
+  public function hasTranslation($langcode) {
+    if ($this->getLangcode() === $langcode) {
+      return TRUE;
+    }
+    elseif (\Drupal::moduleHandler()->moduleExists('config_translation')) {
+      /** @var \Drupal\locale\LocaleConfigManager $local_config_manager */
+      $local_config_manager = \Drupal::service('locale.config_manager');
+      return $local_config_manager->hasTranslation($this->getConfigDependencyName(), $langcode);
+    }
+    else {
+      return FALSE;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasTranslations() {
+    return (\Drupal::moduleHandler()->moduleExists('config_translation')
+      && count($this->getTranslationLanguages()) > 1);
   }
 
   /**
@@ -960,7 +997,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    */
   public function getSetting($key, $default = FALSE) {
     $settings = $this->getSettings();
-    $value = (isset($settings[$key])) ? $settings[$key] : NULL;
+    $value = $settings[$key] ?? NULL;
     if ($default) {
       return $value ?: \Drupal::config('webform.settings')->get('settings.default_' . $key);
     }
@@ -1051,7 +1088,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       'form_previous_submissions' => TRUE,
       'form_confidential' => FALSE,
       'form_confidential_message' => '',
-      'form_remote_addr' => TRUE,
+      'form_disable_remote_addr' => FALSE,
       'form_convert_anonymous' => FALSE,
       'form_prepopulate' => FALSE,
       'form_prepopulate_source_entity' => FALSE,
@@ -1072,6 +1109,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       'form_access_denied_message' => '',
       'form_access_denied_attributes' => [],
       'form_file_limit' => '',
+      'form_method' => '',
+      'form_action' => '',
+      'form_attributes' => [],
       'share' => FALSE,
       'share_node' => FALSE,
       'share_theme_name' => '',
@@ -1497,6 +1537,11 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       return;
     }
 
+    // If the webform elements are being updated, do not alter them.
+    if ($this->updating) {
+      return;
+    }
+
     // Get the current langcode.
     $current_langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
 
@@ -1516,7 +1561,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     }
 
     // Get the webform's decoded elements and translations.
-    $elements = Yaml::decode($this->elements);
+    $elements = WebformYaml::decode($this->elements);
     $elementsTranslations = $translation_manager->getElements($this, $current_langcode);
 
     // If the elements are empty or they are equal to the translated elements
@@ -1645,7 +1690,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       $element['#webform_composite'] = FALSE;
 
       if (!empty($parent)) {
-        $parent_element =& $this->elementsInitializedAndFlattened[$parent];
+        $parent_element = &$this->elementsInitializedAndFlattened[$parent];
         // Add element to the parent element's children.
         $parent_element['#webform_children'][$key] = $key;
         // Set #parent_flexbox to TRUE is the parent element is a
@@ -1793,7 +1838,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    */
   public function getElement($key, $include_children = FALSE) {
     $elements_flattened = $this->getElementsInitializedAndFlattened();
-    $element = (isset($elements_flattened[$key])) ? $elements_flattened[$key] : NULL;
+    $element = $elements_flattened[$key] ?? NULL;
     if ($element && $include_children) {
       $elements = $this->getElementsInitialized();
       return NestedArray::getValue($elements, $element['#webform_parents']);
@@ -1808,7 +1853,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    */
   public function getElementDecoded($key) {
     $elements = $this->getElementsDecodedAndFlattened();
-    return (isset($elements[$key])) ? $elements[$key] : NULL;
+    return $elements[$key] ?? NULL;
   }
 
   /**
@@ -1816,7 +1861,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    */
   public function getElementInitialized($key) {
     $elements = $this->getElementsInitializedAndFlattened();
-    return (isset($elements[$key])) ? $elements[$key] : NULL;
+    return $elements[$key] ?? NULL;
   }
 
   /**
@@ -2032,9 +2077,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
         $access_operation = (in_array($operation, ['default', 'add'])) ? 'create' : 'update';
         if ($element_plugin->checkAccessRules($access_operation, $element)) {
           $pages[$key] = array_intersect_key($element, $wizard_properties) + [
-              '#type' => 'page',
-              '#access' => TRUE,
-            ];
+            '#type' => 'page',
+            '#access' => TRUE,
+          ];
         }
       }
     }
@@ -2076,7 +2121,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    */
   public function getPage($operation, $key) {
     $pages = $this->getPages($operation);
-    return (isset($pages[$key])) ? $pages[$key] : NULL;
+    return $pages[$key] ?? NULL;
   }
 
   /**
@@ -2216,10 +2261,6 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   public function getCacheContexts() {
     $cache_contexts = parent::getCacheContexts();
 
-    // Add paths to cache contexts since webform can be placed on multiple
-    // pages.
-    $cache_contexts[] = 'url.path';
-
     // Add all prepopulate query string parameters.
     if ($this->getSetting('form_prepopulate')) {
       $cache_contexts[] = 'url.query_args';
@@ -2227,11 +2268,11 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     else {
       // Add source entity type and id query string parameters.
       if ($this->getSetting('form_prepopulate_source_entity')) {
-        $cache_contexts[] = 'url.query_args:entity_type';
-        $cache_contexts[] = 'url.query_args:entity_id';
+        $cache_contexts[] = 'url.query_args:source_entity_type';
+        $cache_contexts[] = 'url.query_args:source_entity_id';
       }
       // Add webform (secure) token query string parameter.
-      if ($this->getSetting('token_view') || $this->getSetting('token_update')) {
+      if ($this->getSetting('token_view') || $this->getSetting('token_update') || $this->getSetting('token_delete')) {
         $cache_contexts[] = 'url.query_args:token';
       }
     }
@@ -2284,8 +2325,8 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     // Because webform are not fieldable, when a webform is saved not all
     // config/content entity related caches need to be cleared.
-    // parent::postSave($storage, $update);
-    /**************************************************************************/
+    // parent::postSave($storage, $update);.
+    /* ********************************************************************** */
 
     $this->invalidateTagsOnSave($update);
 
@@ -2308,7 +2349,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       $this->entityTypeBundleInfo()->clearCachedBundles();
     }
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Update paths.
     $this->updatePaths();
@@ -2363,6 +2404,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
 
     // Reset settings.
     $this->settingsOriginal = $this->settings;
+
+    // Clear updating flag.
+    $this->setUpdating(FALSE);
   }
 
   /**
@@ -2381,8 +2425,8 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       return;
     }
 
-    $page_submit_path = trim($this->getSetting('page_submit_path'), '/');
-    $default_page_base_path = trim(\Drupal::config('webform.settings')->get('settings.default_page_base_path'), '/');
+    $page_submit_path = $this->getSetting('page_submit_path');
+    $default_page_base_path = \Drupal::config('webform.settings')->get('settings.default_page_base_path');
 
     // Skip generating paths if submit path and base path are empty.
     if (empty($page_submit_path) && empty($default_page_base_path)) {
@@ -2390,13 +2434,13 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     }
 
     // Update webform base, confirmation, submissions and drafts paths.
-    $path_base_alias = '/' . ($page_submit_path ?: $default_page_base_path . '/' . str_replace('_', '-', $this->id()));
+    $path_base_alias = ($page_submit_path ?: $default_page_base_path . '/' . str_replace('_', '-', $this->id()));
     $path_suffixes = ['', '/confirmation', '/submissions', '/drafts'];
     foreach ($path_suffixes as $path_suffix) {
       $path_source = '/webform/' . $this->id() . $path_suffix;
       $path_alias = $path_base_alias . $path_suffix;
       if ($path_suffix === '/confirmation' && $this->getSetting('page_confirm_path')) {
-        $path_alias = '/' . trim($this->getSetting('page_confirm_path'), '/');
+        $path_alias = $this->getSetting('page_confirm_path');
       }
       $this->updatePath($path_source, $path_alias, $this->langcode);
       $this->updatePath($path_source, $path_alias, LanguageInterface::LANGCODE_NOT_SPECIFIED);
@@ -2469,9 +2513,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     ];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Handler plugins.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Returns the webform handler plugin manager.
@@ -2755,9 +2799,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     \Drupal::moduleHandler()->alter('webform_handler_invoke_' . $method_name, $handler, $args);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element plugins.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -2772,9 +2816,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Variant plugins.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Returns the webform variant plugin manager.
@@ -2897,11 +2941,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     if ($webform_submission) {
       // Make sure webform submission is associated with this webform.
       if ($webform_submission->getWebform()->id() !== $this->id()) {
-        $t_args = [
-          '@sid' => $webform_submission->id(),
-          '@webform_id' => $this->id(),
-        ];
-        throw new \Exception($this->t('Variants can not be applied because the #@sid submission was not created using @webform_id', $t_args));
+        throw new \Exception("Variants can not be applied because the #{$webform_submission->id()} submission was not created using {$this->id()}.");
       }
       $variants += $this->getVariantsData($webform_submission);
     }
@@ -2992,9 +3032,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     return $variant_plugin->applyVariant();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // URL.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -3003,8 +3043,15 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * submission webform and not the back-end 'edit-form'.
    */
   public function url($rel = 'canonical', $options = []) {
+    @trigger_error('Webform::url() function is deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use \Drupal\webform\Entity\Webform::toUrl() instead. See https://www.drupal.org/project/webform/issues/3251189', E_USER_DEPRECATED);
     // Do not remove this override: the default value of $rel is different.
-    return parent::url($rel, $options);
+    if ($this->id() === NULL || !$this->hasLinkTemplate($rel)) {
+      return '';
+    }
+    $uri = $this->toUrl($rel);
+    $options += $uri->getOptions();
+    $uri->setOptions($options);
+    return $uri->toString();
   }
 
   /**
@@ -3024,7 +3071,8 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * submission webform and not the back-end 'edit-form'.
    */
   public function urlInfo($rel = 'canonical', array $options = []) {
-    return parent::urlInfo($rel, $options);
+    @trigger_error('Webform::urlInfo() function is deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use \Drupal\webform\Entity\Webform::toUrl() instead. See https://www.drupal.org/project/webform/issues/3251189', E_USER_DEPRECATED);
+    return parent::toUrl($rel, $options);
   }
 
   /**
@@ -3044,12 +3092,13 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * webform and not the back-end 'edit-form'.
    */
   public function link($text = NULL, $rel = 'canonical', array $options = []) {
-    return parent::link($text, $rel, $options);
+    @trigger_error('Webform::link() function is deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use \Drupal\webform\Entity\Webform::toLink() instead. See https://www.drupal.org/project/webform/issues/3251189', E_USER_DEPRECATED);
+    return parent::toLink($text, $rel, $options)->toString();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Revisions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -3058,9 +3107,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     return TRUE;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // State.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -3068,7 +3117,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   public function getState($key, $default = NULL) {
     $namespace = 'webform.webform.' . $this->id();
     $values = \Drupal::state()->get($namespace, []);
-    return (isset($values[$key])) ? $values[$key] : $default;
+    return $values[$key] ?? $default;
   }
 
   /**
@@ -3100,9 +3149,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     return (isset($values[$key])) ? TRUE : FALSE;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // User data.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -3112,7 +3161,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     /** @var \Drupal\user\UserDataInterface $user_data */
     $user_data = \Drupal::service('user.data');
     $values = $user_data->get('webform', $account->id(), $this->id());
-    return (isset($values[$key])) ? $values[$key] : $default;
+    return $values[$key] ?? $default;
   }
 
   /**
@@ -3150,9 +3199,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     return (isset($values[$key])) ? TRUE : FALSE;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Third party settings.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -3161,9 +3210,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     unset($this->third_party_settings[$module]);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Dependency.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -3200,9 +3249,9 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     return $changed;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Other.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

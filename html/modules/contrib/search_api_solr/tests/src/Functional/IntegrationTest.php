@@ -14,6 +14,7 @@ use Drupal\Tests\search_api\Functional\IntegrationTest as SearchApiIntegrationTe
 class IntegrationTest extends SearchApiIntegrationTest {
 
   use SolrCommitTrait;
+
   /**
    * The backend of the search server used for this test.
    *
@@ -32,7 +33,7 @@ class IntegrationTest extends SearchApiIntegrationTest {
   /**
    * {@inheritdoc}
    */
-  protected function tearDown() {
+  protected function tearDown(): void {
     if ($this->indexId) {
       if ($index = $this->getIndex()) {
         $index->clear();
@@ -123,7 +124,7 @@ class IntegrationTest extends SearchApiIntegrationTest {
       'backend_config[connector_config][host]' => 'localhost',
       'backend_config[connector_config][port]' => '8983',
       'backend_config[connector_config][path]' => '/',
-      'backend_config[connector_config][core]' => 'd8',
+      'backend_config[connector_config][core]' => 'drupal',
     ];
     $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('The Solr server could be reached.');

@@ -5,22 +5,23 @@
  * Main module file containing hooks.
  */
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\simple_sitemap\Entity\SimpleSitemap;
+use Drupal\simple_sitemap\Form\FormHelper;
+use Drupal\simple_sitemap\Queue\QueueWorker;
 use Drupal\system\MenuInterface;
 use Drupal\language\ConfigurableLanguageInterface;
 
 /**
- *Implements hook_help().
- *
- * @param $route_name
- * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
- * @return \Drupal\Component\Render\MarkupInterface|null
+ * Implements hook_help().
  */
-function simple_sitemap_help($route_name, RouteMatchInterface $route_match) {
-  return $route_name === 'help.page.simple_sitemap' ?
-    check_markup(file_get_contents(dirname(__FILE__) . "/README.md")) : NULL;
+function simple_sitemap_help($route_name, RouteMatchInterface $route_match): ?MarkupInterface {
+  return $route_name === 'help.page.simple_sitemap'
+    ? check_markup(file_get_contents(__DIR__ . '/README.md'))
+    : NULL;
 }
 
 /**
@@ -28,9 +29,8 @@ function simple_sitemap_help($route_name, RouteMatchInterface $route_match) {
  *
  * Adds sitemap settings to entity types that are supported via plugins.
  *
- * @param $form
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- * @param $form_id
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function simple_sitemap_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
@@ -45,6 +45,8 @@ function simple_sitemap_form_alter(&$form, FormStateInterface $form_state, $form
     '#group' => isset($form['additional_settings']) ? 'additional_settings' : 'advanced',
     '#title' => t('Simple XML Sitemap'),
     '#description' => $f->getEntityCategory() === 'instance' ? t('Settings for this entity can be overridden here.') : '',
+    '#attributes' => ['class' => ['simple-sitemap-fieldset']],
+    '#tree' => TRUE,
     '#weight' => 10,
   ];
 
@@ -54,32 +56,26 @@ function simple_sitemap_form_alter(&$form, FormStateInterface $form_state, $form
   }
 
   $f->displayEntitySettings($form['simple_sitemap'])
-  // todo: do not show setting when creating new bundle.
+  // @todo Do not show setting when creating new bundle.
     ->displayRegenerateNow($form['simple_sitemap']);
 
   // Add submission handler.
-  if (isset($form['actions']['submit']['#submit'])) {
-    foreach (array_keys($form['actions']) as $action) {
-      if ($action !== 'preview'
-        && isset($form['actions'][$action]['#type'])
-        && $form['actions'][$action]['#type'] === 'submit') {
-        $form['actions'][$action]['#submit'][] = 'simple_sitemap_entity_form_submit';
-      }
-    }
-  }
-  // Fix for account page rendering other submit handlers not usable.
-  else {
-    $form['#submit'][] = 'simple_sitemap_entity_form_submit';
-  }
+  FormHelper::addSubmitHandler($form, 'simple_sitemap_entity_form_submit');
 }
 
 /**
  * Form submission handler called in hook_form_alter.
  *
- * @param $form
+ * @param array $form
+ *   An associative array containing the structure of the form.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The current state of the form.
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
-function simple_sitemap_entity_form_submit($form, FormStateInterface &$form_state) {
+function simple_sitemap_entity_form_submit(array $form, FormStateInterface $form_state) {
 
   /** @var Drupal\simple_sitemap\Form\FormHelper $f */
   $f = \Drupal::service('simple_sitemap.form_helper');
@@ -87,53 +83,39 @@ function simple_sitemap_entity_form_submit($form, FormStateInterface &$form_stat
     return;
   }
 
-  $values = $form_state->getValues();
+  $values = $form_state->getValue('simple_sitemap');
 
-  // Fix for values appearing in a sub array on a commerce product entity.
-  $values = isset($values['simple_sitemap']) ? $values['simple_sitemap'] : $values;
+  /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
+  $generator = \Drupal::service('simple_sitemap.generator');
 
-  // Only make changes in DB if sitemap settings actually changed.
-  if ($f->valuesChanged($form, $values)) {
+  // @todo No need to load all sitemaps here.
+  foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
 
-    /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
-    $generator = \Drupal::service('simple_sitemap.generator');
+    // Variants may have changed since form load.
+    if (isset($values[$variant])) {
+      $generator->setVariants($variant);
 
-    foreach ($generator->getSitemapManager()->getSitemapVariants(NULL, FALSE) as $variant => $definition) {
+      switch ($f->getEntityCategory()) {
+        case 'bundle':
+          $generator->entityManager()->setBundleSettings($f->getEntityTypeId(), $f->getBundleName(), $values[$variant]);
+          break;
 
-      if (isset($values['index_' . $variant . '_' . $f->getEntityTypeId() . '_settings'])) { // Variants may have changed since form load.
-        $settings = [
-          'index' => (bool) $values['index_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
-          'priority' => $values['priority_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
-          'changefreq' => $values['changefreq_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
-          'include_images' => (bool) $values['include_images_' . $variant . '_' . $f->getEntityTypeId() . '_settings'],
-        ];
-
-        $generator->setVariants($variant);
-
-        switch ($f->getEntityCategory()) {
-
-          case 'bundle':
-            $generator->setBundleSettings($f->getEntityTypeId(), $f->getBundleName(), $settings);
-            if (empty($settings['index'])) {
-              $generator->removeEntityInstanceSettings($f->getEntityTypeId(), $f->getInstanceId());
-            }
-            break;
-
-          case 'instance':
-            if (!$f->entityIsNew()) {
-              $generator->setEntityInstanceSettings($f->getEntityTypeId(), $f->getInstanceId(), $settings);
-            }
-            break;
-        }
+        case 'instance':
+          // Make sure the entity is saved first for multi-step forms,
+          // see https://www.drupal.org/project/simple_sitemap/issues/3080510.
+          if (!$f->entityIsNew()) {
+            $generator->entityManager()->setEntityInstanceSettings($f->getEntityTypeId(), $f->getInstanceId(), $values[$variant]);
+          }
+          break;
       }
     }
+  }
 
-    // Regenerate sitemaps according to user setting.
-    if ($values['simple_sitemap_regenerate_now']) {
-      $generator->setVariants(TRUE)
-        ->rebuildQueue()
-        ->generateSitemap();
-    }
+  // Regenerate sitemaps according to user setting.
+  if ($form_state->getValue('simple_sitemap_regenerate_now')) {
+    $generator->setVariants()
+      ->rebuildQueue()
+      ->generate();
   }
 }
 
@@ -141,15 +123,18 @@ function simple_sitemap_entity_form_submit($form, FormStateInterface &$form_stat
  * Implements hook_cron().
  */
 function simple_sitemap_cron() {
+  /** @var \Drupal\simple_sitemap\Settings $settings */
+  $settings = \Drupal::service(('simple_sitemap.settings'));
 
-  /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
-  $generator = \Drupal::service('simple_sitemap.generator');
+  if ($settings->get('cron_generate')) {
 
-  if ($generator->getSetting('cron_generate')) {
-    $interval = (int) $generator->getSetting('cron_generate_interval', 0) * 60 * 60;
+    $interval = (int) $settings->get('cron_generate_interval', 0) * 60 * 60;
     $request_time = \Drupal::service('datetime.time')->getRequestTime();
-    $generation_in_progress = $generator->getQueueWorker()->generationInProgress();
     $state = \Drupal::state();
+
+    /** @var \Drupal\simple_sitemap\Queue\QueueWorker $queue_worker */
+    $queue_worker = \Drupal::service('simple_sitemap.queue_worker');
+    $generation_in_progress = $queue_worker->generationInProgress();
 
     if ($interval === 0
       || $generation_in_progress
@@ -159,7 +144,9 @@ function simple_sitemap_cron() {
         $state->set('simple_sitemap.last_cron_generate', $request_time);
       }
 
-      $generator->generateSitemap('cron');
+      /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
+      $generator = \Drupal::service('simple_sitemap.generator');
+      $generator->generate(QueueWorker::GENERATE_TYPE_CRON);
     }
   }
 }
@@ -171,13 +158,13 @@ function simple_sitemap_cron() {
  */
 function simple_sitemap_configurable_language_delete(ConfigurableLanguageInterface $language) {
 
-  /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
-  $generator = \Drupal::service('simple_sitemap.generator');
+  /** @var \Drupal\simple_sitemap\Settings $settings */
+  $settings = \Drupal::service('simple_sitemap.settings');
 
-  $excluded_languages = $generator->getSetting('excluded_languages');
+  $excluded_languages = $settings->get('excluded_languages', []);
   if (isset($excluded_languages[$language->id()])) {
     unset($excluded_languages[$language->id()]);
-    $generator->saveSetting('excluded_languages', $excluded_languages);
+    $settings->save('excluded_languages', $excluded_languages);
   }
 }
 
@@ -185,18 +172,16 @@ function simple_sitemap_configurable_language_delete(ConfigurableLanguageInterfa
  * Implements hook_entity_delete().
  *
  * Removes settings of the removed entity.
- *
- * @param \Drupal\Core\Entity\EntityInterface $entity
  */
 function simple_sitemap_entity_delete(EntityInterface $entity) {
 
-  /** @var \Drupal\simple_sitemap\EntityHelper $entity_helper */
+  /** @var \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper */
   $entity_helper = \Drupal::service('simple_sitemap.entity_helper');
   if ($entity_helper->supports($entity->getEntityType())) {
 
-    /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
+    /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
     $generator = \Drupal::service('simple_sitemap.generator');
-    $generator->setVariants(TRUE)->removeEntityInstanceSettings(
+    $generator->setVariants()->entityManager()->removeEntityInstanceSettings(
       $entity->getEntityTypeId(), $entity->id()
     );
   }
@@ -207,14 +192,14 @@ function simple_sitemap_entity_delete(EntityInterface $entity) {
  *
  * Removes settings of the removed bundle.
  *
- * @param string $entity_type_id
- * @param string $bundle
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function simple_sitemap_entity_bundle_delete($entity_type_id, $bundle) {
 
-  /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
+  /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
   $generator = \Drupal::service('simple_sitemap.generator');
-  $generator->setVariants(TRUE)->removeBundleSettings($entity_type_id, $bundle);
+  $generator->setVariants()->entityManager()->removeBundleSettings($entity_type_id, $bundle);
 }
 
 /**
@@ -222,31 +207,36 @@ function simple_sitemap_entity_bundle_delete($entity_type_id, $bundle) {
  *
  * Removes settings for the removed menu.
  *
- * @param \Drupal\system\MenuInterface $menu
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function simple_sitemap_menu_delete(MenuInterface $menu) {
 
-  /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
+  /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
   $generator = \Drupal::service('simple_sitemap.generator');
-  $generator->setVariants(TRUE)->removeBundleSettings('menu_link_content', $menu->id());
+  $generator->setVariants()->entityManager()->removeBundleSettings('menu_link_content', $menu->id());
 }
 
 /**
  * Implements hook_page_attachments_alter().
  */
 function simple_sitemap_page_attachments_alter(array &$attachments) {
-  /** @var \Drupal\simple_sitemap\Simplesitemap $generator */
-  $generator = \Drupal::service('simple_sitemap.generator');
-  if ($generator->getSetting('disable_language_hreflang')) {
-    // @fixme https://www.drupal.org/project/drupal/issues/1255092
-    // Content Translation module normally adds identical hreflang tags, so
-    // executing its hook_page_attachments() implementation would be harmless,
-    // but if an entity page is configured as the front page, it attaches
-    // extraneous hreflang tags using the entity URL.
-    foreach ($attachments['#attached']['html_head_link'] as $key => $list) {
-      foreach ($list as $k => $element) {
-        if (!empty($element['hreflang']) && !empty($element['rel'])) {
-          unset($attachments['#attached']['html_head_link'][$key]);
+  if (!empty($attachments['#attached']['html_head_link'])) {
+
+    /** @var \Drupal\simple_sitemap\Settings $settings */
+    $settings = \Drupal::service('simple_sitemap.settings');
+
+    if ($settings->get('disable_language_hreflang')) {
+      // @fixme https://www.drupal.org/project/drupal/issues/1255092
+      // Content Translation module normally adds identical hreflang tags, so
+      // executing its hook_page_attachments() implementation would be harmless,
+      // but if an entity page is configured as the front page, it attaches
+      // extraneous hreflang tags using the entity URL.
+      foreach ($attachments['#attached']['html_head_link'] as $key => $list) {
+        foreach ($list as $element) {
+          if (!empty($element['hreflang']) && !empty($element['rel'])) {
+            unset($attachments['#attached']['html_head_link'][$key]);
+          }
         }
       }
     }

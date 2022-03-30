@@ -79,7 +79,7 @@ class WebformElementStatesSelectorsTest extends WebformElementBrowserTestBase {
 
     // Check the value element is included.
     $selectors = $webform->getElementsSelectorOptions(['excluded_elements' => []]);
-    $this->assertEqual($selectors[':input[name="value"]'], 'Value [Value]');
+    $this->assertEquals($selectors[':input[name="value"]'], 'Value [Value]');
   }
 
 }

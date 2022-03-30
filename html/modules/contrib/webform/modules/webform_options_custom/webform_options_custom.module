@@ -18,7 +18,7 @@ function webform_options_custom_webform_help_info() {
     'content' => t('The <strong>Custom options configuration</strong> page lists reusable HTML/SVG custom options elements.'),
     'video_id' => 'custom_options',
     'routes' => [
-      // @see /admin/structure/webform/config/options_custom
+      // @see /admin/structure/webform/options/custom
       'entity.webform_options_custom.collection',
     ],
   ];

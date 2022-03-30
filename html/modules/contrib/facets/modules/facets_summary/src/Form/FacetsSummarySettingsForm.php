@@ -194,7 +194,7 @@ class FacetsSummarySettingsForm extends EntityForm {
     if ($is_new) {
       if ($this->moduleHandler->moduleExists('block')) {
         $message = $this->t('Facet Summary %name has been created. Go to the <a href=":block_overview">Block overview page</a> to place the new block in the desired region.', ['%name' => $facets_summary->getName(), ':block_overview' => $this->urlGenerator->generateFromRoute('block.admin_display')]);
-        \Drupal::messenger()->addMessage($message);
+        $this->messenger()->addMessage($message);
         $form_state->setRedirect('entity.facets_summary.edit_form', ['facets_summary' => $facets_summary->id()]);
       }
 
@@ -222,7 +222,7 @@ class FacetsSummarySettingsForm extends EntityForm {
       }
     }
     else {
-      \Drupal::messenger()->addMessage($this->t('Facet %name has been updated.', ['%name' => $facets_summary->getName()]));
+      $this->messenger()->addMessage($this->t('Facet %name has been updated.', ['%name' => $facets_summary->getName()]));
     }
 
     // Clear Drupal cache for blocks to reflect recent changes.
@@ -241,7 +241,7 @@ class FacetsSummarySettingsForm extends EntityForm {
       if ($view !== NULL) {
         $view->display_handler->overrideOption('cache', ['type' => 'none']);
         $view->save();
-        \Drupal::messenger()->addMessage($this->t('Caching of view %view has been disabled.', ['%view' => $view->storage->label()]));
+        $this->messenger()->addMessage($this->t('Caching of view %view has been disabled.', ['%view' => $view->storage->label()]));
       }
     }
 

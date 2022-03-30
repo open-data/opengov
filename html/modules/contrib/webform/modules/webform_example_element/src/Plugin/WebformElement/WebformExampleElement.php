@@ -41,7 +41,7 @@ class WebformExampleElement extends WebformElementBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

@@ -33,22 +33,27 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
    * Test element prepopulate.
    */
   public function testElementPrepopulate() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_element_prepopulate');
 
     $files = $this->getTestFiles('text');
 
     // Check default value of elements on multiple_values.
     $this->drupalGet('/webform/test_element_prepopulate');
-    $this->assertFieldByName('textfield_01', '');
-    $this->assertFieldByName('textfield_prepopulate_01', '{default_value_01}');
-    $this->assertFieldByName('files[managed_file_prepopulate_01]', '');
-    $this->drupalPostForm('/webform/test_element_prepopulate', [], 'Next >');
-    $this->assertFieldByName('textfield_02', '');
-    $this->assertFieldByName('textfield_prepopulate_02', '{default_value_02}');
+    $assert_session->fieldValueEquals('textfield_01', '');
+    $assert_session->fieldValueEquals('textfield_prepopulate_01', '{default_value_01}');
+    $field = $assert_session->fieldExists('files[managed_file_prepopulate_01]');
+    $this->assertEmpty($field->getAttribute('value'));
+
+    $this->drupalGet('/webform/test_element_prepopulate');
+    $this->submitForm([], 'Next >');
+    $assert_session->fieldValueEquals('textfield_02', '');
+    $assert_session->fieldValueEquals('textfield_prepopulate_02', '{default_value_02}');
 
     // Check 'textfield' can not be prepopulated.
     $this->drupalGet('/webform/test_element_prepopulate', ['query' => ['textfield_01' => 'value']]);
-    $this->assertNoFieldByName('textfield_0', 'value');
+    $assert_session->fieldValueNotEquals('textfield_01', 'value');
 
     // Check prepopulating textfield on multiple pages.
     $options = [
@@ -58,9 +63,10 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
       ],
     ];
     $this->drupalGet('/webform/test_element_prepopulate', $options);
-    $this->assertFieldByName('textfield_prepopulate_01', 'value_01');
-    $this->drupalPostForm('/webform/test_element_prepopulate', [], 'Next >', $options);
-    $this->assertFieldByName('textfield_prepopulate_02', 'value_02');
+    $assert_session->fieldValueEquals('textfield_prepopulate_01', 'value_01');
+    $this->drupalGet('/webform/test_element_prepopulate', $options);
+    $this->submitForm([], 'Next >');
+    $assert_session->fieldValueEquals('textfield_prepopulate_02', 'value_02');
 
     // Check prepopulating textfield on multiple pages and changing the value.
     $options = [
@@ -70,26 +76,28 @@ class WebformElementPrepopulateTest extends WebformElementBrowserTestBase {
       ],
     ];
     $this->drupalGet('/webform/test_element_prepopulate', $options);
-    $this->assertFieldByName('textfield_prepopulate_01', 'value_01');
-    $this->drupalPostForm('/webform/test_element_prepopulate', ['textfield_prepopulate_01' => 'edit_01'], 'Next >', $options);
-    $this->assertFieldByName('textfield_prepopulate_02', 'value_02');
-    $this->drupalPostForm(NULL, [], '< Previous', $options);
-    $this->assertNoFieldByName('textfield_prepopulate_01', 'value_01');
-    $this->assertFieldByName('textfield_prepopulate_01', 'edit_01');
+    $assert_session->fieldValueEquals('textfield_prepopulate_01', 'value_01');
+    $this->drupalGet('/webform/test_element_prepopulate', $options);
+    $edit = ['textfield_prepopulate_01' => 'edit_01'];
+    $this->submitForm($edit, 'Next >');
+    $assert_session->fieldValueEquals('textfield_prepopulate_02', 'value_02');
+    $this->submitForm([], '< Previous');
+    $assert_session->fieldValueNotEquals('textfield_prepopulate_01', 'value_01');
+    $assert_session->fieldValueEquals('textfield_prepopulate_01', 'edit_01');
 
     // Check 'managed_file_prepopulate' can not be prepopulated.
     // The #prepopulate property is not available to managed file elements.
     // @see \Drupal\webform\Plugin\WebformElement\WebformManagedFileBase::defaultProperties
-    $edit = [
-      'files[managed_file_prepopulate_01]' => \Drupal::service('file_system')->realpath($files[0]->uri),
-    ];
-    $this->drupalPostForm('/webform/test_element_prepopulate', $edit, 'Next >');
-    $this->drupalPostForm(NULL, [], 'Submit');
+    $this->drupalGet('/webform/test_element_prepopulate');
+    $edit = ['files[managed_file_prepopulate_01]' => \Drupal::service('file_system')->realpath($files[0]->uri)];
+    $this->submitForm($edit, 'Next >');
+    $this->submitForm([], 'Submit');
     $sid = $this->getLastSubmissionId($webform);
     $webform_submission = WebformSubmission::load($sid);
     $fid = $webform_submission->getElementData('managed_file_prepopulate_01');
     $this->drupalGet('/webform/test_element_prepopulate', ['query' => ['managed_file_prepopulate_01' => $fid]]);
-    $this->assertFieldByName('files[managed_file_prepopulate_01]', '');
+    $field = $assert_session->fieldExists('files[managed_file_prepopulate_01]');
+    $this->assertEmpty($field->getAttribute('value'));
   }
 
 }

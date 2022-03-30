@@ -32,12 +32,13 @@ elements: |
     '#title': text_basic_min_max_height
     '#wrap': false
     '#default_value': |
-        Pellentesque habitant morbi tristique senectus
-        et netus et malesuada fames ac turpis egestas.
-        Vestibulum tortor quam, feugiat vitae, ultricies
-        eget, tempor sit amet, ante.
-        Donec eu libero sit amet quam egestas semper. Aenean
-        ultricies mi vitae est. Mauris placerat eleifend leo.
+      Pellentesque habitant morbi tristique senectus
+      et netus et malesuada fames ac turpis egestas.
+      Vestibulum tortor quam, feugiat vitae, ultricies
+      eget, tempor sit amet, ante.
+      Donec eu libero sit amet quam egestas semper. Aenean
+      ultricies mi vitae est. Mauris placerat eleifend leo.
+      
     '#attributes':
       style: 'min-height:100px; max-height:200px'
   yaml_basic:
@@ -54,6 +55,20 @@ elements: |
       one: One
       two: Two
       three: Three
+  yaml_indexed_array:
+    '#type': webform_codemirror
+    '#mode': yaml
+    '#title': yaml_indexed_array
+    '#description': 'Pass an indexed array as the default value'
+    '#default_value':
+      - one
+  yaml_indexed_associative_array:
+    '#type': webform_codemirror
+    '#mode': yaml
+    '#title': yaml_indexed_associative_array
+    '#description': 'Pass an indexed associative array as the default value'
+    '#default_value':
+      - one: One
   yaml_decode_value:
     '#type': webform_codemirror
     '#mode': yaml
@@ -93,13 +108,13 @@ elements: |
           </script>
         </body>
       </html>
-  
+      
   twig_basic:
     '#type': webform_codemirror
     '#mode': twig
     '#title': twig_basic
     '#default_value': |
-  
+      
       {% set value = "Hello" %}
       {{ value }}
   
@@ -123,7 +138,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -144,6 +159,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -290,5 +308,7 @@ handlers:
     status: true
     conditions: {  }
     weight: 1
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

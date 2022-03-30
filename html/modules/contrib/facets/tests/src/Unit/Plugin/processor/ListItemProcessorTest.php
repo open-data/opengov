@@ -64,7 +64,7 @@ class ListItemProcessorTest extends UnitTestCase {
 
     // Create a search api based facet source and make the property definition
     // return null.
-    $data_definition = $this->getMock(ComplexDataDefinitionInterface::class);
+    $data_definition = $this->createMock(ComplexDataDefinitionInterface::class);
     $data_definition->expects($this->any())
       ->method('getPropertyDefinition')
       ->willReturn(NULL);

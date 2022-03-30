@@ -11,6 +11,13 @@ use Drupal\Tests\BrowserTestBase;
  */
 class PasswordCharacterOperations extends BrowserTestBase {
 
+  /**
+   * Set default theme to stark.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
+
   public static $modules = ['password_policy_characters', 'password_policy'];
 
   /**
@@ -34,36 +41,37 @@ class PasswordCharacterOperations extends BrowserTestBase {
    */
   public function testPasswordCharacterManagement() {
     // Create a policy and add various "characters" constraints.
-    $this->drupalPostForm('admin/config/security/password-policy/add', ['label' => 'Test policy', 'id' => 'test_policy'], 'Next');
+    $this->drupalGet('admin/config/security/password-policy/add');
+    $this->submitForm(['label' => 'Test policy', 'id' => 'test_policy'], 'Next');
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
     $this->assertSession()->pageTextContains('Number of characters');
     $this->assertSession()->pageTextContains('Character type');
 
-    $this->drupalPostForm(NULL, ['character_type' => 'special', 'character_count' => 2], 'Save');
+    $this->submitForm(['character_type' => 'special', 'character_count' => 2], 'Save');
     $this->assertSession()->pageTextContains('Password must contain 2 special characters');
 
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
-    $this->drupalPostForm(NULL, ['character_type' => 'numeric', 'character_count' => 3], 'Save');
+    $this->submitForm(['character_type' => 'numeric', 'character_count' => 3], 'Save');
     $this->assertSession()->pageTextContains('Password must contain 3 numeric characters');
 
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
-    $this->drupalPostForm(NULL, ['character_type' => 'lowercase', 'character_count' => 4], 'Save');
+    $this->submitForm(['character_type' => 'lowercase', 'character_count' => 4], 'Save');
     $this->assertSession()->pageTextContains('Password must contain 4 lowercase characters');
 
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
-    $this->drupalPostForm(NULL, ['character_type' => 'uppercase', 'character_count' => 5], 'Save');
+    $this->submitForm(['character_type' => 'uppercase', 'character_count' => 5], 'Save');
     $this->assertSession()->pageTextContains('Password must contain 5 uppercase characters');
 
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
-    $this->drupalPostForm(NULL, ['character_type' => 'special', 'character_count' => ''], 'Save');
+    $this->submitForm(['character_type' => 'special', 'character_count' => ''], 'Save');
     $this->assertSession()->pageTextContains('Number of characters field is required.');
 
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
-    $this->drupalPostForm(NULL, ['character_type' => 'special', 'character_count' => -1], 'Save');
+    $this->submitForm(['character_type' => 'special', 'character_count' => -1], 'Save');
     $this->assertSession()->pageTextContains('The number of characters must be a positive number.');
 
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
-    $this->drupalPostForm(NULL, ['character_type' => 'special', 'character_count' => $this->randomMachineName()], 'Save');
+    $this->submitForm(['character_type' => 'special', 'character_count' => $this->randomMachineName()], 'Save');
     $this->assertSession()->pageTextContains('The number of characters must be a positive number.');
   }
 

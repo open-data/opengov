@@ -644,7 +644,15 @@ class ProviderBase extends PluginBase implements ProviderInterface {
     // Process API data.
     if ($api = $this->getApi()) {
       $provider_path = ProviderManager::FILE_PATH;
-      file_prepare_directory($provider_path, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+
+      // FILE_CREATE_DIRECTORY = 1 | FILE_MODIFY_PERMISSIONS = 2.
+      $options = 1 | 2;
+      if ($fileSystem = Bootstrap::fileSystem('prepareDirectory')) {
+        $fileSystem->prepareDirectory($provider_path, $options);
+      }
+      else {
+        file_prepare_directory($provider_path, $options);
+      }
 
       // Use manually imported API data, if it exists.
       if (file_exists("$provider_path/$plugin_id.json") && ($imported_data = file_get_contents("$provider_path/$plugin_id.json"))) {

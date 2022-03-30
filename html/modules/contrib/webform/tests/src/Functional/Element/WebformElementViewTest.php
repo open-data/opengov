@@ -27,48 +27,54 @@ class WebformElementViewTest extends WebformElementBrowserTestBase {
    * Test view element.
    */
   public function testView() {
+    $assert_session = $this->assertSession();
+
     // Check that embedded view is render.
     $this->drupalGet('/webform/test_element_view');
-    $this->assertRaw('No submissions available.');
+    $assert_session->responseContains('No submissions available.');
 
     // Check that embedded view can't be edited.
     $admin_webform_account = $this->drupalCreateUser(['administer webform']);
     $this->drupalLogin($admin_webform_account);
     $this->drupalGet('/admin/structure/webform/manage/test_element_view/element/view/edit');
-    $this->assertRaw("Only users who can 'Administer views' or 'Edit webform source code' can update the view name, display id, and arguments.");
-    $this->assertNoFieldByName('properties[name]');
-    $this->assertNoFieldByName('properties[display_id]');
+    $assert_session->responseContains("Only users who can 'Administer views' or 'Edit webform source code' can update the view name, display id, and arguments.");
+    $assert_session->fieldNotExists('properties[name]');
+    $assert_session->fieldNotExists('properties[display_id]');
 
     // Check that embedded view can be edited.
     $admin_views_account = $this->drupalCreateUser(['administer webform', 'administer views']);
     $this->drupalLogin($admin_views_account);
     $this->drupalGet('/admin/structure/webform/manage/test_element_view/element/view/edit');
-    $this->assertNoRaw("Only users who can 'Administer views' or 'Edit webform source code' can update the view name, display id, and arguments.");
-    $this->assertFieldByName('properties[name]');
-    $this->assertFieldByName('properties[display_id]');
+    $assert_session->responseNotContains("Only users who can 'Administer views' or 'Edit webform source code' can update the view name, display id, and arguments.");
+    $assert_session->fieldExists('properties[name]');
+    $assert_session->fieldExists('properties[display_id]');
 
     // Check view name validation.
+    $this->drupalGet('/admin/structure/webform/manage/test_element_view/element/view/edit');
     $edit = ['properties[name]' => 'xxx'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_view/element/view/edit', $edit, 'Save');
-    $this->assertRaw('View <em class="placeholder">xxx</em> does not exist.');
+    $this->submitForm($edit, 'Save');
+    $assert_session->responseContains('View <em class="placeholder">xxx</em> does not exist.');
 
     // Check view display id validation.
+    $this->drupalGet('/admin/structure/webform/manage/test_element_view/element/view/edit');
     $edit = ['properties[display_id]' => 'xxx'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_view/element/view/edit', $edit, 'Save');
-    $this->assertRaw('View display <em class="placeholder">xxx</em> does not exist.');
+    $this->submitForm($edit, 'Save');
+    $assert_session->responseContains('View display <em class="placeholder">xxx</em> does not exist.');
 
     // Check view exposed filter validation.
+    $this->drupalGet('/admin/structure/webform/manage/test_element_view/element/view/edit');
     $edit = ['properties[display_id]' => 'embed_administer'];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_view/element/view/edit', $edit, 'Save');
-    $this->assertRaw('View display <em class="placeholder">embed_administer</em> has exposed filters which will break the webform.');
+    $this->submitForm($edit, 'Save');
+    $assert_session->responseContains('View display <em class="placeholder">embed_administer</em> has exposed filters which will break the webform.');
 
     // Check view exposed filter validation.
+    $this->drupalGet('/admin/structure/webform/manage/test_element_view/element/view/edit');
     $edit = [
       'properties[display_id]' => 'embed_administer',
       'properties[display_on]' => 'view',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_element_view/element/view/edit', $edit, 'Save');
-    $this->assertNoRaw('View display <em class="placeholder">embed_administer</em> has exposed filters which will break the webform.');
+    $this->submitForm($edit, 'Save');
+    $assert_session->responseNotContains('View display <em class="placeholder">embed_administer</em> has exposed filters which will break the webform.');
   }
 
 }

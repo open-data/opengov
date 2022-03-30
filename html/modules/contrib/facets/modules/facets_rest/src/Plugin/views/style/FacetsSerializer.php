@@ -109,11 +109,23 @@ class FacetsSerializer extends Serializer {
     $this->facetsManager->updateResults($facetsource_id);
 
     $processed_facets = [];
+    $facets_metadata = [];
     foreach ($facets as $facet) {
       $processed_facets[] = $this->facetsManager->build($facet);
+      $facets_metadata[$facet->id()] = array(
+        'label' => $facet->label(),
+        'weight' => $facet->getWeight(),
+        'field_id' => $facet->getFieldIdentifier(),
+        'url_alias' => $facet->getUrlAlias()
+      );
     }
+    uasort($facets_metadata, function($a, $b) {
+      return $a['weight'] > $b['weight'];
+    });
 
     $rows['facets'] = array_values($processed_facets);
+    $rows['facets_metadata'] = $facets_metadata;
+
     if (!$this->options['show_facets']) {
       $rows = $rows['search_results'];
     }

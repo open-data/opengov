@@ -29,11 +29,15 @@ class WebformElementInputMaskTest extends WebformElementBrowserTestBase {
    * Test element input mask.
    */
   public function testInputMask() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_element_input_mask');
 
     // Check default values.
     $this->postSubmission($webform);
-    $this->assertRaw("currency: '$ 1.00'
+    $assert_session->responseContains("currency: '$ 1.00'
+currency_negative: '-$ 1.00'
+currency_positive_negative: '$ 1.00'
 datetime: ''
 decimal: ''
 email: ''
@@ -57,6 +61,8 @@ module: ''");
       'decimal' => '9.9',
       'ip' => '255.255.255.255',
       'currency' => '$ 9.99',
+      'currency_negative' => '-$ 9.99',
+      'currency_positive_negative' => '-$ 9.99',
       'percentage' => '99 %',
       'phone' => '(999) 999-9999',
       'license_plate' => '9-AAA-999',
@@ -69,7 +75,9 @@ module: ''");
       'module' => '999',
     ];
     $this->postSubmission($webform, $edit);
-    $this->assertRaw("currency: '$ 9.99'
+    $assert_session->responseContains("currency: '$ 9.99'
+currency_negative: '-$ 9.99'
+currency_positive_negative: '-$ 9.99'
 datetime: '2007-06-09''T''17:46:21'
 decimal: '9.9'
 email: example@example.com
@@ -89,6 +97,8 @@ module: '999'");
     // Check pattern validation error messages.
     $edit = [
       'currency' => '$ 9.9_',
+      'currency_negative' => '-$ 9.9_',
+      'currency_positive_negative' => '-$ 9.9_',
       'decimal' => '9._',
       'ip' => '255.255.255.__',
       'mac' => '99-99-99-99-99-_)',
@@ -100,14 +110,14 @@ module: '999'");
     ];
     $this->postSubmission($webform, $edit);
     foreach ($edit as $name => $value) {
-      $this->assertRaw('<em class="placeholder">' . $name . '</em> field is not in the right format.');
+      $assert_session->responseContains('<em class="placeholder">' . $name . '</em> field is not in the right format.');
     }
 
     // Check currency submitted as the default input (ie $ 0.00) triggers
     // required validation.
     // @see \Drupal\webform\Plugin\WebformElement\TextBase::validateInputMask
     $this->postSubmission($webform, ['currency' => '$ 0.00']);
-    $this->assertRaw('currency field is required.');
+    $assert_session->responseContains('currency field is required.');
 
   }
 

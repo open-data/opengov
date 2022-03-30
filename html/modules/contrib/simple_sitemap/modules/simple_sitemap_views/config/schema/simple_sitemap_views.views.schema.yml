@@ -1,12 +1,18 @@
 views.display_extender.simple_sitemap_display_extender:
   type: views_display_extender
   mapping:
+    variants:
+      type: sequence
+      label: 'Variants'
+      sequence:
+        type: simple_sitemap_views_variant_settings
+
+simple_sitemap_views_variant_settings:
+  type: mapping
+  mapping:
     index:
       label: 'Index'
       type: boolean
-    variant:
-      label: 'Sitemap variant'
-      type: string
     priority:
       label: 'Priority'
       type: string

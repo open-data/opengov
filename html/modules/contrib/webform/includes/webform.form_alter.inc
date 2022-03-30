@@ -42,15 +42,17 @@ function webform_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     // the translation to the elements.
     if ($webform->getLangcode() !== $language_manager->getCurrentLanguage()->getId()) {
       $original_language = $language_manager->getLanguage($webform->getLangcode());
-      $form['langcode_message'] = [
-        '#type' => 'webform_message',
-        '#message_type' => 'warning',
-        '#message_message' => t('You are editing the original %language language for this webform.', ['%language' => $original_language->getName()]),
-        '#message_close' => TRUE,
-        '#message_storage' => WebformMessage::STORAGE_LOCAL,
-        '#message_id' => $webform->id() . '.original_language',
-        '#weight' => -100,
-      ];
+      if ($original_language) {
+        $form['langcode_message'] = [
+          '#type' => 'webform_message',
+          '#message_type' => 'warning',
+          '#message_message' => t('You are editing the original %language language for this webform.', ['%language' => $original_language->getName()]),
+          '#message_close' => TRUE,
+          '#message_storage' => WebformMessage::STORAGE_LOCAL,
+          '#message_id' => $webform->id() . '.original_language',
+          '#weight' => -100,
+        ];
+      }
     }
   }
 
@@ -83,9 +85,9 @@ function _webform_form_webform_submission_form_after_build($form, FormStateInter
   return $form;
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Update manager.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_form_FORM_ID_alter() for update manager update form.
@@ -131,9 +133,9 @@ function webform_form_update_manager_update_form_alter(&$form, FormStateInterfac
   ];
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Views.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_form_FORM_ID_alter() for views exposed form.
@@ -149,9 +151,9 @@ function webform_form_views_exposed_form_alter(&$form, FormStateInterface $form_
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // SMTP.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_form_FORM_ID_alter() for SMTP admin settings form.
@@ -170,9 +172,9 @@ function _webform_form_smtp_admin_settings_submit(&$form, FormStateInterface $fo
   $email_provider->check();
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Configuration management.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_form_FORM_ID_alter() for config single import form.

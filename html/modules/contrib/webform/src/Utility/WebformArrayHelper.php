@@ -86,6 +86,21 @@ class WebformArrayHelper {
   }
 
   /**
+   * Determine if an array is multidimensional.
+   *
+   * @param array $array
+   *   An array.
+   *
+   * @return bool
+   *   TRUE if array is multidimensional.
+   *
+   * @see https://stackoverflow.com/questions/145337/checking-if-array-is-multidimensional-or-not
+   */
+  public static function isMultidimensional(array $array) {
+    return (count($array) !== count($array, COUNT_RECURSIVE));
+  }
+
+  /**
    * Get the first key in an array.
    *
    * @param array $array

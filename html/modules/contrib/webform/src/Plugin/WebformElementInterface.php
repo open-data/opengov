@@ -22,9 +22,9 @@ use Drupal\webform\WebformSubmissionInterface;
  */
 interface WebformElementInterface extends PluginInspectionInterface, PluginFormInterface, ContainerFactoryPluginInterface, WebformEntityInjectionInterface {
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Property methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get default properties.
@@ -79,9 +79,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function hasProperty($property_name);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Definition and meta data methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get the Webform element's form element class definition.
@@ -289,9 +289,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function getInfo();
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element relationship methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get related element types.
@@ -304,9 +304,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function getRelatedTypes(array $element);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element rendering methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Initialize an element to be displayed, rendered, or exported.
@@ -441,9 +441,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function getKey(array $element);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Display submission value methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Build an element as HTML element.
@@ -617,9 +617,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function isEmptyExcluded(array $element, array $options);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Preview method.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Generate a renderable preview of the element.
@@ -629,9 +629,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function preview();
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Test methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get test values for an element.
@@ -648,9 +648,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function getTestValues(array $element, WebformInterface $webform, array $options);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Table methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get element's table column(s) settings.
@@ -678,9 +678,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function formatTableColumn(array $element, WebformSubmissionInterface $webform_submission, array $options = []);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Export methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get an element's default export options.
@@ -750,9 +750,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function buildExportRecord(array $element, WebformSubmissionInterface $webform_submission, array $export_options);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // #states API methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get an element's supported states as options.
@@ -805,9 +805,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function getElementSelectorInputValue($selector, $trigger, array $element, WebformSubmissionInterface $webform_submission);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Operation methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Changes the values of an entity before it is created.
@@ -873,9 +873,9 @@ interface WebformElementInterface extends PluginInspectionInterface, PluginFormI
    */
   public function postDelete(array &$element, WebformSubmissionInterface $webform_submission);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element configuration methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get configuration form's off-canvas width.

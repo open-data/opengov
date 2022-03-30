@@ -5,6 +5,8 @@
  * Webform module drush commands.
  */
 
+use Drush\Drush;
+
 /**
  * Implements hook_drush_command().
  */
@@ -40,9 +42,9 @@ function webform_devel_drush_help($section) {
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Reset.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements drush_hook_COMMAND().
@@ -54,9 +56,9 @@ function drush_webform_devel_reset() {
     return drush_user_abort();
   }
 
-  drush_print(dt('Resetting message closed via State API…'));
+  Drush::output()->writeln(dt('Resetting message closed via State API…'));
   \Drupal::state()->delete('webform.element.message');
 
-  drush_print(dt('Resetting message closed via User Data…'));
+  Drush::output()->writeln(dt('Resetting message closed via User Data…'));
   \Drupal::service('user.data')->delete('webform', NULL, 'webform.element.message');
 }

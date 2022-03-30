@@ -80,7 +80,6 @@ elements: |
     checkboxes_description:
       '#type': checkboxes
       '#title': 'Checkboxes with descriptions'
-      '#options_description_display': description
       '#options':
         one: 'One -- This is a description.'
         two: 'Two -- This is a description.'
@@ -158,9 +157,6 @@ elements: |
     range:
       '#type': range
       '#title': Range
-      '#min': 0
-      '#max': 100
-      '#step': 1
       '#output': right
       '#output__field_prefix': $
       '#output__field_suffix': '.00'
@@ -239,7 +235,6 @@ elements: |
     webform_scale:
       '#type': webform_scale
       '#title': Scale
-      '#min': 1
       '#max': 10
       '#min_text': '1 = disagree'
       '#max_text': '10 = agree'
@@ -273,6 +268,8 @@ elements: |
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
+        filter:
+          type: _none
     entity_autocomplete_tags:
       '#type': entity_autocomplete
       '#title': 'Entity autocomplete tags'
@@ -280,6 +277,8 @@ elements: |
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
+        filter:
+          type: _none
       '#tags': true
     entity_autocomplete_multiple:
       '#type': entity_autocomplete
@@ -288,6 +287,8 @@ elements: |
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
+        filter:
+          type: _none
       '#multiple': true
     webform_entity_checkboxes:
       '#type': webform_entity_checkboxes
@@ -296,6 +297,8 @@ elements: |
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
+        filter:
+          type: _none
       '#options':
         1: Administrator
         0: Anonymous
@@ -306,6 +309,8 @@ elements: |
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
+        filter:
+          type: _none
       '#options':
         1: Administrator
         0: Anonymous
@@ -316,6 +321,8 @@ elements: |
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
+        filter:
+          type: _none
     webform_entity_select_multiple:
       '#type': webform_entity_select
       '#title': 'Entity select multiple'
@@ -323,6 +330,8 @@ elements: |
       '#selection_handler': 'default:user'
       '#selection_settings':
         include_anonymous: true
+        filter:
+          type: _none
       '#multiple': true
       '#select2': true
     webform_term_checkboxes:
@@ -349,8 +358,6 @@ elements: |
       webform_address:
         '#type': webform_address
         '#title': 'First address'
-        '#flexbox': false
-        '#title_display': above
       webform_same_address:
         '#type': webform_same
         '#title': 'Second address same as the first address'
@@ -361,8 +368,6 @@ elements: |
       webform_address_other:
         '#type': webform_address
         '#title': 'Second address'
-        '#flexbox': false
-        '#title_display': above
     webform_link_multiple:
       '#type': webform_link
       '#title': 'Link multiple'
@@ -378,10 +383,10 @@ elements: |
         last_name:
           '#type': textfield
           '#title': 'Last name'
-        gender:
+        sex:
           '#type': webform_select_other
-          '#options': gender
-          '#title': Gender
+          '#options': sex
+          '#title': Sex
         martial_status:
           '#type': webform_select_other
           '#options': marital_status
@@ -630,7 +635,6 @@ elements: |
       element_flex_1:
         '#type': textfield
         '#title': 'Element (Flex: 1)'
-        '#flex': 1
       element_flex_2:
         '#type': textfield
         '#title': 'Element (Flex: 2)'
@@ -668,7 +672,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -689,6 +693,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

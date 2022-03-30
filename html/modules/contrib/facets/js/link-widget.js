@@ -34,11 +34,11 @@
 
             // Add handler for clicks on widget links.
             $widgetLinks.on('click', clickHandler);
-          });
 
-        // We have to trigger attaching of behaviours, so that Facets JS API can
-        // register handlers on link widgets.
-        Drupal.attachBehaviors(context, Drupal.settings);
+            // We have to trigger attaching of behaviours, so that Facets JS API can
+            // register handlers on link widgets.
+            Drupal.attachBehaviors(this.parentNode, Drupal.settings);
+          });
       }
     }
   };

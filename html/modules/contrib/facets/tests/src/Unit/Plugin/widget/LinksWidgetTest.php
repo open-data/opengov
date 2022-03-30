@@ -6,7 +6,6 @@ use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\Plugin\facets\widget\LinksWidget;
 use Drupal\facets\Result\Result;
-use Prophecy\Argument;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
@@ -42,7 +41,7 @@ class LinksWidgetTest extends WidgetTestBase {
     $this->widget->setConfiguration(['show_numbers' => TRUE]);
     $output = $this->widget->build($facet);
 
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(4, $output['#items']);
 
     $expected_links = [
@@ -52,9 +51,9 @@ class LinksWidgetTest extends WidgetTestBase {
       $this->buildLinkAssertion('Alpaca', 'alpaca', $facet, 9),
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertInternalType('array', $output['#items'][$index]);
+      $this->assertSame('array', gettype($output['#items'][$index]));
       $this->assertEquals($value, $output['#items'][$index]['#title']);
-      $this->assertInternalType('array', $output['#items'][$index]['#title']);
+      $this->assertSame('array', gettype($output['#items'][$index]['#title']));
       $this->assertEquals('link', $output['#items'][$index]['#type']);
       $this->assertEquals(['facet-item'], $output['#items'][$index]['#wrapper_attributes']['class']);
     }
@@ -74,7 +73,7 @@ class LinksWidgetTest extends WidgetTestBase {
     $this->widget->setConfiguration(['show_numbers' => TRUE]);
     $output = $this->widget->build($facet);
 
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(4, $output['#items']);
 
     $expected_links = [
@@ -84,7 +83,7 @@ class LinksWidgetTest extends WidgetTestBase {
       $this->buildLinkAssertion('Alpaca', 'alpaca', $facet, 9, TRUE),
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertInternalType('array', $output['#items'][$index]);
+      $this->assertSame('array', gettype($output['#items'][$index]));
       $this->assertEquals($value, $output['#items'][$index]['#title']);
       $this->assertEquals('link', $output['#items'][$index]['#type']);
       if ($index === 0 || $index === 3) {
@@ -107,7 +106,7 @@ class LinksWidgetTest extends WidgetTestBase {
     $this->widget->setConfiguration(['show_numbers' => FALSE]);
     $output = $this->widget->build($facet);
 
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(4, $output['#items']);
 
     $expected_links = [
@@ -117,7 +116,7 @@ class LinksWidgetTest extends WidgetTestBase {
       $this->buildLinkAssertion('Alpaca', 'alpaca', $facet, 9, FALSE, FALSE),
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertInternalType('array', $output['#items'][$index]);
+      $this->assertSame('array', gettype($output['#items'][$index]));
       $this->assertEquals($value, $output['#items'][$index]['#title']);
       $this->assertEquals('link', $output['#items'][$index]['#type']);
       if ($index === 1) {
@@ -132,7 +131,7 @@ class LinksWidgetTest extends WidgetTestBase {
 
     $output = $this->widget->build($facet);
 
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(4, $output['#items']);
 
     $expected_links = [
@@ -142,7 +141,7 @@ class LinksWidgetTest extends WidgetTestBase {
       $this->buildLinkAssertion('Alpaca', 'alpaca', $facet, 9),
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertInternalType('array', $output['#items'][$index]);
+      $this->assertSame('array', gettype($output['#items'][$index]));
       $this->assertEquals($value, $output['#items'][$index]['#title']);
       $this->assertEquals('link', $output['#items'][$index]['#type']);
       if ($index === 1) {
@@ -168,7 +167,7 @@ class LinksWidgetTest extends WidgetTestBase {
     $this->widget->setConfiguration(['show_numbers' => TRUE]);
     $output = $this->widget->build($facet);
 
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(4, $output['#items']);
 
     $expected_links = [
@@ -178,7 +177,7 @@ class LinksWidgetTest extends WidgetTestBase {
       $this->buildLinkAssertion('Alpaca', 'alpaca', $facet, 9),
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertInternalType('array', $output['#items'][$index]);
+      $this->assertSame('array', gettype($output['#items'][$index]));
       $this->assertEquals($value, $output['#items'][$index]['#title']);
       $this->assertEquals('link', $output['#items'][$index]['#type']);
       if ($index === 1) {
@@ -200,7 +199,7 @@ class LinksWidgetTest extends WidgetTestBase {
 
     $output = $this->widget->build($facet);
 
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(4, $output['#items']);
 
     $request = new Request();
@@ -219,7 +218,7 @@ class LinksWidgetTest extends WidgetTestBase {
     $output = $this->widget->build($facet);
 
     // Check that we now have more results.
-    $this->assertInternalType('array', $output);
+    $this->assertSame('array', gettype($output));
     $this->assertCount(5, $output['#items']);
   }
 
@@ -266,7 +265,7 @@ class LinksWidgetTest extends WidgetTestBase {
       ->method('createInstance')
       ->willReturn($url_processor);
 
-    $storage = $this->getMock(EntityStorageInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
     $em = $this->getMockBuilder(EntityTypeManagerInterface::class)
       ->disableOriginalConstructor()
       ->getMock();

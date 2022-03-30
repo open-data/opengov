@@ -1,0 +1,10 @@
+name: 'Facets events test'
+type: module
+description: 'Facets events test'
+package: 'Testing'
+hidden: true
+core_version_requirement: ^8.8 || ^9
+# Information added by Drupal.org packaging script on 2021-05-12
+version: '8.x-1.8'
+project: 'facets'
+datestamp: 1620810021

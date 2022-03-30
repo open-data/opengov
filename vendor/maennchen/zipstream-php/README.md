@@ -5,7 +5,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/maennchen/ZipStream-PHP/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/maennchen/ZipStream-PHP/)
 [![Latest Stable Version](https://poser.pugx.org/maennchen/zipstream-php/v/stable)](https://packagist.org/packages/maennchen/zipstream-php)
 [![Total Downloads](https://poser.pugx.org/maennchen/zipstream-php/downloads)](https://packagist.org/packages/maennchen/zipstream-php)
-[![License](https://img.shields.io/github/license/maennchen/zipstream-php.svg)](LICENSE)
+[![Financial Contributors on Open Collective](https://opencollective.com/zipstream/all/badge.svg?label=financial+contributors)](https://opencollective.com/zipstream) [![License](https://img.shields.io/github/license/maennchen/zipstream-php.svg)](LICENSE)
 
 ## Overview
 
@@ -26,30 +26,30 @@ composer require maennchen/zipstream-php
 Here's a simple example:
 
 ```php
-# Autoload the dependencies
+// Autoload the dependencies
 require 'vendor/autoload.php';
 
-# enable output of HTTP headers
+// enable output of HTTP headers
 $options = new ZipStream\Option\Archive();
 $options->setSendHttpHeaders(true);
 
-# create a new zipstream object
+// create a new zipstream object
 $zip = new ZipStream\ZipStream('example.zip', $options);
 
-# create a file named 'hello.txt'
+// create a file named 'hello.txt'
 $zip->addFile('hello.txt', 'This is the contents of hello.txt');
 
-# add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
+// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
 $zip->addFileFromPath('some_image.jpg', 'path/to/image.jpg');
 
-# add a file named 'goodbye.txt' from an open stream resource
+// add a file named 'goodbye.txt' from an open stream resource
 $fp = tmpfile();
 fwrite($fp, 'The quick brown fox jumped over the lazy dog.');
 rewind($fp);
 $zip->addFileFromStream('goodbye.txt', $fp);
 fclose($fp);
 
-# finish the zip stream
+// finish the zip stream
 $zip->finish();
 ```
 
@@ -58,6 +58,18 @@ disable) the HTTP headers. It is also possible to specify the storage method whe
 the current default storage method is 'deflate' i.e files are stored with Compression mode 0x08.
 
 See the [Wiki](https://github.com/maennchen/ZipStream-PHP/wiki) for details.
+
+## Known issue
+
+The native Mac OS archive extraction tool might not open archives in some conditions. A workaround is to disable the Zip64 feature with the option `$opt->setEnableZip64(false)`. This limits the archive to 4 Gb and 64k files but will allow Mac OS users to open them without issue. See #116.
+
+The linux `unzip` utility might not handle properly unicode characters. It is recommended to extract with another tool like [7-zip](https://www.7-zip.org/). See #146.
+
+## Upgrade to version 2.0.0
+
+* Only the self opened streams will be closed (#139)
+If you were relying on ZipStream to close streams that the library didn't open,
+you'll need to close them yourself now.
 
 ## Upgrade to version 1.0.0
 
@@ -74,8 +86,38 @@ ZipStream-PHP is a collaborative project. Please take a look at the [CONTRIBUTIN
 
 ## About the Authors
 
-* Paul Duncan <pabs@pablotron.org> - http://pablotron.org/
-* Jonatan Männchen <jonatan@maennchen.ch> - http://commanders.ch
+* Paul Duncan <pabs@pablotron.org> - https://pablotron.org/
+* Jonatan Männchen <jonatan@maennchen.ch> - https://maennchen.dev
 * Jesse G. Donat <donatj@gmail.com> - https://donatstudios.com
-* Nicolas CARPi <nicolas.carpi@curie.fr> - https://www.elabftw.net
+* Nicolas CARPi <nico-git@deltablot.email> - https://www.deltablot.com
 * Nik Barham <nik@brokencube.co.uk> - https://www.brokencube.co.uk
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/maennchen/ZipStream-PHP/graphs/contributors"><img src="https://opencollective.com/zipstream/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/zipstream/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/zipstream"><img src="https://opencollective.com/zipstream/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/zipstream/contribute)]
+
+<a href="https://opencollective.com/zipstream/organization/0/website"><img src="https://opencollective.com/zipstream/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/1/website"><img src="https://opencollective.com/zipstream/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/2/website"><img src="https://opencollective.com/zipstream/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/3/website"><img src="https://opencollective.com/zipstream/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/4/website"><img src="https://opencollective.com/zipstream/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/5/website"><img src="https://opencollective.com/zipstream/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/6/website"><img src="https://opencollective.com/zipstream/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/7/website"><img src="https://opencollective.com/zipstream/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/8/website"><img src="https://opencollective.com/zipstream/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/zipstream/organization/9/website"><img src="https://opencollective.com/zipstream/organization/9/avatar.svg"></a>

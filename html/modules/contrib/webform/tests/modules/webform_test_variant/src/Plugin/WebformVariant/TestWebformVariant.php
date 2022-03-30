@@ -14,6 +14,7 @@ use Drupal\webform\WebformInterface;
  *   label = @Translation("Test"),
  *   category = @Translation("Test"),
  *   description = @Translation("Test of a webform variant."),
+ *   machine_name_replace = "-",
  * )
  */
 class TestWebformVariant extends WebformVariantBase {
@@ -79,9 +80,9 @@ class TestWebformVariant extends WebformVariantBase {
     return TRUE;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Debug and exception handlers.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Display debugging information.

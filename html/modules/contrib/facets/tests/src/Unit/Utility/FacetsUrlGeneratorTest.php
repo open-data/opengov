@@ -31,7 +31,8 @@ class FacetsUrlGeneratorTest extends UnitTestCase {
 
     $url_generator = new FacetsUrlGenerator($url_processor_plugin_manager, $etm->reveal());
 
-    $this->setExpectedException(\InvalidArgumentException::class, "The active filters passed in are invalid. They should look like: ['facet_id' => ['value1', 'value2']]");
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage("The active filters passed in are invalid. They should look like: ['facet_id' => ['value1', 'value2']]");
     $url_generator->getUrl([]);
   }
 
@@ -49,7 +50,8 @@ class FacetsUrlGeneratorTest extends UnitTestCase {
 
     $url_generator = new FacetsUrlGenerator($url_processor_plugin_manager, $etm->reveal());
 
-    $this->setExpectedException(\InvalidArgumentException::class, "The active filters passed in are invalid. They should look like: [imaginary => ['value1', 'value2']]");
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage("The active filters passed in are invalid. They should look like: [imaginary => ['value1', 'value2']]");
     $url_generator->getUrl(['imaginary' => 'unicorn']);
   }
 
@@ -68,7 +70,8 @@ class FacetsUrlGeneratorTest extends UnitTestCase {
 
     $url_generator = new FacetsUrlGenerator($url_processor_plugin_manager, $etm->reveal());
 
-    $this->setExpectedException(\InvalidArgumentException::class, 'The Facet imaginary could not be loaded.');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('The Facet imaginary could not be loaded.');
     $url_generator->getUrl(['imaginary' => ['unicorn']]);
   }
 

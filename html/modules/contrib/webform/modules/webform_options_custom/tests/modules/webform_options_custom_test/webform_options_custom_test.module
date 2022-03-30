@@ -19,7 +19,7 @@ function webform_options_custom_test_webform_load(array $entities) {
   $elements = $webform->getElementsDecodedAndFlattened();
   foreach ($elements as $element_key => $element) {
     if (isset($element['#url']) && strpos($element['#url'], '/') === FALSE) {
-      $element['#url'] = $base_url . '/' . drupal_get_path('module', 'webform_options_custom_test') . '/images/' . $element['#url'];
+      $element['#url'] = $base_url . '/' . \Drupal::service('extension.list.module')->getPath('webform_options_custom_test') . '/images/' . $element['#url'];
     }
     $webform->setElementProperties($element_key, $element);
   }

@@ -75,7 +75,7 @@ class WebformLikert extends WebformElementBase {
     return array_merge(parent::defineTranslatableProperties(), ['questions', 'answers', 'na_answer_text']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -103,7 +103,7 @@ class WebformLikert extends WebformElementBase {
       case 'raw':
         $items = [];
         foreach ($element['#questions'] as $question_key => $question_text) {
-          $answer_value = (isset($value[$question_key])) ? $value[$question_key] : NULL;
+          $answer_value = $value[$question_key] ?? NULL;
           $items[$question_key] = ['#markup' => "<b>$question_key:</b> $answer_value"];
         }
         return [
@@ -116,12 +116,12 @@ class WebformLikert extends WebformElementBase {
         // HTML emails.
         $header = [];
         $header['likert_question'] = [
-          'data' => WebformAccessibilityHelper::buildVisuallyHidden(t('Questions')),
+          'data' => WebformAccessibilityHelper::buildVisuallyHidden($this->t('Questions')),
           'align' => 'left',
           'width' => '40%',
         ];
         foreach ($element['#answers'] as $answer_value => $answer_text) {
-          list($answer_title) = WebformOptionsHelper::splitOption($answer_text);
+          [$answer_title] = WebformOptionsHelper::splitOption($answer_text);
           $header[$answer_value] = [
             'data' => $answer_title,
             'align' => 'center',
@@ -133,9 +133,9 @@ class WebformLikert extends WebformElementBase {
 
         $rows = [];
         foreach ($element['#questions'] as $question_key => $question_text) {
-          list($question_title) = WebformOptionsHelper::splitOption($question_text);
+          [$question_title] = WebformOptionsHelper::splitOption($question_text);
 
-          $question_value = (isset($value[$question_key])) ? $value[$question_key] : NULL;
+          $question_value = $value[$question_key] ?? NULL;
           $row = [];
           $row['likert_question'] = [
             'data' => $question_title,
@@ -167,8 +167,8 @@ class WebformLikert extends WebformElementBase {
       case 'list':
         $items = [];
         foreach ($element['#questions'] as $question_key => $question_text) {
-          list($question_title) = WebformOptionsHelper::splitOption($question_text);
-          $answer_value = (isset($value[$question_key])) ? $value[$question_key] : NULL;
+          [$question_title] = WebformOptionsHelper::splitOption($question_text);
+          $answer_value = $value[$question_key] ?? NULL;
           $answer_text = ($answer_value !== NULL) ? WebformOptionsHelper::getOptionText($answer_value, $element['#answers'], TRUE) : $this->t('[blank]');
           $items[$question_key] = [
             'question' => [
@@ -200,7 +200,7 @@ class WebformLikert extends WebformElementBase {
       case 'raw':
         $list = [];
         foreach ($element['#questions'] as $question_key => $question_label) {
-          $answer_value = (isset($value[$question_key])) ? $value[$question_key] : NULL;
+          $answer_value = $value[$question_key] ?? NULL;
           $list[] = "$question_key: $answer_value";
         }
         return implode(PHP_EOL, $list);
@@ -211,7 +211,7 @@ class WebformLikert extends WebformElementBase {
       case 'list':
         $list = [];
         foreach ($element['#questions'] as $question_key => $question_label) {
-          $answer_value = (isset($value[$question_key])) ? $value[$question_key] : NULL;
+          $answer_value = $value[$question_key] ?? NULL;
           $answer_text = WebformOptionsHelper::getOptionText($answer_value, $element['#answers'], TRUE);
           $list[] = "$question_label: $answer_text";
         }
@@ -274,7 +274,7 @@ class WebformLikert extends WebformElementBase {
 
     $record = [];
     foreach ($element['#questions'] as $question_key => $question_label) {
-      $answer_value = (isset($value[$question_key])) ? $value[$question_key] : NULL;
+      $answer_value = $value[$question_key] ?? NULL;
       if ($export_options['likert_answers_format'] === 'key') {
         $record[] = $answer_value;
       }
@@ -338,7 +338,7 @@ class WebformLikert extends WebformElementBase {
     if (isset($options['question_key'])) {
       $value = $this->getValue($element, $webform_submission);
       $question_key = $options['question_key'];
-      $question_value = (isset($value[$question_key])) ? $value[$question_key] : '';
+      $question_value = $value[$question_key] ?? '';
       return WebformOptionsHelper::getOptionText($question_value, $element['#answers'], TRUE);
     }
     else {

@@ -20,7 +20,7 @@ class WebformEntitySettingsAssetsForm extends WebformEntitySettingsBaseForm {
 
     $form['description'] = [
       '#type' => 'webform_message',
-      '#message_message' => $this->t('The below CSS and JavasScript will be loaded on all pages that references and loads this webform.'),
+      '#message_message' => $this->t('The below CSS and JavaScript will be loaded on all pages that reference and load this webform.'),
       '#message_type' => 'info',
       '#message_close' => TRUE,
       '#message_storage' => WebformMessage::STORAGE_SESSION,

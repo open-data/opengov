@@ -5,7 +5,6 @@ namespace Drupal\Tests\webform\FunctionalJavascript;
 use Drupal\Core\Test\AssertMailTrait;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\webform\Traits\WebformBrowserTestTrait;
-use Drupal\Tests\webform\Traits\WebformAssertLegacyTrait;
 use Drupal\Tests\webform\Traits\WebformWebDriverTestTrait;
 
 /**
@@ -15,7 +14,6 @@ abstract class WebformWebDriverTestBase extends WebDriverTestBase {
 
   use AssertMailTrait;
   use WebformBrowserTestTrait;
-  use WebformAssertLegacyTrait;
   use WebformWebDriverTestTrait;
 
   /**

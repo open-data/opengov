@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\webform\Functional\Access;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 
@@ -33,6 +32,8 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
   public function testAccessRules() {
     global $base_path;
 
+    $assert_session = $this->assertSession();
+
     /** @var \Drupal\webform\WebformAccessRulesManagerInterface $access_rules_manager */
     $access_rules_manager = \Drupal::service('webform.access_rules_manager');
     $default_access_rules = $access_rules_manager->getDefaultAccessRules();
@@ -49,15 +50,15 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
     $uid = $account->id();
     $rid = $account->getRoles(TRUE)[0];
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Test.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalLogin($account);
 
     // Check that user cannot access test form.
     $this->drupalGet("webform/$webform_id/test");
-    $this->assertResponse(403, 'Webform setting access denied for test rule.');
+    $assert_session->statusCodeEquals(403);
 
     // Assign user to 'test' access rule.
     $access_rules = [
@@ -71,17 +72,17 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
 
     // Check that user can access test form.
     $this->drupalGet("webform/$webform_id/test");
-    $this->assertResponse(200, 'Webform setting access for test rule.');
+    $assert_session->statusCodeEquals(200);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Administer.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check that user cannot access form settings.
     $this->drupalGet("admin/structure/webform/manage/$webform_id/settings");
-    $this->assertResponse(403, 'Webform setting access denied for administer rule.');
+    $assert_session->statusCodeEquals(403);
     $this->drupalGet("admin/structure/webform/manage/$webform_id/results/submissions");
-    $this->assertResponse(403, 'Webform submissions access denied for administer rule.');
+    $assert_session->statusCodeEquals(403);
 
     // Assign user to 'administer' access rule.
     $access_rules = [
@@ -95,20 +96,20 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
 
     // Check that user cannot access settings.
     $this->drupalGet("admin/structure/webform/manage/$webform_id/settings");
-    $this->assertResponse(200, 'Webform setting access allowed for administer rule.');
+    $assert_session->statusCodeEquals(200);
     $this->drupalGet("admin/structure/webform/manage/$webform_id/results/submissions");
-    $this->assertResponse(200, 'Webform submissions access allowed for administer rule.');
+    $assert_session->statusCodeEquals(200);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Create.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalLogout();
 
     // Check create authenticated/anonymous access.
     $webform->setAccessRules($default_access_rules)->save();
     $this->drupalGet('/webform/' . $webform->id());
-    $this->assertResponse(200, 'Webform create submission access allowed for anonymous/authenticated user.');
+    $assert_session->statusCodeEquals(200);
 
     // Revoke create from anonymous and authenticated roles.
     $access_rules = [
@@ -122,11 +123,11 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
 
     // Check create access denied.
     $this->drupalGet('/webform/' . $webform->id());
-    $this->assertResponse(403, 'Webform returns access denied');
+    $assert_session->statusCodeEquals(403);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Any.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $any_tests = [
       'webform/{webform}' => 'create',
@@ -146,7 +147,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       $path = str_replace('{webform_submission}', $sid, $path);
 
       $this->drupalGet($path);
-      $this->assertResponse(403, 'Webform returns access denied');
+      $assert_session->statusCodeEquals(403);
     }
 
     // Login.
@@ -158,7 +159,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       $path = str_replace('{webform_submission}', $sid, $path);
 
       $this->drupalGet($path);
-      $this->assertResponse(403, 'Webform returns access denied');
+      $assert_session->statusCodeEquals(403);
     }
 
     // Check any access rules by role, user id, and permission.
@@ -176,7 +177,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       ] + $default_access_rules;
       $webform->setAccessRules($access_rules)->save();
       $this->drupalGet($path);
-      $this->assertResponse(200, 'Webform allows access via role access rules');
+      $assert_session->statusCodeEquals(200);
 
       // Check access rule via user id.
       $access_rules = [
@@ -188,7 +189,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       ] + $default_access_rules;
       $webform->setAccessRules($access_rules)->save();
       $this->drupalGet($path);
-      $this->assertResponse(200, 'Webform allows access via user access rules');
+      $assert_session->statusCodeEquals(200);
 
       // Check access rule via 'access content'.
       $access_rules = [
@@ -200,12 +201,12 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       ] + $default_access_rules;
       $webform->setAccessRules($access_rules)->save();
       $this->drupalGet($path);
-      $this->assertResponse(200, "Webform allows access via permission access rules");
+      $assert_session->statusCodeEquals(200);
     }
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Own.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check own / user specific access rules.
     $access_rules = [
@@ -238,22 +239,22 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
 
     // Check no view previous submission message.
     $this->drupalGet('/webform/' . $webform->id());
-    $this->assertNoRaw('You have already submitted this webform.');
-    $this->assertNoRaw('View your previous submission');
+    $assert_session->responseNotContains('You have already submitted this webform.');
+    $assert_session->responseNotContains('View your previous submission');
 
     $sid = $this->postSubmission($webform);
 
     // Check view previous submission message.
     $this->drupalGet('/webform/' . $webform->id());
-    $this->assertRaw('You have already submitted this webform.');
-    $this->assertRaw("<a href=\"{$base_path}webform/{$webform_id}/submissions/{$sid}\">View your previous submission</a>.");
+    $assert_session->responseContains('You have already submitted this webform.');
+    $assert_session->responseContains("<a href=\"{$base_path}webform/{$webform_id}/submissions/{$sid}\">View your previous submission</a>.");
 
     $sid = $this->postSubmission($webform);
 
     // Check view previous submissions message.
     $this->drupalGet('/webform/' . $webform->id());
-    $this->assertRaw('You have already submitted this webform.');
-    $this->assertRaw("<a href=\"{$base_path}webform/{$webform_id}/submissions\">View your previous submissions</a>");
+    $assert_session->responseContains('You have already submitted this webform.');
+    $assert_session->responseContains("<a href=\"{$base_path}webform/{$webform_id}/submissions\">View your previous submissions</a>");
 
     // Check the new submission's view, update, and delete access for the user.
     $test_own = [
@@ -275,7 +276,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
       $path = str_replace('{webform_submission}', $sid, $path);
 
       $this->drupalGet($path);
-      $this->assertResponse($status_code, new FormattableMarkup('Webform @status_code access via own access rules.', ['@status_code' => ($status_code === 403 ? 'denies' : 'allows')]));
+      $assert_session->statusCodeEquals($status_code);
     }
 
     // Enable submission user duplicate.
@@ -284,13 +285,13 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
 
     // Check enable user submission duplicate.
     $this->drupalGet("webform/$webform_id/submissions/$sid/duplicate");
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check disabled previous submissions messages.
     $webform->setSetting('form_previous_submissions', FALSE);
     $webform->save();
     $this->drupalGet('/webform/' . $webform->id());
-    $this->assertNoRaw('You have already submitted this webform.');
+    $assert_session->responseNotContains('You have already submitted this webform.');
   }
 
 }

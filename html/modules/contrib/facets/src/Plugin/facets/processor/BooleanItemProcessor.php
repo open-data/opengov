@@ -96,6 +96,13 @@ class BooleanItemProcessor extends ProcessorPluginBase implements BuildProcessor
    * {@inheritdoc}
    */
   public function supportsFacet(FacetInterface $facet) {
+    $field_identifier = $facet->getFieldIdentifier();
+    $facet_source = $facet->getFacetSource();
+    $field = $facet_source->getIndex()->getField($field_identifier);
+    if ($field->getType() == "boolean") {
+      return TRUE;
+    }
+
     $data_definition = $facet->getDataDefinition();
     if ($data_definition->getDataType() == "boolean") {
       return TRUE;

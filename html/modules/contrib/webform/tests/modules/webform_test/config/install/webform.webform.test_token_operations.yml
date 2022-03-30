@@ -40,7 +40,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -61,6 +61,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -122,9 +125,9 @@ settings:
   confirmation_type: page
   confirmation_title: ''
   confirmation_message: |
-    <p>You can view your submission via <a href="[webform_submission:view-url]">[webform_submission:view-url:relative]</a></p>
-    <p>You can update your submission via <a href="[webform_submission:update-url]">[webform_submission:update-url:relative]</a></p>
-    <p>You can delete your submission via <a href="[webform_submission:delete-url]">[webform_submission:delete-url:relative]</a></p>
+    <p>You can view your submission via <a href="[webform_submission:token-view-url]">[webform_submission:token-view-url:relative]</a></p>
+    <p>You can update your submission via <a href="[webform_submission:token-update-url]">[webform_submission:token-update-url:relative]</a></p>
+    <p>You can delete your submission via <a href="[webform_submission:token-delete-url]">[webform_submission:token-delete-url:relative]</a></p>
     
   confirmation_url: ''
   confirmation_attributes: {  }
@@ -225,9 +228,9 @@ handlers:
       from_name: _default
       subject: _default
       body: |
-        <a href="[webform_submission:view-url]">[webform_submission:view-url]</a><br/>
-        <a href="[webform_submission:update-url]">[webform_submission:update-url]</a><br/>
-        <a href="[webform_submission:delete-url]">[webform_submission:delete-url]</a>
+        <a href="[webform_submission:token-view-url]">[webform_submission:token-view-url]</a><br/>
+        <a href="[webform_submission:token-update-url]">[webform_submission:token-update-url]</a><br/>
+        <a href="[webform_submission:token-delete-url]">[webform_submission:token-delete-url]</a>
         
       excluded_elements: {  }
       ignore_access: false

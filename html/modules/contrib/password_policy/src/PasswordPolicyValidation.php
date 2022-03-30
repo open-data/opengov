@@ -9,11 +9,25 @@ namespace Drupal\password_policy;
  */
 class PasswordPolicyValidation {
 
-  protected $error = NULL;
+  /**
+   * Error message.
+   *
+   * @var string
+   */
+  protected $error = '';
+
+  /**
+   * Whether or not policy has an error.
+   *
+   * @var bool
+   */
   protected $valid = TRUE;
 
   /**
    * Set error message and mark as invalid.
+   *
+   * @param string $error
+   *   The error message.
    */
   public function setErrorMessage($error) {
     $this->valid = FALSE;

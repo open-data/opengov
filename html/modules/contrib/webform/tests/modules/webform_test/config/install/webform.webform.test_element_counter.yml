@@ -50,13 +50,12 @@ elements: |
       '#counter_maximum_message': '%d character(s) remaining. This is custom text'
     counter_characters_xss:
       '#type': textfield
-      '#title': 'counter_characters_xss'
+      '#title': counter_characters_xss
       '#counter_type': character
       '#counter_minimum': 5
       '#counter_maximum': 10
       '#counter_minimum_message': '<script>alert(''XSS'');</script><em>%d</em> character(s) entered.'
       '#counter_maximum_message': '<script>alert(''XSS'');</script><em>%d</em> character(s) remaining.'
-  
   counter_word:
     '#type': details
     '#title': counter_word
@@ -110,7 +109,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -131,6 +130,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -277,5 +279,7 @@ handlers:
     status: true
     conditions: {  }
     weight: 1
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

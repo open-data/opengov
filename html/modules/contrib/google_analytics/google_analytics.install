@@ -58,7 +58,42 @@ function google_analytics_requirements($phase) {
         'value' => t('Debugging enabled'),
       ];
     }
+
+    // Raise warning if php code is being used.
+    if ($config->get('visibility.request_path_mode') && $config->get('visibility.request_path_mode') === '2') {
+      $requirements['google_analytics_php'] = [
+        'title' => t('Google Analytics module'),
+        'description' => t('Using PHP code in Google Analytics is deprecated and not available in Drupal 9. You must move your logic into a custom module, and change the <a href=":url">Page Visibility settings</a> to suppress this message.', [':url' => Url::fromRoute('google_analytics.admin_settings_form')->toString()]),
+        'severity' => REQUIREMENT_ERROR,
+        'value' => t('PHP code exists'),
+      ];
+    }
   }
 
   return $requirements;
+}
+
+/**
+ * Migrate create only fields to gtag.js parameters.
+ */
+function google_analytics_update_8300() {
+  $config = \Drupal::configFactory()->getEditable('google_analytics.settings');
+  $create_only_fields = $config->get('codesnippet.create');
+  $parameters = [
+    'client_id' => $create_only_fields['clientId'],
+    'cookie_name' => $create_only_fields['cookieName'],
+    'cookie_domain' => $create_only_fields['cookieDomain'],
+    'cookie_expires' => $create_only_fields['cookieExpires'],
+    'sample_rate' => $create_only_fields['sampleRate'],
+    'site_speed_sample_rate' => $create_only_fields['siteSpeedSampleRate'],
+    'use_amp_client_id' => $create_only_fields['useAmpClientId'],
+    'user_id' => $create_only_fields['userId'],
+  ];
+  $parameters = array_filter($parameters);
+
+  $config
+    ->set('codesnippet.create', $parameters)
+    ->save();
+
+  return t('Migrated create only fields to gtag.js parameters.');
 }

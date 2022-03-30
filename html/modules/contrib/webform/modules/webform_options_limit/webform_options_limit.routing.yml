@@ -9,7 +9,7 @@ entity.webform_options_limit.summary:
         type: 'entity:webform'
   requirements:
     _entity_access: 'webform.submission_view_any'
-    _custom_access: '\Drupal\webform_options_limit\Controller\WebformOptionsLimitController::checkAccess'
+    _custom_access: '\Drupal\webform_options_limit\Access\WebformOptionsLimitAccess::checkAccess'
 
 # Webform node routes.
 # This route will be removed if the webform_node.module is not installed.
@@ -27,4 +27,4 @@ entity.node.webform_options_limit.summary:
       node:
         type: 'entity:node'
   requirements:
-    _custom_access: '\Drupal\webform_options_limit\Controller\WebformOptionsLimitController::checkNodeAccess'
+    _custom_access: '\Drupal\webform_options_limit\Access\WebformOptionsLimitAccess::checkNodeAccess'

@@ -1,4 +1,4 @@
-uuid: b754b5b4-0b50-4a42-a23c-30f95cd9870e
+uuid: null
 langcode: en
 status: open
 dependencies:
@@ -58,7 +58,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -79,6 +79,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -225,7 +228,9 @@ handlers:
     status: true
     conditions: {  }
     weight: -49
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
   email:
     id: email
     label: Email
@@ -264,5 +269,3 @@ handlers:
       theme_name: ''
       parameters: {  }
 variants: {  }
-_core:
-  default_config_hash: l67ofWFfSw0nP4K6ZBRppS9Dv_uBzGiAeEUKwW7-IwA

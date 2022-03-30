@@ -25,7 +25,7 @@ class WebformAccessBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   protected $type;
 
   /**
-   * Constructs a WebformAccessBreadcrumbBuilder.
+   * Constructs a WebformAccessBreadcrumbBuilder object.
    *
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation service.

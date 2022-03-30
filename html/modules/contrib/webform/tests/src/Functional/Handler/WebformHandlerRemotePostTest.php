@@ -38,11 +38,15 @@ class WebformHandlerRemotePostTest extends WebformBrowserTestBase {
    * Test remote post handler.
    */
   public function testRemotePostHandler() {
+    global $base_url;
+
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // POST.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_remote_post');
@@ -51,7 +55,7 @@ class WebformHandlerRemotePostTest extends WebformBrowserTestBase {
     $sid = $this->postSubmission($webform);
 
     // Check POST response.
-    $this->assertRaw("method: post
+    $assert_session->responseContains("method: post
 status: success
 message: 'Processed completed request.'
 options:
@@ -66,129 +70,127 @@ options:
     last_name: Smith");
 
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertRaw("form_params:
+    $assert_session->responseContains("form_params:
   custom_completed: true
   custom_data: true
   response_type: '200'
   first_name: John
   last_name: Smith");
-    $this->assertRaw('This is a custom 200 success message.');
+    $assert_session->responseContains('This is a custom 200 success message.');
 
     // Check confirmation number is set via the
     // [webform:handler:remote_post:completed:confirmation_number] token.
-    $this->assertRaw('Your confirmation number is ' . $webform_submission->getElementData('confirmation_number') . '.');
+    $assert_session->responseContains('Your confirmation number is ' . $webform_submission->getElementData('confirmation_number') . '.');
 
     // Check custom header.
-    $this->assertRaw('{&quot;headers&quot;:{&quot;Accept-Language&quot;:&quot;en&quot;,&quot;custom_header&quot;:&quot;true&quot;}');
+    $assert_session->responseContains('{&quot;headers&quot;:{&quot;Accept-Language&quot;:&quot;en&quot;,&quot;custom_header&quot;:&quot;true&quot;}');
 
     // Sleep for 1 second to make sure submission timestamp is updated.
     sleep(1);
 
     // Check 'updated' operation.
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_remote_post/submission/$sid/edit", [], 'Save');
-    $this->assertRaw("form_params:
+    $this->drupalGet("admin/structure/webform/manage/test_handler_remote_post/submission/$sid/edit");
+    $this->submitForm([], 'Save');
+    $assert_session->responseContains("form_params:
   custom_updated: true
   custom_data: true
   response_type: '200'
   first_name: John
   last_name: Smith");
-    $this->assertRaw('Processed updated request.');
+    $assert_session->responseContains('Processed updated request.');
 
     // Check 'deleted`' operation.
-    $this->drupalPostForm("admin/structure/webform/manage/test_handler_remote_post/submission/$sid/delete", [], 'Delete');
-    $this->assertRaw("form_params:
+    $this->drupalGet("admin/structure/webform/manage/test_handler_remote_post/submission/$sid/delete");
+    $this->submitForm([], 'Delete');
+    $assert_session->responseContains("form_params:
   custom_deleted: true
   custom_data: true
   first_name: John
   last_name: Smith
   response_type: '200'");
-    $this->assertRaw('Processed deleted request.');
+    $assert_session->responseContains('Processed deleted request.');
 
     // Switch anonymous user.
     $this->drupalLogout();
 
     // Check 'draft' operation.
     $this->postSubmission($webform, [], 'Save Draft');
-    $this->assertRaw("form_params:
+    $assert_session->responseContains("form_params:
   custom_draft_created: true
   custom_data: true
   response_type: '200'
   first_name: John
   last_name: Smith");
-    $this->assertRaw('Processed draft_created request.');
+    $assert_session->responseContains('Processed draft_created request.');
 
     // Login root user.
     $this->drupalLogin($this->rootUser);
 
     // Check 'convert' operation.
-    $this->assertRaw("form_params:
+    $assert_session->responseContains("form_params:
   custom_converted: true
   custom_data: true
   first_name: John
   last_name: Smith
   response_type: '200'");
-    $this->assertRaw('Processed converted request.');
-    $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
+    $assert_session->responseContains('Processed converted request.');
+    $assert_session->responseNotContains('Unable to process this submission. Please contact the site administrator.');
 
     // Check excluded data.
-    $handler = $webform->getHandler('remote_post');
-    $configuration = $handler->getConfiguration();
-    $configuration['settings']['excluded_data'] = [
-      'last_name' => 'last_name',
-    ];
-    $handler->setConfiguration($configuration);
+    $webform->getHandler('remote_post')
+      ->setSetting('excluded_data', [
+        'last_name' => 'last_name',
+      ]);
     $webform->save();
     $sid = $this->postSubmission($webform);
-    $this->assertRaw('first_name: John');
-    $this->assertNoRaw('last_name: Smith');
-    $this->assertRaw("sid: '$sid'");
-    $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
+    $assert_session->responseContains('first_name: John');
+    $assert_session->responseNotContains('last_name: Smith');
+    $assert_session->responseContains("sid: '$sid'");
+    $assert_session->responseNotContains('Unable to process this submission. Please contact the site administrator.');
 
     // Check 200 Success Error.
     $this->postSubmission($webform, ['response_type' => '200']);
-    $this->assertRaw('This is a custom 200 success message.');
-    $this->assertRaw('Processed completed request.');
+    $assert_session->responseContains('This is a custom 200 success message.');
+    $assert_session->responseContains('Processed completed request.');
 
     // Check 500 Internal Server Error.
     $this->postSubmission($webform, ['response_type' => '500']);
-    $this->assertNoRaw('Processed completed request.');
-    $this->assertRaw('Failed to process completed request.');
-    $this->assertRaw('Unable to process this submission. Please contact the site administrator.');
+    $assert_session->responseNotContains('Processed completed request.');
+    $assert_session->responseContains('Failed to process completed request.');
+    $assert_session->responseContains('Unable to process this submission. Please contact the site administrator.');
 
     // Check default custom response message.
     $handler = $webform->getHandler('remote_post');
-    $configuration = $handler->getConfiguration();
-    $configuration['settings']['message'] = 'This is a custom response message';
-    $handler->setConfiguration($configuration);
+    $handler->setSetting('message', 'This is a custom response message');
     $webform->save();
     $this->postSubmission($webform, ['response_type' => '500']);
-    $this->assertRaw('Failed to process completed request.');
-    $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
-    $this->assertRaw('This is a custom response message');
+    $assert_session->responseContains('Failed to process completed request.');
+    $assert_session->responseNotContains('Unable to process this submission. Please contact the site administrator.');
+    $assert_session->responseContains('This is a custom response message');
 
     // Check 201 Completed with no custom message.
     $this->postSubmission($webform, ['response_type' => '201']);
 
-    $this->assertNoRaw('Processed created request.');
-    $this->assertNoRaw('This is a custom 404 not found message.');
+    $assert_session->responseNotContains('Processed created request.');
+    $assert_session->responseNotContains('This is a custom 404 not found message.');
 
     // Check 404 Not Found with custom message.
     $this->postSubmission($webform, ['response_type' => '404']);
-    $this->assertRaw('File not found');
-    $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
-    $this->assertRaw('This is a custom 404 not found message.');
+    $assert_session->responseContains('File not found');
+    $assert_session->responseNotContains('Unable to process this submission. Please contact the site administrator.');
+    $assert_session->responseContains('This is a custom 404 not found message.');
 
     // Check 401 Unauthorized with custom message and token.
     $this->postSubmission($webform, ['response_type' => '401']);
-    $this->assertRaw('Unauthorized');
-    $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
-    $this->assertRaw('This is a message token <strong>Unauthorized to process completed request.</strong>');
+    $assert_session->responseContains('Unauthorized');
+    $assert_session->responseNotContains('Unable to process this submission. Please contact the site administrator.');
+    $assert_session->responseContains('This is a message token <strong>Unauthorized to process completed request.</strong>');
 
     // Check 405 Method Not Allowed with custom message and token.
     $this->postSubmission($webform, ['response_type' => '405']);
-    $this->assertRaw('Method Not Allowed');
-    $this->assertNoRaw('Unable to process this submission. Please contact the site administrator.');
-    $this->assertRaw('This is a array token <strong>[webform:handler:remote_post:options]</strong>');
+    $assert_session->responseContains('Method Not Allowed');
+    $assert_session->responseNotContains('Unable to process this submission. Please contact the site administrator.');
+    $assert_session->responseContains('This is a array token <strong>[webform:handler:remote_post:options]</strong>');
 
     // Disable saving of results.
     $webform->setSetting('results_disabled', TRUE);
@@ -199,24 +201,22 @@ options:
     $this->assertNull($sid);
 
     // Get confirmation number from JSON packet.
-    preg_match('/&quot;confirmation_number&quot;:&quot;([a-zA-z0-9]+)&quot;/', $this->getRawContent(), $match);
-    $this->assertRaw('Your confirmation number is ' . $match[1] . '.');
+    preg_match('/&quot;confirmation_number&quot;:&quot;([a-zA-z0-9]+)&quot;/', $this->getSession()->getPage()->getContent(), $match);
+    $assert_session->responseContains('Your confirmation number is ' . $match[1] . '.');
 
     // Set remote post error URL to homepage.
     $handler = $webform->getHandler('remote_post');
-    $configuration = $handler->getConfiguration();
-    $configuration['settings']['error_url'] = $webform->toUrl('canonical', ['query' => ['error' => '1']])->toString();
-    $handler->setConfiguration($configuration);
+    $handler->setSetting('error_url', $webform->toUrl('canonical', ['query' => ['error' => '1']])->toString());
     $webform->save();
 
     // Check 404 Not Found with custom error uri.
     $this->postSubmission($webform, ['response_type' => '404']);
-    $this->assertRaw('This is a custom 404 not found message.');
-    $this->assertUrl($webform->toUrl('canonical', ['query' => ['error' => '1']])->setAbsolute()->toString());
+    $assert_session->responseContains('This is a custom 404 not found message.');
+    $assert_session->addressEquals($webform->toUrl('canonical', ['query' => ['error' => '1']])->setAbsolute()->toString());
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // PUT.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_remote_put');
@@ -224,7 +224,7 @@ options:
     $this->postSubmission($webform);
 
     // Check PUT response.
-    $this->assertRaw("method: put
+    $assert_session->responseContains("method: put
 status: success
 message: 'Processed completed request.'
 options:
@@ -237,9 +237,9 @@ options:
     first_name: John
     last_name: Smith");
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // GET.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_remote_get');
@@ -247,7 +247,7 @@ options:
     $this->postSubmission($webform);
 
     // Check GET response.
-    $this->assertRaw("method: get
+    $assert_session->responseContains("method: get
 status: success
 message: 'Processed completed request.'
 options:
@@ -255,18 +255,18 @@ options:
     custom_header: 'true'");
 
     // Check request URL contains query string.
-    $this->assertRaw("http://webform-test-handler-remote-post/completed?custom_completed=1&amp;custom_data=1&amp;response_type=200&amp;first_name=John&amp;last_name=Smith");
+    $assert_session->responseContains("http://webform-test-handler-remote-post/completed?custom_completed=1&amp;custom_data=1&amp;response_type=200&amp;first_name=John&amp;last_name=Smith");
 
     // Check response data.
-    $this->assertRaw("message: 'Processed completed request.'");
+    $assert_session->responseContains("message: 'Processed completed request.'");
 
     // Get confirmation number from JSON packet.
-    preg_match('/&quot;confirmation_number&quot;:&quot;([a-zA-z0-9]+)&quot;/', $this->getRawContent(), $match);
-    $this->assertRaw('Your confirmation number is ' . $match[1] . '.');
+    preg_match('/&quot;confirmation_number&quot;:&quot;([a-zA-z0-9]+)&quot;/', $this->getSession()->getPage()->getContent(), $match);
+    $assert_session->responseContains('Your confirmation number is ' . $match[1] . '.');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // POST File.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_remote_post_file');
@@ -285,7 +285,7 @@ options:
     $files_uuid = $file->uuid();
 
     // Check the file name, uri, and data is appended to form params.
-    $this->assertRaw("form_params:
+    $assert_session->responseContains("form_params:
   file: 1
   files:
     - 2
@@ -296,12 +296,6 @@ options:
     mime: text/plain
     uuid: $file_uuid
     data: dGhpcyBpcyBhIHNhbXBsZSB0eHQgZmlsZQppdCBoYXMgdHdvIGxpbmVzCg==
-  file__id: $file_id
-  file__name: file.txt
-  file__uri: 'private://webform/test_handler_remote_post_file/$sid/file.txt'
-  file__mime: text/plain
-  file__uuid: $file_uuid
-  file__data: dGhpcyBpcyBhIHNhbXBsZSB0eHQgZmlsZQppdCBoYXMgdHdvIGxpbmVzCg==
   _files:
     -
       id: $files_id
@@ -311,12 +305,50 @@ options:
       uuid: $files_uuid
       data: dGhpcyBpcyBhIHNhbXBsZSB0eHQgZmlsZQppdCBoYXMgdHdvIGxpbmVzCg==");
 
-    /**************************************************************************/
+    // Check the file data is NOT appended to form params.
+    $handler = $webform->getHandler('remote_post');
+    $handler->setSetting('file_data', FALSE);
+    $webform->save();
+    $this->drupalGet("/admin/structure/webform/manage/test_handler_remote_post_file/submission/$sid/edit");
+    $this->submitForm([], 'Save');
+    $assert_session->responseContains("form_params:
+  file: 1
+  files:
+    - 2
+  _file:
+    id: $file_id
+    name: file.txt
+    uri: 'private://webform/test_handler_remote_post_file/$sid/file.txt'
+    mime: text/plain
+    uuid: $file_uuid
+  _files:
+    -
+      id: $files_id
+      name: files.txt
+      uri: 'private://webform/test_handler_remote_post_file/$sid/files.txt'
+      mime: text/plain
+      uuid: $files_uuid");
+
+    /* ********************************************************************** */
     // POST cast.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_remote_post_cast');
+
+    $this->postSubmission($webform);
+    $assert_session->responseContains("form_params:
+  boolean_true: true
+  integer: 100
+  float: 100.01
+  checkbox: false
+  number: ''
+  number_multiple: {  }
+  custom_composite:
+    -
+      textfield: ''
+      number: !!float 0
+      checkbox: false");
 
     $edit = [
       'checkbox' => TRUE,
@@ -327,7 +359,7 @@ options:
       'custom_composite[items][0][number]' => '20.5',
     ];
     $this->postSubmission($webform, $edit);
-    $this->assertRaw("form_params:
+    $assert_session->responseContains("form_params:
   boolean_true: true
   integer: 100
   float: 100.01
@@ -340,6 +372,17 @@ options:
       textfield: text
       checkbox: true
       number: 20.5");
+
+    /* ********************************************************************** */
+    // POST error.
+    /* ********************************************************************** */
+
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform = Webform::load('test_handler_remote_post_error');
+
+    $this->postSubmission($webform);
+
+    $this->assertEquals($base_url . '/error_url', $this->getUrl());
   }
 
 }

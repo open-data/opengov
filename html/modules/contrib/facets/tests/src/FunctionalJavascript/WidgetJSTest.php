@@ -134,26 +134,113 @@ class WidgetJSTest extends JsBase {
     // Make sure the block is shown on the page.
     $page = $this->getSession()->getPage();
     $block = $page->findById('block-llama-block');
-    $block->isVisible();
+    $this->assertTrue($block->isVisible());
 
-    // Narrow the context to the block that shows the facet and get objects that
-    // contain the <li>-html elements.
-    $list_items = $block->findAll('css', 'li');
+    // The checkboxes should be wrapped in a container with a CSS class that
+    // correctly identifies the widget type.
+    $this->assertCount(1, $block->findAll('css', 'div.facets-widget-checkbox ul'));
 
+    // The checkboxes should be wrapped in a list element that has the expected
+    // CSS classes to identify it as well as the data attributes that enable the
+    // JS functionality.
+    $this->assertCount(1, $block->findAll('css', 'ul.facet-inactive.item-list__checkbox.js-facets-widget.js-facets-checkbox-links'));
+    $this->assertCount(1, $block->findAll('css', 'ul[data-drupal-facet-id="llama"]'));
+    $this->assertCount(1, $block->findAll('css', 'ul[data-drupal-facet-alias="llama"]'));
+
+    // There should be two list items that can be identified by CSS class.
+    $list_items = $block->findAll('css', 'ul li.facet-item');
     $this->assertCount(2, $list_items);
 
-    /** @var \Behat\Mink\Element\NodeElement $list_item */
-    foreach ($list_items as $list_item) {
-      $this->assertEquals('li', $list_item->getTagName());
-      $list_item->find('css', 'label')->isVisible();
-      $list_item->find('css', 'input[type="checkbox"]')->isVisible();
-    }
+    // The list items should contain a checkbox, a label and a hidden link that
+    // leads to the updated search results. None of the checkboxes should be
+    // checked.
+    $expected = [
+      ['item', 3, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem', FALSE],
+      ['article', 2, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+    ];
+    $this->assertListItems($expected, $list_items);
 
-    // Check that clicking one of the checkboxes changes the url.
+    // Checking one of the checkboxes should cause a redirect to a page with
+    // updated search results.
     $checkbox = $page->findField('item (3)');
     $checkbox->click();
     $current_url = $this->getSession()->getCurrentUrl();
-    $this->assertTrue(strpos($current_url, 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem') !== FALSE);
+    $this->assertStringContainsString('search-api-test-fulltext?f%5B0%5D=llama%3Aitem', $current_url);
+
+    // Now the chosen keyword should be checked and the hidden links should be
+    // updated.
+    $expected = [
+      ['item', 3, base_path() . 'search-api-test-fulltext', TRUE],
+      ['article', 2, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+    ];
+    $this->assertListItems($expected, $block->findAll('css', 'ul li.facet-item'));
+
+    // Unchecking a checkbox should remove the keyword from the search.
+    $checkbox = $page->findField('item (3)');
+    $checkbox->click();
+    $current_url = $this->getSession()->getCurrentUrl();
+    $this->assertStringContainsString('search-api-test-fulltext', $current_url);
+    $expected = [
+      ['item', 3, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem', FALSE],
+      ['article', 2, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+    ];
+    $this->assertListItems($expected, $block->findAll('css', 'ul li.facet-item'));
+  }
+
+  /**
+   * Checks that the list items that wrap checkboxes are rendered correctly.
+   *
+   * @param array[] $expected
+   *   An array of expected properties, each an array with the following values:
+   *   - The expected checkbox value.
+   *   - The expected number of results, displayed in the checkbox label.
+   *   - The URI leading to the updated search results.
+   *   - A boolean indicating whether the checkbox is expected to be checked.
+   * @param \Behat\Mink\Element\NodeElement[] $list_items
+   *   The list items to check.
+   */
+  protected function assertListItems(array $expected, array $list_items): void {
+    $this->assertCount(count($expected), $list_items);
+
+    foreach ($expected as $key => [$keyword, $count, $uri, $selected]) {
+      $list_item = $list_items[$key];
+
+      // The list element should be visible.
+      $this->assertTrue($list_item->isVisible());
+
+      // It should contain 1 input element (the checkbox). It should have the
+      // expected ID and CSS class.
+      $item_id = "llama-{$keyword}";
+      $this->assertCount(1, $list_item->findAll('css', 'input'));
+      $this->assertCount(1, $list_item->findAll('css', "input#{$item_id}[type='checkbox'].facets-checkbox"));
+
+      // It should contain a label for the checkbox.
+      $labels = $list_item->findAll('css', "label[for=$item_id]");
+      $this->assertCount(1, $labels);
+      // The label should contain the search keyword and the result count. Since
+      // there can be multiple spaces or newlines between the keyword and the
+      // count, reduce them to a single space before asserting. The keyword and
+      // the count should be wrapped in elements with semantic classes.
+      $label = reset($labels);
+      $expected_text = "<span class=\"facet-item__value\">$keyword</span> <span class=\"facet-item__count\">($count)</span>";
+      $this->assertTrue($label->isVisible());
+      $this->assertEquals($expected_text, trim(preg_replace('/\s+/', ' ', $label->getHtml())));
+
+      // There should be a hidden link that leads to the updated search results.
+      // If a user checks a checkbox this hidden link is followed in JS.
+      $links = $list_item->findAll('css', 'a');
+      $this->assertCount(1, $links);
+      $link = reset($links);
+      // The link should not be visible.
+      $this->assertFalse($link->isVisible());
+      // The link should indicate that search engines shouldn't follow it.
+      $this->assertEquals('nofollow', $link->getAttribute('rel'));
+      // The link should have CSS classes that allow to attach our JS code.
+      $this->assertEquals($item_id, $link->getAttribute('data-drupal-facet-item-id'));
+      $this->assertEquals($keyword, $link->getAttribute('data-drupal-facet-item-value'));
+      // The link text should include the keyword as well as the count.
+      $this->assertStringContainsString($expected_text, trim(preg_replace('/\s+/', ' ', $link->getHtml())));
+    }
   }
 
   /**
@@ -171,6 +258,7 @@ class WidgetJSTest extends JsBase {
       'facet_source_id' => 'search_api:views_page__search_api_test_view__page_1',
       'field_identifier' => 'type',
       'empty_behavior' => ['behavior' => 'none'],
+      'show_only_one_result' => TRUE,
       'widget' => [
         'type' => 'dropdown',
         'config' => [
@@ -194,29 +282,94 @@ class WidgetJSTest extends JsBase {
     // Make sure the block is shown on the page.
     $page = $this->getSession()->getPage();
     $block = $page->findById('block-llama-block');
-    $block->isVisible();
+    $this->assertTrue($block->isVisible());
 
-    // Narrow the context to the block that shows the facet and get the
-    // <select>-html element.
+    // There should be a single select element in the block.
+    $this->assertCount(1, $block->findAll('css', 'select'));
+
+    // The select element should be wrapped in a container with a CSS class that
+    // correctly identifies the widget type.
+    $this->assertCount(1, $block->findAll('css', 'div.facets-widget-dropdown select'));
+
+    // The select element should have the expected CSS classes to identify it as
+    // well as the data attributes that enable the JS functionality.
+    $this->assertCount(1, $block->findAll('css', 'select.facet-inactive.item-list__dropdown.facets-dropdown.js-facets-widget.js-facets-dropdown'));
+    $this->assertCount(1, $block->findAll('css', 'select[data-drupal-facet-id="llama"]'));
+    $this->assertCount(1, $block->findAll('css', 'select[data-drupal-facet-alias="llama"]'));
+
+    // The select element should have an accessible label.
+    $this->assertCount(1, $block->findAll('css', 'select[aria-labelledby="facet_llama_label"]'));
+    $this->assertCount(1, $block->findAll('css', 'label#facet_llama_label'));
+    $this->assertEquals('Facet LLAMA', $block->find('css', 'label')->getHtml());
+
+    // The select element should be visible.
     $dropdown = $block->find('css', 'select');
-    $dropdown->isVisible();
+    $this->assertTrue($dropdown->isVisible());
 
-    $block->find('css', '.item-list__dropdown');
-    $block->isVisible();
-
+    // There should be 3 options in the expected order.
     $options = $dropdown->findAll('css', 'option');
-    $this->assertCount(3, $options);
 
-    // Check the default option.
-    $default = $options[0];
-    $default->isSelected();
-    $this->assertEquals('- All -', $default->getText());
+    $expected = [
+      // The first option is the default option, it doesn't have a value and it
+      // should be selected.
+      ['- All -', '', TRUE],
+      // The second option should have the expected option text, have the URI
+      // that points to the updated search result as the value, and is not
+      // selected.
+      [' item (3)', base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem', FALSE],
+      // The third option is similar.
+      [' article (2)', base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+    ];
+    $this->assertSelectOptions($expected, $options);
 
-    // Check that selecting one of the options changes the url.
+    // Selecting one of the options should cause a redirect to a page with
+    // updated search results.
     $dropdown->selectOption('item (3)');
     $this->getSession()->wait(6000, "window.location.search != ''");
     $current_url = $this->getSession()->getCurrentUrl();
-    $this->assertTrue(strpos($current_url, 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem') !== FALSE);
+    $this->assertStringContainsString('search-api-test-fulltext?f%5B0%5D=llama%3Aitem', $current_url);
+
+    // Now the clicked option should be selected and the URIs in the option
+    // values should be updated.
+    $dropdown = $block->find('css', 'select');
+    $this->assertTrue($dropdown->isVisible());
+    $options = $dropdown->findAll('css', 'option');
+
+    $expected = [
+      // The first option is the default option, it should point to the original
+      // search result (without any chosen facets) and should not be selected.
+      ['- All -', base_path() . 'search-api-test-fulltext', FALSE],
+      // The second option should now be selected, and since clicking it again
+      // would negate it, it should also link to the search page without any
+      // chosen facets.
+      [' item (3)', base_path() . 'search-api-test-fulltext', TRUE],
+      // The third option remains unchanged.
+      [' article (2)', base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+    ];
+    $this->assertSelectOptions($expected, $options);
+  }
+
+  /**
+   * Checks that the given select option elements have the selected properties.
+   *
+   * @param array[] $expected
+   *   An array of expected properties, each an array with the following values:
+   *   - The expected option text.
+   *   - The expected option value.
+   *   - A boolean indicating whether the option is expected to be selected.
+   * @param \Behat\Mink\Element\NodeElement[] $options
+   *   The list of options to check.
+   */
+  protected function assertSelectOptions(array $expected, array $options): void {
+    $this->assertCount(count($expected), $options);
+    foreach ($expected as $key => [$text, $value, $selected]) {
+      $option = $options[$key];
+      // There can be multiple spaces or newlines between the value text and the
+      // number of results. Reduce them to a single space before asserting.
+      $this->assertEquals($text, preg_replace('/\s+/', ' ', $option->getText()));
+      $this->assertEquals($value, $option->getValue());
+      $this->assertEquals($selected, $option->isSelected());
+    }
   }
 
 }

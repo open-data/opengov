@@ -66,9 +66,6 @@ class IndexTaskManager implements IndexTaskManagerInterface, EventSubscriberInte
    *   The current batch context.
    * @param \Drupal\Core\Config\ConfigImporter $config_importer
    *   The config importer.
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   *   Thrown if any error occurred while tracking items.
    */
   public static function processIndexTasks(&$context, ConfigImporter $config_importer) {
     $index_task_manager = \Drupal::getContainer()
@@ -169,11 +166,7 @@ class IndexTaskManager implements IndexTaskManagerInterface, EventSubscriberInte
    * {@inheritdoc}
    */
   public function startTracking(IndexInterface $index, array $datasource_ids = NULL) {
-    if (!isset($datasource_ids)) {
-      $datasource_ids = $index->getDatasourceIds();
-    }
-
-    foreach ($datasource_ids as $datasource_id) {
+    foreach ($datasource_ids ?? $index->getDatasourceIds() as $datasource_id) {
       $data = [
         'datasource' => $datasource_id,
         'page' => 0,

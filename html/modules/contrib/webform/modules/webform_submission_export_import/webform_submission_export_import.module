@@ -42,10 +42,10 @@ function webform_submission_export_import_local_tasks_alter(&$local_tasks) {
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // The below code is copy of _file_save_upload_single() which allows imported
 // files to be securely created.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Saves a file upload to a new location.
@@ -98,20 +98,20 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
       return FALSE;
 
     case UPLOAD_ERR_OK:
-      /************************************************************************/
+      // phpcs:disable
+      /* ******************************************************************** */
       // DO NOT USE IF UPLOADED FILE.
-      /************************************************************************/
-      /*
+      /* ******************************************************************** */
       // Final check that this is a valid upload, if it isn't, use the
       // default error handler.
-      if (is_uploaded_file($file_info->getRealPath())) {
-        break;
-      }
-      */
+      // if (is_uploaded_file($file_info->getRealPath())) {
+      //   break;
+      // }
+      // phpcs:enable
       break;
 
     default:
-      // Unknown error
+      // Unknown error.
       \Drupal::messenger()->addError(t('The file %file could not be saved. An unknown error has occurred.', ['%file' => $file_info->getFilename()]));
       return FALSE;
 
@@ -222,9 +222,10 @@ function _webform_submission_export_import_file_save_upload_single(\SplFileInfo 
 
   $file->setFileUri($file->destination);
 
-  /************************************************************************/
+  /* ******************************************************************** */
   // DO NOT USE MOVE UPLOADED FILE.
-  /************************************************************************/
+  /* ******************************************************************** */
+  // phpcs:ignore
   // if (!drupal_move_uploaded_file($file_info->getRealPath(), $file->getFileUri())) {
   if (!\Drupal::service('file_system')->move($file_info->getRealPath(), $file->getFileUri(), $replace)) {
     \Drupal::messenger()->addError(t('File upload error. Could not move uploaded file.'));

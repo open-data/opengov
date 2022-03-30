@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Client;
 
 use Solarium\Core\Configurable;
@@ -23,9 +30,9 @@ class Endpoint extends Configurable
         'host' => '127.0.0.1',
         'port' => 8983,
         'path' => '/',
+        'context' => 'solr',
         'collection' => null,
         'core' => null,
-        'timeout' => 5,
         'leader' => false,
     ];
 
@@ -39,7 +46,7 @@ class Endpoint extends Configurable
      */
     public function __toString()
     {
-        $output = __CLASS__.'::__toString'."\n".'host: '.$this->getHost()."\n".'port: '.$this->getPort()."\n".'path: '.$this->getPath()."\n".'collection: '.$this->getCollection()."\n".'core: '.$this->getCore()."\n".'timeout: '.$this->getTimeout()."\n".'authentication: '.print_r($this->getAuthentication(), 1);
+        $output = __CLASS__.'::__toString'."\n".'host: '.$this->getHost()."\n".'port: '.$this->getPort()."\n".'path: '.$this->getPath()."\n".'context: '.$this->getContext()."\n".'collection: '.$this->getCollection()."\n".'core: '.$this->getCore()."\n".'authentication: '.print_r($this->getAuthentication(), true);
 
         return $output;
     }
@@ -64,6 +71,7 @@ class Endpoint extends Configurable
     public function setKey(string $value): self
     {
         $this->setOption('key', $value);
+
         return $this;
     }
 
@@ -77,6 +85,7 @@ class Endpoint extends Configurable
     public function setHost(string $host): self
     {
         $this->setOption('host', $host);
+
         return $this;
     }
 
@@ -100,6 +109,7 @@ class Endpoint extends Configurable
     public function setPort(int $port): self
     {
         $this->setOption('port', $port);
+
         return $this;
     }
 
@@ -124,11 +134,8 @@ class Endpoint extends Configurable
      */
     public function setPath(string $path): self
     {
-        if ('/' === substr($path, -1)) {
-            $path = substr($path, 0, -1);
-        }
+        $this->setOption('path', rtrim($path, '/'));
 
-        $this->setOption('path', $path);
         return $this;
     }
 
@@ -143,6 +150,32 @@ class Endpoint extends Configurable
     }
 
     /**
+     * Set context option.
+     *
+     * If the context has a leading or trailing slash it will be removed.
+     *
+     * @param string $context
+     *
+     * @return self Provides fluent interface
+     */
+    public function setContext(string $context): self
+    {
+        $this->setOption('context', trim($context, '/'));
+
+        return $this;
+    }
+
+    /**
+     * Get context option.
+     *
+     * @return string|null
+     */
+    public function getContext(): ?string
+    {
+        return $this->getOption('context');
+    }
+
+    /**
      * Set collection option.
      *
      * @param string $collection
@@ -152,6 +185,7 @@ class Endpoint extends Configurable
     public function setCollection(string $collection): self
     {
         $this->setOption('collection', $collection);
+
         return $this;
     }
 
@@ -175,6 +209,7 @@ class Endpoint extends Configurable
     public function setCore(string $core): self
     {
         $this->setOption('core', $core);
+
         return $this;
     }
 
@@ -189,29 +224,6 @@ class Endpoint extends Configurable
     }
 
     /**
-     * Set timeout option.
-     *
-     * @param int $timeout
-     *
-     * @return self Provides fluent interface
-     */
-    public function setTimeout(int $timeout): self
-    {
-        $this->setOption('timeout', $timeout);
-        return $this;
-    }
-
-    /**
-     * Get timeout option.
-     *
-     * @return int|null
-     */
-    public function getTimeout(): ?int
-    {
-        return $this->getOption('timeout');
-    }
-
-    /**
      * Set scheme option.
      *
      * @param string $scheme
@@ -221,6 +233,7 @@ class Endpoint extends Configurable
     public function setScheme(string $scheme): self
     {
         $this->setOption('scheme', $scheme);
+
         return $this;
     }
 
@@ -239,17 +252,18 @@ class Endpoint extends Configurable
      *
      * Based on host, path, port and collection options.
      *
-     * @return string
-     *
      * @throws UnexpectedValueException
+     *
+     * @return string
      */
     public function getCollectionBaseUri(): string
     {
         $uri = $this->getServerUri();
+        $context = $this->getContext();
         $collection = $this->getCollection();
 
         if ($collection) {
-            $uri .= 'solr/'.$collection.'/';
+            $uri .= $context.'/'.$collection.'/';
         } else {
             throw new UnexpectedValueException('No collection set.');
         }
@@ -262,18 +276,19 @@ class Endpoint extends Configurable
      *
      * Based on host, path, port and core options.
      *
-     * @return string
-     *
      * @throws UnexpectedValueException
+     *
+     * @return string
      */
     public function getCoreBaseUri(): string
     {
         $uri = $this->getServerUri();
+        $context = $this->getContext();
         $core = $this->getCore();
 
         if ($core) {
             // V1 API
-            $uri .= 'solr/'.$core.'/';
+            $uri .= $context.'/'.$core.'/';
         } else {
             throw new UnexpectedValueException('No core set.');
         }
@@ -284,9 +299,9 @@ class Endpoint extends Configurable
     /**
      * Get the base url for all V1 API requests.
      *
-     * @return string
-     *
      * @throws UnexpectedValueException
+     *
+     * @return string
      */
     public function getBaseUri(): string
     {
@@ -304,21 +319,21 @@ class Endpoint extends Configurable
     /**
      * Get the base url for all V1 API requests.
      *
-     * @return string
-     *
      * @throws UnexpectedValueException
+     *
+     * @return string
      */
     public function getV1BaseUri(): string
     {
-        return $this->getServerUri().'solr/';
+        return $this->getServerUri().$this->getContext().'/';
     }
 
     /**
      * Get the base url for all V2 API requests.
      *
-     * @return string
-     *
      * @throws UnexpectedValueException
+     *
+     * @return string
      */
     public function getV2BaseUri(): string
     {
@@ -376,6 +391,7 @@ class Endpoint extends Configurable
     public function setLeader(bool $leader): self
     {
         $this->setOption('leader', $leader);
+
         return $this;
     }
 
@@ -393,8 +409,10 @@ class Endpoint extends Configurable
      * Initialization hook.
      *
      * In this case the path needs to be cleaned of trailing slashes.
+     * The context needs to be cleaned of leading and trailing slashes.
      *
      * @see setPath()
+     * @see setContext()
      */
     protected function init()
     {
@@ -402,6 +420,9 @@ class Endpoint extends Configurable
             switch ($name) {
                 case 'path':
                     $this->setPath($value);
+                    break;
+                case 'context':
+                    $this->setContext($value);
                     break;
             }
         }

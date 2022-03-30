@@ -68,7 +68,11 @@ class BulkFormTest extends BrowserTestBase {
     // Log in as a user with 'administer nodes' permission to have access to the
     // bulk operation.
     $this->drupalCreateContentType(['type' => 'page']);
-    $admin_user = $this->drupalCreateUser(['administer nodes', 'edit any page content', 'delete any page content']);
+    $admin_user = $this->drupalCreateUser([
+      'administer nodes',
+      'edit any page content',
+      'delete any page content',
+    ]);
     $this->drupalLogin($admin_user);
 
     $this->drupalGet('test_bulk_form');
@@ -113,7 +117,7 @@ class BulkFormTest extends BrowserTestBase {
 
     $this->drupalGet('test_bulk_form');
     $options = $this->xpath('//select[@id=:id]/option', [':id' => 'edit-action']);
-    $this->assertEqual(count($options), 2);
+    $this->assertCount(2, $options);
     $this->assertOption('edit-action', 'node_make_sticky_action');
     $this->assertOption('edit-action', 'node_make_unsticky_action');
 

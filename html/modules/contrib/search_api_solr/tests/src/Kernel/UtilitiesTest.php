@@ -65,6 +65,9 @@ class UtilitiesTest extends KernelTestBase {
     $this->assertEquals('text_de-CH-1901', Utility::decodeSolrName($encoded));
   }
 
+  /**
+   *
+   */
   public function testMergeDefaultIndexThirdPartySettings() {
     $third_party_settings = [
       'finalize' => TRUE,
@@ -133,6 +136,10 @@ class UtilitiesTest extends KernelTestBase {
           'limit_to_content_language' => TRUE,
           'include_language_independent' => TRUE,
         ],
+        'term_modifiers' => [
+          'slop' => 3,
+          'fuzzy' => 1,
+        ],
       ],
       search_api_solr_merge_default_index_third_party_settings($third_party_settings)
     );
@@ -147,4 +154,5 @@ class UtilitiesTest extends KernelTestBase {
 
     $this->assertEquals([], $highlighted_keys);
   }
+
 }

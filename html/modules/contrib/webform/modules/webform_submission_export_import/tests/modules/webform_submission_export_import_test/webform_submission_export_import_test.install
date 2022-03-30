@@ -10,7 +10,7 @@
  */
 function webform_submission_export_import_test_uninstall() {
   // Delete webform and external CSV import examples.
-  $files_path = drupal_get_path('module', 'webform_submission_export_import_test') . '/files';
+  $files_path = \Drupal::service('extension.list.module')->getPath('webform_submission_export_import_test') . '/files';
   $file_names = [
     'public://test_submission_export_import-webform.csv',
     'public://test_submission_export_import-external.csv',

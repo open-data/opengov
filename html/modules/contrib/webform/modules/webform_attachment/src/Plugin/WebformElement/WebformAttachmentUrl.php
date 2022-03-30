@@ -34,7 +34,7 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
     return array_merge(parent::defineTranslatableProperties(), ['url']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

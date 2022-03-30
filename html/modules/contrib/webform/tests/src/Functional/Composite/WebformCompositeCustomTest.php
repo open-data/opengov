@@ -22,34 +22,43 @@ class WebformCompositeCustomTest extends WebformBrowserTestBase {
    * Test custom composite element.
    */
   public function testCustom() {
+    $assert_session = $this->assertSession();
 
     /* Display */
 
     $this->drupalGet('/webform/test_composite_custom');
 
     // Check basic custom composite.
-    $this->assertRaw('<label>webform_custom_composite_basic</label>');
-    $this->assertRaw('<div id="webform_custom_composite_basic_table">');
-    $this->assertRaw('<div class="webform-multiple-table webform-multiple-table-responsive">');
-    $this->assertRaw('<th class="webform_custom_composite_basic-table--handle webform-multiple-table--handle"><span class="visually-hidden">Re-order</span></th>');
-    $this->assertRaw('<th class="webform_custom_composite_basic-table--first_name webform-multiple-table--first_name">First name</th>');
-    $this->assertRaw('<th class="webform_custom_composite_basic-table--last_name webform-multiple-table--last_name">Last name</th>');
-    $this->assertRaw('<th class="webform_custom_composite_basic-table--weight webform-multiple-table--weight">Weight</th>');
+    $assert_session->responseContains('<label>webform_custom_composite_basic</label>');
+    $assert_session->responseContains('<div id="webform_custom_composite_basic_table">');
+    $assert_session->responseContains('<div class="webform-multiple-table webform-multiple-table-responsive">');
+    $assert_session->responseContains('<th class="webform_custom_composite_basic-table--handle webform-multiple-table--handle"><span class="visually-hidden">Re-order</span></th>');
+    $assert_session->responseContains('<th class="webform_custom_composite_basic-table--first_name webform-multiple-table--first_name">First name</th>');
+    $assert_session->responseContains('<th class="webform_custom_composite_basic-table--last_name webform-multiple-table--last_name">Last name</th>');
+    $assert_session->responseContains('<th class="webform_custom_composite_basic-table--weight webform-multiple-table--weight">Weight</th>');
 
     // Check advanced custom composite.
-    $this->assertRaw('<span class="field-suffix"> yrs. old</span>');
+    $assert_session->responseContains('<span class="field-suffix"> yrs. old</span>');
+
+    // Check composite in fieldset.
+    $assert_session->responseContains('<fieldset class="fieldgroup form-composite js-webform-type-webform-custom-composite webform-type-webform-custom-composite js-form-item form-item js-form-wrapper form-wrapper" data-drupal-selector="edit-webform-custom-composite-fieldset" id="edit-webform-custom-composite-fieldset">');
+    $assert_session->responseContains('<span class="fieldset-legend">webform_custom_composite_fieldset</span>');
+
+    // Check composite in container.
+    $assert_session->responseContains('<div id="webform_custom_composite_container_table"><div class="custom-class js-form-wrapper form-wrapper" data-drupal-selector="edit-webform-custom-composite-container" id="edit-webform-custom-composite-container">');
 
     /* Processing */
 
     // Check contact composite value.
-    $this->drupalPostForm('/webform/test_composite_custom', [], 'Submit');
-    $this->assertRaw("webform_custom_composite_basic:
+    $this->drupalGet('/webform/test_composite_custom');
+    $this->submitForm([], 'Submit');
+    $assert_session->responseContains("webform_custom_composite_basic:
   - first_name: John
     last_name: Smith
 webform_custom_composite_advanced:
   - first_name: John
     last_name: Smith
-    gender: Male
+    sex: Male
     martial_status: Single
     employment_status: Unemployed
     age: '20'");

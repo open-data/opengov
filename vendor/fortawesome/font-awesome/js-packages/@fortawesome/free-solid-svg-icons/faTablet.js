@@ -4,9 +4,9 @@ var prefix = 'fas';
 var iconName = 'tablet';
 var width = 448;
 var height = 512;
-var ligatures = [];
-var unicode = 'f10a';
-var svgPathData = 'M400 0H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zM224 480c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z';
+var aliases = ["tablet-android"];
+var unicode = 'f3fb';
+var svgPathData = 'M384 0H64C28.65 0 0 28.65 0 64v384c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V64C448 28.65 419.3 0 384 0zM288 447.1C288 456.8 280.8 464 272 464H175.1C167.2 464 160 456.8 160 448S167.2 432 175.1 432h96C280.8 432 288 439.2 288 447.1z';
 
 exports.definition = {
   prefix: prefix,
@@ -14,7 +14,7 @@ exports.definition = {
   icon: [
     width,
     height,
-    ligatures,
+    aliases,
     unicode,
     svgPathData
   ]};
@@ -24,6 +24,7 @@ exports.prefix = prefix;
 exports.iconName = iconName;
 exports.width = width;
 exports.height = height;
-exports.ligatures = ligatures;
+exports.ligatures = aliases;
 exports.unicode = unicode;
 exports.svgPathData = svgPathData;
+exports.aliases = aliases;

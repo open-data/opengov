@@ -51,7 +51,7 @@ class WebformDateHelper {
    *
    * @see \Drupal\Core\Datetime\DateFormatterInterface::format
    */
-  public static function format($timestamp, $type = 'fallback', $format = '', $timezone = NULL, $langcode = NULL) {
+  public static function format($timestamp, $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL) {
     /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
     $date_formatter = \Drupal::service('date.formatter');
     return $timestamp ? $date_formatter->format($timestamp, $type, $format, $timezone, $langcode) : '';
@@ -149,7 +149,7 @@ class WebformDateHelper {
   public static function getIntervalText($interval) {
     $interval = ((string) $interval) ?: '';
     $intervals = self::getIntervalOptionsFlattened();
-    return (isset($intervals[$interval])) ? $intervals[$interval] : $intervals[''];
+    return $intervals[$interval] ?? $intervals[''];
   }
 
   /**
@@ -252,7 +252,7 @@ class WebformDateHelper {
 
     }
 
-    // M =	A short textual representation of a month, three letters.
+    // M = A short textual representation of a month, three letters.
     if (strpos($format, 'M') !== FALSE) {
       $month_names_abbr_untranslated = DateHelper::monthNamesAbbrUntranslated();
       $month_names_abbr_translated = DateHelper::monthNamesAbbr();

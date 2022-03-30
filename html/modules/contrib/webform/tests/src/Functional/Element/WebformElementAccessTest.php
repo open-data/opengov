@@ -30,6 +30,8 @@ class WebformElementAccessTest extends WebformElementBrowserTestBase {
    * Test element access.
    */
   public function testAccess() {
+    $assert_session = $this->assertSession();
+
     $normal_user = $this->drupalCreateUser([
       'access user profiles',
     ]);
@@ -52,7 +54,7 @@ class WebformElementAccessTest extends WebformElementBrowserTestBase {
 
     $webform = Webform::load('test_element_access');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check user from USER:1 to admin submission user.
     $elements = $webform->get('elements');
@@ -69,65 +71,65 @@ class WebformElementAccessTest extends WebformElementBrowserTestBase {
     // Check admins have 'administer webform element access' permission.
     $this->drupalLogin($this->rootUser);
     $this->drupalGet('/admin/structure/webform/manage/test_element_access/element/access_create_roles_anonymous/edit');
-    $this->assertFieldById('edit-properties-access-create-roles-anonymous', NULL);
+    $assert_session->fieldExists('edit-properties-access-create-roles-anonymous');
 
     // Check webform builder don't have 'administer webform element access'
     // permission.
     $this->drupalLogin($own_submission_user);
     $this->drupalGet('/admin/structure/webform/manage/test_element_access/element/access_create_roles_anonymous/edit');
-    $this->assertNoFieldById('edit-properties-access-create-roles-anonymous', NULL);
+    $assert_session->fieldNotExists('edit-properties-access-create-roles-anonymous');
 
     /* Create access */
 
     // Check anonymous role access.
     $this->drupalLogout();
     $this->drupalGet('/webform/test_element_access');
-    $this->assertFieldByName('access_create_roles_anonymous');
-    $this->assertNoFieldByName('access_create_roles_authenticated');
-    $this->assertNoFieldByName('access_create_users');
-    $this->assertNoFieldByName('access_create_permissions');
+    $assert_session->fieldExists('access_create_roles_anonymous');
+    $assert_session->fieldNotExists('access_create_roles_authenticated');
+    $assert_session->fieldNotExists('access_create_users');
+    $assert_session->fieldNotExists('access_create_permissions');
 
     // Check authenticated access.
     $this->drupalLogin($normal_user);
     $this->drupalGet('/webform/test_element_access');
-    $this->assertNoFieldByName('access_create_roles_anonymous');
-    $this->assertFieldByName('access_create_roles_authenticated');
-    $this->assertNoFieldByName('access_create_users');
-    $this->assertFieldByName('access_create_permissions');
+    $assert_session->fieldNotExists('access_create_roles_anonymous');
+    $assert_session->fieldExists('access_create_roles_authenticated');
+    $assert_session->fieldNotExists('access_create_users');
+    $assert_session->fieldExists('access_create_permissions');
 
     // Check admin user access.
     $this->drupalLogin($admin_submission_user);
     $this->drupalGet('/webform/test_element_access');
-    $this->assertNoFieldByName('access_create_roles_anonymous');
-    $this->assertFieldByName('access_create_roles_authenticated');
-    $this->assertFieldByName('access_create_users');
-    $this->assertFieldByName('access_create_permissions');
+    $assert_session->fieldNotExists('access_create_roles_anonymous');
+    $assert_session->fieldExists('access_create_roles_authenticated');
+    $assert_session->fieldExists('access_create_users');
+    $assert_session->fieldExists('access_create_permissions');
 
     /* Update access */
 
     // Check anonymous role access.
     $this->drupalLogout();
     $this->drupalGet($webform_submission->getTokenUrl());
-    $this->assertFieldByName('access_update_roles_anonymous');
-    $this->assertNoFieldByName('access_update_roles_authenticated');
-    $this->assertNoFieldByName('access_update_users');
-    $this->assertNoFieldByName('access_update_permissions');
+    $assert_session->fieldExists('access_update_roles_anonymous');
+    $assert_session->fieldNotExists('access_update_roles_authenticated');
+    $assert_session->fieldNotExists('access_update_users');
+    $assert_session->fieldNotExists('access_update_permissions');
 
     // Check authenticated role access.
     $this->drupalLogin($normal_user);
     $this->drupalGet("/webform/test_element_access/submissions/$sid/edit");
-    $this->assertNoFieldByName('access_update_roles_anonymous');
-    $this->assertFieldByName('access_update_roles_authenticated');
-    $this->assertNoFieldByName('access_update_users');
-    $this->assertFieldByName('access_update_permissions');
+    $assert_session->fieldNotExists('access_update_roles_anonymous');
+    $assert_session->fieldExists('access_update_roles_authenticated');
+    $assert_session->fieldNotExists('access_update_users');
+    $assert_session->fieldExists('access_update_permissions');
 
     // Check admin user access.
     $this->drupalLogin($admin_submission_user);
     $this->drupalGet("/admin/structure/webform/manage/test_element_access/submission/$sid/edit");
-    $this->assertNoFieldByName('access_update_roles_anonymous');
-    $this->assertFieldByName('access_update_roles_authenticated');
-    $this->assertFieldByName('access_update_users');
-    $this->assertFieldByName('access_update_permissions');
+    $assert_session->fieldNotExists('access_update_roles_anonymous');
+    $assert_session->fieldExists('access_update_roles_authenticated');
+    $assert_session->fieldExists('access_update_users');
+    $assert_session->fieldExists('access_update_permissions');
 
     /* View, Table, and Download access */
 
@@ -143,26 +145,26 @@ class WebformElementAccessTest extends WebformElementBrowserTestBase {
       // Check anonymous role access.
       $this->drupalLogout();
       $this->drupalGet($url['path'], $url['options']);
-      $this->assertRaw('access_view_roles (anonymous)');
-      $this->assertNoRaw('access_view_roles (authenticated)');
-      $this->assertNoRaw('access_view_users (USER:' . $admin_submission_user->id() . ')');
-      $this->assertNoRaw('access_view_permissions (access user profiles)');
+      $assert_session->responseContains('access_view_roles (anonymous)');
+      $assert_session->responseNotContains('access_view_roles (authenticated)');
+      $assert_session->responseNotContains('access_view_users (USER:' . $admin_submission_user->id() . ')');
+      $assert_session->responseNotContains('access_view_permissions (access user profiles)');
 
       // Check authenticated role access.
       $this->drupalLogin($this->rootUser);
       $this->drupalGet($url['path'], $url['options']);
-      $this->assertNoRaw('access_view_roles (anonymous)');
-      $this->assertRaw('access_view_roles (authenticated)');
-      $this->assertNoRaw('access_view_users (USER:' . $admin_submission_user->id() . ')');
-      $this->assertRaw('access_view_permissions (access user profiles)');
+      $assert_session->responseNotContains('access_view_roles (anonymous)');
+      $assert_session->responseContains('access_view_roles (authenticated)');
+      $assert_session->responseNotContains('access_view_users (USER:' . $admin_submission_user->id() . ')');
+      $assert_session->responseContains('access_view_permissions (access user profiles)');
 
       // Check admin user access.
       $this->drupalLogin($admin_submission_user);
       $this->drupalGet($url['path'], $url['options']);
-      $this->assertNoRaw('access_view_roles (anonymous)');
-      $this->assertRaw('access_view_roles (authenticated)');
-      $this->assertRaw('access_view_users (USER:' . $admin_submission_user->id() . ')');
-      $this->assertRaw('access_view_permissions (access user profiles)');
+      $assert_session->responseNotContains('access_view_roles (anonymous)');
+      $assert_session->responseContains('access_view_roles (authenticated)');
+      $assert_session->responseContains('access_view_users (USER:' . $admin_submission_user->id() . ')');
+      $assert_session->responseContains('access_view_permissions (access user profiles)');
     }
 
     /* Download token access */
@@ -181,22 +183,22 @@ class WebformElementAccessTest extends WebformElementBrowserTestBase {
       // Check anonymous role access.
       $this->drupalLogout();
       $this->drupalGet($url['path'], $url['options']);
-      $this->assertNoRaw($raw, 'Anonymous user can not access token');
+      $assert_session->responseNotContains($raw, 'Anonymous user can not access token');
 
       // Check authenticated role access.
       $this->drupalLogin($normal_user);
       $this->drupalGet($url['path'], $url['options']);
-      $this->assertNoRaw($raw, 'Authenticated user can not access token');
+      $assert_session->responseNotContains($raw, 'Authenticated user can not access token');
 
       // Check admin webform access.
       $this->drupalLogin($this->rootUser);
       $this->drupalGet($url['path'], $url['options']);
-      $this->assertRaw($raw, 'Admin webform user can access token');
+      $assert_session->responseContains($raw, 'Admin webform user can access token');
 
       // Check admin submission access.
       $this->drupalLogin($admin_submission_user);
       $this->drupalGet($url['path'], $url['options']);
-      $this->assertRaw($raw, 'Admin submission user can access token');
+      $assert_session->responseContains($raw, 'Admin submission user can access token');
     }
 
     /* #access */
@@ -212,15 +214,15 @@ class WebformElementAccessTest extends WebformElementBrowserTestBase {
 
     // Check that textfield and fieldset are removed from results.
     $this->drupalGet('/admin/structure/webform/manage/test_element_access/results/submissions');
-    $this->assertNoRaw('textfield_access_property');
-    $this->assertNoRaw('fieldset_access_property');
-    $this->assertRaw('fieldset_textfield_access');
+    $assert_session->responseNotContains('textfield_access_property');
+    $assert_session->responseNotContains('fieldset_access_property');
+    $assert_session->responseContains('fieldset_textfield_access');
 
     // Check that textfield and fieldset are removed from download.
     $this->drupalGet('/admin/structure/webform/manage/test_element_access/results/download');
-    $this->assertNoRaw('textfield_access_property');
-    $this->assertNoRaw('fieldset_access_property');
-    $this->assertRaw('fieldset_textfield_access');
+    $assert_session->responseNotContains('textfield_access_property');
+    $assert_session->responseNotContains('fieldset_access_property');
+    $assert_session->responseContains('fieldset_textfield_access');
   }
 
 }

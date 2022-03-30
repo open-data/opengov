@@ -243,6 +243,27 @@ interface FacetInterface extends ConfigEntityInterface {
   public function setUseHierarchy($use_hierarchy);
 
   /**
+   * Returns the value of the keep_hierarchy_parents_active boolean.
+   *
+   * This will return true when the parent results of a hierarchical facet
+   * should be kept active when a child becomes active.
+   *
+   * @return bool
+   *   A boolean flag indicating if the parent results of a hierarchical facet
+   *   should be kept active when a child becomes active.
+   */
+  public function getKeepHierarchyParentsActive();
+
+  /**
+   * Sets the keep_hierarchy_parents_active.
+   *
+   * @param bool $keep_hierarchy_parents_active
+   *   A boolean flag indicating if the parent results of a hierarchical facet
+   *   should be kept active when a child becomes active.
+   */
+  public function setKeepHierarchyParentsActive($keep_hierarchy_parents_active);
+
+  /**
    * Returns the value of the expand_hierarchy boolean.
    *
    * This will return true when the results in the facet should be expanded in

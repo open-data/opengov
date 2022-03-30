@@ -190,6 +190,67 @@ class ExcludeSpecifiedItemsProcessorTest extends UnitTestCase {
   }
 
   /**
+   * Tests invert filtering happens for string filter.
+   */
+  public function testInvertStringFilter() {
+    $facet = new Facet([], 'facets_facet');
+    $facet->setResults($this->originalResults);
+    $facet->addProcessor([
+      'processor_id' => 'exclude_specified_items',
+      'weights' => [],
+      'settings' => [
+        'exclude' => 'alpaca',
+        'regex' => 0,
+        'invert' => 1,
+      ],
+    ]);
+    $this->processor->setConfiguration([
+      'exclude' => 'llama',
+      'regex' => 0,
+      'invert' => 1,
+    ]);
+    $filtered_results = $this->processor->build($facet, $this->originalResults);
+
+    $this->assertCount(1, $filtered_results);
+
+    foreach ($filtered_results as $result) {
+      $this->assertEquals('llama', $result->getDisplayValue());
+    }
+  }
+
+  /**
+   * Tests filtering happens for string filter.
+   */
+  public function testInvertMultiString() {
+    $facet = new Facet([], 'facets_facet');
+    $facet->setResults($this->originalResults);
+    $facet->addProcessor([
+      'processor_id' => 'exclude_specified_items',
+      'weights' => [],
+      'settings' => [
+        'exclude' => 'alpaca',
+        'regex' => 0,
+        'invert' => 1,
+      ],
+    ]);
+    $this->processor->setConfiguration([
+      'exclude' => 'llama,badger',
+      'regex' => 0,
+      'invert' => 1,
+    ]);
+    $filtered_results = $this->processor->build($facet, $this->originalResults);
+
+    $this->assertCount(2, $filtered_results);
+
+    $filtered_results_values = [];
+    foreach ($filtered_results as $result) {
+      $filtered_results_values[] = $result->getDisplayValue();
+    }
+    $this->assertContains('llama', $filtered_results_values);
+    $this->assertContains('badger', $filtered_results_values);
+  }
+
+  /**
    * Tests filtering happens for regex filter.
    *
    * @dataProvider provideRegexTests
@@ -214,7 +275,7 @@ class ExcludeSpecifiedItemsProcessorTest extends UnitTestCase {
     $this->assertCount(count($expected_results), $filtered_results);
 
     foreach ($filtered_results as $res) {
-      $this->assertTrue(in_array($res->getDisplayValue(), $expected_results));
+      $this->assertContains($res->getDisplayValue(), $expected_results);
     }
   }
 
@@ -312,7 +373,7 @@ class ExcludeSpecifiedItemsProcessorTest extends UnitTestCase {
    */
   public function testConfiguration() {
     $config = $this->processor->defaultConfiguration();
-    $this->assertEquals(['exclude' => '', 'regex' => 0], $config);
+    $this->assertEquals(['exclude' => '', 'regex' => 0, 'invert' => 0], $config);
   }
 
   /**

@@ -6,6 +6,8 @@ use Drupal\node\Entity\Node;
 use Drupal\webform\Entity\Webform;
 
 /**
+ * Test block caching.
+ *
  * These tests proof that the webform block which
  * renders the webform as a block provides the correct
  * cache tags / cache contexts so that cachability works.
@@ -53,30 +55,39 @@ class WebformBlockCacheTest extends WebformBrowserTestBase {
    * Test that an anonymous can visit the webform block and the page is cacheable.
    */
   public function testAnonymousVisitIsCacheable() {
+    $session = $this->getSession();
+    $assert_session = $this->assertSession();
+
     $this->drupalGet('/node/1');
-    $this->assertSession()->responseContains('Contact');
-    $this->assertEquals('MISS', $this->drupalGetHeader('X-Drupal-Cache'));
+    $assert_session->responseContains('Contact');
+    $this->assertEquals('MISS', $session->getResponseHeader('X-Drupal-Cache'));
     $this->drupalGet('/node/1');
-    $this->assertEquals('HIT', $this->drupalGetHeader('X-Drupal-Cache'));
+    $this->assertEquals('HIT', $session->getResponseHeader('X-Drupal-Cache'));
   }
 
   /**
    * Test that admin user can visit the page and the it is cacheable.
    */
   public function testAuthenticatedVisitIsCacheable() {
+    $session = $this->getSession();
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->authenticatedUser);
 
     $this->drupalGet('/node/1');
-    $this->assertSession()->responseContains('Contact');
-    $this->assertEquals('MISS', $this->drupalGetHeader('X-Drupal-Dynamic-Cache'));
+    $assert_session->responseContains('Contact');
+    $this->assertEquals('MISS', $session->getResponseHeader('X-Drupal-Dynamic-Cache'));
     $this->drupalGet('/node/1');
-    $this->assertEquals('HIT', $this->drupalGetHeader('X-Drupal-Dynamic-Cache'));
+    $this->assertEquals('HIT', $session->getResponseHeader('X-Drupal-Dynamic-Cache'));
   }
 
   /**
    * Test that if an Webform is access restricted the page can still be cached.
    */
   public function testAuthenticatedAndRestrictedVisitIsCacheable() {
+    $session = $this->getSession();
+    $assert_session = $this->assertSession();
+
     /** @var \Drupal\webform\WebformAccessRulesManagerInterface $access_rules_manager */
     $access_rules_manager = \Drupal::service('webform.access_rules_manager');
     $default_access_rules = $access_rules_manager->getDefaultAccessRules();
@@ -94,10 +105,10 @@ class WebformBlockCacheTest extends WebformBrowserTestBase {
     $this->drupalLogin($this->authenticatedUser);
 
     $this->drupalGet('/node/1');
-    $this->assertSession()->responseContains('Contact');
-    $this->assertEquals('MISS', $this->drupalGetHeader('X-Drupal-Dynamic-Cache'));
+    $assert_session->responseContains('Contact');
+    $this->assertEquals('MISS', $session->getResponseHeader('X-Drupal-Dynamic-Cache'));
     $this->drupalGet('/node/1');
-    $this->assertEquals('HIT', $this->drupalGetHeader('X-Drupal-Dynamic-Cache'));
+    $this->assertEquals('HIT', $session->getResponseHeader('X-Drupal-Dynamic-Cache'));
   }
 
 }

@@ -3,16 +3,20 @@
 namespace Drush\Commands\generate;
 
 use Consolidation\SiteProcess\Util\Escape;
+use DrupalCodeGenerator\Command\BaseGenerator;
+use DrupalCodeGenerator\Command\GeneratorInterface;
 use DrupalCodeGenerator\GeneratorDiscovery;
 use DrupalCodeGenerator\Helper\Dumper;
 use DrupalCodeGenerator\Helper\Renderer;
-use DrupalCodeGenerator\TwigEnvironment;
+use Drush\Boot\AutoloaderAwareInterface;
+use Drush\Boot\AutoloaderAwareTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Commands\generate\Helper\InputHandler;
 use Drush\Commands\generate\Helper\OutputHandler;
 use Drush\Commands\help\ListCommands;
-use Drush\Drush;
 use Drush\Drupal\DrushServiceModifier;
+use Drush\Drush;
+use Robo\ClassDiscovery\RelativeNamespaceDiscovery;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Filesystem\Filesystem;
@@ -20,8 +24,9 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * Drush generate command.
  */
-class GenerateCommands extends DrushCommands
+class GenerateCommands extends DrushCommands implements AutoloaderAwareInterface
 {
+    use AutoloaderAwareTrait;
 
     /**
      * Generate boilerplate code for modules/plugins/services etc.
@@ -102,7 +107,7 @@ class GenerateCommands extends DrushCommands
         $helperSet->set($dumper);
 
         $twig_loader = new \Twig_Loader_Filesystem();
-        $renderer = new Renderer(new TwigEnvironment($twig_loader));
+        $renderer = new Renderer(\dcg_get_twig_environment($twig_loader));
         $helperSet->set($renderer);
 
         $helperSet->set(new InputHandler());
@@ -126,7 +131,8 @@ class GenerateCommands extends DrushCommands
         }
 
         $global_paths = array_filter($global_paths, 'file_exists');
-        $global_generators =  $discovery->getGenerators($global_paths, '\Drush\Generators');
+        $global_generators_deprecated =  $discovery->getGenerators($global_paths, '\Drush\Generators');
+        $global_generators = $this->discoverPsr4Generators();
 
         $module_generators = [];
 
@@ -138,7 +144,13 @@ class GenerateCommands extends DrushCommands
         }
 
         /** @var \Symfony\Component\Console\Command\Command[] $generators */
-        $generators = array_merge($dcg_generators, $drush_generators, $global_generators, $module_generators);
+        $generators = array_merge(
+            $dcg_generators,
+            $drush_generators,
+            $global_generators,
+            $global_generators_deprecated,
+            $module_generators
+        );
 
         foreach ($generators as $generator) {
             $sub_names = explode(':', $generator->getName());
@@ -158,5 +170,26 @@ class GenerateCommands extends DrushCommands
 
         $application->setAutoExit(false);
         return $application;
+    }
+
+    protected function discoverPsr4Generators(): array
+    {
+        $generators = (new RelativeNamespaceDiscovery($this->autoloader()))
+          ->setRelativeNamespace('Drush\Generators')
+          ->setSearchPattern('/.*Generator\.php$/')
+          ->getClasses();
+
+        return array_map(
+            function (string $class): GeneratorInterface {
+                return new $class;
+            },
+            array_filter($generators, function (string $class): bool {
+                $reflectionClass = new \ReflectionClass($class);
+                return $reflectionClass->isSubclassOf(BaseGenerator::class)
+                  && !$reflectionClass->isAbstract()
+                  && !$reflectionClass->isInterface()
+                  && !$reflectionClass->isTrait();
+            })
+        );
     }
 }

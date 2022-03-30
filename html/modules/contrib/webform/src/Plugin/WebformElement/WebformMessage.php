@@ -43,7 +43,7 @@ class WebformMessage extends WebformMarkupBase {
     return array_merge(parent::defineTranslatableProperties(), ['message_message']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
