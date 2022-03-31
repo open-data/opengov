@@ -860,7 +860,6 @@ class ProcessorIntegrationTest extends FacetsTestBase {
       $hiddenProcessors = [
         'boolean_item',
         'translate_entity',
-        'translate_entity_aggregated_fields',
         'uid_to_username_callback',
       ];
       if (in_array($processor->getPluginId(), $hiddenProcessors)) {

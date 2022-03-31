@@ -6,7 +6,6 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
 use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Escape;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\FileStorage;
@@ -15,7 +14,6 @@ use Drupal\Core\Config\StorageInterface;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use Drush\Exec\ExecTrait;
-use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use Drush\Utils\FsUtils;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,26 +22,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Parser;
 use Webmozart\PathUtil\Path;
 
-class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteAliasManagerAwareInterface
+class ConfigCommands extends DrushCommands implements StdinAwareInterface
 {
     use StdinAwareTrait;
     use ExecTrait;
-    use SiteAliasManagerAwareTrait;
 
     /**
      * @var ConfigFactoryInterface
      */
     protected $configFactory;
-
-    /**
-     * @var StorageInterface
-     */
-    protected $configStorageExport;
-
-    /**
-     * @var \Drupal\Core\Config\ImportStorageTransformer
-     */
-    protected $importStorageTransformer;
 
     /**
      * @return ConfigFactoryInterface
@@ -57,56 +44,11 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
     /**
      * ConfigCommands constructor.
      * @param ConfigFactoryInterface $configFactory
-     * @param \Drupal\Core\Config\StorageInterface $configStorage
      */
-    public function __construct($configFactory, StorageInterface $configStorage)
+    public function __construct($configFactory)
     {
         parent::__construct();
         $this->configFactory = $configFactory;
-        $this->configStorage = $configStorage;
-    }
-
-    /**
-     * @param \Drupal\Core\Config\StorageInterface $exportStorage
-     */
-    public function setExportStorage(StorageInterface $exportStorage)
-    {
-        $this->configStorageExport = $exportStorage;
-    }
-
-    /**
-     * @return StorageInterface
-     */
-    public function getConfigStorageExport()
-    {
-        if (isset($this->configStorageExport)) {
-            return $this->configStorageExport;
-        }
-        return $this->configStorage;
-    }
-
-    /**
-     * @param \Drupal\Core\Config\ImportStorageTransformer $importStorageTransformer
-     */
-    public function setImportTransformer($importStorageTransformer)
-    {
-        $this->importStorageTransformer = $importStorageTransformer;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasImportTransformer()
-    {
-        return isset($this->importStorageTransformer);
-    }
-
-    /**
-     * @return \Drupal\Core\Config\ImportStorageTransformer
-     */
-    public function getImportTransformer()
-    {
-        return $this->importStorageTransformer;
     }
 
     /**
@@ -115,8 +57,8 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      * @command config:get
      * @validate-config-name
      * @interact-config-name
-     * @param $config_name The config object name, for example <info>system.site</info>.
-     * @param $key The config key, for example <info>page.front</info>. Optional.
+     * @param $config_name The config object name, for example "system.site".
+     * @param $key The config key, for example "page.front". Optional.
      * @option source The config storage source to read. Additional labels may be defined in settings.php.
      * @option include-overridden Apply module and settings.php overrides to values.
      * @usage drush config:get system.site
@@ -141,16 +83,14 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      * @command config:set
      * @validate-config-name
      * @todo @interact-config-name deferred until we have interaction for key.
-     * @param $config_name The config object name, for example <info>system.site</info>.
-     * @param $key The config key, for example <info>page.front</info>.
-     * @param $value The value to assign to the config key. Use <info>-</info> to read from STDIN.
-     * @option input-format Format to parse the object. Recognized values: <info>string</info>, <info>yaml</info>
+     * @param $config_name The config object name, for example "system.site".
+     * @param $key The config key, for example "page.front".
+     * @param $value The value to assign to the config key. Use '-' to read from STDIN.
+     * @option input-format Format to parse the object. Use "string" for string (default), and "yaml" for YAML.
      * @option value The value to assign to the config key (if any).
      * @hidden-options value
      * @usage drush config:set system.site page.front '/path/to/page'
-     *   Sets the given URL path as value for the config item with key <info>page.front</info> of <info>system.site</info> config object.
-     * @usage drush config:set system.site '[]'
-     *   Sets the given key to an empty array.
+     *   Sets the given URL path as value for the config item with key "page.front" of "system.site" config object.
      * @aliases cset,config-set
      */
     public function set($config_name, $key, $value = null, $options = ['input-format' => 'string', 'value' => self::REQ])
@@ -171,12 +111,6 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
             $data = $this->stdin()->contents();
         }
 
-
-        // Special handling for empty array.
-        if ($data == '[]') {
-            $data = [];
-        }
-
         // Now, we parse the value.
         switch ($options['input-format']) {
             case 'yaml':
@@ -184,7 +118,7 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
                 $data = $parser->parse($data, true);
         }
 
-        if (is_array($data) && !empty($data) && $this->io()->confirm(dt('Do you want to update or set multiple keys on !name config.', ['!name' => $config_name]))) {
+        if (is_array($data) && $this->io()->confirm(dt('Do you want to update or set multiple keys on !name config.', ['!name' => $config_name]))) {
             foreach ($data as $data_key => $value) {
                 $config->set("$key.$data_key", $value);
             }
@@ -210,7 +144,7 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      * @command config:edit
      * @validate-config-name
      * @interact-config-name
-     * @param $config_name The config object name, for example <info>system.site</info>.
+     * @param $config_name The config object name, for example "system.site".
      * @optionset_get_editor
      * @allow_additional_options config-import
      * @hidden-options source,partial
@@ -234,9 +168,9 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
         $temp_storage = new FileStorage($temp_dir);
         $temp_storage->write($config_name, $contents);
 
-        // Note that `getEditor()` returns a string that contains a
+        // Note that `drush_get_editor` returns a string that contains a
         // %s placeholder for the config file path.
-        $exec = self::getEditor();
+        $exec = drush_get_editor();
         $cmd = sprintf($exec, Escape::shellArg($temp_storage->getFilePath($config_name)));
         $process = $this->processManager()->shell($cmd);
         $process->setTty(true);
@@ -244,9 +178,8 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
 
         // Perform import operation if user did not immediately exit editor.
         if (!$options['bg']) {
-            $redispatch_options = Drush::redispatchOptions() + ['strict' => 0, 'partial' => true, 'source' => $temp_dir];
-            $self = $this->siteAliasManager()->getSelf();
-            $process = $this->processManager()->drush($self, 'config-import', [], $redispatch_options);
+            $redispatch_options = Drush::redispatchOptions()   + ['partial' => true, 'source' => $temp_dir];
+            $process = $this->processManager()->drush(Drush::aliasManager()->getSelf(), 'config-import', [], $redispatch_options);
             $process->mustRun($process->showRealtime());
         }
     }
@@ -283,8 +216,8 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      *
      * @command config:status
      * @option state  A comma-separated list of states to filter results.
-     * @option prefix Prefix The config prefix. For example, <info>system</info>. No prefix will return all names in the system.
-     * @option string $label A config directory label (i.e. a key in $config_directories array in settings.php).
+     * @option prefix Prefix The config prefix. For example, "system". No prefix will return all names in the system.
+     * @option string $label A config directory label (i.e. a key in \$config_directories array in settings.php).
      * @usage drush config:status
      *   Display configuration items that need to be synchronized.
      * @usage drush config:status --state=Identical
@@ -293,8 +226,6 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      *   Display all content types that would be created in active storage on configuration import.
      * @usage drush config:status --state=Any --format=list
      *   List all config names.
-     * @usage drush config:status 2>&amp;1 | grep "No differences"
-     *   Check there are no differences between database and exported config. Useful for CI.
      * @field-labels
      *   name: Name
      *   state: State
@@ -356,18 +287,11 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
             ];
         }
 
-        if (!$rows) {
+        if ($rows) {
+            return new RowsOfFields($rows);
+        } else {
             $this->logger()->notice(dt('No differences between DB and sync directory.'));
-
-            // Suppress output if there are no differences and we are using the
-            // human readable "table" formatter so that we not uselessly output
-            // empty table headers.
-            if ($options['format'] === 'table') {
-                return null;
-            }
         }
-
-        return new RowsOfFields($rows);
     }
 
     /**
@@ -398,7 +322,7 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
             }
         } else {
             // If a directory isn't specified, use the label argument or default sync directory.
-            $return = \drush_config_get_config_directory($label ?: 'sync');
+            $return = \config_get_config_directory($label ?: CONFIG_SYNC_DIRECTORY);
         }
         return Path::canonicalize($return);
     }
@@ -408,11 +332,10 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      */
     public function getChanges($target_storage)
     {
-        if ($this->hasImportTransformer()) {
-            $target_storage = $this->getImportTransformer()->transform($target_storage);
-        }
+        /** @var StorageInterface $active_storage */
+        $active_storage = \Drupal::service('config.storage');
 
-        $config_comparer = new StorageComparer($this->configStorage, $target_storage);
+        $config_comparer = new StorageComparer($active_storage, $target_storage, \Drupal::service('config.manager'));
 
         $change_list = [];
         if ($config_comparer->createChangelist()->hasChanges()) {
@@ -428,7 +351,7 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      */
     public function getStorage($directory)
     {
-        if ($directory == Path::canonicalize(\drush_config_get_config_directory())) {
+        if ($directory == Path::canonicalize(\config_get_config_directory(CONFIG_SYNC_DIRECTORY))) {
             return \Drupal::service('config.storage.sync');
         } else {
             return new FileStorage($directory);
@@ -500,11 +423,6 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      */
     public function interactConfigLabel(InputInterface $input, ConsoleOutputInterface $output)
     {
-        if (drush_drupal_major_version() >= 9) {
-            // Nothing to do.
-            return;
-        }
-
         global $config_directories;
 
         $option_name = $input->hasOption('destination') ? 'destination' : 'source';
@@ -546,7 +464,6 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
      *   The source config storage service.
      * @param StorageInterface $destination
      *   The destination config storage service.
-     * @throws \Exception
      */
     public static function copyConfig(StorageInterface $source, StorageInterface $destination)
     {
@@ -560,11 +477,7 @@ class ConfigCommands extends DrushCommands implements StdinAwareInterface, SiteA
 
         // Export all the configuration.
         foreach ($source->listAll() as $name) {
-            try {
-                $destination->write($name, $source->read($name));
-            } catch (\TypeError $e) {
-                throw new \Exception(dt('Source not found for @name.', ['@name' => $name]));
-            }
+            $destination->write($name, $source->read($name));
         }
 
         // Export configuration collections.

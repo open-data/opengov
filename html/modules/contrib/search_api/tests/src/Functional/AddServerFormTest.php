@@ -16,16 +16,9 @@ class AddServerFormTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'search_api',
   ];
-
-  /**
-   * The theme to install as the default for testing.
-   *
-   * @var string
-   */
-  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}

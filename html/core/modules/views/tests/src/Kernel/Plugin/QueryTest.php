@@ -44,7 +44,7 @@ class QueryTest extends ViewsKernelTestBase {
     $view->setDisplay();
 
     $view->initQuery();
-    $this->assertInstanceOf(QueryTestPlugin::class, $view->query);
+    $this->assertInstanceOf(QueryTestPlugin::class, $view->query, 'Make sure the right query plugin got instantiated.');
   }
 
   public function _testQueryExecute() {

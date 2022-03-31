@@ -6,7 +6,6 @@ use Composer\Util\Filesystem;
 use Drupal\Tests\Composer\Plugin\Scaffold\AssertUtilsTrait;
 use Drupal\Tests\Composer\Plugin\Scaffold\Fixtures;
 use Drupal\Tests\Composer\Plugin\Scaffold\ScaffoldTestResult;
-use Drupal\Tests\PhpunitCompatibilityTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -19,7 +18,6 @@ use PHPUnit\Framework\TestCase;
  */
 class ScaffoldTest extends TestCase {
   use AssertUtilsTrait;
-  use PhpunitCompatibilityTrait;
 
   /**
    * The root of this project.
@@ -184,7 +182,7 @@ class ScaffoldTest extends TestCase {
     $fixture_name = 'empty-fixture';
 
     $result = $this->scaffoldSut($fixture_name, FALSE, FALSE);
-    $this->assertStringContainsString('Nothing scaffolded because no packages are allowed in the top-level composer.json file', $result->scaffoldOutput());
+    $this->assertContains('Nothing scaffolded because no packages are allowed in the top-level composer.json file', $result->scaffoldOutput());
   }
 
   /**
@@ -192,8 +190,9 @@ class ScaffoldTest extends TestCase {
    */
   public function testProjectThatScaffoldsEmptyProject() {
     $fixture_name = 'project-allowing-empty-fixture';
+    $is_link = FALSE;
     $result = $this->scaffoldSut($fixture_name, FALSE, FALSE);
-    $this->assertStringContainsString('The allowed package fixtures/empty-fixture does not provide a file mapping for Composer Scaffold', $result->scaffoldOutput());
+    $this->assertContains('The allowed package fixtures/empty-fixture does not provide a file mapping for Composer Scaffold', $result->scaffoldOutput());
     $this->assertCommonDrupalAssetsWereScaffolded($result->docroot(), FALSE);
     $this->assertAutoloadFileCorrect($result->docroot());
   }
@@ -344,7 +343,7 @@ include __DIR__ . "/settings-custom-additions.php";',
    */
   public function testDrupalDrupalFileWasAppended($fixture_name, $is_link, $scaffold_file_path, $scaffold_file_contents, $scaffoldOutputContains) {
     $result = $this->scaffoldSut($fixture_name, $is_link, FALSE);
-    $this->assertStringContainsString($scaffoldOutputContains, $result->scaffoldOutput());
+    $this->assertContains($scaffoldOutputContains, $result->scaffoldOutput());
 
     $this->assertScaffoldedFile($result->docroot() . '/' . $scaffold_file_path, FALSE, $scaffold_file_contents);
     $this->assertCommonDrupalAssetsWereScaffolded($result->docroot(), $is_link);
@@ -423,7 +422,7 @@ include __DIR__ . "/settings-custom-additions.php";',
       $expected = "return require __DIR__ . '/../vendor/autoload.php';";
     }
 
-    $this->assertStringContainsString($expected, $contents);
+    $this->assertContains($expected, $contents);
   }
 
 }

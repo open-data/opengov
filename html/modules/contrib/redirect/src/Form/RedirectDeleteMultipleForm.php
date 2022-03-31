@@ -27,7 +27,7 @@ class RedirectDeleteMultipleForm extends ConfirmFormBase {
   /**
    * The private tempstore factory.
    *
-   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   * @var \Drupal\user\PrivateTempStoreFactory
    */
   protected $privateTempStoreFactory;
 

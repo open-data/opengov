@@ -74,7 +74,6 @@ class AssignmentInConditionUnitTest extends AbstractSniffUnitTest
             88 => 1,
             90 => 1,
             92 => 1,
-            95 => 1,
         ];
 
     }//end getWarningList()

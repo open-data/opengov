@@ -56,7 +56,7 @@ class BlockContentFieldFilterTest extends BlockContentTestBase {
     $this->blockContentInfos = [
       'en' => 'Food in Paris',
       'es' => 'Comida en Paris',
-      'fr' => 'Nourriture en Paris',
+      'fr' => 'Nouriture en Paris',
     ];
 
     // Create block_content with translations.

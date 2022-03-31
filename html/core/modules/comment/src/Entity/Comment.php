@@ -404,8 +404,7 @@ class Comment extends ContentEntityBase implements CommentInterface {
    * {@inheritdoc}
    */
   public function getAuthorName() {
-    // If their is a valid user id and the user entity exists return the label.
-    if ($this->get('uid')->target_id && $this->get('uid')->entity) {
+    if ($this->get('uid')->target_id) {
       return $this->get('uid')->entity->label();
     }
     return $this->get('name')->value ?: \Drupal::config('user.settings')->get('anonymous');
@@ -511,8 +510,8 @@ class Comment extends ContentEntityBase implements CommentInterface {
    */
   public static function preCreate(EntityStorageInterface $storage, array &$values) {
     if (empty($values['comment_type']) && !empty($values['field_name']) && !empty($values['entity_type'])) {
-      $fields = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions($values['entity_type']);
-      $values['comment_type'] = $fields[$values['field_name']]->getSetting('comment_type');
+      $field_storage = FieldStorageConfig::loadByName($values['entity_type'], $values['field_name']);
+      $values['comment_type'] = $field_storage->getSetting('comment_type');
     }
   }
 

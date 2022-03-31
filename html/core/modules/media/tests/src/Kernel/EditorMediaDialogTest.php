@@ -84,9 +84,9 @@ class EditorMediaDialogTest extends KernelTestBase {
     ]);
     $form_state->setRequestMethod('POST');
 
-    $form = EditorMediaDialog::create($this->container)
+    EditorMediaDialog::create($this->container)
       ->buildForm([], $form_state, $editor->reveal());
-    $this->assertNotNull($form, 'Form should have been built without errors.');
+    $this->pass('Form was built without errors.');
   }
 
 }

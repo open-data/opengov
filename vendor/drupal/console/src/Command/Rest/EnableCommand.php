@@ -16,6 +16,7 @@ use Drupal\rest\RestResourceConfigInterface;
 use Drupal\Console\Command\Shared\RestTrait;
 use Drupal\rest\Plugin\Type\ResourcePluginManager;
 use Drupal\Core\Authentication\AuthenticationCollector;
+use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
@@ -44,20 +45,31 @@ class EnableCommand extends ContainerAwareCommand
     protected $authenticationCollector;
 
     /**
+     * The entity manager.
+     *
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    /**
      * EnableCommand constructor.
      *
      * @param EntityTypeManagerInterface $entityTypeManager
      * @param ResourcePluginManager      $pluginManagerRest
      * @param AuthenticationCollector    $authenticationCollector
+     * @param EntityManager              $entity_manager
+     *   The entity manager.
      */
     public function __construct(
         EntityTypeManagerInterface $entityTypeManager,
         ResourcePluginManager $pluginManagerRest,
-        AuthenticationCollector $authenticationCollector
+        AuthenticationCollector $authenticationCollector,
+        EntityManager $entity_manager
     ) {
         $this->entityTypeManager = $entityTypeManager;
         $this->pluginManagerRest = $pluginManagerRest;
         $this->authenticationCollector = $authenticationCollector;
+        $this->entityManager = $entity_manager;
         parent::__construct();
     }
 
@@ -96,7 +108,7 @@ class EnableCommand extends ContainerAwareCommand
         $input->setArgument('resource-id', $resource_id);
 
         // Calculate states available by resource and generate the question.
-        $plugin = $this->pluginManagerRest->createInstance($resource_id);
+        $plugin = $this->pluginManagerRest->getInstance(['id' => $resource_id]);
 
         $methods = $plugin->availableMethods();
         $method = $this->getIo()->choice(
@@ -134,9 +146,9 @@ class EnableCommand extends ContainerAwareCommand
         );
 
         $format_resource_id = str_replace(':', '.', $resource_id);
-        $config = $this->entityTypeManager->getStorage('rest_resource_config')->load($format_resource_id);
+        $config = $this->entityManager->getStorage('rest_resource_config')->load($format_resource_id);
         if (!$config) {
-            $config = $this->entityTypeManager->getStorage('rest_resource_config')->create(
+            $config = $this->entityManager->getStorage('rest_resource_config')->create(
                 [
                 'id' => $format_resource_id,
                 'granularity' => RestResourceConfigInterface::METHOD_GRANULARITY,

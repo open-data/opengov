@@ -26,9 +26,6 @@ interface TaskManagerInterface {
   /**
    * Adds a new pending task.
    *
-   * In case this would duplicate an existing task, that existing task is
-   * returned instead.
-   *
    * @param string $type
    *   The type of task.
    * @param \Drupal\search_api\ServerInterface|null $server
@@ -39,7 +36,7 @@ interface TaskManagerInterface {
    *   (optional) Additional, type-specific data to save with the task.
    *
    * @return \Drupal\search_api\Task\TaskInterface
-   *   The new task, or an identical existing task.
+   *   The new task.
    */
   public function addTask($type, ServerInterface $server = NULL, IndexInterface $index = NULL, $data = NULL);
 

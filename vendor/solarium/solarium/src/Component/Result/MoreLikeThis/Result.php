@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Result\MoreLikeThis;
 
 use Solarium\Core\Query\DocumentInterface;
@@ -54,7 +47,7 @@ class Result implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Get Solr numFound.
+     * get Solr numFound.
      *
      * Returns the number of MLT documents found by Solr (this is NOT the
      * number of documents fetched from Solr!)
@@ -103,6 +96,6 @@ class Result implements \IteratorAggregate, \Countable
      */
     public function count(): int
     {
-        return \count($this->documents);
+        return count($this->documents);
     }
 }

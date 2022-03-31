@@ -1,15 +1,7 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Select\Query;
 
-use Solarium\Component\Analytics\Analytics;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Component\ComponentAwareQueryTrait;
 use Solarium\Component\Debug;
@@ -23,7 +15,6 @@ use Solarium\Component\MoreLikeThis;
 use Solarium\Component\QueryElevation;
 use Solarium\Component\QueryInterface;
 use Solarium\Component\QueryTrait;
-use Solarium\Component\QueryTraits\AnalyticsTrait;
 use Solarium\Component\QueryTraits\DebugTrait;
 use Solarium\Component\QueryTraits\DisMaxTrait;
 use Solarium\Component\QueryTraits\DistributedSearchTrait;
@@ -48,7 +39,6 @@ use Solarium\Core\Query\AbstractQuery;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\Exception\InvalidArgumentException;
-use Solarium\Exception\OutOfBoundsException;
 use Solarium\QueryType\Select\RequestBuilder;
 use Solarium\QueryType\Select\ResponseParser;
 use Solarium\QueryType\Select\Result\Document;
@@ -63,23 +53,22 @@ use Solarium\QueryType\Select\Result\Result;
  */
 class Query extends AbstractQuery implements ComponentAwareQueryInterface, QueryInterface
 {
-    use AnalyticsTrait;
     use ComponentAwareQueryTrait;
-    use DebugTrait;
-    use DisMaxTrait;
-    use DistributedSearchTrait;
-    use EDisMaxTrait;
-    use FacetSetTrait;
-    use GroupingTrait;
-    use HighlightingTrait;
     use MoreLikeThisTrait;
-    use QueryElevationTrait;
-    use QueryTrait;
-    use ReRankQueryTrait;
-    use SpatialTrait;
     use SpellcheckTrait;
-    use StatsTrait;
     use SuggesterTrait;
+    use DebugTrait;
+    use SpatialTrait;
+    use FacetSetTrait;
+    use DisMaxTrait;
+    use EDisMaxTrait;
+    use HighlightingTrait;
+    use GroupingTrait;
+    use DistributedSearchTrait;
+    use StatsTrait;
+    use QueryElevationTrait;
+    use ReRankQueryTrait;
+    use QueryTrait;
 
     /**
      * Solr sort mode descending.
@@ -145,10 +134,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      */
     protected $filterQueries = [];
 
-    /**
-     * @param array|null $options
-     */
-    public function __construct(array $options = null)
+    public function __construct($options = null)
     {
         $this->componentTypes = [
             ComponentAwareQueryInterface::COMPONENT_MORELIKETHIS => MoreLikeThis::class,
@@ -165,7 +151,6 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
             ComponentAwareQueryInterface::COMPONENT_STATS => Stats::class,
             ComponentAwareQueryInterface::COMPONENT_QUERYELEVATION => QueryElevation::class,
             ComponentAwareQueryInterface::COMPONENT_RERANKQUERY => ReRankQuery::class,
-            ComponentAwareQueryInterface::COMPONENT_ANALYTICS => Analytics::class,
         ];
 
         parent::__construct($options);
@@ -556,7 +541,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
 
         $key = $filterQuery->getKey();
 
-        if (null === $key || 0 === \strlen($key)) {
+        if (0 === \strlen($key)) {
             throw new InvalidArgumentException('A filterquery must have a key value');
         }
 
@@ -669,7 +654,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @param string $tag
      *
-     * @throws OutOfBoundsException
+     * @throws \Solarium\Exception\OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -688,7 +673,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @param array $tags
      *
-     * @throws OutOfBoundsException
+     * @throws \Solarium\Exception\OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -705,7 +690,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
     /**
      * Get all tagss.
      *
-     * @throws OutOfBoundsException
+     * @throws \Solarium\Exception\OutOfBoundsException
      *
      * @return array
      */
@@ -722,7 +707,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @param string $tag
      *
-     * @throws OutOfBoundsException
+     * @throws \Solarium\Exception\OutOfBoundsException
      *
      * @return $this
      */
@@ -739,7 +724,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
     /**
      * Remove all tags.
      *
-     * @throws OutOfBoundsException
+     * @throws \Solarium\Exception\OutOfBoundsException
      *
      * @return self Provides fluent interface
      */
@@ -760,7 +745,7 @@ class Query extends AbstractQuery implements ComponentAwareQueryInterface, Query
      *
      * @param array $tags
      *
-     * @throws OutOfBoundsException
+     * @throws \Solarium\Exception\OutOfBoundsException
      *
      * @return $this
      */

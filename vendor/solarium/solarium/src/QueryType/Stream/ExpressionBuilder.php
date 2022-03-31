@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Stream;
 
 use Solarium\Exception\InvalidArgumentException;
@@ -251,17 +244,17 @@ class ExpressionBuilder
      * @param string $name
      * @param array  $arguments
      *
-     * @throws InvalidArgumentException
-     *
      * @return string
+     *
+     * @throws InvalidArgumentException
      */
     public function __call(string $name, array $arguments): string
     {
         return $name.'('.implode(', ', array_filter($arguments, function ($value) {
-            if (\is_array($value) || (\is_object($value) && !method_exists($value, '__toString'))) {
+            if (is_array($value) || (is_object($value) && !method_exists($value, '__toString'))) {
                 throw new InvalidArgumentException('An expression argument must be a scalar value or an object that provides a __toString() method.');
             }
-            if (\is_string($value)) {
+            if (is_string($value)) {
                 $value = trim($value);
             }
             // Eliminate empty string arguments.
@@ -278,30 +271,29 @@ class ExpressionBuilder
      */
     public static function indent(string $expression): string
     {
-        $currentIndentation = 0;
-        $indentationStep = 2;
-        $indentedExpression = '';
-        $len = \strlen($expression);
+        $current_indentation = 0;
+        $indentation_step = 2;
+        $indented_expression = '';
+        $len = strlen($expression);
         for ($c = 0; $c < $len; ++$c) {
             if ('(' === $expression[$c]) {
-                $indentedExpression .= $expression[$c].PHP_EOL;
-                $currentIndentation += $indentationStep;
-                $indentedExpression .= str_pad('', $currentIndentation);
+                $indented_expression .= $expression[$c].PHP_EOL;
+                $current_indentation += $indentation_step;
+                $indented_expression .= str_pad('', $current_indentation);
             } elseif (')' === $expression[$c]) {
-                $currentIndentation -= $indentationStep;
-                $indentedExpression .= PHP_EOL;
-                $indentedExpression .= str_pad('', $currentIndentation).$expression[$c];
+                $current_indentation -= $indentation_step;
+                $indented_expression .= PHP_EOL;
+                $indented_expression .= str_pad('', $current_indentation).$expression[$c];
             } elseif (',' === $expression[$c]) {
-                $indentedExpression .= $expression[$c].PHP_EOL.str_pad('', $currentIndentation);
+                $indented_expression .= $expression[$c].PHP_EOL.str_pad('', $current_indentation);
                 // swallow space if any
                 if (' ' === @$expression[$c + 1]) {
                     ++$c;
                 }
             } else {
-                $indentedExpression .= $expression[$c];
+                $indented_expression .= $expression[$c];
             }
         }
-
-        return $indentedExpression;
+        return $indented_expression;
     }
 }

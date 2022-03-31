@@ -62,7 +62,7 @@ class KeyValueContentEntityStorageTest extends KernelTestBase {
       $this->fail('EntityMalformedException was thrown.');
     }
     catch (EntityMalformedException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('EntityMalformedException was thrown.');
     }
 
     // Verify that an empty entity cannot be saved.
@@ -71,7 +71,7 @@ class KeyValueContentEntityStorageTest extends KernelTestBase {
       $this->fail('EntityMalformedException was thrown.');
     }
     catch (EntityMalformedException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('EntityMalformedException was thrown.');
     }
 
     // Verify that an entity with an empty ID string is considered empty, too.
@@ -84,7 +84,7 @@ class KeyValueContentEntityStorageTest extends KernelTestBase {
       $this->fail('EntityMalformedException was thrown.');
     }
     catch (EntityMalformedException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('EntityMalformedException was thrown.');
     }
 
     // Verify properties on a newly created entity.
@@ -108,6 +108,7 @@ class KeyValueContentEntityStorageTest extends KernelTestBase {
     // Verify that the entity can be saved.
     try {
       $status = $entity_test->save();
+      $this->pass('EntityMalformedException was not thrown.');
     }
     catch (EntityMalformedException $e) {
       $this->fail('EntityMalformedException was not thrown.');
@@ -142,7 +143,7 @@ class KeyValueContentEntityStorageTest extends KernelTestBase {
       $this->fail('Not possible to overwrite an entity entity.');
     }
     catch (EntityStorageException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Not possible to overwrite an entity entity.');
     }
 
     // Verify that renaming the ID returns correct status and properties.

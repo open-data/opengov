@@ -58,7 +58,7 @@ class DenormalizeTest extends NormalizerTestBase {
       $this->fail('Exception should be thrown when type is invalid.');
     }
     catch (UnexpectedValueException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Exception thrown when type is invalid.');
     }
 
     // No type.
@@ -70,7 +70,7 @@ class DenormalizeTest extends NormalizerTestBase {
       $this->fail('Exception should be thrown when no type is provided.');
     }
     catch (UnexpectedValueException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Exception thrown when no type is provided.');
     }
   }
 

@@ -25,14 +25,13 @@ class ViewsFieldTraitTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'field',
     'search_api',
     'search_api_test_example_content',
     'user',
     'system',
     'entity_test',
-    'filter',
     'text',
   ];
 
@@ -103,7 +102,7 @@ class ViewsFieldTraitTest extends KernelTestBase {
         'aggregated_field' => [
           'label' => 'Aggregated field',
           'property_path' => 'aggregated_field',
-          'type' => 'string',
+          'type' => 'text',
           'configuration' => [
             'type' => 'union',
             'fields' => [
@@ -124,7 +123,7 @@ class ViewsFieldTraitTest extends KernelTestBase {
     ]);
 
     $this->field = new ViewsTestField([], 'search_api', []);
-    /** @var \Drupal\search_api\Plugin\views\query\SearchApiQuery|\PHPUnit\Framework\MockObject\MockObject $query */
+    /** @var \Drupal\search_api\Plugin\views\query\SearchApiQuery|\PHPUnit_Framework_MockObject_MockObject $query */
     $query = $this->getMockBuilder(SearchApiQuery::class)
       ->disableOriginalConstructor()
       ->getMock();

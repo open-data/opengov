@@ -1,6 +1,6 @@
 uuid: 572e0ee7-61e6-4f28-91eb-650daf5e98eb
 langcode: en
-status: false
+status: true
 dependencies:
   config:
     - search_api_solr.solr_field_type.text_und_6_0_0

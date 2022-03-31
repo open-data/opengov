@@ -5,6 +5,7 @@ namespace Drupal\webform\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\webform\WebformHelpManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -37,12 +38,22 @@ class WebformHelpVideoForm extends FormBase {
   }
 
   /**
+   * Constructs a WebformHelpVideoForm object.
+   *
+   * @param \Drupal\webform\WebformHelpManagerInterface $help_manager
+   *   The webform help manager.
+   */
+  public function __construct(WebformHelpManagerInterface $help_manager) {
+    $this->helpManager = $help_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->helpManager = $container->get('webform.help_manager');
-    return $instance;
+    return new static(
+      $container->get('webform.help_manager')
+    );
   }
 
   /**
@@ -100,7 +111,7 @@ class WebformHelpVideoForm extends FormBase {
         ],
         '#attributes' => ['class' => ['button', 'button--primary']],
       ];
-      if ($this->getRequest()->query->get('more') && $this->currentUser()->hasPermission('access webform help')) {
+      if ($this->getRequest()->query->get('more')) {
         $form['modal_actions']['more'] = [
           '#type' => 'link',
           '#title' => $this->t('▶ Watch more videos'),

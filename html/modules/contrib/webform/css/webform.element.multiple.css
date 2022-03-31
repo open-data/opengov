@@ -20,11 +20,6 @@
   white-space: nowrap;
 }
 
-.webform-multiple-table td .webform-element-help--title,
-.webform-multiple-table td .webform-element-help--content {
-  white-space: normal;
-}
-
 .webform-multiple-table td .description,
 .webform-multiple-table td .messages,
 .webform-multiple-table td .form-item--error-message {
@@ -76,10 +71,10 @@
 }
 
 .webform-multiple-table td .container-inline select,
-.webform-multiple-table td.webform-has-field-prefix select,
-.webform-multiple-table td.webform-has-field-suffix select,
-.webform-multiple-table td.webform-has-field-prefix input,
-.webform-multiple-table td.webform-has-field-suffix input {
+.form-type-webform-multiple.webform-has-field-prefix td select,
+.form-type-webform-multiple.webform-has-field-suffix td select,
+.form-type-webform-multiple.webform-has-field-prefix td input,
+.form-type-webform-multiple.webform-has-field-suffix td input {
   width: auto;
 }
 
@@ -172,7 +167,6 @@
   }
 
   .webform-multiple-table-responsive tr {
-    position: relative;
     display: block;
     padding: 0.5em 0;
   }
@@ -192,10 +186,9 @@
     content: "";
   }
 
+  .webform-multiple-table-responsive td.webform-multiple-table--handle,
   .webform-multiple-table-responsive td.webform-multiple-table--operations {
-    position: absolute;
-    top: 0.75em;
-    right: 0;
+    display: none;
   }
 
   .webform-multiple-table-responsive td.webform-multiple-table--weight {

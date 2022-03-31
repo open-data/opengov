@@ -1,18 +1,11 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Exception;
 
 /**
  * StreamException exception for Solarium classes.
  */
-class StreamException extends \UnexpectedValueException implements RuntimeExceptionInterface
+class StreamException extends \UnexpectedValueException implements ExceptionInterface
 {
     /**
      * @var string the streaming expression
@@ -24,7 +17,7 @@ class StreamException extends \UnexpectedValueException implements RuntimeExcept
      *
      * @param string $expression
      */
-    public function setExpression(string $expression): void
+    public function setExpression(string $expression)
     {
         $this->expression = $expression;
     }

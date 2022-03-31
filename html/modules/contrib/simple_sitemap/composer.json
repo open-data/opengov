@@ -5,17 +5,18 @@
   "homepage": "https://drupal.org/project/simple_sitemap",
   "authors": [
     {
-      "name": "Pawel Ginalski (gbyte)",
-      "email": "contact@gbyte.dev",
-      "homepage": "https://www.drupal.org/u/gbyte",
+      "name": "Pawel Ginalski (gbyte.co)",
+      "email": "contact@gbyte.co",
+      "homepage": "https://www.drupal.org/u/gbyte.co",
       "role": "Maintainer"
     }
   ],
   "support": {
     "issues": "https://drupal.org/project/issues/simple_sitemap",
+    "irc": "irc://irc.freenode.org/drupal-contribute",
     "source": "https://cgit.drupalcode.org/simple_sitemap"
   },
-  "license": "GPL-2.0-or-later",
+  "license": "GPL-2.0+",
   "minimum-stability": "dev",
   "require": {
     "ext-xmlwriter": "*"
@@ -23,7 +24,7 @@
   "extra": {
     "drush": {
       "services": {
-        "drush.services.yml": "^9 || ^10"
+        "drush.services.yml": "^9"
       }
     }
   }

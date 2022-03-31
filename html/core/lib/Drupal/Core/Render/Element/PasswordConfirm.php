@@ -73,10 +73,7 @@ class PasswordConfirm extends FormElement {
       '#title' => t('Password'),
       '#value' => empty($element['#value']) ? NULL : $element['#value']['pass1'],
       '#required' => $element['#required'],
-      '#attributes' => [
-        'class' => ['password-field', 'js-password-field'],
-        'autocomplete' => ['new-password'],
-      ],
+      '#attributes' => ['class' => ['password-field', 'js-password-field']],
       '#error_no_message' => TRUE,
     ];
     $element['pass2'] = [
@@ -84,10 +81,7 @@ class PasswordConfirm extends FormElement {
       '#title' => t('Confirm password'),
       '#value' => empty($element['#value']) ? NULL : $element['#value']['pass2'],
       '#required' => $element['#required'],
-      '#attributes' => [
-        'class' => ['password-confirm', 'js-password-confirm'],
-        'autocomplete' => ['new-password'],
-      ],
+      '#attributes' => ['class' => ['password-confirm', 'js-password-confirm']],
       '#error_no_message' => TRUE,
     ];
     $element['#element_validate'] = [[get_called_class(), 'validatePasswordConfirm']];

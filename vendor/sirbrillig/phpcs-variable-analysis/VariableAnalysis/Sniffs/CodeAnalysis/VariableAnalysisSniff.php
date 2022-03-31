@@ -89,14 +89,6 @@ class VariableAnalysisSniff implements Sniff {
   public $allowUndefinedVariablesInFileScope = false;
 
   /**
-   *  If set, ignores unused variables in the file scope (the top-level
-   *  scope of a file).
-   *
-   *  @var bool
-   */
-  public $allowUnusedVariablesInFileScope = false;
-
-  /**
    *  A space-separated list of names of placeholder variables that you want to
    *  ignore from unused variable warnings. For example, to ignore the variables
    *  `$junk` and `$unused`, this could be set to `'junk unused'`.
@@ -937,18 +929,9 @@ class VariableAnalysisSniff implements Sniff {
       Helpers::debug('processVariableAsAssignment: found reference variable');
       $varInfo = $this->getOrCreateVariableInfo($varName, $currScope);
       // If the variable was already declared, but was not yet read, it is
-      // unused because we're about to change the binding; that is, unless we
-      // are inside a conditional block because in that case the condition may
-      // never activate.
+      // unused because we're about to change the binding.
       $scopeInfo = $this->getOrCreateScopeInfo($currScope);
-      $ifPtr = Helpers::getClosestIfPositionIfBeforeOtherConditions($tokens[$referencePtr]['conditions']);
-      $lastAssignmentPtr = $varInfo->firstDeclared;
-      if (! $ifPtr && $lastAssignmentPtr) {
-        $this->processScopeCloseForVariable($phpcsFile, $varInfo, $scopeInfo);
-      }
-      if ($ifPtr && $lastAssignmentPtr && $ifPtr <= $lastAssignmentPtr) {
-        $this->processScopeCloseForVariable($phpcsFile, $varInfo, $scopeInfo);
-      }
+      $this->processScopeCloseForVariable($phpcsFile, $varInfo, $scopeInfo);
       // The referenced variable may have a different name, but we don't
       // actually need to mark it as used in this case because the act of this
       // assignment will mark it used on the next token.
@@ -1496,21 +1479,19 @@ class VariableAnalysisSniff implements Sniff {
     foreach ($allAssignmentIndices as $index) {
       foreach ($blockIndices as $blockIndex) {
         $blockToken = $tokens[$blockIndex];
-        Helpers::debug('for variable inside else, looking at assignment', $index, 'at block index', $blockIndex, 'which is token', $blockToken);
+        Helpers::debug('looking at assignment', $index, 'at block index', $blockIndex, 'which is token', $blockToken);
         if (isset($blockToken['scope_opener']) && isset($blockToken['scope_closer'])) {
           $scopeOpener = $blockToken['scope_opener'];
           $scopeCloser = $blockToken['scope_closer'];
         } else {
-          // If the `if` statement has no scope, it is probably inline, which
-          // means its scope is from the end of the condition up until the next
-          // semicolon
-          $scopeOpener = isset($blockToken['parenthesis_closer']) ? $blockToken['parenthesis_closer'] : $blockIndex + 1;
+          // If the `if` statement has no scope, it is probably inline, which means its scope is up until the next semicolon
+          $scopeOpener = $blockIndex + 1;
           $scopeCloser = $phpcsFile->findNext([T_SEMICOLON], $scopeOpener);
           if (! $scopeCloser) {
             throw new \Exception("Cannot find scope for if condition block at index {$stackPtr} while examining variable {$varName}");
           }
         }
-        Helpers::debug('for variable inside else, looking at scope', $index, 'between', $scopeOpener, 'and', $scopeCloser);
+        Helpers::debug('looking at scope', $index, 'between', $scopeOpener, 'and', $scopeCloser);
         if (Helpers::isIndexInsideScope($index, $scopeOpener, $scopeCloser)) {
           $assignmentsInsideAttachedBlocks[] = $index;
         }
@@ -1518,10 +1499,8 @@ class VariableAnalysisSniff implements Sniff {
     }
 
     if (count($assignmentsInsideAttachedBlocks) === count($allAssignmentIndices)) {
-      if (! $varInfo->ignoreUndefined) {
-        Helpers::debug("variable $varName inside else looks undefined");
-        $this->warnAboutUndefinedVariable($phpcsFile, $varName, $stackPtr);
-      }
+      Helpers::debug("variable $varName inside else looks undefined");
+      $this->warnAboutUndefinedVariable($phpcsFile, $varName, $stackPtr);
       return;
     }
 
@@ -1706,9 +1685,6 @@ class VariableAnalysisSniff implements Sniff {
       return;
     }
     if ($this->allowUnusedVariablesBeforeRequire && Helpers::isRequireInScopeAfter($phpcsFile, $varInfo, $scopeInfo)) {
-      return;
-    }
-    if ($scopeInfo->scopeStartIndex === 0 && $this->allowUnusedVariablesInFileScope) {
       return;
     }
 

@@ -44,7 +44,7 @@ class SearchApiStandard extends ArgumentPluginBase {
     unset($defaults['summary']);
 
     if ($which) {
-      return $defaults[$which] ?? NULL;
+      return isset($defaults[$which]) ? $defaults[$which] : NULL;
     }
     return $defaults;
   }

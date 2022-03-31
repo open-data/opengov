@@ -10,7 +10,6 @@ use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\Url;
 use Drupal\webform\Entity\WebformOptions as WebformOptionsEntity;
 use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 
 /**
@@ -142,7 +141,7 @@ class WebformElementOptions extends FormElement {
     array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformElementOptions']);
 
     if (!empty($element['#states'])) {
-      WebformFormHelper::processStates($element, '#wrapper_attributes');
+      webform_process_states($element, '#wrapper_attributes');
     }
 
     return $element;

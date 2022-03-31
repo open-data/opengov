@@ -1,10 +1,12 @@
 name: 'Facets query processor'
 type: module
 description: 'Facets query processor'
-package: 'Testing'
+package: 'Search'
+# core: 8.x
 hidden: true
-core_version_requirement: ^8.8 || ^9
-# Information added by Drupal.org packaging script on 2021-05-12
-version: '8.x-1.8'
+
+# Information added by Drupal.org packaging script on 2019-04-30
+version: '8.x-1.4'
+core: '8.x'
 project: 'facets'
-datestamp: 1620810021
+datestamp: 1556645886

@@ -193,9 +193,14 @@ class ModuleInstaller implements ModuleInstallerInterface {
           }
         }
 
-        // Update the module handler in order to have the correct module list
-        // for the kernel update.
+        // Update the module handler in order to load the module's code.
+        // This allows the module to participate in hooks and its existence to
+        // be discovered by other modules.
+        // The current ModuleHandler instance is obsolete with the kernel
+        // rebuild below.
         $this->moduleHandler->setModuleList($module_filenames);
+        $this->moduleHandler->load($module);
+        module_load_install($module);
 
         // Clear the static cache of the "extension.list.module" service to pick
         // up the new module, since it merges the installation status of modules
@@ -204,10 +209,6 @@ class ModuleInstaller implements ModuleInstallerInterface {
 
         // Update the kernel to include it.
         $this->updateKernel($module_filenames);
-
-        // Load the module's .module and .install files.
-        $this->moduleHandler->load($module);
-        module_load_install($module);
 
         // Replace the route provider service with a version that will rebuild
         // if routes used during installation. This ensures that a module's
@@ -322,7 +323,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
         \Drupal::service('theme_handler')->refreshInfo();
 
         // Allow the module to perform install tasks.
-        $this->moduleHandler->invoke($module, 'install', [$sync_status]);
+        $this->moduleHandler->invoke($module, 'install');
 
         // Record the fact that it was installed.
         \Drupal::logger('system')->info('%module module installed.', ['%module' => $module]);
@@ -344,7 +345,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
         \Drupal::service('router.builder')->rebuild();
       }
 
-      $this->moduleHandler->invokeAll('modules_installed', [$modules_installed, $sync_status]);
+      $this->moduleHandler->invokeAll('modules_installed', [$modules_installed]);
     }
 
     return TRUE;
@@ -356,7 +357,6 @@ class ModuleInstaller implements ModuleInstallerInterface {
   public function uninstall(array $module_list, $uninstall_dependents = TRUE) {
     // Get all module data so we can find dependencies and sort.
     $module_data = \Drupal::service('extension.list.module')->getList();
-    $sync_status = \Drupal::service('config.installer')->isSyncing();
     $module_list = $module_list ? array_combine($module_list, $module_list) : [];
     if (array_diff_key($module_list, $module_data)) {
       // One or more of the given modules doesn't exist.
@@ -371,14 +371,12 @@ class ModuleInstaller implements ModuleInstallerInterface {
     }
 
     if ($uninstall_dependents) {
-      $theme_list = \Drupal::service('extension.list.theme')->getList();
-
       // Add dependent modules to the list. The new modules will be processed as
       // the foreach loop continues.
       foreach ($module_list as $module => $value) {
         foreach (array_keys($module_data[$module]->required_by) as $dependent) {
-          if (!isset($module_data[$dependent]) && !isset($theme_list[$dependent])) {
-            // The dependent module or theme does not exist.
+          if (!isset($module_data[$dependent])) {
+            // The dependent module does not exist.
             return FALSE;
           }
 
@@ -430,7 +428,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
 
       // Uninstall the module.
       module_load_install($module);
-      $this->moduleHandler->invoke($module, 'uninstall', [$sync_status]);
+      $this->moduleHandler->invoke($module, 'uninstall');
 
       // Remove all configuration belonging to the module.
       \Drupal::service('config.manager')->uninstall('module', $module);
@@ -516,7 +514,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
     drupal_get_installed_schema_version(NULL, TRUE);
 
     // Let other modules react.
-    $this->moduleHandler->invokeAll('modules_uninstalled', [$module_list, $sync_status]);
+    $this->moduleHandler->invokeAll('modules_uninstalled', [$module_list]);
 
     // Flush all persistent caches.
     // Any cache entry might implicitly depend on the uninstalled modules,

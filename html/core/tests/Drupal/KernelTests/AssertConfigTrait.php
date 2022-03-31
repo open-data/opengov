@@ -30,7 +30,6 @@ trait AssertConfigTrait {
         case 'Drupal\Component\Diff\Engine\DiffOpCopy':
           // Nothing to do, a copy is what we expect.
           break;
-
         case 'Drupal\Component\Diff\Engine\DiffOpDelete':
         case 'Drupal\Component\Diff\Engine\DiffOpChange':
           // It is not part of the skipped config, so we can directly throw the
@@ -69,7 +68,6 @@ trait AssertConfigTrait {
             throw new \Exception($config_name . ': ' . var_export($op, TRUE));
           }
           break;
-
         case 'Drupal\Component\Diff\Engine\DiffOpAdd':
           // The _core property does not exist in the default config.
           if ($op->closing[0] === '_core:') {
@@ -83,7 +81,6 @@ trait AssertConfigTrait {
             throw new \Exception($config_name . ': ' . var_export($op, TRUE));
           }
           break;
-
         default:
           throw new \Exception($config_name . ': ' . var_export($op, TRUE));
       }

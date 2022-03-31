@@ -3,18 +3,25 @@
 namespace Drupal\webform;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\TableSort;
 use Drupal\views\Views;
 use Drupal\webform\Controller\WebformSubmissionController;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -56,20 +63,6 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
   const STATE_DRAFT = 'draft';
 
   /**
-   * The date formatter service.
-   *
-   * @var \Drupal\Core\Datetime\DateFormatterInterface
-   */
-  protected $dateFormatter;
-
-  /**
-   * The language manager.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
-   */
-  protected $languageManager;
-
-  /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -103,20 +96,6 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
-
-  /**
-   * The 'form_builder' service.
-   *
-   * @var \Drupal\Core\Form\FormBuilderInterface
-   */
-  protected $formBuilder;
-
-  /**
-   * The pager manager.
-   *
-   * @var \Drupal\Core\Pager\PagerManagerInterface
-   */
-  protected $pagerManager;
 
   /**
    * The webform request handler.
@@ -273,35 +252,60 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    /** @var \Drupal\webform\WebformSubmissionListBuilder $instance */
-    $instance = parent::createInstance($container, $entity_type);
-
-    $instance->dateFormatter = $container->get('date.formatter');
-    $instance->languageManager = $container->get('language_manager');
-    $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->routeMatch = $container->get('current_route_match');
-    $instance->request = $container->get('request_stack')->getCurrentRequest();
-    $instance->currentUser = $container->get('current_user');
-    $instance->configFactory = $container->get('config.factory');
-    $instance->formBuilder = $container->get('form_builder');
-    $instance->pagerManager = $container->get('pager.manager');
-    $instance->requestHandler = $container->get('webform.request');
-    $instance->elementManager = $container->get('plugin.manager.webform.element');
-    $instance->messageManager = $container->get('webform.message_manager');
-
-    $instance->initialize();
-    return $instance;
+    return new static(
+      $entity_type,
+      $container->get('entity_type.manager')->getStorage($entity_type->id()),
+      $container->get('entity_type.manager'),
+      $container->get('current_route_match'),
+      $container->get('request_stack'),
+      $container->get('current_user'),
+      $container->get('config.factory'),
+      $container->get('webform.request'),
+      $container->get('plugin.manager.webform.element'),
+      $container->get('webform.message_manager')
+    );
   }
 
   /**
-   * Initialize WebformSubmissionListBuilder object.
+   * Constructs a new WebformSubmissionListBuilder object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The entity storage class.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration factory.
+   * @param \Drupal\webform\WebformRequestInterface $webform_request
+   *   The webform request handler.
+   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+   *   The webform element manager.
+   * @param \Drupal\webform\WebformMessageManagerInterface $message_manager
+   *   The webform message manager.
    */
-  protected function initialize() {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entity_type_manager, RouteMatchInterface $route_match, RequestStack $request_stack, AccountInterface $current_user, ConfigFactoryInterface $config_factory, WebformRequestInterface $webform_request, WebformElementManagerInterface $element_manager, WebformMessageManagerInterface $message_manager) {
+    parent::__construct($entity_type, $storage);
+    $this->entityTypeManager = $entity_type_manager;
+    $this->routeMatch = $route_match;
+    $this->request = $request_stack->getCurrentRequest();
+    $this->currentUser = $current_user;
+    $this->configFactory = $config_factory;
+    $this->requestHandler = $webform_request;
+    $this->elementManager = $element_manager;
+    $this->messageManager = $message_manager;
+
     $this->keys = $this->request->query->get('search');
     $this->state = $this->request->query->get('state');
     $this->sourceEntityTypeId = $this->request->query->get('entity');
 
-    [$this->webform, $this->sourceEntity] = $this->requestHandler->getWebformEntities();
+    list($this->webform, $this->sourceEntity) = $this->requestHandler->getWebformEntities();
 
     $this->messageManager->setWebform($this->webform);
     $this->messageManager->setSourceEntity($this->sourceEntity);
@@ -469,7 +473,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     $settings = $this->submissionViews[$this->submissionView];
 
     // Get view name and display id.
-    [$name, $display_id] = explode(':', $settings['view']);
+    list($name, $display_id) = explode(':', $settings['view']);
 
     // Load the view and set custom property used to fix the exposed
     // filter action.
@@ -547,7 +551,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
 
     // Customize buttons.
     if ($this->customize) {
-      $build['customize'] = $this->buildCustomizeButton();
+      $build['custom_top'] = $this->buildCustomizeButton();
     }
 
     // Display info.
@@ -560,16 +564,15 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     $build['table']['#sticky'] = TRUE;
     $build['table']['#attributes']['class'][] = 'webform-results-table';
 
-    // Bulk operations only visible on webform submissions pages.
-    $webform_submission_bulk_form = $this->configFactory->get('webform.settings')->get('settings.webform_submission_bulk_form');
-    if ($webform_submission_bulk_form
-      && !$this->account
-      && $this->webform
-      && $this->webform->access('submission_update_any')) {
-      $build['table'] = \Drupal::formBuilder()->getForm('\Drupal\webform\Form\WebformSubmissionBulkForm', $build['table'], $this->webform->access('submission_delete_any'));
+    // Customize.
+    // Only displayed when more than 20 submissions are being displayed.
+    if ($this->customize && isset($build['table']['#rows']) && count($build['table']['#rows']) >= 20) {
+      $build['custom_bottom'] = $this->buildCustomizeButton();
+      if (isset($build['pager'])) {
+        $build['pager']['#weight'] = 10;
+      }
     }
 
-    // Must preload libraries required by (modal) dialogs.
     // Must preload libraries required by (modal) dialogs.
     WebformDialogHelper::attachLibraries($build);
 
@@ -660,7 +663,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       elseif ($this->sourceEntityTypeId && strpos($this->sourceEntityTypeId, ':') !== FALSE) {
         $source_entity_options = $this->webform;
         try {
-          [$source_entity_type, $source_entity_id] = explode(':', $this->sourceEntityTypeId);
+          list($source_entity_type, $source_entity_id) = explode(':', $this->sourceEntityTypeId);
           $source_entity = $this->entityTypeManager->getStorage($source_entity_type)->load($source_entity_id);
           $source_entity_default_value = $source_entity->label() . " ($source_entity_type:$source_entity_id)";
         }
@@ -678,7 +681,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       $source_entity_default_value = '';
     }
 
-    return $this->formBuilder->getForm('\Drupal\webform\Form\WebformSubmissionFilterForm', $this->keys, $this->state, $state_options, $source_entity_default_value, $source_entity_options);
+    return \Drupal::formBuilder()->getForm('\Drupal\webform\Form\WebformSubmissionFilterForm', $this->keys, $this->state, $state_options, $source_entity_default_value, $source_entity_options);
   }
 
   /**
@@ -721,10 +724,10 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    */
   protected function buildInfo() {
     if ($this->draft) {
-      $info = $this->formatPlural($this->total, '@count draft', '@count drafts');
+      $info = $this->formatPlural($this->total, '@total draft', '@total drafts', ['@total' => $this->total]);
     }
     else {
-      $info = $this->formatPlural($this->total, '@count submission', '@count submissions');
+      $info = $this->formatPlural($this->total, '@total submission', '@total submissions', ['@total' => $this->total]);
     }
     return [
       '#markup' => $info,
@@ -733,9 +736,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     ];
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Header functions.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -786,7 +789,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
   protected function buildHeaderColumn(array $column) {
     $name = $column['name'];
     if ($this->format['header_format'] === 'key') {
-      $title = $column['key'] ?? $column['name'];
+      $title = isset($column['key']) ? $column['key'] : $column['name'];
     }
     else {
       $title = $column['title'];
@@ -817,9 +820,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     }
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Row functions.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -861,8 +864,10 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       case 'created':
       case 'completed':
       case 'changed':
+        /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
+        $date_formatter = \Drupal::service('date.formatter');
         return ($is_raw ? $entity->{$name}->value :
-          ($entity->{$name}->value ? $this->dateFormatter->format($entity->{$name}->value) : '')
+          ($entity->{$name}->value ? $date_formatter->format($entity->{$name}->value) : '')
         );
 
       case 'entity':
@@ -881,7 +886,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
           return $langcode;
         }
         else {
-          $language = $this->languageManager->getLanguage($langcode);
+          $language = \Drupal::languageManager()->getLanguage($langcode);
           return ($language) ? $language->getName() : $langcode;
         }
 
@@ -974,7 +979,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         ];
 
       case 'uid':
-        return ($is_raw) ? $entity->getOwner()->id() : ($entity->getOwner()->getAccountName() ?: $this->t('Anonymous'));
+        return ($is_raw) ? $entity->getOwner()->id() : ($entity->getOwner()->getAccountName() ?: t('Anonymous'));
 
       case 'uuid':
         return $entity->uuid();
@@ -998,9 +1003,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     }
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Operations.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -1041,7 +1046,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       if ($entity->access('duplicate') && $webform->getSetting('submission_user_duplicate')) {
         $operations['duplicate'] = [
           'title' => $this->t('Duplicate'),
-          'weight' => 30,
+          'weight' => 23,
           'url' => $this->requestHandler->getUrl($entity, $this->sourceEntity, 'webform.user.submission.duplicate'),
         ];
       }
@@ -1075,7 +1080,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       if ($entity->access('notes')) {
         $operations['notes'] = [
           'title' => $this->t('Notes'),
-          'weight' => 30,
+          'weight' => 21,
           'url' => $this->requestHandler->getUrl($entity, $this->sourceEntity, 'webform_submission.notes_form'),
         ];
       }
@@ -1083,14 +1088,14 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       if ($entity->access('resend') && $webform->hasMessageHandler()) {
         $operations['resend'] = [
           'title' => $this->t('Resend'),
-          'weight' => 40,
+          'weight' => 22,
           'url' => $this->requestHandler->getUrl($entity, $this->sourceEntity, 'webform_submission.resend_form'),
         ];
       }
       if ($entity->access('duplicate')) {
         $operations['duplicate'] = [
           'title' => $this->t('Duplicate'),
-          'weight' => 50,
+          'weight' => 23,
           'url' => $this->requestHandler->getUrl($entity, $this->sourceEntity, 'webform_submission.duplicate_form'),
         ];
       }
@@ -1124,9 +1129,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     return $operations;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Route functions.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Get submission route name based on the current route.
@@ -1166,9 +1171,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     return $route_parameters;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Submission views functions.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Get the submission view type for the current route.
@@ -1261,7 +1266,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         continue;
       }
 
-      [$view_name, $view_display_id] = explode(':', $submission_view['view']);
+      list($view_name, $view_display_id) = explode(':', $submission_view['view']);
       $view = Views::getView($view_name);
       if (!$view || !$view->access($view_display_id)) {
         unset($submission_views[$name]);
@@ -1272,9 +1277,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     return $submission_views;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Query functions.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -1301,7 +1306,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       // Must manually initialize the pager because the DISTINCT clause in the
       // query is breaking the row counting.
       // @see webform_query_alter()
-      $this->pagerManager->createPager($this->total, $this->limit);
+      \Drupal::service('pager.manager')->createPager($this->total, $this->limit);
       return $result;
     }
     else {
@@ -1363,14 +1368,6 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     $query = $submission_storage->getQuery();
     $submission_storage->addQueryConditions($query, $this->webform, $this->sourceEntity, $this->account);
 
-    // If we are viewing all submissions, we want to exclude
-    // any orphaned submissions.
-    if (empty($this->webform)) {
-      /** @var \Drupal\webform\WebformEntityStorageInterface $webform_storage */
-      $webform_storage = $this->entityTypeManager->getStorage('webform');
-      $query->condition('webform_id', $webform_storage->getWebformIds(), 'IN');
-    }
-
     // Filter by key(word).
     if ($keys) {
       // Search values.
@@ -1423,7 +1420,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
 
     // Filter by source entity.
     if ($source_entity && strpos($source_entity, ':') !== FALSE) {
-      [$entity_type, $entity_id] = explode(':', $source_entity);
+      list($entity_type, $entity_id) = explode(':', $source_entity);
       $query->condition('entity_type', $entity_type);
       $query->condition('entity_id', $entity_id);
     }

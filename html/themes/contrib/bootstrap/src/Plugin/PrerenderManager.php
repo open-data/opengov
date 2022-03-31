@@ -2,7 +2,6 @@
 
 namespace Drupal\bootstrap\Plugin;
 
-use Drupal\bootstrap\BcSupport\TrustedCallbackInterface;
 use Drupal\bootstrap\Theme;
 use Drupal\bootstrap\Utility\Element;
 
@@ -11,7 +10,7 @@ use Drupal\bootstrap\Utility\Element;
  *
  * @ingroup plugins_prerender
  */
-class PrerenderManager extends PluginManager implements TrustedCallbackInterface {
+class PrerenderManager extends PluginManager {
 
   /**
    * Constructs a new \Drupal\bootstrap\Plugin\PrerenderManager object.
@@ -48,13 +47,6 @@ class PrerenderManager extends PluginManager implements TrustedCallbackInterface
     $e->smartDescription();
 
     return $element;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function trustedCallbacks() {
-    return ['preRender'];
   }
 
 }

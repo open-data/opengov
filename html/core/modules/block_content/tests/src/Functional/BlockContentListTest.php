@@ -31,10 +31,7 @@ class BlockContentListTest extends BlockContentTestBase {
    * Tests the custom block listing page.
    */
   public function testListing() {
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer blocks',
-      'translate configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer blocks', 'translate configuration']));
     $this->drupalGet('admin/structure/block/block-content');
 
     // Test for the page title.
@@ -46,7 +43,7 @@ class BlockContentListTest extends BlockContentTestBase {
 
     // Test the table header.
     $elements = $this->xpath('//div[@class="layout-content"]//table/thead/tr/th');
-    $this->assertCount(2, $elements, 'Correct number of table header cells found.');
+    $this->assertEqual(count($elements), 2, 'Correct number of table header cells found.');
 
     // Test the contents of each th cell.
     $expected_items = [t('Block description'), t('Operations')];
@@ -58,9 +55,9 @@ class BlockContentListTest extends BlockContentTestBase {
     $new_label = 'Albatross';
     // Add a new entity using the operations link.
     $link_text = t('Add custom block');
-    $this->assertSession()->linkExists($link_text);
+    $this->assertLink($link_text);
     $this->clickLink($link_text);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $edit = [];
     $edit['info[0][value]'] = $label;
     $edit['body[0][value]'] = $this->randomMachineName(16);
@@ -72,7 +69,7 @@ class BlockContentListTest extends BlockContentTestBase {
 
     // Check the number of table row cells.
     $elements = $this->xpath('//div[@class="layout-content"]//table/tbody/tr[@class="odd"]/td');
-    $this->assertCount(2, $elements, 'Correct number of table row cells found.');
+    $this->assertEqual(count($elements), 2, 'Correct number of table row cells found.');
     // Check the contents of each row cell. The first cell contains the label,
     // the second contains the machine name, and the third contains the
     // operations list.
@@ -87,8 +84,8 @@ class BlockContentListTest extends BlockContentTestBase {
     if (!empty($block)) {
       $this->assertLinkByHref('block/' . $block->id());
       $this->clickLink(t('Edit'));
-      $this->assertSession()->statusCodeEquals(200);
-      $this->assertTitle("Edit custom block $label | Drupal");
+      $this->assertResponse(200);
+      $this->assertTitle(strip_tags(t('Edit custom block %label', ['%label' => $label]) . ' | Drupal'));
       $edit = ['info[0][value]' => $new_label];
       $this->drupalPostForm(NULL, $edit, t('Save'));
     }
@@ -104,7 +101,7 @@ class BlockContentListTest extends BlockContentTestBase {
     $this->assertLinkByHref('block/' . $block->id() . '/delete');
     $delete_text = t('Delete');
     $this->clickLink($delete_text);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertTitle("Are you sure you want to delete the custom block $new_label? | Drupal");
     $this->drupalPostForm(NULL, [], $delete_text);
 

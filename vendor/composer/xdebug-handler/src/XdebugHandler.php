@@ -205,7 +205,7 @@ class XdebugHandler
 
         if (count($envArgs) !== 6
             || (!self::$inRestart && php_ini_loaded_file() !== $envArgs[0])) {
-            return null;
+            return;
         }
 
         return array(
@@ -512,7 +512,7 @@ class XdebugHandler
     /**
      * Adds restart settings to the environment
      *
-     * @param string[] $envArgs
+     * @param string $envArgs
      */
     private function setEnvRestartSettings($envArgs)
     {
@@ -564,12 +564,11 @@ class XdebugHandler
      * Returns true if there are no known configuration issues
      *
      * @param string $info Set by method
-     * @return bool
      */
     private function checkConfiguration(&$info)
     {
-        if (!function_exists('proc_open') && !function_exists('passthru')) {
-            $info = 'execution functions have been disabled (proc_open or passthru required)';
+        if (false !== strpos(ini_get('disable_functions'), 'passthru')) {
+            $info = 'passthru function is disabled';
             return false;
         }
 
@@ -589,32 +588,28 @@ class XdebugHandler
     /**
      * Enables async signals and control interrupts in the restarted process
      *
-     * Available on Unix PHP 7.1+ with the pcntl extension and Windows PHP 7.4+.
+     * Only available on Unix PHP 7.1+ with the pcntl extension. To replicate on
+     * Windows would require PHP 7.4+ using proc_open rather than passthru.
      */
     private function tryEnableSignals()
     {
-        if (function_exists('pcntl_async_signals') && function_exists('pcntl_signal')) {
-            pcntl_async_signals(true);
-            $message = 'Async signals enabled';
-
-            if (!self::$inRestart) {
-                // Restarting, so ignore SIGINT in parent
-                pcntl_signal(SIGINT, SIG_IGN);
-                $message .= ' (SIGINT = SIG_IGN)';
-            } elseif (is_int(pcntl_signal_get_handler(SIGINT))) {
-                // Restarted, no handler set so force default action
-                pcntl_signal(SIGINT, SIG_DFL);
-                $message .= ' (SIGINT = SIG_DFL)';
-            }
-            $this->notify(Status::INFO, $message);
+        if (!function_exists('pcntl_async_signals') || !function_exists('pcntl_signal')) {
+            return;
         }
 
-        if (!self::$inRestart && function_exists('sapi_windows_set_ctrl_handler')) {
-            // Restarting, so set a handler to ignore CTRL events in the parent.
-            // This ensures that CTRL+C events will be available in the child
-            // process without having to enable them there, which is unreliable.
-            sapi_windows_set_ctrl_handler(function ($evt) {});
-            $this->notify(Status::INFO, 'CTRL signals suppressed');
+        pcntl_async_signals(true);
+        $message = 'Async signals enabled';
+
+        if (!self::$inRestart) {
+            // Restarting, so ignore SIGINT in parent
+            pcntl_signal(SIGINT, SIG_IGN);
+            $message .= ' (SIGINT = SIG_IGN)';
+        } elseif (is_int(pcntl_signal_get_handler(SIGINT))) {
+            // Restarted, no handler set so force default action
+            pcntl_signal(SIGINT, SIG_DFL);
+            $message .= ' (SIGINT = SIG_DFL)';
         }
+
+        $this->notify(Status::INFO, $message);
     }
 }

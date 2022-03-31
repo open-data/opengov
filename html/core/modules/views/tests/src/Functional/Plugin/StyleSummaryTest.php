@@ -63,21 +63,21 @@ class StyleSummaryTest extends ViewTestBase {
     $this->assertRaw('stable/css/views/views.module.css');
 
     $summary_list = $this->cssSelect('ul.views-summary li');
-    $this->assertCount(4, $summary_list);
+    $this->assertEqual(4, count($summary_list));
 
     foreach ($summary_list as $summary_list_item) {
       $this->assertEqual('(5)', trim(explode(' ', $summary_list_item->getText())[1]));
     }
 
     $summary_links = $this->cssSelect('ul.views-summary a');
-    $this->assertCount(4, $summary_links);
+    $this->assertEqual(4, count($summary_links));
     foreach ($summary_links as $index => $summary_link) {
       $this->assertEqual('type' . $index, trim($summary_link->getText()));
     }
 
     $this->clickLink('type1');
     $entries = $this->cssSelect('div.view-content div.views-row');
-    $this->assertCount(2, $entries);
+    $this->assertEqual(2, count($entries));
 
     // Add a base path to the summary settings.
     $edit = [
@@ -90,7 +90,7 @@ class StyleSummaryTest extends ViewTestBase {
     $this->drupalGet('test-summary');
     $this->clickLink('type1');
     $entries = $this->cssSelect('div.view-content div.views-row');
-    $this->assertCount(2, $entries);
+    $this->assertEqual(2, count($entries));
 
     // Change the summary display to an unformatted list displaying 3 items.
     $edit = [
@@ -105,21 +105,21 @@ class StyleSummaryTest extends ViewTestBase {
     $this->drupalGet('test-summary');
 
     $summary_list = $this->cssSelect('.views-summary-unformatted');
-    $this->assertCount(3, $summary_list);
+    $this->assertEqual(3, count($summary_list));
 
     foreach ($summary_list as $summary_list_item) {
       $this->assertEqual('(5)', trim(explode(' ', $summary_list_item->getText())[1]));
     }
 
     $summary_links = $this->cssSelect('.views-summary-unformatted a');
-    $this->assertCount(3, $summary_links);
+    $this->assertEqual(3, count($summary_links));
     foreach ($summary_links as $index => $summary_link) {
       $this->assertEqual('type' . $index, trim($summary_link->getText()));
     }
 
     $this->clickLink('type1');
     $entries = $this->cssSelect('div.view-content div.views-row');
-    $this->assertCount(2, $entries);
+    $this->assertEqual(2, count($entries));
 
     // Add a base path to the summary settings.
     $edit = [
@@ -132,7 +132,7 @@ class StyleSummaryTest extends ViewTestBase {
     $this->drupalGet('test-summary');
     $this->clickLink('type1');
     $entries = $this->cssSelect('div.view-content div.views-row');
-    $this->assertCount(2, $entries);
+    $this->assertEqual(2, count($entries));
 
     // Set base_path to an unknown path and test that the links lead to the
     // front page.

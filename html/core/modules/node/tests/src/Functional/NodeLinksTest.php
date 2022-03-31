@@ -35,7 +35,7 @@ class NodeLinksTest extends NodeTestBase {
     // Links are displayed by default.
     $this->drupalGet('node');
     $this->assertText($node->getTitle());
-    $this->assertSession()->linkExists('Read more');
+    $this->assertLink('Read more');
 
     // Hide links.
     \Drupal::service('entity_display.repository')
@@ -45,7 +45,7 @@ class NodeLinksTest extends NodeTestBase {
 
     $this->drupalGet('node');
     $this->assertText($node->getTitle());
-    $this->assertSession()->linkNotExists('Read more');
+    $this->assertNoLink('Read more');
   }
 
 }

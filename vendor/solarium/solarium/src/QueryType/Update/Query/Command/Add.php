@@ -1,22 +1,15 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Update\Query\Command;
 
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\Exception\RuntimeException;
+use Solarium\Core\Query\DocumentInterface;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
 /**
  * Update query add command.
  *
- * @see https://solr.apache.org/guide/uploading-data-with-index-handlers.html#adding-documents
+ * @see http://wiki.apache.org/solr/UpdateXmlMessages#add.2BAC8-update
  */
 class Add extends AbstractCommand
 {
@@ -40,7 +33,10 @@ class Add extends AbstractCommand
     /**
      * Add a single document.
      *
+     *
      * @param DocumentInterface $document
+     *
+     * @throws RuntimeException
      *
      * @return self Provides fluent interface
      */
@@ -82,22 +78,6 @@ class Add extends AbstractCommand
     }
 
     /**
-     * Set documents.
-     *
-     * This overwrite any previously added documents.
-     *
-     * @param DocumentInterface[] $documents
-     *
-     * @return self Provides fluent interface
-     */
-    public function setDocuments(array $documents): self
-    {
-        $this->documents = $documents;
-
-        return $this;
-    }
-
-    /**
      * Get all documents.
      *
      * @return DocumentInterface[]
@@ -105,18 +85,6 @@ class Add extends AbstractCommand
     public function getDocuments(): array
     {
         return $this->documents;
-    }
-
-    /**
-     * Clear all documents.
-     *
-     * @return self Provides fluent interface
-     */
-    public function clear(): self
-    {
-        $this->documents = [];
-
-        return $this;
     }
 
     /**
@@ -129,7 +97,6 @@ class Add extends AbstractCommand
     public function setOverwrite(bool $overwrite): self
     {
         $this->setOption('overwrite', $overwrite);
-
         return $this;
     }
 
@@ -153,7 +120,6 @@ class Add extends AbstractCommand
     public function setCommitWithin(int $commitWithin): self
     {
         $this->setOption('commitwithin', $commitWithin);
-
         return $this;
     }
 

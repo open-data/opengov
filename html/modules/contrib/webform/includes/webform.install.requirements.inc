@@ -19,9 +19,9 @@ function webform_requirements($phase) {
 
   $requirements = [];
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Experimental modules.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   // Warn if any experimental webform modules are installed.
   // @see system_requirements()
@@ -44,9 +44,9 @@ function webform_requirements($phase) {
     ];
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Check HTML email handling.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /** @var \Drupal\webform\WebformEmailProviderInterface $email_provider */
   $email_provider = \Drupal::service('webform.email_provider');
@@ -79,9 +79,9 @@ function webform_requirements($phase) {
     ];
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Check private file upload.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   $scheme_options = ManagedFile::getVisibleStreamWrappers();
   if (isset($scheme_options['private'])) {
@@ -99,17 +99,17 @@ function webform_requirements($phase) {
     ];
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Check external libraries.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /** @var \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager */
   $libraries_manager = \Drupal::service('webform.libraries_manager');
   $requirements += $libraries_manager->requirements();
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Check Bootstrap theme.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   if (\Drupal::config('webform.settings')->get('requirements.bootstrap')) {
     $bootstrap_enabled = FALSE;
@@ -141,9 +141,9 @@ function webform_requirements($phase) {
     }
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Check Clientside validation module.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   if (\Drupal::config('webform.settings')->get('requirements.clientside_validation')
     && \Drupal::moduleHandler()->moduleExists('clientside_validation')) {
@@ -163,44 +163,9 @@ function webform_requirements($phase) {
     }
   }
 
-  /* ************************************************************************ */
-  // Check jQuery UI Datepicker module.
-  /* ************************************************************************ */
-
-  $config_factory = \Drupal::configFactory();
-  $has_datepicker = FALSE;
-  foreach ($config_factory->listAll('webform.webform.') as $webform_config_name) {
-    $webform_config = $config_factory->getEditable($webform_config_name);
-    $data = $webform_config->getRawData();
-    if (strpos($data['elements'], 'datepicker')) {
-      $has_datepicker = TRUE;
-      break;
-    }
-  }
-  if ($has_datepicker) {
-    if (\Drupal::moduleHandler()->moduleExists('jquery_ui_datepicker')) {
-      $requirements['jquery_ui_datepicker'] = [
-        'title' => t('Webform: jQuery UI Datepicker'),
-        'value' => t('jQuery UI Datepicker module installed.'),
-      ];
-    }
-    else {
-      $t_args = [
-        ':href_webform' => Url::fromRoute('entity.webform.collection', [], ['query' => ['search' => 'datepicker']])->toString(),
-        ':href_datepicker' => 'https://www.drupal.org/project/jquery_ui_datepicker',
-      ];
-      $requirements['jquery_ui_datepicker'] = [
-        'title' => t('Webform: jQuery UI Datepicker'),
-        'value' => t('jQuery UI Datepicker module not installed.'),
-        'description' => t('The <a href=":href_datepicker">jQuery UI Datepicker</a> module is required to support datepickers. Disable this datepicker warning by <a href=":href_webform">removing #datepicker property from all webforms</a>.', $t_args),
-        'severity' => REQUIREMENT_WARNING,
-      ];
-    }
-  }
-
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Check SPAM protection.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   if (\Drupal::config('webform.settings')->get('requirements.spam')) {
     $spam_protection = FALSE;
@@ -238,15 +203,15 @@ function webform_requirements($phase) {
     }
     if ($spam_protection) {
       $requirements['webform_spam'] = [
-        'title' => t('Webform: Spam protection'),
-        'value' => t('Webform Spam protection module installed.'),
+        'title' => t('Webform: SPAM protection'),
+        'value' => t('Webform SPAM protection module installed.'),
         'description' => \Drupal::service('renderer')->renderPlain($installed_projects),
       ];
     }
     else {
       $requirements['webform_spam'] = [
-        'title' => t('Webform: Spam protection'),
-        'value' => t('Webform <a href=":href">Spam protection module</a> missing. Please install one of the below modules.', [':href' => 'https://www.drupal.org/node/206787']),
+        'title' => t('Webform: SPAM protection'),
+        'value' => t('Webform <a href=":href">SPAM protection module</a> missing. Please install one of the below modules.', [':href' => 'https://www.drupal.org/node/206787']),
         'description' => \Drupal::service('renderer')->renderPlain($available_projects),
         'severity' => REQUIREMENT_WARNING,
       ];

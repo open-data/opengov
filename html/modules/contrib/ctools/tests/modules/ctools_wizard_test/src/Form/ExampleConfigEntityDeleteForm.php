@@ -10,12 +10,11 @@ use Drupal\Core\Url;
  * Builds the form to delete Example config entity entities.
  */
 class ExampleConfigEntityDeleteForm extends EntityConfirmFormBase {
-
   /**
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
+    return $this->t('Are you sure you want to delete %name?', array('%name' => $this->entity->label()));
   }
 
   /**
@@ -41,7 +40,7 @@ class ExampleConfigEntityDeleteForm extends EntityConfirmFormBase {
       $this->t('content @type: deleted @label.',
         [
           '@type' => $this->entity->bundle(),
-          '@label' => $this->entity->label(),
+          '@label' => $this->entity->label()
         ]
         )
     );

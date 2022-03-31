@@ -7,7 +7,6 @@ use Drupal\webform\Plugin\WebformElementBase;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'table' element.
@@ -21,22 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class Table extends WebformElementBase {
-
-  /**
-   * The renderer.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->renderer = $container->get('renderer');
-    return $instance;
-  }
 
   /**
    * {@inheritdoc}
@@ -56,7 +39,7 @@ class Table extends WebformElementBase {
     return array_merge(parent::defineTranslatableProperties(), ['header']);
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -159,7 +142,7 @@ class Table extends WebformElementBase {
   protected function formatTextItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     // Render the HTML table.
     $build = $this->formatHtml($element, $webform_submission, $options);
-    $html = $this->renderer->renderPlain($build);
+    $html = \Drupal::service('renderer')->renderPlain($build);
 
     // Convert table in pipe delimited plain text.
     $html = preg_replace('#\s*</td>\s*<td[^>]*>\s*#', ' | ', $html);
@@ -202,10 +185,6 @@ class Table extends WebformElementBase {
       '#title' => $this->t('Empty text'),
       '#description' => $this->t('Text to display when no rows are present.'),
     ];
-
-    // Unset textarea rows to prevent any conflicts.
-    unset($form['form']['size_container']['rows']);
-
     return $form;
   }
 

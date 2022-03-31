@@ -7,7 +7,6 @@ use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Mink;
 use Behat\Mink\Session;
 use Drupal\Component\FileSystem\FileSystem as DrupalFilesystem;
-use Drupal\Tests\PhpunitCompatibilityTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\BrowserKit\Client as SymfonyClient;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
@@ -53,7 +52,6 @@ use Symfony\Component\Process\Process;
 abstract class BuildTestBase extends TestCase {
 
   use ExternalCommandRequirementsTrait;
-  use PhpunitCompatibilityTrait;
 
   /**
    * The working directory where this test will manipulate files.
@@ -268,7 +266,7 @@ abstract class BuildTestBase extends TestCase {
    *   Text we expect to find in the error output of the command.
    */
   public function assertErrorOutputContains($expected) {
-    $this->assertStringContainsString($expected, $this->commandProcess->getErrorOutput());
+    $this->assertContains($expected, $this->commandProcess->getErrorOutput());
   }
 
   /**
@@ -278,7 +276,7 @@ abstract class BuildTestBase extends TestCase {
    *   Text we expect to find in the output of the command.
    */
   public function assertCommandOutputContains($expected) {
-    $this->assertStringContainsString($expected, $this->commandProcess->getOutput());
+    $this->assertContains($expected, $this->commandProcess->getOutput());
   }
 
   /**

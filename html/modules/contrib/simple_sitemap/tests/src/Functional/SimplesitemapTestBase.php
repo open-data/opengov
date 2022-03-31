@@ -18,7 +18,7 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
    *
    * @var string[]
    */
-  protected static $modules = [
+  public static $modules = [
     'simple_sitemap',
     'node',
     'content_translation',
@@ -27,7 +27,7 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
   /**
    * Simple sitemap generator.
    *
-   * @var \Drupal\simple_sitemap\Manager\Generator
+   * @var \Drupal\simple_sitemap\Simplesitemap
    */
   protected $generator;
 
@@ -59,12 +59,14 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
    */
   protected $node2;
 
+  protected $defaultSitemapUrl = 'sitemap.xml';
+
   /**
-   * The default sitemap URL.
+   * Use the testing profile.
    *
    * @var string
    */
-  protected $defaultSitemapUrl = 'sitemap.xml';
+  protected $profile = 'testing';
 
   /**
    * Use the classy theme.
@@ -125,14 +127,6 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
     $this->assertGreaterThan(1, $nr_found);
   }
 
-  /**
-   * Helper function to create languages.
-   *
-   * @param array|string $langcodes
-   *   An array of language codes or the single language code.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   */
   protected function addLanguages($langcodes = 'de') {
     foreach ((array) $langcodes as $langcode) {
       ConfigurableLanguage::createFromLangcode($langcode)

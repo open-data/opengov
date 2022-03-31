@@ -52,16 +52,7 @@ class SearchConfigSettingsFormTest extends BrowserTestBase {
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
     // Log in as a user that can create and search content.
-    $this->searchUser = $this->drupalCreateUser([
-      'search content',
-      'administer search',
-      'administer nodes',
-      'bypass node access',
-      'access user profiles',
-      'administer users',
-      'administer blocks',
-      'access site reports',
-    ]);
+    $this->searchUser = $this->drupalCreateUser(['search content', 'administer search', 'administer nodes', 'bypass node access', 'access user profiles', 'administer users', 'administer blocks', 'access site reports']);
     $this->drupalLogin($this->searchUser);
 
     // Add a single piece of content and index it.
@@ -113,7 +104,7 @@ class SearchConfigSettingsFormTest extends BrowserTestBase {
     $text = $this->randomMachineName(5);
     $this->drupalPostForm('search/node', ['keys' => $text], t('Search'));
     $this->drupalGet('admin/reports/dblog');
-    $this->assertSession()->linkNotExists('Searched Content for ' . $text . '.', 'Search was not logged');
+    $this->assertNoLink('Searched Content for ' . $text . '.', 'Search was not logged');
 
     // Turn on logging.
     $edit = ['logging' => TRUE];
@@ -121,7 +112,7 @@ class SearchConfigSettingsFormTest extends BrowserTestBase {
     $text = $this->randomMachineName(5);
     $this->drupalPostForm('search/node', ['keys' => $text], t('Search'));
     $this->drupalGet('admin/reports/dblog');
-    $this->assertSession()->linkExists('Searched Content for ' . $text . '.', 0, 'Search was logged');
+    $this->assertLink('Searched Content for ' . $text . '.', 0, 'Search was logged');
 
   }
 
@@ -182,7 +173,7 @@ class SearchConfigSettingsFormTest extends BrowserTestBase {
       // Run a search from the correct search URL.
       $info = $plugin_info[$entity_id];
       $this->drupalGet('search/' . $entity->getPath(), ['query' => ['keys' => $info['keys']]]);
-      $this->assertSession()->statusCodeEquals(200);
+      $this->assertResponse(200);
       $this->assertNoText('no results', $entity->label() . ' search found results');
       $this->assertText($info['text'], 'Correct search text found');
 
@@ -204,7 +195,7 @@ class SearchConfigSettingsFormTest extends BrowserTestBase {
 
       // Try an invalid search path, which should 404.
       $this->drupalGet('search/not_a_plugin_path');
-      $this->assertSession()->statusCodeEquals(404);
+      $this->assertResponse(404);
 
       $entity->disable()->save();
     }
@@ -322,14 +313,14 @@ class SearchConfigSettingsFormTest extends BrowserTestBase {
 
     // Disable the first search page.
     $this->clickLink(t('Disable'));
-    $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->linkNotExists(t('Disable'));
+    $this->assertResponse(200);
+    $this->assertNoLink(t('Disable'));
     $this->verifySearchPageOperations($first_id, TRUE, TRUE, FALSE, TRUE);
     $this->verifySearchPageOperations($second_id, TRUE, FALSE, FALSE, FALSE);
 
     // Enable the first search page.
     $this->clickLink(t('Enable'));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->verifySearchPageOperations($first_id, TRUE, TRUE, TRUE, FALSE);
     $this->verifySearchPageOperations($second_id, TRUE, FALSE, FALSE, FALSE);
 
@@ -347,11 +338,11 @@ class SearchConfigSettingsFormTest extends BrowserTestBase {
   public function testRouteProtection() {
     // Ensure that the enable and disable routes are protected.
     $this->drupalGet('admin/config/search/pages/manage/node_search/enable');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
     $this->drupalGet('admin/config/search/pages/manage/node_search/disable');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
     $this->drupalGet('admin/config/search/pages/manage/node_search/set-default');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
   }
 
   /**

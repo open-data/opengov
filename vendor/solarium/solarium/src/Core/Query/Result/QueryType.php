@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Query\Result;
 
 use Solarium\Core\Query\ResponseParserInterface;
@@ -36,7 +29,7 @@ class QueryType extends Result
         if (!$this->parsed) {
             $responseParser = $this->query->getResponseParser();
             if (!$responseParser || !($responseParser instanceof ResponseParserInterface)) {
-                throw new UnexpectedValueException(sprintf('No responseparser returned by querytype: %s', $this->query->getType()));
+                throw new UnexpectedValueException('No responseparser returned by querytype: '.$this->query->getType());
             }
 
             $this->mapData($responseParser->parse($this));

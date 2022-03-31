@@ -75,7 +75,7 @@ class SearchApiMoreLikeThis extends SearchApiStandard {
         $this->query->abort();
         return;
       }
-      $fields = $this->options['fields'] ?? [];
+      $fields = isset($this->options['fields']) ? $this->options['fields'] : [];
       if (!$fields) {
         $fields = array_keys($this->query->getIndex()->getFields());
       }

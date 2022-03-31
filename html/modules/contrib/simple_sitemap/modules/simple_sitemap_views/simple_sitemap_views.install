@@ -10,10 +10,7 @@
  */
 function simple_sitemap_views_install() {
   // Enable views display extender plugin.
-  /** @var \Drupal\simple_sitemap_views\SimpleSitemapViews $simple_sitemap_views */
-  $simple_sitemap_views = \Drupal::service('simple_sitemap.views');
-  $simple_sitemap_views->enable();
-  \Drupal::messenger()->addWarning(t('In order to use the Simple XML Sitemap Views module, the Views URL generator must be <a href="@url">added</a> to a sitemap type.', ['@url' => $GLOBALS['base_url'] . '/admin/config/search/simplesitemap/types']));
+  \Drupal::service('simple_sitemap.views')->enable();
 }
 
 /**
@@ -21,9 +18,7 @@ function simple_sitemap_views_install() {
  */
 function simple_sitemap_views_uninstall() {
   // Disable views display extender plugin.
-  /** @var \Drupal\simple_sitemap_views\SimpleSitemapViews $simple_sitemap_views */
-  $simple_sitemap_views = \Drupal::service('simple_sitemap.views');
-  $simple_sitemap_views->disable();
+  \Drupal::service('simple_sitemap.views')->disable();
 }
 
 /**
@@ -69,54 +64,10 @@ function simple_sitemap_views_schema() {
     ],
     'primary key' => ['id'],
     'indexes' => [
+      'view' => ['view_id'],
+      'display' => ['view_id', 'display_id'],
       'arguments_ids' => ['view_id', 'display_id', 'arguments_ids'],
     ],
   ];
   return $schema;
-}
-
-/**
- * Update views display extender config.
- */
-function simple_sitemap_views_update_8301() {
-  $config_factory = \Drupal::configFactory();
-  $display_extender_name = 'simple_sitemap_display_extender';
-
-  // Find all views configs.
-  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
-    $view = $config_factory->getEditable($view_config_name);
-    $changed = FALSE;
-
-    // Go through each display on each view.
-    $displays = $view->get('display');
-    foreach ($displays as $display_name => $display) {
-      if (isset($display['display_options']['display_extenders'][$display_extender_name])) {
-        $options = $display['display_options']['display_extenders'][$display_extender_name];
-
-        if (!isset($options['variants']) && isset($options['variant'])) {
-          $variant = $options['variant'];
-          unset($options['variant']);
-
-          // Update display extender config.
-          $key = "display.$display_name.display_options.display_extenders.$display_extender_name";
-          $options = ['variants' => [$variant => $options]];
-          $view->set($key, $options);
-          $changed = TRUE;
-        }
-      }
-    }
-
-    if ($changed) {
-      $view->save(TRUE);
-    }
-  }
-}
-
-/**
- * Remove unnecessary indexes.
- */
-function simple_sitemap_views_update_8302() {
-  $schema = \Drupal::database()->schema();
-  $schema->dropIndex('simple_sitemap_views', 'view');
-  $schema->dropIndex('simple_sitemap_views', 'display');
 }

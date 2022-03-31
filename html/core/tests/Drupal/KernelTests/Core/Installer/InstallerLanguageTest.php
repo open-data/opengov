@@ -20,9 +20,8 @@ class InstallerLanguageTest extends KernelTestBase {
     // Different translation files would be found depending on which language
     // we are looking for.
     $expected_translation_files = [
-      NULL => ['drupal-8.0.0-beta2.hu.po', 'drupal-8.0.0.de.po', 'drupal-8.0.x.fr-CA.po'],
+      NULL => ['drupal-8.0.0-beta2.hu.po', 'drupal-8.0.0.de.po'],
       'de' => ['drupal-8.0.0.de.po'],
-      'fr-CA' => ['drupal-8.0.x.fr-CA.po'],
       'hu' => ['drupal-8.0.0-beta2.hu.po'],
       'it' => [],
     ];
@@ -34,7 +33,7 @@ class InstallerLanguageTest extends KernelTestBase {
       $files_found = $file_translation->findTranslationFiles($langcode);
       $this->assertTrue(count($files_found) == count($files_expected), new FormattableMarkup('@count installer languages found.', ['@count' => count($files_expected)]));
       foreach ($files_found as $file) {
-        $this->assertContains($file->filename, $files_expected, new FormattableMarkup('@file found.', ['@file' => $file->filename]));
+        $this->assertTrue(in_array($file->filename, $files_expected), new FormattableMarkup('@file found.', ['@file' => $file->filename]));
       }
     }
   }

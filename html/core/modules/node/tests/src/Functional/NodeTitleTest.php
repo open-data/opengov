@@ -41,12 +41,7 @@ class NodeTitleTest extends NodeTestBase {
     $this->drupalPlaceBlock('system_breadcrumb_block');
     $this->drupalPlaceBlock('page_title_block');
 
-    $this->adminUser = $this->drupalCreateUser([
-      'administer nodes',
-      'create article content',
-      'create page content',
-      'post comments',
-    ]);
+    $this->adminUser = $this->drupalCreateUser(['administer nodes', 'create article content', 'create page content', 'post comments']);
     $this->drupalLogin($this->adminUser);
     $this->addDefaultCommentField('node', 'page');
   }

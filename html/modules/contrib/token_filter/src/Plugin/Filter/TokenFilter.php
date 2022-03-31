@@ -6,7 +6,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Utility\Token;
@@ -119,17 +118,15 @@ class TokenFilter extends FilterBase implements ContainerFactoryPluginInterface 
     $data = [];
 
     $entity = drupal_static('token_filter_entity', NULL);
-    $cache = new BubbleableMetadata();
     if (!is_null($entity) && $entity instanceof ContentEntityInterface) {
-      $cache->addCacheableDependency($entity);
       $token_type = $this->tokenEntityMapper->getTokenTypeForEntityType($entity->getEntityTypeId());
       $data[$token_type] = $entity;
     }
 
     $clear = $this->settings['replace_empty'];
-    $replacements = $this->token->replace($text, $data, ['clear' => $clear], $cache);
+    $replacements = $this->token->replace($text, $data, ['clear' => $clear]);
 
-    return (new FilterProcessResult($replacements))->merge($cache);
+    return new FilterProcessResult($replacements);
   }
 
   /**

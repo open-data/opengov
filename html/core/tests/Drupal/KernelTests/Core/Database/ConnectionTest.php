@@ -5,7 +5,6 @@ namespace Drupal\KernelTests\Core\Database;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Database\DatabaseExceptionWrapper;
-use Drupal\Core\Database\Query\Condition;
 
 /**
  * Tests of the core database system.
@@ -128,17 +127,33 @@ class ConnectionTest extends DatabaseTestBase {
       $this->markTestSkipped("This test only runs for MySQL");
     }
 
+    $db = Database::getConnection('default', 'default');
     // Disable the protection at the PHP level.
-    $this->expectException(DatabaseExceptionWrapper::class);
-    Database::getConnection('default', 'default')->query('SELECT * FROM {test}; SELECT * FROM {test_people}', [], ['allow_delimiter_in_query' => TRUE]);
+    try {
+      $db->query('SELECT * FROM {test}; SELECT * FROM {test_people}',
+        [],
+        ['allow_delimiter_in_query' => TRUE]
+      );
+      $this->fail('No PDO exception thrown for multiple statements.');
+    }
+    catch (DatabaseExceptionWrapper $e) {
+      $this->pass('PDO exception thrown for multiple statements.');
+    }
   }
 
   /**
    * Ensure that you cannot execute multiple statements.
    */
   public function testMultipleStatements() {
-    $this->expectException(\InvalidArgumentException::class);
-    Database::getConnection('default', 'default')->query('SELECT * FROM {test}; SELECT * FROM {test_people}');
+
+    $db = Database::getConnection('default', 'default');
+    try {
+      $db->query('SELECT * FROM {test}; SELECT * FROM {test_people}');
+      $this->fail('No exception thrown for multiple statements.');
+    }
+    catch (\InvalidArgumentException $e) {
+      $this->pass('Exception thrown for multiple statements.');
+    }
   }
 
   /**
@@ -158,19 +173,6 @@ class ConnectionTest extends DatabaseTestBase {
       $this->assertIdentical($db->escapeField($word), $expected, new FormattableMarkup('The reserved word %word was correctly escaped when used as a column name.', ['%word' => $word]));
       $this->assertIdentical($db->escapeAlias($word), $expected, new FormattableMarkup('The reserved word %word was correctly escaped when used as an alias.', ['%word' => $word]));
     }
-  }
-
-  /**
-   * Test that the method ::condition() returns a Condition object.
-   */
-  public function testCondition() {
-    $connection = Database::getConnection('default', 'default');
-    $namespace = (new \ReflectionObject($connection))->getNamespaceName() . "\\Condition";
-    if (!class_exists($namespace)) {
-      $namespace = Condition::class;
-    }
-    $condition = $connection->condition('AND');
-    $this->assertSame($namespace, get_class($condition));
   }
 
 }

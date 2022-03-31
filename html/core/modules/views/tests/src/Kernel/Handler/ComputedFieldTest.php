@@ -50,7 +50,7 @@ class ComputedFieldTest extends ViewsKernelTestBase {
 
     $rendered_view = $view->preview();
     $output = $this->container->get('renderer')->renderRoot($rendered_view);
-    $this->assertStringContainsString('computed string', (string) $output);
+    $this->assertContains('computed string', (string) $output);
   }
 
 }

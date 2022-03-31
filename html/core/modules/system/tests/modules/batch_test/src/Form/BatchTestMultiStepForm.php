@@ -56,7 +56,6 @@ class BatchTestMultiStepForm extends FormBase {
       case 1:
         batch_set(_batch_test_batch_1());
         break;
-
       case 2:
         batch_set(_batch_test_batch_2());
         break;

@@ -47,7 +47,7 @@ class WebformCard extends ContainerBase {
     return array_merge(parent::defineTranslatableProperties(), ['prev_button_label', 'next_button_label']);
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -94,13 +94,6 @@ class WebformCard extends ContainerBase {
     }
 
     return $build;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function preview() {
-    return [];
   }
 
   /**

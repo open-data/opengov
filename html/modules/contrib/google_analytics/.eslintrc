@@ -1,5 +1,5 @@
 {
   "globals": {
-    "gtag": true
+    "ga": true
   }
 }

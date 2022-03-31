@@ -45,7 +45,6 @@ class BlockDisplayVariantTest extends UnitTestCase {
         return [];
       }
 
-
       public function getRegionNames() {
         return [
           'top' => 'Top',

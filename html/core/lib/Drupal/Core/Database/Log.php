@@ -69,7 +69,6 @@ class Log {
    *
    * @param $logging_key
    *   The logging key to fetch.
-   *
    * @return
    *   An indexed array of all query records for this logging key.
    */

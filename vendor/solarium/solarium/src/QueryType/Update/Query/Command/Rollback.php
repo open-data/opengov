@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Update\Query\Command;
 
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
@@ -14,7 +7,7 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 /**
  * Update query rollback command.
  *
- * @see https://solr.apache.org/guide/uploading-data-with-index-handlers.html#rollback-operations
+ * @see http://wiki.apache.org/solr/UpdateXmlMessages#A.22rollback.22
  */
 class Rollback extends AbstractCommand
 {

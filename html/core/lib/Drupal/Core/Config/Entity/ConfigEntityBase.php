@@ -248,7 +248,8 @@ abstract class ConfigEntityBase extends EntityBase implements ConfigEntityInterf
     $id_key = $entity_type->getKey('id');
     $property_names = $entity_type->getPropertiesToExport($this->id());
     if (empty($property_names)) {
-      throw new SchemaIncompleteException(sprintf("Entity type '%s' is missing 'config_export' definition in its annotation", get_class($entity_type)));
+      $config_name = $entity_type->getConfigPrefix() . '.' . $this->id();
+      throw new SchemaIncompleteException("Incomplete or missing schema for $config_name");
     }
     foreach ($property_names as $property_name => $export_name) {
       // Special handling for IDs so that computed compound IDs work.
@@ -489,7 +490,7 @@ abstract class ConfigEntityBase extends EntityBase implements ConfigEntityInterf
    * already invalidates it.
    */
   protected function invalidateTagsOnSave($update) {
-    Cache::invalidateTags($this->getListCacheTagsToInvalidate());
+    Cache::invalidateTags($this->getEntityType()->getListCacheTags());
   }
 
   /**
@@ -499,11 +500,7 @@ abstract class ConfigEntityBase extends EntityBase implements ConfigEntityInterf
    * config system already invalidates them.
    */
   protected static function invalidateTagsOnDelete(EntityTypeInterface $entity_type, array $entities) {
-    $tags = $entity_type->getListCacheTags();
-    foreach ($entities as $entity) {
-      $tags = Cache::mergeTags($tags, $entity->getListCacheTagsToInvalidate());
-    }
-    Cache::invalidateTags($tags);
+    Cache::invalidateTags($entity_type->getListCacheTags());
   }
 
   /**

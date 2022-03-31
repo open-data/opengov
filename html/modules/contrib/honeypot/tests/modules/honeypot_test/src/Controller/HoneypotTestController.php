@@ -4,14 +4,11 @@ namespace Drupal\honeypot_test\Controller;
 
 use Drupal\Core\Form\FormState;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Controller for honeypot_test routes.
  */
 class HoneypotTestController {
-
-  use StringTranslationTrait;
 
   /**
    * Page that triggers a programmatic form submission.
@@ -23,7 +20,7 @@ class HoneypotTestController {
     $values = [
       'name' => 'robo-user',
       'mail' => 'robouser@example.com',
-      'op' => $this->t('Submit'),
+      'op' => t('Submit'),
     ];
     $form_state->setValues($values);
     \Drupal::formBuilder()->submitForm('\Drupal\user\Form\UserPasswordForm', $form_state);

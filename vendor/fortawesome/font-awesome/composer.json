@@ -5,15 +5,39 @@
   "homepage": "https://fontawesome.com",
   "authors": [
     {
-      "name": "The Font Awesome Team",
-      "homepage": "https://github.com/orgs/FortAwesome/people"
+      "name": "Travis Chase",
+      "homepage": "http://twitter.com/supercodepoet"
+    },
+    {
+      "name": "Dave Gandy",
+      "homepage": "http://twitter.com/davegandy"
+    },
+    {
+      "name": "Rob Madole",
+      "homepage": "http://twitter.com/robmadole"
+    },
+    {
+      "name": "Jory Raphael",
+      "homepage": "http://twitter.com/sensibleworld"
+    },
+    {
+      "name": "Geremia Taglialatela",
+      "homepage": "http://twitter.com/gtagliala"
+    },
+    {
+      "name": "Brian Talbot",
+      "homepage": "http://twitter.com/talbs"
+    },
+    {
+      "name": "Mike Wilkerson",
+      "homepage": "http://twitter.com/mw77"
     }
   ],
   "support": {
     "email": "hello@fontawesome.com",
     "issues": "https://github.com/FortAwesome/Font-Awesome/issues",
     "source": "https://github.com/FortAwesome/Font-Awesome",
-    "docs": "http://fontawesome.com/docs"
+    "docs": "http://fontawesome.com/how-to-use"
   },
   "license": [
     "CC-BY-4.0",

@@ -193,8 +193,6 @@
 
   CKEDITOR.config.autoGrow_onStartup = true;
 
-  CKEDITOR.config.autoGrow_maxHeight = 0.7 * window.innerHeight;
-
   CKEDITOR.timestamp = drupalSettings.ckeditor.timestamp;
 
   if (AjaxCommands) {

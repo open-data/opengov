@@ -23,8 +23,6 @@ class WebformFieldTest extends WebformBrowserTestBase {
    * Tests the webform (entity reference) field.
    */
   public function testWebformField() {
-    $assert_session = $this->assertSession();
-
     /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
     $display_repository = \Drupal::service('entity_display.repository');
 
@@ -51,12 +49,12 @@ class WebformFieldTest extends WebformBrowserTestBase {
 
     $this->drupalLogin($this->rootUser);
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Check that webform select menu is visible.
     $this->drupalGet('/node/add/page');
     $this->assertNoCssSelect('#edit-field-webform-0-target-id optgroup');
-    $assert_session->optionExists('edit-field-webform-0-target-id', 'contact');
+    $this->assertOption('edit-field-webform-0-target-id', 'contact');
 
     // Add category to 'contact' webform.
     /** @var \Drupal\webform\WebformInterface $webform */
@@ -73,19 +71,18 @@ class WebformFieldTest extends WebformBrowserTestBase {
 
     // Check that webform 2 is included in the select menu.
     $this->drupalGet('/node/add/page');
-    $assert_session->optionExists('edit-field-webform-0-target-id', 'contact');
-    $assert_session->optionExists('edit-field-webform-0-target-id', $webform_2->id());
+    $this->assertOption('edit-field-webform-0-target-id', 'contact');
+    $this->assertOption('edit-field-webform-0-target-id', $webform_2->id());
 
     // Limit the webform select menu to only the contact form.
     $this->drupalGet('/admin/structure/types/manage/page/form-display');
-    $this->drupalGet('/admin/structure/types/manage/page/form-display');
-    $this->submitForm([], 'field_webform_settings_edit');
-    $this->submitForm(['fields[field_webform][settings_edit_form][settings][webforms][]' => ['contact']], 'Save');
+    $this->drupalPostForm('/admin/structure/types/manage/page/form-display', [], 'field_webform_settings_edit');
+    $this->drupalPostForm(NULL, ['fields[field_webform][settings_edit_form][settings][webforms][]' => ['contact']], 'Save');
 
     // Check that webform 2 is NOT included in the select menu.
     $this->drupalGet('/node/add/page');
-    $assert_session->optionExists('edit-field-webform-0-target-id', 'contact');
-    $assert_session->optionNotExists('edit-field-webform-0-target-id', $webform_2->id());
+    $this->assertOption('edit-field-webform-0-target-id', 'contact');
+    $this->assertNoOption('edit-field-webform-0-target-id', $webform_2->id());
   }
 
 }

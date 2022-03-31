@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Update\Query\Command;
 
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
@@ -14,7 +7,7 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 /**
  * Update query commit command.
  *
- * @see https://solr.apache.org/guide/uploading-data-with-index-handlers.html#commit-and-optimize-during-updates
+ * @see http://wiki.apache.org/solr/UpdateXmlMessages#A.22commit.22_and_.22optimize.22
  */
 class Commit extends AbstractCommand
 {
@@ -48,7 +41,6 @@ class Commit extends AbstractCommand
     public function setSoftCommit(bool $softCommit): self
     {
         $this->setOption('softcommit', $softCommit);
-
         return $this;
     }
 
@@ -72,7 +64,6 @@ class Commit extends AbstractCommand
     public function setWaitSearcher(bool $waitSearcher): self
     {
         $this->setOption('waitsearcher', $waitSearcher);
-
         return $this;
     }
 
@@ -96,7 +87,6 @@ class Commit extends AbstractCommand
     public function setExpungeDeletes(bool $expungeDeletes): self
     {
         $this->setOption('expungedeletes', $expungeDeletes);
-
         return $this;
     }
 }

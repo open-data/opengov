@@ -21,9 +21,7 @@ class FormatDateTest extends BrowserTestBase {
    */
   public function testAdminDefinedFormatDate() {
     // Create and log in an admin user.
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer site configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer site configuration']));
 
     // Add new date format.
     $edit = [

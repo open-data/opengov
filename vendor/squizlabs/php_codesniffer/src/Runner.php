@@ -232,7 +232,7 @@ class Runner
     /**
      * Exits if the minimum requirements of PHP_CodeSniffer are not met.
      *
-     * @return void
+     * @return array
      * @throws \PHP_CodeSniffer\Exceptions\DeepExitException If the requirements are not met.
      */
     public function checkRequirements()
@@ -291,7 +291,7 @@ class Runner
 
         // Ensure this option is enabled or else line endings will not always
         // be detected properly for files created on a Mac with the /r line ending.
-        @ini_set('auto_detect_line_endings', true);
+        ini_set('auto_detect_line_endings', true);
 
         // Disable the PCRE JIT as this caused issues with parallel running.
         ini_set('pcre.jit', false);
@@ -487,7 +487,6 @@ class Runner
                         $file = $todo->current();
 
                         if ($file->ignored === true) {
-                            $todo->next();
                             continue;
                         }
 
@@ -732,7 +731,7 @@ class Runner
 
                         if (isset($childOutput) === false) {
                             // The child process died, so the run has failed.
-                            $file = new DummyFile('', $this->ruleset, $this->config);
+                            $file = new DummyFile(null, $this->ruleset, $this->config);
                             $file->setErrorCounts(1, 0, 0, 0);
                             $this->printProgress($file, $totalBatches, $numProcessed);
                             $success = false;
@@ -756,7 +755,7 @@ class Runner
                         }
 
                         // Fake a processed file so we can print progress output for the batch.
-                        $file = new DummyFile('', $this->ruleset, $this->config);
+                        $file = new DummyFile(null, $this->ruleset, $this->config);
                         $file->setErrorCounts(
                             $childOutput['totalErrors'],
                             $childOutput['totalWarnings'],

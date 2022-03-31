@@ -215,9 +215,7 @@
                   'figcaption',
                 );
 
-                const captionFilter = new CKEDITOR.filter(
-                  widgetDefinition.editables.caption.allowedContent,
-                );
+                const captionFilter = new CKEDITOR.filter(widgetDefinition.editables.caption.allowedContent);
                 captionFilter.applyTo(caption);
 
                 // Use Drupal's data-placeholder attribute to insert a CSS-based,

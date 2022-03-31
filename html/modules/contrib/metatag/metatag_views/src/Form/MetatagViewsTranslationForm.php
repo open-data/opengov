@@ -11,17 +11,15 @@ use Drupal\metatag\MetatagToken;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\language\ConfigurableLanguageManagerInterface;
 use Drupal\metatag_views\MetatagViewsValuesCleanerTrait;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
- * Defines a form for translating meta tags for views.
+ * Class MetatagViewsEditForm.
  *
  * @package Drupal\metatag_views\Form
  */
 class MetatagViewsTranslationForm extends FormBase {
 
   use MetatagViewsValuesCleanerTrait;
-  use StringTranslationTrait;
 
   /**
    * Drupal\metatag\MetatagManager definition.
@@ -103,9 +101,9 @@ class MetatagViewsTranslationForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(MetatagManagerInterface $metatag_manager, EntityTypeManagerInterface $entity_type_manager, MetatagToken $token, MetatagTagPluginManager $tagPluginManager, ConfigurableLanguageManagerInterface $language_manager) {
+  public function __construct(MetatagManagerInterface $metatag_manager, EntityTypeManagerInterface $entity_manager, MetatagToken $token, MetatagTagPluginManager $tagPluginManager, ConfigurableLanguageManagerInterface $language_manager) {
     $this->metatagManager = $metatag_manager;
-    $this->viewsManager = $entity_type_manager->getStorage('view');
+    $this->viewsManager = $entity_manager->getStorage('view');
     $this->tokenService = $token;
     $this->tagPluginManager = $tagPluginManager;
     $this->languageManager = $language_manager;
@@ -138,7 +136,7 @@ class MetatagViewsTranslationForm extends FormBase {
     $config_name = $this->view->getConfigDependencyName();
     $config_path = 'display.' . $this->displayId . '.display_options.display_extenders.metatag_display_extender.metatags';
 
-    $configuration = $this->configFactory()->get($config_name);
+    $configuration = \Drupal::service('config.factory')->get($config_name);
     $this->baseData = $configuration->getOriginal($config_path, FALSE);
 
     // Set the translation target language on the configuration factory.
@@ -146,7 +144,7 @@ class MetatagViewsTranslationForm extends FormBase {
     $this->languageManager->setConfigOverrideLanguage($this->language);
 
     // Read in translated values.
-    $configuration = $this->configFactory()->get($config_name);
+    $configuration = \Drupal::service('config.factory')->get($config_name);
     $translated_values = $configuration->get($config_path);
 
     // Set the configuration language back.
@@ -160,9 +158,9 @@ class MetatagViewsTranslationForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Get the parameters from request.
-    $this->viewId = $this->getRequest()->get('view_id');
-    $this->displayId = $this->getRequest()->get('display_id');
-    $langcode = $this->getRequest()->get('langcode');
+    $this->viewId = \Drupal::request()->get('view_id');
+    $this->displayId = \Drupal::request()->get('display_id');
+    $langcode = \Drupal::request()->get('langcode');
 
     $this->view = $this->viewsManager->load($this->viewId);
     $this->language = $this->languageManager->getLanguage($langcode);
@@ -179,12 +177,12 @@ class MetatagViewsTranslationForm extends FormBase {
     ]);
 
     $form['metatags'] = $this->form($form, $this->prepareValues());
-    $form['metatags']['#title'] = $this->t('Metatags');
+    $form['metatags']['#title'] = t('Metatags');
     $form['metatags']['#type'] = 'fieldset';
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Submit'),
+      '#value' => t('Submit'),
     ];
 
     return $form;

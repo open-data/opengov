@@ -29,8 +29,7 @@ function webform_test_test_element_disabled() {
     // Set disabled.
     $element['#disabled'] = TRUE;
 
-    $element_key = str_replace(':', '_', $element_type);
-    $data[$element_key] = $element;
+    $data[$element_type] = $element;
   }
 
   return $data;

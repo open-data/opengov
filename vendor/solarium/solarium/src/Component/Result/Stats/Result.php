@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Result\Stats;
 
 /**
@@ -14,14 +7,19 @@ namespace Solarium\Component\Result\Stats;
  */
 class Result
 {
-    use ResultTrait;
-
     /**
      * Field name.
      *
      * @var string
      */
     protected $field;
+
+    /**
+     * Stats data.
+     *
+     * @var array
+     */
+    protected $stats;
 
     /**
      * Constructor.
@@ -46,26 +44,114 @@ class Result
     }
 
     /**
+     * Get min value.
+     *
+     * @return string|null
+     */
+    public function getMin(): ?string
+    {
+        return $this->getValue('min');
+    }
+
+    /**
+     * Get max value.
+     *
+     * @return string|null
+     */
+    public function getMax(): ?string
+    {
+        return $this->getValue('max');
+    }
+
+    /**
+     * Get sum value.
+     *
+     * @return string|null
+     */
+    public function getSum(): ?string
+    {
+        return $this->getValue('sum');
+    }
+
+    /**
+     * Get count value.
+     *
+     * @return int|null
+     */
+    public function getCount(): ?int
+    {
+        return (int) $this->getValue('count');
+    }
+
+    /**
+     * Get missing value.
+     *
+     * @return string|null
+     */
+    public function getMissing(): ?string
+    {
+        return $this->getValue('missing');
+    }
+
+    /**
+     * Get sumOfSquares value.
+     *
+     * @return string|null
+     */
+    public function getSumOfSquares(): ?string
+    {
+        return $this->getValue('sumOfSquares');
+    }
+
+    /**
+     * Get mean value.
+     *
+     * @return string|null
+     */
+    public function getMean(): ?string
+    {
+        return $this->getValue('mean');
+    }
+
+    /**
+     * Get stddev value.
+     *
+     * @return string|null
+     */
+    public function getStddev(): ?string
+    {
+        return $this->getValue('stddev');
+    }
+
+    /**
      * Get facet stats.
      *
      * @return array|null
      */
     public function getFacets(): ?array
     {
-        return $this->getStatValue('facets');
+        return $this->getValue('facets');
     }
 
     /**
-     * Get value by stat name.
+     * Get percentile stats.
      *
-     * @param string $stat
-     *
-     * @return mixed|null
-     *
-     * @deprecated Use getStatValue() instead
+     * @return array|null
      */
-    public function getValue(string $stat)
+    public function getPercentiles(): ?array
     {
-        return $this->getStatValue($stat);
+        return $this->getValue('percentiles');
+    }
+
+    /**
+     * Get value by name.
+     *
+     * @param mixed $name
+     *
+     * @return string|array|null
+     */
+    protected function getValue($name)
+    {
+        return $this->stats[$name] ?? null;
     }
 }

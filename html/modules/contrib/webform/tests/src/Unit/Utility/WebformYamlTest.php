@@ -38,22 +38,21 @@ class WebformYamlTest extends UnitTestCase {
    * @see testTidy()
    */
   public function providerTidy() {
-    $multiline = (floatval(\Drupal::VERSION) >= 9.1) ? '|-' : '|';
     $tests[] = [
       ['simple' => 'value'],
       "simple: value",
     ];
     $tests[] = [
       ['returns' => "line 1\nline 2"],
-      "returns: $multiline\n  line 1\n  line 2",
+      "returns: |\n  line 1\n  line 2",
     ];
     $tests[] = [
       ['one two' => "line 1\nline 2"],
-      "'one two': $multiline\n  line 1\n  line 2",
+      "'one two': |\n  line 1\n  line 2",
     ];
     $tests[] = [
       ['one two' => "line 1\r\nline 2"],
-      "'one two': $multiline\n  line 1\n  line 2",
+      "'one two': |\n  line 1\n  line 2",
     ];
     $tests[] = [
       ['array' => ['one', 'two']],
@@ -140,7 +139,7 @@ class WebformYamlTest extends UnitTestCase {
    *
    * @dataProvider providerEncode
    */
-  public function testEncode($yaml, $expected) {
+  public function testEncdoe($yaml, $expected) {
     $result = WebformYaml::encode($yaml);
     $this->assertEquals($expected, $result);
   }
@@ -151,18 +150,17 @@ class WebformYamlTest extends UnitTestCase {
    * @see testEncode()
    */
   public function providerEncode() {
-    $multiline = (floatval(\Drupal::VERSION) >= 9.1) ? '|-' : '|';
     $tests[] = [
       ['simple' => 'value'],
       "simple: value",
     ];
     $tests[] = [
       ['returns' => "line 1\nline 2"],
-      "returns: $multiline\n  line 1\n  line 2",
+      "returns: |\n  line 1\n  line 2",
     ];
     $tests[] = [
       ['one two' => "line 1\nline 2"],
-      "'one two': $multiline\n  line 1\n  line 2",
+      "'one two': |\n  line 1\n  line 2",
     ];
     $tests[] = [
       ['array' => ['one', 'two']],

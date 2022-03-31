@@ -11,7 +11,6 @@ use Drupal\Core\Archiver\ArchiveTar;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Config\ConfigManagerInterface;
 use Drupal\Core\Config\StorageInterface;
-use Drupal\Core\Site\Settings;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -84,7 +83,7 @@ class ExportCommand extends Command
         if (!$input->getOption('directory')) {
             $directory = $this->getIo()->ask(
                 $this->trans('commands.config.export.questions.directory'),
-                Settings::get('config_sync_directory')
+                config_get_config_directory(CONFIG_SYNC_DIRECTORY)
             );
             $input->setOption('directory', $directory);
         }
@@ -103,7 +102,7 @@ class ExportCommand extends Command
         $drupal_root = $this->drupalFinder->getComposerRoot();
 
         if (!$directory) {
-            $directory = Settings::get('config_sync_directory') ;
+            $directory = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
         }
 
         $fileSystem = new Filesystem();

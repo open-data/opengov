@@ -197,15 +197,12 @@ abstract class HandlerBase extends PluginBase implements ViewsHandlerInterface {
       case 'xss':
         $value = Xss::filter($value);
         break;
-
       case 'xss_admin':
         $value = Xss::filterAdmin($value);
         break;
-
       case 'url':
         $value = Html::escape(UrlHelper::stripDangerousProtocols($value));
         break;
-
       default:
         $value = Html::escape($value);
         break;
@@ -234,13 +231,10 @@ abstract class HandlerBase extends PluginBase implements ViewsHandlerInterface {
         return $string;
       case 'upper':
         return mb_strtoupper($string);
-
       case 'lower':
         return mb_strtolower($string);
-
       case 'ucfirst':
         return Unicode::ucfirst($string);
-
       case 'ucwords':
         return Unicode::ucwords($string);
     }

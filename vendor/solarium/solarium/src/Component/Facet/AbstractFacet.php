@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Facet;
 
 use Solarium\Core\Configurable;
@@ -15,7 +8,7 @@ use Solarium\Core\Query\LocalParameters\LocalParametersTrait;
 /**
  * Facet base class.
  *
- * @see https://solr.apache.org/guide/faceting.html
+ * @see http://wiki.apache.org/solr/SimpleFacetParameters
  */
 abstract class AbstractFacet extends Configurable implements FacetInterface
 {

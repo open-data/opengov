@@ -34,5 +34,8 @@ class GlobalOptionsEventListener implements EventSubscriberInterface
 
         // TODO: We need a good strategy for managing global options.
         // $simulate = $input->getOption('simulate');
+
+        // Set up legacy contexts (deprecated)
+        LegacyPreflight::setGlobalOptionContexts($input, $output);
     }
 }

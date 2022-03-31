@@ -47,7 +47,6 @@ use Drupal\facets\FacetInterface;
  *     "widget",
  *     "query_operator",
  *     "use_hierarchy",
- *     "keep_hierarchy_parents_active",
  *     "expand_hierarchy",
  *     "enable_parent_when_child_gets_disabled",
  *     "hard_limit",
@@ -147,14 +146,6 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   protected $use_hierarchy = FALSE;
 
   /**
-   * A boolean flag indicating if the parent results of a hierarchical facet
-   * should be kept active when a child becomes active.
-   *
-   * @var bool
-   */
-  protected $keep_hierarchy_parents_active = FALSE;
-
-  /**
    * A boolean indicating if hierarchical items should always be expanded.
    *
    * @var bool
@@ -173,7 +164,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    *
    * @var bool
    */
-  protected $exclude = FALSE;
+  protected $exclude;
 
   /**
    * The field identifier.
@@ -547,20 +538,6 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    */
   public function getUseHierarchy() {
     return $this->use_hierarchy;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setKeepHierarchyParentsActive($keep_hierarchy_parents_active) {
-    return $this->keep_hierarchy_parents_active = $keep_hierarchy_parents_active;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getKeepHierarchyParentsActive() {
-    return $this->keep_hierarchy_parents_active;
   }
 
   /**
@@ -1018,15 +995,6 @@ class Facet extends ConfigEntityBase implements FacetInterface {
 
     // Now rebuild the cache to force a fresh set of data.
     $container->get('plugin.manager.block')->clearCachedDefinitions();
-  }
-
-  /**
-   * Remove the facet lazy built data when the facet is serialized.
-   */
-  public function __sleep() {
-    unset($this->facet_source_instance);
-    unset($this->processors);
-    return parent::__sleep();
   }
 
 }

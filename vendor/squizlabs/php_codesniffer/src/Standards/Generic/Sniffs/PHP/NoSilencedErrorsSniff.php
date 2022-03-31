@@ -55,7 +55,7 @@ class NoSilencedErrorsSniff implements Sniff
     {
         // Prepare the "Found" string to display.
         $contextLength  = 4;
-        $endOfStatement = $phpcsFile->findEndOfStatement($stackPtr, [T_COMMA, T_COLON]);
+        $endOfStatement = $phpcsFile->findEndOfStatement($stackPtr, T_COMMA);
         if (($endOfStatement - $stackPtr) < $contextLength) {
             $contextLength = ($endOfStatement - $stackPtr);
         }

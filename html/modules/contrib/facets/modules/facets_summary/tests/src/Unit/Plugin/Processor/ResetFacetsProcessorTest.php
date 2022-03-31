@@ -71,7 +71,7 @@ class ResetFacetsProcessorTest extends UnitTestCase {
     $summary->addProcessor($config);
 
     $result = $this->processor->build($summary, ['foo'], []);
-    $this->assertSame('array', gettype($result));
+    $this->assertInternalType('array', $result);
   }
 
 }

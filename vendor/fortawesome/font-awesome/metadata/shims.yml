@@ -1,65 +1,66 @@
 area-chart:
   name: chart-area
 arrow-circle-o-down:
-  name: circle-down
+  name: arrow-alt-circle-down
   prefix: far
 arrow-circle-o-left:
-  name: circle-left
+  name: arrow-alt-circle-left
   prefix: far
 arrow-circle-o-right:
-  name: circle-right
+  name: arrow-alt-circle-right
   prefix: far
 arrow-circle-o-up:
-  name: circle-up
+  name: arrow-alt-circle-up
   prefix: far
 arrows:
-  name: up-down-left-right
+  name: arrows-alt
 arrows-alt:
-  name: maximize
+  name: expand-arrows-alt
 arrows-h:
-  name: left-right
+  name: arrows-alt-h
 arrows-v:
-  name: up-down
+  name: arrows-alt-v
 bar-chart:
-  name: chart-column
+  name: chart-bar
+  prefix: far
 bitbucket-square:
   name: bitbucket
   prefix: fab
 calendar:
-  name: calendar-days
+  name: calendar-alt
 calendar-o:
   name: calendar
   prefix: far
 caret-square-o-down:
-  name: square-caret-down
+  name: caret-square-down
   prefix: far
 caret-square-o-left:
-  name: square-caret-left
+  name: caret-square-left
   prefix: far
 caret-square-o-right:
-  name: square-caret-right
+  name: caret-square-right
   prefix: far
 caret-square-o-up:
-  name: square-caret-up
+  name: caret-square-up
   prefix: far
 cc:
   name: closed-captioning
   prefix: far
 chain-broken:
-  name: link-slash
+  name: unlink
 circle-o-notch:
   name: circle-notch
 circle-thin:
   name: circle
   prefix: far
 clipboard:
-  name: paste
+  prefix: far
 clone:
   prefix: far
 cloud-download:
-  name: cloud-arrow-down
+  name: cloud-download-alt
 cloud-upload:
-  name: cloud-arrow-up
+  name: cloud-upload-alt
 code-fork:
   name: code-branch
 comment-alt:
@@ -69,8 +70,6 @@ commenting:
   name: comment-dots
 compass:
   prefix: far
-compress:
-  name: down-left-and-up-right-to-center
 copyright:
   prefix: far
 creative-commons:
@@ -90,13 +89,11 @@ eercast:
 eur:
   name: euro-sign
 exchange:
-  name: right-left
-expand:
-  name: up-right-and-down-left-from-center
+  name: exchange-alt
 external-link:
-  name: up-right-from-square
+  name: external-link-alt
 external-link-square:
-  name: square-up-right
+  name: external-link-square-alt
 eye:
   prefix: far
 eye-dropper:
@@ -113,19 +110,17 @@ facebook-official:
   name: facebook
   prefix: fab
 file-text:
-  name: file-lines
+  name: file-alt
 files-o:
   name: copy
   prefix: far
 floppy-o:
-  name: floppy-disk
+  name: save
   prefix: far
 gbp:
-  name: sterling-sign
+  name: pound-sign
 glass:
-  name: martini-glass-empty
-globe:
-  name: earth-americas
+  name: glass-martini
 google-plus:
   name: google-plus-g
   prefix: fab
@@ -149,26 +144,24 @@ hand-o-up:
   prefix: far
 header:
   name: heading
-home:
-  name: house
-hourglass-half:
-  name: hourglass
-hourglass-o:
-  name: hourglass-empty
 id-badge:
   prefix: far
 ils:
   name: shekel-sign
 inr:
-  name: indian-rupee-sign
+  name: rupee-sign
+intersex:
+  name: transgender
 jpy:
   name: yen-sign
 krw:
   name: won-sign
 level-down:
-  name: turn-down
+  name: level-down-alt
 level-up:
-  name: turn-up
+  name: level-up-alt
+life-ring:
+  prefix: far
 line-chart:
   name: chart-line
 linkedin:
@@ -178,91 +171,89 @@ linkedin-square:
   name: linkedin
   prefix: fab
 list-alt:
-  name: rectangle-list
   prefix: far
 long-arrow-down:
-  name: down-long
+  name: long-arrow-alt-down
 long-arrow-left:
-  name: left-long
+  name: long-arrow-alt-left
 long-arrow-right:
-  name: right-long
+  name: long-arrow-alt-right
 long-arrow-up:
-  name: up-long
-magic:
-  name: wand-magic-sparkles
+  name: long-arrow-alt-up
 map-marker:
-  name: location-dot
+  name: map-marker-alt
 meanpath:
   name: font-awesome
   prefix: fab
 mobile:
-  name: mobile-screen-button
+  name: mobile-alt
 money:
-  name: money-bill-1
+  name: money-bill-alt
+  prefix: far
 object-group:
   prefix: far
 object-ungroup:
   prefix: far
 paste:
   prefix: far
+pencil:
+  name: pencil-alt
 pencil-square:
-  name: square-pen
+  name: pen-square
 pencil-square-o:
-  name: pen-to-square
+  name: edit
   prefix: far
 picture:
   name: image
 pie-chart:
   name: chart-pie
 refresh:
-  name: arrows-rotate
+  name: sync
 registered:
   prefix: far
 repeat:
-  name: arrow-rotate-right
+  name: redo
 rub:
   name: ruble-sign
-share-square-o:
-  name: share-from-square
+scissors:
+  name: cut
+shield:
+  name: shield-alt
 sign-in:
-  name: right-to-bracket
+  name: sign-in-alt
 sign-out:
-  name: right-from-bracket
-snapchat-ghost:
-  name: snapchat
-  prefix: fab
+  name: sign-out-alt
+sliders:
+  name: sliders-h
 sort-alpha-asc:
-  name: arrow-down-a-z
+  name: sort-alpha-down
 sort-alpha-desc:
-  name: arrow-down-z-a
+  name: sort-alpha-up
 sort-amount-asc:
-  name: arrow-down-short-wide
+  name: sort-amount-down
 sort-amount-desc:
-  name: arrow-down-wide-short
+  name: sort-amount-up
 sort-asc:
   name: sort-up
 sort-desc:
   name: sort-down
 sort-numeric-asc:
-  name: arrow-down-1-9
+  name: sort-numeric-down
 sort-numeric-desc:
-  name: arrow-down-9-1
+  name: sort-numeric-up
+spoon:
+  name: utensil-spoon
 star-half-empty:
   name: star-half
 star-half-full:
   name: star-half
-star-half-o:
-  name: star-half-stroke
-  prefix: far
 support:
   name: life-ring
   prefix: far
 tablet:
-  name: tablet-screen-button
+  name: tablet-alt
 tachometer:
-  name: gauge-high
-tasks:
-  name: bars-progress
+  name: tachometer-alt
 television:
   name: tv
 thumb-tack:
@@ -273,24 +264,17 @@ thumbs-o-down:
 thumbs-o-up:
   name: thumbs-up
   prefix: far
-transgender:
-  name: mars-and-venus
-transgender-alt:
-  name: transgender
+ticket:
+  name: ticket-alt
 trash:
-  name: trash-can
+  name: trash-alt
 trash-o:
-  name: trash-can
+  name: trash-alt
   prefix: far
 try:
-  name: turkish-lira-sign
-unlock-alt:
-  name: unlock
+  name: lira-sign
 usd:
   name: dollar-sign
-user-circle-o:
-  name: circle-user
-  prefix: far
 video-camera:
   name: video
 vimeo:

@@ -56,7 +56,7 @@ class SqlPgsql extends SqlBase
 
     /*
      * @param $hide_password
-     *   Not used in postgres. We always hide via a .pgpass file.
+     *   Not used in postgres. Use .pgpass file instead. See http://drupal.org/node/438828.
      */
     public function creds($hide_password = true)
     {

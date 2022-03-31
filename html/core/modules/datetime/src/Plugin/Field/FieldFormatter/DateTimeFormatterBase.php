@@ -232,6 +232,7 @@ abstract class DateTimeFormatterBase extends FormatterBase implements ContainerF
     $build = [
       '#theme' => 'time',
       '#text' => $this->formatDate($date),
+      '#html' => FALSE,
       '#attributes' => [
         'datetime' => $iso_date,
       ],

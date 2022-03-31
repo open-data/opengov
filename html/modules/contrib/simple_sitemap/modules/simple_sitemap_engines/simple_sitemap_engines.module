@@ -2,14 +2,8 @@
 
 /**
  * @file
- * Main module file containing hooks.
+ * Submits sitemaps to search engines.
  */
-
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
-use Drupal\simple_sitemap_engines\Entity\SimpleSitemapEngine;
-use Drupal\simple_sitemap_engines\Form\FormHelper;
 
 /**
  * Implements hook_cron().
@@ -17,167 +11,32 @@ use Drupal\simple_sitemap_engines\Form\FormHelper;
  * If the sitemap submission interval has elapsed, adds each search engine to
  * the submission queue to be processed.
  *
- * @see Drupal\simple_sitemap_engines\Plugin\QueueWorker\SitemapSubmittingWorker
+ * @see Drupal\simple_sitemap_engines\Plugin\QueueWorker\SitemapSubmitter
  */
 function simple_sitemap_engines_cron() {
+
+  /** @var \Drupal\Core\Config\Config $config */
   $config = \Drupal::config('simple_sitemap_engines.settings');
 
   if ($config->get('enabled')) {
     $interval = (int) $config->get('submission_interval') * 60 * 60;
-    $request_time = \Drupal::time()->getRequestTime();
+    $request_time = \Drupal::service('datetime.time')->getRequestTime();
+    $state = \Drupal::state();
 
-    foreach (SimpleSitemapEngine::loadSitemapSubmissionEngines() as $id => $engine) {
-      $last_submitted = \Drupal::state()->get("simple_sitemap_engines.simple_sitemap_engine.{$id}.last_submitted", -1);
-      if ($last_submitted !== -1
-        && $last_submitted + $interval > $request_time) {
-        continue;
-      }
-      if (!empty($engine->sitemap_variants)) {
-        \Drupal::queue('simple_sitemap_engine_submit')->createItem($id);
-      }
-    }
-  }
-}
+    if ($interval === 0
+      || $state->get('simple_sitemap_engines_last_submitted', 0) + $interval <= $request_time) {
 
-/**
- * Implements hook_form_alter().
- */
-function simple_sitemap_engines_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  /** @var Drupal\simple_sitemap_engines\Form\FormHelper $f */
-  $f = \Drupal::service('simple_sitemap.engines.form_helper');
-  if (/*!isset($form['simple_sitemap']) || */!$f->processForm($form_state)) {
-    return;
-  }
+      /** @var \Drupal\Core\Queue\QueueInterface $queue */
+      $queue = \Drupal::queue('simple_sitemap_engine_submit');
 
-  if ($f->getEntityCategory() === 'bundle') {
-    $f->displayEntitySettings($form['simple_sitemap']);
-    FormHelper::addSubmitHandler($form, 'simple_sitemap_engines_bundle_entity_form_submit');
-  }
-  elseif ($f->getEntityCategory() === 'instance') {
-    $f->displayEntitySettings($form);
-    FormHelper::addSubmitHandler($form, 'simple_sitemap_engines_entity_form_submit');
-  }
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function simple_sitemap_engines_form_simple_sitemap_entity_bundles_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  foreach ($form['settings'] as $bundle => &$bundle_settings) {
-    /** @var Drupal\simple_sitemap_engines\Form\FormHelper $f */
-    $f = \Drupal::service('simple_sitemap.engines.form_helper');
-    $f->setEntityCategory('bundle')
-      ->setEntityTypeId($form['entity_type_id']['#value'])
-      ->setBundleName($bundle)
-      ->displayEntitySettings($bundle_settings);
-  }
-  FormHelper::addSubmitHandler($form, 'simple_sitemap_engines_entity_bundles_form_submit');
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * @todo Implement form overriding \Drupal\simple_sitemap\Form\EntitiesForm.
- */
-function simple_sitemap_engines_form_simple_sitemap_entities_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  /** @var \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper */
-  $entity_helper = \Drupal::service('simple_sitemap.entity_helper');
-
-  $header = &$form['sitemap_entities']['entity_types']['#header'];
-  array_splice($header, 2, 0, ['index_now' => t('IndexNow')]);
-
-  foreach(Element::children($form['sitemap_entities']['entity_types']) as $type) {
-    $row = &$form['sitemap_entities']['entity_types'][$type];
-    $enabled = $row['enabled']['#default_value'];
-    $bundles = [];
-    if ($enabled) {
-      foreach (\Drupal::configFactory()->listAll("simple_sitemap_engines.bundle_settings.$type.") as $name) {
-        if (\Drupal::configFactory()->get($name)->get('index_now')) {
-          $name_parts = explode('.', $name);
-          $bundles[] = $entity_helper->getBundleLabel($type, array_pop($name_parts));
+      $state->set('simple_sitemap_engines_last_submitted', $request_time);
+      foreach (\Drupal::entityTypeManager()
+                 ->getStorage('simple_sitemap_engine')
+                 ->loadMultiple() as $id => $engine) {
+        if (!empty($engine->sitemap_variants)) {
+          $queue->createItem($id);
         }
       }
     }
-    array_splice($row, 2, 0, ['index_now' => [
-      '#type' => 'item',
-      '#input' => FALSE,
-      '#markup' => $bundles
-        ? '<em>' . implode(', ', $bundles) . "</em>"
-        : ($enabled ? t('Excluded') : NULL),
-    ]]);
   }
-}
-
-/**
- * Form submission handler called in hook_form_alter.
- */
-function simple_sitemap_engines_bundle_entity_form_submit(array $form, FormStateInterface $form_state) {
-  /** @var Drupal\simple_sitemap_engines\Form\FormHelper $f */
-  $f = \Drupal::service('simple_sitemap.engines.form_helper');
-  if (!$f->processForm($form_state)) {
-    return;
-  }
-
-  \Drupal::configFactory()->getEditable(
-    "simple_sitemap_engines.bundle_settings.{$f->getEntityTypeId()}.{$f->getBundleName()}"
-  )->set('index_now', $form_state->getValue(['simple_sitemap', 'index_now']))->save();
-}
-
-/**
- * Form submission handler called in hook_form_alter.
- */
-function simple_sitemap_engines_entity_form_submit(array $form, FormStateInterface $form_state) {
-  /** @var Drupal\simple_sitemap_engines\Form\FormHelper $f */
-  $f = \Drupal::service('simple_sitemap.engines.form_helper');
-  if ($f->processForm($form_state)) {
-    $f->getEntity()->_index_now = (bool) $form_state->getValue(['index_now']);
-  }
-}
-
-/**
- * Form submission handler called in hook_form_alter.
- */
-function simple_sitemap_engines_entity_bundles_form_submit(array $form, FormStateInterface $form_state) {
-  foreach ($form_state->getValue('bundles') as $bundle => $settings) {
-    \Drupal::configFactory()->getEditable(
-    "simple_sitemap_engines.bundle_settings.{$form_state->getValue('entity_type_id')}.$bundle"
-    )->set('index_now', $settings['index_now'])->save();
-  }
-}
-
-/**
- * Implements hook_entity_delete().
- */
-function simple_sitemap_engines_entity_delete(EntityInterface $entity) {
-  /** @var \Drupal\simple_sitemap_engines\Submitter\IndexNowSubmitter $submitter */
-  $submitter = \Drupal::service('simple_sitemap.engines.index_now_submitter');
-  $submitter->submitIfSubmittable($entity);
-}
-
-/**
- * Implements hook_entity_insert().
- */
-function simple_sitemap_engines_entity_insert(EntityInterface $entity) {
-  /** @var \Drupal\simple_sitemap_engines\Submitter\IndexNowSubmitter $submitter */
-  $submitter = \Drupal::service('simple_sitemap.engines.index_now_submitter');
-  $submitter->submitIfSubmittable($entity);
-}
-
-/**
- * Implements hook_entity_update().
- */
-function simple_sitemap_engines_entity_update(EntityInterface $entity) {
-  /** @var \Drupal\simple_sitemap_engines\Submitter\IndexNowSubmitter $submitter */
-  $submitter = \Drupal::service('simple_sitemap.engines.index_now_submitter');
-  $submitter->submitIfSubmittable($entity);
-}
-
-/**
- * Implements hook_entity_bundle_delete().
- *
- * Removes settings of the removed bundle.
- */
-function simple_sitemap_engines_entity_bundle_delete($entity_type_id, $bundle) {
-  \Drupal::configFactory()
-    ->getEditable("simple_sitemap_engines.bundle_settings.$entity_type_id.$bundle")->delete();
 }

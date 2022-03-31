@@ -36,7 +36,7 @@ class FieldSettingsTest extends MigrateTestCase {
       ]);
 
     $value = $plugin->transform([], $executable, $row, 'foo');
-    $this->assertIsArray($value);
+    $this->assertInternalType('array', $value);
     $this->assertSame('', $value['default_image']['uuid']);
   }
 

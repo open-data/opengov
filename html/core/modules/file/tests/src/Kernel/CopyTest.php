@@ -33,8 +33,8 @@ class CopyTest extends FileManagedUnitTestBase {
 
     $this->assertDifferentFile($source, $result);
     $this->assertEqual($result->getFileUri(), $desired_uri, 'The copied file entity has the desired filepath.');
-    $this->assertFileExists($source->getFileUri());
-    $this->assertFileExists($result->getFileUri());
+    $this->assertTrue(file_exists($source->getFileUri()), 'The original file still exists.');
+    $this->assertTrue(file_exists($result->getFileUri()), 'The copied file exists.');
 
     // Reload the file from the database and check that the changes were
     // actually saved.

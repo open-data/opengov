@@ -65,9 +65,3 @@ $a = [
 
 $var = $foo->something(!$var);
 $var = $foo?->something(!$var);
-
-$callback = function ($value) {
-    if ($value > 10) {
-        return false;
-    }
-};

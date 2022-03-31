@@ -2,33 +2,28 @@
  * @file
  * Attaches simple_sitemap behaviors to the entity form.
  */
-(function ($, Drupal) {
+(function($) {
 
   "use strict";
 
-  Drupal.behaviors.simpleSitemapFieldsetSummaries = {
-    attach: function (context) {
-      $(context).find('.simple-sitemap-fieldset').drupalSetSummary(function (context) {
-        let summary = '', enabledVariants = [];
-
-        $(context).find('input:checkbox[name$="[index_now]"]').each(function () {
-          summary = (this.checked ? Drupal.t('IndexNow notification enabled') : Drupal.t('IndexNow notification disabled')) + ', ';
-        });
-
-        $(context).find('input:radio:checked[data-simple-sitemap-label][value="1"]').each(function () {
-          enabledVariants.push(this.dataset.simpleSitemapLabel);
+  Drupal.behaviors.simple_sitemapFieldsetSummaries = {
+    attach: function(context, settings) {
+      $(context).find('#edit-simple-sitemap').drupalSetSummary(function(context) {
+        var enabledVariants = [];
+        $('input:radio.enabled-for-variant').each(function() {
+          if ($(this).is(':checked') && $(this).val() == 1) {
+            enabledVariants.push($(this).attr('class').split(' ')[1])
+          }
         });
 
         if (enabledVariants.length > 0) {
-          summary += Drupal.t('Included in sitemaps: ') + enabledVariants.join(', ');
+          return Drupal.t('Included in sitemap variants: ') + enabledVariants.join(', ');
         }
         else {
-          summary += Drupal.t('Excluded from all sitemaps');
+          return Drupal.t('Excluded from all sitemap variants');
         }
 
-        return summary;
       });
     }
   };
-
-})(jQuery, Drupal);
+})(jQuery);

@@ -23,7 +23,7 @@ elements: |
       one
       two
       three
-      
+  
     '#class__description': 'This is a custom class description.'
     '#style__description': 'This is a custom style description.'
     '#attributes__description': 'This is a custom attributes description.'
@@ -32,18 +32,8 @@ elements: |
         - one
         - two
         - four
-        - five
       style: 'color: red'
       custom: test
-  webform_element_attributes_no_classes:
-    '#type': webform_element_attributes
-    '#title': webform_element_attributes_no_classes
-    '#default_value':
-      class:
-        - one
-        - two
-        - four
-        - five
   
 css: ''
 javascript: ''
@@ -65,7 +55,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_disable_remote_addr: false
+  form_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -86,9 +76,6 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
-  form_method: ''
-  form_action: ''
-  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -235,7 +222,5 @@ handlers:
     status: true
     conditions: {  }
     weight: 0
-    settings:
-      format: yaml
-      submission: false
+    settings: {  }
 variants: {  }

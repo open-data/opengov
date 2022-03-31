@@ -34,11 +34,10 @@ class UserRegistrationTest extends BrowserTestBase {
     // Require email verification.
     $config->set('verify_mail', TRUE)->save();
 
-    // Set registration to administrator only and ensure the user registration
-    // page is inaccessible.
+    // Set registration to administrator only.
     $config->set('register', UserInterface::REGISTER_ADMINISTRATORS_ONLY)->save();
     $this->drupalGet('user/register');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403, 'Registration page is inaccessible when only administrators can create accounts.');
 
     // Allow registration by site visitors without administrator approval.
     $config->set('register', UserInterface::REGISTER_VISITORS)->save();
@@ -212,7 +211,7 @@ class UserRegistrationTest extends BrowserTestBase {
 
     // Create one account.
     $this->drupalPostForm('user/register', $edit, t('Create new account'));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
 
     $user_storage = \Drupal::entityTypeManager()->getStorage('user');
 
@@ -225,7 +224,7 @@ class UserRegistrationTest extends BrowserTestBase {
     $edit['pass[pass2]'] = $edit['pass[pass1]'] = $this->randomMachineName();
 
     $this->drupalPostForm('user/register', $edit, t('Create new account'));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
 
     $this->assertNotEmpty($user_storage->loadByProperties(['name' => $edit['name']]));
   }

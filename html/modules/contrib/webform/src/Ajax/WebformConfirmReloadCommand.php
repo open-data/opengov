@@ -19,7 +19,7 @@ class WebformConfirmReloadCommand implements CommandInterface {
   protected $message;
 
   /**
-   * Constructs a WebformConfirmReloadCommand object.
+   * Constructs an WebformConfirmReloadCommand object.
    *
    * @param string $message
    *   The message to be displayed.

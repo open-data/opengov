@@ -167,8 +167,12 @@ class MigrateFieldInstanceTest extends MigrateDrupal7TestBase {
     $this->assertEntity('node.article.field_vocab_fixed', 'vocab_fixed', 'entity_reference', FALSE, TRUE);
     $this->assertEntity('node.article.field_vocab_localize', 'vocab_localize', 'entity_reference', FALSE, FALSE);
     $this->assertEntity('node.article.field_vocab_translate', 'vocab_translate', 'entity_reference', FALSE, TRUE);
+  }
 
-    // Test migration of text field instances with different text processing.
+  /**
+   * Tests the migration of text field instances with different text processing.
+   */
+  public function testTextFieldInstances() {
     // All text and text_long field instances using a field base that has only
     // plain text instances should be migrated to string and string_long fields.
     // All text_with_summary field instances using a field base that has only

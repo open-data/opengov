@@ -157,9 +157,8 @@ interface EntityTypeInterface extends PluginDefinitionInterface {
    *
    * @param string $handler_type
    *   The type of handler to check.
-   * @param string|false $nested
-   *   (optional) The nested handler definition key, or FALSE if the handler
-   *   does not have a nested definition. Defaults to FALSE.
+   * @param bool $nested
+   *   (optional) If this handler has a nested definition. Defaults to FALSE.
    *
    * @return bool
    *   TRUE if a handler of this type exists, FALSE otherwise.
@@ -169,14 +168,11 @@ interface EntityTypeInterface extends PluginDefinitionInterface {
   /**
    * @param string $handler_type
    *   The handler type to get.
-   * @param string|false $nested
-   *   (optional) The nested handler definition key, or FALSE if the handler
-   *   does not have a nested definition. Defaults to FALSE.
    *
    * @return array|string|null
    *   The handlers for a given type, or NULL if none exist.
    */
-  public function getHandlerClass($handler_type, $nested = FALSE);
+  public function getHandlerClass($handler_type);
 
   /**
    * Gets an array of handlers.
@@ -232,9 +228,8 @@ interface EntityTypeInterface extends PluginDefinitionInterface {
    * @param string $operation
    *   The name of the operation to use, e.g., 'default'.
    *
-   * @return string|null
-   *   The class for this operation's form for this entity type or NULL if the
-   *   entity type does not have a form class for this operation.
+   * @return string
+   *   The class for this operation's form for this entity type.
    *
    * @see \Drupal\Core\Entity\EntityFormBuilderInterface
    */
@@ -369,11 +364,9 @@ interface EntityTypeInterface extends PluginDefinitionInterface {
    * @return bool
    *   TRUE if the entity type is a subclass of the class or interface.
    *
-   * @deprecated in drupal:8.3.0 and is removed from drupal:10.0.0.
+   * @deprecated in drupal:8.3.0 and is removed from drupal:9.0.0.
    *   Use Drupal\Core\Entity\EntityTypeInterface::entityClassImplements()
    *   instead.
-   *
-   * @see https://www.drupal.org/node/2842808
    */
   public function isSubclassOf($class);
 

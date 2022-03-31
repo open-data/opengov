@@ -4,19 +4,21 @@ namespace Drupal\pathauto;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Remove the drush commands until path_alias module is enabled.
+ * Overrides the pathauto.alias_storage_helper service if needed.
  */
 class PathautoServiceProvider extends ServiceProviderBase {
 
   /**
    * {@inheritdoc}
    */
-  public function register(ContainerBuilder $container) {
-    $definitions = array_keys($container->getDefinitions());
-    if (!in_array('path_alias.repository', $definitions)) {
-      $container->removeDefinition('pathauto.commands');
+  public function alter(ContainerBuilder $container) {
+    if (version_compare(\Drupal::VERSION, '8.8', '<')) {
+      $definition = $container->getDefinition('pathauto.alias_storage_helper');
+      $definition->setClass(LegacyAliasStorageHelper::class);
+      $definition->setArgument(1, new Reference('path.alias_storage'));
     }
   }
 

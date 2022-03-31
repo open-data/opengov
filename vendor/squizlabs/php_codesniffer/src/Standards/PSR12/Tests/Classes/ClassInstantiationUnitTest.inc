@@ -36,9 +36,3 @@ $a = new ${$varHoldingClassName};
 $class = new $obj?->classname();
 $class = new $obj?->classname;
 $class = new ${$obj?->classname};
-
-// Issue 3456.
-// Anon classes should be skipped, even when there is an attribute between the new and the class keywords.
-$anonWithAttribute = new #[SomeAttribute('summary')] class {
-    public const SOME_STUFF = 'foo';
-};

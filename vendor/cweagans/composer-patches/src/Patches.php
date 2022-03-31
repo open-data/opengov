@@ -124,7 +124,6 @@ class Patches implements PluginInterface, EventSubscriberInterface {
       }
 
       // Remove packages for which the patch set has changed.
-      $promises = array();
       foreach ($packages as $package) {
         if (!($package instanceof AliasPackage)) {
           $package_name = $package->getName();
@@ -136,13 +135,9 @@ class Patches implements PluginInterface, EventSubscriberInterface {
             || ($has_patches && $has_applied_patches && $tmp_patches[$package_name] !== $extra['patches_applied'])) {
             $uninstallOperation = new UninstallOperation($package, 'Removing package so it can be re-installed and re-patched.');
             $this->io->write('<info>Removing package ' . $package_name . ' so that it can be re-installed and re-patched.</info>');
-            $promises[] = $installationManager->uninstall($localRepository, $uninstallOperation);
+            $installationManager->uninstall($localRepository, $uninstallOperation);
           }
         }
-      }
-      $promises = array_filter($promises);
-      if ($promises) {
-        $this->composer->getLoop()->wait($promises);
       }
     }
     // If the Locker isn't available, then we don't need to do this.
@@ -283,7 +278,6 @@ class Patches implements PluginInterface, EventSubscriberInterface {
     // Check if we should exit in failure.
     $extra = $this->composer->getPackage()->getExtra();
     $exitOnFailure = getenv('COMPOSER_EXIT_ON_PATCH_FAILURE') || !empty($extra['composer-exit-on-patch-failure']);
-    $skipReporting = getenv('COMPOSER_PATCHES_SKIP_REPORTING') || !empty($extra['composer-patches-skip-reporting']);
 
     // Get the package object for the current operation.
     $operation = $event->getOperation();
@@ -330,10 +324,7 @@ class Patches implements PluginInterface, EventSubscriberInterface {
     $localPackage->setExtra($extra);
 
     $this->io->write('');
-
-    if (true !== $skipReporting) {
-      $this->writePatchReport($this->patches[$package_name], $install_path);
-    }
+    $this->writePatchReport($this->patches[$package_name], $install_path);
   }
 
   /**
@@ -562,19 +553,6 @@ class Patches implements PluginInterface, EventSubscriberInterface {
       }
     }
     return $patched;
-  }
-
-  /**
-   * Indicates if a package has been patched.
-   *
-   * @param \Composer\Package\PackageInterface $package
-   *   The package to check.
-   *
-   * @return bool
-   *   TRUE if the package has been patched.
-   */
-  public static function isPackagePatched(PackageInterface $package) {
-    return array_key_exists('patches_applied', $package->getExtra());
   }
 
     /**

@@ -12,7 +12,6 @@ namespace PHP_CodeSniffer\Filters;
 use PHP_CodeSniffer\Util;
 use PHP_CodeSniffer\Ruleset;
 use PHP_CodeSniffer\Config;
-use ReturnTypeWillChange;
 
 class Filter extends \RecursiveFilterIterator
 {
@@ -90,7 +89,6 @@ class Filter extends \RecursiveFilterIterator
      *
      * @return bool
      */
-    #[ReturnTypeWillChange]
     public function accept()
     {
         $filePath = $this->current();
@@ -132,7 +130,6 @@ class Filter extends \RecursiveFilterIterator
      *
      * @return \RecursiveIterator
      */
-    #[ReturnTypeWillChange]
     public function getChildren()
     {
         $filterClass = get_called_class();

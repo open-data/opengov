@@ -2,8 +2,6 @@
 
 namespace Drupal\webform_devel;
 
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\Render\Element\Email as EmailElement;
@@ -27,13 +25,6 @@ class WebformDevelSchema implements WebformDevelSchemaInterface {
   use StringTranslationTrait;
 
   /**
-   * The entity field manager.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
-   */
-  protected $entityFieldManager;
-
-  /**
    * The element info manager.
    *
    * @var \Drupal\Core\Render\ElementInfoManagerInterface
@@ -52,14 +43,11 @@ class WebformDevelSchema implements WebformDevelSchemaInterface {
    *
    * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
    *   The element info manager.
-   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
-   *   The entity field manager.
    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
    *   The webform element manager.
    */
-  public function __construct(ElementInfoManagerInterface $element_info, EntityFieldManagerInterface $entity_field_manager, WebformElementManagerInterface $element_manager) {
+  public function __construct(ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager) {
     $this->elementInfo = $element_info;
-    $this->entityFieldManager = $entity_field_manager;
     $this->elementManager = $element_manager;
   }
 
@@ -78,8 +66,7 @@ class WebformDevelSchema implements WebformDevelSchemaInterface {
       'maxlength' => $this->t('Maxlength'),
       'required' => $this->t('Required'),
       'multiple' => $this->t('Multiple'),
-      'options_text' => $this->t('Options text'),
-      'options_value' => $this->t('Options value'),
+      'options' => $this->t('Options'),
     ];
   }
 
@@ -94,7 +81,6 @@ class WebformDevelSchema implements WebformDevelSchemaInterface {
    */
   public function getElements(WebformInterface $webform) {
     $records = [];
-
     $elements = $webform->getElementsInitializedFlattenedAndHasValue();
     foreach ($elements as $element_key => $element) {
       $element_plugin = $this->elementManager->getElementInstance($element);
@@ -107,89 +93,7 @@ class WebformDevelSchema implements WebformDevelSchemaInterface {
         }
       }
     }
-
-    $field_definitions = $this->entityFieldManager->getBaseFieldDefinitions('webform_submission');
-    foreach ($field_definitions as $field_name => $field_definition) {
-      $definition = $this->getDefinition($field_definition);
-      unset($definition['options']);
-      $records[$field_name] = $definition;
-    }
-
     return $records;
-  }
-
-  /**
-   * Get webform element schema.
-   *
-   * @param \Drupal\Core\Field\BaseFieldDefinition $definition
-   *   A webform submission base field definition.
-   *
-   * @return array
-   *   An array containing the schema for a webform submission
-   *   base field definition.
-   */
-  protected function getDefinition(BaseFieldDefinition $definition) {
-    $data = [];
-
-    // Name.
-    $data['name'] = $definition->getName();
-
-    // Title.
-    $data['title'] = $definition->getName();
-
-    // Element type.
-    $data['type'] = $definition->getType();
-
-    // Datatype.
-    $datatype = '';
-    switch ($definition->getType()) {
-      case 'created':
-      case 'changed':
-      case 'completed':
-      case 'timestamp':
-        $datatype = 'Timestamp';
-        break;
-
-      case 'language':
-      case 'string':
-      case 'uuid':
-      case 'entity_reference':
-        $datatype = 'Text';
-        break;
-
-      case 'string_long':
-        $datatype = 'Blob';
-        break;
-
-      case 'integer':
-        $datatype = 'Number';
-        break;
-
-      case 'boolean':
-        $datatype = 'Boolean';
-        break;
-    }
-
-    $data['datatype'] = $datatype;
-
-    // Maxlength.
-    $maxlength = $definition->getSetting('max_length');
-    switch ($datatype) {
-      case 'Blob':
-        $maxlength = 'Unlimited';
-    }
-    $data['maxlength'] = $maxlength;
-
-    // Required.
-    $data['required'] = '';
-
-    // Multiple.
-    $data['multiple'] = $definition->getCardinality();
-
-    // Options.
-    $data['options'] = [];
-
-    return $data;
   }
 
   /**
@@ -311,12 +215,10 @@ class WebformDevelSchema implements WebformDevelSchemaInterface {
     $data['multiple'] = $multiple;
 
     if (isset($element['#options'])) {
-      $data['options_text'] = OptGroup::flattenOptions($element['#options']);
-      $data['options_value'] = array_keys(OptGroup::flattenOptions($element['#options']));
+      $data['options'] = OptGroup::flattenOptions($element['#options']);
     }
     else {
-      $data['options_text'] = [];
-      $data['options_value'] = [];
+      $data['options'] = [];
     }
 
     return $data;

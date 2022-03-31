@@ -9,7 +9,6 @@ dependencies:
 id: text_el_6_0_0
 label: 'Greek Text Field'
 minimum_solr_version: 6.0.0
-custom_code: ''
 field_type_language_code: el
 domains: {}
 field_type:
@@ -472,24 +471,3 @@ text_files:
     "\uFB05" => "st"
     # ﬆ => st
     "\uFB06" => "st"
-    # Māori macrons.
-    # Ā => A
-    "\u0100" => "A"
-    # Ē => E
-    "\u0112" => "E"
-    # Ī => I
-    "\u012A" => "I"
-    # Ō => O
-    "\u014C" => "O"
-    # Ū => U
-    "\u016A" => "U"
-    # ā => a
-    "\u0101" => "a"
-    # ē => e
-    "\u0113" => "e"
-    # ī => i
-    "\u012B" => "i"
-    # ō => o
-    "\u014D" => "o"
-    # ū => u
-    "\u016B" => "u"

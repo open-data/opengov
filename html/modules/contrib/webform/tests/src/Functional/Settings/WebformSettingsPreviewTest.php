@@ -36,66 +36,61 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
    * Tests webform webform submission form preview.
    */
   public function testPreview() {
-    $assert_session = $this->assertSession();
-
     $this->drupalLogin($this->rootUser);
 
     $webform_preview = Webform::load('test_form_preview');
 
     // Check webform with optional preview.
     $this->drupalGet('/webform/test_form_preview');
-    $assert_session->buttonExists('Submit');
-    $assert_session->buttonExists('Preview');
+    $this->assertFieldByName('op', 'Submit');
+    $this->assertFieldByName('op', 'Preview');
 
     // Check default preview with values.
-    $this->drupalGet('/webform/test_form_preview');
-    $edit = ['name' => 'test', 'email' => 'example@example.com', 'checkbox' => TRUE];
-    $this->submitForm($edit, 'Preview');
+    $this->drupalPostForm('/webform/test_form_preview', ['name' => 'test', 'email' => 'example@example.com', 'checkbox' => TRUE], 'Preview');
 
-    $assert_session->responseContains('<h1>Test: Webform: Preview: Preview</h1>');
+    $this->assertRaw('<h1>Test: Webform: Preview: Preview</h1>');
 
-    $assert_session->responseContains('<b>Preview</b></li>');
+    $this->assertRaw('<b>Preview</b></li>');
 
-    $assert_session->responseContains('Please review your submission. Your submission is not complete until you press the "Submit" button!');
+    $this->assertRaw('Please review your submission. Your submission is not complete until you press the "Submit" button!');
 
-    $assert_session->buttonExists('Submit');
-    $assert_session->buttonExists('< Previous');
+    $this->assertFieldByName('op', 'Submit');
+    $this->assertFieldByName('op', '< Previous');
 
-    $assert_session->responseContains('<div class="webform-preview js-form-wrapper form-wrapper" data-drupal-selector="edit-preview" id="edit-preview">');
-    $assert_session->responseContains('<div data-drupal-selector="edit-submission" class="webform-submission-data webform-submission-data--webform-test-form-preview webform-submission-data--view-mode-preview">');
-    $assert_session->responseContains('<fieldset class="format-attributes-class webform-container webform-container-type-fieldset js-form-item form-item js-form-wrapper form-wrapper" id="test_form_preview--fieldset">');
-    $assert_session->responseContains('<div class="format-attributes-class webform-element webform-element-type-textfield js-form-item form-item js-form-type-item form-item-name js-form-item-name" id="test_form_preview--name">');
-    $assert_session->responseContains('<label>Name</label>' . PHP_EOL . '        test');
+    $this->assertRaw('<div class="webform-preview js-form-wrapper form-wrapper" data-drupal-selector="edit-preview" id="edit-preview">');
+    $this->assertRaw('<div data-drupal-selector="edit-submission" class="webform-submission-data webform-submission-data--webform-test-form-preview webform-submission-data--view-mode-preview">');
+    $this->assertRaw('<fieldset class="format-attributes-class webform-container webform-container-type-fieldset js-form-item form-item js-form-wrapper form-wrapper" id="test_form_preview--fieldset">');
+    $this->assertRaw('<div class="format-attributes-class webform-element webform-element-type-textfield js-form-item form-item js-form-type-item form-item-name js-form-item-name" id="test_form_preview--name">');
+    $this->assertRaw('<label>Name</label>' . PHP_EOL . '        test');
 
-    $assert_session->responseContains('<section class="format-attributes-class js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_form_preview--container">');
-    $assert_session->responseContains('<div class="format-attributes-class webform-element webform-element-type-email js-form-item form-item js-form-type-item form-item-email js-form-item-email" id="test_form_preview--email">');
-    $assert_session->responseContains('<label>Email</label>' . PHP_EOL . '        <a href="mailto:example@example.com">example@example.com</a>');
+    $this->assertRaw('<section class="format-attributes-class js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_form_preview--container">');
+    $this->assertRaw('<div class="format-attributes-class webform-element webform-element-type-email js-form-item form-item js-form-type-item form-item-email js-form-item-email" id="test_form_preview--email">');
+    $this->assertRaw('<label>Email</label>' . PHP_EOL . '        <a href="mailto:example@example.com">example@example.com</a>');
 
-    $assert_session->responseContains('<div class="format-attributes-class webform-element webform-element-type-checkbox js-form-item form-item js-form-type-item form-item-checkbox js-form-item-checkbox" id="test_form_preview--checkbox">');
-    $assert_session->responseContains('<section class="format-attributes-class js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_form_preview--section">');
-    $assert_session->responseContains('<label>Checkbox</label>' . PHP_EOL . '        Yes');
-    $assert_session->responseContains('<div class="webform-preview js-form-wrapper form-wrapper" data-drupal-selector="edit-preview" id="edit-preview">');
+    $this->assertRaw('<div class="format-attributes-class webform-element webform-element-type-checkbox js-form-item form-item js-form-type-item form-item-checkbox js-form-item-checkbox" id="test_form_preview--checkbox">');
+    $this->assertRaw('<section class="format-attributes-class js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_form_preview--section">');
+    $this->assertRaw('<label>Checkbox</label>' . PHP_EOL . '        Yes');
+    $this->assertRaw('<div class="webform-preview js-form-wrapper form-wrapper" data-drupal-selector="edit-preview" id="edit-preview">');
 
     // Check default preview without values.
-    $this->drupalGet('/webform/test_form_preview');
-    $this->submitForm([], 'Preview');
-    $assert_session->responseNotContains('<label>Name</label>');
-    $assert_session->responseNotContains('<label>Email</label>');
-    $assert_session->responseNotContains('<label>Checkbox</label>');
+    $this->drupalPostForm('/webform/test_form_preview', [], 'Preview');
+    $this->assertNoRaw('<label>Name</label>');
+    $this->assertNoRaw('<label>Email</label>');
+    $this->assertNoRaw('<label>Checkbox</label>');
 
     // Check submission view without values.
     $sid = $this->postSubmission($webform_preview);
     $this->drupalGet("admin/structure/webform/manage/test_form_preview/submission/$sid");
-    $assert_session->responseNotContains('<label>Name</label>');
-    $assert_session->responseNotContains('<label>Email</label>');
-    $assert_session->responseNotContains('<label>Checkbox</label>');
+    $this->assertNoRaw('<label>Name</label>');
+    $this->assertNoRaw('<label>Email</label>');
+    $this->assertNoRaw('<label>Checkbox</label>');
 
     // Check submission table without values.
     $this->drupalGet("admin/structure/webform/manage/test_form_preview/submission/$sid/table");
-    $assert_session->responseNotContains('<th>Name</th>');
-    $assert_session->responseNotContains('<th>Email</th>');
-    $assert_session->responseNotContains('<th>Checkbox</th>');
-    $assert_session->responseNotContains('<td>No</td>');
+    $this->assertNoRaw('<th>Name</th>');
+    $this->assertNoRaw('<th>Email</th>');
+    $this->assertNoRaw('<th>Checkbox</th>');
+    $this->assertNoRaw('<td>No</td>');
 
     // Clear default preview message.
     \Drupal::configFactory()->getEditable('webform.settings')
@@ -103,10 +98,8 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
       ->save();
 
     // Check blank preview message is not displayed.
-    $this->drupalGet('/webform/test_form_preview');
-    $edit = ['name' => 'test', 'email' => 'example@example.com'];
-    $this->submitForm($edit, 'Preview');
-    $assert_session->responseNotContains('Please review your submission. Your submission is not complete until you press the "Submit" button!');
+    $this->drupalPostForm('/webform/test_form_preview', ['name' => 'test', 'email' => 'example@example.com'], 'Preview');
+    $this->assertNoRaw('Please review your submission. Your submission is not complete until you press the "Submit" button!');
 
     // Set preview and submission to include empty.
     $webform_preview->setSetting('preview_exclude_empty', FALSE);
@@ -116,27 +109,25 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
     $webform_preview->save();
 
     // Check empty elements are included in preview.
-    $this->drupalGet('/webform/test_form_preview');
-    $edit = ['name' => '', 'email' => '', 'checkbox' => FALSE];
-    $this->submitForm($edit, 'Preview');
-    $assert_session->responseContains('<label>Name</label>' . PHP_EOL . '        {Empty}');
-    $assert_session->responseContains('<div class="format-attributes-class webform-element webform-element-type-email js-form-item form-item js-form-type-item form-item-email js-form-item-email" id="test_form_preview--email">');
-    $assert_session->responseContains('<label>Email</label>' . PHP_EOL . '        {Empty}');
-    $assert_session->responseContains('<label>Checkbox</label>' . PHP_EOL . '        No');
+    $this->drupalPostForm('/webform/test_form_preview', ['name' => '', 'email' => '', 'checkbox' => FALSE], 'Preview');
+    $this->assertRaw('<label>Name</label>' . PHP_EOL . '        {Empty}');
+    $this->assertRaw('<div class="format-attributes-class webform-element webform-element-type-email js-form-item form-item js-form-type-item form-item-email js-form-item-email" id="test_form_preview--email">');
+    $this->assertRaw('<label>Email</label>' . PHP_EOL . '        {Empty}');
+    $this->assertRaw('<label>Checkbox</label>' . PHP_EOL . '        No');
 
     // Check empty elements are included in submission view.
     $sid = $this->postSubmission($webform_preview);
     $this->drupalGet("admin/structure/webform/manage/test_form_preview/submission/$sid");
-    $assert_session->responseContains('<label>Name</label>');
-    $assert_session->responseContains('<label>Email</label>');
-    $assert_session->responseContains('<label>Checkbox</label>');
+    $this->assertRaw('<label>Name</label>');
+    $this->assertRaw('<label>Email</label>');
+    $this->assertRaw('<label>Checkbox</label>');
 
     // Check submission table without values.
     $this->drupalGet("admin/structure/webform/manage/test_form_preview/submission/$sid/table");
-    $assert_session->responseContains('<th>Name</th>');
-    $assert_session->responseContains('<th>Email</th>');
-    $assert_session->responseContains('<th>Checkbox</th>');
-    $assert_session->responseContains('<td>No</td>');
+    $this->assertRaw('<th>Name</th>');
+    $this->assertRaw('<th>Email</th>');
+    $this->assertRaw('<th>Checkbox</th>');
+    $this->assertRaw('<td>No</td>');
 
     // Add special character to title.
     $webform_preview->set('title', "This has special characters. '<>\"&");
@@ -144,15 +135,13 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
 
     // Check special characters in form page title.
     $this->drupalGet('/webform/test_form_preview');
-    $assert_session->responseContains('<title>This has special characters. \'"& | Drupal</title>');
-    $assert_session->responseContains('<h1>This has special characters. &#039;&lt;&gt;&quot;&amp;</h1>');
+    $this->assertRaw('<title>This has special characters. \'"& | Drupal</title>');
+    $this->assertRaw('<h1>This has special characters. &#039;&lt;&gt;&quot;&amp;</h1>');
 
     // Check special characters in preview page title.
-    $this->drupalGet('/webform/test_form_preview');
-    $edit = ['name' => 'test'];
-    $this->submitForm($edit, 'Preview');
-    $assert_session->responseContains('<title>This has special characters. \'"&: Preview | Drupal</title>');
-    $assert_session->responseContains('<h1>This has special characters. &#039;&lt;&gt;&quot;&amp;: Preview</h1>');
+    $this->drupalPostForm('/webform/test_form_preview', ['name' => 'test'], 'Preview');
+    $this->assertRaw('<title>This has special characters. \'"&: Preview | Drupal</title>');
+    $this->assertRaw('<h1>This has special characters. &#039;&lt;&gt;&quot;&amp;: Preview</h1>');
 
     // Check required preview with custom settings.
     $webform_preview->setSettings([
@@ -173,28 +162,24 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
     $webform_preview->save();
 
     // Check custom preview.
-    $this->drupalGet('/webform/test_form_preview');
-    $edit = ['name' => 'test'];
-    $this->submitForm($edit, '{Preview}');
-    $assert_session->responseContains('<h1>{Title}</h1>');
-    $assert_session->responseContains('<b>{Label}</b></li>');
-    $assert_session->responseContains('{Message}');
-    $assert_session->buttonExists('Submit');
-    $assert_session->buttonExists('{Back}');
-    $assert_session->responseContains('<label>Name</label>' . PHP_EOL . '        test');
-    $assert_session->responseNotContains('<label>Email</label>');
-    $assert_session->responseContains('<div class="preview-custom webform-preview js-form-wrapper form-wrapper" data-drupal-selector="edit-preview" id="edit-preview">');
+    $this->drupalPostForm('/webform/test_form_preview', ['name' => 'test'], '{Preview}');
+    $this->assertRaw('<h1>{Title}</h1>');
+    $this->assertRaw('<b>{Label}</b></li>');
+    $this->assertRaw('{Message}');
+    $this->assertFieldByName('op', 'Submit');
+    $this->assertFieldByName('op', '{Back}');
+    $this->assertRaw('<label>Name</label>' . PHP_EOL . '        test');
+    $this->assertNoRaw('<label>Email</label>');
+    $this->assertRaw('<div class="preview-custom webform-preview js-form-wrapper form-wrapper" data-drupal-selector="edit-preview" id="edit-preview">');
 
     $this->drupalGet('/webform/test_form_preview');
-    $assert_session->buttonNotExists('Submit');
-    $assert_session->buttonExists('{Preview}');
+    $this->assertNoFieldByName('op', 'Submit');
+    $this->assertFieldByName('op', '{Preview}');
 
     // Check empty element is excluded from preview.
-    $this->drupalGet('/webform/test_form_preview');
-    $edit = ['name' => 'test', 'email' => ''];
-    $this->submitForm($edit, '{Preview}');
-    $assert_session->responseContains('<label>Name</label>' . PHP_EOL . '        test');
-    $assert_session->responseNotContains('<label>Email</label>');
+    $this->drupalPostForm('/webform/test_form_preview', ['name' => 'test', 'email' => ''], '{Preview}');
+    $this->assertRaw('<label>Name</label>' . PHP_EOL . '        test');
+    $this->assertNoRaw('<label>Email</label>');
   }
 
 }

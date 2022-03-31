@@ -4,9 +4,9 @@ var prefix = 'fas';
 var iconName = 'square-full';
 var width = 512;
 var height = 512;
-var aliases = [128997,128998,128999,129000,129001,129002,129003,11036,11035];
+var ligatures = [];
 var unicode = 'f45c';
-var svgPathData = 'M0 0H512V512H0V0z';
+var svgPathData = 'M512 512H0V0h512v512z';
 
 exports.definition = {
   prefix: prefix,
@@ -14,7 +14,7 @@ exports.definition = {
   icon: [
     width,
     height,
-    aliases,
+    ligatures,
     unicode,
     svgPathData
   ]};
@@ -24,7 +24,6 @@ exports.prefix = prefix;
 exports.iconName = iconName;
 exports.width = width;
 exports.height = height;
-exports.ligatures = aliases;
+exports.ligatures = ligatures;
 exports.unicode = unicode;
 exports.svgPathData = svgPathData;
-exports.aliases = aliases;

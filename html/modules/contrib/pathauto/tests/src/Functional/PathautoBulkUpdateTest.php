@@ -15,11 +15,6 @@ class PathautoBulkUpdateTest extends BrowserTestBase {
 
   use PathautoTestHelperTrait;
 
- /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stable';
-
   /**
    * Modules to enable.
    *
@@ -51,7 +46,7 @@ class PathautoBulkUpdateTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  function setUp() {
     parent::setUp();
 
     // Allow other modules to add additional permissions for the admin user.
@@ -70,7 +65,7 @@ class PathautoBulkUpdateTest extends BrowserTestBase {
     $this->patterns['forum'] = $this->createPattern('forum', '/forums/[term:name]');
   }
 
-  public function testBulkUpdate() {
+  function testBulkUpdate() {
     // Create some nodes.
     $this->nodes = [];
     for ($i = 1; $i <= 5; $i++) {
@@ -98,7 +93,7 @@ class PathautoBulkUpdateTest extends BrowserTestBase {
     }
     $this->assertEntityAliasExists($this->adminUser);
     // This is the default "General discussion" forum.
-    $this->assertAliasExists(['path' => '/taxonomy/term/1']);
+    $this->assertAliasExists(['source' => '/taxonomy/term/1']);
 
     // Add a new node.
     $new_node = $this->drupalCreateNode(['path' => ['alias' => '', 'pathauto' => PathautoState::SKIP]]);
@@ -139,7 +134,7 @@ class PathautoBulkUpdateTest extends BrowserTestBase {
   /**
    * Tests alias generation for nodes that existed before installing Pathauto.
    */
-  public function testBulkUpdateExistingContent() {
+  function testBulkUpdateExistingContent() {
     // Create a node.
     $node = $this->drupalCreateNode();
 

@@ -78,11 +78,11 @@ class ThemeTestSubscriber implements EventSubscriberInterface {
    */
   public function onView(GetResponseEvent $event) {
     $current_route = $this->currentRouteMatch->getRouteName();
-    $entity_autocomplete_route = [
+    $entity_autcomplete_route = [
       'system.entity_autocomplete',
     ];
 
-    if (in_array($current_route, $entity_autocomplete_route)) {
+    if (in_array($current_route, $entity_autcomplete_route)) {
       if ($this->container->initialized('theme.registry')) {
         throw new \Exception('registry initialized');
       }

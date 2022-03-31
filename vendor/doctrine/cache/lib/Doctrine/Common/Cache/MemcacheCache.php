@@ -3,13 +3,12 @@
 namespace Doctrine\Common\Cache;
 
 use Memcache;
-
 use function time;
 
 /**
  * Memcache cache provider.
  *
- * @deprecated Deprecated without replacement in doctrine/cache 1.11. This class will be dropped in 2.0
+ * @deprecated
  *
  * @link   www.doctrine-project.org
  */

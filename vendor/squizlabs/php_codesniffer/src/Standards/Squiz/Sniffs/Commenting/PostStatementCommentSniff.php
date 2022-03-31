@@ -40,7 +40,6 @@ class PostStatementCommentSniff implements Sniff
         T_WHILE   => true,
         T_FOR     => true,
         T_FOREACH => true,
-        T_MATCH   => true,
     ];
 
 

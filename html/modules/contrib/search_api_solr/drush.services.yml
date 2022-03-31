@@ -2,6 +2,8 @@ services:
   search_api_solr.commands:
     class: Drupal\search_api_solr\Commands\SearchApiSolrCommands
     arguments:
-      - '@search_api_solr.command_helper'
+      - '@entity_type.manager'
+      - '@module_handler'
+      - '@event_dispatcher'
     tags:
       - { name: drush.command }

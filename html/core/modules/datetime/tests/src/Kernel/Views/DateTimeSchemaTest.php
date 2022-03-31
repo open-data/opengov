@@ -37,8 +37,7 @@ class DateTimeSchemaTest extends DateTimeHandlerTestBase {
     $view = Views::getView('test_filter_datetime');
     $view->initHandlers();
     $filters = $view->displayHandlers->get('default')->getOption('filters');
-    $filters['field_date_value']['type'] = 'date';
-    $view->displayHandlers->get('default')->overrideOption('filters', $filters);
+    $filters['field_date_value']['type'] = 'Date';
     $view->save();
     $this->assertConfigSchemaByName('views.view.test_filter_datetime');
 

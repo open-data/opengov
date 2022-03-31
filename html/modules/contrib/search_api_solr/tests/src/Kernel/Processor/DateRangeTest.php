@@ -16,8 +16,6 @@ use Drupal\Tests\search_api\Kernel\ResultsTrait;
  * Tests the "Date range" processor.
  *
  * @group search_api_solr
- * @group not_solr3
- * @group not_solr4
  *
  * @see \Drupal\search_api_solr\Plugin\search_api\processor\DateRange
  */
@@ -39,14 +37,16 @@ class DateRangeTest extends ProcessorTestBase {
   public static $modules = [
     'datetime',
     'datetime_range',
+    'devel',
     'search_api_solr',
+    'search_api_solr_devel',
     'search_api_solr_test',
   ];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp($processor = NULL): void {
+  public function setUp($processor = NULL) {
     parent::setUp('solr_date_range');
     $this->enableSolrServer();
 
@@ -152,6 +152,7 @@ class DateRangeTest extends ProcessorTestBase {
 
     $fieldsHelper = $this->container->get('search_api.fields_helper');
 
+    // Index location coordinates as location data type.
     $this->index->addField($fieldsHelper->createField($this->index, 'field_date_range', $date_range_info));
     $this->index->addField($fieldsHelper->createField($this->index, 'field_date_ranges', $date_ranges_info));
 

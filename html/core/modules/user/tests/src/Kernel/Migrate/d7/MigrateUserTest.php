@@ -26,6 +26,8 @@ class MigrateUserTest extends MigrateDrupal7TestBase {
     'language',
     'link',
     'menu_ui',
+    // Required for translation migrations.
+    'migrate_drupal_multilingual',
     'node',
     'taxonomy',
     'telephone',
@@ -88,7 +90,7 @@ class MigrateUserTest extends MigrateDrupal7TestBase {
   protected function assertEntity($id, $label, $mail, $password, $created, $access, $login, $blocked, $entity_langcode, $prefered_langcode, $timezone, $init, $roles, $field_integer, $field_file_target_id = FALSE, $has_picture = FALSE) {
     /** @var \Drupal\user\UserInterface $user */
     $user = User::load($id);
-    $this->assertInstanceOf(UserInterface::class, $user);
+    $this->assertTrue($user instanceof UserInterface);
     $this->assertSame($label, $user->label());
     $this->assertSame($mail, $user->getEmail());
     $this->assertSame($password, $user->getPassword());

@@ -191,7 +191,7 @@ class UrlTest extends UnitTestCase {
 
     $this->assertInstanceOf('Drupal\Core\Url', $url);
     $this->assertFalse($url->isRouted());
-    $this->assertStringStartsWith('base:', $uri);
+    $this->assertEquals(0, strpos($uri, 'base:'));
 
     $parts = UrlHelper::parse($path);
     $options = $url->getOptions();

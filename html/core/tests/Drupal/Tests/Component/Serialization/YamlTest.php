@@ -126,7 +126,7 @@ class YamlTest extends TestCase {
       if ($dir->getExtension() == 'yml' && strpos($pathname, '/../../../../../node_modules') === FALSE) {
         if (strpos($dir->getRealPath(), 'invalid_file') !== FALSE) {
           // There are some intentionally invalid files provided for testing
-          // library API behaviors, ignore them.
+          // library API behaviours, ignore them.
           continue;
         }
         $files[] = [$dir->getRealPath()];

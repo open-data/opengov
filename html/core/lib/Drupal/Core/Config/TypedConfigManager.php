@@ -269,7 +269,6 @@ class TypedConfigManager extends TypedDataManager implements TypedConfigManagerI
    *   Configuration name with variables in square brackets.
    * @param mixed $data
    *   Configuration data for the element.
-   *
    * @return string
    *   Configuration name with variables replaced.
    */

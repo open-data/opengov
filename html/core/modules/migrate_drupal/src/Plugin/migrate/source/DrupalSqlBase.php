@@ -160,7 +160,6 @@ abstract class DrupalSqlBase extends SqlBase implements ContainerFactoryPluginIn
    *   Name of the variable.
    * @param $default
    *   The default value.
-   *
    * @return mixed
    */
   protected function variableGet($name, $default) {

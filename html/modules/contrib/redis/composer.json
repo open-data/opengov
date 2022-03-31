@@ -1,11 +1,10 @@
 {
   "name": "drupal/redis",
   "type": "drupal-module",
-  "description": "Integration of Drupal with the Redis key-value store.",
   "suggest": {
     "predis/predis": "^1.1.1"
   },
-  "license": "GPL-2.0-or-later",
+  "license": "GPL-2.0",
   "autoload": {
     "psr-4": {
       "Drupal\\redis\\": "src"

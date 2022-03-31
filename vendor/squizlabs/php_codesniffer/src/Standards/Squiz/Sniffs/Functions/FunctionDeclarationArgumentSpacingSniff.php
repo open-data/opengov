@@ -120,14 +120,8 @@ class FunctionDeclarationArgumentSpacingSniff implements Sniff
             $next = $phpcsFile->findNext(T_WHITESPACE, ($openBracket + 1), $closeBracket, true);
             if ($next === false) {
                 if (($closeBracket - $openBracket) !== 1) {
-                    if ($tokens[$openBracket]['line'] !== $tokens[$closeBracket]['line']) {
-                        $found = 'newline';
-                    } else {
-                        $found = $tokens[($openBracket + 1)]['length'];
-                    }
-
                     $error = 'Expected 0 spaces between parenthesis of function declaration; %s found';
-                    $data  = [$found];
+                    $data  = [$tokens[($openBracket + 1)]['length']];
                     $fix   = $phpcsFile->addFixableError($error, $openBracket, 'SpacingBetween', $data);
                     if ($fix === true) {
                         $phpcsFile->fixer->replaceToken(($openBracket + 1), '');
@@ -137,7 +131,7 @@ class FunctionDeclarationArgumentSpacingSniff implements Sniff
                 // No params, so we don't check normal spacing rules.
                 return;
             }
-        }//end if
+        }
 
         foreach ($params as $paramNumber => $param) {
             if ($param['pass_by_reference'] === true) {

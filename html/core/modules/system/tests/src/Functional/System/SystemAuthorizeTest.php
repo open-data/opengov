@@ -27,9 +27,7 @@ class SystemAuthorizeTest extends BrowserTestBase {
     parent::setUp();
 
     // Create an administrator user.
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer software updates',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer software updates']));
   }
 
   /**
@@ -38,7 +36,7 @@ class SystemAuthorizeTest extends BrowserTestBase {
    * Initializing authorize.php needs to happen in the child Drupal
    * installation, not the parent. So, we visit a menu callback provided by
    * system_test.module which calls system_authorized_init() to initialize the
-   * user's session inside the test site, not the framework site. This callback
+   * $_SESSION inside the test site, not the framework site. This callback
    * redirects to authorize.php when it's done initializing.
    *
    * @see system_authorized_init()

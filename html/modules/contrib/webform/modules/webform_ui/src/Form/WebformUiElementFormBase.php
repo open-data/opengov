@@ -4,9 +4,11 @@ namespace Drupal\webform_ui\Form;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\WebformTable;
@@ -14,8 +16,11 @@ use Drupal\webform\Plugin\WebformElement\WebformTableRow;
 use Drupal\webform\Plugin\WebformElementVariantInterface;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Form\WebformDialogFormTrait;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformYaml;
+use Drupal\webform\WebformEntityElementsValidatorInterface;
 use Drupal\webform\WebformInterface;
+use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -130,16 +135,38 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
   }
 
   /**
+   * Constructs a WebformUiElementFormBase.
+   *
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
+   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+   *   The webform element manager.
+   * @param \Drupal\webform\WebformEntityElementsValidatorInterface $elements_validator
+   *   Webform element validator.
+   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
+   *   The webform token manager.
+   */
+  public function __construct(RendererInterface $renderer, EntityFieldManagerInterface $entity_field_manager, WebformElementManagerInterface $element_manager, WebformEntityElementsValidatorInterface $elements_validator, WebformTokenManagerInterface $token_manager) {
+    $this->renderer = $renderer;
+    $this->entityFieldManager = $entity_field_manager;
+    $this->elementManager = $element_manager;
+    $this->elementsValidator = $elements_validator;
+    $this->tokenManager = $token_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->renderer = $container->get('renderer');
-    $instance->entityFieldManager = $container->get('entity_field.manager');
-    $instance->elementManager = $container->get('plugin.manager.webform.element');
-    $instance->elementsValidator = $container->get('webform.elements_validator');
-    $instance->tokenManager = $container->get('webform.token_manager');
-    return $instance;
+    return new static(
+      $container->get('renderer'),
+      $container->get('entity_field.manager'),
+      $container->get('plugin.manager.webform.element'),
+      $container->get('webform.elements_validator'),
+      $container->get('webform.token_manager')
+    );
   }
 
   /**
@@ -160,7 +187,6 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
     $form['#parents'] = [];
     $form['properties'] = ['#parents' => ['properties']];
     $subform_state = SubformState::createForSubform($form['properties'], $form, $form_state);
-    $subform_state->set('element', $this->element);
     $form['properties'] = $element_plugin->buildConfigurationForm($form['properties'], $subform_state);
 
     // Move messages to the top of the webform.
@@ -571,9 +597,9 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
     return NULL;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Element key handling.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Determines if the webform element key already exists.
@@ -634,9 +660,9 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
     }
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Default value handling.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Build update default value form elements.
@@ -708,22 +734,9 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
         '#attributes' => ['formnovalidate' => 'formnovalidate'],
         '#_validate_form' => TRUE,
       ];
-      $form['properties']['default']['actions']['clear_default_value'] = [
-        '#type' => 'submit',
-        '#value' => $this->t('Clear default value'),
-        '#submit' => ['::clearDefaultValue'],
-        '#attributes' => ['formnovalidate' => 'formnovalidate'],
-        '#states' => [
-          'visible' => [':input[name="properties[default_value]"]' => ['filled' => TRUE]],
-        ],
-        '#_validate_form' => TRUE,
-      ];
+
       if ($this->isAjax()) {
         $form['properties']['default']['actions']['set_default_value']['#ajax'] = [
-          'callback' => '::submitAjaxForm',
-          'event' => 'click',
-        ];
-        $form['properties']['default']['actions']['clear_default_value']['#ajax'] = [
           'callback' => '::submitAjaxForm',
           'event' => 'click',
         ];
@@ -788,21 +801,6 @@ abstract class WebformUiElementFormBase extends FormBase implements WebformUiEle
     }
 
     $form_state->set('default_value_element', $properties);
-    $form_state->setRebuild(TRUE);
-  }
-
-  /**
-   * Clear default value to be updated.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   */
-  public function clearDefaultValue(array &$form, FormStateInterface $form_state) {
-    NestedArray::setValue($form_state->getUserInput(), ['properties', 'default_value'], '');
-    $form_state->set('active_tab', 'advanced');
-    $form_state->set('default_value_element', NULL);
     $form_state->setRebuild(TRUE);
   }
 

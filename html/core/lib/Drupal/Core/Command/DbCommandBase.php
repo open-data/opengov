@@ -26,7 +26,6 @@ class DbCommandBase extends Command {
    *
    * @param \Symfony\Component\Console\Input\InputInterface $input
    *   Input object.
-   *
    * @return \Drupal\Core\Database\Connection
    */
   protected function getDatabaseConnection(InputInterface $input) {

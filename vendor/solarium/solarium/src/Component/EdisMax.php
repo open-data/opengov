@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component;
 
 use Solarium\Component\RequestBuilder\ComponentRequestBuilderInterface;
@@ -15,7 +8,7 @@ use Solarium\Component\RequestBuilder\EdisMax as RequestBuilder;
 /**
  * EdisMax component.
  *
- * @see https://solr.apache.org/guide/the-extended-dismax-query-parser.html
+ * @see http://wiki.apache.org/solr/ExtendedDisMax
  */
 class EdisMax extends DisMax
 {
@@ -63,7 +56,6 @@ class EdisMax extends DisMax
     public function setBoostFunctionsMult(string $boostFunctionsMult): self
     {
         $this->setOption('boostfunctionsmult', $boostFunctionsMult);
-
         return $this;
     }
 
@@ -92,7 +84,6 @@ class EdisMax extends DisMax
     public function setPhraseBigramFields(string $phraseBigramFields): self
     {
         $this->setOption('phrasebigramfields', $phraseBigramFields);
-
         return $this;
     }
 
@@ -119,7 +110,6 @@ class EdisMax extends DisMax
     public function setPhraseBigramSlop(int $phraseBigramSlop): self
     {
         $this->setOption('phrasebigramslop', $phraseBigramSlop);
-
         return $this;
     }
 
@@ -148,7 +138,6 @@ class EdisMax extends DisMax
     public function setPhraseTrigramFields(string $phraseTrigramFields): self
     {
         $this->setOption('phrasetrigramfields', $phraseTrigramFields);
-
         return $this;
     }
 
@@ -175,7 +164,6 @@ class EdisMax extends DisMax
     public function setPhraseTrigramSlop(int $phraseTrigramSlop): self
     {
         $this->setOption('phrasetrigramslop', $phraseTrigramSlop);
-
         return $this;
     }
 
@@ -207,7 +195,6 @@ class EdisMax extends DisMax
     public function setUserFields(string $userFields): self
     {
         $this->setOption('userfields', $userFields);
-
         return $this;
     }
 

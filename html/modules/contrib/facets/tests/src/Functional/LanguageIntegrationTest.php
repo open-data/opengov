@@ -83,7 +83,7 @@ class LanguageIntegrationTest extends FacetsTestBase {
     $this->clickLink('item');
 
     // Check that the language code is still in the url.
-    $this->assertNotFalse(strpos($this->getUrl(), 'xx-lolspeak/'), 'Found the language code in the url');
+    $this->assertTrue(strpos($this->getUrl(), 'xx-lolspeak/'), 'Found the language code in the url');
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('item');
     $this->assertSession()->pageTextContains('article');

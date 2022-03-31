@@ -184,10 +184,7 @@ class FilterDateTest extends ViewTestBase {
    */
   protected function _testUiValidation() {
 
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer views',
-      'administer site configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer views', 'administer site configuration']));
 
     $this->drupalGet('admin/structure/views/view/test_filter_date_between/edit');
     $this->drupalGet('admin/structure/views/nojs/handler/test_filter_date_between/default/filter/created');
@@ -246,18 +243,18 @@ class FilterDateTest extends ViewTestBase {
     $this->drupalGet($path);
     $this->drupalPostForm(NULL, [], 'Apply');
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(4, $results);
+    $this->assertEqual(count($results), 4);
     $this->drupalPostForm(NULL, ['created' => '1'], 'Apply');
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(1, $results);
+    $this->assertEqual(count($results), 1);
     $this->assertEqual($results[0]->getText(), $this->nodes[3]->id());
     $this->drupalPostForm(NULL, ['created' => '2'], 'Apply');
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(1, $results);
+    $this->assertEqual(count($results), 1);
     $this->assertEqual($results[0]->getText(), $this->nodes[3]->id());
     $this->drupalPostForm(NULL, ['created' => '3'], 'Apply');
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(1, $results);
+    $this->assertEqual(count($results), 1);
     $this->assertEqual($results[0]->getText(), $this->nodes[1]->id());
 
     // Change the filter to a single filter to test the schema when the operator
@@ -274,13 +271,13 @@ class FilterDateTest extends ViewTestBase {
     // Test that the filter works as expected.
     $this->drupalGet($path);
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(1, $results);
+    $this->assertEqual(count($results), 1);
     $this->assertEqual($results[0]->getText(), $this->nodes[3]->id());
     $this->drupalPostForm(NULL, [
       'created' => $this->dateFormatter->format(250000, 'custom', 'Y-m-d H:i:s'),
     ], 'Apply');
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(2, $results);
+    $this->assertEqual(count($results), 2);
     $this->assertEqual($results[0]->getText(), $this->nodes[2]->id());
     $this->assertEqual($results[1]->getText(), $this->nodes[3]->id());
   }

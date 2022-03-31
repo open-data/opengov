@@ -71,7 +71,7 @@ class NodeGrantDatabaseStorage implements NodeGrantDatabaseStorageInterface {
       // Return the equivalent of the default grant, defined by
       // self::writeDefault().
       if ($operation === 'view') {
-        return AccessResult::allowedIf($node->isPublished());
+        return AccessResult::allowedIf($node->isPublished())->addCacheableDependency($node);
       }
       else {
         return AccessResult::neutral();
@@ -288,7 +288,6 @@ class NodeGrantDatabaseStorage implements NodeGrantDatabaseStorageInterface {
    *
    * @param array $node_access_grants
    *   An array of grants, as returned by node_access_grants().
-   *
    * @return \Drupal\Core\Database\Query\Condition
    *   A condition object to be passed to $query->condition().
    *

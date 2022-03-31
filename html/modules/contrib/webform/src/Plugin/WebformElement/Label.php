@@ -2,8 +2,6 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
-use Drupal\webform\WebformSubmissionInterface;
-
 /**
  * Provides a 'label' element.
  *
@@ -24,28 +22,16 @@ class Label extends WebformMarkupBase {
   protected function defineDefaultProperties() {
     return [
       'title' => '',
+      // General settings.
+      'description' => '',
       // Form validation.
       'required' => FALSE,
       // Attributes.
       'attributes' => [],
-    ] + parent::defineDefaultProperties();
+    ] + $this->defineDefaultBaseProperties();
   }
 
-  /* ************************************************************************ */
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildHtml(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
-    // Unset #required which is not appropriate when displaying a label.
-    unset($element['#required']);
-
-    // Must define #title_display to prevent PHP warnings via the preprocessor.
-    // @see template_preprocess_form_element_label()
-    $element += ['#title_display' => NULL];
-
-    return parent::buildHtml($element, $webform_submission, $options);
-  }
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

@@ -7,8 +7,8 @@ use InvalidArgumentException;
 use Iterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SplFileInfo;
-
+use const DIRECTORY_SEPARATOR;
+use const PATHINFO_DIRNAME;
 use function bin2hex;
 use function chmod;
 use function defined;
@@ -32,13 +32,8 @@ use function substr;
 use function tempnam;
 use function unlink;
 
-use const DIRECTORY_SEPARATOR;
-use const PATHINFO_DIRNAME;
-
 /**
  * Base file cache driver.
- *
- * @deprecated Deprecated without replacement in doctrine/cache 1.11. This class will be dropped in 2.0
  */
 abstract class FileCache extends CacheProvider
 {
@@ -71,7 +66,6 @@ abstract class FileCache extends CacheProvider
     /**
      * @param string $directory The cache directory.
      * @param string $extension The cache file extension.
-     * @param int    $umask
      *
      * @throws InvalidArgumentException
      */
@@ -84,7 +78,6 @@ abstract class FileCache extends CacheProvider
                 gettype($umask)
             ));
         }
-
         $this->umask = $umask;
 
         if (! $this->createPathIfNeeded($directory)) {
@@ -140,8 +133,7 @@ abstract class FileCache extends CacheProvider
         $hash = hash('sha256', $id);
 
         // This ensures that the filename is unique and that there are no invalid chars in it.
-        if (
-            $id === ''
+        if ($id === ''
             || ((strlen($id) * 2 + $this->extensionStringLength) > 255)
             || ($this->isRunningOnWindows && ($this->directoryStringLength + 4 + strlen($id) * 2 + $this->extensionStringLength) > 258)
         ) {
@@ -224,7 +216,7 @@ abstract class FileCache extends CacheProvider
      *
      * @return bool TRUE on success or if path already exists, FALSE if path cannot be created.
      */
-    private function createPathIfNeeded(string $path): bool
+    private function createPathIfNeeded(string $path) : bool
     {
         if (! is_dir($path)) {
             if (@mkdir($path, 0777 & (~$this->umask), true) === false && ! is_dir($path)) {
@@ -243,7 +235,7 @@ abstract class FileCache extends CacheProvider
      *
      * @return bool TRUE on success, FALSE if path cannot be created, if path is not writable or an any other error.
      */
-    protected function writeFile(string $filename, string $content): bool
+    protected function writeFile(string $filename, string $content) : bool
     {
         $filepath = pathinfo($filename, PATHINFO_DIRNAME);
 
@@ -270,10 +262,7 @@ abstract class FileCache extends CacheProvider
         return false;
     }
 
-    /**
-     * @return Iterator<string, SplFileInfo>
-     */
-    private function getIterator(): Iterator
+    private function getIterator() : Iterator
     {
         return new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($this->directory, FilesystemIterator::SKIP_DOTS),
@@ -284,9 +273,9 @@ abstract class FileCache extends CacheProvider
     /**
      * @param string $name The filename
      */
-    private function isFilenameEndingWithExtension(string $name): bool
+    private function isFilenameEndingWithExtension(string $name) : bool
     {
         return $this->extension === ''
-            || strrpos($name, $this->extension) === strlen($name) - $this->extensionStringLength;
+            || strrpos($name, $this->extension) === (strlen($name) - $this->extensionStringLength);
     }
 }

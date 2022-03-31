@@ -21,7 +21,6 @@ class ShortcutSetAccessControlHandler extends EntityAccessControlHandler {
     switch ($operation) {
       case 'view':
         return AccessResult::allowedIfHasPermission($account, 'access shortcuts');
-
       case 'update':
         if ($account->hasPermission('administer shortcuts')) {
           return AccessResult::allowed()->cachePerPermissions();

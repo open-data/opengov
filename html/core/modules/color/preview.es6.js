@@ -14,11 +14,11 @@
      * The callback for when the color preview has been attached.
      *
      * @param {Element} context
-     *   The context to initiate the color behavior.
+     *   The context to initiate the color behaviour.
      * @param {object} settings
      *   Settings for the color functionality.
      * @param {HTMLFormElement} form
-     *   The form to initiate the color behavior on.
+     *   The form to initiate the color behaviour on.
      * @param {object} farb
      *   The farbtastic object.
      * @param {number} height

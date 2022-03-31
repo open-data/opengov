@@ -43,9 +43,10 @@ class HelpCLIFormatter implements FormatterInterface
             foreach ($data['arguments'] as $argument) {
                 $formatted = $this->formatArgumentName($argument);
                 $description = $argument['description'];
-                if (isset($argument['defaults'])) {
-                    $description .= ' [default: <info>' . implode(',', $argument['defaults']) . '</info>]';
-                }
+                // @todo No argument default in Helpdocument
+                //        if ($argument['default']) {
+        //          $description .= ' [default: ' . $argument->getDefault() . ']';
+        //        }
                 $rows[] = [' ' . $formatted, $description];
             }
             $formatterManager->write($output, 'table', new RowsOfFields($rows), $options);
@@ -83,7 +84,7 @@ class HelpCLIFormatter implements FormatterInterface
     }
 
     /**
-     * @param iterable $option
+     * @param array $option
      * @return string
      */
     public static function formatOptionKeys($option)
@@ -110,19 +111,11 @@ class HelpCLIFormatter implements FormatterInterface
 
     public static function formatOptionDescription($option)
     {
-        $defaults = '';
-        if (array_key_exists('defaults', $option)) {
-            $defaults = implode(' ', $option['defaults']); //
-            // Avoid info tags for large strings https://github.com/drush-ops/drush/issues/4639.
-            if (strlen($defaults) <= 100) {
-                $defaults = "<info>$defaults</info>";
-            }
-            $defaults = ' [default: ' . $defaults . ']';
-        }
+        $defaults = array_key_exists('defaults', $option) ? ' [default: "' . implode(' ', $option['defaults']) . '"]' : '';
         return $option['description'] . $defaults;
     }
 
-    public static function formatArgumentName($argument)
+    public function formatArgumentName($argument)
     {
         $element = $argument['name'];
         if (!$argument['is_required']) {
@@ -142,17 +135,10 @@ class HelpCLIFormatter implements FormatterInterface
     {
         if (array_key_exists('options', $data)) {
             foreach ($data['options'] as $key => $option) {
-                if (self::isGlobalOption($key)) {
+                if (substr($option['name'], 0, 8) == '--notify' || substr($option['name'], 0, 5) == '--xh-' || substr($option['name'], 0, 11) == '--druplicon') {
                     unset($data['options'][$key]);
                 }
             }
         }
-    }
-
-    public static function isGlobalOption($name)
-    {
-        $application = Drush::getApplication();
-        $def = $application->getDefinition();
-        return array_key_exists($name, $def->getOptions()) || substr($name, 0, 6) == 'notify' || substr($name, 0, 3) == 'xh-' || substr($name, 0, 9) == 'druplicon';
     }
 }

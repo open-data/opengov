@@ -15,14 +15,14 @@ use Drupal\Core\Render\Element;
  *
  * Example usage:
  * @code
- * $form['email'] = [
+ * $form['email'] = array(
  *   '#type' => 'email',
  *   '#title' => $this->t('Email'),
  *   '#pattern' => '*@example.com',
- * ];
- * @endcode
+ * );
+ * @end
  *
- * @see \Drupal\Core\Render\Element\Textfield
+ * @see \Drupal\Core\Render\Element\Render\Textfield
  *
  * @FormElement("email")
  */

@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Analysis\Query;
 
 use Solarium\Core\Client\Client;
@@ -73,8 +66,7 @@ class Field extends AbstractQuery
     public function setFieldValue(string $value): self
     {
         $this->setOption('fieldvalue', $value);
-
-        return $this;
+        return  $this;
     }
 
     /**
@@ -99,7 +91,6 @@ class Field extends AbstractQuery
     public function setFieldType(string $type): self
     {
         $this->setOption('fieldtype', $type);
-
         return $this;
     }
 
@@ -125,7 +116,6 @@ class Field extends AbstractQuery
     public function setFieldName(string $name): self
     {
         $this->setOption('fieldname', $name);
-
         return $this;
     }
 

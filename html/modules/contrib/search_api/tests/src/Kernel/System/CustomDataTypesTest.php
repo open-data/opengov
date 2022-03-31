@@ -34,7 +34,7 @@ class CustomDataTypesTest extends KernelTestBase {
    *
    * @var string[]
    */
-  protected static $modules = [
+  public static $modules = [
     'field',
     'search_api',
     'search_api_db',

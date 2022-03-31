@@ -57,7 +57,7 @@ class UserLegacyTest extends KernelTestBase {
       User::create(),
       User::create(),
     ];
-    $this->assertCount(4, user_view_multiple($entities));
+    $this->assertEquals(4, count(user_view_multiple($entities)));
   }
 
   /**

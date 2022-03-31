@@ -4,5 +4,3 @@ description: 'Provides an entity type for testing definition and schema updates.
 package: Testing
 version: VERSION
 core: 8.x
-dependencies:
-  - drupal:field

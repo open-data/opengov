@@ -3,11 +3,10 @@
 namespace Drupal\fontawesome\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\UrlHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Asset\LibraryDiscoveryInterface;
+use Drupal\Core\Asset\LibraryDiscovery;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 
@@ -19,16 +18,14 @@ class SettingsForm extends ConfigFormBase {
   /**
    * Drupal LibraryDiscovery service container.
    *
-   * @var \Drupal\Core\Asset\LibraryDiscoveryInterface
+   * @var Drupal\Core\Asset\LibraryDiscovery
    */
   protected $libraryDiscovery;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, LibraryDiscoveryInterface $library_discovery) {
-    parent::__construct($config_factory);
-
+  public function __construct(LibraryDiscovery $library_discovery) {
     $this->libraryDiscovery = $library_discovery;
   }
 
@@ -37,7 +34,6 @@ class SettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory'),
       $container->get('library.discovery')
     );
   }
@@ -101,13 +97,6 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $fontawesome_config->get('allow_pseudo_elements'),
     ];
 
-    $form['load_assets'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Load Font Awesome library?'),
-      '#default_value' => $fontawesome_config->get('load_assets'),
-      '#description' => $this->t("If enabled, this module will attempt to load the Font Awesome library for you. To prevent loading twice, leave this option disabled if you're including the assets manually or through another module or theme."),
-    ];
-
     $form['external'] = [
       '#type' => 'details',
       '#open' => TRUE,
@@ -116,11 +105,6 @@ class SettingsForm extends ConfigFormBase {
         ':remoteurl' => $fontawesome_library['remote'],
         '%installpath' => '/libraries',
       ]),
-      '#states' => [
-        'visible' => [
-          ':input[name="load_assets"]' => ['checked' => TRUE],
-        ],
-      ],
       'use_cdn' => [
         '#type' => 'checkbox',
         '#title' => $this->t('Use external file (CDN) / local file?'),
@@ -170,11 +154,6 @@ class SettingsForm extends ConfigFormBase {
         '#description' => $this->t('Checking this box will cause the Font Awesome library to load the file containing the solid icon declarations (<i>solid.js/solid.css</i>)'),
         '#default_value' => is_null($fontawesome_config->get('use_solid_file')) === TRUE ? TRUE : $fontawesome_config->get('use_solid_file'),
       ],
-      '#states' => [
-        'visible' => [
-          ':input[name="load_assets"]' => ['checked' => TRUE],
-        ],
-      ],
       'use_regular_file' => [
         '#type' => 'checkbox',
         '#title' => $this->t('Load regular icons'),
@@ -193,18 +172,6 @@ class SettingsForm extends ConfigFormBase {
         '#description' => $this->t('Checking this box will cause the Font Awesome library to load the file containing the brands icon declarations (<i>brands.js/brands.css</i>)'),
         '#default_value' => is_null($fontawesome_config->get('use_brands_file')) === TRUE ? TRUE : $fontawesome_config->get('use_brands_file'),
       ],
-      'use_duotone_file' => [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Load duotone icons'),
-        '#description' => $this->t('Checking this box will cause the Font Awesome library to load the file containing the duotone icon declarations (<i>duotone.js/duotone.css</i>)'),
-        '#default_value' => is_null($fontawesome_config->get('use_duotone_file')) === TRUE ? TRUE : $fontawesome_config->get('use_duotone_file'),
-      ],
-      'use_thin_file' => [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Load thin icons'),
-        '#description' => $this->t('Checking this box will cause the Font Awesome library to load the file containing the thin icon declarations (<i>thin.js/thin.css</i>)'),
-        '#default_value' => is_null($fontawesome_config->get('use_thin_file')) === TRUE ? TRUE : $fontawesome_config->get('use_thin_file'),
-      ],
     ];
 
     $form['shim'] = [
@@ -214,11 +181,6 @@ class SettingsForm extends ConfigFormBase {
       '#description' => $this->t('Version 5 of Font Awesome has some changes which require modifications to the way you declare many of your icons. The settings below are designed to ease that transition. See @upgradingLink for more information.', [
         '@upgradingLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to upgrading version 4 to version 5'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4'))->toString(),
       ]),
-      '#states' => [
-        'visible' => [
-          ':input[name="load_assets"]' => ['checked' => TRUE],
-        ],
-      ],
       'use_shim' => [
         '#type' => 'checkbox',
         '#title' => $this->t('Use version 4 shim file?'),
@@ -242,13 +204,6 @@ class SettingsForm extends ConfigFormBase {
           ],
         ],
       ],
-    ];
-
-    $form['bypass_validation'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Bypass Font Awesome icon validation?'),
-      '#default_value' => $fontawesome_config->get('bypass_validation'),
-      '#description' => $this->t("If enabled, icon name validation will not take place. This is useful when using custom icons from Font Awesome's hosted kits."),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -301,7 +256,6 @@ class SettingsForm extends ConfigFormBase {
     $this->config('fontawesome.settings')
       ->set('tag', $values['tag'])
       ->set('method', $values['method'])
-      ->set('load_assets', $values['load_assets'])
       ->set('use_cdn', $values['use_cdn'])
       ->set('external_svg_location', (string) $values['external_svg_location'])
       ->set('external_svg_integrity', (string) $values['external_svg_integrity'])
@@ -312,9 +266,6 @@ class SettingsForm extends ConfigFormBase {
       ->set('use_regular_file', $values['use_regular_file'])
       ->set('use_light_file', $values['use_light_file'])
       ->set('use_brands_file', $values['use_brands_file'])
-      ->set('use_duotone_file', $values['use_duotone_file'])
-      ->set('use_thin_file', $values['use_thin_file'])
-      ->set('bypass_validation', $values['bypass_validation'])
       ->save();
 
     parent::submitForm($form, $form_state);

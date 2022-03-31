@@ -6,11 +6,14 @@ use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Element\Webform as WebformElement;
 use Drupal\webform\Routing\WebformUncacheableResponse;
 use Drupal\webform\WebformInterface;
+use Drupal\webform\WebformRequestInterface;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -50,13 +53,30 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
   protected $webformEntityReferenceManager;
 
   /**
+   * Constructs a WebformEntityController object.
+   *
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer service.
+   * @param \Drupal\webform\WebformRequestInterface $request_handler
+   *   The webform request handler.
+   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
+   *   The webform token manager.
+   */
+  public function __construct(RendererInterface $renderer, WebformRequestInterface $request_handler, WebformTokenManagerInterface $token_manager) {
+    $this->renderer = $renderer;
+    $this->requestHandler = $request_handler;
+    $this->tokenManager = $token_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->renderer = $container->get('renderer');
-    $instance->requestHandler = $container->get('webform.request');
-    $instance->tokenManager = $container->get('webform.token_manager');
+    $instance = new static(
+      $container->get('renderer'),
+      $container->get('webform.request'),
+      $container->get('webform.token_manager')
+    );
     $instance->webformEntityReferenceManager = $container->get('webform.entity_reference_manager');
     return $instance;
   }
@@ -93,10 +113,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
       return new WebformUncacheableResponse($assets['css'], 200, ['Content-Type' => 'text/css']);
     }
     else {
-      $response = new CacheableResponse($assets['css'], 200, ['Content-Type' => 'text/css']);
-      return $response
-        ->addCacheableDependency($webform)
-        ->addCacheableDependency($this->config('webform.settings'));
+      return new CacheableResponse($assets['css'], 200, ['Content-Type' => 'text/css']);
     }
   }
 
@@ -117,10 +134,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
       return new WebformUncacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
     }
     else {
-      $response = new CacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
-      return $response
-        ->addCacheableDependency($webform)
-        ->addCacheableDependency($this->config('webform.settings'));
+      return new CacheableResponse($assets['javascript'], 200, ['Content-Type' => 'text/javascript']);
     }
   }
 
@@ -140,7 +154,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
   public function confirmation(Request $request, WebformInterface $webform = NULL, WebformSubmissionInterface $webform_submission = NULL) {
     /** @var \Drupal\Core\Entity\EntityInterface $source_entity */
     if (!$webform) {
-      [$webform, $source_entity] = $this->requestHandler->getWebformEntities();
+      list($webform, $source_entity) = $this->requestHandler->getWebformEntities();
     }
     else {
       $source_entity = $this->requestHandler->getCurrentSourceEntity('webform');
@@ -342,7 +356,7 @@ class WebformEntityController extends ControllerBase implements ContainerInjecti
   public function title(WebformInterface $webform = NULL) {
     /** @var \Drupal\Core\Entity\EntityInterface $source_entity */
     if (!$webform) {
-      [$webform, $source_entity] = $this->requestHandler->getWebformEntities();
+      list($webform, $source_entity) = $this->requestHandler->getWebformEntities();
     }
     else {
       $source_entity = $this->requestHandler->getCurrentSourceEntity('webform');

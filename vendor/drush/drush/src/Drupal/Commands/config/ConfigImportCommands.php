@@ -1,18 +1,16 @@
 <?php
 namespace Drush\Drupal\Commands\config;
 
-use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\CommandError;
+use Consolidation\AnnotatedCommand\CommandData;
 use Drupal\config\StorageReplaceDataWrapper;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigException;
-use Drupal\Core\Config\ConfigImporter;
 use Drupal\Core\Config\ConfigManagerInterface;
-use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Config\StorageComparer;
+use Drupal\Core\Config\ConfigImporter;
+use Drupal\Core\Config\ConfigException;
+use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Config\TypedConfigManagerInterface;
-use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ModuleInstallerInterface;
 use Drupal\Core\Extension\ThemeHandlerInterface;
@@ -20,6 +18,7 @@ use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drush\Commands\DrushCommands;
 use Drush\Exceptions\UserAbortException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webmozart\PathUtil\Path;
 
 class ConfigImportCommands extends DrushCommands
@@ -34,8 +33,6 @@ class ConfigImportCommands extends DrushCommands
 
     protected $configStorageSync;
 
-    protected $configCache;
-
     protected $eventDispatcher;
 
     protected $lock;
@@ -48,19 +45,10 @@ class ConfigImportCommands extends DrushCommands
 
     protected $stringTranslation;
 
-    protected $importStorageTransformer;
-
     /**
      * @var \Drupal\Core\Extension\ModuleHandlerInterface
      */
     protected $moduleHandler;
-
-    /**
-     * The module extension list.
-     *
-     * @var \Drupal\Core\Extension\ModuleExtensionList
-     */
-    protected $moduleExtensionList;
 
     /**
      * @return ConfigManagerInterface
@@ -86,25 +74,12 @@ class ConfigImportCommands extends DrushCommands
         return $this->configStorageSync;
     }
 
-    /**
-     * @return \Drupal\Core\Cache\CacheBackendInterface
-     */
-    public function getConfigCache()
-    {
-        return $this->configCache;
-    }
-
-    /**
-     * @return \Drupal\Core\Extension\ModuleHandlerInterface
-     */
     public function getModuleHandler()
     {
         return $this->moduleHandler;
     }
 
     /**
-     * Note that type hint is changing https://www.drupal.org/project/drupal/issues/3161983
-     *
      * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     public function getEventDispatcher()
@@ -153,71 +128,16 @@ class ConfigImportCommands extends DrushCommands
     }
 
     /**
-     * @param \Drupal\Core\Config\ImportStorageTransformer $importStorageTransformer
-     */
-    public function setImportTransformer($importStorageTransformer)
-    {
-        $this->importStorageTransformer = $importStorageTransformer;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasImportTransformer()
-    {
-        return isset($this->importStorageTransformer);
-    }
-
-    /**
-     * @return \Drupal\Core\Config\ImportStorageTransformer
-     */
-    public function getImportTransformer()
-    {
-        return $this->importStorageTransformer;
-    }
-
-    /**
-     * @return \Drupal\Core\Extension\ModuleExtensionList
-     */
-    public function getModuleExtensionList(): \Drupal\Core\Extension\ModuleExtensionList
-    {
-        return $this->moduleExtensionList;
-    }
-
-    /**
      * @param ConfigManagerInterface $configManager
      * @param StorageInterface $configStorage
      * @param StorageInterface $configStorageSync
-     * @param \Drupal\Core\Cache\CacheBackendInterface $configCache
-     * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-     * @param $eventDispatcher
-     * @param \Drupal\Core\Lock\LockBackendInterface $lock
-     * @param \Drupal\Core\Config\TypedConfigManagerInterface $configTyped
-     * @param \Drupal\Core\Extension\ModuleInstallerInterface $moduleInstaller
-     * @param \Drupal\Core\Extension\ThemeHandlerInterface $themeHandler
-     * @param \Drupal\Core\StringTranslation\TranslationInterface $stringTranslation
-     * @param \Drupal\Core\Extension\ModuleExtensionList $moduleExtensionList
      */
-    public function __construct(
-        ConfigManagerInterface $configManager,
-        StorageInterface $configStorage,
-        StorageInterface $configStorageSync,
-        CacheBackendInterface $configCache,
-        ModuleHandlerInterface $moduleHandler,
-        // Omit type hint as it changed in https://www.drupal.org/project/drupal/issues/3161983
-        $eventDispatcher,
-        LockBackendInterface $lock,
-        TypedConfigManagerInterface $configTyped,
-        ModuleInstallerInterface $moduleInstaller,
-        ThemeHandlerInterface $themeHandler,
-        TranslationInterface $stringTranslation,
-        ModuleExtensionList $moduleExtensionList
-    ) {
+    public function __construct(ConfigManagerInterface $configManager, StorageInterface $configStorage, StorageInterface $configStorageSync, ModuleHandlerInterface $moduleHandler, EventDispatcherInterface $eventDispatcher, LockBackendInterface $lock, TypedConfigManagerInterface $configTyped, ModuleInstallerInterface $moduleInstaller, ThemeHandlerInterface $themeHandler, TranslationInterface $stringTranslation)
+    {
         parent::__construct();
         $this->configManager = $configManager;
         $this->configStorage = $configStorage;
         $this->configStorageSync = $configStorageSync;
-        $this->configCache = $configCache;
         $this->moduleHandler = $moduleHandler;
         $this->eventDispatcher = $eventDispatcher;
         $this->lock = $lock;
@@ -225,29 +145,19 @@ class ConfigImportCommands extends DrushCommands
         $this->moduleInstaller = $moduleInstaller;
         $this->themeHandler = $themeHandler;
         $this->stringTranslation = $stringTranslation;
-        $this->moduleExtensionList = $moduleExtensionList;
     }
 
     /**
      * Import config from a config directory.
      *
      * @command config:import
-     *
-     * @param string $label A config directory label (i.e. a key in \$config_directories array in settings.php).
-     * @param array $options
-     *
-     * @return bool|void
+     * @param $label A config directory label (i.e. a key in \$config_directories array in settings.php).
      * @interact-config-label
      * @option diff Show preview as a diff.
      * @option preview Deprecated. Format for displaying proposed changes. Recognized values: list, diff.
      * @option source An arbitrary directory that holds the configuration files. An alternative to label argument
-     * @option partial Allows for partial config imports from the source directory. Only updates and new configs will be processed with this flag (missing configs will not be deleted). No config transformation happens.
+     * @option partial Allows for partial config imports from the source directory. Only updates and new configs will be processed with this flag (missing configs will not be deleted).
      * @aliases cim,config-import
-     * @topics docs:deploy
-     * @bootstrap full
-     *
-     * @throws \Drupal\Core\Config\StorageTransformerException
-     * @throws \Drush\Exceptions\UserAbortException
      */
     public function import($label = null, $options = ['preview' => 'list', 'source' => self::REQ, 'partial' => false, 'diff' => false])
     {
@@ -256,7 +166,7 @@ class ConfigImportCommands extends DrushCommands
         $source_storage_dir = ConfigCommands::getDirectory($label, $options['source']);
 
         // Prepare the configuration storage for the import.
-        if ($source_storage_dir == Path::canonicalize(\drush_config_get_config_directory())) {
+        if ($source_storage_dir == Path::canonicalize(\config_get_config_directory(CONFIG_SYNC_DIRECTORY))) {
             $source_storage = $this->getConfigStorageSync();
         } else {
             $source_storage = new FileStorage($source_storage_dir);
@@ -271,12 +181,6 @@ class ConfigImportCommands extends DrushCommands
                 $replacement_storage->replaceData($name, $data);
             }
             $source_storage = $replacement_storage;
-        } elseif ($this->hasImportTransformer()) {
-            // Use the import transformer if it is available. (Drupal ^8.8)
-            // Drupal core does not apply transformations for single imports.
-            // And in addition the StorageReplaceDataWrapper is not compatible
-            // with StorageCopyTrait::replaceStorageContents.
-            $source_storage = $this->getImportTransformer()->transform($source_storage);
         }
 
         $config_manager = $this->getConfigManager();
@@ -319,8 +223,7 @@ class ConfigImportCommands extends DrushCommands
             $this->getModuleHandler(),
             $this->getModuleInstaller(),
             $this->getThemeHandler(),
-            $this->getStringTranslation(),
-            $this->getModuleExtensionList()
+            $this->getStringTranslation()
         );
         if ($config_importer->alreadyImporting()) {
             $this->logger()->warning('Another request may be synchronizing configuration already.');
@@ -339,8 +242,6 @@ class ConfigImportCommands extends DrushCommands
                             }
                         } while ($context['finished'] < 1);
                     }
-                    // Clear the cache of the active config storage.
-                    $this->getConfigCache()->deleteAll();
                 }
                 if ($config_importer->getErrors()) {
                     throw new ConfigException('Errors occurred during import');
@@ -363,14 +264,14 @@ class ConfigImportCommands extends DrushCommands
     }
 
     /**
-     * @hook validate config:import
+     * @hook validate config-import
      * @param \Consolidation\AnnotatedCommand\CommandData $commandData
      * @return \Consolidation\AnnotatedCommand\CommandError|null
      */
     public function validate(CommandData $commandData)
     {
         $msgs = [];
-        if ($commandData->input()->getOption('partial') && !\Drupal::moduleHandler()->moduleExists('config')) {
+        if ($commandData->input()->getOption('partial') && !$this->getModuleHandler()->moduleExists('config')) {
             $msgs[] = 'Enable the config module in order to use the --partial option.';
         }
 

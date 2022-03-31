@@ -30,8 +30,6 @@ class WebformHandlerConditionsTest extends WebformBrowserTestBase {
    * Tests webform handler plugin conditions.
    */
   public function testConditions() {
-    $assert_session = $this->assertSession();
-
     $this->drupalLogin($this->rootUser);
 
     /** @var \Drupal\webform\WebformInterface $webform */
@@ -40,59 +38,59 @@ class WebformHandlerConditionsTest extends WebformBrowserTestBase {
     $this->drupalGet('/webform/test_handler_conditions');
 
     // Check no triggers.
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
 
     // Check post submission no trigger.
     $this->postSubmission($webform);
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
 
     // Trigger only A handler.
     $this->postSubmission($webform, ['trigger_a' => TRUE]);
 
     // Check non submission hooks are executed.
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
 
     // Check trigger A submission hooks are executed.
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:validateForm');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:submitForm');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preSave');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postSave insert');
-    $assert_session->responseContains('Test A');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:confirmForm');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:validateForm');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:submitForm');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preSave');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postSave insert');
+    $this->assertRaw('Test A');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:confirmForm');
 
     // Trigger only B handler.
     $this->postSubmission($webform, ['trigger_b' => TRUE]);
 
     // Check non submission hooks are executed.
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
-    $assert_session->responseContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preCreate');
+    $this->assertRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:alterElements');
 
     // Check trigger A submission hooks are no executed.
-    $assert_session->responseNotContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:validateForm');
-    $assert_session->responseNotContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:submitForm');
-    $assert_session->responseNotContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preSave');
-    $assert_session->responseNotContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postSave insert');
-    $assert_session->responseNotContains('Test A');
-    $assert_session->responseNotContains('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:confirmForm');
+    $this->assertNoRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:validateForm');
+    $this->assertNoRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:submitForm');
+    $this->assertNoRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preSave');
+    $this->assertNoRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postSave insert');
+    $this->assertNoRaw('Test A');
+    $this->assertNoRaw('Invoked test_a: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:confirmForm');
 
     // Check trigger B submission hooks are executed.
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:validateForm');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:submitForm');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preSave');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postSave insert');
-    $assert_session->responseContains('Test B');
-    $assert_session->responseContains('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:confirmForm');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:validateForm');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:submitForm');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:preSave');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:postSave insert');
+    $this->assertRaw('Test B');
+    $this->assertRaw('Invoked test_b: Drupal\webform_test_handler\Plugin\WebformHandler\TestWebformHandler:confirmForm');
   }
 
 }

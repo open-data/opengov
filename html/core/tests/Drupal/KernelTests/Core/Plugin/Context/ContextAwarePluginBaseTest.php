@@ -51,7 +51,7 @@ class ContextAwarePluginBaseTest extends KernelTestBase {
    * @covers ::getContextDefinitions
    */
   public function testGetContextDefinitions() {
-    $this->assertIsArray($this->plugin->getContextDefinitions());
+    $this->assertInternalType('array', $this->plugin->getContextDefinitions());
   }
 
   /**

@@ -48,10 +48,10 @@ class WebformExampleComposite extends WebformCompositeBase {
       // Use #after_build to add #states.
       '#after_build' => [[get_called_class(), 'afterBuild']],
     ];
-    $elements['sex'] = [
+    $elements['gender'] = [
       '#type' => 'select',
-      '#title' => t('Sex'),
-      '#options' => 'sex',
+      '#title' => t('Gender'),
+      '#options' => 'gender',
       // Use #after_build to add #states.
       '#after_build' => [[get_called_class(), 'afterBuild']],
     ];

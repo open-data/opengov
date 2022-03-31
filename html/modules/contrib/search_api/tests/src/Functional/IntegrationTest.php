@@ -11,7 +11,6 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\node\Entity\Node;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
-use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\search_api\tracker\Basic;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\Utility\Utility;
@@ -60,7 +59,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'node',
     'search_api',
     'search_api_test',
@@ -139,7 +138,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     Server::create([
       'id' => 456,
       'name' => 789,
-      'description' => 'WebTest server description',
+      'description' => 'WebTest server' . ' description',
       'backend' => $this->serverBackend,
       'backend_config' => [],
     ])->save();
@@ -342,7 +341,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
 
     $index = $this->getIndex(TRUE);
 
-    $this->assertInstanceOf(IndexInterface::class, $index, 'Index was correctly created.');
+    $this->assertTrue($index, 'Index was correctly created.');
     $this->assertEquals($edit['name'], $index->label(), 'Name correctly inserted.');
     $this->assertEquals($edit['id'], $index->id(), 'Index ID correctly inserted.');
     $this->assertTrue($index->status(), 'Index status correctly inserted.');
@@ -457,8 +456,8 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // Verify that everything was changed correctly.
     $index = $this->getIndex(TRUE);
     $tracker = $index->getTrackerInstance();
-    $this->assertInstanceOf(TestTracker::class, $tracker, get_class($tracker));
-    $this->assertInstanceOf(TestTracker::class, $tracker, 'Tracker was successfully switched.');
+    $this->assertTrue($tracker instanceof TestTracker, get_class($tracker));
+    $this->assertTrue($tracker instanceof TestTracker, 'Tracker was successfully switched.');
     $configuration = [
       'foo' => 'foobar',
       'dependencies' => [],
@@ -477,7 +476,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->assertSession()->pageTextContains('The index was successfully saved.');
     $index = $this->getIndex(TRUE);
     $tracker = $index->getTrackerInstance();
-    $this->assertInstanceOf(Basic::class, $tracker, 'Tracker was successfully switched.');
+    $this->assertTrue($tracker instanceof Basic, 'Tracker was successfully switched.');
   }
 
   /**
@@ -758,12 +757,6 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->submitForm($edit, 'Save and manage fields');
 
-    // Make sure this worked.
-    $entity_bundle_info = $this->container->get('entity_type.bundle.info');
-    $entity_bundle_info->clearCachedBundles();
-    $bundles = $entity_bundle_info->getBundleInfo('node');
-    $this->assertArrayHasKey('_content_', $bundles);
-
     // Add a field to that content type with funky chars.
     $field_name = '^6%{[*>.<"field';
     FieldStorageConfig::create([
@@ -790,7 +783,6 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // Also check data type labels/descriptions.
     $this->assertHtmlEscaped('"Test" data type');
     $this->assertSession()->responseContains('Dummy <em>data type</em> implementation');
-    $this->submitForm([], 'Save changes');
 
     $edit = [
       'datasource_configs[entity:node][bundles][default]' => 1,
@@ -836,7 +828,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $index = $this->getIndex(TRUE);
     $fields = $index->getFields();
 
-    $this->assertArrayNotHasKey('nid', $fields, 'Field changes have not been persisted.');
+    $this->assertTrue(empty($fields['nid']), 'Field changes have not been persisted.');
     $this->drupalGet($this->getIndexPath('fields'));
     $this->submitForm([], 'Save changes');
     $this->assertSession()->pageTextContains('The changes were successfully saved.');
@@ -873,7 +865,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
       'fields[title][title]' => 'new_title',
       'fields[title][id]' => 'new_id',
       'fields[title][type]' => 'text',
-      'fields[title][boost]' => Utility::formatBoostFactor(21),
+      'fields[title][boost]' => '21.0',
       'fields[revision_log][type]' => 'search_api_test',
     ];
     $this->drupalGet($this->getIndexPath('fields'));
@@ -903,17 +895,6 @@ class IntegrationTest extends SearchApiBrowserTestBase {
 
     // Make sure that property paths are correctly displayed.
     $this->assertSession()->pageTextContains('uid:entity:name');
-
-    // Verify that custom boost values set directly in the config won't be
-    // overwritten when saving the "Fields" form in the UI.
-    $index = $this->getIndex(TRUE);
-    $index->getField('title')->setBoost(4.0);
-    $index->save();
-    $this->drupalGet($this->getIndexPath('fields'));
-    $this->submitForm([], 'Save changes');
-    $this->assertSession()->pageTextContains('The changes were successfully saved.');
-    $index = $this->getIndex(TRUE);
-    $this->assertEquals(4.0, $index->getField('title')->getBoost());
   }
 
   /**
@@ -921,9 +902,8 @@ class IntegrationTest extends SearchApiBrowserTestBase {
    */
   protected function checkDataTypesTable() {
     $this->drupalGet($this->getIndexPath('fields'));
-    $rows = $this->xpath('//*[@id="search-api-data-types-table"]//table/tbody/tr');
-    $this->assertIsArray($rows);
-    $this->assertNotEmpty($rows);
+    $rows = $this->xpath('//*[@id="search-api-data-types-table"]/*/table/tbody/tr');
+    $this->assertTrue(is_array($rows) && !empty($rows), 'Found a datatype listing.');
 
     /** @var \Behat\Mink\Element\NodeElement $row */
     foreach ($rows as $row) {
@@ -1064,7 +1044,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // Find the "Remove" link for the "body" field.
     $links = $this->xpath('//a[@data-drupal-selector=:id]', [':id' => 'edit-fields-body-remove']);
     $this->assertNotEmpty($links, 'Found "Remove" link for body field');
-    $this->assertIsArray($links);
+    $this->assertInternalType('array', $links);
     $url_target = $this->getAbsoluteUrl($links[0]->getAttribute('href'));
     $this->drupalGet($url_target);
     $this->drupalGet($this->getIndexPath('fields'));
@@ -1072,7 +1052,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
 
     $index = $this->getIndex(TRUE);
     $fields = $index->getFields();
-    $this->assertArrayNotHasKey('body', $fields);
+    $this->assertTrue(!isset($fields['body']), 'The body field has been removed from the index.');
   }
 
   /**
@@ -1103,16 +1083,18 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $this->drupalGet($this->getIndexPath('fields/add/nojs'));
     $this->assertSession()->responseContains($message_parts[0]);
     $this->assertSession()->responseContains($message_parts[1]);
-    $this->assertSession()->elementNotExists('xpath', '//input[not(@disabled)]');
+    $this->assertFalse($this->xpath('//input[not(@disabled)]'));
     $this->drupalGet($this->getIndexPath('fields/edit/rendered_item'));
     $this->assertSession()->responseContains($message_parts[0]);
     $this->assertSession()->responseContains($message_parts[1]);
-    $this->assertSession()->elementNotExists('xpath', '//input[not(@disabled)]');
+    $this->assertFalse($this->xpath('//input[not(@disabled)]'));
     $this->drupalGet($this->getIndexPath('fields'));
     $this->assertSession()->responseContains($message_parts[0]);
     $this->assertSession()->responseContains($message_parts[1]);
-    $this->assertSession()->elementNotExists('xpath', '//input[not(@disabled)]');
-    $this->clickLink('break this lock');
+    $this->assertFalse($this->xpath('//input[not(@disabled)]'));
+    $match_result = preg_match('#fields/break-lock">([^<>]*?)</a>#', $message, $m);
+    $this->assertTrue($match_result);
+    $this->clickLink($m[1]);
 
     $this->assertSession()->responseContains(new FormattableMarkup('By breaking this lock, any unsaved changes made by @user will be lost.', $args));
     $this->submitForm([], 'Break lock');
@@ -1120,12 +1102,12 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // Make sure the field has not been added to the index.
     $index = $this->getIndex(TRUE);
     $fields = $index->getFields();
-    $this->assertArrayNotHasKey('changed', $fields);
+    $this->assertTrue(!isset($fields['changed']), 'The changed field has not been added to the index.');
 
     // Find the "Remove" link for the "title" field.
     $links = $this->xpath('//a[@data-drupal-selector=:id]', [':id' => 'edit-fields-title-remove']);
     $this->assertNotEmpty($links, 'Found "Remove" link for title field');
-    $this->assertIsArray($links);
+    $this->assertInternalType('array', $links);
     $url_target = $this->getAbsoluteUrl($links[0]->getAttribute('href'));
     $this->drupalGet($url_target);
 
@@ -1259,10 +1241,10 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // Change the boost of the field.
     $fields_path = $this->getIndexPath('fields');
     $this->drupalGet($fields_path);
-    $this->submitForm(['fields[url][boost]' => Utility::formatBoostFactor(8)], 'Save changes');
+    $this->submitForm(['fields[url][boost]' => '8.0'], 'Save changes');
     $this->assertSession()->pageTextContains('The changes were successfully saved.');
     $option_field = $this->assertSession()
-      ->optionExists('edit-fields-url-boost', Utility::formatBoostFactor(8));
+      ->optionExists('edit-fields-url-boost', '8.0');
     $this->assertTrue($option_field->hasAttribute('selected'), 'Boost is correctly saved.');
 
     // Change the type of the field.
@@ -1383,14 +1365,8 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     $index = $this->getIndex(TRUE);
     $index->reindex();
 
-    $user_count = \Drupal::entityQuery('user')
-      ->accessCheck(FALSE)
-      ->count()
-      ->execute();
-    $node_count = \Drupal::entityQuery('node')
-      ->accessCheck(FALSE)
-      ->count()
-      ->execute();
+    $user_count = \Drupal::entityQuery('user')->count()->execute();
+    $node_count = \Drupal::entityQuery('node')->count()->execute();
 
     // Enable indexing of users.
     $settings_path = $this->getIndexPath('edit');
@@ -1431,10 +1407,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
    * "unindexed" in the tracker.
    */
   protected function changeIndexServer() {
-    $node_count = \Drupal::entityQuery('node')
-      ->accessCheck(FALSE)
-      ->count()
-      ->execute();
+    $node_count = \Drupal::entityQuery('node')->count()->execute();
     $this->assertEquals($node_count, $this->countTrackedItems(), 'All nodes are correctly tracked by the index.');
 
     // Index all remaining items on the index.
@@ -1476,21 +1449,16 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // Ensure all items need to be indexed.
     $this->getIndex()->reindex();
 
-    $this->drupalGet($this->getIndexPath());
-    $this->submitForm([], 'Index now');
+    $this->drupalPostForm($this->getIndexPath(), [], 'Index now');
     $this->assertSession()->statusCodeEquals(200);
     $this->checkForMetaRefresh();
-    $count = \Drupal::entityQuery('node')
-      ->accessCheck(FALSE)
-      ->count()
-      ->execute() - 1;
+    $count = \Drupal::entityQuery('node')->count()->execute() - 1;
     $this->assertSession()->pageTextContains("Successfully indexed $count items.");
     $this->assertSession()->pageTextContains('1 item could not be indexed.');
     $this->assertSession()->pageTextNotContains("Couldn't index items.");
     $this->assertSession()->pageTextNotContains('An error occurred');
 
-    $this->drupalGet($this->getIndexPath());
-    $this->submitForm([], 'Index now');
+    $this->drupalPostForm($this->getIndexPath(), [], 'Index now');
     $this->assertSession()->statusCodeEquals(200);
     $this->checkForMetaRefresh();
     $this->assertSession()->pageTextContains("Couldn't index items.");
@@ -1498,16 +1466,14 @@ class IntegrationTest extends SearchApiBrowserTestBase {
 
     \Drupal::state()->set($key, []);
     $this->setError('backend', 'indexItems');
-    $this->drupalGet($this->getIndexPath());
-    $this->submitForm([], 'Index now');
+    $this->drupalPostForm($this->getIndexPath(), [], 'Index now');
     $this->assertSession()->statusCodeEquals(200);
     $this->checkForMetaRefresh();
     $this->assertSession()->pageTextContains("Couldn't index items.");
     $this->assertSession()->pageTextNotContains('An error occurred');
 
     $this->setError('backend', 'indexItems', FALSE);
-    $this->drupalGet($this->getIndexPath());
-    $this->submitForm([], 'Index now');
+    $this->drupalPostForm($this->getIndexPath(), [], 'Index now');
     $this->assertSession()->statusCodeEquals(200);
     $this->checkForMetaRefresh();
     $this->assertSession()->pageTextContains("Successfully indexed 1 item.");
@@ -1533,33 +1499,27 @@ class IntegrationTest extends SearchApiBrowserTestBase {
       ->condition('item_id', Utility::createCombinedId('entity:node', '2:en'))
       ->execute();
     $this->assertEquals(1, $deleted);
-    $manipulated_items_count = \Drupal::entityQuery('node')
-      ->accessCheck(FALSE)
-      ->count()
-      ->execute() - 1;
+    $manipulated_items_count = \Drupal::entityQuery('node')->count()->execute() - 1;
 
     $this->assertEquals($manipulated_items_count, $tracker->getIndexedItemsCount());
     $this->assertEquals($manipulated_items_count, $tracker->getTotalItemsCount());
     $this->assertEquals($manipulated_items_count + 1, $this->countItemsOnServer());
 
-    $this->drupalGet($this->getIndexPath('reindex'));
-    $this->submitForm([], 'Confirm');
+    $this->drupalPostForm($this->getIndexPath('reindex'), [], 'Confirm');
     $assert_session->pageTextContains("The search index $label was successfully queued for reindexing.");
     $this->assertEquals(0, $tracker->getIndexedItemsCount());
     $this->assertEquals($manipulated_items_count, $tracker->getTotalItemsCount());
     $this->assertEquals($manipulated_items_count + 1, $this->countItemsOnServer());
     $this->indexItems();
 
-    $this->drupalGet($this->getIndexPath('clear'));
-    $this->submitForm([], 'Confirm');
+    $this->drupalPostForm($this->getIndexPath('clear'), [], 'Confirm');
     $assert_session->pageTextContains("All items were successfully deleted from search index $label.");
     $this->assertEquals(0, $tracker->getIndexedItemsCount());
     $this->assertEquals($manipulated_items_count, $tracker->getTotalItemsCount());
     $this->assertEquals(0, $this->countItemsOnServer());
     $this->indexItems();
 
-    $this->drupalGet($this->getIndexPath('rebuild-tracker'));
-    $this->submitForm([], 'Confirm');
+    $this->drupalPostForm($this->getIndexPath('rebuild-tracker'), [], 'Confirm');
     $assert_session->pageTextContains("The tracking information for search index $label will be rebuilt.");
     $this->assertEquals(0, $tracker->getIndexedItemsCount());
     $this->assertEquals($manipulated_items_count + 1, $tracker->getTotalItemsCount());
@@ -1582,14 +1542,14 @@ class IntegrationTest extends SearchApiBrowserTestBase {
     // Confirm deletion.
     $this->submitForm([], 'Delete');
     $this->assertSession()->responseContains(new FormattableMarkup('The search server %name has been deleted.', ['%name' => $server->label()]));
-    $this->assertNull(Server::load($this->serverId), 'Server could not be found anymore.');
+    $this->assertFalse(Server::load($this->serverId), 'Server could not be found anymore.');
     $this->assertSession()->addressEquals('admin/config/search/search-api');
 
     // Confirm that the index hasn't been deleted.
     $this->indexStorage->resetCache([$this->indexId]);
     /** @var \Drupal\search_api\IndexInterface $index */
     $index = $this->indexStorage->load($this->indexId);
-    $this->assertInstanceOf(IndexInterface::class, $index, 'The index associated with the server was not deleted.');
+    $this->assertTrue($index, 'The index associated with the server was not deleted.');
     $this->assertFalse($index->status(), 'The index associated with the server was disabled.');
     $this->assertNull($index->getServerId(), 'The index was removed from the server.');
   }

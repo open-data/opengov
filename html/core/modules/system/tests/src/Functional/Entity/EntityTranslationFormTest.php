@@ -52,11 +52,7 @@ class EntityTranslationFormTest extends BrowserTestBase {
   public function testEntityFormLanguage() {
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
-    $web_user = $this->drupalCreateUser([
-      'create page content',
-      'edit own page content',
-      'administer content types',
-    ]);
+    $web_user = $this->drupalCreateUser(['create page content', 'edit own page content', 'administer content types']);
     $this->drupalLogin($web_user);
 
     // Create a node with language LanguageInterface::LANGCODE_NOT_SPECIFIED.
@@ -104,7 +100,7 @@ class EntityTranslationFormTest extends BrowserTestBase {
 
     // Check to make sure the node was created.
     $node = $this->drupalGetNodeByTitle($edit['title[0][value]']);
-    $this->assertInstanceOf(Node::class, $node);
+    $this->assertInstanceOf(Node::class, $node, 'Node found in database.');
 
     // Make body translatable.
     $field_storage = FieldStorageConfig::loadByName('node', 'body');

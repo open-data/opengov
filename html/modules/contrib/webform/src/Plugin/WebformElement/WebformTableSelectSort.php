@@ -33,7 +33,7 @@ class WebformTableSelectSort extends OptionsBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -52,7 +52,7 @@ class WebformTableSelectSort extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function getItemsDefaultFormat() {
+  public function getItemDefaultFormat() {
     return 'ol';
   }
 

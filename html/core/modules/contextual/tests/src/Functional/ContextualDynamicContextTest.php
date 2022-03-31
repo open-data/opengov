@@ -66,15 +66,8 @@ class ContextualDynamicContextTest extends BrowserTestBase {
     ConfigurableLanguage::createFromLangcode('it')->save();
     $this->rebuildContainer();
 
-    $this->editorUser = $this->drupalCreateUser([
-      'access content',
-      'access contextual links',
-      'edit any article content',
-    ]);
-    $this->authenticatedUser = $this->drupalCreateUser([
-      'access content',
-      'access contextual links',
-    ]);
+    $this->editorUser = $this->drupalCreateUser(['access content', 'access contextual links', 'edit any article content']);
+    $this->authenticatedUser = $this->drupalCreateUser(['access content', 'access contextual links']);
     $this->anonymousUser = $this->drupalCreateUser(['access content']);
   }
 
@@ -111,7 +104,7 @@ class ContextualDynamicContextTest extends BrowserTestBase {
     }
     $response = $this->renderContextualLinks([], 'node');
     $this->assertSame(400, $response->getStatusCode());
-    $this->assertStringContainsString('No contextual ids specified.', (string) $response->getBody());
+    $this->assertContains('No contextual ids specified.', (string) $response->getBody());
     $response = $this->renderContextualLinks($ids, 'node');
     $this->assertSame(200, $response->getStatusCode());
     $json = Json::decode((string) $response->getBody());
@@ -134,7 +127,7 @@ class ContextualDynamicContextTest extends BrowserTestBase {
     }
     $response = $this->renderContextualLinks([], 'node');
     $this->assertSame(400, $response->getStatusCode());
-    $this->assertStringContainsString('No contextual ids specified.', (string) $response->getBody());
+    $this->assertContains('No contextual ids specified.', (string) $response->getBody());
     $response = $this->renderContextualLinks($ids, 'node');
     $this->assertSame(200, $response->getStatusCode());
     $json = Json::decode((string) $response->getBody());
@@ -191,7 +184,7 @@ class ContextualDynamicContextTest extends BrowserTestBase {
       'http_errors' => FALSE,
     ]);
     $this->assertEquals('400', $response->getStatusCode());
-    $this->assertStringContainsString('No contextual ID tokens specified.', (string) $response->getBody());
+    $this->assertContains('No contextual ID tokens specified.', (string) $response->getBody());
 
     $response = $http_client->request('POST', $url, [
       'cookies' => $this->getSessionCookies(),
@@ -199,7 +192,7 @@ class ContextualDynamicContextTest extends BrowserTestBase {
       'http_errors' => FALSE,
     ]);
     $this->assertEquals('400', $response->getStatusCode());
-    $this->assertStringContainsString('Invalid contextual ID specified.', (string) $response->getBody());
+    $this->assertContains('Invalid contextual ID specified.', (string) $response->getBody());
 
     $response = $http_client->request('POST', $url, [
       'cookies' => $this->getSessionCookies(),
@@ -207,7 +200,7 @@ class ContextualDynamicContextTest extends BrowserTestBase {
       'http_errors' => FALSE,
     ]);
     $this->assertEquals('400', $response->getStatusCode());
-    $this->assertStringContainsString('Invalid contextual ID specified.', (string) $response->getBody());
+    $this->assertContains('Invalid contextual ID specified.', (string) $response->getBody());
 
     $response = $http_client->request('POST', $url, [
       'cookies' => $this->getSessionCookies(),

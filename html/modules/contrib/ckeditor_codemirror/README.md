@@ -43,14 +43,14 @@ INSTALLATION
         ```
         "merge-plugin": {
             "include": [
-                "{DOCROOT}/modules/contrib/ckeditor_codemirror/composer.libraries.json"
+                "{DOCROOT}/modules/custom/ckeditor_codemirror/composer.libraries.json"
             ]
         },
         ```
     
         Note: Remember to replace `{DOCROOT}` with the appropriate root folder 
         for the Drupal installation -- this is likely `web` or `docroot`.
-    3. Execute `composer install` (or, in some cases, `composer update --lock`).
+    3. Execute `composer install`.
     
     That's it! Composer should install the CKEditor CodeMirror plugin in the 
     appropriate place (`/libraries/ckeditor_codemirror`).

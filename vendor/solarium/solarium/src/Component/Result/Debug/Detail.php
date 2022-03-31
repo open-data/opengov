@@ -1,18 +1,11 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Result\Debug;
 
 /**
  * Select component debug detail result.
  */
-class Detail implements \ArrayAccess
+class Detail
 {
     /**
      * Value.
@@ -36,7 +29,7 @@ class Detail implements \ArrayAccess
     protected $description;
 
     /**
-     * @var \Solarium\Component\Result\Debug\Detail[]
+     * @var array
      */
     protected $subDetails;
 
@@ -85,105 +78,21 @@ class Detail implements \ArrayAccess
     }
 
     /**
-     * @param \Solarium\Component\Result\Debug\Detail[]|array $subDetails
+     * @param array $subDetails
      *
      * @return self
      */
     public function setSubDetails(array $subDetails): self
     {
-        $this->subDetails = [];
-        foreach ($subDetails as $subDetail) {
-            if ($subDetail instanceof Detail) {
-                $this->subDetails[] = $subDetail;
-            } else {
-                $this->subDetails[] = new Detail($subDetail['match'], $subDetail['value'], $subDetail['description']);
-            }
-        }
-
+        $this->subDetails = $subDetails;
         return $this;
     }
 
     /**
-     * @return \Solarium\Component\Result\Debug\Detail[]|null
+     * @return array
      */
-    public function getSubDetails(): ?array
+    public function getSubDetails(): array
     {
         return $this->subDetails;
-    }
-
-    /**
-     * ArrayAccess implementation.
-     *
-     * @param mixed $offset
-     *
-     * @return bool
-     */
-    public function offsetExists($offset): bool
-    {
-        return \in_array($offset, ['match', 'value', 'description']);
-    }
-
-    #[\ReturnTypeWillChange]
-    /**
-     * ArrayAccess implementation.
-     *
-     * @param mixed $offset
-     *
-     * @return mixed
-     */
-    public function offsetGet($offset)
-    {
-        return $this->{$offset};
-    }
-
-    /**
-     * ArrayAccess implementation.
-     *
-     * @param mixed $offset
-     * @param mixed $value
-     */
-    public function offsetSet($offset, $value): void
-    {
-        // Details are immutable.
-    }
-
-    /**
-     * ArrayAccess implementation.
-     *
-     * @param mixed $offset
-     */
-    public function offsetUnset($offset): void
-    {
-        // Details are immutable.
-    }
-
-    /**
-     * Get a recursive dump of the debug details.
-     *
-     * @param int $depth
-     *
-     * @return string
-     */
-    public function debugDump(int $depth = 0): string
-    {
-        $string = '';
-        if ($this->match) {
-            $string .= str_repeat('... ', $depth).sprintf('%f', $this->value).' <= '.$this->description.PHP_EOL;
-            foreach ($this->getSubDetails() ?? [] as $subDetail) {
-                if ($subDetail->getMatch()) {
-                    $string .= $subDetail->debugDump($depth + 1);
-                }
-            }
-        }
-
-        return $string;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString()
-    {
-        return $this->debugDump();
     }
 }

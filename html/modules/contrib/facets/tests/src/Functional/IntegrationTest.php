@@ -177,7 +177,7 @@ class IntegrationTest extends FacetsTestBase {
     $this->drupalGet('admin/structure/block');
     $this->assertSession()->pageTextContains($block_id);
 
-    $this->drupalGet('admin/structure/block/library/stark');
+    $this->drupalGet('admin/structure/block/library/classy');
     $this->assertSession()->pageTextContains($name);
 
     $this->drupalGet('admin/config/search/facets/' . $id . '/delete');
@@ -185,7 +185,7 @@ class IntegrationTest extends FacetsTestBase {
     $this->assertSession()->pageTextContains($block->label());
     $this->drupalPostForm(NULL, [], 'Delete');
 
-    $this->drupalGet('admin/structure/block/library/stark');
+    $this->drupalGet('admin/structure/block/library/classy');
     $this->assertSession()->pageTextNotContains($name);
   }
 

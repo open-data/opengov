@@ -111,10 +111,7 @@ class FilterAdminTest extends BrowserTestBase {
       'access site reports',
     ]);
 
-    $this->webUser = $this->drupalCreateUser([
-      'create page content',
-      'edit own page content',
-    ]);
+    $this->webUser = $this->drupalCreateUser(['create page content', 'edit own page content']);
     user_role_grant_permissions('authenticated', [$basic_html_format->getPermissionName()]);
     user_role_grant_permissions('anonymous', [$restricted_html_format->getPermissionName()]);
     $this->drupalLogin($this->adminUser);
@@ -166,7 +163,7 @@ class FilterAdminTest extends BrowserTestBase {
 
     // Verify that disabled text format no longer exists.
     $this->drupalGet('admin/config/content/formats/manage/' . $format_id);
-    $this->assertSession()->statusCodeEquals(404);
+    $this->assertResponse(404, 'Disabled text format no longer exists.');
 
     // Attempt to create a format of the same machine name as the disabled
     // format but with a different human readable name.
@@ -206,7 +203,7 @@ class FilterAdminTest extends BrowserTestBase {
     $this->drupalGet('admin/config/content/formats');
     $this->assertNoRaw('admin/config/content/formats/manage/' . $plain . '/disable', 'Disable link for the fallback format not found.');
     $this->drupalGet('admin/config/content/formats/manage/' . $plain . '/disable');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403, 'The fallback format cannot be disabled.');
 
     // Verify access permissions to Full HTML format.
     $full_format = FilterFormat::load($full);
@@ -323,7 +320,7 @@ class FilterAdminTest extends BrowserTestBase {
     $edit['body[0][format]'] = $plain;
     $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, t('Save'));
     $this->drupalGet('node/' . $node->id());
-    $this->assertEscaped($text);
+    $this->assertEscaped($text, 'The "Plain text" text format escapes all HTML tags.');
     $this->config('filter.settings')
       ->set('always_show_fallback_choice', FALSE)
       ->save();

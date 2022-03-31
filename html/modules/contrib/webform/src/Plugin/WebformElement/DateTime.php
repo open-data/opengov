@@ -5,7 +5,6 @@ namespace Drupal\webform\Plugin\WebformElement;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformSubmissionInterface;
 
@@ -20,7 +19,7 @@ use Drupal\webform\WebformSubmissionInterface;
  *   category = @Translation("Date/time elements"),
  * )
  */
-class DateTime extends DateBase implements TrustedCallbackInterface {
+class DateTime extends DateBase {
 
   /**
    * {@inheritdoc}
@@ -41,11 +40,12 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       }
     }
 
-    $properties = [
+    return [
       'date_min' => '',
       'date_max' => '',
       // Date settings.
       'date_date_format' => $date_format,
+      'date_date_datepicker_button' => FALSE,
       'date_date_element' => 'date',
       'date_year_range' => '1900:2050',
       'date_date_placeholder' => '',
@@ -57,12 +57,6 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       'date_time_step' => '',
       'date_time_placeholder' => '',
     ] + parent::defineDefaultProperties();
-    if ($this->datePickerExists()) {
-      $properties += [
-        'date_date_datepicker_button' => FALSE,
-      ];
-    }
-    return $properties;
   }
 
   /**
@@ -72,7 +66,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     return array_merge(parent::defineTranslatableProperties(), ['date_date_placeholder', 'date_time_placeholder']);
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -90,12 +84,12 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
 
     /* Date */
 
-    $date_element = $element['#date_date_element'] ?? 'date';
+    $date_element = (isset($element['#date_date_element'])) ? $element['#date_date_element'] : 'date';
 
     // Unset unsupported date format for date elements that are not
     // text or datepicker.
     if (!in_array($date_element, ['text', 'datepicker'])) {
-      unset($element['#date_date_format']);
+      unset($element['date_date_format']);
     }
 
     // Set date year range.
@@ -114,7 +108,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     }
 
     // Add date callback.
-    $element['#date_date_callbacks'][] = floatval(\Drupal::VERSION) >= 9.3 ? [DateTime::class, 'dateCallback'] : '_webform_datetime_date';
+    $element['#date_date_callbacks'][] = '_webform_datetime_date';
 
     /* Time */
 
@@ -124,7 +118,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     }
 
     // Add time callback.
-    $element['#date_time_callbacks'][] = floatval(\Drupal::VERSION) >= 9.3 ? [DateTime::class, 'timeCallback'] : '_webform_datetime_time';
+    $element['#date_time_callbacks'][] = '_webform_datetime_time';
 
     // Prepare element after date/time formats have been updated.
     parent::prepare($element, $webform_submission);
@@ -181,22 +175,17 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
         'none' => $this->t('None - Do not display a date element'),
       ],
     ];
-    if (!$this->datePickerExists()) {
-      unset($form['date']['date_date_element']['#options']['datepicker']);
-    }
-    if ($this->datePickerExists()) {
-      $form['date']['date_date_datepicker_button'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Show date picker button'),
-        '#description' => $this->t('If checked, date picker will include a calendar button'),
-        '#return_value' => TRUE,
-        '#states' => [
-          'visible' => [
-            [':input[name="properties[date_date_element]"]' => ['value' => 'datepicker']],
-          ],
+    $form['date']['date_date_datepicker_button'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show date picker button'),
+      '#description' => $this->t('If checked, date picker will include a calendar button'),
+      '#return_value' => TRUE,
+      '#states' => [
+        'visible' => [
+          [':input[name="properties[date_date_element]"]' => ['value' => 'datepicker']],
         ],
-      ];
-    }
+      ],
+    ];
     $form['date']['date_date_element_datetime_warning'] = [
       '#type' => 'webform_message',
       '#message_type' => 'warning',
@@ -260,6 +249,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       '#description' => $this->t("A description of the range of years to allow, like '1900:2050', '-3:+3' or '2000:+3', where the first value describes the earliest year and the second the latest year in the range.") . ' ' .
       $this->t('A year in either position means that specific year.') . ' ' .
       $this->t('A +/- value describes a dynamic value that is that many years earlier or later than the current year at the time the webform is displayed.') . ' ' .
+      $this->t("Used in jQueryUI (fallback) datepicker year range and HTML5 min/max date settings. Defaults to '1900:2050'.") . ' ' .
       $this->t('Use min/max validation to define a more specific date range.'),
       '#states' => [
         'invisible' => [
@@ -424,112 +414,6 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     }
 
     return $properties;
-  }
-
-  /**
-   * Callback for custom datetime date element.
-   *
-   * @param array $element
-   *   The element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   * @param \Drupal\Core\Datetime\DrupalDateTime|null $date
-   *   The date value.
-   *
-   * @see \Drupal\webform\Plugin\WebformElement\DateTime::prepare
-   */
-  public static function dateCallback(array &$element, FormStateInterface $form_state, DrupalDateTime $date = NULL) {
-    // Make sure the date element is being displayed.
-    if (!isset($element['date'])) {
-      return;
-    }
-
-    $type = (isset($element['#date_date_element'])) ? $element['#date_date_element'] : 'date';
-    switch ($type) {
-      case 'datepicker':
-        // Convert #type from datepicker to textfield.
-        $element['date']['#type'] = 'textfield';
-
-        // Must manually set 'data-drupal-date-format' to trigger date picker.
-        // @see \Drupal\Core\Render\Element\Date::processDate
-        $element['date']['#attributes']['data-drupal-date-format'] = [$element['date']['#date_date_format']];
-        break;
-    }
-  }
-
-  /**
-   * Callback for custom datetime time element.
-   *
-   * @param array $element
-   *   The element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   * @param \Drupal\Core\Datetime\DrupalDateTime|null $date
-   *   The date value.
-   *
-   * @see \Drupal\webform\Plugin\WebformElement\DateTime::prepare
-   */
-  public static function timeCallback(array &$element, FormStateInterface $form_state, DrupalDateTime $date = NULL) {
-    // Make sure the time element is being displayed.
-    if (!isset($element['time'])) {
-      return;
-    }
-
-    // Apply time specific min/max to the element.
-    foreach (['min', 'max'] as $property) {
-      if (!empty($element["#date_time_$property"])) {
-        $value = $element["#date_time_$property"];
-      }
-      elseif (!empty($element["#date_$property"])) {
-        $value = date('H:i:s', strtotime($element["#date_$property"]));
-      }
-      else {
-        $value = NULL;
-      }
-      if ($value) {
-        $element['time']["#$property"] = $value;
-        $element['time']['#attributes'][$property] = $value;
-      }
-    }
-
-    // Apply time step and format to the element.
-    if (!empty($element['#date_time_step'])) {
-      $element['time']['#step'] = $element['#date_time_step'];
-      $element['time']['#attributes']['step'] = $element['#date_time_step'];
-    }
-    if (!empty($element['#date_time_format'])) {
-      $element['time']['#time_format'] = $element['#date_time_format'];
-    }
-
-    // Remove extra attributes for date element.
-    unset(
-      $element['time']['#attributes']['data-min-year'],
-      $element['time']['#attributes']['data-max-year']
-    );
-
-    $type = $element['#date_time_element'] ?? 'time';
-
-    switch ($type) {
-      case 'timepicker':
-        $element['time']['#type'] = 'webform_time';
-        $element['time']['#timepicker'] = TRUE;
-        break;
-
-      case 'time':
-        $element['time']['#type'] = 'webform_time';
-        break;
-
-      case 'text':
-        $element['time']['#element_validate'][] = ['\Drupal\webform\Element\WebformTime', 'validateWebformTime'];
-        break;
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function trustedCallbacks() {
-    return array_merge(['dateCallback', 'timeCallback'], parent::trustedCallbacks());
   }
 
 }

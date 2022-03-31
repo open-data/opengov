@@ -30,7 +30,7 @@ class CliTest extends KernelTestBase {
    *
    * @var string[]
    */
-  protected static $modules = [
+  public static $modules = [
     'search_api',
     'search_api_test',
     'user',

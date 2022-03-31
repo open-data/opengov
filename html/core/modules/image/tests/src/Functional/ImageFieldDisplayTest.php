@@ -152,10 +152,10 @@ class ImageFieldDisplayTest extends ImageFieldTestBase {
       $this->assertEqual($this->drupalGetHeader('Content-Type'), 'image/png', 'Content-Type header was sent.');
       $this->assertTrue(strstr($this->drupalGetHeader('Cache-Control'), 'private') !== FALSE, 'Cache-Control header was sent.');
 
-      // Log out and ensure the file cannot be accessed.
+      // Log out and try to access the file.
       $this->drupalLogout();
       $this->drupalGet(file_create_url($image_uri));
-      $this->assertSession()->statusCodeEquals(403);
+      $this->assertResponse('403', 'Access denied to original image as anonymous user.');
 
       // Log in again.
       $this->drupalLogin($this->adminUser);
@@ -185,7 +185,7 @@ class ImageFieldDisplayTest extends ImageFieldTestBase {
         ':alt' => $alt,
       ]
     );
-    $this->assertCount(1, $elements, 'Image linked to content formatter displaying correctly on full node view.');
+    $this->assertEqual(count($elements), 1, 'Image linked to content formatter displaying correctly on full node view.');
 
     // Test the image style 'thumbnail' formatter.
     $display_options['settings']['image_link'] = '';
@@ -211,10 +211,10 @@ class ImageFieldDisplayTest extends ImageFieldTestBase {
     $this->assertRaw($default_output, 'Image style thumbnail formatter displaying correctly on full node view.');
 
     if ($scheme == 'private') {
-      // Log out and ensure the file cannot be accessed.
+      // Log out and try to access the file.
       $this->drupalLogout();
       $this->drupalGet(ImageStyle::load('thumbnail')->buildUrl($image_uri));
-      $this->assertSession()->statusCodeEquals(403);
+      $this->assertResponse('403', 'Access denied to image style thumbnail as anonymous user.');
     }
 
     // Test the image URL formatter without an image style.

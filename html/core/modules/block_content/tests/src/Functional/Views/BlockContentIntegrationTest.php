@@ -42,10 +42,10 @@ class BlockContentIntegrationTest extends BlockContentTestBase {
     }
 
     $this->drupalGet('test-block_content-view');
-    $this->assertSession()->statusCodeEquals(404);
+    $this->assertResponse(404);
 
     $this->drupalGet('test-block_content-view/all');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertIds($all_ids);
     /* @var \Drupal\block_content\Entity\BlockContentType[] $types*/
     foreach ($types as $type) {

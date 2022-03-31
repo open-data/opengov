@@ -36,7 +36,7 @@ class ReportTest extends UITestBase {
 
     // Test the report page.
     $this->drupalGet('admin/reports/views-plugins');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, "Views report page exists");
   }
 
 }

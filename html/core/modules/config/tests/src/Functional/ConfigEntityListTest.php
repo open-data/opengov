@@ -46,7 +46,7 @@ class ConfigEntityListTest extends BrowserTestBase {
     $controller = \Drupal::entityTypeManager()->getListBuilder('config_test');
 
     // Test getStorage() method.
-    $this->assertInstanceOf(EntityStorageInterface::class, $controller->getStorage());
+    $this->assertInstanceOf(EntityStorageInterface::class, $controller->getStorage(), 'EntityStorage instance in storage.');
 
     // Get a list of ConfigTest entities and confirm that it contains the
     // ConfigTest entity provided by the config_test module.
@@ -54,7 +54,7 @@ class ConfigEntityListTest extends BrowserTestBase {
     $list = $controller->load();
     $this->assertCount(1, $list, '1 ConfigTest entity found.');
     $entity = $list['dotted.default'];
-    $this->assertInstanceOf(ConfigTest::class, $entity);
+    $this->assertInstanceOf(ConfigTest::class, $entity, '"Default" ConfigTest entity is an instance of ConfigTest.');
 
     // Test getOperations() method.
     $expected_operations = [
@@ -156,10 +156,7 @@ class ConfigEntityListTest extends BrowserTestBase {
    */
   public function testListUI() {
     // Log in as an administrative user to access the full menu trail.
-    $this->drupalLogin($this->drupalCreateUser([
-      'access administration pages',
-      'administer site configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['access administration pages', 'administer site configuration']));
 
     // Get the list callback page.
     $this->drupalGet('admin/structure/config_test');
@@ -193,9 +190,9 @@ class ConfigEntityListTest extends BrowserTestBase {
     $this->assertNotEmpty($elements[2]->find('xpath', '//ul'), 'Operations list found.');
 
     // Add a new entity using the operations link.
-    $this->assertSession()->linkExists('Add test configuration');
+    $this->assertLink('Add test configuration');
     $this->clickLink('Add test configuration');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $edit = [
       'label' => 'Antelope',
       'id' => 'antelope',
@@ -215,7 +212,7 @@ class ConfigEntityListTest extends BrowserTestBase {
     // Edit the entity using the operations link.
     $this->assertLinkByHref('admin/structure/config_test/manage/antelope');
     $this->clickLink('Edit', 1);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertTitle('Edit Antelope | Drupal');
     $edit = ['label' => 'Albatross', 'id' => 'albatross'];
     $this->drupalPostForm(NULL, $edit, t('Save'));
@@ -229,7 +226,7 @@ class ConfigEntityListTest extends BrowserTestBase {
     // Delete the added entity using the operations link.
     $this->assertLinkByHref('admin/structure/config_test/manage/albatross/delete');
     $this->clickLink('Delete', 1);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertTitle('Are you sure you want to delete the test configuration Albatross? | Drupal');
     $this->drupalPostForm(NULL, [], t('Delete'));
 
@@ -240,7 +237,7 @@ class ConfigEntityListTest extends BrowserTestBase {
 
     // Delete the original entity using the operations link.
     $this->clickLink('Delete');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertTitle('Are you sure you want to delete the test configuration Default? | Drupal');
     $this->drupalPostForm(NULL, [], t('Delete'));
 
@@ -257,9 +254,7 @@ class ConfigEntityListTest extends BrowserTestBase {
    * Test paging.
    */
   public function testPager() {
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer site configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer site configuration']));
 
     $storage = \Drupal::service('entity_type.manager')->getListBuilder('config_test')->getStorage();
 

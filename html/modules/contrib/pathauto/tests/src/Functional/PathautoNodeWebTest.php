@@ -17,11 +17,6 @@ class PathautoNodeWebTest extends BrowserTestBase {
   use PathautoTestHelperTrait;
 
   /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stable';
-
-  /**
    * Modules to enable.
    *
    * @var array
@@ -38,7 +33,7 @@ class PathautoNodeWebTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  function setUp() {
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
@@ -61,7 +56,7 @@ class PathautoNodeWebTest extends BrowserTestBase {
   /**
    * Tests editing nodes with different settings.
    */
-  public function testNodeEditing() {
+  function testNodeEditing() {
     // Ensure that the Pathauto checkbox is checked by default on the node add
     // form.
     $this->drupalGet('node/add/page');
@@ -149,7 +144,7 @@ class PathautoNodeWebTest extends BrowserTestBase {
   /**
    * Test node operations.
    */
-  public function testNodeOperations() {
+  function testNodeOperations() {
     $node1 = $this->drupalCreateNode(['title' => 'node1']);
     $node2 = $this->drupalCreateNode(['title' => 'node2']);
 
@@ -201,7 +196,7 @@ class PathautoNodeWebTest extends BrowserTestBase {
     // Ensure that the pathauto field was saved to the database.
     \Drupal::entityTypeManager()->getStorage('node')->resetCache();
     $node = Node::load($node->id());
-    $this->assertSame(PathautoState::SKIP, $node->path->pathauto);
+    $this->assertIdentical($node->path->pathauto, PathautoState::SKIP);
 
     // Ensure that the manual path alias was saved and an automatic alias was not generated.
     $this->assertEntityAlias($node, '/test-alias');
@@ -248,7 +243,7 @@ class PathautoNodeWebTest extends BrowserTestBase {
     // Ensure that the pathauto field was saved to the database.
     \Drupal::entityTypeManager()->getStorage('node')->resetCache();
     $node = Node::load($node->id());
-    $this->assertSame(PathautoState::CREATE, $node->path->pathauto);
+    $this->assertIdentical($node->path->pathauto, PathautoState::CREATE);
 
     $this->assertEntityAlias($node, '/content/node-version-three');
     $this->assertNoEntityAliasExists($node, '/manually-edited-alias');

@@ -22,13 +22,11 @@ class WebformThirdPartySettingsTest extends WebformBrowserTestBase {
    * Tests webform third party settings.
    */
   public function testThirdPartySettings() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('contact');
 
     $this->drupalLogin($this->rootUser);
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Check honeypot (custom) third party setting does not exist.
     $this->assertNull($webform->getThirdPartySetting('honeypot', 'honeypot'));
@@ -45,44 +43,46 @@ class WebformThirdPartySettingsTest extends WebformBrowserTestBase {
 
     // Check 'Webform: Settings' shows no modules installed.
     $this->drupalGet('/admin/structure/webform/config');
-    $assert_session->responseContains('There are no third party settings available.');
+    $this->assertRaw('There are no third party settings available.');
 
     // Check 'Contact: Settings' does not show 'Third party settings'.
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
-    $assert_session->responseNotContains('Third party settings');
+    $this->assertNoRaw('Third party settings');
 
     // Install test third party settings module.
-    $this->drupalGet('admin/modules');
-    $edit = ['modules[webform_test_third_party_settings][enable]' => TRUE];
-    $this->submitForm($edit, 'Install');
+    $this->drupalPostForm('admin/modules', [
+      'modules[webform_test_third_party_settings][enable]' => TRUE,
+    ], 'Install');
 
     // Check 'Webform: Settings' shows no modules installed.
     $this->drupalGet('/admin/structure/webform/config');
-    $assert_session->responseNotContains('There are no third party settings available.');
+    $this->assertNoRaw('There are no third party settings available.');
 
     // Check 'Contact: Settings' shows 'Third party settings'.
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
-    $assert_session->responseContains('Third party settings');
+    $this->assertRaw('Third party settings');
 
     // Check 'Webform: Settings' message.
-    $this->drupalGet('/admin/structure/webform/config');
-    $edit = ['third_party_settings[webform_test_third_party_settings][message]' => 'Message for all webforms'];
-    $this->submitForm($edit, 'Save configuration');
+    $edit = [
+      'third_party_settings[webform_test_third_party_settings][message]' => 'Message for all webforms',
+    ];
+    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
     $this->drupalGet('/webform/contact');
-    $assert_session->responseContains('Message for all webforms');
+    $this->assertRaw('Message for all webforms');
 
     // Check that webform.settings.yml contain message.
-    $this->assertEquals(
+    $this->assertEqual(
       'Message for all webforms',
       $this->config('webform.settings')->get('third_party_settings.webform_test_third_party_settings.message')
     );
 
     // Check 'Contact: Settings: Third party' message.
-    $this->drupalGet('/admin/structure/webform/manage/contact/settings');
-    $edit = ['third_party_settings[webform_test_third_party_settings][message]' => 'Message for only this webform'];
-    $this->submitForm($edit, 'Save');
+    $edit = [
+      'third_party_settings[webform_test_third_party_settings][message]' => 'Message for only this webform',
+    ];
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $this->drupalGet('/webform/contact');
-    $assert_session->responseContains('Message for only this webform');
+    $this->assertRaw('Message for only this webform');
 
     // Check honeypot (custom) third party setting still exists.
     $webform = $this->reloadWebform('contact');
@@ -95,24 +95,25 @@ class WebformThirdPartySettingsTest extends WebformBrowserTestBase {
 
     // Check clearing 'Check 'Contact: Settings: Third party' message
     // sets the value to null.
-    $this->drupalGet('/admin/structure/webform/manage/contact/settings');
-    $edit = ['third_party_settings[webform_test_third_party_settings][message]' => ''];
-    $this->submitForm($edit, 'Save');
+    $edit = [
+      'third_party_settings[webform_test_third_party_settings][message]' => '',
+    ];
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings', $edit, 'Save');
     $webform = $this->reloadWebform('contact');
-    $this->assertEquals([], $webform->getThirdPartySettings('webform_test_third_party_settings'));
+    $this->assertEqual([], $webform->getThirdPartySettings('webform_test_third_party_settings'));
     $this->assertNull(
       $this->config('webform.webform.contact')->get('third_party_settings.webform_test_third_party_settings')
     );
 
     // Uninstall test third party settings module.
-    $this->drupalGet('admin/modules/uninstall');
-    $edit = ['uninstall[webform_test_third_party_settings]' => TRUE];
-    $this->submitForm($edit, 'Uninstall');
-    $this->submitForm([], 'Uninstall');
+    $this->drupalPostForm('admin/modules/uninstall', [
+      'uninstall[webform_test_third_party_settings]' => TRUE,
+    ], 'Uninstall');
+    $this->drupalPostForm(NULL, [], 'Uninstall');
 
     // Check webform.
     $this->drupalGet('/webform/contact');
-    $assert_session->responseNotContains('Message for only this webform');
+    $this->assertNoRaw('Message for only this webform');
 
     // Check that webform.settings.yml no longer contains message or
     // webform_test_third_party_settings.

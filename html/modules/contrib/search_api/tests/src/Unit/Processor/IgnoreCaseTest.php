@@ -2,10 +2,7 @@
 
 namespace Drupal\Tests\search_api\Unit\Processor;
 
-use Drupal\search_api\IndexInterface;
-use Drupal\search_api\Item\Field;
 use Drupal\search_api\Plugin\search_api\processor\IgnoreCase;
-use Drupal\search_api\Query\Condition;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -18,7 +15,6 @@ use Drupal\Tests\UnitTestCase;
 class IgnoreCaseTest extends UnitTestCase {
 
   use ProcessorTestTrait;
-  use TestItemsTrait;
 
   /**
    * Creates a new processor object for use in the tests.
@@ -56,29 +52,6 @@ class IgnoreCaseTest extends UnitTestCase {
       ['Foo Bar', 'foo bar'],
       ['Foo bar BaZ, ÄÖÜÀÁ<>»«.', 'foo bar baz, äöüàá<>»«.'],
     ];
-  }
-
-  /**
-   * Tests whether "IS NULL" conditions are correctly kept.
-   *
-   * @see https://www.drupal.org/project/search_api/issues/3212925
-   */
-  public function testIsNullConditions() {
-    $this->setUpMockContainer();
-    $index = $this->createMock(IndexInterface::class);
-    $index->method('getFields')->willReturn([
-      'field' => (new Field($index, 'field'))->setType('string'),
-    ]);
-    $this->processor->setIndex($index);
-
-    $passed_value = NULL;
-    $this->invokeMethod('processConditionValue', [&$passed_value]);
-    $this->assertSame(NULL, $passed_value);
-
-    $condition = new Condition('field', NULL);
-    $conditions = [$condition];
-    $this->invokeMethod('processConditions', [&$conditions]);
-    $this->assertSame([$condition], $conditions);
   }
 
 }

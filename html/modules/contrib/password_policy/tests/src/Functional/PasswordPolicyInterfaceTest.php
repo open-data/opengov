@@ -11,13 +11,6 @@ use Drupal\Tests\BrowserTestBase;
  */
 class PasswordPolicyInterfaceTest extends BrowserTestBase {
 
-  /**
-   * Set default theme to stark.
-   *
-   * @var string
-   */
-  protected $defaultTheme = 'stark';
-
   public static $modules = [
     'password_policy',
     'password_policy_length',
@@ -45,8 +38,7 @@ class PasswordPolicyInterfaceTest extends BrowserTestBase {
     $edit = [
       'roles[' . $rid . ']' => $rid,
     ];
-    $this->drupalGet('user/' . $user1->id() . '/edit');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('user/' . $user1->id() . '/edit', $edit, 'Save');
 
     // Create new password reset policy for role.
     $this->drupalGet('admin/config/security/password-policy/add');
@@ -56,30 +48,28 @@ class PasswordPolicyInterfaceTest extends BrowserTestBase {
       'password_reset' => '1',
     ];
     // Set reset and policy info.
-    $this->submitForm($edit, 'Next');
+    $this->drupalPostForm(NULL, $edit, 'Next');
     // Fill out length constraint for test policy.
     $edit = [
       'character_length' => '5',
       'character_operation' => 'minimum',
     ];
     // @todo convert this to using the button on the form.
-    $this->drupalGet('admin/config/system/password_policy/constraint/add/test/password_length');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('admin/config/system/password_policy/constraint/add/test/password_length', $edit, 'Save');
     // Go to the next page.
-    $this->submitForm([], 'Next');
+    $this->drupalPostForm(NULL, [], 'Next');
     // Set the roles for the policy.
     $edit = [
       'roles[' . $rid . ']' => $rid,
     ];
-    $this->submitForm($edit, 'Finish');
+    $this->drupalPostForm(NULL, $edit, 'Finish');
 
     // Try failing password on form submit.
     $edit = [];
     $edit['current_pass'] = $user1->pass_raw;
     $edit['pass[pass1]'] = '111';
     $edit['pass[pass2]'] = '111';
-    $this->drupalGet('user/' . $user1->id() . '/edit');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('user/' . $user1->id() . '/edit', $edit, 'Save');
 
     $this->assertSession()->pageTextContains('The password does not satisfy the password policies');
 
@@ -88,8 +78,7 @@ class PasswordPolicyInterfaceTest extends BrowserTestBase {
     $edit['current_pass'] = $user1->pass_raw;
     $edit['pass[pass1]'] = '111111';
     $edit['pass[pass2]'] = '111111';
-    $this->drupalGet('user/' . $user1->id() . '/edit');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('user/' . $user1->id() . '/edit', $edit, 'Save');
 
     $this->assertSession()->pageTextNotContains('The password does not satisfy the password policies');
   }

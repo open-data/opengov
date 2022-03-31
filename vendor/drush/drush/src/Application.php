@@ -1,27 +1,23 @@
 <?php
 namespace Drush;
 
-use Composer\Autoload\ClassLoader;
 use Consolidation\AnnotatedCommand\AnnotatedCommand;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
-use Consolidation\Filter\Hooks\FilterHooks;
-use Consolidation\SiteAlias\SiteAliasManager;
 use Drush\Boot\BootstrapManager;
-use Drush\Command\RemoteCommandProxy;
-use Drush\Commands\DrushCommands;
-use Drush\Config\ConfigAwareTrait;
-use Drush\Log\LogLevel;
-use Drush\Runtime\RedispatchHook;
 use Drush\Runtime\TildeExpansionHook;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Robo\ClassDiscovery\RelativeNamespaceDiscovery;
+use Consolidation\SiteAlias\SiteAliasManager;
+use Drush\Log\LogLevel;
+use Drush\Command\RemoteCommandProxy;
+use Drush\Runtime\RedispatchHook;
+use Drush\Config\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Console\Application as SymfonyApplication;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Our application object
@@ -196,8 +192,7 @@ class Application extends SymfonyApplication implements LoggerAwareInterface, Co
         $command = $this->bootstrapAndFind($name);
         // Avoid exception when help is being built by https://github.com/bamarni/symfony-console-autocomplete.
         // @todo Find a cleaner solution.
-        $argv = Drush::config()->get('runtime.argv');
-        if (count($argv) > 1 && $argv[1] !== 'help') {
+        if (Drush::config()->get('runtime.argv')[1] !== 'help') {
             $this->checkObsolete($command);
         }
         return $command;
@@ -228,7 +223,7 @@ class Application extends SymfonyApplication implements LoggerAwareInterface, Co
 
             $this->logger->log(LogLevel::DEBUG, 'Bootstrap further to find {command}', ['command' => $name]);
             $this->bootstrapManager->bootstrapMax();
-            $this->logger->log(LogLevel::DEBUG, 'Done with bootstrap max in Application::bootstrapAndFind(): trying to find {command} again.', ['command' => $name]);
+            $this->logger->log(LogLevel::DEBUG, 'Done with bootstrap max in Application::find(): trying to find {command} again.', ['command' => $name]);
 
             if (!$this->bootstrapManager()->hasBootstrapped(DRUSH_BOOTSTRAP_DRUPAL_ROOT)) {
                 // Unable to progress in the bootstrap. Give friendly error message.
@@ -311,7 +306,7 @@ class Application extends SymfonyApplication implements LoggerAwareInterface, Co
      * Configure the application object and register all of the commandfiles
      * available in the search paths provided via Preflight
      */
-    public function configureAndRegisterCommands(InputInterface $input, OutputInterface $output, $commandfileSearchpath, ClassLoader $classLoader)
+    public function configureAndRegisterCommands(InputInterface $input, OutputInterface $output, $commandfileSearchpath)
     {
         // Symfony will call this method for us in run() (it will be
         // called again), but we want to call it up-front, here, so that
@@ -320,12 +315,12 @@ class Application extends SymfonyApplication implements LoggerAwareInterface, Co
         // any of the configuration steps we do here.
         $this->configureIO($input, $output);
 
-        $commandClasses = array_unique(array_merge(
-            $this->discoverCommandsFromConfiguration(),
-            $this->discoverCommands($commandfileSearchpath, '\Drush'),
-            $this->discoverPsr4Commands($classLoader),
-            [FilterHooks::class]
-        ));
+        $discovery = $this->commandDiscovery();
+        $commandClasses = $discovery->discover($commandfileSearchpath, '\Drush');
+        $commandClasses[] = \Consolidation\Filter\Hooks\FilterHooks::class;
+        $commandClasses = array_merge($this->commandsFromConfiguration(), $commandClasses);
+
+        $this->loadCommandClasses($commandClasses);
 
         // Uncomment the lines below to use Console's built in help and list commands.
         // unset($commandClasses[__DIR__ . '/Commands/help/HelpCommands.php']);
@@ -338,20 +333,21 @@ class Application extends SymfonyApplication implements LoggerAwareInterface, Co
         $runner->registerCommandClasses($this, $commandClasses);
     }
 
-    protected function discoverCommandsFromConfiguration()
+    protected function commandsFromConfiguration()
     {
         $commandList = [];
+
         foreach ($this->config->get('drush.commands', []) as $key => $value) {
+            $classname = $key;
+            $path = $value;
             if (is_numeric($key)) {
                 $classname = $value;
                 $commandList[] = $classname;
             } else {
-                $classname = ltrim($key, '\\');
-                $commandList[$value] = $classname;
+                $commandList[$path] = $classname;
             }
         }
-        $this->loadCommandClasses($commandList);
-        return array_keys($commandList);
+        return $commandList;
     }
 
     /**
@@ -368,9 +364,9 @@ class Application extends SymfonyApplication implements LoggerAwareInterface, Co
     }
 
     /**
-     * Discovers command classes.
+     * Create a command file discovery object
      */
-    protected function discoverCommands(array $directoryList, string $baseNamespace): array
+    protected function commandDiscovery()
     {
         $discovery = new CommandFileDiscovery();
         $discovery
@@ -381,38 +377,6 @@ class Application extends SymfonyApplication implements LoggerAwareInterface, Co
             ->ignoreNamespacePart('src')
             ->setSearchLocations(['Commands', 'Hooks', 'Generators'])
             ->setSearchPattern('#.*(Command|Hook|Generator)s?.php$#');
-        $baseNamespace = ltrim($baseNamespace, '\\');
-        $commandClasses = $discovery->discover($directoryList, $baseNamespace);
-        $this->loadCommandClasses($commandClasses);
-        return array_values($commandClasses);
-    }
-
-    /**
-     * Discovers commands that are PSR4 auto-loaded.
-     */
-    protected function discoverPsr4Commands(ClassLoader $classLoader): array
-    {
-        $classes = (new RelativeNamespaceDiscovery($classLoader))
-            ->setRelativeNamespace('Drush\Commands')
-            ->setSearchPattern('/.*DrushCommands\.php$/')
-            ->getClasses();
-
-        return array_filter($classes, function (string $class): bool {
-            $reflectionClass = new \ReflectionClass($class);
-            return $reflectionClass->isSubclassOf(DrushCommands::class)
-                && !$reflectionClass->isAbstract()
-                && !$reflectionClass->isInterface()
-                && !$reflectionClass->isTrait();
-        });
-    }
-
-    /**
-     * Renders a caught exception. Omits the command docs at end.
-     */
-    public function renderException(\Exception $e, OutputInterface $output)
-    {
-        $output->writeln('', OutputInterface::VERBOSITY_QUIET);
-
-        $this->doRenderException($e, $output);
+        return $discovery;
     }
 }

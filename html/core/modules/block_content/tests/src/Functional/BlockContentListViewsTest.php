@@ -34,10 +34,7 @@ class BlockContentListViewsTest extends BlockContentTestBase {
    * Tests the custom block listing page.
    */
   public function testListing() {
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer blocks',
-      'translate configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer blocks', 'translate configuration']));
     $this->drupalGet('admin/structure/block/block-content');
 
     // Test for the page title.
@@ -53,7 +50,7 @@ class BlockContentListViewsTest extends BlockContentTestBase {
 
     // Test the table header.
     $elements = $this->xpath('//div[@class="layout-content"]//table/thead/tr/th');
-    $this->assertCount(4, $elements, 'Correct number of table header cells found.');
+    $this->assertEqual(count($elements), 4, 'Correct number of table header cells found.');
 
     // Test the contents of each th cell.
     $expected_items = ['Block description', 'Block type', 'Updated Sort ascending', 'Operations'];
@@ -70,9 +67,9 @@ class BlockContentListViewsTest extends BlockContentTestBase {
     $new_label = 'Albatross';
     // Add a new entity using the operations link.
     $link_text = t('Add custom block');
-    $this->assertSession()->linkExists($link_text);
+    $this->assertLink($link_text);
     $this->clickLink($link_text);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $edit = [];
     $edit['info[0][value]'] = $label;
     $edit['body[0][value]'] = $this->randomMachineName(16);
@@ -84,7 +81,7 @@ class BlockContentListViewsTest extends BlockContentTestBase {
 
     // Check the number of table row cells.
     $elements = $this->xpath('//div[@class="layout-content"]//table/tbody/tr/td');
-    $this->assertCount(4, $elements, 'Correct number of table row cells found.');
+    $this->assertEqual(count($elements), 4, 'Correct number of table row cells found.');
     // Check the contents of each row cell. The first cell contains the label,
     // the second contains the machine name, and the third contains the
     // operations list.
@@ -99,7 +96,7 @@ class BlockContentListViewsTest extends BlockContentTestBase {
     if (!empty($block)) {
       $this->assertLinkByHref('block/' . $block->id());
       $this->clickLink(t('Edit'));
-      $this->assertSession()->statusCodeEquals(200);
+      $this->assertResponse(200);
       $this->assertTitle("Edit custom block $label | Drupal");
       $edit = ['info[0][value]' => $new_label];
       $this->drupalPostForm(NULL, $edit, t('Save'));
@@ -116,7 +113,7 @@ class BlockContentListViewsTest extends BlockContentTestBase {
     $this->assertLinkByHref('block/' . $block->id() . '/delete');
     $delete_text = t('Delete');
     $this->clickLink($delete_text);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertTitle("Are you sure you want to delete the custom block $new_label? | Drupal");
     $this->drupalPostForm(NULL, [], $delete_text);
 
@@ -126,7 +123,7 @@ class BlockContentListViewsTest extends BlockContentTestBase {
 
     // Confirm that the empty text is displayed.
     $this->assertText('There are no custom blocks available.');
-    $this->assertSession()->linkExists('custom block');
+    $this->assertLink('custom block');
 
     $block_content = BlockContent::create([
       'info' => 'Non-reusable block',

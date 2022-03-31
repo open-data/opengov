@@ -12,11 +12,6 @@ use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
  */
 class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
 
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
   public static $modules = ['filter', 'file', 'webform'];
 
   /**
@@ -48,12 +43,10 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
   public function testAdvancedEmailHandler() {
     global $base_url;
 
-    $assert_session = $this->assertSession();
-
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_email_advanced');
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Generate a test submission with a file upload.
     $this->drupalLogin($this->rootUser);
@@ -61,31 +54,30 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     // Check handler's custom reply to and return path.
     $this->postSubmissionTest($webform);
     $sent_email = $this->getLastEmail();
-    $this->assertEquals($sent_email['headers']['Return-Path'], 'return_path@example.com');
-    $this->assertEquals($sent_email['headers']['Sender'], 'sender_name <sender_mail@example.com>');
-    $this->assertEquals($sent_email['headers']['Reply-to'], 'reply_to@example.com');
-    $this->assertEquals($sent_email['params']['custom_parameter'], 'test');
+    $this->assertEqual($sent_email['headers']['Return-Path'], 'return_path@example.com');
+    $this->assertEqual($sent_email['headers']['Sender'], 'sender_name <sender_mail@example.com>');
+    $this->assertEqual($sent_email['headers']['Reply-to'], 'reply_to@example.com');
+    $this->assertEqual($sent_email['params']['custom_parameter'], 'test');
     $this->assertArrayNotHasKey('parameters', $sent_email['params']);
 
-    $webform
-      ->getHandler('email')
-      ->setSettings([
-        'reply_to' => '',
-        'return_path' => '',
-        'sender_mail' => '',
-        'sender_name' => '',
-      ]);
+    $email_handler = $webform->getHandler('email');
+    $configuration = $email_handler->getConfiguration();
+    $configuration['settings']['reply_to'] = '';
+    $configuration['settings']['return_path'] = '';
+    $configuration['settings']['sender_mail'] = '';
+    $configuration['settings']['sender_name'] = '';
+    $email_handler->setConfiguration($configuration);
     $webform->save();
 
     // Check no custom reply to and return path.
     $this->postSubmissionTest($webform);
     $sent_email = $this->getLastEmail();
-    $this->assertNotEquals($sent_email['headers']['Return-Path'], 'return_path@example.com');
-    $this->assertNotEquals($sent_email['headers']['Sender'], 'sender_name <sender_mail@example.com>');
-    $this->assertNotEquals($sent_email['headers']['Reply-to'], 'reply_to@example.com');
-    $this->assertEquals($sent_email['headers']['Return-Path'], $sent_email['params']['from_mail']);
-    $this->assertEquals($sent_email['headers']['Sender'], $sent_email['params']['from_mail']);
-    $this->assertEquals($sent_email['headers']['Reply-to'], $sent_email['headers']['From']);
+    $this->assertNotEqual($sent_email['headers']['Return-Path'], 'return_path@example.com');
+    $this->assertNotEqual($sent_email['headers']['Sender'], 'sender_name <sender_mail@example.com>');
+    $this->assertNotEqual($sent_email['headers']['Reply-to'], 'reply_to@example.com');
+    $this->assertEqual($sent_email['headers']['Return-Path'], $sent_email['params']['from_mail']);
+    $this->assertEqual($sent_email['headers']['Sender'], $sent_email['params']['from_mail']);
+    $this->assertEqual($sent_email['headers']['Reply-to'], $sent_email['headers']['From']);
 
     // Check site wide reply to and return path.
     \Drupal::configFactory()->getEditable('webform.settings')
@@ -94,9 +86,9 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
       ->save();
     $this->postSubmissionTest($webform);
     $sent_email = $this->getLastEmail();
-    $this->assertEquals($sent_email['headers']['Return-Path'], 'default_return_path@example.com');
-    $this->assertEquals($sent_email['headers']['Sender'], 'default_return_path@example.com');
-    $this->assertEquals($sent_email['headers']['Reply-to'], 'default_reply_to@example.com');
+    $this->assertEqual($sent_email['headers']['Return-Path'], 'default_return_path@example.com');
+    $this->assertEqual($sent_email['headers']['Sender'], 'default_return_path@example.com');
+    $this->assertEqual($sent_email['headers']['Reply-to'], 'default_reply_to@example.com');
 
     // Check site wide reply to and return path using tokens.
     \Drupal::configFactory()->getEditable('system.site')
@@ -108,9 +100,9 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
       ->save();
     $this->postSubmissionTest($webform);
     $sent_email = $this->getLastEmail();
-    $this->assertEquals($sent_email['headers']['Return-Path'], 'system_site@example.com');
-    $this->assertEquals($sent_email['headers']['Sender'], 'system_site@example.com');
-    $this->assertEquals($sent_email['headers']['Reply-to'], 'system_site@example.com');
+    $this->assertEqual($sent_email['headers']['Return-Path'], 'system_site@example.com');
+    $this->assertEqual($sent_email['headers']['Sender'], 'system_site@example.com');
+    $this->assertEqual($sent_email['headers']['Reply-to'], 'system_site@example.com');
 
     // Check site wide sender mail and name.
     \Drupal::configFactory()->getEditable('webform.settings')
@@ -119,7 +111,7 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
       ->save();
     $this->postSubmissionTest($webform);
     $sent_email = $this->getLastEmail();
-    $this->assertEquals($sent_email['headers']['Sender'], 'Default Sender Name <default_sender_mail@example.com>');
+    $this->assertEqual($sent_email['headers']['Sender'], 'Default Sender Name <default_sender_mail@example.com>');
 
     // Post a new submission using test webform which will automatically
     // upload file.txt.
@@ -139,7 +131,7 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     $sent_email = $this->getLastEmail();
 
     // Check email subject with special characters.
-    $this->assertEquals($sent_email['subject'], 'This has "special" \'chararacters\'');
+    $this->assertEqual($sent_email['subject'], 'This has "special" \'chararacters\'');
 
     // Check email body is HTML.
     $this->assertStringContainsString('<b>First name</b><br />John<br /><br />', $sent_email['params']['body']);
@@ -153,31 +145,32 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     $this->assertStringNotContainsString('<b>Checkbox/b><br />Yes<br /><br />', $sent_email['params']['body']);
 
     // Check email has attachment.
-    $this->assertEquals($sent_email['params']['attachments'][0]['filecontent'], "this is a sample txt file\nit has two lines\n");
-    $this->assertEquals($sent_email['params']['attachments'][0]['filename'], 'file.txt');
-    $this->assertEquals($sent_email['params']['attachments'][0]['filemime'], 'text/plain');
+    $this->assertEqual($sent_email['params']['attachments'][0]['filecontent'], "this is a sample txt file\nit has two lines\n");
+    $this->assertEqual($sent_email['params']['attachments'][0]['filename'], 'file.txt');
+    $this->assertEqual($sent_email['params']['attachments'][0]['filemime'], 'text/plain');
 
     // Check resend webform includes link to the attachment.
     $this->drupalGet("admin/structure/webform/manage/test_handler_email_advanced/submission/$sid/resend");
-    $assert_session->responseContains('<strong><a href="' . $base_url . '/system/files/webform/test_handler_email_advanced/6/file.txt">file.txt</a></strong> (text/plain) - 43 bytes');
+    $this->assertRaw('<strong><a href="' . $base_url . '/system/files/webform/test_handler_email_advanced/6/file.txt">file.txt</a></strong> (text/plain) - 43 bytes');
 
     // Check resend webform with custom message.
-    $this->drupalGet("admin/structure/webform/manage/test_handler_email_advanced/submission/$sid/resend");
-    $this->submitForm(['message[body][value]' => 'Testing 123…'], 'Resend message');
+    $this->drupalPostForm("admin/structure/webform/manage/test_handler_email_advanced/submission/$sid/resend", ['message[body][value]' => 'Testing 123…'], 'Resend message');
     $sent_email = $this->getLastEmail();
     $this->assertStringNotContainsString('<b>First name</b><br />John<br /><br />', $sent_email['params']['body']);
     $this->debug($sent_email['params']['body']);
-    $this->assertEquals($sent_email['params']['body'], 'Testing 123…');
+    $this->assertEqual($sent_email['params']['body'], 'Testing 123…');
 
     // Check resent email has the same attachment.
-    $this->assertEquals($sent_email['params']['attachments'][0]['filecontent'], "this is a sample txt file\nit has two lines\n");
-    $this->assertEquals($sent_email['params']['attachments'][0]['filename'], 'file.txt');
-    $this->assertEquals($sent_email['params']['attachments'][0]['filemime'], 'text/plain');
+    $this->assertEqual($sent_email['params']['attachments'][0]['filecontent'], "this is a sample txt file\nit has two lines\n");
+    $this->assertEqual($sent_email['params']['attachments'][0]['filename'], 'file.txt');
+    $this->assertEqual($sent_email['params']['attachments'][0]['filemime'], 'text/plain');
 
     $email_handler = $webform->getHandler('email');
 
     // Exclude file attachment.
-    $email_handler->setSetting('exclude_attachments', TRUE);
+    $configuration = $email_handler->getConfiguration();
+    $configuration['settings']['exclude_attachments'] = TRUE;
+    $email_handler->setConfiguration($configuration);
     $webform->save();
 
     // Check excluding attachments.
@@ -187,7 +180,9 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     $this->assertArrayHasKey('filecontent', $sent_email['params']['attachments'][0]);
 
     // Exclude file element.
-    $email_handler->setSetting('excluded_elements', ['file' => 'file']);
+    $configuration = $email_handler->getConfiguration();
+    $configuration['settings']['excluded_elements'] = ['file' => 'file'];
+    $email_handler->setConfiguration($configuration);
     $webform->save();
 
     // Check excluding files.
@@ -202,10 +197,10 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     $this->assertStringNotContainsString('<b>Optional</b><br />{Empty}<br /><br />', $sent_email['params']['body']);
 
     // Include empty.
-    $email_handler->setSettings([
-      'exclude_empty' => FALSE,
-      'exclude_empty_checkbox' => FALSE,
-    ]);
+    $configuration = $email_handler->getConfiguration();
+    $configuration['settings']['exclude_empty'] = FALSE;
+    $configuration['settings']['exclude_empty_checkbox'] = FALSE;
+    $email_handler->setConfiguration($configuration);
     $webform->save();
 
     // Check empty included.
@@ -223,8 +218,10 @@ class WebformHandlerEmailAdvancedTest extends WebformBrowserTestBase {
     $this->assertStringContainsString('<b>Notes</b><br />These notes are private.<br /><br />', $sent_email['params']['body']);
 
     // Disable ignore_access.
-    $webform->getHandler('email')
-      ->setSetting('ignore_access', FALSE);
+    $email_handler = $webform->getHandler('email');
+    $configuration = $email_handler->getConfiguration();
+    $configuration['settings']['ignore_access'] = FALSE;
+    $email_handler->setConfiguration($configuration);
     $webform->save();
 
     // Check that private is excluded from email because 'ignore_access' is FALSE.

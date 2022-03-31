@@ -46,14 +46,8 @@ class TourHelpPageTest extends BrowserTestBase {
     // Create users. For the Tour user, include permissions for the language
     // tours' parent pages, but not the translation tour's parent page. See
     // self:getTourList().
-    $this->tourUser = $this->drupalCreateUser([
-      'access administration pages',
-      'access tour',
-      'administer languages',
-    ]);
-    $this->noTourUser = $this->drupalCreateUser([
-      'access administration pages',
-    ]);
+    $this->tourUser = $this->drupalCreateUser(['access administration pages', 'access tour', 'administer languages']);
+    $this->noTourUser = $this->drupalCreateUser(['access administration pages']);
   }
 
   /**
@@ -79,7 +73,7 @@ class TourHelpPageTest extends BrowserTestBase {
     // All users should be able to see the module section.
     $this->assertText('Module overviews are provided by modules');
     foreach ($this->getModuleList() as $name) {
-      $this->assertSession()->linkExists($name);
+      $this->assertLink($name);
     }
 
     // Some users should be able to see the tour section.
@@ -95,10 +89,10 @@ class TourHelpPageTest extends BrowserTestBase {
     // Test the titles that should be links.
     foreach ($titles[0] as $title) {
       if ($tours_ok) {
-        $this->assertSession()->linkExists($title);
+        $this->assertLink($title);
       }
       else {
-        $this->assertSession()->linkNotExists($title);
+        $this->assertNoLink($title);
         // Just test the first item in the list of links that should not
         // be there, because the second matches the name of a module that is
         // in the Module overviews section, so the link will be there and

@@ -139,15 +139,15 @@ class EntityListBuilderTest extends UnitTestCase {
     $list->setRedirectDestination($this->redirectDestination);
 
     $operations = $list->getOperations($this->role);
-    $this->assertIsArray($operations);
+    $this->assertInternalType('array', $operations);
     $this->assertArrayHasKey('edit', $operations);
-    $this->assertIsArray($operations['edit']);
+    $this->assertInternalType('array', $operations['edit']);
     $this->assertArrayHasKey('title', $operations['edit']);
     $this->assertArrayHasKey('delete', $operations);
-    $this->assertIsArray($operations['delete']);
+    $this->assertInternalType('array', $operations['delete']);
     $this->assertArrayHasKey('title', $operations['delete']);
     $this->assertArrayHasKey($operation_name, $operations);
-    $this->assertIsArray($operations[$operation_name]);
+    $this->assertInternalType('array', $operations[$operation_name]);
     $this->assertArrayHasKey('title', $operations[$operation_name]);
   }
 

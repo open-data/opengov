@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Client\State;
 
 /**
@@ -14,6 +7,24 @@ namespace Solarium\Core\Client\State;
  */
 class ShardState extends AbstractState
 {
+    /** @var string */
+    protected $name;
+
+    /** @var string */
+    protected $range;
+
+    /** @var ReplicaState[] */
+    protected $replicas;
+
+    /** @var string Id of the shard leader */
+    protected $shardLeader;
+
+    /** @var string[] An array of all ids of the active replicas */
+    protected $activeReplicas;
+
+    /** @var string Shard is active or inactive */
+    protected $state;
+
     /** The normal/default state of a shard. */
     const ACTIVE = 'active';
 
@@ -39,36 +50,6 @@ class ShardState extends AbstractState
      * session id).
      */
     const RECOVERY_FAILED = 'recovery_failed';
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $range;
-
-    /**
-     * @var ReplicaState[]
-     */
-    protected $replicas;
-
-    /**
-     * @var string Id of the shard leader
-     */
-    protected $shardLeader;
-
-    /**
-     * @var string[] An array of all ids of the active replicas
-     */
-    protected $activeReplicas;
-
-    /**
-     * @var string Shard is active or inactive
-     */
-    protected $state;
 
     /**
      * Returns the name of the shard.
@@ -168,9 +149,6 @@ class ShardState extends AbstractState
         return $replicas;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function init()
     {
         $this->name = key($this->stateRaw);

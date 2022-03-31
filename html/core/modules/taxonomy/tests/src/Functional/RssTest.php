@@ -42,12 +42,7 @@ class RssTest extends TaxonomyTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer taxonomy',
-      'bypass node access',
-      'administer content types',
-      'administer node display',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer taxonomy', 'bypass node access', 'administer content types', 'administer node display']));
     $this->vocabulary = $this->createVocabulary();
     $this->fieldName = 'taxonomy_' . $this->vocabulary->id();
 
@@ -127,7 +122,7 @@ class RssTest extends TaxonomyTestBase {
 
     // Check that the "Exception value" is disabled by default.
     $this->drupalGet('taxonomy/term/all/feed');
-    $this->assertSession()->statusCodeEquals(404);
+    $this->assertResponse(404);
     // Set the exception value to 'all'.
     $view = Views::getView('taxonomy_term');
     $arguments = $view->getDisplay()->getOption('arguments');

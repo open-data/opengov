@@ -73,7 +73,6 @@ class Configuration
         'useUnicode',
         'verbosity',
         'warnOnMultipleConfigs',
-        'yolo',
     ];
 
     private $defaultIncludes;
@@ -108,7 +107,6 @@ class Configuration
     private $forceArrayIndexes = false;
     private $formatterStyles = [];
     private $verbosity = self::VERBOSITY_NORMAL;
-    private $yolo = false;
 
     // services
     private $readline;
@@ -121,7 +119,6 @@ class Configuration
     private $autoCompleter;
     private $checker;
     private $prompt;
-    private $configPaths;
 
     /**
      * Construct a Configuration instance.
@@ -132,8 +129,6 @@ class Configuration
      */
     public function __construct(array $config = [])
     {
-        $this->configPaths = new ConfigPaths();
-
         // explicit configFile option
         if (isset($config['configFile'])) {
             $this->configFile = $config['configFile'];
@@ -202,11 +197,6 @@ class Configuration
             if (self::getOptionFromInput($input, ['raw-output'], ['-r'])) {
                 $config->setRawOutput(true);
             }
-        }
-
-        // Handle --yolo
-        if (self::getOptionFromInput($input, ['yolo'])) {
-            $config->setYolo(true);
         }
 
         return $config;
@@ -351,8 +341,6 @@ class Configuration
             new InputOption('interaction', null, InputOption::VALUE_NONE, 'Force PsySH to run in interactive mode.'),
             new InputOption('no-interaction', null, InputOption::VALUE_NONE, 'Run PsySH without interactive input. Requires input from stdin.'),
             new InputOption('raw-output', 'r', InputOption::VALUE_NONE, 'Print var_export-style return values (for non-interactive input)'),
-
-            new InputOption('yolo', null, InputOption::VALUE_NONE, 'Run PsySH with minimal input validation. You probably don\'t want this.'),
         ];
     }
 
@@ -379,12 +367,6 @@ class Configuration
         if (!$this->configFile && $localConfig = $this->getLocalConfigFile()) {
             $this->loadConfigFile($localConfig);
         }
-
-        $this->configPaths->overrideDirs([
-            'configDir'  => $this->configDir,
-            'dataDir'    => $this->dataDir,
-            'runtimeDir' => $this->runtimeDir,
-        ]);
     }
 
     /**
@@ -407,7 +389,7 @@ class Configuration
             return $this->configFile;
         }
 
-        $files = $this->configPaths->configFiles(['config.php', 'rc.php']);
+        $files = ConfigPaths::getConfigFiles(['config.php', 'rc.php'], $this->configDir);
 
         if (!empty($files)) {
             if ($this->warnOnMultipleConfigs && \count($files) > 1) {
@@ -537,12 +519,6 @@ class Configuration
     public function setConfigDir($dir)
     {
         $this->configDir = (string) $dir;
-
-        $this->configPaths->overrideDirs([
-            'configDir'  => $this->configDir,
-            'dataDir'    => $this->dataDir,
-            'runtimeDir' => $this->runtimeDir,
-        ]);
     }
 
     /**
@@ -563,12 +539,6 @@ class Configuration
     public function setDataDir($dir)
     {
         $this->dataDir = (string) $dir;
-
-        $this->configPaths->overrideDirs([
-            'configDir'  => $this->configDir,
-            'dataDir'    => $this->dataDir,
-            'runtimeDir' => $this->runtimeDir,
-        ]);
     }
 
     /**
@@ -589,12 +559,6 @@ class Configuration
     public function setRuntimeDir($dir)
     {
         $this->runtimeDir = (string) $dir;
-
-        $this->configPaths->overrideDirs([
-            'configDir'  => $this->configDir,
-            'dataDir'    => $this->dataDir,
-            'runtimeDir' => $this->runtimeDir,
-        ]);
     }
 
     /**
@@ -607,15 +571,17 @@ class Configuration
      */
     public function getRuntimeDir()
     {
-        $runtimeDir = $this->configPaths->runtimeDir();
+        if (!isset($this->runtimeDir)) {
+            $this->runtimeDir = ConfigPaths::getRuntimeDir();
+        }
 
-        if (!\is_dir($runtimeDir)) {
-            if (!@\mkdir($runtimeDir, 0700, true)) {
-                throw new RuntimeException(\sprintf('Unable to create PsySH runtime directory. Make sure PHP is able to write to %s in order to continue.', \dirname($runtimeDir)));
+        if (!\is_dir($this->runtimeDir)) {
+            if (!@\mkdir($this->runtimeDir, 0700, true)) {
+                throw new RuntimeException(\sprintf('Unable to create PsySH runtime directory. Make sure PHP is able to write to %s in order to continue.', \dirname($this->runtimeDir)));
             }
         }
 
-        return $runtimeDir;
+        return $this->runtimeDir;
     }
 
     /**
@@ -642,7 +608,7 @@ class Configuration
             return $this->historyFile;
         }
 
-        $files = $this->configPaths->configFiles(['psysh_history', 'history']);
+        $files = ConfigPaths::getConfigFiles(['psysh_history', 'history'], $this->configDir);
 
         if (!empty($files)) {
             if ($this->warnOnMultipleConfigs && \count($files) > 1) {
@@ -653,7 +619,8 @@ class Configuration
             $this->setHistoryFile($files[0]);
         } else {
             // fallback: create our own history file
-            $this->setHistoryFile($this->configPaths->currentConfigDir().'/psysh_history');
+            $dir = $this->configDir ?: ConfigPaths::getCurrentConfigDir();
+            $this->setHistoryFile($dir.'/psysh_history');
         }
 
         return $this->historyFile;
@@ -1023,28 +990,10 @@ class Configuration
     public function getCodeCleaner()
     {
         if (!isset($this->cleaner)) {
-            $this->cleaner = new CodeCleaner(null, null, null, $this->yolo());
+            $this->cleaner = new CodeCleaner();
         }
 
         return $this->cleaner;
-    }
-
-    /**
-     * Enable or disable running PsySH without input validation.
-     *
-     * You don't want this.
-     */
-    public function setYolo($yolo)
-    {
-        $this->yolo = (bool) $yolo;
-    }
-
-    /**
-     * Check whether to disable input validation.
-     */
-    public function yolo()
-    {
-        return $this->yolo;
     }
 
     /**
@@ -1351,7 +1300,7 @@ class Configuration
             return $this->manualDbFile;
         }
 
-        $files = $this->configPaths->dataFiles(['php_manual.sqlite']);
+        $files = ConfigPaths::getDataFiles(['php_manual.sqlite'], $this->dataDir);
         if (!empty($files)) {
             if ($this->warnOnMultipleConfigs && \count($files) > 1) {
                 $msg = \sprintf('Multiple manual database files found: %s. Using %s', \implode(', ', $files), $files[0]);
@@ -1592,7 +1541,9 @@ class Configuration
      */
     public function getUpdateCheckCacheFile()
     {
-        return ConfigPaths::touchFileWithMkdir($this->configPaths->currentConfigDir().'/update_check.json');
+        $dir = $this->configDir ?: ConfigPaths::getCurrentConfigDir();
+
+        return ConfigPaths::touchFileWithMkdir($dir.'/update_check.json');
     }
 
     /**

@@ -43,7 +43,6 @@ class ArrayIndentUnitTest extends AbstractSniffUnitTest
             86 => 1,
             87 => 1,
             88 => 1,
-            98 => 1,
         ];
 
     }//end getErrorList()

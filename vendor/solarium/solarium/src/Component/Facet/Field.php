@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\FacetSetInterface;
@@ -14,20 +7,19 @@ use Solarium\Component\FacetSetInterface;
 /**
  * Facet query.
  *
- * @see https://solr.apache.org/guide/faceting.html#field-value-faceting-parameters
+ * @see http://wiki.apache.org/solr/SimpleFacetParameters#Field_Value_Faceting_Parameters
  */
-class Field extends AbstractFacet implements FieldValueParametersInterface
+class Field extends AbstractField
 {
-    use FieldValueParametersTrait;
+    /**
+     * Facet method enum.
+     */
+    const METHOD_ENUM = 'enum';
 
     /**
-     * Default options.
-     *
-     * @var array
+     * Facet method fc.
      */
-    protected $options = [
-        'field' => 'id',
-    ];
+    const METHOD_FC = 'fc';
 
     /**
      * Get the facet type.
@@ -40,26 +32,50 @@ class Field extends AbstractFacet implements FieldValueParametersInterface
     }
 
     /**
-     * Set the name of the field that should be treated as a facet.
+     * Limit the terms for faceting by a string they must contain. Since Solr 5.1.
      *
-     * @param string $field
+     * @param string $contains
      *
      * @return self Provides fluent interface
      */
-    public function setField(string $field): self
+    public function setContains(string $contains): self
     {
-        $this->setOption('field', $field);
+        $this->setOption('contains', $contains);
 
         return $this;
     }
 
     /**
-     * Get the field name.
+     * Get the facet contains.
      *
      * @return string|null
      */
-    public function getField(): ?string
+    public function getContains(): ?string
     {
-        return $this->getOption('field');
+        return $this->getOption('contains');
+    }
+
+    /**
+     * Case sensitivity of matching string that facet terms must contain. Since Solr 5.1.
+     *
+     * @param bool $containsIgnoreCase
+     *
+     * @return self Provides fluent interface
+     */
+    public function setContainsIgnoreCase($containsIgnoreCase): self
+    {
+        $this->setOption('containsignorecase', $containsIgnoreCase);
+
+        return $this;
+    }
+
+    /**
+     * Get the case sensitivity of facet contains.
+     *
+     * @return bool|null
+     */
+    public function getContainsIgnoreCase(): ?bool
+    {
+        return $this->getOption('containsignorecase');
     }
 }

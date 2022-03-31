@@ -126,9 +126,15 @@ class Ruleset
      */
     public function __construct(Config $config)
     {
+        // Ignore sniff restrictions if caching is on.
+        $restrictions = [];
+        $exclusions   = [];
+        if ($config->cache === false) {
+            $restrictions = $config->sniffs;
+            $exclusions   = $config->exclude;
+        }
+
         $this->config = $config;
-        $restrictions = $config->sniffs;
-        $exclusions   = $config->exclude;
         $sniffs       = [];
 
         $standardPaths = [];
@@ -193,12 +199,6 @@ class Ruleset
 
             $sniffs = array_merge($sniffs, $this->processRuleset($standard));
         }//end foreach
-
-        // Ignore sniff restrictions if caching is on.
-        if ($config->cache === true) {
-            $restrictions = [];
-            $exclusions   = [];
-        }
 
         $sniffRestrictions = [];
         foreach ($restrictions as $sniffCode) {
@@ -726,7 +726,7 @@ class Ruleset
         } else {
             // See if this is a whole standard being referenced.
             $path = Util\Standards::getInstalledStandardPath($ref);
-            if ($path !== null && Util\Common::isPharFile($path) === true && strpos($path, 'ruleset.xml') === false) {
+            if (Util\Common::isPharFile($path) === true && strpos($path, 'ruleset.xml') === false) {
                 // If the ruleset exists inside the phar file, use it.
                 if (file_exists($path.DIRECTORY_SEPARATOR.'ruleset.xml') === true) {
                     $path .= DIRECTORY_SEPARATOR.'ruleset.xml';

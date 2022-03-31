@@ -37,10 +37,7 @@ class UserRoleAdminTest extends BrowserTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->adminUser = $this->drupalCreateUser([
-      'administer permissions',
-      'administer users',
-    ]);
+    $this->adminUser = $this->drupalCreateUser(['administer permissions', 'administer users']);
     $this->drupalPlaceBlock('local_tasks_block');
   }
 
@@ -56,7 +53,7 @@ class UserRoleAdminTest extends BrowserTestBase {
       ':classes' => 'tabs primary',
       ':text' => 'Roles',
     ]);
-    $this->assertCount(1, $tabs, 'Found roles tab');
+    $this->assertEqual(count($tabs), 1, 'Found roles tab');
 
     // Test adding a role. (In doing so, we use a role name that happens to
     // correspond to an integer, to test that the role administration pages
@@ -66,7 +63,7 @@ class UserRoleAdminTest extends BrowserTestBase {
     $this->drupalPostForm('admin/people/roles/add', $edit, t('Save'));
     $this->assertRaw(t('Role %label has been added.', ['%label' => 123]));
     $role = Role::load($role_name);
-    $this->assertIsObject($role);
+    $this->assertTrue(is_object($role), 'The role was successfully retrieved from the database.');
 
     // Check that the role was created in site default language.
     $this->assertEqual($role->language()->getId(), $default_langcode);
@@ -96,10 +93,10 @@ class UserRoleAdminTest extends BrowserTestBase {
     // Make sure that the system-defined roles can be edited via the user
     // interface.
     $this->drupalGet('admin/people/roles/manage/' . RoleInterface::ANONYMOUS_ID);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'Access granted when trying to edit the built-in anonymous role.');
     $this->assertNoText(t('Delete role'), 'Delete button for the anonymous role is not present.');
     $this->drupalGet('admin/people/roles/manage/' . RoleInterface::AUTHENTICATED_ID);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'Access granted when trying to edit the built-in authenticated role.');
     $this->assertNoText(t('Delete role'), 'Delete button for the authenticated role is not present.');
   }
 

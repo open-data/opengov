@@ -1,41 +1,84 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\ManagedResources\Query;
 
+use InvalidArgumentException;
 use Solarium\Core\Client\Client;
+use Solarium\Core\Query\AbstractQuery as BaseQuery;
+use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
-use Solarium\QueryType\ManagedResources\Query\Command\Config;
-use Solarium\QueryType\ManagedResources\Query\Command\Delete;
-use Solarium\QueryType\ManagedResources\Query\Command\Exists;
-use Solarium\QueryType\ManagedResources\Query\Command\Remove;
-use Solarium\QueryType\ManagedResources\Query\Command\Synonyms\Add;
-use Solarium\QueryType\ManagedResources\Query\Command\Synonyms\Create;
-use Solarium\QueryType\ManagedResources\Query\Synonyms\InitArgs;
-use Solarium\QueryType\ManagedResources\ResponseParser\Command as CommandResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Exists as ExistsResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Remove as RemoveResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Synonym as SynonymResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Synonyms as SynonymsResponseParser;
+use Solarium\QueryType\ManagedResources\Query\Synonyms\Command\Add;
+use Solarium\QueryType\ManagedResources\Query\Synonyms\Command\Delete;
+use Solarium\QueryType\ManagedResources\Query\Synonyms\Command\Exists;
+use Solarium\QueryType\ManagedResources\RequestBuilder\Synonyms as RequestBuilder;
+use Solarium\QueryType\ManagedResources\ResponseParser\Synonyms as ResponseParser;
 use Solarium\QueryType\ManagedResources\Result\Synonyms\SynonymMappings;
 
-/**
- * Synonyms.
- */
-class Synonyms extends AbstractQuery
+class Synonyms extends BaseQuery
 {
     /**
-     * Default result class if no command is set.
+     * Synonyms command add.
+     */
+    const COMMAND_ADD = 'add';
+
+    /**
+     * Synonyms command delete.
+     */
+    const COMMAND_DELETE = 'delete';
+
+    /**
+     * Synonyms command delete.
+     */
+    const COMMAND_EXISTS = 'exists';
+
+    /**
+     * Name of the synonyms resource.
      *
      * @var string
      */
-    protected $defaultResultClass = SynonymMappings::class;
+    protected $name = '';
+
+    /**
+     * ResourceId looked up using the managed resources component.
+     *
+     * @var string
+     */
+    protected $resourceId;
+
+    /**
+     * Whether or not to ignore the case.
+     *
+     * @var bool
+     */
+    protected $ignoreCase;
+
+    /**
+     * Controls how the synonyms will be parsed.
+     * The short names solr (for SolrSynonymParser) and wordnet (for
+     * WordnetSynonymParser ) are supported, or you may alternatively supply
+     * the name of your own SynonymMap.Builder subclass.
+     *
+     * @var string
+     */
+    protected $format;
+
+    /**
+     * Cmmand.
+     *
+     * @var AbstractCommand
+     */
+    protected $command;
+
+    /**
+     * Synonyms command types.
+     *
+     * @var array
+     */
+    protected $commandTypes = [
+        self::COMMAND_ADD => Add::class,
+        self::COMMAND_DELETE => Delete::class,
+        self::COMMAND_EXISTS => Exists::class,
+    ];
 
     /**
      * Default options.
@@ -49,20 +92,6 @@ class Synonyms extends AbstractQuery
     ];
 
     /**
-     * Command types.
-     *
-     * @var array
-     */
-    protected $commandTypes = [
-        self::COMMAND_ADD => Add::class,
-        self::COMMAND_CONFIG => Config::class,
-        self::COMMAND_CREATE => Create::class,
-        self::COMMAND_DELETE => Delete::class,
-        self::COMMAND_EXISTS => Exists::class,
-        self::COMMAND_REMOVE => Remove::class,
-    ];
-
-    /**
      * Get query type.
      *
      * @return string
@@ -73,38 +102,105 @@ class Synonyms extends AbstractQuery
     }
 
     /**
-     * Get the response parser class for this query.
+     * Get the request builder class for this query.
      *
-     * @return \Solarium\Core\Query\ResponseParserInterface
+     * @return RequestBuilder
      */
-    public function getResponseParser(): ResponseParserInterface
+    public function getRequestBuilder(): RequestBuilderInterface
     {
-        if (null === $this->command) {
-            if (null === $this->term) {
-                $parser = new SynonymsResponseParser();
-            } else {
-                $parser = new SynonymResponseParser();
-            }
-        } elseif (self::COMMAND_EXISTS === $this->command->getType()) {
-            $parser = new ExistsResponseParser();
-        } elseif (self::COMMAND_REMOVE === $this->command->getType()) {
-            $parser = new RemoveResponseParser();
-        } else {
-            $parser = new CommandResponseParser();
-        }
-
-        return $parser;
+        return new RequestBuilder();
     }
 
     /**
-     * Create an init args instance.
+     * Get the response parser class for this query.
      *
-     * @param array $initArgs
-     *
-     * @return \Solarium\QueryType\ManagedResources\Query\Synonyms\InitArgs
+     * @return ResponseParser
      */
-    public function createInitArgs(array $initArgs = null): InitArgsInterface
+    public function getResponseParser(): ResponseParserInterface
     {
-        return new InitArgs($initArgs);
+        return new ResponseParser();
+    }
+
+    /**
+     * Get the name of the synonym resource.
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set the name of the synonym resource.
+     *
+     * @param string $name
+     *
+     * @return self
+     */
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Create a command instance.
+     *
+     * @param string $type
+     * @param mixed  $options
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return AbstractCommand
+     */
+    public function createCommand($type, $options = null): AbstractCommand
+    {
+        $type = strtolower($type);
+
+        if (!isset($this->commandTypes[$type])) {
+            throw new InvalidArgumentException('Synonyms commandtype unknown: '.$type);
+        }
+
+        $class = $this->commandTypes[$type];
+
+        return new $class($options);
+    }
+
+    /**
+     * Get command for this synonyms query.
+     *
+     * @return AbstractCommand|null
+     */
+    public function getCommand(): ?AbstractCommand
+    {
+        return $this->command;
+    }
+
+    /**
+     * Set a command for the synonyms query.
+     *
+     * @param AbstractCommand $command
+     *
+     * @return self Provides fluent interface
+     */
+    public function setCommand(AbstractCommand $command): self
+    {
+        $this->command = $command;
+
+        return $this;
+    }
+
+    /**
+     * Remove command.
+     *
+     * @return self Provides fluent interface
+     */
+    public function removeCommand(): self
+    {
+        $this->command = null;
+
+        return $this;
     }
 }

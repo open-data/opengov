@@ -50,12 +50,10 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     ];
 
     // Create CSV export.
-    $this->drupalGet('/admin/structure/webform/manage/test_submission_export_import/results/download');
-    $edit = ['exporter' => 'webform_submission_export_import'];
-    $this->submitForm($edit, 'Download');
-    file_put_contents($export_csv_uri, $this->getSession()->getPage()->getContent());
+    $this->drupalPostForm('/admin/structure/webform/manage/test_submission_export_import/results/download', ['exporter' => 'webform_submission_export_import'], 'Download');
+    file_put_contents($export_csv_uri, $this->getRawContent());
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Import CSV export without any changes.
     $actual_stats = $importer->import();
@@ -91,7 +89,6 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $submissions[0]->setNotes('This is a note');
     $submissions[0]->save();
 
-    // phpcs:disable
     // @todo Determine why the below test is failing via DrupalCI.
     return;
 
@@ -133,12 +130,12 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $actual_values = $updated_submission->toArray(TRUE);
 
     // Check that changes and notes were updated.
-    $this->assertNotEquals($expected_values['completed'], $actual_values['completed']);
-    $this->assertNotEquals($expected_values['notes'], $actual_values['notes']);
+    $this->assertNotEqual($expected_values['completed'], $actual_values['completed']);
+    $this->assertNotEqual($expected_values['notes'], $actual_values['notes']);
 
     // Check that notes was reset.
-    $this->assertEquals('This is a note', $expected_values['notes']);
-    $this->assertEquals('', $actual_values['notes']);
+    $this->assertEqual('This is a note', $expected_values['notes']);
+    $this->assertEqual('', $actual_values['notes']);
 
     // Unset changed and notes.
     unset($expected_values['completed'], $expected_values['notes']);
@@ -146,15 +143,12 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
 
     // Check all other values remained the same.
     $this->assertEquals($expected_values, $actual_values);
-    // phpcs:enable
   }
 
   /**
    * Test submission import.
    */
   public function testSubmissionImport() {
-    $assert_session = $this->assertSession();
-
     $this->drupalLogin($this->rootUser);
 
     $webform_csv_url = file_create_url('public://test_submission_export_import-webform.csv');
@@ -167,28 +161,33 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $importer->setWebform($webform);
     $importer->setImportUri($webform_csv_url);
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Upload the webform.csv.
-    $this->drupalGet('/admin/structure/webform/manage/test_submission_export_import/results/upload');
-    $edit = ['import_url' => $webform_csv_url];
-    $this->submitForm($edit, 'Continue');
+    $this->drupalPostForm(
+      '/admin/structure/webform/manage/test_submission_export_import/results/upload',
+      ['import_url' => $webform_csv_url],
+      'Continue'
+    );
 
     // Check submission count.
-    $assert_session->responseContains('Are you sure you want to import 3 submissions?');
+    $this->assertRaw('Are you sure you want to import 3 submissions?');
 
     // Import only the valid record.
-    $edit = ['import_options[treat_warnings_as_errors]' => TRUE, 'confirm' => TRUE];
-    $this->submitForm($edit, 'Import');
+    $this->drupalPostForm(
+      NULL,
+      ['import_options[treat_warnings_as_errors]' => TRUE, 'confirm' => TRUE],
+      'Import'
+    );
 
     // Check import stats.
-    $assert_session->responseContains('Submission import completed. (total: 3; created: 1; updated: 0; skipped: 2)');
+    $this->assertRaw('Submission import completed. (total: 3; created: 1; updated: 0; skipped: 2)');
 
     // Check error messages.
-    $assert_session->responseContains('<strong>Row #2:</strong> [file] Invalid file URL (/webform/plain/tests/files/sample.gif). URLS must begin with http:// or https://.');
-    $assert_session->responseContains('<strong>Row #2:</strong> [composites] YAML is not valid.');
-    $assert_session->responseContains('<strong>Row #3:</strong> The email address <em class="placeholder">not an email address</em> is not valid.');
-    $assert_session->responseContains('<strong>Row #3:</strong> An illegal choice has been detected. Please contact the site administrator.');
+    $this->assertRaw('<strong>Row #2:</strong> [file] Invalid file URL (/webform/plain/tests/files/sample.gif). URLS must begin with http:// or https://.');
+    $this->assertRaw('<strong>Row #2:</strong> [composites] YAML is not valid.');
+    $this->assertRaw('<strong>Row #3:</strong> The email address <em class="placeholder">not an email address</em> is not valid.');
+    $this->assertRaw('<strong>Row #3:</strong> An illegal choice has been detected. Please contact the site administrator.');
 
     // Check the submission 1 (valid) record.
     $submission_1 = $this->loadSubmissionByProperty('notes', 'valid');
@@ -342,6 +341,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
       ],
     ];
     // Unset YAML warning which can vary from server to server.
+
     unset(
       $expected_stats['warnings'][2][1],
       $actual_stats['warnings'][2][1]
@@ -361,52 +361,61 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
 
     // Set not_mapped destination to summary using the UI.
     // Upload the webform.csv.
-    $edit = ['import_url' => $webform_csv_url];
-    $this->drupalGet('/admin/structure/webform/manage/test_submission_export_import/results/upload');
-    $this->submitForm($edit, 'Continue');
+    $this->drupalPostForm(
+      '/admin/structure/webform/manage/test_submission_export_import/results/upload',
+      ['import_url' => $webform_csv_url],
+      'Continue'
+    );
 
-    $edit = [
-      'import_options[mapping][summary]' => '',
-      'import_options[mapping][not_mapped]' => 'summary',
-      'confirm' => TRUE,
-    ];
-    $this->submitForm($edit, 'Import');
+    $this->drupalPostForm(
+      NULL,
+      [
+        'import_options[mapping][summary]' => '',
+        'import_options[mapping][not_mapped]' => 'summary',
+        'confirm' => TRUE,
+      ],
+      'Import'
+    );
 
     // Check that submission summary now is set to not mapped.
     $submission_1 = $this->loadSubmissionByProperty('notes', 'valid');
     $this->assertEquals('{not mapped}', $submission_1->getElementData('summary'));
 
     // Upload the external.csv.
-    $this->drupalGet('/admin/structure/webform/manage/test_submission_export_import/results/upload');
-    $edit = ['import_url' => $external_csv_url];
-    $this->submitForm($edit, 'Continue');
+    $this->drupalPostForm(
+      '/admin/structure/webform/manage/test_submission_export_import/results/upload',
+      ['import_url' => $external_csv_url],
+      'Continue'
+    );
 
     // Check that UUID warning is displayed.
-    $assert_session->responseContains('No UUID or token was found in the source (CSV). A unique hash will be generated for the each CSV record. Any changes to already an imported record in the source (CSV) will create a new submission.');
+    $this->assertRaw('No UUID or token was found in the source (CSV). A unique hash will be generated for the each CSV record. Any changes to already an imported record in the source (CSV) will create a new submission.');
 
     // Import the external.csv.
-    $this->submitForm(['confirm' => TRUE], 'Import');
+    $this->drupalPostForm(NULL, ['confirm' => TRUE], 'Import');
 
     // Check that 1 external submission created.
-    $assert_session->responseContains('Submission import completed. (total: 1; created: 1; updated: 0; skipped: 0)');
+    $this->assertRaw('Submission import completed. (total: 1; created: 1; updated: 0; skipped: 0)');
 
     // Check that external submissions exists.
     $submission_4 = $this->loadSubmissionByProperty('notes', 'valid external data');
     $this->assertEquals('valid external data', $submission_4->getElementData('summary'));
 
     // Upload the external.csv.
-    $this->drupalGet('/admin/structure/webform/manage/test_submission_export_import/results/upload');
-    $edit = ['import_url' => $external_csv_url];
-    $this->submitForm($edit, 'Continue');
+    $this->drupalPostForm(
+      '/admin/structure/webform/manage/test_submission_export_import/results/upload',
+      ['import_url' => $external_csv_url],
+      'Continue'
+    );
 
     // Re-import the external.csv.
-    $this->submitForm(['confirm' => TRUE], 'Import');
+    $this->drupalPostForm(NULL, ['confirm' => TRUE], 'Import');
 
     // Check that 1 external submission updated.
-    $assert_session->responseContains('Submission import completed. (total: 1; created: 0; updated: 1; skipped: 0)');
+    $this->assertRaw('Submission import completed. (total: 1; created: 0; updated: 1; skipped: 0)');
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Load a webform submission using a property value.

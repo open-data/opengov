@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Update;
 
 use Solarium\Core\Client\Request;
@@ -18,7 +11,6 @@ use Solarium\QueryType\Update\Query\Command\Add;
 use Solarium\QueryType\Update\Query\Command\Commit;
 use Solarium\QueryType\Update\Query\Command\Delete;
 use Solarium\QueryType\Update\Query\Command\Optimize;
-use Solarium\QueryType\Update\Query\Command\RawXml;
 use Solarium\QueryType\Update\Query\Document;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
@@ -74,11 +66,9 @@ class RequestBuilder extends BaseRequestBuilder
                 case UpdateQuery::COMMAND_ROLLBACK:
                     $xml .= $this->buildRollbackXml();
                     break;
-                case UpdateQuery::COMMAND_RAWXML:
-                    $xml .= $this->buildRawXmlXml($command);
-                    break;
                 default:
                     throw new RuntimeException('Unsupported command type');
+                    break;
             }
         }
         $xml .= '</update>';
@@ -135,10 +125,10 @@ class RequestBuilder extends BaseRequestBuilder
     {
         $xml = '<delete>';
         foreach ($command->getIds() as $id) {
-            $xml .= '<id>'.$this->getHelper()->escapeXMLCharacterData($id).'</id>';
+            $xml .= '<id>'.htmlspecialchars($id, ENT_NOQUOTES).'</id>';
         }
         foreach ($command->getQueries() as $query) {
-            $xml .= '<query>'.$this->getHelper()->escapeXMLCharacterData($query).'</query>';
+            $xml .= '<query>'.htmlspecialchars($query, ENT_NOQUOTES).'</query>';
         }
         $xml .= '</delete>';
 
@@ -182,37 +172,13 @@ class RequestBuilder extends BaseRequestBuilder
     }
 
     /**
-     * Build XML for a rollback command.
+     * Build XMl for a rollback command.
      *
      * @return string
      */
     public function buildRollbackXml(): string
     {
         return '<rollback/>';
-    }
-
-    /**
-     * Build XML for a raw command.
-     *
-     * @param RawXml $command
-     *
-     * @return string
-     */
-    public function buildRawXmlXml(RawXml $command): string
-    {
-        $xml = '';
-
-        foreach ($command->getCommands() as $raw) {
-            // unwrap grouped commands, they must be consolidated in a single <update>
-            if (false !== ($pos = strpos($raw, '<update'))) {
-                $start = strpos($raw, '>', $pos) + 1;
-                $raw = substr($raw, $start, strrpos($raw, '</update>') - $start);
-            }
-
-            $xml .= $raw;
-        }
-
-        return $xml;
     }
 
     /**
@@ -241,7 +207,7 @@ class RequestBuilder extends BaseRequestBuilder
         } elseif ($value instanceof \DateTimeInterface) {
             $value = $this->getHelper()->formatDate($value);
         } else {
-            $value = $this->getHelper()->escapeXMLCharacterData($value);
+            $value = htmlspecialchars($value, ENT_NOQUOTES);
         }
 
         $xml .= '>'.$value.'</field>';
@@ -262,38 +228,22 @@ class RequestBuilder extends BaseRequestBuilder
         $xml = '';
 
         // Remove the values if 'null' or empty list is specified as the new value
-        // @see https://solr.apache.org/guide/updating-parts-of-documents.html#atomic-updates
-        if (Document::MODIFIER_SET === $modifier && \is_array($value) && empty($value)) {
+        // @see https://lucene.apache.org/solr/guide/8_1/updating-parts-of-documents.html
+        if (Document::MODIFIER_SET === $modifier && is_array($value) && empty($value)) {
             $value = null;
         }
 
-        if (\is_array($value)) {
-            $nestedXml = '';
+        if (is_array($value)) {
             foreach ($value as $multival) {
-                if (\is_array($multival) && '_childDocuments_' === $key) {
+                if (is_array($multival)) {
                     $xml .= '<doc>';
                     foreach ($multival as $k => $v) {
                         $xml .= $this->buildFieldsXml($k, $boost, $v, $modifier);
                     }
                     $xml .= '</doc>';
-                } elseif (\is_array($multival)) {
-                    $nestedXml .= '<doc';
-                    $nestedXml .= $this->attrib('update', $modifier);
-                    $nestedXml .= '>';
-                    foreach ($multival as $k => $v) {
-                        $nestedXml .= $this->buildFieldsXml($k, $boost, $v, null);
-                    }
-                    $nestedXml .= '</doc>';
                 } else {
-                    if (!empty($nestedXml)) {
-                        $xml .= '<field name="'.$key.'">'.$nestedXml.'</field>';
-                        $nestedXml = '';
-                    }
                     $xml .= $this->buildFieldXml($key, $boost, $multival, $modifier);
                 }
-            }
-            if (!empty($nestedXml) && '_childDocuments_' !== $key) {
-                $xml .= '<field name="'.$key.'">'.$nestedXml.'</field>';
             }
         } else {
             $xml .= $this->buildFieldXml($key, $boost, $value, $modifier);

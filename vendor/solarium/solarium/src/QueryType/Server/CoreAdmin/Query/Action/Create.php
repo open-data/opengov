@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Server\CoreAdmin\Query\Action;
 
 use Solarium\QueryType\Server\CoreAdmin\Query\Query as CoreAdminQuery;
@@ -15,7 +8,7 @@ use Solarium\QueryType\Server\Query\Action\AbstractAsyncAction;
 /**
  * Class Create.
  *
- * @see https://solr.apache.org/guide/coreadmin-api.html#coreadmin-create
+ * @see https://lucene.apache.org/solr/guide/6_6/coreadmin-api.html#CoreAdminAPI-Input.1
  */
 class Create extends AbstractAsyncAction implements CoreActionInterface
 {
@@ -40,7 +33,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     {
         // for some reason the core is called "name" in the create action
         $this->setOption('name', $core);
-
         return $this;
     }
 
@@ -65,7 +57,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     public function setInstanceDir(string $instanceDir): self
     {
         $this->setOption('instanceDir', $instanceDir);
-
         return $this;
     }
 
@@ -89,7 +80,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     public function setConfig(string $config): self
     {
         $this->setOption('config', $config);
-
         return $this;
     }
 
@@ -113,7 +103,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     public function setSchema(string $schema): self
     {
         $this->setOption('schema', $schema);
-
         return $this;
     }
 
@@ -137,7 +126,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     public function setDataDir(string $dataDir): self
     {
         $this->setOption('dataDir', $dataDir);
-
         return $this;
     }
 
@@ -161,7 +149,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     public function setConfigSet(string $configSet): self
     {
         $this->setOption('configSet', $configSet);
-
         return $this;
     }
 
@@ -185,7 +172,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     public function setCollection(string $collection): self
     {
         $this->setOption('collection', $collection);
-
         return $this;
     }
 
@@ -209,7 +195,6 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     public function setShard($shard): self
     {
         $this->setOption('shard', $shard);
-
         return $this;
     }
 
@@ -235,21 +220,17 @@ class Create extends AbstractAsyncAction implements CoreActionInterface
     {
         $option = 'property.'.$name;
         $this->setOption($option, $value);
-
         return $this;
     }
 
     /**
      * Get a previously added core property.
      *
-     * @param mixed $name
-     *
      * @return string
      */
     public function getCoreProperty($name): string
     {
         $option = 'property.'.$name;
-
         return $this->getOption($option);
     }
 }

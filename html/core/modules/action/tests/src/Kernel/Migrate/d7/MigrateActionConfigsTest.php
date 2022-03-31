@@ -6,7 +6,7 @@ use Drupal\Tests\SchemaCheckTestTrait;
 use Drupal\Tests\migrate_drupal\Kernel\d7\MigrateDrupal7TestBase;
 
 /**
- * Upgrade variables to null.
+ * Upgrade variables to action.settings.yml.
  *
  * @group migrate_drupal_7
  */
@@ -28,11 +28,12 @@ class MigrateActionConfigsTest extends MigrateDrupal7TestBase {
   }
 
   /**
-   * Tests migration of action variables to null.
+   * Tests migration of action variables to action.settings.yml.
    */
   public function testActionSettings() {
     $config = $this->config('action.settings');
-    $this->assertTrue($config->isNew());
+    $this->assertSame(28, $config->get('recursion_limit'));
+    $this->assertConfigSchema(\Drupal::service('config.typed'), 'action.settings', $config->get());
   }
 
 }

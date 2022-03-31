@@ -51,7 +51,6 @@ class MigrateCommentFieldTest extends MigrateDrupal7TestBase {
     $this->assertEntity('comment_node_book');
     $this->assertEntity('comment_forum');
     $this->assertEntity('comment_node_test_content_type');
-    $this->assertEntity('comment_node_et');
   }
 
 }

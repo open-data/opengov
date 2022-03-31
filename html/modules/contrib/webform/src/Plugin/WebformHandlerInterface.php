@@ -20,7 +20,7 @@ use Drupal\webform\WebformSubmissionInterface;
  * @see \Drupal\webform\Plugin\WebformHandlerManagerInterface
  * @see plugin_api
  */
-interface WebformHandlerInterface extends PluginInspectionInterface, ConfigurableInterface, ContainerFactoryPluginInterface, PluginFormInterface, WebformEntityInjectionInterface, WebformPluginSettingsInterface {
+interface WebformHandlerInterface extends PluginInspectionInterface, ConfigurableInterface, ContainerFactoryPluginInterface, PluginFormInterface {
 
   /**
    * Value indicating unlimited plugin instances are permitted.
@@ -286,6 +286,52 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   public function hasAnonymousSubmissionTracking();
 
   /**
+   * Set the webform that this is handler is attached to.
+   *
+   * @param \Drupal\webform\WebformInterface $webform
+   *   A webform.
+   *
+   * @return $this
+   *   This webform handler.
+   *
+   * @todo Webform 8.x-6.x: Replace with WebformEntityInjectionInterface.
+   */
+  public function setWebform(WebformInterface $webform);
+
+  /**
+   * Get the webform that this handler is attached to.
+   *
+   * @return \Drupal\webform\WebformInterface
+   *   A webform.
+   *
+   * @todo Webform 8.x-6.x: Replace with WebformEntityInjectionInterface.
+   */
+  public function getWebform();
+
+  /**
+   * Set the webform submission that this handler is handling.
+   *
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   *
+   * @return $this
+   *   This webform handler.
+   *
+   * @todo Webform 8.x-6.x: Replace with WebformEntityInjectionInterface.
+   */
+  public function setWebformSubmission(WebformSubmissionInterface $webform_submission = NULL);
+
+  /**
+   * Get the webform submission that this handler is handling.
+   *
+   * @return \Drupal\webform\WebformSubmissionInterface
+   *   A webform submission.
+   *
+   * @todo Webform 8.x-6.x: Replace with WebformEntityInjectionInterface.
+   */
+  public function getWebformSubmission();
+
+  /**
    * Check handler conditions against a webform submission.
    *
    * Note: Conditions are only applied to callbacks that require a
@@ -304,9 +350,9 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function checkConditions(WebformSubmissionInterface $webform_submission);
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Webform methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Alter webform submission webform elements.
@@ -336,9 +382,9 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function alterElement(array &$element, FormStateInterface $form_state, array $context);
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Webform submission methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Alter/override a webform submission webform settings.
@@ -353,9 +399,9 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function overrideSettings(array &$settings, WebformSubmissionInterface $webform_submission);
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Submission form methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Get configuration form's off-canvas width.
@@ -371,19 +417,7 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   public function getOffCanvasWidth();
 
   /**
-   * Acts on an webform submission about to be shown on a webform submission form.
-   *
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
-   * @param string $operation
-   *   The current operation.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   */
-  public function prepareForm(WebformSubmissionInterface $webform_submission, $operation, FormStateInterface $form_state);
-
-  /**
-   * Alter webform submission form.
+   * Alter webform submission webform .
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -395,7 +429,7 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   public function alterForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission);
 
   /**
-   * Validate webform submission form.
+   * Validate webform submission webform .
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -407,7 +441,7 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission);
 
   /**
-   * Submit webform submission form.
+   * Submit webform submission webform.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -419,7 +453,7 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
   public function submitForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission);
 
   /**
-   * Confirm webform submission form.
+   * Confirm webform submission webform.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -430,9 +464,9 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission);
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Submission methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Changes the values of an entity before it is created.
@@ -533,9 +567,9 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function access(WebformSubmissionInterface $webform_submission, $operation, AccountInterface $account = NULL);
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Preprocessing methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Prepares variables for webform confirmation templates.
@@ -550,9 +584,9 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function preprocessConfirmation(array &$variables);
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Handler methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Acts on handler after it has been created and added to webform.
@@ -569,9 +603,9 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    */
   public function deleteHandler();
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Element methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Controls entity operation access to webform submission element.

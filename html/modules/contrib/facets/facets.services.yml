@@ -33,16 +33,8 @@ services:
     arguments:
       - '@plugin.manager.facets.url_processor'
       - '@entity_type.manager'
-  facets.configuration_subscriber:
-    class: Drupal\facets\EventSubscriber\ConfigurationSubscriber
+  facets.event_subscriber:
+    class: Drupal\facets\EventSubscriber
     arguments: ['@plugin.manager.block']
     tags:
       - { name: event_subscriber }
-  facets.search_api_subscriber:
-    class: Drupal\facets\EventSubscriber\SearchApiSubscriber
-    arguments: ['@facets.manager']
-    tags:
-      - { name: event_subscriber }
-  facets.language_switcher_links_alterer:
-    class: Drupal\facets\LanguageSwitcherLinksAlterer
-    arguments: ['@language_manager', '@cache.default', '@entity_type.manager', '@plugin.manager.facets.url_processor']

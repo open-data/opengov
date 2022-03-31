@@ -2,6 +2,7 @@
 
 namespace Doctrine\Common\Cache;
 
+use const PHP_EOL;
 use function fclose;
 use function fgets;
 use function fopen;
@@ -10,12 +11,8 @@ use function serialize;
 use function time;
 use function unserialize;
 
-use const PHP_EOL;
-
 /**
  * Filesystem cache driver.
- *
- * @deprecated Deprecated without replacement in doctrine/cache 1.11. This class will be dropped in 2.0
  */
 class FilesystemCache extends FileCache
 {

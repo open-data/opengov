@@ -13,7 +13,7 @@ class OptionsCommands
 
     /**
      * @hook option @optionset_proc_build
-     * @option ssh-options A string of extra options that will be passed to the ssh command (e.g. <info>-p 100</info>)
+     * @option ssh-options A string of extra options that will be passed to the ssh command (e.g. "-p 100")
      * @option tty Create a tty (e.g. to run an interactive program).
      */
     public function optionsetProcBuild($options = ['ssh-options' => self::REQ, 'tty' => false])
@@ -22,8 +22,8 @@ class OptionsCommands
 
     /**
      * @hook option @optionset_get_editor
-     * @option editor A string of bash which launches user's preferred text editor. Defaults to <info>${VISUAL-${EDITOR-vi}}</info>.
-     * @option bg Launch editor in background process.
+     * @option editor A string of bash which launches user's preferred text editor. Defaults to ${VISUAL-${EDITOR-vi}}.
+     * @option bg Run editor in the background. Does not work with editors such as `vi` that run in the terminal.
      */
     public function optionsetGetEditor($options = ['editor' => '', 'bg' => false])
     {
@@ -40,18 +40,17 @@ class OptionsCommands
     /**
      * @hook option @optionset_sql
      * @option database The DB connection key if using multiple connections in settings.php.
-     * @option db-url A Drupal 6 style database URL. For example <info>mysql://root:pass@localhost:port/dbname</info>
-     * @option target The name of a target within the specified database connection.
-     * @option show-passwords Show password on the CLI. Useful for debugging.
+     * @option db-url A Drupal 6 style database URL.
+     * @option target The name of a target within the specified database connection. Defaults to default
      */
-    public function optionsetSql($options = ['database' => 'default', 'target' => 'default', 'db-url' => self::REQ, 'show-passwords' => false])
+    public function optionsetSql($options = ['database' => 'default', 'target' => 'default', 'db-url' => self::REQ])
     {
     }
 
     /**
      * @hook option @optionset_table_selection
-     * @option skip-tables-key A key in the $skip_tables array. @see [Site aliases](../site-aliases.md)
-     * @option structure-tables-key A key in the $structure_tables array. @see [Site aliases](../site-aliases.md)
+     * @option skip-tables-key A key in the $skip_tables array. @see example.drush.yml
+     * @option structure-tables-key A key in the $structure_tables array. @see example.drush.yml
      * @option tables-key A key in the $tables array.
      * @option skip-tables-list A comma-separated list of tables to exclude completely.
      * @option structure-tables-list A comma-separated list of tables to include for structure, but not data.

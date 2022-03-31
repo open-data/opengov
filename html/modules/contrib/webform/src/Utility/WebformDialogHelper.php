@@ -65,10 +65,9 @@ class WebformDialogHelper {
       $build['#attached']['library'][] = 'webform/webform.admin.off_canvas';
     }
     // @see \Drupal\webform\Element\WebformHtmlEditor::preRenderWebformHtmlEditor
-    // phpcs:ignore Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing
     if (\Drupal::moduleHandler()->moduleExists('imce') && \Drupal\imce\Imce::access()) {
       $build['#attached']['library'][] = 'imce/drupal.imce.ckeditor';
-      $build['#attached']['drupalSettings']['webform']['html_editor']['ImceImageIcon'] = file_create_url(\Drupal::service('extension.list.module')->getPath('imce') . '/js/plugins/ckeditor/icons/imceimage.png');
+      $build['#attached']['drupalSettings']['webform']['html_editor']['ImceImageIcon'] = file_create_url(drupal_get_path('module', 'imce') . '/js/plugins/ckeditor/icons/imceimage.png');
     }
   }
 
@@ -93,7 +92,7 @@ class WebformDialogHelper {
       static::DIALOG_NORMAL => 800,
       static::DIALOG_NARROW => 700,
     ];
-    $width = $dialog_widths[$width] ?? $width;
+    $width = (isset($dialog_widths[$width])) ? $dialog_widths[$width] : $width;
 
     $class[] = 'webform-ajax-link';
     return [
@@ -134,7 +133,7 @@ class WebformDialogHelper {
       static::DIALOG_NORMAL => 600,
       static::DIALOG_NARROW => 550,
     ];
-    $width = $dialog_widths[$width] ?? $width;
+    $width = (isset($dialog_widths[$width])) ? $dialog_widths[$width] : $width;
 
     $class[] = 'webform-ajax-link';
     return [

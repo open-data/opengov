@@ -37,7 +37,7 @@ class ViewElementTest extends ViewsKernelTestBase {
 
     // There should be 5 rows in the results.
     $xpath = $this->xpath('//div[@class="views-row"]');
-    $this->assertCount(5, $xpath);
+    $this->assertEqual(count($xpath), 5);
 
     // Add an argument and save the view.
     $view->displayHandlers->get('default')->overrideOption('arguments', [
@@ -65,7 +65,7 @@ class ViewElementTest extends ViewsKernelTestBase {
     $this->setRawContent($renderer->renderRoot($render));
     // There should be 1 row in the results, 'John' arg 25.
     $xpath = $this->xpath('//div[@class="views-row"]');
-    $this->assertCount(1, $xpath);
+    $this->assertEqual(count($xpath), 1);
   }
 
   /**
@@ -90,7 +90,7 @@ class ViewElementTest extends ViewsKernelTestBase {
 
     // There should be 5 rows in the results.
     $xpath = $this->xpath('//div[@class="views-row"]');
-    $this->assertCount(5, $xpath);
+    $this->assertEqual(count($xpath), 5);
 
     // Add an argument and save the view.
     $view->displayHandlers->get('default')->overrideOption('arguments', [
@@ -118,7 +118,7 @@ class ViewElementTest extends ViewsKernelTestBase {
     $this->setRawContent($renderer->renderRoot($render));
     // There should be 1 row in the results, 'John' arg 25.
     $xpath = $this->xpath('//div[@class="views-row"]');
-    $this->assertCount(1, $xpath);
+    $this->assertEqual(count($xpath), 1);
 
     // Tests the render array with an exposed filter.
     $view = Views::getView('test_view_embed');
@@ -126,7 +126,7 @@ class ViewElementTest extends ViewsKernelTestBase {
     $this->setRawContent($renderer->renderRoot($render));
 
     // Ensure that the exposed form is rendered.
-    $this->assertCount(1, $this->xpath('//form[@class="views-exposed-form"]'));
+    $this->assertEqual(1, count($this->xpath('//form[@class="views-exposed-form"]')));
   }
 
 }

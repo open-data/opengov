@@ -82,8 +82,7 @@ class RedisCacheTagsChecksum implements CacheTagsChecksumInterface, CacheTagsInv
     // The mget command returns the values as an array with numeric keys,
     // combine it with the tags array to get the expected return value and run
     // it through intval() to convert to integers and FALSE to 0.
-    $values = $this->client->mget($keys);
-    return $values ? array_map('intval', array_combine($tags, $values)) : [];
+    return array_map('intval', array_combine($tags, $this->client->mget($keys)));
   }
 
   /**

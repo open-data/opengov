@@ -11,7 +11,7 @@ use Drupal\metatag\Plugin\metatag\Tag\MetaPropertyBase;
  *   id = "og_latitude",
  *   label = @Translation("Latitude"),
  *   description = @Translation(""),
- *   name = "place:location:latitude",
+ *   name = "og:latitude",
  *   group = "open_graph",
  *   weight = 16,
  *   type = "string",

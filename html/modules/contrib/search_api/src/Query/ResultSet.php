@@ -203,7 +203,7 @@ class ResultSet implements \IteratorAggregate, ResultSetInterface {
    * {@inheritdoc}
    */
   public function setExtraData($key, $data = NULL) {
-    if ($data !== NULL) {
+    if (isset($data)) {
       $this->extraData[$key] = $data;
     }
     else {
@@ -224,7 +224,6 @@ class ResultSet implements \IteratorAggregate, ResultSetInterface {
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
   public function getIterator() {
     return new \ArrayIterator($this->resultItems);
   }

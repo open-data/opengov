@@ -48,15 +48,7 @@ class LocaleConfigTranslationTest extends BrowserTestBase {
 
     // Add custom language.
     $this->langcode = 'xx';
-    $admin_user = $this->drupalCreateUser([
-      'administer languages',
-      'access administration pages',
-      'translate interface',
-      'administer modules',
-      'access site-wide contact form',
-      'administer contact forms',
-      'administer site configuration',
-    ]);
+    $admin_user = $this->drupalCreateUser(['administer languages', 'access administration pages', 'translate interface', 'administer modules', 'access site-wide contact form', 'administer contact forms', 'administer site configuration']);
     $this->drupalLogin($admin_user);
     $name = $this->randomMachineName(16);
     $edit = [
@@ -98,7 +90,7 @@ class LocaleConfigTranslationTest extends BrowserTestBase {
 
     // Get translation and check we've only got the message.
     $translation = \Drupal::languageManager()->getLanguageConfigOverride($this->langcode, 'system.maintenance')->get();
-    $this->assertCount(1, $translation, 'Got the right number of properties after translation.');
+    $this->assertEqual(count($translation), 1, 'Got the right number of properties after translation.');
     $this->assertEqual($translation['message'], $message);
 
     // Check default medium date format exists and create a translation for it.
@@ -143,7 +135,7 @@ class LocaleConfigTranslationTest extends BrowserTestBase {
 
     // Check the string is unique and has no translation yet.
     $translations = $this->storage->getTranslations(['language' => $this->langcode, 'type' => 'configuration', 'name' => 'image.style.medium']);
-    $this->assertCount(1, $translations);
+    $this->assertEqual(count($translations), 1);
     $translation = reset($translations);
     $this->assertEqual($translation->source, $string->source);
     $this->assertEmpty($translation->translation);
@@ -166,9 +158,7 @@ class LocaleConfigTranslationTest extends BrowserTestBase {
     // Check the right single translation has been created.
     $translations = $this->storage->getTranslations(['language' => $this->langcode, 'type' => 'configuration', 'name' => 'image.style.medium']);
     $translation = reset($translations);
-    $this->assertCount(1, $translations, 'Got only one translation for image configuration.');
-    $this->assertEquals($string->source, $translation->source);
-    $this->assertEquals($image_style_label, $translation->translation);
+    $this->assertTrue(count($translations) == 1 && $translation->source == $string->source && $translation->translation == $image_style_label, 'Got only one translation for image configuration.');
 
     // Try more complex configuration data.
     $translation = \Drupal::languageManager()->getLanguageConfigOverride($this->langcode, 'image.style.medium')->get();

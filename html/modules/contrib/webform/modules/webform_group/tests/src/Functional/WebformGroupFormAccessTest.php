@@ -15,8 +15,6 @@ class WebformGroupFormAccessTest extends WebformGroupBrowserTestBase {
    * Tests webform group form access.
    */
   public function testGroupFormAccess() {
-    $assert_session = $this->assertSession();
-
     // Webform.
     $webform = Webform::load('contact');
 
@@ -38,30 +36,30 @@ class WebformGroupFormAccessTest extends WebformGroupBrowserTestBase {
 
     $group->save();
 
-    /* ********************************************************************** */
+    /**************************************************************************/
     // Create access.
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Logout.
     $this->drupalLogout();
 
     // Check that the form is displayed to anonymous user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldExists('message');
+    $this->assertFieldByName('message');
 
     // Login as an outsider user.
     $this->drupalLogin($outsider_user);
 
     // Check that the form is displayed to outsider user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldExists('message');
+    $this->assertFieldByName('message');
 
     // Login as a member user.
     $this->drupalLogin($member_user);
 
     // Check that the form is displayed to member user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldExists('message');
+    $this->assertFieldByName('message');
 
     // Add webform node to group.
     $group->addContent($node, 'group_node:webform');
@@ -79,14 +77,14 @@ class WebformGroupFormAccessTest extends WebformGroupBrowserTestBase {
 
     // Check that the form is NOT displayed to anonymous user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldNotExists('message');
+    $this->assertNoFieldByName('message');
 
     // Login as an outsider user.
     $this->drupalLogin($outsider_user);
 
     // Check that the form is NOT displayed to outsider user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldNotExists('message');
+    $this->assertNoFieldByName('message');
 
     // Allow outsider to access webform.
     $access['create']['group_roles'][] = 'outsider';
@@ -95,14 +93,14 @@ class WebformGroupFormAccessTest extends WebformGroupBrowserTestBase {
 
     // Check that the form is displayed to outsider user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldExists('message');
+    $this->assertFieldByName('message');
 
     // Login as an member user.
     $this->drupalLogin($member_user);
 
     // Check that the form is NOT displayed to member user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldNotExists('message');
+    $this->assertNoFieldByName('message');
 
     // Allow member to access webform.
     $access['create']['group_roles'][] = 'member';
@@ -111,24 +109,24 @@ class WebformGroupFormAccessTest extends WebformGroupBrowserTestBase {
 
     // Check that the form is displayed to member user.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldExists('message');
+    $this->assertFieldByName('message');
 
-    /* ********************************************************************** */
+    /**************************************************************************/
     // Update any access.
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     $this->drupalLogout();
 
     // Check that anonymous can't access the submission page.
     $this->drupalGet("/node/$nid/webform/results/submissions");
-    $assert_session->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // Login as an member user.
     $this->drupalLogin($member_user);
 
     // Check that member can't access the submission page.
     $this->drupalGet("/node/$nid/webform/results/submissions");
-    $assert_session->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // Allow member to access submissions.
     $access['view_any']['group_roles'][] = 'member';
@@ -137,7 +135,7 @@ class WebformGroupFormAccessTest extends WebformGroupBrowserTestBase {
 
     // Check that member can access the submission page.
     $this->drupalGet("/node/$nid/webform/results/submissions");
-    $assert_session->statusCodeEquals(200);
+    $this->assertResponse(200);
   }
 
 }

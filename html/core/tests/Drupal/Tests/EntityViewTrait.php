@@ -30,7 +30,6 @@ trait EntityViewTrait {
    *   the current content language.
    * @param bool $reset
    *   (optional) Whether to clear the cache for this entity.
-   *
    * @return array
    *
    * @see \Drupal\Core\Render\RendererInterface::render()

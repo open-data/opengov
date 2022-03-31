@@ -4,8 +4,6 @@ namespace Drupal\search_api\Plugin\views\field;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\TypedData\ComplexDataInterface;
-use Drupal\search_api\LoggerTrait;
-use Drupal\search_api\SearchApiException;
 use Drupal\views\Plugin\views\field\EntityOperations;
 use Drupal\views\ResultRow;
 
@@ -18,25 +16,17 @@ use Drupal\views\ResultRow;
  */
 class SearchApiEntityOperations extends EntityOperations {
 
-  use LoggerTrait;
-
   /**
    * {@inheritdoc}
    */
   public function render(ResultRow $values) {
     $build = [];
 
-    try {
-      $entity = $this->getContainedEntity($values->_item->getOriginalObject());
-    }
-    catch (SearchApiException $e) {
-      $this->logException($e);
-      return $build;
-    }
+    $entity = $this->getContainedEntity($values->_item->getOriginalObject());
     if ($entity) {
       $entity_type = $entity->getEntityType();
       if ($entity_type->hasListBuilderClass()) {
-        $operations = $this->entityTypeManager->getListBuilder($entity_type->id())
+        $operations = $this->entityManager->getListBuilder($entity_type->id())
           ->getOperations($entity);
         if ($this->options['destination']) {
           foreach ($operations as $i => $operation) {

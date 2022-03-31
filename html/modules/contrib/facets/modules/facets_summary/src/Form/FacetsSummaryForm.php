@@ -400,7 +400,7 @@ class FacetsSummaryForm extends EntityForm {
     $facets_summary->setFacets((array) $enabled_facets);
     $facets_summary->save();
 
-    $this->messenger()->addMessage($this->t('Facets Summary %name has been updated.', ['%name' => $facets_summary->getName()]));
+    \Drupal::messenger()->addMessage($this->t('Facets Summary %name has been updated.', ['%name' => $facets_summary->getName()]));
   }
 
   /**

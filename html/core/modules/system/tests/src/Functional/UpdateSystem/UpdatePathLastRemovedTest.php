@@ -46,9 +46,7 @@ class UpdatePathLastRemovedTest extends BrowserTestBase {
     require_once $this->root . '/core/includes/update.inc';
 
     $this->updateUrl = Url::fromRoute('system.db_update');
-    $this->updateUser = $this->drupalCreateUser([
-      'administer software updates',
-    ]);
+    $this->updateUser = $this->drupalCreateUser(['administer software updates']);
   }
 
   /**

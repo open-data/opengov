@@ -35,11 +35,7 @@ class LanguageConfigurationElementTest extends BrowserTestBase {
 
   protected function setUp() {
     parent::setUp();
-    $user = $this->drupalCreateUser([
-      'access administration pages',
-      'administer languages',
-      'administer content types',
-    ]);
+    $user = $this->drupalCreateUser(['access administration pages', 'administer languages', 'administer content types']);
     $this->drupalLogin($user);
   }
 

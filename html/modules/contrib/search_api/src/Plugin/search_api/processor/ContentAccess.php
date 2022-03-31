@@ -16,6 +16,7 @@ use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Processor\ProcessorPluginBase;
 use Drupal\search_api\Processor\ProcessorProperty;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\search_api\SearchApiException;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -240,7 +241,12 @@ class ContentAccess extends ProcessorPluginBase {
         $account = User::load($account);
       }
       if ($account instanceof AccountInterface) {
-        $this->addNodeAccess($query, $account);
+        try {
+          $this->addNodeAccess($query, $account);
+        }
+        catch (SearchApiException $e) {
+          $this->logException($e);
+        }
       }
       else {
         $account = $query->getOption('search_api_access_account', $this->getCurrentUser());
@@ -262,6 +268,9 @@ class ContentAccess extends ProcessorPluginBase {
    *   The query to which a node access filter should be added, if applicable.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user for whom the search is executed.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   *   Thrown if not all necessary fields are indexed on the index.
    */
   protected function addNodeAccess(QueryInterface $query, AccountInterface $account) {
     // Don't do anything if the user can access all content.

@@ -229,7 +229,8 @@ class LibraryDiscoveryIntegrationTest extends KernelTestBase {
 
     $this->libraryDiscovery->clearCachedDefinitions();
 
-    $this->assertSame($theme_name, $theme_manager->getActiveTheme()->getName());
+    // Assert message.
+    $this->pass(sprintf('Activated theme "%s"', $theme_name));
   }
 
   /**
@@ -256,7 +257,7 @@ class LibraryDiscoveryIntegrationTest extends KernelTestBase {
     $library = $this->libraryDiscovery->getLibraryByName($extension, $library_name);
     foreach ($library[$sub_key] as $definition) {
       if ($asset == $definition['data']) {
-        return TRUE;
+        return $this->pass($message);
       }
     }
     return $this->fail($message);
@@ -289,7 +290,7 @@ class LibraryDiscoveryIntegrationTest extends KernelTestBase {
         return $this->fail($message);
       }
     }
-    return TRUE;
+    return $this->pass($message);
   }
 
 }

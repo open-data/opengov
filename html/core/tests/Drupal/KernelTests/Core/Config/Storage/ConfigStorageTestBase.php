@@ -60,13 +60,13 @@ abstract class ConfigStorageTestBase extends KernelTestBase {
 
     // Listing all names returns all.
     $names = $this->storage->listAll();
-    $this->assertContains('system.performance', $names);
-    $this->assertContains($name, $names);
+    $this->assertTrue(in_array('system.performance', $names));
+    $this->assertTrue(in_array($name, $names));
 
     // Listing all names with prefix returns names with that prefix only.
     $names = $this->storage->listAll('config_test.');
-    $this->assertNotContains('system.performance', $names);
-    $this->assertContains($name, $names);
+    $this->assertFalse(in_array('system.performance', $names));
+    $this->assertTrue(in_array($name, $names));
 
     // Rename the configuration storage object.
     $new_name = 'config_test.storage_rename';

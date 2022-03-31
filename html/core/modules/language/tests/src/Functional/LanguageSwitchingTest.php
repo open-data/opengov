@@ -38,11 +38,7 @@ class LanguageSwitchingTest extends BrowserTestBase {
     parent::setUp();
 
     // Create and log in user.
-    $admin_user = $this->drupalCreateUser([
-      'administer blocks',
-      'administer languages',
-      'access administration pages',
-    ]);
+    $admin_user = $this->drupalCreateUser(['administer blocks', 'administer languages', 'access administration pages']);
     $this->drupalLogin($admin_user);
   }
 

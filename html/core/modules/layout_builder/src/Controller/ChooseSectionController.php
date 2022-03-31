@@ -69,8 +69,8 @@ class ChooseSectionController implements ContainerInjectionInterface {
       $item = [
         '#type' => 'link',
         '#title' => [
-          'icon' => $definition->getIcon(60, 80, 1, 3),
-          'label' => [
+          $definition->getIcon(60, 80, 1, 3),
+          [
             '#type' => 'container',
             '#children' => $definition->getLabel(),
           ],
@@ -90,10 +90,10 @@ class ChooseSectionController implements ContainerInjectionInterface {
         $item['#attributes']['data-dialog-type'][] = 'dialog';
         $item['#attributes']['data-dialog-renderer'][] = 'off_canvas';
       }
-      $items[$plugin_id] = $item;
+      $items[] = $item;
     }
     $output['layouts'] = [
-      '#theme' => 'item_list__layouts',
+      '#theme' => 'item_list',
       '#items' => $items,
       '#attributes' => [
         'class' => [

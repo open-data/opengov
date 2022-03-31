@@ -48,7 +48,7 @@ class StatusTest extends BrowserTestBase {
   public function testStatusPage() {
     // Go to Administration.
     $this->drupalGet('admin/reports/status');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'The status page is reachable.');
 
     $phpversion = phpversion();
     $this->assertText($phpversion, 'Php version is shown on the page.');
@@ -81,7 +81,7 @@ class StatusTest extends BrowserTestBase {
     $this->assertText(t('Out of date'));
 
     $this->drupalGet('admin/reports/status/php');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'The phpinfo page is reachable.');
 
     // Check if cron error is displayed in errors section
     $cron_last_run = \Drupal::state()->get('system.cron_last');

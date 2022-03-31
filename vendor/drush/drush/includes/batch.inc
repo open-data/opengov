@@ -24,8 +24,8 @@
  * implementations.
  */
 
-use Drupal\Core\Database\Database;
 use Drush\Drush;
+use Drush\Log\LogLevel;
 
 /**
  * Class extending ArrayObject to allow the batch API to perform logging when
@@ -37,7 +37,6 @@ use Drush\Drush;
  * @see _drush_batch_worker().
  */
 class DrushBatchContext extends ArrayObject {
-  #[\ReturnTypeWillChange]
   function offsetSet($name, $value) {
     if ($name == 'message') {
       Drush::logger()->notice(strip_tags($value));
@@ -113,7 +112,7 @@ function drush_batch_command($id) {
  *   A return array. The callers only care about the finished marker and an #abort on an operation.
  *
  */
-function _drush_backend_batch_process($command = 'batch-process', $args = [], $options = []) {
+function _drush_backend_batch_process($command = 'batch-process', $args, $options) {
   $result = NULL;
 
   $batch =& batch_get();
@@ -131,7 +130,7 @@ function _drush_backend_batch_process($command = 'batch-process', $args = [], $o
 
     // Assign an arbitrary id: don't rely on a serial column in the 'batch'
     // table, since non-progressive batches skip database storage completely.
-    $batch['id'] = \Drupal::database()->nextId();
+    $batch['id'] = db_next_id();
     $args[] = $batch['id'];
 
     $batch['progressive'] = TRUE;
@@ -150,19 +149,12 @@ function _drush_backend_batch_process($command = 'batch-process', $args = [], $o
 
     while (!$finished) {
       $process = Drush::drush(Drush::aliasManager()->getSelf(), $command, $args);
-      // We already re-spawn when memory is low so no need for timeout.
-      $process->setTimeout(null);
       // Suppress printing stdout since a JSON array is returned to us here.
       $process->run($process->showRealtime()->hideStdout());
       $result = $process->getOutputAsJson();
       $finished = !$process->isSuccessful() || (isset($result['drush_batch_process_finished']) && $result['drush_batch_process_finished'] === TRUE);
     }
   }
-
-  // An attempt to clear the batch is performed in "_drush_batch_finished",
-  // however when that is run in a separate process, static cache changes need
-  // to be replayed.
-  $batch = NULL;
 
   return $result;
 }
@@ -183,11 +175,9 @@ function _drush_backend_batch_process($command = 'batch-process', $args = [], $o
 function _drush_batch_command($id) {
   $batch =& batch_get();
 
-  $data = Database::getConnection()->select('batch', 'b')
-    ->fields('b', ['batch'])
-    ->condition('bid', $id)
-    ->execute()
-    ->fetchField();
+  $data = db_query("SELECT batch FROM {batch} WHERE bid = :bid", [
+    ':bid' => $id
+  ])->fetchField();
 
   if ($data) {
     $batch = unserialize($data);
@@ -376,8 +366,16 @@ function _drush_batch_finished() {
  */
 function _drush_batch_shutdown() {
   if ($batch = batch_get()) {
+    if (drush_drupal_major_version() >= 8) {
       /** @var \Drupal\Core\Batch\BatchStorage $batch_storage */
       $batch_storage = \Drupal::service('batch.storage');
       $batch_storage->update($batch);
+    }
+    else {
+      db_update('batch')
+        ->fields(['batch' => serialize($batch)])
+        ->condition('bid', $batch['id'])
+        ->execute();
+    }
   }
 }

@@ -3,12 +3,18 @@
 namespace Drupal\webform\Plugin\WebformHandler;
 
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\WebformInterface;
+use Drupal\webform\WebformSubmissionConditionsValidatorInterface;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,18 +50,36 @@ class SettingsWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerChannelFactoryInterface $logger_factory, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, WebformSubmissionConditionsValidatorInterface $conditions_validator, TypedConfigManagerInterface $typed_config, WebformTokenManagerInterface $token_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger_factory, $config_factory, $entity_type_manager, $conditions_validator);
+    $this->typedConfigManager = $typed_config;
+    $this->tokenManager = $token_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->typedConfigManager = $container->get('config.typed');
-    $instance->tokenManager = $container->get('webform.token_manager');
-    return $instance;
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('logger.factory'),
+      $container->get('config.factory'),
+      $container->get('entity_type.manager'),
+      $container->get('webform_submission.conditions_validator'),
+      $container->get('config.typed'),
+      $container->get('webform.token_manager')
+    );
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSummary() {
-    $settings = $this->getSettings();
+    $configuration = $this->getConfiguration();
+    $settings = $configuration['settings'];
+
     $setting_definitions = $this->getSettingsDefinitions();
     $setting_override = $this->getSettingsOverride();
     foreach ($setting_override as $name => $value) {
@@ -132,8 +156,7 @@ class SettingsWebformHandler extends WebformHandlerBase {
     $form['confirmation_settings']['confirmation_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Confirmation URL'),
-      '#description' => $this->t('The URL or path to redirect the user to upon successful submission.') .
-        '<br/>' . $this->t('Paths beginning with a forward slash (/) will redirect be treated as root-relative. Paths without a forward slash (/) will redirect be treated as Drupal relative path.'),
+      '#description' => $this->t('URL to redirect the user to upon successful submission.'),
       '#default_value' => $this->configuration['confirmation_url'],
       '#access' => !empty($this->configuration['confirmation_url']) || $has_confirmation_url,
       '#maxlength' => NULL,
@@ -270,9 +293,9 @@ class SettingsWebformHandler extends WebformHandlerBase {
     $this->displayDebug($webform_submission);
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Debug handlers.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Display debugging information about the current action.
@@ -326,12 +349,12 @@ class SettingsWebformHandler extends WebformHandlerBase {
       '#header' => $header,
       '#rows' => $rows,
     ];
-    $this->messenger()->addWarning($this->renderer->renderPlain($build));
+    $this->messenger()->addWarning(\Drupal::service('renderer')->renderPlain($build));
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Settings helpers.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Get webform setting definitions.

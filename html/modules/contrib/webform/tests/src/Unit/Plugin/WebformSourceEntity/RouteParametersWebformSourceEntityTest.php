@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\webform\Unit\Plugin\WebformSourceEntity;
 
-use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\webform\Plugin\WebformSourceEntity\RouteParametersWebformSourceEntity;
@@ -58,13 +57,7 @@ class RouteParametersWebformSourceEntityTest extends UnitTestCase {
     $route_match->method('getParameters')
       ->willReturn(new ParameterBag($route_parameters));
 
-    // Build container.
-    $container = new ContainerBuilder();
-    $container->set('current_route_match', $route_match);
-
-    /* ********************************************************************** */
-
-    $plugin = RouteParametersWebformSourceEntity::create($container, [], 'route_parameters', []);
+    $plugin = new RouteParametersWebformSourceEntity([], 'route_parameters', [], $route_match);
     $output = $plugin->getSourceEntity($ignored_types);
 
     if ($expect_source_entity) {

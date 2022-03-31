@@ -156,14 +156,12 @@ class CommentAdminTest extends CommentTestBase {
 
     $this->assertFalse($this->commentExists($anonymous_comment4), 'Anonymous comment was not published.');
 
-    // Ensure comments cannot be approved without a valid token.
+    // Approve comment.
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('comment/1/approve');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403, 'Forged comment approval was denied.');
     $this->drupalGet('comment/1/approve', ['query' => ['token' => 'forged']]);
-    $this->assertSession()->statusCodeEquals(403);
-
-    // Approve comment.
+    $this->assertResponse(403, 'Forged comment approval was denied.');
     $this->drupalGet('comment/1/edit');
     $this->assertFieldChecked('edit-status-0');
     $this->drupalGet('node/' . $this->node->id());
@@ -182,7 +180,7 @@ class CommentAdminTest extends CommentTestBase {
     $this->drupalLogin($this->adminUser);
     // Browse to comment bundle overview.
     $this->drupalGet('admin/structure/comment');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     // Make sure titles visible.
     $this->assertText('Comment type');
     $this->assertText('Description');
@@ -190,7 +188,7 @@ class CommentAdminTest extends CommentTestBase {
     $this->assertText('Default comment field');
     // Manage fields.
     $this->clickLink('Manage fields');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     // Make sure comment_body field is shown.
     $this->assertText('comment_body');
     // Rest from here on in is field_ui.

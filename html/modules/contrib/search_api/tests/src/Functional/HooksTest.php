@@ -17,7 +17,7 @@ class HooksTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'node',
     'rest',
     'search_api',

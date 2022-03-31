@@ -39,8 +39,12 @@ class SettingManager extends PluginManager {
   /**
    * {@inheritdoc}
    */
-  protected function sortDefinitions(array &$definitions) {
-    uasort($definitions, [$this, 'sort']);
+  public function getDefinitions($sorted = TRUE) {
+    $definitions = parent::getDefinitions(FALSE);
+    if ($sorted) {
+      uasort($definitions, [$this, 'sort']);
+    }
+    return $definitions;
   }
 
   /**

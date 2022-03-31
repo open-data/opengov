@@ -38,7 +38,7 @@
    *   TRUE if element is within the webform.
    */
   $.fn.isWebform = function () {
-    return $(this).closest('form.webform-submission-form, form[id^="webform"], form[data-is-webform]').length ? true : false;
+    return $(this).closest('form[id^="webform"], form[data-is-webform]').length ? true : false;
   };
 
   /**
@@ -66,6 +66,7 @@
   /* ************************************************************************ */
   // Dependents.
   /* ************************************************************************ */
+
 
   // Apply solution included in #1962800 patch.
   // Issue #1962800: Form #states not working with literal integers as
@@ -156,10 +157,9 @@
       // @see Issue #2860529: Conditional required File upload field don't work.
       toggleRequired($target.find('input[type="file"]'), e.value);
 
-      // Fix #required for radios and likert.
+      // Fix #required for radios.
       // @see Issue #2856795: If radio buttons are required but not filled form is nevertheless submitted.
-      if ($target.is('.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other, .js-webform-type-webform-entity-radios, .webform-likert-table')) {
-        $target.toggleClass('required', e.value);
+      if ($target.is('.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other')) {
         toggleRequired($target.find('input[type="radio"]'), e.value);
       }
 
@@ -167,7 +167,6 @@
       // @see Issue #2938414: Checkboxes don't support #states required.
       // @see checkboxRequiredhandler
       if ($target.is('.js-form-type-checkboxes, .js-form-type-webform-checkboxes-other, .js-webform-type-checkboxes, .js-webform-type-webform-checkboxes-other')) {
-        $target.toggleClass('required', e.value);
         var $checkboxes = $target.find('input[type="checkbox"]');
         if (e.value) {
           // Add event handler.
@@ -180,33 +179,6 @@
           $checkboxes.off('click', statesCheckboxesRequiredEventHandler);
           // Remove required attribute.
           toggleRequired($checkboxes, false);
-        }
-      }
-
-      // Fix #required for tableselect.
-      // @see Issue #3212581: Table select does not trigger client side validation
-      if ($target.is('.js-webform-tableselect')) {
-        $target.toggleClass('required', e.value);
-        var isMultiple = $target.is('[multiple]');
-        if (isMultiple) {
-          // Checkboxes.
-          var $tbody = $target.find('tbody');
-          var $checkboxes = $tbody.find('input[type="checkbox"]');
-          copyRequireMessage($target, $checkboxes);
-          if (e.value) {
-            $checkboxes.on('click change', statesCheckboxesRequiredEventHandler);
-            checkboxesRequired($tbody);
-          }
-          else {
-            $checkboxes.off('click change ', statesCheckboxesRequiredEventHandler);
-            toggleRequired($tbody, false);
-          }
-        }
-        else {
-          // Radios.
-          var $radios = $target.find('input[type="radio"]');
-          copyRequireMessage($target, $radios);
-          toggleRequired($radios, e.value);
         }
       }
 
@@ -342,43 +314,11 @@
    */
   Drupal.behaviors.webformRadiosRequired = {
     attach: function (context) {
-      $('.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other, .js-webform-type-webform-entity-radios, .js-webform-type-webform-scale', context)
+      $('.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other', context)
         .once('webform-radios-required')
         .each(function () {
           var $element = $(this);
           setTimeout(function () {radiosRequired($element);});
-        });
-    }
-  };
-
- /**
-   * Adds HTML5 validation to required table select.
-   *
-   * @type {Drupal~behavior}
-   *
-   * @see https://www.drupal.org/project/webform/issues/2856795
-   */
-  Drupal.behaviors.webformTableSelectRequired = {
-    attach: function (context) {
-      $('.js-webform-tableselect.required', context)
-        .once('webform-tableselect-required')
-        .each(function () {
-          var $element = $(this);
-          var $tbody = $element.find('tbody');
-          var isMultiple = $element.is('[multiple]');
-
-          if (isMultiple) {
-            // Check all checkbox triggers checkbox 'change' event on
-            // select and deselect all.
-            // @see Drupal.tableSelect
-            $tbody.find('input[type="checkbox"]').on('click change', function () {
-              checkboxesRequired($tbody);
-            });
-          }
-
-          setTimeout(function () {
-            isMultiple ? checkboxesRequired($tbody) : radiosRequired($element);
-          });
         });
     }
   };
@@ -446,29 +386,11 @@
         .trigger('blur', extraParameters);
     }
     else if (tag === 'select') {
-      // Do not trigger the onchange event for Address element's country code
-      // when it is initialized.
-      // @see \Drupal\address\Element\Country
-      if ($input.closest('.webform-type-address').length) {
-        if (!$input.data('webform-states-address-initialized')
-          && $input.attr('autocomplete') === 'country'
-          && $input.val() === $input.find("option[selected]").attr('value')) {
-          return;
-        }
-        $input.data('webform-states-address-initialized', true);
-      }
-
       $input
         .trigger('change', extraParameters)
         .trigger('blur', extraParameters);
     }
     else if (type !== 'submit' && type !== 'button' && type !== 'file') {
-      // Make sure input mask is removed and then reset when value is restored.
-      // @see https://www.drupal.org/project/webform/issues/3124155
-      // @see https://www.drupal.org/project/webform/issues/3202795
-      var hasInputMask = ($.fn.inputmask && $input.hasClass('js-webform-input-mask'));
-      hasInputMask && $input.inputmask('remove');
-
       $input
         .trigger('input', extraParameters)
         .trigger('change', extraParameters)
@@ -476,7 +398,11 @@
         .trigger('keyup', extraParameters)
         .trigger('blur', extraParameters);
 
-      hasInputMask && $input.inputmask();
+      // Make sure input mask is reset when value is restored.
+      // @see https://www.drupal.org/project/webform/issues/3124155
+      if ($input.attr('data-inputmask-mask')) {
+        setTimeout(function () {$input.inputmask('remove').inputmask();});
+      }
     }
   }
 
@@ -538,10 +464,6 @@
       }
       else if (tag === 'select') {
         $.each(value, function (i, option_value) {
-          // Prevent "Syntax error, unrecognized expression" error by
-          // escaping single quotes.
-          // @see https://forum.jquery.com/topic/escape-characters-prior-to-using-selector
-          option_value = option_value.replace(/'/g, "\\\'");
           $input.find("option[value='" + option_value + "']").prop('selected', true);
         });
       }
@@ -611,22 +533,11 @@
    *   Is input required.
    */
   function toggleRequired($input, required) {
-    var isCheckboxOrRadio = ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox');
     if (required) {
-      if (isCheckboxOrRadio) {
-        $input.attr({'required': 'required'});
-      }
-      else {
-        $input.attr({'required': 'required', 'aria-required': 'true'});
-      }
+      $input.attr({'required': 'required', 'aria-required': 'true'});
     }
     else {
-      if (isCheckboxOrRadio) {
-        $input.removeAttr('required');
-      }
-      else {
-        $input.removeAttr('required aria-required');
-      }
+      $input.removeAttr('required aria-required');
     }
   }
 

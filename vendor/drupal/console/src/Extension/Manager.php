@@ -5,9 +5,6 @@ namespace Drupal\Console\Extension;
 use Drupal\Console\Utils\Site;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Drupal\Core\Extension\ModuleExtensionList;
-use Drupal\Core\Extension\ThemeHandler;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Class ExtensionManager
@@ -47,44 +44,20 @@ class Manager
     private $extension = null;
 
     /**
-     * @var Drupal\Core\Extension\ModuleExtensionList
-     */
-    private $extensionList;
-
-    /**
-     * @var ModuleHandlerInterface
-     */
-    protected $moduleHandler;
-
-    /**
-     * @var ThemeHandler
-     */
-    protected $themeHandler;
-
-    /**
      * ExtensionManager constructor.
      *
      * @param Site   $site
      * @param Client $httpClient
      * @param string $appRoot
-     * @param ModuleExtensionList $extensionList
-     * @param ModuleHandlerInterface $moduleHandler
-     * @param ThemeHandler  $themeHandler
      */
     public function __construct(
         Site $site,
         Client $httpClient,
-        $appRoot,
-        ModuleExtensionList $extensionList,
-        ModuleHandlerInterface $moduleHandler,
-        ThemeHandler $themeHandler
+        $appRoot
     ) {
         $this->site = $site;
         $this->httpClient = $httpClient;
         $this->appRoot = $appRoot;
-        $this->extensionList = $extensionList;
-        $this->moduleHandler = $moduleHandler;
-        $this->themeHandler = $themeHandler;
         $this->initialize();
     }
 
@@ -218,8 +191,8 @@ class Manager
         foreach ($this->extensions[$type] as $extension) {
             $name = $extension->getName();
 
-            $isInstalled = $type=='module' && $this->moduleHandler->moduleExists($name);
-            if (!$isInstalled && property_exists($extension, 'status')) {
+            $isInstalled = false;
+            if (property_exists($extension, 'status')) {
                 $isInstalled = ($extension->status)?true:false;
             }
             if (!$showInstalled && $isInstalled) {
@@ -250,11 +223,12 @@ class Manager
     {
         if ($type === 'module') {
             $this->site->loadLegacyFile('/core/modules/system/system.module');
-            $this->extensionList->reset()->getList();
+            system_rebuild_module_data();
         }
 
         if ($type === 'theme') {
-            $this->themeHandler->rebuildThemeData();
+            $themeHandler = \Drupal::service('theme_handler');
+            $themeHandler->rebuildThemeData();
         }
 
         /*

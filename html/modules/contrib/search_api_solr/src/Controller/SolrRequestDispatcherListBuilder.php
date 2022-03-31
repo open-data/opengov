@@ -19,8 +19,11 @@ class SolrRequestDispatcherListBuilder extends AbstractSolrEntityListBuilder {
    *
    * @return array
    *   List of all disabled request handlers for current server.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   protected function getDisabledEntities(): array {
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     return $backend->getDisabledRequestDispatchers();
   }

@@ -17,9 +17,8 @@ class Linter
      * Lints all php files inside a given phar with the current PHP version
      *
      * @param string $path Phar file path
-     * @param list<string> $excludedPaths Paths which should be skipped by the linter
      */
-    public static function lint($path, array $excludedPaths = array())
+    public static function lint($path)
     {
         $php = defined('PHP_BINARY') ? PHP_BINARY : 'php';
 
@@ -51,17 +50,13 @@ class Linter
             2 => array('pipe', 'w')
         );
 
-        // path to phar + phar:// + trailing slash
-        $baseLen = strlen(realpath($path)) + 7 + 1;
         foreach (new \RecursiveIteratorIterator(new \Phar($path)) as $file) {
             if ($file->isDir()) {
                 continue;
             }
             if (substr($file, -4) === '.php') {
                 $filename = (string) $file;
-                if (in_array(substr($filename, $baseLen), $excludedPaths, true)) {
-                    continue;
-                }
+
                 if ($isWindows) {
                     file_put_contents($tmpFile, file_get_contents($filename));
                 }

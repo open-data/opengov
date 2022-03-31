@@ -48,7 +48,7 @@ class RenderTest extends KernelTestBase {
    */
   public function testRenderChildren() {
     // Ensure that #prefix and #suffix is only being printed once since that is
-    // the behavior the caller code expects.
+    // the behaviour the caller code expects.
     $build = [
       '#type' => 'container',
       '#theme' => 'theme_test_render_element_children',
@@ -68,8 +68,13 @@ class RenderTest extends KernelTestBase {
     $build['#attached']['library'][] = 'core/drupal.states';
     $build['#attached']['drupal_process_states'][] = [];
     $renderer = $this->container->get('bare_html_page_renderer');
-    $this->expectException(\LogicException::class);
-    $renderer->renderBarePage($build, '', 'maintenance_page');
+    try {
+      $renderer->renderBarePage($build, '', 'maintenance_page');
+      $this->fail("Invalid #attachment 'drupal_process_states' allowed");
+    }
+    catch (\LogicException $e) {
+      $this->pass("Invalid #attachment 'drupal_process_states' not allowed");
+    }
   }
 
   /**

@@ -5,7 +5,7 @@
 
 (Drupal => {
   /**
-   * Constructs a checkbox input element.
+   * Constucts a checkbox input element.
    *
    * @return {string}
    *   A string representing a DOM fragment.

@@ -314,42 +314,42 @@ class SectionTest extends UnitTestCase {
    * @covers ::unsetThirdPartySetting
    * @dataProvider providerTestUnsetThirdPartySetting
    */
-  public function testUnsetThirdPartySetting($provider, $key, $expected) {
-    $this->section->unsetThirdPartySetting($provider, $key);
-    $this->assertSame($expected, $this->section->getThirdPartySettings($provider));
+  public function testUnsetThirdPartySetting() {
+    $this->section->unsetThirdPartySetting('bad_judgement', 'blink_speed');
+    $this->assertSame(['spin_direction' => 'clockwise'], $this->section->getThirdPartySettings('bad_judgement'));
+    $this->section->unsetThirdPartySetting('hunt_and_peck', 'delay');
+    $this->assertSame([], $this->section->getThirdPartySettings('hunt_and_peck'));
+    $this->section->unsetThirdPartySetting('bad_judgement', 'non_existing_key');
+    $this->section->unsetThirdPartySetting('non_existing_provider', 'non_existing_key');
   }
 
   /**
-   * Provides test data for ::testUnsetThirdPartySetting().
+   * Provides test data for ::testUnsetThirdPartySettings().
    */
   public function providerTestUnsetThirdPartySetting() {
     $data = [];
-    $data['Key with values'] = [
+    $data[] = [
       'bad_judgement',
       'blink_speed',
       [
         'spin_direction' => 'clockwise',
       ],
     ];
-    $data['Key without values'] = [
+    $data[] = [
       'hunt_and_peck',
       'delay',
       [],
     ];
-    $data['Non-existing key'] = [
+    $data[] = [
       'bad_judgement',
       'non_existing_key',
-      [
-        'blink_speed' => 'fast',
-        'spin_direction' => 'clockwise',
-      ],
+      [],
     ];
-    $data['Non-existing provider'] = [
+    $data[] = [
       'non_existing_provider',
       'non_existing_key',
       [],
     ];
-
     return $data;
   }
 

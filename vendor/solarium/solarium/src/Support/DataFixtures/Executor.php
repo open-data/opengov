@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Support\DataFixtures;
 
 use Solarium\Core\Client\ClientInterface;
@@ -34,7 +27,7 @@ class Executor
     /**
      * @param FixtureInterface[] $fixtures
      */
-    public function execute(array $fixtures): void
+    public function execute(array $fixtures)
     {
         foreach ($fixtures as $fixture) {
             $fixture->load($this->client);

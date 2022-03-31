@@ -78,7 +78,6 @@ display:
             description: ''
             use_operator: true
             operator: search_api_fulltext_op
-            expose_fields: false
             identifier: search_api_fulltext
             required: false
             remember: false

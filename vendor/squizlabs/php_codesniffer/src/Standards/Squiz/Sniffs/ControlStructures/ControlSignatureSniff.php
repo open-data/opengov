@@ -53,7 +53,6 @@ class ControlSignatureSniff implements Sniff
             T_ELSE,
             T_ELSEIF,
             T_SWITCH,
-            T_MATCH,
         ];
 
     }//end register()

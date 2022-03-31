@@ -50,9 +50,18 @@ class AccountSwitcherTest extends KernelTestBase {
 
     // Verify that AccountSwitcherInterface::switchBack() will throw
     // an exception if there are no accounts left in the stack.
-    $this->expectException(\RuntimeException::class);
-    $this->expectExceptionMessage('No more accounts to revert to.');
-    $switcher->switchBack();
+    try {
+      $switcher->switchBack();
+      $this->fail('::switchBack() throws exception if called without previous switch.');
+    }
+    catch (\RuntimeException $e) {
+      if ($e->getMessage() == 'No more accounts to revert to.') {
+        $this->pass('::switchBack() throws exception if called without previous switch.');
+      }
+      else {
+        $this->fail($e->getMessage());
+      }
+    }
   }
 
 }

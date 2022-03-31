@@ -15,11 +15,6 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   use PathautoTestHelperTrait;
 
   /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stable';
-
-  /**
    * Modules to enable.
    *
    * @var array
@@ -92,7 +87,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  function setUp() {
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'article']);
@@ -112,7 +107,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * Test if the default values are shown correctly in the form.
    */
-  public function testDefaultFormValues() {
+  function testDefaultFormValues() {
     $this->drupalGet('/admin/config/search/path/settings');
     $this->assertNoFieldChecked('edit-verbose');
     $this->assertField('edit-separator', $this->defaultFormValues['separator']);
@@ -128,7 +123,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * Test the verbose option.
    */
-  public function testVerboseOption() {
+  function testVerboseOption() {
     $edit = ['verbose' => '1'];
     $this->drupalPostForm('/admin/config/search/path/settings', $edit, t('Save configuration'));
     $this->assertText(t('The configuration options have been saved.'));
@@ -149,7 +144,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * Tests generating aliases with different settings.
    */
-  public function testSettingsForm() {
+  function testSettingsForm() {
     // Ensure the separator settings apply correctly.
     $this->checkAlias('My awesome content', '/content/my.awesome.content', ['separator' => '.']);
 
@@ -175,7 +170,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * Test the punctuation setting form items.
    */
-  public function testPunctuationSettings() {
+  function testPunctuationSettings() {
     // Test the replacement of punctuations.
     $settings = [];
     foreach ($this->defaultPunctuations as $key => $punctuation) {

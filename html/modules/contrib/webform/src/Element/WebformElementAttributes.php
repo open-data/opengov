@@ -130,7 +130,7 @@ class WebformElementAttributes extends FormElement {
     // Apply custom properties. Typically used for descriptions.
     foreach ($element as $key => $value) {
       if (strpos($key, '__') !== FALSE) {
-        [$element_key, $property_key] = explode('__', ltrim($key, '#'));
+        list($element_key, $property_key) = explode('__', ltrim($key, '#'));
         $element[$element_key]["#$property_key"] = $value;
       }
     }
@@ -156,17 +156,14 @@ class WebformElementAttributes extends FormElement {
         $class_other = $element['class']['other']['#value'];
         if (isset($class[WebformSelectOther::OTHER_OPTION])) {
           unset($class[WebformSelectOther::OTHER_OPTION]);
-          if ($class_other) {
-            $class_other = preg_split('/[ ]+/', $class_other);
-            $class += array_combine($class_other, $class_other);
-          }
+          $class[$class_other] = $class_other;
         }
         if ($class) {
           $attributes['class'] = array_values($class);
         }
       }
       else {
-        $attributes['class'] = preg_split('/[ ]+/', $values['class']);
+        $attributes['class'] = [$values['class']];
       }
     }
 

@@ -83,7 +83,9 @@ class Inline
         self::$objectForMap = (bool) (Yaml::PARSE_OBJECT_FOR_MAP & $flags);
         self::$constantSupport = (bool) (Yaml::PARSE_CONSTANT & $flags);
 
-        if (is_null($value) || '' === trim($value)) {
+        $value = trim($value);
+
+        if ('' === $value) {
             return '';
         }
 

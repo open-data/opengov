@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component;
 
 use Solarium\Component\Facet\FacetInterface;
@@ -142,6 +135,7 @@ interface FacetSetInterface
      *
      * When no key is supplied the facet cannot be added, in that case you will need to add it manually
      * after setting the key, by using the addFacet method.
+     *
      *
      * @param string            $type
      * @param array|object|null $options

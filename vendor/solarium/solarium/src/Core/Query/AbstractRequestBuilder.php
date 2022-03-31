@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Query;
 
 use Solarium\Core\Client\Request;
@@ -40,12 +33,11 @@ abstract class AbstractRequestBuilder implements RequestBuilderInterface
         $request->addParam('timeAllowed', $query->getTimeAllowed());
         $request->addParam('NOW', $query->getNow());
         $request->addParam('TZ', $query->getTimeZone());
-        $request->addParam('ie', $query->getInputEncoding());
         $request->addParams($query->getParams());
 
         $request->addParam('wt', $query->getResponseWriter());
         if ($query::WT_JSON === $query->getResponseWriter()) {
-            // Only flat JSON format is supported. Other JSON formats are easier to handle but might lose information.
+            // Only flat JSON format is supported. Other JSON formats are easier to handle but might loose information.
             $request->addParam('json.nl', 'flat');
         }
 
@@ -60,7 +52,7 @@ abstract class AbstractRequestBuilder implements RequestBuilderInterface
      *
      * LocalParams can be use in various Solr GET params.
      *
-     * @see https://solr.apache.org/guide/local-parameters-in-queries.html
+     * @see http://wiki.apache.org/solr/LocalParams
      *
      * @param string $value
      * @param array  $localParams in key => value format
@@ -70,29 +62,20 @@ abstract class AbstractRequestBuilder implements RequestBuilderInterface
     public function renderLocalParams(string $value, array $localParams = []): string
     {
         $params = '';
-        $helper = $this->getHelper();
-
-        if (0 === strpos($value, '{!')) {
-            $params = substr($value, 2, strpos($value, '}') - 2).' ';
-            $value = substr($value, strpos($value, '}') + 1);
-        }
-
         foreach ($localParams as $paramName => $paramValue) {
-            if (null === $paramValue || '' === $paramValue || [] === $paramValue) {
+            if (empty($paramValue)) {
                 continue;
             }
 
-            if (\is_array($paramValue)) {
+            if (is_array($paramValue)) {
                 $paramValue = implode(',', $paramValue);
-            } elseif (\is_bool($paramValue)) {
-                $paramValue = $paramValue ? 'true' : 'false';
             }
 
-            $params .= $paramName.'='.$helper->escapeLocalParamValue($paramValue).' ';
+            $params .= $paramName.'='.$paramValue.' ';
         }
 
-        if ('' !== $params = trim($params)) {
-            $value = sprintf('{!%s}%s', $params, $value);
+        if ('' !== $params) {
+            $value = '{!'.trim($params).'}'.$value;
         }
 
         return $value;

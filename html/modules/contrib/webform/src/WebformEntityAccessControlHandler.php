@@ -7,10 +7,12 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\webform\Access\WebformAccessResult;
-use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
+use Drupal\webform\Plugin\WebformSourceEntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Defines the access control handler for the webform entity type.
@@ -19,14 +21,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class WebformEntityAccessControlHandler extends EntityAccessControlHandler implements EntityHandlerInterface {
 
-  use WebformEntityStorageTrait;
-
   /**
    * The request stack.
    *
    * @var \Symfony\Component\HttpFoundation\RequestStack
    */
   protected $requestStack;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * The webform source entity plugin manager.
@@ -43,15 +50,39 @@ class WebformEntityAccessControlHandler extends EntityAccessControlHandler imple
   protected $accessRulesManager;
 
   /**
+   * WebformEntityAccessControlHandler constructor.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\webform\Plugin\WebformSourceEntityManagerInterface $webform_source_entity_manager
+   *   Webform source entity plugin manager.
+   * @param \Drupal\webform\WebformAccessRulesManagerInterface $access_rules_manager
+   *   Webform access rules manager service.
+   */
+  public function __construct(EntityTypeInterface $entity_type, RequestStack $request_stack, EntityTypeManagerInterface $entity_type_manager, WebformSourceEntityManagerInterface $webform_source_entity_manager, WebformAccessRulesManagerInterface $access_rules_manager) {
+    parent::__construct($entity_type);
+
+    $this->requestStack = $request_stack;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->webformSourceEntityManager = $webform_source_entity_manager;
+    $this->accessRulesManager = $access_rules_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    $instance = new static($entity_type);
-    $instance->requestStack = $container->get('request_stack');
-    $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->webformSourceEntityManager = $container->get('plugin.manager.webform.source_entity');
-    $instance->accessRulesManager = $container->get('webform.access_rules_manager');
-    return $instance;
+    return new static(
+      $entity_type,
+      $container->get('request_stack'),
+      $container->get('entity_type.manager'),
+      $container->get('plugin.manager.webform.source_entity'),
+      $container->get('webform.access_rules_manager')
+    );
   }
 
   /**
@@ -151,8 +182,8 @@ class WebformEntityAccessControlHandler extends EntityAccessControlHandler imple
 
     // Check submission_* operation.
     if (strpos($operation, 'submission_') === 0) {
-      // Grant user with administer webform submission access to do whatever they
-      // like on the submission operations.
+      // Grant user with administer webform submission access to do whatever he
+      // likes on the submission operations.
       if ($account->hasPermission('administer webform submission')) {
         return WebformAccessResult::allowed();
       }
@@ -179,11 +210,14 @@ class WebformEntityAccessControlHandler extends EntityAccessControlHandler imple
       }
 
       if (in_array($operation, ['submission_page', 'submission_create'])) {
+        /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
+        $submission_storage = $this->entityTypeManager->getStorage('webform_submission');
+
         // Check limit total unique access.
         // @see \Drupal\webform\WebformSubmissionForm::setEntity
         if ($entity->getSetting('limit_total_unique')) {
           $source_entity = $this->webformSourceEntityManager->getSourceEntity('webform');
-          $last_submission = $this->getSubmissionStorage()->getLastSubmission($entity, $source_entity, NULL, ['in_draft' => FALSE]);
+          $last_submission = $submission_storage->getLastSubmission($entity, $source_entity, NULL, ['in_draft' => FALSE]);
           if ($last_submission && $last_submission->access('update')) {
             return WebformAccessResult::allowed($last_submission);
           }
@@ -197,7 +231,7 @@ class WebformEntityAccessControlHandler extends EntityAccessControlHandler imple
             return WebformAccessResult::forbidden($entity);
           }
           $source_entity = $this->webformSourceEntityManager->getSourceEntity('webform');
-          $last_submission = $this->getSubmissionStorage()->getLastSubmission($entity, $source_entity, $account, ['in_draft' => FALSE]);
+          $last_submission = $submission_storage->getLastSubmission($entity, $source_entity, $account, ['in_draft' => FALSE]);
           if ($last_submission && $last_submission->access('update')) {
             return WebformAccessResult::allowed($last_submission);
           }
@@ -207,7 +241,7 @@ class WebformEntityAccessControlHandler extends EntityAccessControlHandler imple
         $token = $this->requestStack->getCurrentRequest()->query->get('token');
         if ($token && $entity->isOpen()) {
           $source_entity = $this->webformSourceEntityManager->getSourceEntity('webform');
-          if ($submission = $this->getSubmissionStorage()->loadFromToken($token, $entity, $source_entity)) {
+          if ($submission = $submission_storage->loadFromToken($token, $entity, $source_entity)) {
             return WebformAccessResult::allowed($submission)
               ->addCacheContexts(['url']);
           }

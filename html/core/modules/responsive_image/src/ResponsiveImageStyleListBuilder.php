@@ -15,6 +15,7 @@ class ResponsiveImageStyleListBuilder extends ConfigEntityListBuilder {
    */
   public function buildHeader() {
     $header['label'] = t('Label');
+    $header['id'] = t('Machine name');
     return $header + parent::buildHeader();
   }
 
@@ -23,6 +24,7 @@ class ResponsiveImageStyleListBuilder extends ConfigEntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
+    $row['id'] = $entity->id();
     return $row + parent::buildRow($entity);
   }
 

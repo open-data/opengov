@@ -19,6 +19,8 @@ class MigrateTermLocalizedTranslationTest extends MigrateDrupal7TestBase {
   public static $modules = [
     'content_translation',
     'language',
+    // Required for translation migrations.
+    'migrate_drupal_multilingual',
     'taxonomy',
     'text',
   ];

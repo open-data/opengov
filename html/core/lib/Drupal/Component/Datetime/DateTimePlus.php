@@ -129,8 +129,7 @@ class DateTimePlus {
    * @param \DateTime $datetime
    *   A DateTime object.
    * @param array $settings
-   *   (optional) A keyed array for settings, suitable for passing on to
-   *   __construct().
+   *   @see __construct()
    *
    * @return static
    *   A new DateTimePlus object.
@@ -184,11 +183,9 @@ class DateTimePlus {
    * @param int $timestamp
    *   A UNIX timestamp.
    * @param mixed $timezone
-   *   (optional) \DateTimeZone object, time zone string or NULL. See
-   *   __construct() for more details.
+   *   @see __construct()
    * @param array $settings
-   *   (optional) A keyed array for settings, suitable for passing on to
-   *   __construct().
+   *   @see __construct()
    *
    * @return static
    *   A new DateTimePlus object.
@@ -214,14 +211,11 @@ class DateTimePlus {
    *   any other specialized input with a known format. If provided the
    *   date will be created using the createFromFormat() method.
    *   @see http://php.net/manual/datetime.createfromformat.php
-   * @param string $time
-   *   String representing the time.
+   * @param mixed $time
+   *   @see __construct()
    * @param mixed $timezone
-   *   (optional) \DateTimeZone object, time zone string or NULL. See
-   *   __construct() for more details.
+   *   @see __construct()
    * @param array $settings
-   *   (optional) A keyed array for settings, suitable for passing on to
-   *   __construct(). Supports an additional key:
    *   - validate_format: (optional) Boolean choice to validate the
    *     created date using the input format. The format used in
    *     createFromFormat() allows slightly different values than format().
@@ -229,6 +223,7 @@ class DateTimePlus {
    *     possible to a validation step to confirm that the date created
    *     from a format string exactly matches the input. This option
    *     indicates the format can be used for validation. Defaults to TRUE.
+   *   @see __construct()
    *
    * @return static
    *   A new DateTimePlus object.
@@ -624,10 +619,11 @@ class DateTimePlus {
     $valid_date = FALSE;
     $valid_time = TRUE;
     // Check for a valid date using checkdate(). Only values that
-    // meet that test are valid. An empty value, either a string or a 0, is not
-    // a valid value.
-    if (!empty($array['year']) && !empty($array['month']) && !empty($array['day'])) {
-      $valid_date = checkdate($array['month'], $array['day'], $array['year']);
+    // meet that test are valid.
+    if (array_key_exists('year', $array) && array_key_exists('month', $array) && array_key_exists('day', $array)) {
+      if (@checkdate($array['month'], $array['day'], $array['year'])) {
+        $valid_date = TRUE;
+      }
     }
     // Testing for valid time is reversed. Missing time is OK,
     // but incorrect values are not.
@@ -640,7 +636,6 @@ class DateTimePlus {
               $valid_time = FALSE;
             }
             break;
-
           case 'minute':
           case 'second':
           default:

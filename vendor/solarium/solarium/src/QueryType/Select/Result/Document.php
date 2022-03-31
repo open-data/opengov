@@ -1,16 +1,10 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Select\Result;
 
-use Solarium\Core\Query\AbstractDocument;
 use Solarium\Exception\RuntimeException;
+use Solarium\Core\Query\AbstractDocument;
+use Solarium\Core\Query\DocumentInterface;
 
 /**
  * Read-only Solr document.
@@ -47,8 +41,10 @@ class Document extends AbstractDocument
      * @param string $value
      *
      * @throws RuntimeException
+     *
+     * @return DocumentInterface
      */
-    public function __set($name, $value): void
+    public function __set($name, $value): DocumentInterface
     {
         throw new RuntimeException('A readonly document cannot be altered');
     }

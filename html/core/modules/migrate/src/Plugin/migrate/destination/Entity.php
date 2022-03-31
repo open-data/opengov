@@ -14,10 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides a generic destination to import entities.
  *
- * Available configuration keys:
- * - default_bundle: (optional) The bundle to use for this row if 'bundle' is
- *   not defined on the row.
- *
  * Examples:
  *
  * @code
@@ -48,10 +44,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   revision_timestamp: timestamp
  * destination:
  *   plugin: entity:node
- *   default_bundle: custom
  * @endcode
- *
- * This will save the processed, migrated row as a node of type 'custom'.
  *
  * @MigrateDestination(
  *   id = "entity",

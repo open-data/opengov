@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Client\Adapter;
 
 use Solarium\Core\Client\Endpoint;
@@ -23,9 +16,9 @@ class AdapterHelper
      * @param Request  $request
      * @param Endpoint $endpoint
      *
-     * @throws HttpException
-     *
      * @return string
+     *
+     * @throws HttpException
      */
     public static function buildUri(Request $request, Endpoint $endpoint): string
     {
@@ -37,7 +30,6 @@ class AdapterHelper
             } else {
                 $baseUri = $endpoint->getBaseUri();
             }
-
             return $baseUri.$request->getUri();
         } catch (UnexpectedValueException $e) {
             // Backward compatibility: getBaseUri() now throws an UnexpectedValueException and we don't send a request.

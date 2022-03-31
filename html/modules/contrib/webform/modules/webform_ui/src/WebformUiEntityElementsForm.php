@@ -5,17 +5,21 @@ namespace Drupal\webform_ui;
 use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Element\WebformElementStates;
 use Drupal\webform\Form\WebformEntityAjaxFormTrait;
 use Drupal\webform\Plugin\WebformElement\WebformElement;
 use Drupal\webform\Plugin\WebformElement\WebformTable;
 use Drupal\webform\Utility\WebformDialogHelper;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\webform\Utility\WebformYaml;
+use Drupal\webform\WebformEntityElementsValidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -73,15 +77,34 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
   protected $tokenManager;
 
   /**
+   * Constructs a WebformUiEntityElementsForm.
+   *
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
+   *   The element manager.
+   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+   *   The webform element manager.
+   * @param \Drupal\webform\WebformEntityElementsValidatorInterface $elements_validator
+   *   Webform element validator.
+   */
+  public function __construct(RendererInterface $renderer, ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager, WebformEntityElementsValidatorInterface $elements_validator) {
+    $this->renderer = $renderer;
+    $this->elementInfo = $element_info;
+    $this->elementManager = $element_manager;
+    $this->elementsValidator = $elements_validator;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->renderer = $container->get('renderer');
-    $instance->elementInfo = $container->get('plugin.manager.element_info');
-    $instance->elementManager = $container->get('plugin.manager.webform.element');
-    $instance->elementsValidator = $container->get('webform.elements_validator');
-    return $instance;
+    return new static(
+      $container->get('renderer'),
+      $container->get('plugin.manager.element_info'),
+      $container->get('plugin.manager.webform.element'),
+      $container->get('webform.elements_validator')
+    );
   }
 
   /**
@@ -106,28 +129,28 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     }
 
     $form['webform_ui_elements'] = [
-      '#type' => 'table',
-      '#header' => $header,
-      '#empty' => $this->t('Please add elements to this webform.'),
-      '#attributes' => [
-        'class' => ['webform-ui-elements-table'],
-      ],
-      '#tabledrag' => [
-        [
-          'action' => 'match',
-          'relationship' => 'parent',
-          'group' => 'row-parent-key',
-          'source' => 'row-key',
-          'hidden' => TRUE, /* hides the WEIGHT & PARENT tree columns below */
-          'limit' => FALSE,
+        '#type' => 'table',
+        '#header' => $header,
+        '#empty' => $this->t('Please add elements to this webform.'),
+        '#attributes' => [
+          'class' => ['webform-ui-elements-table'],
         ],
-        [
-          'action' => 'order',
-          'relationship' => 'sibling',
-          'group' => 'row-weight',
+        '#tabledrag' => [
+          [
+            'action' => 'match',
+            'relationship' => 'parent',
+            'group' => 'row-parent-key',
+            'source' => 'row-key',
+            'hidden' => TRUE, /* hides the WEIGHT & PARENT tree columns below */
+            'limit' => FALSE,
+          ],
+          [
+            'action' => 'order',
+            'relationship' => 'sibling',
+            'group' => 'row-weight',
+          ],
         ],
-      ],
-    ] + $rows;
+      ] + $rows;
 
     if ($rows && !$webform->hasActions()) {
       $form['webform_ui_elements'] += ['webform_actions_default' => $this->getCustomizeActionsRow()];
@@ -187,7 +210,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
           }
 
           $parent_keys[] = $current_parent_key;
-          $current_parent_key = $webform_ui_elements[$current_parent_key]['parent_key'] ?? NULL;
+          $current_parent_key = (isset($webform_ui_elements[$current_parent_key]['parent_key'])) ? $webform_ui_elements[$current_parent_key]['parent_key'] : NULL;
         }
       }
 
@@ -217,7 +240,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     // Rebuild elements to reflect new hierarchy.
     $elements_updated = [];
     // Preserve the original elements root properties.
-    $elements_original = WebformYaml::decode($webform->get('elements'));
+    $elements_original = Yaml::decode($webform->get('elements')) ?: [];
     foreach ($elements_original as $key => $value) {
       if (WebformElementHelper::property($key)) {
         $elements_updated[$key] = $value;
@@ -227,7 +250,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     $this->buildUpdatedElementsRecursive($elements_updated, '', $webform_ui_elements, $elements_flattened);
 
     // Update the webform's elements.
-    $webform->setUpdating()->setElements($elements_updated);
+    $webform->setElements($elements_updated);
 
     // Validate only elements required, hierarchy, and rendering.
     $validate_options = [
@@ -484,7 +507,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
 
     // Add element key and type.
     $row['#attributes']['data-webform-key'] = $element['#webform_key'];
-    $row['#attributes']['data-webform-type'] = $element['#type'] ?? '';
+    $row['#attributes']['data-webform-type'] = (isset($element['#type'])) ? $element['#type'] : '';
 
     $row['#attributes']['class'] = $row_class;
 

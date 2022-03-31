@@ -69,10 +69,7 @@ class FormTest extends FieldTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $web_user = $this->drupalCreateUser([
-      'view test entity',
-      'administer entity_test content',
-    ]);
+    $web_user = $this->drupalCreateUser(['view test entity', 'administer entity_test content']);
     $this->drupalLogin($web_user);
 
     $this->fieldStorageSingle = [
@@ -311,8 +308,7 @@ class FormTest extends FieldTestBase {
     }
     ksort($pattern);
     $pattern = implode('.*', array_values($pattern));
-    // Verify that the widgets are displayed in the correct order.
-    $this->assertPattern("|$pattern|s");
+    $this->assertPattern("|$pattern|s", 'Widgets are displayed in the correct order');
     $this->assertFieldByName("{$field_name}[$delta][value]", '', "New widget is displayed");
     $this->assertFieldByName("{$field_name}[$delta][_weight]", $delta, "New widget has the right weight");
     $this->assertNoField("{$field_name}[" . ($delta + 1) . '][value]', 'No extraneous widget is displayed');
@@ -670,7 +666,7 @@ class FormTest extends FieldTestBase {
     $entity->save();
 
     $this->drupalGet('entity_test_base_field_display/manage/' . $entity->id());
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertText('A field with multiple values');
     // Test if labels were XSS filtered.
     $this->assertEscaped("<script>alert('a configurable field');</script>");

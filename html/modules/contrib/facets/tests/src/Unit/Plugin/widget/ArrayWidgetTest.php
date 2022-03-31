@@ -31,7 +31,7 @@ class ArrayWidgetTest extends WidgetTestBase {
 
     $output = $this->widget->build($facet);
 
-    $this->assertSame('array', gettype($output));
+    $this->assertInternalType('array', $output);
     $this->assertCount(4, $output['tag']);
 
     $expected_links = [
@@ -41,7 +41,7 @@ class ArrayWidgetTest extends WidgetTestBase {
       ['url' => NULL, 'values' => ['value' => 'Alpaca', 'count' => 9]],
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertSame('array', gettype($output['tag'][$index]));
+      $this->assertInternalType('array', $output['tag'][$index]);
       $this->assertEquals($value['values']['value'], $output['tag'][$index]['values']['value']);
       $this->assertEquals($value['values']['count'], $output['tag'][$index]['values']['count']);
     }

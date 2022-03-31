@@ -157,7 +157,7 @@ class UninstallTest extends BrowserTestBase {
       $this->fail($message);
     }
     catch (EntityMalformedException $e) {
-      // Expected exception; just continue testing.
+      $this->pass($message);
     }
 
     // Even though the module failed to install properly, its configuration

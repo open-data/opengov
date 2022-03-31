@@ -170,3 +170,4 @@ drupal.vertical-tabs:
     - bootstrap/theme
     - core/jquery.once
     - core/drupal.form
+    - core/matchmedia

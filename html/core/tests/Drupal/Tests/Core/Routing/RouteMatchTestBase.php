@@ -22,7 +22,6 @@ abstract class RouteMatchTestBase extends UnitTestCase {
    *   Parameters array
    * @param $raw_parameters
    *   Raw parameters array
-   *
    * @return \Drupal\Core\Routing\RouteMatchInterface
    */
   abstract protected function getRouteMatch($name, Route $route, array $parameters, array $raw_parameters);

@@ -26,7 +26,7 @@ class WebformScrollTopCommand implements CommandInterface {
   protected $target;
 
   /**
-   * Constructs a WebformScrollTopCommand object.
+   * Constructs a \Drupal\webform\Ajax\ScrollTopCommand object.
    *
    * @param string $selector
    *   A CSS selector.

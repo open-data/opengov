@@ -2,11 +2,16 @@
 
 namespace Drupal\webform_access;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Entity\Webform;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformDialogHelper;
+use Drupal\webform\WebformAccessRulesManagerInterface;
+use Drupal\webform\WebformEntityReferenceManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Provides a form to define a webform access group.
@@ -49,16 +54,38 @@ class WebformAccessGroupForm extends EntityForm {
   protected $webformAccessRulesManager;
 
   /**
+   * Constructs a WebformAccessGroupForm.
+   *
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity manager.
+   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+   *   The webform element manager.
+   * @param \Drupal\webform\WebformEntityReferenceManagerInterface $webform_entity_reference_manager
+   *   The webform entity reference manager.
+   * @param \Drupal\webform\WebformAccessRulesManagerInterface $webform_access_rules_manager
+   *   The webform access rules manager.
+   */
+  public function __construct(Connection $database, EntityTypeManagerInterface $entity_type_manager, WebformElementManagerInterface $element_manager, WebformEntityReferenceManagerInterface $webform_entity_reference_manager, WebformAccessRulesManagerInterface $webform_access_rules_manager) {
+    $this->database = $database;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->elementManager = $element_manager;
+    $this->webformEntityReferenceManager = $webform_entity_reference_manager;
+    $this->webformAccessRulesManager = $webform_access_rules_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->database = $container->get('database');
-    $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->elementManager = $container->get('plugin.manager.webform.element');
-    $instance->webformEntityReferenceManager = $container->get('webform.entity_reference_manager');
-    $instance->webformAccessRulesManager = $container->get('webform.access_rules_manager');
-    return $instance;
+    return new static(
+      $container->get('database'),
+      $container->get('entity_type.manager'),
+      $container->get('plugin.manager.webform.element'),
+      $container->get('webform.entity_reference_manager'),
+      $container->get('webform.access_rules_manager')
+    );
   }
 
   /**

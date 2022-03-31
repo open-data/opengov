@@ -5,4 +5,3 @@ package: 'Core (Experimental)'
 core: 8.x
 dependencies:
   - migrate_drupal
-hidden: true

@@ -22,7 +22,6 @@ class DbToolsApplicationTest extends KernelTestBase {
     $application = new DbToolsApplication();
     $command = $application->find('dump');
     $this->assertInstanceOf('\Drupal\Core\Command\DbDumpCommand', $command);
-    $this->assertSame(\Drupal::VERSION, $application->getVersion());
   }
 
   /**

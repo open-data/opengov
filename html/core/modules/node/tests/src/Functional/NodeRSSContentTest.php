@@ -33,11 +33,7 @@ class NodeRSSContentTest extends NodeTestBase {
     // Use bypass node access permission here, because the test class uses
     // hook_grants_alter() to deny access to everyone on node_access
     // queries.
-    $user = $this->drupalCreateUser([
-      'bypass node access',
-      'access content',
-      'create article content',
-    ]);
+    $user = $this->drupalCreateUser(['bypass node access', 'access content', 'create article content']);
     $this->drupalLogin($user);
   }
 

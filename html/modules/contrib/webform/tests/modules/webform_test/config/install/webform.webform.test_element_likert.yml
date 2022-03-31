@@ -80,25 +80,7 @@ elements: |
       - 'Option 1'
       - 'Option 2'
       - 'Option 3'
-  likert_trigger_required:
-    '#type': checkbox
-    '#title': likert_trigger_required
-  likert_states_required:
-    '#type': webform_likert
-    '#title': likert_states_required
-    '#states':
-      required:
-        ':input[name="likert_trigger_required"]':
-          checked: true
-    '#questions':
-      q1: 'Question 1'
-      q2: 'Question 2'
-      q3: 'Question 3'
-    '#answers':
-      1: 'Option 1'
-      2: 'Option 2'
-      3: 'Option 3'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -119,7 +101,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_disable_remote_addr: false
+  form_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -140,9 +122,6 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
-  form_method: ''
-  form_action: ''
-  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -289,7 +268,5 @@ handlers:
     status: true
     conditions: {  }
     weight: 1
-    settings:
-      format: yaml
-      submission: false
+    settings: {  }
 variants: {  }

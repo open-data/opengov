@@ -64,9 +64,6 @@ search_api_solr.solr_field_type.*:
                 pattern:
                   type: string
                   label: 'SimplePatternSplitTokenizer::'
-                mode:
-                  type: string
-                  label: 'JapaneseTokenizerFactory::'
             filters:
               type: search_api_solr.solr_field_type_filters
     collated_field_type:
@@ -108,9 +105,6 @@ search_api_solr.solr_field_type.*:
         nouns:
           type: string
           label: 'Nouns'
-        stoptags:
-          type: string
-          label: 'Stop tags'
 
 search_api_solr.solr_common_field_type:
   type: mapping
@@ -154,9 +148,6 @@ search_api_solr.solr_common_field_type:
               pattern:
                 type: string
                 label: 'SimplePatternSplitTokenizer::'
-              mode:
-                type: string
-                label: 'JapaneseTokenizerFactory::'
           filters:
             type: search_api_solr.solr_field_type_filters
     similarity:

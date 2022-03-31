@@ -31,7 +31,10 @@ trait SearchApiHandlerTrait {
    * @see \Drupal\views\Plugin\views\HandlerBase::getEntityType()
    */
   public function getEntityType() {
-    return $this->definition['entity_type'] ?? parent::getEntityType();
+    if (isset($this->definition['entity_type'])) {
+      return $this->definition['entity_type'];
+    }
+    return parent::getEntityType();
   }
 
   /**
@@ -57,8 +60,10 @@ trait SearchApiHandlerTrait {
    *   query.
    */
   public function getQuery() {
-    $query = $this->query ?? $this->view->query ?? NULL;
-    return $query instanceof SearchApiQuery ? $query : NULL;
+    if (empty($this->query) || !($this->query instanceof SearchApiQuery)) {
+      return NULL;
+    }
+    return $this->query;
   }
 
 }

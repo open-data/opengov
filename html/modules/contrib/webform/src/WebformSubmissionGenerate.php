@@ -219,7 +219,7 @@ class WebformSubmissionGenerate implements WebformSubmissionGenerateInterface {
     }
 
     // Return default values.
-    return $this->names['default'] ?? NULL;
+    return (isset($this->names['default'])) ? $this->names['default'] : NULL;
   }
 
 }

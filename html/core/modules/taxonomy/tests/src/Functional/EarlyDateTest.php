@@ -51,11 +51,7 @@ class EarlyDateTest extends TaxonomyTestBase {
       ])
       ->save();
 
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer taxonomy',
-      'administer nodes',
-      'bypass node access',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer taxonomy', 'administer nodes', 'bypass node access']));
   }
 
   /**

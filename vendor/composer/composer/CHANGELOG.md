@@ -1,26 +1,3 @@
-### [1.10.25] 2022-01-21
-
-  * Fixed selfupdate on Windows + PHP 8.1 regression (#10446)
-
-### [1.10.24] 2021-12-09
-
-  * Added v1 deprecation warning when running install. Please make sure you upgrade to Composer 2, see https://blog.packagist.com/deprecating-composer-1-support/
-  * Fixed PHP 8.1 compatibility
-  * Fixed some more Windows CLI parameter escaping edge cases
-
-### [1.10.23] 2021-10-05
-
-  * Security: Fixed command injection vulnerability on Windows (GHSA-frqg-7g38-6gcf / CVE-2021-41116)
-
-### [1.10.22] 2021-04-27
-
-  * Security: Fixed command injection vulnerability in HgDriver/HgDownloader and hardened other VCS drivers and downloaders (GHSA-h5h8-pc6h-jvvx / CVE-2021-29472)
-
-### [1.10.21] 2021-04-01
-
-  * Fixed support for new GitHub OAuth token format
-  * Fixed processes silently ignoring the CWD when it does not exist
-
 ### [1.10.20] 2021-01-27
 
   * Fixed exclude-from-classmap causing regex issues when having too many paths
@@ -952,11 +929,6 @@
 
   * Initial release
 
-[1.10.25]: https://github.com/composer/composer/compare/1.10.24...1.10.25
-[1.10.24]: https://github.com/composer/composer/compare/1.10.23...1.10.24
-[1.10.23]: https://github.com/composer/composer/compare/1.10.22...1.10.23
-[1.10.22]: https://github.com/composer/composer/compare/1.10.21...1.10.22
-[1.10.21]: https://github.com/composer/composer/compare/1.10.20...1.10.21
 [1.10.20]: https://github.com/composer/composer/compare/1.10.19...1.10.20
 [1.10.19]: https://github.com/composer/composer/compare/1.10.18...1.10.19
 [1.10.18]: https://github.com/composer/composer/compare/1.10.17...1.10.18

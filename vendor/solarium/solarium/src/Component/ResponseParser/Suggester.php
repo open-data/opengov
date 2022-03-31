@@ -1,17 +1,12 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\ResponseParser;
 
 use Solarium\Component\AbstractComponent;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Component\Result\Suggester\Result;
+use Solarium\Component\Suggester as SuggesterComponent;
+use Solarium\Core\Query\AbstractQuery;
 use Solarium\Core\Query\AbstractResponseParser;
 use Solarium\QueryType\Suggester\Result\Dictionary;
 use Solarium\QueryType\Suggester\Result\Term;
@@ -24,9 +19,9 @@ class Suggester extends AbstractResponseParser implements ComponentParserInterfa
     /**
      * Parse result data into result objects.
      *
-     * @param \Solarium\Component\ComponentAwareQueryInterface|null $query
-     * @param \Solarium\Component\AbstractComponent|null            $suggester
-     * @param array                                                 $data
+     * @param AbstractQuery      $query
+     * @param SuggesterComponent $suggester
+     * @param array              $data
      *
      * @return Result|null
      */
@@ -35,7 +30,7 @@ class Suggester extends AbstractResponseParser implements ComponentParserInterfa
         $dictionaries = [];
         $allSuggestions = [];
 
-        if (isset($data['suggest']) && \is_array($data['suggest'])) {
+        if (isset($data['suggest']) && is_array($data['suggest'])) {
             foreach ($data['suggest'] as $dictionary => $dictionaryResults) {
                 $terms = [];
                 foreach ($dictionaryResults as $term => $termData) {
@@ -51,11 +46,6 @@ class Suggester extends AbstractResponseParser implements ComponentParserInterfa
         return null;
     }
 
-    /**
-     * @param array $terms
-     *
-     * @return \Solarium\QueryType\Suggester\Result\Dictionary
-     */
     private function createDictionary(array $terms): Dictionary
     {
         return new Dictionary(
@@ -63,11 +53,6 @@ class Suggester extends AbstractResponseParser implements ComponentParserInterfa
         );
     }
 
-    /**
-     * @param array $termData
-     *
-     * @return \Solarium\QueryType\Suggester\Result\Term
-     */
     private function createTerm(array $termData): Term
     {
         return new Term(

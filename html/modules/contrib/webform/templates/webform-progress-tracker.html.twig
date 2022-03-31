@@ -11,7 +11,7 @@
  * - current_index: The current wizard page index.
  * - max_pages: Maximum number of pages that progress text should be displayed on.
  *
- * @see template_preprocess_webform_progress_tracker()
+ * @see template_preprocess_webform_progress_bar()
  * @see https://www.w3.org/WAI/tutorials/forms/multi-page/
  *
  * @ingroup themeable
@@ -38,14 +38,14 @@
         .addClass(classes)
     %}
     <li{{ attributes }}>
-      <div class="progress-marker" data-webform-progress-step data-webform-progress-link data-text="{{ index + 1 }}"></div>
+      <span class="progress-marker" data-webform-progress-step data-webform-progress-link>{{ index + 1 }}</span>
       {% if progress|length < max_pages %}
-        <div class="progress-text">
-          <div class="progress-title" data-webform-progress-link>
+        <span class="progress-text">
+          <span class="progress-title" data-webform-progress-link>
             <span class="visually-hidden" data-webform-progress-state>{% if is_active or is_completed %}{{ is_active ? 'Current'|t : 'Completed'|t }}{% endif %}</span>
             {{ page.title }}
-          </div>
-        </div>
+          </span>
+        </span>
       {% endif %}
     </li>
   {% endfor %}

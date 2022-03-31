@@ -5,7 +5,6 @@ namespace Drupal\ctools\Plugin\Condition;
 use Drupal\Core\Condition\ConditionPluginBase;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\ctools\ConstraintConditionInterface;
@@ -18,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "entity_bundle",
  *   deriver = "\Drupal\ctools\Plugin\Deriver\EntityBundle"
  * )
+ *
  */
 class EntityBundle extends ConditionPluginBase implements ConstraintConditionInterface, ContainerFactoryPluginInterface {
 
@@ -73,17 +73,17 @@ class EntityBundle extends ConditionPluginBase implements ConstraintConditionInt
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $options = [];
+    $options = array();
     $bundles = $this->entityTypeBundleInfo->getBundleInfo($this->bundleOf->id());
     foreach ($bundles as $id => $info) {
       $options[$id] = $info['label'];
     }
-    $form['bundles'] = [
+    $form['bundles'] = array(
       '#title' => $this->pluginDefinition['label'],
       '#type' => 'checkboxes',
       '#options' => $options,
       '#default_value' => $this->configuration['bundles'],
-    ];
+    );
     return parent::buildConfigurationForm($form, $form_state);
   }
 
@@ -104,11 +104,6 @@ class EntityBundle extends ConditionPluginBase implements ConstraintConditionInt
     }
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $this->getContextValue($this->bundleOf->id());
-
-    if (!$entity instanceof ContentEntityInterface) {
-      return TRUE;
-    }
-
     return !empty($this->configuration['bundles'][$entity->bundle()]);
   }
 
@@ -120,17 +115,17 @@ class EntityBundle extends ConditionPluginBase implements ConstraintConditionInt
       $bundles = $this->configuration['bundles'];
       $last = array_pop($bundles);
       $bundles = implode(', ', $bundles);
-      return $this->t('@bundle_type is @bundles or @last', ['@bundle_type' => $this->bundleOf->getBundleLabel(), '@bundles' => $bundles, '@last' => $last]);
+      return $this->t('@bundle_type is @bundles or @last', array('@bundle_type' => $this->bundleOf->getBundleLabel(), '@bundles' => $bundles, '@last' => $last));
     }
     $bundle = reset($this->configuration['bundles']);
-    return $this->t('@bundle_type is @bundle', ['@bundle_type' => $this->bundleOf->getBundleLabel(), '@bundle' => $bundle]);
+    return $this->t('@bundle_type is @bundle', array('@bundle_type' => $this->bundleOf->getBundleLabel(), '@bundle' => $bundle));
   }
 
   /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return ['bundles' => []] + parent::defaultConfiguration();
+    return array('bundles' => array()) + parent::defaultConfiguration();
   }
 
   /**
@@ -138,7 +133,7 @@ class EntityBundle extends ConditionPluginBase implements ConstraintConditionInt
    *
    * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
    */
-  public function applyConstraints(array $contexts = []) {
+  public function applyConstraints(array $contexts = array()) {
     // Nullify any bundle constraints on contexts we care about.
     $this->removeConstraints($contexts);
     $bundle = array_values($this->configuration['bundles']);
@@ -153,7 +148,7 @@ class EntityBundle extends ConditionPluginBase implements ConstraintConditionInt
    *
    * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
    */
-  public function removeConstraints(array $contexts = []) {
+  public function removeConstraints(array $contexts = array()) {
     // Reset the bundle constraint for any context we've mapped.
     foreach ($this->getContextMapping() as $definition_id => $context_id) {
       $constraints = $contexts[$context_id]->getContextDefinition()->getConstraints();

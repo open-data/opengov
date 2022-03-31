@@ -35,7 +35,7 @@ elements: |
       table__1__gender:
         '#type': select
         '#options': gender
-        '#default_value': Man
+        '#default_value': Male
       table__1__markup:
         '#markup': '{markup_1}'
     table__2:
@@ -50,7 +50,7 @@ elements: |
       table__2__gender:
         '#type': select
         '#options': gender
-        '#default_value': Woman
+        '#default_value': Female
       table__2__markup:
         '#markup': '{markup_2}'
   table_basic:
@@ -214,7 +214,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_disable_remote_addr: false
+  form_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -235,9 +235,6 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
-  form_method: ''
-  form_action: ''
-  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -384,7 +381,5 @@ handlers:
     status: true
     conditions: {  }
     weight: 0
-    settings:
-      format: yaml
-      submission: false
+    settings: {  }
 variants: {  }

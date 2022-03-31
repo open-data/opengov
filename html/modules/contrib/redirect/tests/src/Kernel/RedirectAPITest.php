@@ -27,7 +27,7 @@ class RedirectAPITest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['redirect', 'link', 'field', 'system', 'user', 'language', 'views', 'path_alias'];
+  public static $modules = ['redirect', 'link', 'field', 'system', 'user', 'language', 'views'];
 
   /**
    * {@inheritdoc}
@@ -167,8 +167,7 @@ class RedirectAPITest extends KernelTestBase {
    */
   public function testDuplicateRedirectEntry() {
     $redirect = $this->storage->create();
-    // The trailing slash should be removed on pre-save.
-    $redirect->setSource('/foo/foo/', []);
+    $redirect->setSource('/foo/foo', []);
     $redirect->setRedirect('foo');
     $redirect->save();
 

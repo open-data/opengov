@@ -111,7 +111,6 @@ abstract class TermResourceTestBase extends EntityResourceTestBase {
           ],
         ];
         break;
-
       case [2]:
         $expected_parent_normalization = [
           [
@@ -122,7 +121,6 @@ abstract class TermResourceTestBase extends EntityResourceTestBase {
           ],
         ];
         break;
-
       case [0, 2]:
         $expected_parent_normalization = [
           [
@@ -136,7 +134,6 @@ abstract class TermResourceTestBase extends EntityResourceTestBase {
           ],
         ];
         break;
-
       case [3, 2]:
         $expected_parent_normalization = [
           [
@@ -259,16 +256,12 @@ abstract class TermResourceTestBase extends EntityResourceTestBase {
     switch ($method) {
       case 'GET':
         return "The 'access content' permission is required and the taxonomy term must be published.";
-
       case 'POST':
         return "The following permissions are required: 'create terms in camelids' OR 'administer taxonomy'.";
-
       case 'PATCH':
         return "The following permissions are required: 'edit terms in camelids' OR 'administer taxonomy'.";
-
       case 'DELETE':
         return "The following permissions are required: 'delete terms in camelids' OR 'administer taxonomy'.";
-
       default:
         return parent::getExpectedUnauthorizedAccessMessage($method);
     }

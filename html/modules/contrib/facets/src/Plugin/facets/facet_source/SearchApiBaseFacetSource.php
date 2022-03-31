@@ -5,7 +5,6 @@ namespace Drupal\facets\Plugin\facets\facet_source;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\Exception\InvalidQueryTypeException;
 use Drupal\facets\FacetInterface;
-use Drupal\facets\FacetSource\SearchApiFacetSourceInterface;
 use Drupal\search_api\Backend\BackendInterface;
 use Drupal\facets\FacetSource\FacetSourcePluginBase;
 use Drupal\search_api\FacetsQueryTypeMappingInterface;
@@ -16,15 +15,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * A base class for Search API facet sources.
  */
-abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements SearchApiFacetSourceInterface {
+abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase {
 
   /**
    * The search index.
    *
    * @var \Drupal\search_api\IndexInterface
-   *
-   * @deprecated in facets:8.x-1.5 and is removed from facets:8.x-2.0. Classes
-   *   extending SearchApiBaseFacetSource should implement ::getIndex() instead.
    */
   protected $index;
 
@@ -76,28 +72,6 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function getIndex() {
-    @trigger_error('Relying on $this->index is deprecated in facets:8.x-1.5. It will be removed from facets:8.x-2.0. Instead, all subclasses should implement ::getIndex() themselves, and the blanket implementation will be removed from SearchApiBaseFacetSource. See https://www.drupal.org/node/3154173', E_USER_DEPRECATED);
-    return $this->index;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDisplay() {
-    return $this->getPluginDefinition()['display_id'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getViewsDisplay() {
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
     $form['field_identifier'] = [
@@ -117,9 +91,9 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
    */
   public function getFields() {
     $indexed_fields = [];
-    $fields = $this->getIndex()->getFields();
+    $fields = $this->index->getFields();
     // Get the Search API Server.
-    $server = $this->getIndex()->getServerInstance();
+    $server = $this->index->getServerInstance();
     // Get the Search API Backend.
     $backend = $server->getBackend();
     foreach ($fields as $field) {
@@ -139,11 +113,11 @@ abstract class SearchApiBaseFacetSource extends FacetSourcePluginBase implements
     // identifier.
     $field_id = $facet->getFieldIdentifier();
     // Get the Search API Server.
-    $server = $this->getIndex()->getServerInstance();
+    $server = $this->index->getServerInstance();
     // Get the Search API Backend.
     $backend = $server->getBackend();
 
-    $fields = $this->getIndex()->getFields();
+    $fields = $this->index->getFields();
     if (isset($fields[$field_id])) {
       return $this->getQueryTypesForDataType($backend, $fields[$field_id]->getType());
     }

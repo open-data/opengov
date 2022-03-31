@@ -202,7 +202,7 @@ abstract class ManageResolverRelationships extends FormBase {
    * @param string $route_name_base
    *   The base of route.
    * @param array $route_parameters
-   *   The parameters of route.
+   *   The paramenters of route.
    *
    * @return mixed
    *   The operations.

@@ -14,13 +14,7 @@ class MetatagSettingsTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
-    // Contrib modules.
-    'token',
-
-    // This module.
-    'metatag',
-  ];
+  public static $modules = ['metatag'];
 
   /**
    * The metatag manager.

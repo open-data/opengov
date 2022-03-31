@@ -53,7 +53,7 @@ class MigrateFileTest extends MigrateDrupal6TestBase implements MigrateDumpAlter
   protected function assertEntity($fid, $name, $size, $uri, $type, $uid) {
     /** @var \Drupal\file\FileInterface $file */
     $file = File::load($fid);
-    $this->assertInstanceOf(FileInterface::class, $file);
+    $this->assertTrue($file instanceof FileInterface);
     $this->assertIdentical($name, $file->getFilename());
     $this->assertIdentical($size, $file->getSize());
     $this->assertIdentical($uri, $file->getFileUri());
@@ -133,7 +133,7 @@ class MigrateFileTest extends MigrateDrupal6TestBase implements MigrateDumpAlter
     // then it would have an fid of 9.
     $this->assertNull(File::load(9));
 
-    $this->assertCount(8, File::loadMultiple());
+    $this->assertEquals(8, count(File::loadMultiple()));
   }
 
   /**

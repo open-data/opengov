@@ -49,9 +49,9 @@ class WebformGroupTokensTest extends WebformGroupBrowserTestBase {
     $token_manager = \Drupal::service('webform.token_manager');
     $token_data['webform_group'] = $webform_submission;
 
-    /* ********************************************************************** */
+    /**************************************************************************/
     // [webform_group:role:GROUP_ROLE] tokens.
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Enable group roles and owner.
     \Drupal::configFactory()->getEditable('webform_group.settings')
@@ -62,7 +62,7 @@ class WebformGroupTokensTest extends WebformGroupBrowserTestBase {
 
     // Check [webform_group:role:member] token.
     $result = $token_manager->replace('[webform_group:role:member]', $webform_submission, $token_data);
-    $this->assertEquals(implode(',', [
+    $this->assertEqual(implode(',', [
       $owner_user->getEmail(),
       $member_user->getEmail(),
       $custom_user->getEmail(),
@@ -70,17 +70,17 @@ class WebformGroupTokensTest extends WebformGroupBrowserTestBase {
 
     // Check [webform_group:role:custom] token.
     $result = $token_manager->replace('[webform_group:role:custom]', $webform_submission, $token_data);
-    $this->assertEquals(implode(',', [
+    $this->assertEqual(implode(',', [
       $custom_user->getEmail(),
     ]), $result);
 
     // Check [webform_group:role:outsider] token returns nothing.
     $result = $token_manager->replace('[webform_group:role:outsider]', $webform_submission, $token_data);
-    $this->assertEquals('', $result);
+    $this->assertEqual('', $result);
 
     // Check [webform_group:owner:mail] token returns the group's owner email.
     $result = $token_manager->replace('[webform_group:owner:mail]', $webform_submission, $token_data);
-    $this->assertEquals($owner_user->getEmail(), $result);
+    $this->assertEqual($owner_user->getEmail(), $result);
 
   }
 

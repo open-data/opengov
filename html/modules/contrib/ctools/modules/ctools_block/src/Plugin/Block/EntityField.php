@@ -296,7 +296,7 @@ class EntityField extends BlockBase implements ContextAwarePluginInterface, Cont
    * Gets the field definition.
    *
    * @return \Drupal\Core\Field\FieldDefinitionInterface
-   *   The field definition.
+   *   The field defination.
    */
   protected function getFieldDefinition() {
     if (empty($this->fieldDefinition)) {
@@ -312,7 +312,7 @@ class EntityField extends BlockBase implements ContextAwarePluginInterface, Cont
    * Gets the field storage definition.
    *
    * @return \Drupal\Core\Field\FieldStorageDefinitionInterface
-   *   The field storage definition.
+   *   The field storage defination.
    */
   protected function getFieldStorageDefinition() {
     if (empty($this->fieldStorageDefinition)) {

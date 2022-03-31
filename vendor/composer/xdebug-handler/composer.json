@@ -22,8 +22,7 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^4.2 || ^5",
-        "phpstan/phpstan": "^0.12.55"
+        "phpunit/phpunit": "^4.8.35 || ^5.7 || 6.5 - 8"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +35,6 @@
         }
     },
     "scripts": {
-        "test": "SYMFONY_PHPUNIT_REMOVE_RETURN_TYPEHINT=1 vendor/bin/simple-phpunit",
-        "phpstan": "vendor/bin/phpstan analyse"
+        "test": "phpunit"
     }
 }

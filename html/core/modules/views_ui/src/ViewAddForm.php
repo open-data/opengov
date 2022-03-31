@@ -9,7 +9,7 @@ use Drupal\views\Plugin\ViewsPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Form controller for the Views add form.
+ * Form controller for the Views edit form.
  *
  * @internal
  */
@@ -23,7 +23,7 @@ class ViewAddForm extends ViewFormBase {
   protected $wizardManager;
 
   /**
-   * Constructs a new ViewAddForm object.
+   * Constructs a new ViewEditForm object.
    *
    * @param \Drupal\views\Plugin\ViewsPluginManager $wizard_manager
    *   The wizard plugin manager.

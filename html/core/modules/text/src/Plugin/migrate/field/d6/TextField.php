@@ -123,10 +123,8 @@ class TextField extends FieldPluginBase {
       case 'optionwidgets_buttons':
       case 'optionwidgets_select':
         return 'list_string';
-
       case 'optionwidgets_onoff':
         return 'boolean';
-
       default:
         return parent::getFieldType($row);
     }

@@ -2,15 +2,14 @@
 
 namespace Drupal\facets\QueryType;
 
-use Drupal\Component\Plugin\ConfigurableInterface;
-use Drupal\Component\Plugin\DependentPluginInterface;
+use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Core\Entity\DependencyTrait;
 use Drupal\Core\Plugin\PluginBase;
 
 /**
  * A base class for query type plugins that implements most of the boilerplate.
  */
-abstract class QueryTypePluginBase extends PluginBase implements QueryTypeInterface, ConfigurableInterface, DependentPluginInterface {
+abstract class QueryTypePluginBase extends PluginBase implements QueryTypeInterface, ConfigurablePluginInterface {
 
   use DependencyTrait;
 

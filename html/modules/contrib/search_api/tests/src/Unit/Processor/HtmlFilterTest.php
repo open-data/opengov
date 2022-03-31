@@ -2,10 +2,7 @@
 
 namespace Drupal\Tests\search_api\Unit\Processor;
 
-use Drupal\search_api\IndexInterface;
-use Drupal\search_api\Item\Field;
 use Drupal\search_api\Plugin\search_api\processor\HtmlFilter;
-use Drupal\search_api\Query\Condition;
 use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\UnitTestCase;
 
@@ -281,28 +278,6 @@ class HtmlFilterTest extends UnitTestCase {
     unset($config['tags']);
     $configs[] = [$config];
     return $configs;
-  }
-
-  /**
-   * Tests whether "IS NULL" conditions are correctly kept.
-   *
-   * @see https://www.drupal.org/project/search_api/issues/3212925
-   */
-  public function testIsNullConditions() {
-    $index = $this->createMock(IndexInterface::class);
-    $index->method('getFields')->willReturn([
-      'field' => (new Field($index, 'field'))->setType('string'),
-    ]);
-    $this->processor->setIndex($index);
-
-    $passed_value = NULL;
-    $this->invokeMethod('processConditionValue', [&$passed_value]);
-    $this->assertSame(NULL, $passed_value);
-
-    $condition = new Condition('field', NULL);
-    $conditions = [$condition];
-    $this->invokeMethod('processConditions', [&$conditions]);
-    $this->assertSame([$condition], $conditions);
   }
 
 }

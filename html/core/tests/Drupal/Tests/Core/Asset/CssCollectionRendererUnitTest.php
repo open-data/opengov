@@ -4,7 +4,6 @@ namespace Drupal\Tests\Core\Asset;
 
 use Drupal\Core\Asset\CssCollectionRenderer;
 use Drupal\Tests\UnitTestCase;
-use Drupal\Core\State\StateInterface;
 
 /**
  * Tests the CSS asset collection renderer.
@@ -28,13 +27,18 @@ class CssCollectionRendererUnitTest extends UnitTestCase {
   protected $fileCssGroup;
 
   /**
-   * {@inheritdoc}
+   * The state mock class.
+   *
+   * @var \Drupal\Core\State\StateInterface|\PHPUnit\Framework\MockObject\MockObject
    */
+  protected $state;
+
   protected function setUp() {
     parent::setUp();
-    $state = $this->prophesize(StateInterface::class);
-    $state->get('system.css_js_query_string', '0')->shouldBeCalledOnce()->willReturn(NULL);
-    $this->renderer = new CssCollectionRenderer($state->reveal());
+
+    $this->state = $this->createMock('Drupal\Core\State\StateInterface');
+
+    $this->renderer = new CssCollectionRenderer($this->state);
     $this->fileCssGroup = [
       'group' => -100,
       'type' => 'file',
@@ -72,16 +76,15 @@ class CssCollectionRendererUnitTest extends UnitTestCase {
    * @see testRender
    */
   public function providerTestRender() {
-    $create_link_element = function ($href, $media = 'all', $browsers = [], $custom_attributes = []) {
-      $attributes = [
-        'rel' => 'stylesheet',
-        'media' => $media,
-        'href' => $href,
-      ];
+    $create_link_element = function ($href, $media = 'all', $browsers = []) {
       return [
         '#type' => 'html_tag',
         '#tag' => 'link',
-        '#attributes' => array_replace($attributes, $custom_attributes),
+        '#attributes' => [
+          'rel' => 'stylesheet',
+          'media' => $media,
+          'href' => $href,
+        ],
         '#browsers' => $browsers,
       ];
     };
@@ -89,8 +92,6 @@ class CssCollectionRendererUnitTest extends UnitTestCase {
     $create_file_css_asset = function ($data, $media = 'all', $preprocess = TRUE) {
       return ['group' => 0, 'type' => 'file', 'media' => $media, 'preprocess' => $preprocess, 'data' => $data, 'browsers' => []];
     };
-
-    $custom_attributes = ['integrity' => 'sha384-psK1OYPAYjYUhtDYW+Pj2yc', 'crossorigin' => 'anonymous', 'random-attribute' => 'test'];
 
     return [
       // Single external CSS asset.
@@ -105,21 +106,12 @@ class CssCollectionRendererUnitTest extends UnitTestCase {
         ],
       ],
       // Single file CSS asset.
-      1 => [
+      2 => [
         [
           0 => ['group' => 0, 'type' => 'file', 'media' => 'all', 'preprocess' => TRUE, 'data' => 'public://css/file-all', 'browsers' => []],
         ],
         [
           0 => $create_link_element(file_url_transform_relative(file_create_url('public://css/file-all')) . '?', 'all'),
-        ],
-      ],
-      // Single file CSS asset with custom attributes.
-      2 => [
-        [
-          0 => ['group' => 0, 'type' => 'file', 'media' => 'all', 'preprocess' => TRUE, 'data' => 'public://css/file-all', 'browsers' => [], 'attributes' => $custom_attributes],
-        ],
-        [
-          0 => $create_link_element(file_url_transform_relative(file_create_url('public://css/file-all')) . '?', 'all', [], $custom_attributes),
         ],
       ],
       // 31 file CSS assets: expect 31 link elements.
@@ -193,7 +185,7 @@ class CssCollectionRendererUnitTest extends UnitTestCase {
       ],
       // 32 file CSS assets with the same properties, except for the 10th and
       // 20th files, they have different 'media' properties.
-      4 => [
+      5 => [
         [
           0 => $create_file_css_asset('public://css/1.css'),
           1 => $create_file_css_asset('public://css/2.css'),
@@ -272,6 +264,10 @@ class CssCollectionRendererUnitTest extends UnitTestCase {
    * @dataProvider providerTestRender
    */
   public function testRender(array $css_assets, array $render_elements) {
+    $this->state->expects($this->once())
+      ->method('get')
+      ->with('system.css_js_query_string')
+      ->will($this->returnValue(NULL));
     $this->assertSame($render_elements, $this->renderer->render($css_assets));
   }
 
@@ -279,6 +275,10 @@ class CssCollectionRendererUnitTest extends UnitTestCase {
    * Tests a CSS asset group with the invalid 'type' => 'internal'.
    */
   public function testRenderInvalidType() {
+    $this->state->expects($this->once())
+      ->method('get')
+      ->with('system.css_js_query_string')
+      ->will($this->returnValue(NULL));
     $this->expectException('Exception');
     $this->expectExceptionMessage('Invalid CSS asset type.');
 

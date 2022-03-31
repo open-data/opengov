@@ -37,9 +37,6 @@ class Composer {
     'jcalderonzumba/gastonjs' => ['docs', 'examples', 'tests'],
     'jcalderonzumba/mink-phantomjs-driver' => ['tests'],
     'justinrainbow/json-schema' => ['demo'],
-    'laminas/laminas-escaper' => ['doc'],
-    'laminas/laminas-feed' => ['doc'],
-    'laminas/laminas-stdlib' => ['doc'],
     'masterminds/html5' => ['bin', 'test'],
     'mikey179/vfsStream' => ['src/test'],
     'myclabs/deep-copy' => ['doc'],
@@ -92,6 +89,9 @@ class Composer {
     'symfony-cmf/routing' => ['Test', 'Tests'],
     'theseer/tokenizer' => ['tests'],
     'twig/twig' => ['doc', 'ext', 'test', 'tests'],
+    'zendframework/zend-escaper' => ['doc'],
+    'zendframework/zend-feed' => ['doc'],
+    'zendframework/zend-stdlib' => ['doc'],
   ];
 
   /**

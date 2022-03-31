@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\DisMax;
 
 use Solarium\Component\QueryInterface;
@@ -41,7 +34,6 @@ class BoostQuery extends Configurable implements QueryInterface
     public function setKey(string $value): self
     {
         $this->setOption('key', $value);
-
         return $this;
     }
 

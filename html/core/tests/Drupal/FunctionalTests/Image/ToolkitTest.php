@@ -32,7 +32,7 @@ class ToolkitTest extends ToolkitTestBase {
    */
   public function testLoad() {
     $image = $this->getImage();
-    $this->assertIsObject($image);
+    $this->assertTrue(is_object($image), 'Returned an object.');
     $this->assertEqual($image->getToolkitId(), 'test', 'Image had toolkit set.');
     $this->assertToolkitOperationsCalled(['parseFile']);
   }

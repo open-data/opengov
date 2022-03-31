@@ -48,7 +48,7 @@ class SerializationTest extends KernelTestBase {
       $this->fail('The serializer was expected to throw an exception for an unsupported format, but did not.');
     }
     catch (UnexpectedValueException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('The serializer threw an exception for an unsupported format.');
     }
   }
 

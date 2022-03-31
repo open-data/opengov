@@ -70,7 +70,7 @@ class Xss {
 
     // Defuse all HTML entities.
     $string = str_replace('&', '&amp;', $string);
-    // Change back only well-formed entities in our list of allowed html tags:
+    // Change back only well-formed entities in our whitelist:
     // Decimal numeric entities.
     $string = preg_replace('/&amp;#([0-9]+;)/', '&#\1', $string);
     // Hexadecimal numeric entities.
@@ -83,7 +83,7 @@ class Xss {
     $splitter = function ($matches) use ($html_tags, $class) {
       return $class::split($matches[1], $html_tags, $class);
     };
-    // Strip any tags that are not in the list of allowed html tags.
+    // Strip any tags that are not in the whitelist.
     return preg_replace_callback('%
       (
       <(?=[^a-zA-Z!/])  # a lone <
@@ -161,9 +161,7 @@ class Xss {
       $elem = '!--';
     }
 
-    // Defer to the ::needsRemoval() method to decide if the element is to be
-    // removed. This allows the list of tags to be treated as either a list of
-    // allowed tags or a list of denied tags.
+    // When in whitelist mode, an element is disallowed when not listed.
     if ($class::needsRemoval($html_tags, $elem)) {
       return '';
     }
@@ -213,14 +211,7 @@ class Xss {
           // Attribute name, href for instance.
           if (preg_match('/^([-a-zA-Z][-a-zA-Z0-9]*)/', $attributes, $match)) {
             $attribute_name = strtolower($match[1]);
-            $skip = (
-              $attribute_name == 'style' ||
-              substr($attribute_name, 0, 2) == 'on' ||
-              substr($attribute_name, 0, 1) == '-' ||
-              // Ignore long attributes to avoid unnecessary processing
-              // overhead.
-              strlen($attribute_name) > 96
-            );
+            $skip = ($attribute_name == 'style' || substr($attribute_name, 0, 2) == 'on');
 
             // Values for attributes of type URI should be filtered for
             // potentially malicious protocols (for example, an href-attribute

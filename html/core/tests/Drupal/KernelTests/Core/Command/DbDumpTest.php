@@ -45,6 +45,15 @@ class DbDumpTest extends KernelTestBase {
   protected $data;
 
   /**
+   * Flag to skip these tests, which are database-backend dependent (MySQL).
+   *
+   * @see \Drupal\Core\Command\DbDumpCommand
+   *
+   * @var bool
+   */
+  protected $skipTests = FALSE;
+
+  /**
    * An array of original table schemas.
    *
    * @var array
@@ -84,9 +93,8 @@ class DbDumpTest extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    if (Database::getConnection()->databaseType() !== 'mysql') {
-      $this->markTestSkipped("Skipping test since the DbDumpCommand is currently only compatible with MySql");
-    }
+    // Determine what database backend is running, and set the skip flag.
+    $this->skipTests = Database::getConnection()->databaseType() !== 'mysql';
 
     // Create some schemas so our export contains tables.
     $this->installSchema('system', [
@@ -153,6 +161,10 @@ class DbDumpTest extends KernelTestBase {
    * Test the command directly.
    */
   public function testDbDumpCommand() {
+    if ($this->skipTests) {
+      $this->pass("Skipping test since the DbDumpCommand is currently only compatible with MySql");
+      return;
+    }
 
     $application = new DbDumpApplication();
     $command = $application->find('dump-database-d8-mysql');
@@ -182,6 +194,10 @@ class DbDumpTest extends KernelTestBase {
    * Test loading the script back into the database.
    */
   public function testScriptLoad() {
+    if ($this->skipTests) {
+      $this->pass("Skipping test since the DbDumpCommand is currently only compatible with MySql");
+      return;
+    }
 
     // Generate the script.
     $application = new DbDumpApplication();

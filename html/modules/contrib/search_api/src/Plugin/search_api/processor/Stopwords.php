@@ -92,11 +92,7 @@ class Stopwords extends FieldsProcessorPluginBase {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     // Convert our text input to an array.
-    $stopwords = $form_state->getValue('stopwords', '');
-    $stopwords = explode("\n", $stopwords);
-    $stopwords = array_map('trim', $stopwords);
-    $stopwords = array_filter($stopwords, 'strlen');
-    $form_state->setValue('stopwords', $stopwords);
+    $form_state->setValue('stopwords', array_filter(array_map('trim', explode("\n", $form_state->getValues()['stopwords'])), 'strlen'));
 
     parent::submitConfigurationForm($form, $form_state);
   }
@@ -126,7 +122,7 @@ class Stopwords extends FieldsProcessorPluginBase {
    */
   protected function process(&$value) {
     $stopwords = $this->getStopWords();
-    if (empty($stopwords)) {
+    if (empty($stopwords) || !is_string($value)) {
       return;
     }
     $value = trim($value);

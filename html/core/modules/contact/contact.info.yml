@@ -1,6 +1,6 @@
 name: Contact
 type: module
-description: 'Provides site-wide contact forms and forms to contact individual users.'
+description: 'Enables the use of both personal and site-wide contact forms.'
 package: Core
 version: VERSION
 core: 8.x

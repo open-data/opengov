@@ -34,7 +34,6 @@ class LowercaseDeclarationSniff implements Sniff
             T_WHILE,
             T_TRY,
             T_CATCH,
-            T_MATCH,
         ];
 
     }//end register()

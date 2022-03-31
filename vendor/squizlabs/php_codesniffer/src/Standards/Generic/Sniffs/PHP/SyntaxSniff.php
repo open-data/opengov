@@ -13,7 +13,6 @@ namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Util\Common;
 
 class SyntaxSniff implements Sniff
 {
@@ -33,10 +32,7 @@ class SyntaxSniff implements Sniff
      */
     public function register()
     {
-        return [
-            T_OPEN_TAG,
-            T_OPEN_TAG_WITH_ECHO,
-        ];
+        return [T_OPEN_TAG];
 
     }//end register()
 
@@ -57,7 +53,7 @@ class SyntaxSniff implements Sniff
         }
 
         $fileName = escapeshellarg($phpcsFile->getFilename());
-        $cmd      = Common::escapeshellcmd($this->phpPath)." -l -d display_errors=1 -d error_prepend_string='' $fileName 2>&1";
+        $cmd      = escapeshellcmd($this->phpPath)." -l -d display_errors=1 -d error_prepend_string='' $fileName 2>&1";
         $output   = shell_exec($cmd);
         $matches  = [];
         if (preg_match('/^.*error:(.*) in .* on line ([0-9]+)/m', trim($output), $matches) === 1) {

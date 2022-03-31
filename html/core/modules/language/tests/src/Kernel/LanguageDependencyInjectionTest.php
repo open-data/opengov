@@ -48,7 +48,7 @@ class LanguageDependencyInjectionTest extends LanguageTestBase {
       $this->fail('Expected DeleteDefaultLanguageException thrown.');
     }
     catch (DeleteDefaultLanguageException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Expected DeleteDefaultLanguageException thrown.');
     }
 
     // Re-save the previous default language and the delete should work.

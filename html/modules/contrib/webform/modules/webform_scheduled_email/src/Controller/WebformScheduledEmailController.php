@@ -5,6 +5,7 @@ namespace Drupal\webform_scheduled_email\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\webform\WebformInterface;
+use Drupal\webform_scheduled_email\WebformScheduledEmailManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -21,12 +22,22 @@ class WebformScheduledEmailController extends ControllerBase implements Containe
   protected $manager;
 
   /**
+   * Constructs a WebformScheduledEmailController object.
+   *
+   * @param \Drupal\webform_scheduled_email\WebformScheduledEmailManagerInterface $manager
+   *   The webform scheduled email manager.
+   */
+  public function __construct(WebformScheduledEmailManagerInterface $manager) {
+    $this->manager = $manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->manager = $container->get('webform_scheduled_email.manager');
-    return $instance;
+    return new static(
+      $container->get('webform_scheduled_email.manager')
+    );
   }
 
   /**

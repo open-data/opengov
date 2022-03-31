@@ -49,11 +49,9 @@ abstract class NodeResourceTestBase extends EntityResourceTestBase {
       case 'GET':
         $this->grantPermissionsToTestedRole(['access content']);
         break;
-
       case 'POST':
         $this->grantPermissionsToTestedRole(['access content', 'create camelids content']);
         break;
-
       case 'PATCH':
         // Do not grant the 'create url aliases' permission to test the case
         // when the path field is protected/not accessible, see
@@ -61,7 +59,6 @@ abstract class NodeResourceTestBase extends EntityResourceTestBase {
         // for a positive test.
         $this->grantPermissionsToTestedRole(['access content', 'edit any camelids content']);
         break;
-
       case 'DELETE':
         $this->grantPermissionsToTestedRole(['access content', 'delete any camelids content']);
         break;

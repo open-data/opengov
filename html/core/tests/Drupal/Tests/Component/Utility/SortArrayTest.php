@@ -3,7 +3,6 @@
 namespace Drupal\Tests\Component\Utility;
 
 use Drupal\Component\Utility\SortArray;
-use Drupal\Tests\PhpunitCompatibilityTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,8 +13,6 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \Drupal\Component\Utility\SortArray
  */
 class SortArrayTest extends TestCase {
-
-  use PhpunitCompatibilityTrait;
 
   /**
    * Tests SortArray::sortByWeightElement() input against expected output.
@@ -319,8 +316,7 @@ class SortArrayTest extends TestCase {
    *   Actual comparison function return value.
    */
   protected function assertBothNegativePositiveOrZero($expected, $result) {
-    $this->assertIsNumeric($expected);
-    $this->assertIsNumeric($result);
+    $this->assertTrue(is_numeric($expected) && is_numeric($result), 'Parameters are numeric.');
     $this->assertTrue(($expected < 0 && $result < 0) || ($expected > 0 && $result > 0) || ($expected === 0 && $result === 0), 'Numbers are either both negative, both positive or both zero.');
   }
 

@@ -1,17 +1,10 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Plugin;
 
 use Solarium\Core\Client\Request;
 use Solarium\Core\Event\Events;
-use Solarium\Core\Event\PreExecuteRequest;
+use Solarium\Core\Event\PostCreateRequest as PostCreateRequestEvent;
 use Solarium\Core\Plugin\AbstractPlugin;
 
 /**
@@ -45,7 +38,6 @@ class PostBigRequest extends AbstractPlugin
     public function setMaxQueryStringLength(int $value): self
     {
         $this->setOption('maxquerystringlength', $value);
-
         return $this;
     }
 
@@ -62,27 +54,21 @@ class PostBigRequest extends AbstractPlugin
     /**
      * Event hook to adjust client settings just before query execution.
      *
-     * @param object $event
+     * @param PostCreateRequestEvent $event
      *
      * @return self Provides fluent interface
      */
-    public function preExecuteRequest($event): self
+    public function postCreateRequest(PostCreateRequestEvent $event): self
     {
-        // We need to accept event proxies or decorators.
-        /* @var PreExecuteRequest $event */
         $request = $event->getRequest();
         $queryString = $request->getQueryString();
-
-        if (Request::METHOD_GET === $request->getMethod() &&
-            \strlen($queryString) > $this->getMaxQueryStringLength()) {
-            $charset = $request->getParam('ie') ?? 'utf-8';
-
+        if (Request::METHOD_GET == $request->getMethod() &&
+            strlen($queryString) > $this->getMaxQueryStringLength()) {
             $request->setMethod(Request::METHOD_POST);
             $request->setRawData($queryString);
             $request->clearParams();
-            $request->addHeader('Content-Type: application/x-www-form-urlencoded; charset='.$charset);
+            $request->addHeader('Content-Type: application/x-www-form-urlencoded');
         }
-
         return $this;
     }
 
@@ -94,9 +80,6 @@ class PostBigRequest extends AbstractPlugin
     protected function initPluginType()
     {
         $dispatcher = $this->client->getEventDispatcher();
-        if (is_subclass_of($dispatcher, '\Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
-            // PostBigRequest has to act on PRE_EXECUTE_REQUEST before Loadbalancer (priority 0). Set priority to 10.
-            $dispatcher->addListener(Events::PRE_EXECUTE_REQUEST, [$this, 'preExecuteRequest'], 10);
-        }
+        $dispatcher->addListener(Events::POST_CREATE_REQUEST, [$this, 'postCreateRequest']);
     }
 }

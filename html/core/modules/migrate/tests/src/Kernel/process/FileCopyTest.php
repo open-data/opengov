@@ -67,9 +67,10 @@ class FileCopyTest extends FileTestBase {
     foreach ($data_sets as $data) {
       list($source_path, $destination_path) = $data;
       $actual_destination = $this->doTransform($source_path, $destination_path);
-      $this->assertFileExists($destination_path);
+      $message = sprintf('File %s exists', $destination_path);
+      $this->assertFileExists($destination_path, $message);
       // Make sure we didn't accidentally do a move.
-      $this->assertFileExists($source_path);
+      $this->assertFileExists($source_path, $message);
       $this->assertSame($actual_destination, $destination_path, 'The import returned the copied filename.');
     }
   }
@@ -89,7 +90,7 @@ class FileCopyTest extends FileTestBase {
     clearstatcache(TRUE, $destination_path);
 
     $timestamp = (new \SplFileInfo($file_reuse))->getMTime();
-    $this->assertIsInt($timestamp);
+    $this->assertInternalType('int', $timestamp);
 
     // We need to make sure the modified timestamp on the file is sooner than
     // the attempted migration.
@@ -151,8 +152,10 @@ class FileCopyTest extends FileTestBase {
     foreach ($data_sets as $data) {
       list($source_path, $destination_path) = $data;
       $actual_destination = $this->doTransform($source_path, $destination_path, ['move' => TRUE]);
-      $this->assertFileExists($destination_path);
-      $this->assertFileNotExists($source_path);
+      $message = sprintf('File %s exists', $destination_path);
+      $this->assertFileExists($destination_path, $message);
+      $message = sprintf('File %s does not exist', $source_path);
+      $this->assertFileNotExists($source_path, $message);
       $this->assertSame($actual_destination, $destination_path, 'The importer returned the moved filename.');
     }
   }
@@ -202,7 +205,7 @@ class FileCopyTest extends FileTestBase {
     $destination = $this->createUri('foo.txt', NULL, 'public');
     $expected_destination = 'public://foo_0.txt';
     $actual_destination = $this->doTransform($source, $destination, ['file_exists' => 'rename']);
-    $this->assertFileExists($expected_destination);
+    $this->assertFileExists($expected_destination, 'File was renamed on import');
     $this->assertSame($actual_destination, $expected_destination, 'The importer returned the renamed filename.');
   }
 

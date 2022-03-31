@@ -1,18 +1,11 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Plugin;
 
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Plugin\AbstractPlugin;
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\QueryType\Select\Query\Query as SelectQuery;
+use Solarium\Core\Query\DocumentInterface;
 use Solarium\QueryType\Select\Result\Result as SelectResult;
 
 /**
@@ -58,7 +51,7 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
      *
      * @var int
      */
-    protected $position = 0;
+    protected $position;
 
     /**
      * Cursor mark.
@@ -86,7 +79,6 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
         $this->resetData();
 
         $this->setOption('prefetch', $value);
-
         return $this;
     }
 
@@ -137,7 +129,6 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
     public function setEndpoint($endpoint): self
     {
         $this->setOption('endpoint', $endpoint);
-
         return $this;
     }
 
@@ -169,16 +160,13 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
     /**
      * Iterator implementation.
      */
-    public function rewind(): void
+    public function rewind()
     {
         $this->position = 0;
 
-        // this condition prevents needlessly re-fetching if the iterator hasn't moved past its first set of results yet
-        // (this includes when a count is done before the iterator is used)
-        if ($this->start > $this->options['prefetch']) {
+        // this condition prevent useless re-fetching of data if a count is done before the iterator is used
+        if ($this->start !== $this->options['prefetch']) {
             $this->start = 0;
-            $this->result = null;
-            $this->documents = null;
 
             if (null !== $this->cursormark) {
                 $this->cursormark = '*';
@@ -211,7 +199,7 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
     /**
      * Iterator implementation.
      */
-    public function next(): void
+    public function next()
     {
         ++$this->position;
     }
@@ -225,7 +213,7 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
     {
         $adjustedIndex = $this->position % $this->options['prefetch'];
 
-        // this condition prevents erroneously fetching the next set of results if a count is done before the iterator is used
+        // this condition prevent useless re-fetching of data if a count is done before the iterator is used
         if (0 === $adjustedIndex && (0 !== $this->position || null === $this->result)) {
             $this->fetchNext();
         }
@@ -265,7 +253,7 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
      */
     protected function resetData(): self
     {
-        $this->position = 0;
+        $this->position = null;
         $this->result = null;
         $this->documents = null;
         $this->start = 0;

@@ -89,14 +89,7 @@ class Query extends QueryBase implements QueryInterface {
       $direction = $sort['direction'] == 'ASC' ? -1 : 1;
       $field = $sort['field'];
       uasort($result, function ($a, $b) use ($field, $direction) {
-        $properties = explode('.', $field);
-        foreach ($properties as $property) {
-          if (isset($a[$property]) || isset($b[$property])) {
-            $a = isset($a[$property]) ? $a[$property] : NULL;
-            $b = isset($b[$property]) ? $b[$property] : NULL;
-          }
-        }
-        return ($a <= $b) ? $direction : -$direction;
+        return ($a[$field] <= $b[$field]) ? $direction : -$direction;
       });
     }
 
@@ -190,21 +183,18 @@ class Query extends QueryBase implements QueryInterface {
             return $id !== $value;
           };
           break;
-
         case 'STARTS_WITH':
           $filter = function ($name) use ($value, $prefix_length) {
             $id = substr($name, $prefix_length);
             return strpos($id, $value) === 0;
           };
           break;
-
         case 'CONTAINS':
           $filter = function ($name) use ($value, $prefix_length) {
             $id = substr($name, $prefix_length);
             return strpos($id, $value) !== FALSE;
           };
           break;
-
         case 'ENDS_WITH':
           $filter = function ($name) use ($value, $prefix_length) {
             $id = substr($name, $prefix_length);

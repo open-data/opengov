@@ -139,12 +139,12 @@
   // Bind to custom Drupal events.
   $(document).on({
     /**
-     * Recalculate columns width when window is resized, when show/hide weight
-     * is triggered, or when toolbar tray is toggled.
+     * Recalculate columns width when window is resized and when show/hide
+     * weight is triggered.
      *
      * @ignore
      */
-    'columnschange.TableHeader drupalToolbarTrayChange': tableHeaderResizeHandler,
+    'columnschange.TableHeader': tableHeaderResizeHandler,
 
     /**
      * Recalculate TableHeader.topOffset when viewport is resized.
@@ -210,7 +210,7 @@
         // Clone the table header so it inherits original jQuery properties.
         const $stickyHeader = this.$originalHeader.clone(true);
         // Hide the table to avoid a flash of the header clone upon page load.
-        this.$stickyTable = $('<table class="sticky-header"></table>')
+        this.$stickyTable = $('<table class="sticky-header"/>')
           .css({
             visibility: 'hidden',
             position: 'fixed',

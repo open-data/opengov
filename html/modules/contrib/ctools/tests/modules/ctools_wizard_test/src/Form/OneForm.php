@@ -2,6 +2,7 @@
 
 namespace Drupal\ctools_wizard_test\Form;
 
+
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -55,9 +56,9 @@ class OneForm extends FormBase {
    *   The current state of the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $keys = [
+    $keys = array(
       'one',
-    ];
+    );
     $cached_values = $form_state->getTemporaryValue('wizard');
     foreach ($keys as $key) {
       $cached_values[$key] = $form_state->getValue($key);

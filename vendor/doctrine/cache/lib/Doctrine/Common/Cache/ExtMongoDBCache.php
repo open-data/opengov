@@ -11,7 +11,6 @@ use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\Exception\Exception;
 use MongoDB\Model\BSONDocument;
-
 use function serialize;
 use function time;
 use function unserialize;
@@ -19,7 +18,7 @@ use function unserialize;
 /**
  * MongoDB cache provider for ext-mongodb
  *
- * @deprecated Deprecated without replacement in doctrine/cache 1.11. This class will be dropped in 2.0
+ * @internal Do not use - will be removed in 2.0. Use MongoDBCache instead
  */
 class ExtMongoDBCache extends CacheProvider
 {
@@ -101,7 +100,7 @@ class ExtMongoDBCache extends CacheProvider
                 ['_id' => $id],
                 [
                     '$set' => [
-                        MongoDBCache::EXPIRATION_FIELD => ($lifeTime > 0 ? new UTCDateTime((time() + $lifeTime) * 1000) : null),
+                        MongoDBCache::EXPIRATION_FIELD => ($lifeTime > 0 ? new UTCDateTime((time() + $lifeTime) * 1000): null),
                         MongoDBCache::DATA_FIELD => new Binary(serialize($data), Binary::TYPE_GENERIC),
                     ],
                 ],
@@ -181,14 +180,14 @@ class ExtMongoDBCache extends CacheProvider
     /**
      * Check if the document is expired.
      */
-    private function isExpired(BSONDocument $document): bool
+    private function isExpired(BSONDocument $document) : bool
     {
         return isset($document[MongoDBCache::EXPIRATION_FIELD]) &&
             $document[MongoDBCache::EXPIRATION_FIELD] instanceof UTCDateTime &&
             $document[MongoDBCache::EXPIRATION_FIELD]->toDateTime() < new DateTime();
     }
 
-    private function createExpirationIndex(): void
+    private function createExpirationIndex() : void
     {
         if ($this->expirationIndexCreated) {
             return;

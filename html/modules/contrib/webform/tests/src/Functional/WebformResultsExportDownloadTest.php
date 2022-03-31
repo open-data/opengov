@@ -18,14 +18,14 @@ class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'locale', 'webform', 'token', 'webform_attachment'];
+  public static $modules = ['node', 'locale', 'webform'];
 
   /**
    * Webforms to load.
    *
    * @var array
    */
-  protected static $testWebforms = ['test_exporter_archive'];
+  protected static $testWebforms = ['test_element_managed_file'];
 
   /**
    * Tests download files.
@@ -33,108 +33,76 @@ class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
   public function testDownloadFiles() {
     $this->drupalLogin($this->rootUser);
 
-    /** @var \Drupal\webform\WebformInterface $webform */
-    $webform = Webform::load('test_exporter_archive');
+    /** @var \Drupal\webform\WebformInterface $webform_managed_file */
+    $webform_managed_file = Webform::load('test_element_managed_file');
 
     /** @var \Drupal\webform\WebformSubmissionExporterInterface $submission_exporter */
     $submission_exporter = \Drupal::service('webform_submission.exporter');
-    $submission_exporter->setWebform($webform);
+    $submission_exporter->setWebform($webform_managed_file);
     $submission_exporter->setExporter();
 
     $sids = [];
-    $sids[] = $this->postSubmissionTest($webform);
-    $sids[] = $this->postSubmissionTest($webform);
-    $sids[] = $this->postSubmissionTest($webform);
+    $sids[] = $this->postSubmissionTest($webform_managed_file);
+    $sids[] = $this->postSubmissionTest($webform_managed_file);
+    $sids[] = $this->postSubmissionTest($webform_managed_file);
 
-    $tests = [
-      [
-        'archive_type' => 'tar',
-        'files' => TRUE,
-        'attachments' => FALSE,
-      ],
-      [
-        'archive_type' => 'zip',
-        'files' => TRUE,
-        'attachments' => FALSE,
-      ],
-      [
-        'archive_type' => 'tar',
-        'files' => FALSE,
-        'attachments' => TRUE,
-      ],
-      [
-        'archive_type' => 'zip',
-        'files' => FALSE,
-        'attachments' => TRUE,
-      ],
-    ];
-    foreach ($tests as $test) {
+    $archive_types = ['tar', 'zip'];
+    foreach ($archive_types as $archive_type) {
       // Set exporter archive type.
-      $submission_exporter->setExporter(['archive_type' => $test['archive_type']]);
+      $submission_exporter->setExporter(['archive_type' => $archive_type]);
 
       /* Download CSV */
 
-      // Download archive with CSV (delimited).
-      $this->drupalGet('/admin/structure/webform/manage/test_exporter_archive/results/download');
+      // Download tar ball archive with CSV.
       $edit = [
-        'exporter' => 'delimited',
-        'archive_type' => $test['archive_type'],
-        'files' => $test['files'],
-        'attachments' => $test['attachments'],
+        'files' => TRUE,
+        'archive_type' => $archive_type,
       ];
-      $this->submitForm($edit, 'Download');
+      $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/results/download', $edit, 'Download');
 
       // Load the archive and get a list of files.
       $files = $this->getArchiveContents($submission_exporter->getArchiveFilePath());
 
       // Check that CSV file exists.
-      $this->debug($files);
-      $this->assertArrayHasKey('test_exporter_archive/test_exporter_archive.csv', $files);
+      $this->assertArrayHasKey('test_element_managed_file/test_element_managed_file.csv', $files);
 
       // Check submission file directories.
       /** @var \Drupal\webform\WebformSubmissionInterface[] $submissions */
       $submissions = WebformSubmission::loadMultiple($sids);
       foreach ($submissions as $submission) {
         $serial = $submission->serial();
+        $fid = $submission->getElementData('managed_file_single');
+        $filename = File::load($fid)->getFilename();
 
-        if ($test['files']) {
-          $fid = $submission->getElementData('managed_file');
-          $filename = File::load($fid)->getFilename();
-          $this->assertArrayHasKey("submission-$serial/$filename", $files);
-        }
+        $this->assertArrayHasKey("submission-$serial/$filename", $files);
       }
 
       /* Download YAML */
 
-      // Download archive with YAML documents.
-      $this->drupalGet('/admin/structure/webform/manage/test_exporter_archive/results/download');
+      // Download tar ball archive with YAML documents.
       $edit = [
+        'files' => TRUE,
         'exporter' => 'yaml',
-        'archive_type' => $test['archive_type'],
-        'files' => $test['files'],
-        'attachments' => $test['attachments'],
+        'archive_type' => $archive_type,
       ];
-      $this->submitForm($edit, 'Download');
+      $this->drupalPostForm('/admin/structure/webform/manage/test_element_managed_file/results/download', $edit, 'Download');
 
       // Load the archive and get a list of files.
       $files = $this->getArchiveContents($submission_exporter->getArchiveFilePath());
 
       // Check that CSV file does not exists.
-      $this->assertArrayNotHasKey('test_exporter_archive/test_exporter_archive.csv', $files);
+      $this->assertArrayNotHasKey('test_element_managed_file/test_element_managed_file.csv', $files);
 
       // Check submission file directories.
       /** @var \Drupal\webform\WebformSubmissionInterface[] $submissions */
       $submissions = WebformSubmission::loadMultiple($sids);
       foreach ($submissions as $submission) {
         $serial = $submission->serial();
+        $fid = $submission->getElementData('managed_file_single');
+        $filename = File::load($fid)->getFilename();
 
         $this->assertArrayHasKey("submission-$serial.yml", $files);
-
-        if ($test['files']) {
-          $fid = $submission->getElementData('managed_file');
-          $filename = File::load($fid)->getFilename();
-          $this->assertArrayHasKey("submission-$serial/$filename", $files);
-        }
+        $this->assertArrayHasKey("submission-$serial/$filename", $files);
       }
     }
   }

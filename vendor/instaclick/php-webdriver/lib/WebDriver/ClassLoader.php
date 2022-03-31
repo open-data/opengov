@@ -25,8 +25,6 @@ namespace WebDriver;
  * WebDriver\ClassLoader (autoloader) class
  *
  * @package WebDriver
- *
- * @deprecated
  */
 final class ClassLoader
 {

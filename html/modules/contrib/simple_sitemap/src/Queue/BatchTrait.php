@@ -4,56 +4,40 @@ namespace Drupal\simple_sitemap\Queue;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
-/**
- * Provides a helper with batch callbacks.
- */
 trait BatchTrait {
 
   use StringTranslationTrait;
 
   /**
-   * An associative array defining the batch.
-   *
    * @var array
    */
   protected $batch;
 
-  /**
-   * Message displayed if an error occurred while processing the batch.
-   *
-   * @var string
-   */
-  protected static $batchErrorMessage = 'The generation failed to finish. It can be continued manually on the module\'s settings page, or via drush.';
+  protected static $batchErrorMessage = 'The generation failed to finish. It can be continued manually on the module\'s setting page, or via drush.';
 
   /**
-   * Adds a new batch.
-   *
    * @param string $from
-   *   The source of generation.
    * @param array|null $variants
-   *   An array of variants.
-   *
    * @return bool
-   *   TRUE if batch was added and FALSE otherwise.
    */
-  public function batchGenerate(string $from = self::GENERATE_TYPE_FORM, ?array $variants = NULL): bool {
+  public function batchGenerateSitemap($from = 'form', $variants = NULL) {
     $this->batch = [
       'title' => $this->t('Generating XML sitemaps'),
       'init_message' => $this->t('Initializing...'),
       'error_message' => $this->t(self::$batchErrorMessage),
-      'progress_message' => $this->t('Processing items from the queue.<br>Each sitemap gets published after all of its items have been processed.'),
-      'operations' => [[__CLASS__ . '::' . 'doBatchGenerate', []]],
+      'progress_message' => $this->t('Processing items from the queue.<br>Each sitemap variant is published after all of its items have been processed.'),
+      'operations' => [[ __CLASS__ . '::' . 'doBatchGenerateSitemap', []]],
       'finished' => [__CLASS__, 'finishGeneration'],
     ];
 
     switch ($from) {
 
-      case self::GENERATE_TYPE_FORM:
+      case 'form':
         // Start batch process.
         batch_set($this->batch);
         return TRUE;
 
-      case self::GENERATE_TYPE_DRUSH:
+      case 'drush':
         // Start drush batch process.
         batch_set($this->batch);
 
@@ -64,33 +48,26 @@ trait BatchTrait {
         drush_backend_batch_process();
         return TRUE;
     }
-
     return FALSE;
   }
 
   /**
-   * Processes the batch item.
-   *
-   * @param mixed $context
-   *   The batch context.
-   *
+   * @param $context
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    *
-   * @todo Variants into generate().
+   * @todo Variants into generateSitemap().
    */
-  public static function doBatchGenerate(&$context): void {
+  public static function doBatchGenerateSitemap(&$context) {
 
     /** @var \Drupal\simple_sitemap\Queue\QueueWorker $queue_worker */
     $queue_worker = \Drupal::service('simple_sitemap.queue_worker');
 
-    $queue_worker->generate();
+    $queue_worker->generateSitemap();
     $processed_element_count = $queue_worker->getProcessedElementCount();
     $original_element_count = $queue_worker->getInitialElementCount();
 
-    $context['message'] = t('@indexed out of @total total queue items have been processed.', [
-      '@indexed' => $processed_element_count,
-      '@total' => $original_element_count,
-    ]);
+    $context['message'] = t('@indexed out of @total total items have been processed.', [
+      '@indexed' => $processed_element_count, '@total' => $original_element_count]);
     $context['finished'] = $original_element_count > 0 ? ($processed_element_count / $original_element_count) : 1;
   }
 
@@ -98,27 +75,21 @@ trait BatchTrait {
    * Callback function called by the batch API when all operations are finished.
    *
    * @param bool $success
-   *   Indicates whether the batch process was successful.
    * @param array $results
-   *   Results information passed from the processing callback.
    * @param array $operations
-   *   A list of the operations that had not been completed by the batch API.
    *
    * @return bool
-   *   Indicates whether the batch process was successful.
    *
    * @see https://api.drupal.org/api/drupal/core!includes!form.inc/group/batch/8
    */
-  public static function finishGeneration(bool $success, array $results, array $operations): bool {
-    /** @var \Drupal\simple_sitemap\Logger $logger */
-    $logger = \Drupal::service('simple_sitemap.logger');
+  public static function finishGeneration($success, $results, $operations) {
     if ($success) {
-      $logger
+      \Drupal::service('simple_sitemap.logger')
         ->m('The XML sitemaps have been regenerated.')
         ->log('info');
     }
     else {
-      $logger
+      \Drupal::service('simple_sitemap.logger')
         ->m(self::$batchErrorMessage)
         ->display('error', 'administer sitemap settings')
         ->log('error');
@@ -126,5 +97,5 @@ trait BatchTrait {
 
     return $success;
   }
-
 }
+

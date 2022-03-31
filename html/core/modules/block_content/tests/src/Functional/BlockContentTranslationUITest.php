@@ -145,10 +145,12 @@ class BlockContentTranslationUITest extends ContentTranslationUITestBase {
     $entity->addTranslation('it', $values);
 
     try {
+      $message = 'Blocks can have translations with the same "info" value.';
       $entity->save();
+      $this->pass($message);
     }
     catch (\Exception $e) {
-      $this->fail('Blocks can have translations with the same "info" value.');
+      $this->fail($message);
     }
 
     // Check that the translate operation link is shown.
@@ -175,7 +177,7 @@ class BlockContentTranslationUITest extends ContentTranslationUITestBase {
 
     // Make sure that only a single row was inserted into the block table.
     $rows = Database::getConnection()->query('SELECT * FROM {block_content_field_data} WHERE id = :id', [':id' => $enabled_block_content->id()])->fetchAll();
-    $this->assertCount(1, $rows);
+    $this->assertEqual(1, count($rows));
   }
 
   /**

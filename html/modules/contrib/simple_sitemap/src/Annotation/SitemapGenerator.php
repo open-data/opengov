@@ -7,6 +7,8 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a SitemapGenerator item annotation object.
  *
+ * @package Drupal\simple_sitemap\Annotation
+ *
  * @see \Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator\SitemapGeneratorManager
  * @see plugin_api
  *
@@ -24,18 +26,18 @@ class SitemapGenerator extends Plugin {
   /**
    * The human-readable name of the generator.
    *
-   * @var \Drupal\Core\Annotation\Translation
-   *
    * @ingroup plugin_translatable
+   *
+   * @var \Drupal\Core\Annotation\Translation
    */
   public $label;
 
   /**
    * A short description of the generator.
    *
-   * @var \Drupal\Core\Annotation\Translation
-   *
    * @ingroup plugin_translatable
+   *
+   * @var \Drupal\Core\Annotation\Translation
    */
   public $description;
 
@@ -45,5 +47,4 @@ class SitemapGenerator extends Plugin {
    * @var array
    */
   public $settings = [];
-
 }

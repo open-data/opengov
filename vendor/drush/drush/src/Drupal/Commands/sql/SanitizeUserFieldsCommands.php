@@ -11,13 +11,13 @@ use Symfony\Component\Console\Input\InputInterface;
 class SanitizeUserFieldsCommands extends DrushCommands implements SanitizePluginInterface
 {
     protected $database;
-    protected $entityFieldManager;
+    protected $entityManager;
     protected $entityTypeManager;
 
-    public function __construct($database, $entityFieldManager, $entityTypeManager)
+    public function __construct($database, $entityManager, $entityTypeManager)
     {
         $this->database = $database;
-        $this->entityFieldManager = $entityFieldManager;
+        $this->entityManager = $entityManager;
         $this->entityTypeManager = $entityTypeManager;
     }
 
@@ -32,9 +32,9 @@ class SanitizeUserFieldsCommands extends DrushCommands implements SanitizePlugin
     /**
      * @return mixed
      */
-    public function getEntityFieldManager()
+    public function getEntityManager()
     {
-        return $this->entityFieldManager;
+        return $this->entityManager;
     }
 
     /**
@@ -50,13 +50,9 @@ class SanitizeUserFieldsCommands extends DrushCommands implements SanitizePlugin
     {
         $options = $commandData->options();
         $conn = $this->getDatabase();
-        $field_definitions = $this->getEntityFieldManager()->getFieldDefinitions('user', 'user');
-        $field_storage = $this->getEntityFieldManager()->getFieldStorageDefinitions('user');
-        /** @deprecated Use $options['allowlist-fields'] instead. */
+        $field_definitions = $this->getEntityManager()->getFieldDefinitions('user', 'user');
+        $field_storage = $this->getEntityManager()->getFieldStorageDefinitions('user');
         foreach (explode(',', $options['whitelist-fields']) as $key) {
-            unset($field_definitions[$key], $field_storage[$key]);
-        }
-        foreach (explode(',', $options['allowlist-fields']) as $key) {
             unset($field_definitions[$key], $field_storage[$key]);
         }
 
@@ -70,11 +66,8 @@ class SanitizeUserFieldsCommands extends DrushCommands implements SanitizePlugin
             $query = $conn->update($table);
             $name = $def->getName();
             $field_type_class = \Drupal::service('plugin.manager.field.field_type')->getPluginClass($def->getType());
-            $supported_field_types = ['email', 'string', 'string_long', 'telephone', 'text', 'text_long', 'text_with_summary'];
-            if (in_array($def->getType(), $supported_field_types)) {
-                $value_array = $field_type_class::generateSampleValue($def);
-                $value = $value_array['value'];
-            }
+            $value_array = $field_type_class::generateSampleValue($def);
+            $value = $value_array['value'];
             switch ($def->getType()) {
                 case 'email':
                     $query->fields([$name . '_value' => $value]);
@@ -135,10 +128,9 @@ class SanitizeUserFieldsCommands extends DrushCommands implements SanitizePlugin
 
     /**
      * @hook option sql-sanitize
-     * @option whitelist-fields Deprecated. Use allowlist-fields instead.
-     * @option allowlist-fields A comma delimited list of fields exempt from sanitization.
+     * @option whitelist-fields A comma delimited list of fields exempt from sanitization.
      */
-    public function options($options = ['whitelist-fields' => '', 'allowlist-fields' => ''])
+    public function options($options = ['whitelist-fields' => ''])
     {
     }
 }

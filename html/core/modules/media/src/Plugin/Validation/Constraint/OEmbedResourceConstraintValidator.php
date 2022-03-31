@@ -83,11 +83,6 @@ class OEmbedResourceConstraintValidator extends ConstraintValidator implements C
       throw new \LogicException('Media source must implement ' . OEmbedInterface::class);
     }
     $url = $source->getSourceFieldValue($media);
-    // The URL may be NULL if the source field is empty, which is invalid input.
-    if (empty($url)) {
-      $this->context->addViolation($constraint->invalidResourceMessage);
-      return;
-    }
 
     // Ensure that the URL matches a provider.
     try {
@@ -113,7 +108,8 @@ class OEmbedResourceConstraintValidator extends ConstraintValidator implements C
     // Verify that resource fetching works, because some URLs might match
     // the schemes but don't support oEmbed.
     try {
-      $resource_url = $this->urlResolver->getResourceUrl($url);
+      $endpoints = $provider->getEndpoints();
+      $resource_url = reset($endpoints)->buildResourceUrl($url);
       $this->resourceFetcher->fetchResource($resource_url);
     }
     catch (ResourceException $e) {

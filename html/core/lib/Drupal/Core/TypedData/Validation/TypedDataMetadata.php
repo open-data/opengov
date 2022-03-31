@@ -3,9 +3,11 @@
 namespace Drupal\Core\TypedData\Validation;
 
 use Drupal\Core\TypedData\TypedDataInterface;
+use Symfony\Component\Validator\Exception\BadMethodCallException;
 use Symfony\Component\Validator\Mapping\CascadingStrategy;
 use Symfony\Component\Validator\Mapping\MetadataInterface;
 use Symfony\Component\Validator\Mapping\TraversalStrategy;
+use Symfony\Component\Validator\ValidationVisitorInterface;
 
 /**
  * Validator metadata for typed data objects.
@@ -29,6 +31,13 @@ class TypedDataMetadata implements MetadataInterface {
    */
   public function __construct(TypedDataInterface $typed_data) {
     $this->typedData = $typed_data;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function accept(ValidationVisitorInterface $visitor, $typed_data, $group, $propertyPath) {
+    throw new BadMethodCallException('Not supported.');
   }
 
   /**

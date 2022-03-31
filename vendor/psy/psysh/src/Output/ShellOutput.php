@@ -195,8 +195,6 @@ class ShellOutput extends ConsoleOutput
 
         // Types
         $formatter->setStyle('number', new OutputFormatterStyle('magenta'));
-        $formatter->setStyle('integer', new OutputFormatterStyle('magenta'));
-        $formatter->setStyle('float', new OutputFormatterStyle('yellow'));
         $formatter->setStyle('string', new OutputFormatterStyle('green'));
         $formatter->setStyle('bool', new OutputFormatterStyle('cyan'));
         $formatter->setStyle('keyword', new OutputFormatterStyle('yellow'));

@@ -51,7 +51,7 @@ class WebformBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   protected $requestHandler;
 
   /**
-   * Constructs a WebformBreadcrumbBuilder object.
+   * Constructs a WebformBreadcrumbBuilder.
    *
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
@@ -135,7 +135,7 @@ class WebformBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     elseif (strpos($path, 'admin/structure/webform/test/') !== FALSE) {
       $this->type = 'webform_test';
     }
-    elseif (strpos($path, 'admin/structure/webform/options/') !== FALSE) {
+    elseif (preg_match('#admin/structure/webform/config/(options|images|options_custom)/#', $path)) {
       $this->type = 'webform_options';
     }
     elseif (strpos($path, 'admin/structure/webform/config/') !== FALSE) {
@@ -144,7 +144,6 @@ class WebformBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     else {
       $this->type = NULL;
     }
-
     return ($this->type) ? TRUE : FALSE;
   }
 

@@ -178,14 +178,6 @@ class SideEffectsSniff implements Sniff
                 continue;
             }
 
-            // Ignore attributes.
-            if ($tokens[$i]['code'] === T_ATTRIBUTE
-                && isset($tokens[$i]['attribute_closer']) === true
-            ) {
-                $i = $tokens[$i]['attribute_closer'];
-                continue;
-            }
-
             // Detect and skip over symbols.
             if (isset($symbols[$tokens[$i]['code']]) === true
                 && isset($tokens[$i]['scope_closer']) === true

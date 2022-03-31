@@ -20,9 +20,11 @@ class HoneypotFormProgrammaticSubmissionTest extends BrowserTestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * {@inheritdoc}
+   * Modules to enable.
+   *
+   * @var array
    */
-  protected static $modules = ['honeypot', 'honeypot_test', 'user'];
+  public static $modules = ['honeypot', 'honeypot_test', 'user'];
 
   /**
    * {@inheritdoc}

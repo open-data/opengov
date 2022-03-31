@@ -39,9 +39,6 @@ class SliderWidget extends WidgetPluginBase {
     $build = parent::build($facet);
 
     $results = $facet->getResults();
-    if (empty($results)) {
-      return $build;
-    }
     ksort($results);
 
     $show_numbers = $facet->getWidgetInstance()->getConfiguration()['show_numbers'];

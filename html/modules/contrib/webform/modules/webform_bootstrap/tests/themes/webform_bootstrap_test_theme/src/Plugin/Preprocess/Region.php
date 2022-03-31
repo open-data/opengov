@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace Drupal\webform_bootstrap_test_theme\Plugin\Preprocess;
 

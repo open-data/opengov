@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Select;
 
 use Solarium\Core\Client\Request;
@@ -34,10 +27,7 @@ class RequestBuilder extends BaseRequestBuilder
         // add basic params to request
         $request->addParam(
             'q',
-            $this->renderLocalParams(
-                $query->getQuery(),
-                $query->getLocalParameters()->getParameters()
-            )
+            sprintf('%s%s', $query->getLocalParameters()->render(), $query->getQuery())
         );
         $request->addParam('start', $query->getStart());
         $request->addParam('rows', $query->getRows());
@@ -60,10 +50,7 @@ class RequestBuilder extends BaseRequestBuilder
         $filterQueries = $query->getFilterQueries();
         if (0 !== \count($filterQueries)) {
             foreach ($filterQueries as $filterQuery) {
-                $fq = $this->renderLocalParams(
-                    $filterQuery->getQuery(),
-                    $filterQuery->getLocalParameters()->getParameters()
-                );
+                $fq = sprintf('%s%s', $filterQuery->getLocalParameters()->render(), $filterQuery->getQuery());
 
                 $request->addParam('fq', $fq);
             }

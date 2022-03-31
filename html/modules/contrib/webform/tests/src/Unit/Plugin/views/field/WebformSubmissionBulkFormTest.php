@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace Drupal\Tests\webform\Unit\Plugin\views\field;
 

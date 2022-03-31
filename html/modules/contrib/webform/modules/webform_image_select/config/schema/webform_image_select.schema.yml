@@ -14,4 +14,3 @@
     images:
       type: text
       label: 'Images (YAML)'
-      webform_type: yaml

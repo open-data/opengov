@@ -98,6 +98,11 @@ class ToolbarCacheContextsTest extends BrowserTestBase {
     $this->adminUser2 = $this->drupalCreateUser(array_merge($this->perms, ['access tour']));
     $this->assertToolbarCacheContexts(['user.permissions'], 'Expected cache contexts found with tour module enabled.');
     \Drupal::service('module_installer')->uninstall(['tour']);
+
+    // Test with shortcut module enabled.
+    $this->installExtraModules(['shortcut']);
+    $this->adminUser2 = $this->drupalCreateUser(array_merge($this->perms, ['access shortcuts', 'administer shortcuts']));
+    $this->assertToolbarCacheContexts(['user'], 'Expected cache contexts found with shortcut module enabled.');
   }
 
   /**
@@ -131,7 +136,12 @@ class ToolbarCacheContextsTest extends BrowserTestBase {
     $this->drupalGet('test-page');
     $return = $return && $this->assertCacheContexts($cache_contexts);
 
-    $this->assertTrue($return, $message);
+    if ($return) {
+      $this->pass($message);
+    }
+    else {
+      $this->fail($message);
+    }
     return $return;
   }
 

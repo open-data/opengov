@@ -163,7 +163,7 @@ class TimestampItemNormalizerTest extends UnitTestCase {
     $this->normalizer->setSerializer($serializer_prophecy->reveal());
 
     $denormalized = $this->normalizer->denormalize($timestamp_item_normalization, TimestampItem::class, NULL, $context);
-    $this->assertInstanceOf(TimestampItem::class, $denormalized);
+    $this->assertTrue($denormalized instanceof TimestampItem);
   }
 
   /**

@@ -100,7 +100,7 @@ class SliderWidgetTest extends WidgetTestBase {
       $this->fail('Test is too slow');
     }
 
-    $this->assertSame('array', gettype($build));
+    $this->assertInternalType('array', $build);
     $build = $build['#attached']['drupalSettings']['facets']['sliders']['barn_owl'];
     $this->assertEquals(3, $build['min']);
     $this->assertEquals(19999, $build['max']);

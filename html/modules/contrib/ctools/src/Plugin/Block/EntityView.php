@@ -9,7 +9,6 @@ use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\ContextAwarePluginInterface;
-use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -102,21 +101,6 @@ class EntityView extends BlockBase implements ContextAwarePluginInterface, Conta
   /**
    * {@inheritdoc}
    */
-  public function access(AccountInterface $account, $return_as_object = FALSE) {
-    // Check the parent's access.
-    $parent_access = parent::access($account, TRUE);
-    if (!$parent_access->isAllowed()) {
-      return $return_as_object ? $parent_access : $parent_access->isAllowed();
-    }
-
-    /** @var $entity \Drupal\Core\Entity\EntityInterface */
-    $entity = $this->getContextValue('entity');
-    return $entity->access('view', $account, $return_as_object);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function build() {
     /** @var $entity \Drupal\Core\Entity\EntityInterface */
     $entity = $this->getContextValue('entity');
@@ -124,8 +108,7 @@ class EntityView extends BlockBase implements ContextAwarePluginInterface, Conta
     $view_builder = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId());
     $build = $view_builder->view($entity, $this->configuration['view_mode']);
 
-    CacheableMetadata::createFromObject($entity)
-      ->merge(CacheableMetadata::createFromRenderArray($build))
+    CacheableMetadata::createFromObject($this->getContext('entity'))
       ->applyTo($build);
 
     return $build;

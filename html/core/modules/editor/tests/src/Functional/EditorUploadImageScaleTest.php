@@ -66,10 +66,7 @@ class EditorUploadImageScaleTest extends BrowserTestBase {
     ])->save();
 
     // Create admin user.
-    $this->adminUser = $this->drupalCreateUser([
-      'administer filters',
-      'use text format basic_html',
-    ]);
+    $this->adminUser = $this->drupalCreateUser(['administer filters', 'use text format basic_html']);
     $this->drupalLogin($this->adminUser);
   }
 

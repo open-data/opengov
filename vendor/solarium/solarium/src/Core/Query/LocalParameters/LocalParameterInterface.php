@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Query\LocalParameters;
 
 /**
@@ -29,13 +22,6 @@ interface LocalParameterInterface
      * @return string
      */
     public function getType(): string;
-
-    /**
-     * @param array $values
-     *
-     * @return $this
-     */
-    public function setValues(array $values): self;
 
     /**
      * @return array

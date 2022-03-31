@@ -66,12 +66,7 @@ class ConstructorNameSniff extends AbstractScopeSniff
             return;
         }
 
-        $className = $phpcsFile->getDeclarationName($currScope);
-        if (empty($className) === false) {
-            // Not an anonymous class.
-            $className = strtolower($className);
-        }
-
+        $className = strtolower($phpcsFile->getDeclarationName($currScope));
         if ($className !== $this->currentClass) {
             $this->loadFunctionNamesInScope($phpcsFile, $currScope);
             $this->currentClass = $className;

@@ -4,7 +4,6 @@ namespace Drupal\Tests\menu_link_content\Kernel;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Menu\MenuTreeParameters;
-use Drupal\entity_test\Entity\EntityTestExternal;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\system\Entity\Menu;
@@ -18,10 +17,11 @@ use Drupal\user\Entity\User;
 class MenuLinksTest extends KernelTestBase {
 
   /**
-   * {@inheritdoc}
+   * Modules to enable.
+   *
+   * @var array
    */
-  protected static $modules = [
-    'entity_test',
+  public static $modules = [
     'link',
     'menu_link_content',
     'router_test',
@@ -46,7 +46,6 @@ class MenuLinksTest extends KernelTestBase {
 
     $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
-    $this->installEntitySchema('entity_test_external');
     $this->installEntitySchema('menu_link_content');
     $this->installEntitySchema('user');
 
@@ -163,12 +162,6 @@ class MenuLinksTest extends KernelTestBase {
     // Create user.
     $user = User::create(['name' => 'username']);
     $user->save();
-
-    // Create External test entity.
-    $external_entity = EntityTestExternal::create();
-    $external_entity->save();
-    // Ensure an external entity can be deleted.
-    $external_entity->delete();
 
     // Create "canonical" menu link pointing to the user.
     $menu_link_content = MenuLinkContent::create([
@@ -312,7 +305,7 @@ class MenuLinksTest extends KernelTestBase {
     \Drupal::service('router.builder')->rebuild();
     \Drupal::service('plugin.manager.menu.link')->rebuild();
     $menu_links = $this->menuLinkManager->loadLinksByRoute('menu_test.menu_test');
-    $this->assertCount(1, $menu_links);
+    $this->assertEqual(count($menu_links), 1);
     $menu_link = reset($menu_links);
     $this->assertEqual($menu_link->getPluginId(), 'menu_test');
 
@@ -320,7 +313,7 @@ class MenuLinksTest extends KernelTestBase {
     \Drupal::service('module_installer')->uninstall(['menu_test']);
     \Drupal::service('plugin.manager.menu.link')->rebuild();
     $menu_links = $this->menuLinkManager->loadLinksByRoute('menu_test.menu_test');
-    $this->assertCount(0, $menu_links);
+    $this->assertEqual(count($menu_links), 0);
   }
 
   /**

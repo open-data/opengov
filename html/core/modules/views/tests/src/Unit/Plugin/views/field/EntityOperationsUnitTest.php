@@ -87,7 +87,7 @@ class EntityOperationsUnitTest extends UnitTestCase {
    */
   public function testDefineOptions() {
     $options = $this->plugin->defineOptions();
-    $this->assertIsArray($options);
+    $this->assertInternalType('array', $options);
     $this->assertArrayHasKey('destination', $options);
   }
 

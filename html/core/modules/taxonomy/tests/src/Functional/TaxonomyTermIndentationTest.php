@@ -30,10 +30,7 @@ class TaxonomyTermIndentationTest extends TaxonomyTestBase {
 
   protected function setUp() {
     parent::setUp();
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer taxonomy',
-      'bypass node access',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer taxonomy', 'bypass node access']));
     $this->vocabulary = $this->createVocabulary();
   }
 

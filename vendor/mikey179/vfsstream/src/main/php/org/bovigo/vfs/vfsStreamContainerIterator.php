@@ -38,7 +38,6 @@ class vfsStreamContainerIterator implements \Iterator
     /**
      * resets children pointer
      */
-    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->children);
@@ -49,7 +48,6 @@ class vfsStreamContainerIterator implements \Iterator
      *
      * @return  vfsStreamContent
      */
-    #[\ReturnTypeWillChange]
     public function current()
     {
         $child = current($this->children);
@@ -65,7 +63,6 @@ class vfsStreamContainerIterator implements \Iterator
      *
      * @return  string
      */
-    #[\ReturnTypeWillChange]
     public function key()
     {
         $child = current($this->children);
@@ -79,7 +76,6 @@ class vfsStreamContainerIterator implements \Iterator
     /**
      * iterates to next child
      */
-    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->children);
@@ -90,7 +86,6 @@ class vfsStreamContainerIterator implements \Iterator
      *
      * @return  bool
      */
-    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (false !== current($this->children));

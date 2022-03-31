@@ -117,7 +117,6 @@ class FileTest extends MigrateSqlSourceTestBase {
         'filesize' => '3620',
         'status' => '1',
         'timestamp' => '1421727515',
-        'filepath' => 'sites/default/files/cube.jpeg',
       ],
     ];
     // Do an automatic count.
@@ -144,7 +143,6 @@ class FileTest extends MigrateSqlSourceTestBase {
         'filesize' => '3620',
         'status' => '1',
         'timestamp' => '1421727515',
-        'filepath' => 'sites/default/files/cube.jpeg',
       ],
     ];
     // Do an automatic count.

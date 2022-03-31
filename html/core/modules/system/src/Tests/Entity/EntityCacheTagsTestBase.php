@@ -171,7 +171,6 @@ abstract class EntityCacheTagsTestBase extends PageCacheTagsTestBase {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to be tested, as created by createEntity().
-   *
    * @return array
    *   An array of the additional cache tags.
    *

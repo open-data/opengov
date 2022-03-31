@@ -10,9 +10,35 @@
   ],
   "homepage": "https://fontawesome.com",
   "bugs": {
-    "url": "https://github.com/FortAwesome/Font-Awesome/issues"
+    "url": "http://github.com/FortAwesome/Font-Awesome/issues"
   },
-  "author": "The Font Awesome Team (https://github.com/orgs/FortAwesome/people)",
+  "author": {
+    "name": "Dave Gandy",
+    "email": "dave@fontawesome.com",
+    "web": "http://twitter.com/davegandy"
+  },
+  "contributors": [
+    {
+      "name": "Brian Talbot",
+      "web": "http://twitter.com/talbs"
+    },
+    {
+      "name": "Travis Chase",
+      "web": "http://twitter.com/supercodepoet"
+    },
+    {
+      "name": "Rob Madole",
+      "web": "http://twitter.com/robmadole"
+    },
+    {
+      "name": "Geremia Taglialatela",
+      "web": "http://twitter.com/gtagliala"
+    },
+    {
+      "name": "Mike Wilkerson",
+      "web": "http://twitter.com/mw77"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/FortAwesome/Font-Awesome"
@@ -21,11 +47,8 @@
     "node": ">=6"
   },
   "dependencies": {},
-  "version": "6.1.1",
+  "version": "0.2.19",
   "name": "@fortawesome/fontawesome-common-types",
   "license": "MIT",
-  "types": "./index.d.ts",
-  "scripts": {
-    "postinstall": "node attribution.js"
-  }
+  "types": "./index.d.ts"
 }

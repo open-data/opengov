@@ -1,5 +1,4 @@
 id: bing
 label: 'Bing'
-url: null
-index_now_url: https://bing.com/indexnow?url=[url]&key=[key]
+url: https://www.bing.com/ping?sitemap=[sitemap]
 sitemap_variants: {  }

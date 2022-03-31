@@ -1,267 +1,8 @@
 # CHANGELOG
-All notable changes to the Solarium library will be documented in this file.
+All notable changes to the solarium library will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [6.2.3]
-### Added
-- Plugin\BufferedAddLite (BufferedAdd without event dispatching)
-- Plugin\BufferedDelete and Plugin\BufferedDeleteLite
-
-### Fixed
-- Local parameter values are now escaped automatically when necessary
-
-
-## [6.2.2]
-### Added
-- PHP 8.1 support
-
-
-## [6.2.1]
-### Added
-- Possibility to set the context on an endpoint for SolrCloud instances with a non-default `hostContext` or Solr instances behind a reverse proxy, defaults to `solr` if omitted
-
-
-## [6.2.0]
-### Added
-- Component\FacetSet::setOffset()
-- Component\FacetSet::setMethod() and Component\FacetSet::{METHOD_ENUM,METHOD_FC,METHOD_FCS,METHOD_UIF}
-- Component\FacetSet::setEnumCacheMinimumDocumentFrequency()
-- Component\FacetSet::setExists()
-- Component\FacetSet::setOverrequestCount()
-- Component\FacetSet::setOverrequestRatio()
-- Component\FacetSet::setThreads()
-- Component\FacetSet::setPivotMinCount() to set the global facet.pivot.mincount parameter
-- Component\Facet\Pivot::setPivotMinCount() to set the facet.pivot.mincount parameter for a specific pivot's fields
-- Component\Facet\Pivot::setOffset()
-- Component\Facet\Pivot::setSort()
-- Component\Facet\Pivot::setOverrequestCount()
-- Component\Facet\Pivot::setOverrequestRatio()
-- Component\Facet\Field::METHOD_FCS for per-segment field faceting for single-valued string fields
-- Component\Facet\Field::METHOD_UIF for UnInvertedField faceting
-- Component\Facet\Field::setEnumCacheMinimumDocumentFrequency()
-- Component\Facet\Field::setExists()
-- Component\Facet\Field::setOverrequestCount()
-- Component\Facet\Field::setOverrequestRatio()
-- Component\Facet\Field::setThreads()
-- Component\Facet\JsonTerms::{SORT_COUNT_ASC,SORT_COUNT_DESC,SORT_INDEX_ASC,SORT_INDEX_DESC}
-- Component\Facet\JsonTerms::setOverRefine()
-- Component\Facet\JsonTerms::setPrelimSort()
-
-### Fixed
-- Component\Facet\Pivot::setLimit() now sets the correct query parameter
-- Component\Facet\JsonTerms::setSort() PHPDoc
-
-### Deprecated
-- Component\Facet\Pivot::setMinCount(), use Component\FacetSet::setPivotMinCount() or Component\Facet\Pivot::setPivotMinCount() instead
-- Component\Facet\JsonTerms::SORT_COUNT, use SORT_COUNT_ASC or SORT_COUNT_DESC instead
-- Component\Facet\JsonTerms::SORT_INDEX, use SORT_INDEX_ASC or SORT_INDEX_DESC instead
-
-
-## [6.1.6]
-### Added
-- PHP 8.1 support
-- QueryType\Update\Query\Document::setFields() to set all fields on a Document
-
-### Fixed
-- Always respect automatic filtering of control characters in field values in QueryType\Update\Query\Document
-- Remove the field modifier along with the value(s) and boost in QueryType\Update\Query\Document::removeField()
-- Allow string to be returned for `min`, `max` and `mean` statistics in Component\Result\Stats\ResultTrait
-
-
-## [6.1.5]
-### Added
-- Component\Result\Stats\Result::getDistinctValues()
-- Component\Result\Stats\Result::getCountDistinct()
-- Component\Result\Stats\Result::getCardinality()
-- Component\Result\Stats\FacetValue::getPercentiles()
-- Component\Result\Stats\FacetValue::getDistinctValues()
-- Component\Result\Stats\FacetValue::getCountDistinct()
-- Component\Result\Stats\FacetValue::getCardinality()
-- Component\Result\Stats\FacetValue::getStatValue()
-- Plugin PostBigExtractRequest
-- Support for Configset API
-- Set connection timeout on cURL adapter
-
-### Fixed
-- Component\Result\Stats\Result::getPercentiles() returns percentiles as an associative array
-
-### Changed
-- Component\Result\Stats\Result::getMean() returns `NAN` instead of `'NaN'` if mean is NaN
-- Component\Result\Stats\FacetValue::getMean() returns `NAN` instead of `'NaN'` if mean is NaN
-- Component\Result\Stats\Result::getValue() is renamed to getStatValue()
-
-### Deprecated
-- Component\Result\Stats\FacetValue::getFacets()
-- Component\Result\Stats\Result::getValue()
-
-
-## [6.1.4]
-### Added
-- Solarium\QueryType\ManagedResources\Result\Command::getWasSuccessful()
-- Solarium\QueryType\ManagedResources\Result\Command::getStatusMessage()
-- Query a single term in a Managed Resource
-
-### Fixed
-- Syntax error in request with facet queries that contain local parameters
-- HEAD requests could lead to timeouts with cURL adapter
-- Fix for reserved characters in managed resources (SOLR-6853)
-- Parsing nested details in debug response
-
-### Changed
-- Solarium\Component\Result\Stats\Result::getValue() is now public
-
-
-## [6.1.3]
-### Fixed
-- possible exception in Debug\Detail::__toString() when sub details are missing
-
-
-## [6.1.2]
-### Added
-- MoreLikeThis::setMaximumDocumentFrequency()
-- MoreLikeThis::setMaximumDocumentFrequencyPercentage()
-- getInterestingTerms() of MoreLikeThis Component results
-
-### Fixed
-- Debug\Detail return value types
-- Debug\Document return value types
-
-### Deprecated
-- Support for `mlt.match.include` and `mlt.match.offset` in MoreLikeThis Component (they only work in MLT queries)
-
-
-## [6.1.1]
-
-### Fixed
-- Set Client::VERSION to '6.1.1'. Release 6.1.0 accidentally declared itself as 6.0.4.
-
-
-## [6.1.0]
-### Added
-- Indexing labelled nested child documents through pseudo-fields
-- Extract query now supports extractFormat
-- Helper::rangeQuery() now supports left-inclusive only and right-inclusive only queries
-
-### Fixed
-- PrefetchIterator::key() should return 0 instead of NULL on a fresh PrefetchIterator
-- PrefetchIterator::next() shouldn't skip fetched results after PrefetchIterator::count() on a fresh PrefetchIterator
-- PrefetchIterator::rewind() no longer results in duplicate documents when invoked mid-set
-- Fixed incorrect median function
-- Fix for maxScore being returned as "NaN" when group.query doesn't match any docs (SOLR-13839)
-
-### Changed
-- Exception message for invalid/unavailable file in Extract query now contains filename
-- Helper::rangeQuery() detects point values without parameter to turn off escaping
-
-### Removed
-- PHP 7.2 support
-
-
-## [6.0.4]
-### Added
-- PHP 8 support
-
-### Fixed
-- Avoid Notice: Undefined variable: http_response_header
-
-
-## [6.0.3]
-### Fixed
-- Tika based file extraction with Solr 8.6
-- Avoid TypeError if ClusterState contains no collections
-
-### Changed
-- Require specific symfony/event-dispatcher-contracts package instead of the generic symfony/contracts
-
-
-## [6.0.2]
-### Added
-- Support for the analytics component
-- Function builder
-- Solarium\Component\FacetSet::setMatches()
-- Solarium\Component\FacetSet::setExcludeTerms()
-- Solarium\Component\Facet\Field::setMatches()
-- Solarium\Component\Facet\Field::setExcludeTerms()
-- Solarium\Component\Highlighting\Highlighting::setMethod()
-
-### Changed
-- Refactored Managed Resources code: use `createCommand()` and `createInitArgs()` to issue commands
-
-
-## [6.0.1]
-### Added
-- Solarium\Component\Result\Facet\JsonRange::getBefore()
-- Solarium\Component\Result\Facet\JsonRange::getAfter()
-- Solarium\Component\Result\Facet\JsonRange::getBetween()
-
-### Changed
- - Json range facet result now returns Solarium\Component\Result\Facet\JsonRange
- 
-
-## [6.0.0]
-### Added
-- \Solarium\Component\Result\Facet\Buckets::getNumBuckets()
-
-### Changed
-- Thrown exceptions always implement Solarium\Exception\ExceptionInterface
-
-
-## [6.0.0-rc.1]
-### Added
-- \Solarium\Support\Utility::getXmlEncoding()
-
-### Fixed
-- MoreLikeThis result parsing fails on SolrCloud
-- MinimumScoreFilter plugin might fail on Solr 7 in cloud mode
-
-
-## [6.0.0-beta.1]
-### Changed
-- PostBigRequest plugin now acts on PRE_EXECUTE_REQUEST event instead of POST_CREATE_REQUEST
-- CustomizeRequest plugin now acts on POST_CREATE_REQUEST event instead of PRE_EXECUTE_REQUEST
-
-### Removed
-- PHP 7.1 support
-
-
-## [6.0.0-alpha.1]
-### Added
-- Raw XML commands to update query
-- Raw XML from file in update query
-- Set input encoding for select and update queries
-- Create and configure Managed Resources
-
-### Changed
-- More strict types and type hinting
-- `AdapterInterface` does not extend `ConfigurableInterface` anymore
-- `Http` Adapter does not implement `ConfigurableInterface` anymore
-- `Psr18Adapter` does not implement `ConfigurableInterface` anymore
-- Solarium Client now accepts any PSR-15 compatible event dispatcher (previously it had to be symfony's event dispatcher)
-
-### Removed
-- Zend2HttpAdapter
-- GuzzleAdapter
-- Guzzle3Adapter
-- Endpoint::setTimeout and Endpoint::getTimeout
-- Passing local parameter options (e.g. ``key``, ``tag``, ``exclude``) without the ``local_`` prefix 
-- Support for Solr versions before 7.7
-
-
-## [5.2.0]
-### Added
-- PSR-18 http adapter
-
-### Fixed
-- PUT requests against Solr 8.5.0 using the Zend2Http and Http adapters
-
-### Deprecated
-- Zend2HttpAdapter, use PSR-18 http adapter instead
-- GuzzleAdapter, use PSR-18 http adapter instead
-- Guzzle3Adapter, use PSR-18 http adapter instead
-- Endpoint::setTimeout and Endpoint::getTimeout, configure the timeout on the http adapter instead
-
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [5.1.6]
 ### Added
@@ -276,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal handling of Solr local parameters
 
 ### Deprecated
-- Helper::cacheControl(). Use FilterQuery::setCache() and FilterQuery::setCost() instead
+- Helper::cacheControl(). Use FilterQuery::setCache() and FilterQuery::setCost() instead.
 
 
 ## [5.1.5]
@@ -303,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.1.3]
 ### Fixed
-- Solarium\Component\ResponseParser\Debug fails on SolrCloud 6.x during extracting timing phases
+- Solarium\Component\ResponseParser\Debug fails on Solr Cloud 6.x during extracting timing phases
 
 
 ## [5.1.2]
@@ -550,7 +291,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.0.0-rc.1]
 ### Added
-- Basic support for SolrCloud streaming expressions
+- Basic support for Solr Cloud streaming expressions
 
 
 ## [4.0.0-beta.1]
@@ -565,7 +306,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - More integration tests
 
 ### Removed
-- Outdated Symfony versions on test environment
+- Outdated symfony versions on test environment
 
 ### Fixed
 - Don't escape the '*' in range queries

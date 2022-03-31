@@ -42,7 +42,7 @@
         wrapper = document.querySelector('[data-drupal-messages-fallback]');
         wrapper.removeAttribute('data-drupal-messages-fallback');
         wrapper.setAttribute('data-drupal-messages', '');
-        wrapper.classList.remove('hidden');
+        wrapper.removeAttribute('class');
       }
       return wrapper.innerHTML === ''
         ? Drupal.Message.messageInternalWrapper(wrapper)

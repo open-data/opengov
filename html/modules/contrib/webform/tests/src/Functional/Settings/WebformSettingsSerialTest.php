@@ -17,8 +17,6 @@ class WebformSettingsSerialTest extends WebformBrowserTestBase {
    * Tests webform submission serial number.
    */
   public function testSettings() {
-    $assert_session = $this->assertSession();
-
     // Login the admin user.
     $this->drupalLogin($this->rootUser);
 
@@ -26,21 +24,17 @@ class WebformSettingsSerialTest extends WebformBrowserTestBase {
     $webform = Webform::load('contact');
 
     // Set next serial to 99.
-    $this->drupalGet('/admin/structure/webform/manage/contact/settings/submissions');
-    $edit = ['next_serial' => 99];
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings/submissions', ['next_serial' => 99], 'Save');
 
     // Check next serial is 99.
     $sid = $this->postSubmissionTest($webform);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertEquals($webform_submission->serial(), 99);
-    $this->assertNotEquals($webform_submission->serial(), $sid);
+    $this->assertEqual($webform_submission->serial(), 99);
+    $this->assertNotEqual($webform_submission->serial(), $sid);
 
     // Check that next serial is set to max serial.
-    $this->drupalGet('/admin/structure/webform/manage/contact/settings/submissions');
-    $edit = ['next_serial' => 1];
-    $this->submitForm($edit, 'Save');
-    $assert_session->responseContains('The next submission number was increased to 100 to make it higher than existing submissions.');
+    $this->drupalPostForm('/admin/structure/webform/manage/contact/settings/submissions', ['next_serial' => 1], 'Save');
+    $this->assertRaw('The next submission number was increased to 100 to make it higher than existing submissions.');
 
     // Disable serial.
     $webform->setSetting('serial_disabled', TRUE)->save();
@@ -48,8 +42,8 @@ class WebformSettingsSerialTest extends WebformBrowserTestBase {
     // Check next serial is not 100 but equal to the sid.
     $sid = $this->postSubmissionTest($webform);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertNotEquals($webform_submission->serial(), 100);
-    $this->assertEquals($webform_submission->serial(), $sid);
+    $this->assertNotEqual($webform_submission->serial(), 100);
+    $this->assertEqual($webform_submission->serial(), $sid);
 
   }
 

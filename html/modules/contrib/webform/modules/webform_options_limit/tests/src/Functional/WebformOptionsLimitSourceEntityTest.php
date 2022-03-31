@@ -26,17 +26,14 @@ class WebformOptionsLimitSourceEntityTest extends WebformNodeBrowserTestBase {
    * Test options limit source entity.
    */
   public function testSourceEnity() {
-    $assert_session = $this->assertSession();
-
-    /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_options_limit');
     $node = $this->createWebformNode('test_handler_options_limit');
 
     // Check that the webform node option A and webform option A are both open.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->responseContains('A [1 remaining]');
+    $this->assertRaw('A [1 remaining]');
     $this->drupalGet('/webform/test_handler_options_limit');
-    $assert_session->responseContains('A [1 remaining]');
+    $this->assertRaw('A [1 remaining]');
 
     // Create a webform node submission.
     $this->postNodeSubmission($node);
@@ -44,9 +41,9 @@ class WebformOptionsLimitSourceEntityTest extends WebformNodeBrowserTestBase {
     // Check that the webform node option A is closed and
     // webform option A is open.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->responseContains('A [0 remaining]');
+    $this->assertRaw('A [0 remaining]');
     $this->drupalGet('/webform/test_handler_options_limit');
-    $assert_session->responseContains('A [1 remaining]');
+    $this->assertRaw('A [1 remaining]');
 
     // Create a webform submission.
     $this->postSubmission($webform);
@@ -54,24 +51,26 @@ class WebformOptionsLimitSourceEntityTest extends WebformNodeBrowserTestBase {
     // Check that the webform node option A and webform option A
     // are both closed.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->responseContains('A [0 remaining]');
+    $this->assertRaw('A [0 remaining]');
 
     $this->drupalGet('/webform/test_handler_options_limit');
-    $assert_session->responseContains('A [0 remaining]');
+    $this->assertRaw('A [0 remaining]');
 
     // Purge submission.
     $this->purgeSubmissions();
 
     // Disable source entity support for the handler.
-    $webform->getHandler('options_limit_default')
-      ->setSetting('limit_source_entity', FALSE);
+    $handler = $webform->getHandler('options_limit_default');
+    $configuration = $handler->getConfiguration();
+    $configuration['settings']['limit_source_entity'] = FALSE;
+    $handler->setConfiguration($configuration);
     $webform->save();
 
     // Check that the webform node option A and webform option A are both open.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->responseContains('A [1 remaining]');
+    $this->assertRaw('A [1 remaining]');
     $this->drupalGet('/webform/test_handler_options_limit');
-    $assert_session->responseContains('A [1 remaining]');
+    $this->assertRaw('A [1 remaining]');
 
     // Create one submission which set option limit for both the node and the
     // webform.
@@ -80,9 +79,9 @@ class WebformOptionsLimitSourceEntityTest extends WebformNodeBrowserTestBase {
     // Check that the webform node option A and webform option A
     // are both closed.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->responseContains('A [0 remaining]');
+    $this->assertRaw('A [0 remaining]');
     $this->drupalGet('/webform/test_handler_options_limit');
-    $assert_session->responseContains('A [0 remaining]');
+    $this->assertRaw('A [0 remaining]');
   }
 
 }

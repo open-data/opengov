@@ -1,28 +1,21 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Client\Adapter;
 
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
+use Solarium\Core\Configurable;
 use Solarium\Exception\HttpException;
 
 /**
  * Basic HTTP adapter using a stream.
  */
-class Http implements AdapterInterface, TimeoutAwareInterface
+class Http extends Configurable implements AdapterInterface
 {
-    use TimeoutAwareTrait;
-
     /**
      * Handle Solr communication.
+     *
      *
      * @param Request  $request
      * @param Endpoint $endpoint
@@ -46,16 +39,17 @@ class Http implements AdapterInterface, TimeoutAwareInterface
     /**
      * Check result of a request.
      *
+     *
      * @param string $data
      * @param array  $headers
      *
      * @throws HttpException
      */
-    public function check($data, $headers): void
+    public function check($data, $headers)
     {
         // if there is no data and there are no headers it's a total failure,
         // a connection to the host was impossible.
-        if (false === $data && 0 === \count($headers)) {
+        if (false === $data && 0 == count($headers)) {
             throw new HttpException('HTTP request failed');
         }
     }
@@ -74,10 +68,7 @@ class Http implements AdapterInterface, TimeoutAwareInterface
         $context = stream_context_create(
             ['http' => [
                     'method' => $method,
-                    'timeout' => $this->timeout,
-                    'protocol_version' => 1.0,
-                    'user_agent' => 'Solarium Http Adapter',
-                    'ignore_errors' => true,
+                    'timeout' => $endpoint->getTimeout(),
                 ],
             ]
         );
@@ -94,12 +85,12 @@ class Http implements AdapterInterface, TimeoutAwareInterface
             );
         }
 
-        if (Request::METHOD_POST === $method) {
+        if (Request::METHOD_POST == $method) {
             if ($request->getFileUpload()) {
                 $data = AdapterHelper::buildUploadBodyFromRequest($request);
 
-                $contentLength = \strlen($data);
-                $request->addHeader("Content-Length: $contentLength\r\n");
+                $content_length = strlen($data);
+                $request->addHeader("Content-Length: $content_length\r\n");
                 stream_context_set_option(
                     $context,
                     'http',
@@ -116,11 +107,10 @@ class Http implements AdapterInterface, TimeoutAwareInterface
                         $data
                     );
 
-                    $charset = $request->getParam('ie') ?? 'utf-8';
-                    $request->addHeader('Content-Type: text/xml; charset='.$charset);
+                    $request->addHeader('Content-Type: text/xml; charset=UTF-8');
                 }
             }
-        } elseif (Request::METHOD_PUT === $method) {
+        } elseif (Request::METHOD_PUT == $method) {
             $data = $request->getRawData();
             if (null !== $data) {
                 stream_context_set_option(
@@ -129,14 +119,12 @@ class Http implements AdapterInterface, TimeoutAwareInterface
                     'content',
                     $data
                 );
-                $request->addHeader('Content-Type: application/json; charset=utf-8');
-                // The stream context automatically adds a "Connection: close" header which fails on Solr 8.5.0
-                $request->addHeader('Connection: Keep-Alive');
+                $request->addHeader('Content-Type: application/json; charset=UTF-8');
             }
         }
 
         $headers = $request->getHeaders();
-        if (\count($headers) > 0) {
+        if (count($headers) > 0) {
             stream_context_set_option(
                 $context,
                 'http',
@@ -161,6 +149,6 @@ class Http implements AdapterInterface, TimeoutAwareInterface
         $data = @file_get_contents($uri, false, $context);
 
         // @ see https://www.php.net/manual/en/reserved.variables.httpresponseheader.php
-        return [$data, $http_response_header ?? []];
+        return [$data, $http_response_header];
     }
 }

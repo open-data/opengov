@@ -67,7 +67,7 @@ class FieldWebTest extends ViewTestBase {
    */
   public function testClickSorting() {
     $this->drupalGet('test_click_sort');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
 
     // Only the id and name should be click sortable, but not the name.
     $this->assertLinkByHref(Url::fromRoute('<none>', [], ['query' => ['order' => 'id', 'sort' => 'asc']])->toString());
@@ -84,14 +84,10 @@ class FieldWebTest extends ViewTestBase {
 
     // Clicking a click sort should change the order.
     $this->clickLink(t('ID'));
-    $href = Url::fromRoute('<none>', [], ['query' => ['order' => 'id', 'sort' => 'desc']])->toString();
-    $this->assertLinkByHref($href);
+    $this->assertLinkByHref(Url::fromRoute('<none>', [], ['query' => ['order' => 'id', 'sort' => 'desc']])->toString());
     // Check that the output has the expected order (asc).
     $ids = $this->clickSortLoadIdsFromOutput();
     $this->assertEqual($ids, range(1, 5));
-    // Check that the rel attribute has the correct value.
-    $result = $this->xpath('//a[@href="' . $href . '"]');
-    $this->assertEquals('nofollow', $result[0]->getAttribute('rel'));
 
     $this->clickLink(t('ID Sort descending'));
     // Check that the output has the expected order (desc).
@@ -125,12 +121,11 @@ class FieldWebTest extends ViewTestBase {
    *   The message to display along with the assertion.
    * @param string $group
    *   The type of assertion - examples are "Browser", "PHP".
-   *
    * @return bool
    *   TRUE if the assertion succeeded, FALSE otherwise.
    */
   protected function assertSubString($haystack, $needle, $message = '', $group = 'Other') {
-    return $this->assertStringContainsString($needle, $haystack, $message);
+    return $this->assertTrue(strpos($haystack, $needle) !== FALSE, $message, $group);
   }
 
   /**
@@ -144,12 +139,11 @@ class FieldWebTest extends ViewTestBase {
    *   The message to display along with the assertion.
    * @param string $group
    *   The type of assertion - examples are "Browser", "PHP".
-   *
    * @return bool
    *   TRUE if the assertion succeeded, FALSE otherwise.
    */
   protected function assertNotSubString($haystack, $needle, $message = '', $group = 'Other') {
-    return $this->assertStringNotContainsString($needle, $haystack, $message);
+    return $this->assertTrue(strpos($haystack, $needle) === FALSE, $message, $group);
   }
 
   /**

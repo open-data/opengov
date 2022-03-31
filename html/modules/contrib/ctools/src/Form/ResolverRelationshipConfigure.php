@@ -11,7 +11,6 @@ use Drupal\Core\TempStore\SharedTempStoreFactory;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 abstract class ResolverRelationshipConfigure extends FormBase {
 
   /**
@@ -25,7 +24,7 @@ abstract class ResolverRelationshipConfigure extends FormBase {
   protected $tempstore_id;
 
   /**
-   * @var string
+   * @var string;
    */
   protected $machine_name;
 
@@ -36,8 +35,7 @@ abstract class ResolverRelationshipConfigure extends FormBase {
     return new static($container->get('tempstore.shared'));
   }
 
-
-  public function __construct(SharedTempStoreFactory $tempstore) {
+  function __construct(SharedTempStoreFactory $tempstore) {
     $this->tempstore = $tempstore;
   }
 
@@ -65,7 +63,7 @@ abstract class ResolverRelationshipConfigure extends FormBase {
       // Conditionally set this form element so that we can update or add.
       $form['id'] = [
         '#type' => 'value',
-        '#value' => $id,
+        '#value' => $id
       ];
     }
     else {
@@ -76,7 +74,7 @@ abstract class ResolverRelationshipConfigure extends FormBase {
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
     $form['context'] = [
       '#type' => 'value',
-      '#value' => $context,
+      '#value' => $context
     ];
     $form['label'] = [
       '#type' => 'textfield',
@@ -100,11 +98,10 @@ abstract class ResolverRelationshipConfigure extends FormBase {
       '#value' => $this->t('Save'),
       '#ajax' => [
         'callback' => [$this, 'ajaxSave'],
-      ],
+      ]
     ];
     return $form;
   }
-
 
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $machine_name = $form_state->getValue('machine_name');
@@ -139,7 +136,6 @@ abstract class ResolverRelationshipConfigure extends FormBase {
     list($route_name, $route_parameters) = $this->getParentRouteInfo($cached_values);
     $form_state->setRedirect($route_name, $route_parameters);
   }
-
 
   public function ajaxSave(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();

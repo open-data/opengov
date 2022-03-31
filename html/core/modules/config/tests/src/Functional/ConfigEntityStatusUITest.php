@@ -27,9 +27,7 @@ class ConfigEntityStatusUITest extends BrowserTestBase {
    * Tests status operations.
    */
   public function testCRUD() {
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer site configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer site configuration']));
 
     $id = strtolower($this->randomMachineName());
     $edit = [
@@ -44,14 +42,14 @@ class ConfigEntityStatusUITest extends BrowserTestBase {
     $disable_url = $entity->toUrl('disable');
     $this->assertLinkByHref($disable_url->toString());
     $this->drupalGet($disable_url);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertNoLinkByHref($disable_url->toString());
 
     // Enable an entity.
     $enable_url = $entity->toUrl('enable');
     $this->assertLinkByHref($enable_url->toString());
     $this->drupalGet($enable_url);
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertNoLinkByHref($enable_url->toString());
   }
 

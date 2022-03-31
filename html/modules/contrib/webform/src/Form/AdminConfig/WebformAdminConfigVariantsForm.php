@@ -2,9 +2,11 @@
 
 namespace Drupal\webform\Form\AdminConfig;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Element\WebformMessage;
+use Drupal\webform\Plugin\WebformVariantManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,12 +29,26 @@ class WebformAdminConfigVariantsForm extends WebformAdminConfigBaseForm {
   }
 
   /**
+   * Constructs a WebformAdminConfigVariantsForm object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\webform\Plugin\WebformVariantManagerInterface $variant_manager
+   *   The webform variant manager.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, WebformVariantManagerInterface $variant_manager) {
+    parent::__construct($config_factory);
+    $this->variantManager = $variant_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->variantManager = $container->get('plugin.manager.webform.variant');
-    return $instance;
+    return new static(
+      $container->get('config.factory'),
+      $container->get('plugin.manager.webform.variant')
+    );
   }
 
   /**

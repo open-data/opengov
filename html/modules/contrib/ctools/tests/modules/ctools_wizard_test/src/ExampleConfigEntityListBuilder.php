@@ -9,7 +9,6 @@ use Drupal\Core\Entity\EntityInterface;
  * Provides a listing of Example config entity entities.
  */
 class ExampleConfigEntityListBuilder extends ConfigEntityListBuilder {
-
   /**
    * {@inheritdoc}
    */

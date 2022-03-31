@@ -1,21 +1,14 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Stream;
 
 use Solarium\Core\Query\AbstractResponseParser as ResponseParserAbstract;
-use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
 use Solarium\Core\Query\Result\ResultInterface;
 use Solarium\Exception\RuntimeException;
 use Solarium\Exception\StreamException;
 use Solarium\QueryType\Select\Result\Result;
+use Solarium\Core\Query\DocumentInterface;
 
 /**
  * Parse streaming expression response data.
@@ -27,9 +20,7 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
      *
      * @param Result|ResultInterface $result
      *
-     * @throws \Solarium\Exception\RuntimeException
-     * @throws \Solarium\Exception\StreamException
-     * @throws \Solarium\Exception\UnexpectedValueException
+     * @throws RuntimeException
      *
      * @return array
      */
@@ -43,7 +34,7 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
         // create document instances
         $documentClass = $query->getOption('documentclass');
         $classes = class_implements($documentClass);
-        if (!\in_array(DocumentInterface::class, $classes, true)) {
+        if (!in_array(DocumentInterface::class, $classes, true)) {
             throw new RuntimeException('The result document class must implement DocumentInterface');
         }
 
@@ -79,7 +70,7 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
         return $this->addHeaderInfo(
             $data,
             [
-                'numfound' => \count($documents),
+                'numfound' => count($documents),
                 'documents' => $documents,
             ]
         );

@@ -13,7 +13,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Config\ConfigFactory;
-use Drupal\fontawesome\FontAwesomeManagerInterface;
 
 /**
  * Provides a Font Awesome icon dialog for text editors.
@@ -22,23 +21,15 @@ class EditorIconDialog extends FormBase {
   /**
    * Drupal configuration service container.
    *
-   * @var \Drupal\Core\Config\ConfigFactory
+   * @var Drupal\Core\Config\ConfigFactory
    */
   protected $configFactory;
 
   /**
-   * Drupal Font Awesome manager service.
-   *
-   * @var \Drupal\fontawesome\FontAwesomeManagerInterface
-   */
-  protected $fontAwesomeManager;
-
-  /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactory $config_factory, FontAwesomeManagerInterface $font_awesome_manager) {
+  public function __construct(ConfigFactory $config_factory) {
     $this->configFactory = $config_factory;
-    $this->fontAwesomeManager = $font_awesome_manager;
   }
 
   /**
@@ -46,8 +37,7 @@ class EditorIconDialog extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory'),
-      $container->get('fontawesome.font_awesome_manager')
+      $container->get('config.factory')
     );
   }
 
@@ -61,10 +51,6 @@ class EditorIconDialog extends FormBase {
   /**
    * {@inheritdoc}
    *
-   * @param array $form
-   *   Form array.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   Form state object.
    * @param \Drupal\editor\Entity\Editor $editor
    *   The text editor to which this dialog corresponds.
    */
@@ -119,8 +105,6 @@ class EditorIconDialog extends FormBase {
         'far' => $this->t('Regular'),
         'fal' => $this->t('Light'),
         'fad' => $this->t('Duotone'),
-        'fat' => $this->t('Thin'),
-        'fak' => $this->t('Kit Uploads'),
       ],
       '#default_value' => 'fas',
     ];
@@ -370,13 +354,6 @@ class EditorIconDialog extends FormBase {
    * Validate the Font Awesome icon name.
    */
   public static function validateIconName($element, FormStateInterface $form_state) {
-    // Load the configuration settings.
-    $configuration_settings = \Drupal::config('fontawesome.settings');
-    // Check if we need to bypass.
-    if ($configuration_settings->get('bypass_validation')) {
-      return;
-    }
-
     $value = $element['#value'];
     if (strlen($value) == 0) {
       $form_state->setValueForElement($element, '');
@@ -389,7 +366,7 @@ class EditorIconDialog extends FormBase {
     }
 
     // Load the icon data so we can check for a valid icon.
-    $iconData = \Drupal::service('fontawesome.font_awesome_manager')->getIconMetadata($value);
+    $iconData = fontawesome_extract_icon_metadata($value);
 
     if (!isset($iconData['name'])) {
       $form_state->setError($element, t("Invalid icon name %value. Please see @iconLink for correct icon names.", [
@@ -441,8 +418,8 @@ class EditorIconDialog extends FormBase {
         unset($item['settings']['power_transforms']['flip-v']);
       }
       // Determine the icon style - brands don't allow style.
-      $metadata = $this->fontAwesomeManager->getIconMetadata($item['icon_name']);
-      $item['style'] = $this->fontAwesomeManager->determinePrefix($metadata['styles'], $item['settings']['style']);
+      $metadata = fontawesome_extract_icon_metadata($item['icon_name']);
+      $item['style'] = fontawesome_determine_prefix($metadata['styles'], $item['settings']['style']);
       unset($item['settings']['style']);
 
       // Remove blank data.

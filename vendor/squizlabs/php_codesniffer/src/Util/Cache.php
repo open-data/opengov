@@ -95,25 +95,22 @@ class Cache
         // hash. This ensures that core PHPCS changes will also invalidate the cache.
         // Note that we ignore sniffs here, and any files that don't affect
         // the outcome of the run.
-        $di     = new \RecursiveDirectoryIterator(
-            $installDir,
-            (\FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS)
-        );
+        $di     = new \RecursiveDirectoryIterator($installDir);
         $filter = new \RecursiveCallbackFilterIterator(
             $di,
             function ($file, $key, $iterator) {
-                // Skip non-php files.
+                // Skip hidden files.
                 $filename = $file->getFilename();
-                if ($file->isFile() === true && substr($filename, -4) !== '.php') {
+                if (substr($filename, 0, 1) === '.') {
                     return false;
                 }
 
-                $filePath = Common::realpath($key);
+                $filePath = Common::realpath($file->getPathname());
                 if ($filePath === false) {
                     return false;
                 }
 
-                if ($iterator->hasChildren() === true
+                if (is_dir($filePath) === true
                     && ($filename === 'Standards'
                     || $filename === 'Exceptions'
                     || $filename === 'Reports'

@@ -33,10 +33,7 @@ class WebformXss {
    */
   public static function getHtmlTagList() {
     $allowed_tags = Xss::getHtmlTagList();
-    $allowed_tags[] = 'br';
     $allowed_tags[] = 'font';
-    $allowed_tags[] = 'sub';
-    $allowed_tags[] = 'sup';
     return $allowed_tags;
   }
 

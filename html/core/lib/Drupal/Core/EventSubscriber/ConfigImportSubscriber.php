@@ -276,7 +276,6 @@ class ConfigImportSubscriber extends ConfigImportValidateEventSubscriberBase {
                   ['%name' => $name, '%module' => implode(', ', $this->getNames($diffs, $module_data))]
                 );
                 break;
-
               case 'theme':
                 $message = $this->formatPlural(
                   count($diffs),
@@ -285,7 +284,6 @@ class ConfigImportSubscriber extends ConfigImportValidateEventSubscriberBase {
                   ['%name' => $name, '%theme' => implode(', ', $this->getNames($diffs, $theme_data))]
                 );
                 break;
-
               case 'config':
                 $message = $this->formatPlural(
                   count($diffs),

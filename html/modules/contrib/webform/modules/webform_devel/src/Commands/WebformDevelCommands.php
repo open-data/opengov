@@ -1,7 +1,5 @@
 <?php
 
-// phpcs:ignoreFile
-
 namespace Drupal\webform_devel\Commands;
 
 use Drupal\Core\Serialization\Yaml;
@@ -54,7 +52,7 @@ class WebformDevelCommands extends DrushCommands {
   public function drush_webform_devel_config_update() {
     module_load_include('inc', 'webform', 'includes/webform.install');
 
-    $files = \Drupal::service('file_system')->scanDirectory(__DIR__ . '/../../../../', '/^webform\.webform\..*\.yml$/');
+    $files = $files = \Drupal::service('file_system')->scanDirectory(drupal_get_path('module', 'webform'), '/^webform\.webform\..*\.yml$/');
     $total = 0;
     foreach ($files as $filename => $file) {
       try {

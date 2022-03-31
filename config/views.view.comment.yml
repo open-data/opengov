@@ -870,7 +870,6 @@ display:
         sorts: false
         fields: false
         header: false
-        footer: false
       fields:
         comment_bulk_form:
           id: comment_bulk_form
@@ -1443,18 +1442,6 @@ display:
           empty: false
           content: 'Displaying @start - @end of @total'
           plugin_id: result
-      footer:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: "<a href=\"/sites/default/files/export_comments.csv\" class=\"button btn btn-success\"><span class=\"glyphicon glyphicon-download-alt\"></span> Download all published comments as CSV</a>\r\n"
-          plugin_id: text_custom
     cache_metadata:
       contexts:
         - 'languages:language_content'

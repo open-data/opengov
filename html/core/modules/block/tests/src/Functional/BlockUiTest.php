@@ -89,15 +89,13 @@ class BlockUiTest extends BrowserTestBase {
     $elements = $this->xpath('//div[contains(@class, "region-highlighted")]/div[contains(@class, "block-region") and contains(text(), :title)]', [':title' => 'Highlighted']);
     $this->assertTrue(!empty($elements), 'Block demo regions are shown.');
 
-    // Ensure that other themes can use the block demo page.
     \Drupal::service('theme_installer')->install(['test_theme']);
     $this->drupalGet('admin/structure/block/demo/test_theme');
     $this->assertEscaped('<strong>Test theme</strong>');
 
-    // Ensure that a hidden theme cannot use the block demo page.
     \Drupal::service('theme_installer')->install(['stable']);
     $this->drupalGet('admin/structure/block/demo/stable');
-    $this->assertSession()->statusCodeEquals(404);
+    $this->assertResponse(404, 'Hidden themes that are not the default theme are not supported by the block demo screen');
   }
 
   /**
@@ -152,23 +150,20 @@ class BlockUiTest extends BrowserTestBase {
     \Drupal::service('theme_installer')->install(['stable', 'stark']);
     $this->drupalGet('admin/structure/block');
     $theme_handler = \Drupal::service('theme_handler');
-    $this->assertSession()->linkExists($theme_handler->getName('classy'));
-    $this->assertSession()->linkExists($theme_handler->getName('stark'));
-    $this->assertSession()->linkNotExists($theme_handler->getName('stable'));
+    $this->assertLink($theme_handler->getName('classy'));
+    $this->assertLink($theme_handler->getName('stark'));
+    $this->assertNoLink($theme_handler->getName('stable'));
 
-    // Ensure that a hidden theme cannot use the block demo page.
     $this->drupalGet('admin/structure/block/list/stable');
-    $this->assertSession()->statusCodeEquals(404);
+    $this->assertResponse(404, 'Placing blocks through UI is not possible for a hidden base theme.');
 
-    // Ensure that a hidden theme set as the admin theme can use the block demo
-    // page.
     \Drupal::configFactory()->getEditable('system.theme')->set('admin', 'stable')->save();
     \Drupal::service('router.builder')->rebuildIfNeeded();
     $this->drupalPlaceBlock('local_tasks_block', ['region' => 'header', 'theme' => 'stable']);
     $this->drupalGet('admin/structure/block');
-    $this->assertSession()->linkExists($theme_handler->getName('stable'));
+    $this->assertLink($theme_handler->getName('stable'));
     $this->drupalGet('admin/structure/block/list/stable');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'Placing blocks through UI is possible for a hidden base theme that is the admin theme.');
   }
 
   /**
@@ -377,9 +372,9 @@ class BlockUiTest extends BrowserTestBase {
     $block = reset($this->blocks);
     // Ensure that the enable and disable routes are protected.
     $this->drupalGet('admin/structure/block/manage/' . $block->id() . '/disable');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
     $this->drupalGet('admin/structure/block/manage/' . $block->id() . '/enable');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
   }
 
 }

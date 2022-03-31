@@ -15,11 +15,6 @@ class PathautoUserWebTest extends BrowserTestBase {
   use PathautoTestHelperTrait;
 
   /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stable';
-
-   /**
    * Modules to enable.
    *
    * @var array
@@ -36,7 +31,7 @@ class PathautoUserWebTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  function setUp() {
     parent::setUp();
 
     // Allow other modules to add additional permissions for the admin user.
@@ -55,7 +50,7 @@ class PathautoUserWebTest extends BrowserTestBase {
   /**
    * Basic functional testing of Pathauto with users.
    */
-  public function testUserEditing() {
+  function testUserEditing() {
     // There should be no Pathauto checkbox on user forms.
     $this->drupalGet('user/' . $this->adminUser->id() . '/edit');
     $this->assertNoFieldById('path[0][pathauto]');
@@ -64,7 +59,7 @@ class PathautoUserWebTest extends BrowserTestBase {
   /**
    * Test user operations.
    */
-  public function testUserOperations() {
+  function testUserOperations() {
     $account = $this->drupalCreateUser();
 
     // Delete all current URL aliases.

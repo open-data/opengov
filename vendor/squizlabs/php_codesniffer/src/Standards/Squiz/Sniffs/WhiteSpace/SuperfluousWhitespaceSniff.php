@@ -49,7 +49,6 @@ class SuperfluousWhitespaceSniff implements Sniff
     {
         return [
             T_OPEN_TAG,
-            T_OPEN_TAG_WITH_ECHO,
             T_CLOSE_TAG,
             T_WHITESPACE,
             T_COMMENT,

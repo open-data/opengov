@@ -112,7 +112,6 @@ class EntityAccessCheckTest extends UnitTestCase {
    *
    * @param object $object
    *   Any object, including prophesized mocks based on interfaces.
-   *
    * @return \Drupal\Core\Routing\RouteMatchInterface
    *   A prophesized RouteMatchInterface.
    */

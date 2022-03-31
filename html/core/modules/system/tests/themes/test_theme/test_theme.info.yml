@@ -15,6 +15,8 @@ version: VERSION
 base theme: classy
 core: 8.x
 logo: images/logo2.svg
+stylesheets-remove:
+  - '@stable/css/system/components/js.module.css'
 libraries:
   - test_theme/global-styling
 libraries-override:
@@ -35,10 +37,6 @@ libraries-override:
     css:
       component:
         css/components/dialog.css: false
-  system/base:
-    css:
-      component:
-        /core/themes/stable/css/system/components/js.module.css: false
   # It works for JS as well.
   core/jquery:
     js:

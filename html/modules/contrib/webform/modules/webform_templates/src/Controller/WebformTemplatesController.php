@@ -4,8 +4,10 @@ namespace Drupal\webform_templates\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -18,8 +20,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class WebformTemplatesController extends ControllerBase implements ContainerInjectionInterface {
 
-  use WebformEntityStorageTrait;
-
   /**
    * The current user.
    *
@@ -28,21 +28,44 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
   protected $currentUser;
 
   /**
-   * The form builder.
+   * The webform builder.
    *
    * @var \Drupal\Core\Form\FormBuilderInterface
    */
   protected $formBuilder;
 
   /**
+   * Webform storage.
+   *
+   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
+   */
+  protected $webformStorage;
+
+  /**
+   * Constructs a WebformTemplatesController object.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The webform builder.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(AccountInterface $current_user, FormBuilderInterface $form_builder, EntityTypeManagerInterface $entity_type_manager) {
+    $this->currentUser = $current_user;
+    $this->formBuilder = $form_builder;
+    $this->webformStorage = $entity_type_manager->getStorage('webform');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->currentUser = $container->get('current_user');
-    $instance->formBuilder = $container->get('form_builder');
-    $instance->entityTypeManager = $container->get('entity_type.manager');
-    return $instance;
+    return new static(
+      $container->get('current_user'),
+      $container->get('form_builder'),
+      $container->get('entity_type.manager')
+    );
   }
 
   /**
@@ -63,7 +86,7 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
 
     // Handler autocomplete redirect.
     if ($keys && preg_match('#\(([^)]+)\)$#', $keys, $match)) {
-      if ($webform = $this->getWebformStorage()->load($match[1])) {
+      if ($webform = $this->webformStorage->load($match[1])) {
         return new RedirectResponse($webform->toUrl()->setAbsolute(TRUE)->toString());
       }
     }
@@ -153,7 +176,7 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
     // Display info.
     if ($total = count($rows)) {
       $build['info'] = [
-        '#markup' => $this->formatPlural($total, '@count template', '@count templates'),
+        '#markup' => $this->formatPlural($total, '@total template', '@total templates', ['@total' => $total]),
         '#prefix' => '<div>',
         '#suffix' => '</div>',
       ];
@@ -166,8 +189,8 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
       '#sticky' => TRUE,
       '#empty' => $this->t('There are no templates available.'),
       '#cache' => [
-        'contexts' => $this->getWebformStorage()->getEntityType()->getListCacheContexts(),
-        'tags' => $this->getWebformStorage()->getEntityType()->getListCacheTags(),
+        'contexts' => $this->webformStorage->getEntityType()->getListCacheContexts(),
+        'tags' => $this->webformStorage->getEntityType()->getListCacheTags(),
       ],
     ];
 
@@ -208,7 +231,7 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
    *   An array webform entity that are used as templates.
    */
   protected function getTemplates($keys = '', $category = '') {
-    $query = $this->getWebformStorage()->getQuery();
+    $query = $this->webformStorage->getQuery();
     $query->condition('template', TRUE);
     $query->condition('archive', FALSE);
     // Filter by key(word).
@@ -233,8 +256,8 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
       return [];
     }
 
-    /** @var \Drupal\webform\WebformInterface[] $entities */
-    $entities = $this->getWebformStorage()->loadMultiple($entity_ids);
+    /* @var $entities \Drupal\webform\WebformInterface[] */
+    $entities = $this->webformStorage->loadMultiple($entity_ids);
 
     // If the user is not a webform admin, check view access to each webform.
     if (!$this->isAdmin()) {

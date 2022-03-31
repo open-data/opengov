@@ -140,10 +140,6 @@ class SiteSpecParser
      */
     protected function match($spec)
     {
-        if ($spec === null) {
-            $spec = '';
-        }
-
         foreach ($this->patterns() as $regex => $map) {
             if (preg_match($regex, $spec, $matches)) {
                 return $this->mapResult($map, $matches);

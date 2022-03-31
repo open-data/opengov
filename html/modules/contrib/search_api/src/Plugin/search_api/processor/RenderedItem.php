@@ -4,13 +4,11 @@ namespace Drupal\search_api\Plugin\search_api\processor;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\Entity\EntityViewMode;
-use Drupal\Core\Link;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountSwitcherInterface;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Theme\ThemeInitializationInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
-use Drupal\Core\Url;
 use Drupal\search_api\Datasource\DatasourceInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\LoggerTrait;
@@ -231,25 +229,17 @@ class RenderedItem extends ProcessorPluginBase {
    * {@inheritdoc}
    */
   public function addFieldValues(ItemInterface $item) {
-    // Switch to the default theme in case the admin theme (or any other theme)
-    // is enabled.
+    // Switch to the default theme in case the admin theme is enabled.
     $active_theme = $this->getThemeManager()->getActiveTheme();
     $default_theme = $this->getConfigFactory()
       ->get('system.theme')
       ->get('default');
     $default_theme = $this->getThemeInitializer()
       ->getActiveThemeByName($default_theme);
-    $active_theme_switched = FALSE;
-    if ($default_theme->getName() !== $active_theme->getName()) {
-      $this->getThemeManager()->setActiveTheme($default_theme);
-      // Ensure that static cached default variables are set correctly,
-      // especially the directory variable.
-      drupal_static_reset('template_preprocess');
-      $active_theme_switched = TRUE;
-    }
+    $this->getThemeManager()->setActiveTheme($default_theme);
 
-    // Fields for which some view mode config is missing.
-    $unset_view_modes = [];
+    // Count of items that don't have a view mode.
+    $unset_view_modes = 0;
 
     $fields = $this->getFieldsHelper()
       ->filterForPropertyPath($item->getFields(), NULL, 'rendered_item');
@@ -269,21 +259,23 @@ class RenderedItem extends ProcessorPluginBase {
       if (empty($configuration['view_mode'][$datasource_id][$bundle])) {
         // If it was really not set, also notify the user through the log.
         if (!isset($configuration['view_mode'][$datasource_id][$bundle])) {
-          $unset_view_modes[$field->getFieldIdentifier()] = $field->getLabel();
+          ++$unset_view_modes;
         }
         continue;
       }
-      $view_mode = (string) $configuration['view_mode'][$datasource_id][$bundle];
+      else {
+        $view_mode = (string) $configuration['view_mode'][$datasource_id][$bundle];
+      }
 
       try {
         $build = $datasource->viewItem($item->getOriginalObject(), $view_mode);
-        if ($build) {
-          // Add the excerpt to the render array to allow adding it to view modes.
+        // Add the excerpt to the render array to allow adding it to view modes.
+        if ($item->getExcerpt()) {
           $build['#search_api_excerpt'] = $item->getExcerpt();
-          $value = (string) $this->getRenderer()->renderPlain($build);
-          if ($value) {
-            $field->addValue($value);
-          }
+        }
+        $value = (string) $this->getRenderer()->renderPlain($build);
+        if ($value) {
+          $field->addValue($value);
         }
       }
       catch (\Exception $e) {
@@ -302,30 +294,16 @@ class RenderedItem extends ProcessorPluginBase {
 
     // Restore the original user.
     $this->getAccountSwitcher()->switchBack();
-
-    // Restore the original theme if themes got switched before.
-    if ($active_theme_switched) {
-      $this->getThemeManager()->setActiveTheme($active_theme);
-      // Ensure that static cached default variables are set correctly,
-      // especially the directory variable.
-      drupal_static_reset('template_preprocess');
-    }
+    // Restore the original theme.
+    $this->getThemeManager()->setActiveTheme($active_theme);
 
     if ($unset_view_modes > 0) {
-      foreach ($unset_view_modes as $field_id => $field_label) {
-        $url = new Url('entity.search_api_index.field_config', [
-          'search_api_index' => $this->index->id(),
-          'field_id' => $field_id,
-        ]);
-        $context = [
-          '%index' => $this->index->label(),
-          '%field_id' => $field_id,
-          '%field_label' => $field_label,
-          'link' => (new Link($this->t('Field settings'), $url))->toString(),
-        ];
-        $this->getLogger()
-          ->warning('The field %field_label (%field_id) on index %index is missing view mode configuration for some datasources or bundles. Please review (and re-save) the field settings.', $context);
-      }
+      $context = [
+        '%index' => $this->index->label(),
+        '%processor' => $this->label(),
+        '@count' => $unset_view_modes,
+      ];
+      $this->getLogger()->warning('Warning: While indexing items on search index %index, @count item(s) did not have a view mode configured for one or more "Rendered item" fields.', $context);
     }
   }
 
@@ -374,19 +352,17 @@ class RenderedItem extends ProcessorPluginBase {
       $field_config = $field->getConfiguration();
       $view_modes = $field_config['view_mode'];
       foreach ($this->index->getDatasources() as $datasource_id => $datasource) {
-        $entity_type_id = $datasource->getEntityTypeId();
-        if (!$entity_type_id) {
-          continue;
-        }
-        foreach ($view_modes[$datasource_id] ?? [] as $bundle => $view_mode_id) {
-          if ($view_mode_id) {
-            /** @var \Drupal\Core\Entity\EntityViewModeInterface $view_mode */
-            $view_mode = EntityViewMode::load($entity_type_id . '.' . $view_mode_id);
-            if ($view_mode) {
-              $dependency_key = $view_mode->getConfigDependencyKey();
-              $dependency_name = $view_mode->getConfigDependencyName();
-              if (!empty($dependencies[$dependency_key][$dependency_name])) {
-                unset($view_modes[$datasource_id][$bundle]);
+        if (!empty($view_modes[$datasource_id]) && ($entity_type_id = $datasource->getEntityTypeId())) {
+          foreach ($view_modes[$datasource_id] as $bundle => $view_mode_id) {
+            if ($view_mode_id) {
+              /** @var \Drupal\Core\Entity\EntityViewModeInterface $view_mode */
+              $view_mode = EntityViewMode::load($entity_type_id . '.' . $view_mode_id);
+              if ($view_mode) {
+                $dependency_key = $view_mode->getConfigDependencyKey();
+                $dependency_name = $view_mode->getConfigDependencyName();
+                if (!empty($dependencies[$dependency_key][$dependency_name])) {
+                  unset($view_modes[$datasource_id][$bundle]);
+                }
               }
             }
           }

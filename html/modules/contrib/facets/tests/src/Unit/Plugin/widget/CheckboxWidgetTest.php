@@ -29,10 +29,10 @@ class CheckboxWidgetTest extends WidgetTestBase {
 
     $output = $this->widget->build($facet);
 
-    $this->assertSame('array', gettype($output));
+    $this->assertInternalType('array', $output);
     $this->assertCount(4, $output['#items']);
 
-    $this->assertEquals(['facet-inactive', 'js-facets-checkbox-links'], $output['#attributes']['class']);
+    $this->assertEquals(['js-facets-checkbox-links'], $output['#attributes']['class']);
 
     $expected_links = [
       $this->buildLinkAssertion('Llama', 'llama', $facet, 10),
@@ -41,9 +41,9 @@ class CheckboxWidgetTest extends WidgetTestBase {
       $this->buildLinkAssertion('Alpaca', 'alpaca', $facet, 9),
     ];
     foreach ($expected_links as $index => $value) {
-      $this->assertSame('array', gettype($output['#items'][$index]));
+      $this->assertInternalType('array', $output['#items'][$index]);
       $this->assertEquals($value, $output['#items'][$index]['#title']);
-      $this->assertSame('array', gettype($output['#items'][$index]['#title']));
+      $this->assertInternalType('array', $output['#items'][$index]['#title']);
       $this->assertEquals('link', $output['#items'][$index]['#type']);
       $this->assertEquals(['facet-item'], $output['#items'][$index]['#wrapper_attributes']['class']);
     }

@@ -24,8 +24,6 @@ interface LoaderInterface
      * @param mixed       $resource The resource
      * @param string|null $type     The resource type or null if unknown
      *
-     * @return mixed
-     *
      * @throws \Exception If something went wrong
      */
     public function load($resource, $type = null);

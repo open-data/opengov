@@ -14,17 +14,10 @@ class IntegrationTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'search_api',
     'search_api_db',
   ];
-
-  /**
-   * The theme to install as the default for testing.
-   *
-   * @var string
-   */
-  protected $defaultTheme = 'stark';
 
   /**
    * Tests that adding a server works.

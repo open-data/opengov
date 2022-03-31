@@ -45,7 +45,7 @@ interface StreamWrapperInterface extends PhpStreamWrapperInterface {
   const READ = 0x0004;
 
   /**
-   * Wrapper is writable.
+   * Wrapper is writeable.
    */
   const WRITE = 0x0008;
 
@@ -67,12 +67,12 @@ interface StreamWrapperInterface extends PhpStreamWrapperInterface {
   const HIDDEN = 0x000C;
 
   /**
-   * Hidden, readable and writable using local files.
+   * Hidden, readable and writeable using local files.
    */
   const LOCAL_HIDDEN = 0x000D;
 
   /**
-   * Visible, readable and writable.
+   * Visible, readable and writeable.
    */
   const WRITE_VISIBLE = 0x001C;
 
@@ -91,7 +91,7 @@ interface StreamWrapperInterface extends PhpStreamWrapperInterface {
   const NORMAL = 0x001C;
 
   /**
-   * Visible, readable and writable using local files.
+   * Visible, readable and writeable using local files.
    */
   const LOCAL_NORMAL = 0x001D;
 

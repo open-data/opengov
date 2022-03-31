@@ -4,10 +4,10 @@ description: 'Provides a setup for testing field values extraction.'
 package: Testing
 dependencies:
   - drupal:entity_test
-core_version_requirement: ^8.8 || ^9
+core: 8.x
 hidden: true
 
-# Information added by Drupal.org packaging script on 2022-01-21
-version: '8.x-1.23'
+# Information added by Drupal.org packaging script on 2019-11-07
+version: '8.x-1.15'
 project: 'search_api'
-datestamp: 1642769875
+datestamp: 1573122789

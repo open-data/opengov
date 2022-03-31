@@ -400,7 +400,6 @@ class PoHeader {
               $tokens[] = $formula[$i];
             }
             break;
-
           case 5:
             if ($next == '&') {
               $tokens[] = '&&';
@@ -410,7 +409,6 @@ class PoHeader {
               $tokens[] = $formula[$i];
             }
             break;
-
           case 6:
             if ($next == '|') {
               $tokens[] = '||';
@@ -504,55 +502,42 @@ class PoHeader {
           case '==':
             $f = $element_stack[$i - 2] == $element_stack[$i - 1];
             break;
-
           case '!=':
             $f = $element_stack[$i - 2] != $element_stack[$i - 1];
             break;
-
           case '<=':
             $f = $element_stack[$i - 2] <= $element_stack[$i - 1];
             break;
-
           case '>=':
             $f = $element_stack[$i - 2] >= $element_stack[$i - 1];
             break;
-
           case '<':
             $f = $element_stack[$i - 2] < $element_stack[$i - 1];
             break;
-
           case '>':
             $f = $element_stack[$i - 2] > $element_stack[$i - 1];
             break;
-
           case '+':
             $f = $element_stack[$i - 2] + $element_stack[$i - 1];
             break;
-
           case '-':
             $f = $element_stack[$i - 2] - $element_stack[$i - 1];
             break;
-
           case '*':
             $f = $element_stack[$i - 2] * $element_stack[$i - 1];
             break;
-
           case '/':
             $f = $element_stack[$i - 2] / $element_stack[$i - 1];
             break;
-
           case '%':
             $f = $element_stack[$i - 2] % $element_stack[$i - 1];
             break;
-
           case '&&':
             $f = $element_stack[$i - 2] && $element_stack[$i - 1];
             break;
-
           case '||':
             $f = $element_stack[$i - 2] || $element_stack[$i - 1];
             break;
-
           case ':':
             $f = $element_stack[$i - 3] ? $element_stack[$i - 2] : $element_stack[$i - 1];
             // This operator has 3 preceding elements, instead of the default 2.

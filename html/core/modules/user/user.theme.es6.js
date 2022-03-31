@@ -5,7 +5,7 @@
 
 (Drupal => {
   /**
-   * Constructs a password confirm message element
+   * Constucts a password confirm message element
    *
    * @return {string}
    *   A string representing a DOM fragment.

@@ -125,10 +125,8 @@ class RestResourceConfig extends ConfigEntityBase implements RestResourceConfigI
     switch ($this->granularity) {
       case RestResourceConfigInterface::METHOD_GRANULARITY:
         return $this->getMethodsForMethodGranularity();
-
       case RestResourceConfigInterface::RESOURCE_GRANULARITY:
         return $this->configuration['methods'];
-
       default:
         throw new \InvalidArgumentException('Invalid granularity specified.');
     }
@@ -152,10 +150,8 @@ class RestResourceConfig extends ConfigEntityBase implements RestResourceConfigI
     switch ($this->granularity) {
       case RestResourceConfigInterface::METHOD_GRANULARITY:
         return $this->getAuthenticationProvidersForMethodGranularity($method);
-
       case RestResourceConfigInterface::RESOURCE_GRANULARITY:
         return $this->configuration['authentication'];
-
       default:
         throw new \InvalidArgumentException('Invalid granularity specified.');
     }
@@ -185,10 +181,8 @@ class RestResourceConfig extends ConfigEntityBase implements RestResourceConfigI
     switch ($this->granularity) {
       case RestResourceConfigInterface::METHOD_GRANULARITY:
         return $this->getFormatsForMethodGranularity($method);
-
       case RestResourceConfigInterface::RESOURCE_GRANULARITY:
         return $this->configuration['formats'];
-
       default:
         throw new \InvalidArgumentException('Invalid granularity specified.');
     }

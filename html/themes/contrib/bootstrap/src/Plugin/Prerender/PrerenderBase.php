@@ -2,7 +2,6 @@
 
 namespace Drupal\bootstrap\Plugin\Prerender;
 
-use Drupal\bootstrap\BcSupport\TrustedCallbackInterface;
 use Drupal\bootstrap\Utility\Element;
 
 /**
@@ -10,7 +9,7 @@ use Drupal\bootstrap\Utility\Element;
  *
  * @ingroup plugins_prerender
  */
-class PrerenderBase implements PrerenderInterface, TrustedCallbackInterface {
+class PrerenderBase implements PrerenderInterface {
 
   /**
    * {@inheritdoc}
@@ -27,12 +26,5 @@ class PrerenderBase implements PrerenderInterface, TrustedCallbackInterface {
    *   The element object.
    */
   public static function preRenderElement(Element $element) {}
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function trustedCallbacks() {
-    return ['preRender', 'preRenderElement'];
-  }
 
 }

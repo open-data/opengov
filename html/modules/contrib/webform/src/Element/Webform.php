@@ -138,10 +138,9 @@ class Webform extends RenderElement {
     $attributes['class'][] = 'webform-access-denied';
 
     $build = [
-      '#theme' => 'webform_access_denied',
+      '#type' => 'container',
       '#attributes' => $attributes,
-      '#message' => WebformHtmlEditor::checkMarkup($message),
-      '#webform' => $webform,
+      'message' => WebformHtmlEditor::checkMarkup($message),
     ];
 
     return static::addCacheableDependency($build, $webform);

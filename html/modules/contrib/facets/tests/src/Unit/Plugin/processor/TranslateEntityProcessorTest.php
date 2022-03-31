@@ -10,7 +10,6 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\facets\Entity\Facet;
-use Drupal\facets\FacetInterface;
 use Drupal\facets\Plugin\facets\processor\TranslateEntityProcessor;
 use Drupal\facets\Result\Result;
 use Drupal\node\Entity\Node;
@@ -26,6 +25,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class TranslateEntityProcessorTest extends UnitTestCase {
 
   /**
+   * The mocked facet.
+   *
+   * @var \Drupal\facets\FacetInterface|\PHPUnit_Framework_MockObject_MockObject
+   */
+  protected $facet;
+
+  /**
    * The mocked language manager.
    *
    * @var \Drupal\Core\Language\LanguageManagerInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -35,15 +41,58 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * The mocked entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\Core\Entity\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
    */
   protected $entityTypeManager;
+
+  /**
+   * The original results for the facet, before transformation.
+   *
+   * @var \Drupal\facets\Result\ResultInterface[]
+   */
+  protected $originalResults;
 
   /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
+
+    // Mock the typed data chain.
+    $target_field_definition = $this->getMock(EntityDataDefinition::class);
+    $target_field_definition->expects($this->once())
+      ->method('getEntityTypeId')
+      ->willReturn('entity_type');
+    $property_definition = $this->getMock(DataReferenceDefinitionInterface::class);
+    $property_definition->expects($this->any())
+      ->method('getTargetDefinition')
+      ->willReturn($target_field_definition);
+    $property_definition->expects($this->any())
+      ->method('getDataType')
+      ->willReturn('entity_reference');
+    $data_definition = $this->getMock(ComplexDataDefinitionInterface::class);
+    $data_definition->expects($this->any())
+      ->method('getPropertyDefinition')
+      ->willReturn($property_definition);
+    $data_definition->expects($this->any())
+      ->method('getPropertyDefinitions')
+      ->willReturn([$property_definition]);
+
+    // Create the actual facet.
+    $this->facet = $this->getMockBuilder(Facet::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $this->facet->expects($this->any())
+      ->method('getDataDefinition')
+      ->willReturn($data_definition);
+
+    // Add a field identifier.
+    $this->facet->expects($this->any())
+      ->method('getFieldIdentifier')
+      ->willReturn('testfield');
+
+    $this->originalResults = [new Result($this->facet, 2, 2, 5)];
+    $this->facet->setResults($this->originalResults);
 
     // Mock language manager.
     $this->languageManager = $this->getMockBuilder(LanguageManagerInterface::class)
@@ -68,71 +117,9 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   }
 
   /**
-   * Provides mock data for the tests in this class.
-   *
-   * We create a data definition for both entity reference and entity reference
-   * revision field types so we can test with both the label tranformation.
-   *
-   * @return array
-   *   The facet and results test data.
-   */
-  public function facetDataProvider() {
-    $data = [];
-    foreach (['entity_reference', 'entity_reference_revision'] as $field_type) {
-      // Mock the typed data chain.
-      $target_field_definition = $this->createMock(EntityDataDefinition::class);
-      $target_field_definition->expects($this->once())
-        ->method('getEntityTypeId')
-        ->willReturn('entity_type');
-      $property_definition = $this->createMock(DataReferenceDefinitionInterface::class);
-      $property_definition->expects($this->any())
-        ->method('getTargetDefinition')
-        ->willReturn($target_field_definition);
-      $property_definition->expects($this->any())
-        ->method('getDataType')
-        ->willReturn($field_type);
-      $data_definition = $this->createMock(ComplexDataDefinitionInterface::class);
-      $data_definition->expects($this->any())
-        ->method('getPropertyDefinition')
-        ->willReturn($property_definition);
-      $data_definition->expects($this->any())
-        ->method('getPropertyDefinitions')
-        ->willReturn([$property_definition]);
-
-      // Create the actual facet.
-      $facet = $this->getMockBuilder(Facet::class)
-        ->disableOriginalConstructor()
-        ->getMock();
-      $facet->expects($this->any())
-        ->method('getDataDefinition')
-        ->willReturn($data_definition);
-
-      // Add a field identifier.
-      $facet->expects($this->any())
-        ->method('getFieldIdentifier')
-        ->willReturn('testfield');
-
-      $results = [new Result($facet, 2, 2, 5)];
-      $facet->setResults($results);
-
-      $data[$field_type][] = $facet;
-      $data[$field_type][] = $results;
-    }
-
-    return $data;
-  }
-
-  /**
    * Tests that node results were correctly changed.
-   *
-   * @dataProvider facetDataProvider
-   *
-   * @param \Drupal\facets\FacetInterface $facet
-   *   A facet mock.
-   * @param array $results
-   *   The facet original results mock.
    */
-  public function testNodeResultsChanged(FacetInterface $facet, array $results) {
+  public function testNodeResultsChanged() {
     // Mock a node and add the label to it.
     $node = $this->getMockBuilder(Node::class)
       ->disableOriginalConstructor()
@@ -143,7 +130,7 @@ class TranslateEntityProcessorTest extends UnitTestCase {
     $nodes = [
       2 => $node,
     ];
-    $node_storage = $this->createMock(EntityStorageInterface::class);
+    $node_storage = $this->getMock(EntityStorageInterface::class);
     $node_storage->expects($this->any())
       ->method('loadMultiple')
       ->willReturn($nodes);
@@ -158,14 +145,14 @@ class TranslateEntityProcessorTest extends UnitTestCase {
 
     // Without the processor we expect the id to display.
     foreach ($expected_results as $key => $expected) {
-      $this->assertEquals($expected['nid'], $results[$key]->getRawValue());
-      $this->assertEquals($expected['nid'], $results[$key]->getDisplayValue());
+      $this->assertEquals($expected['nid'], $this->originalResults[$key]->getRawValue());
+      $this->assertEquals($expected['nid'], $this->originalResults[$key]->getDisplayValue());
     }
 
     // With the processor we expect the title to display.
     /** @var \Drupal\facets\Result\ResultInterface[] $filtered_results */
     $processor = new TranslateEntityProcessor([], 'translate_entity', [], $this->languageManager, $this->entityTypeManager);
-    $filtered_results = $processor->build($facet, $results);
+    $filtered_results = $processor->build($this->facet, $this->originalResults);
     foreach ($expected_results as $key => $expected) {
       $this->assertEquals($expected['nid'], $filtered_results[$key]->getRawValue());
       $this->assertEquals($expected['title'], $filtered_results[$key]->getDisplayValue());
@@ -174,15 +161,8 @@ class TranslateEntityProcessorTest extends UnitTestCase {
 
   /**
    * Tests that term results were correctly changed.
-   *
-   * @dataProvider facetDataProvider
-   *
-   * @param \Drupal\facets\FacetInterface $facet
-   *   A facet mock.
-   * @param array $results
-   *   The facet original results mock.
    */
-  public function testTermResultsChanged(FacetInterface $facet, array $results) {
+  public function testTermResultsChanged() {
     // Mock term.
     $term = $this->getMockBuilder(Term::class)
       ->disableOriginalConstructor()
@@ -193,7 +173,7 @@ class TranslateEntityProcessorTest extends UnitTestCase {
     $terms = [
       2 => $term,
     ];
-    $term_storage = $this->createMock(EntityStorageInterface::class);
+    $term_storage = $this->getMock(EntityStorageInterface::class);
     $term_storage->expects($this->any())
       ->method('loadMultiple')
       ->willReturn($terms);
@@ -208,13 +188,13 @@ class TranslateEntityProcessorTest extends UnitTestCase {
 
     // Without the processor we expect the id to display.
     foreach ($expected_results as $key => $expected) {
-      $this->assertEquals($expected['tid'], $results[$key]->getRawValue());
-      $this->assertEquals($expected['tid'], $results[$key]->getDisplayValue());
+      $this->assertEquals($expected['tid'], $this->originalResults[$key]->getRawValue());
+      $this->assertEquals($expected['tid'], $this->originalResults[$key]->getDisplayValue());
     }
 
     /** @var \Drupal\facets\Result\ResultInterface[] $filtered_results */
     $processor = new TranslateEntityProcessor([], 'translate_entity', [], $this->languageManager, $this->entityTypeManager);
-    $filtered_results = $processor->build($facet, $results);
+    $filtered_results = $processor->build($this->facet, $this->originalResults);
 
     // With the processor we expect the title to display.
     foreach ($expected_results as $key => $expected) {
@@ -225,17 +205,10 @@ class TranslateEntityProcessorTest extends UnitTestCase {
 
   /**
    * Test that deleted entities still in index results doesn't display.
-   *
-   * @dataProvider facetDataProvider
-   *
-   * @param \Drupal\facets\FacetInterface $facet
-   *   A facet mock.
-   * @param array $results
-   *   The facet original results mock.
    */
-  public function testDeletedEntityResults(FacetInterface $facet, array $results) {
+  public function testDeletedEntityResults() {
     // Set original results.
-    $term_storage = $this->createMock(EntityStorageInterface::class);
+    $term_storage = $this->getMock(EntityStorageInterface::class);
     $term_storage->expects($this->any())
       ->method('loadMultiple')
       ->willReturn([]);
@@ -246,7 +219,7 @@ class TranslateEntityProcessorTest extends UnitTestCase {
     // Processor should return nothing (and not throw an exception).
     /** @var \Drupal\facets\Result\ResultInterface[] $filtered_results */
     $processor = new TranslateEntityProcessor([], 'translate_entity', [], $this->languageManager, $this->entityTypeManager);
-    $filtered_results = $processor->build($facet, $results);
+    $filtered_results = $processor->build($this->facet, $this->originalResults);
     $this->assertEmpty($filtered_results);
   }
 

@@ -32,11 +32,6 @@ class FilterBooleanWebTest extends UITestBase {
     $result = $this->cssSelect('#edit-options-value--wrapper legend span');
     $this->assertEqual($result[0]->getHtml(), 'Status');
 
-    // Ensure that the operator and the filter value are displayed using correct
-    // layout.
-    $this->assertSession()->elementExists('css', '.views-left-30 .form-item-options-operator');
-    $this->assertSession()->elementExists('css', '.views-right-70 .form-item-options-value');
-
     $this->drupalPostForm(NULL, [], t('Expose filter'));
     $this->drupalPostForm(NULL, [], t('Grouped filters'));
 
@@ -63,7 +58,7 @@ class FilterBooleanWebTest extends UITestBase {
     $this->assertEqual($result[1]->getAttribute('checked'), 'checked');
 
     // Test that there is a remove link for each group.
-    $this->assertCount(3, $this->cssSelect('a.views-remove-link'));
+    $this->assertEqual(count($this->cssSelect('a.views-remove-link')), 3);
 
     // Test selecting a default and removing an item.
     $edit = [];

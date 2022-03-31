@@ -52,7 +52,7 @@ class TestObjectItemTest extends FieldKernelTestBase {
     // Verify that the entity has been created properly.
     $id = $entity->id();
     $entity = EntityTest::load($id);
-    $this->assertInstanceOf(\stdClass::class, $entity->field_test->value);
+    $this->assertTrue($entity->field_test->value instanceof \stdClass);
     $this->assertEquals($object, $entity->field_test->value);
   }
 

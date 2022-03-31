@@ -4,9 +4,12 @@ namespace Drupal\webform_ui\Form;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\webform\Form\WebformDeleteFormBase;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformElementVariantInterface;
 use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\WebformEntityElementsValidatorInterface;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -66,19 +69,35 @@ class WebformUiElementDeleteForm extends WebformDeleteFormBase {
   protected $element;
 
   /**
+   * Constructs a WebformUiElementDeleteForm.
+   *
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+   *   The webform element manager.
+   * @param \Drupal\webform\WebformEntityElementsValidatorInterface $elements_validator
+   *   Webform element validator.
+   */
+  public function __construct(RendererInterface $renderer, WebformElementManagerInterface $element_manager, WebformEntityElementsValidatorInterface $elements_validator) {
+    $this->renderer = $renderer;
+    $this->elementManager = $element_manager;
+    $this->elementsValidator = $elements_validator;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->renderer = $container->get('renderer');
-    $instance->elementManager = $container->get('plugin.manager.webform.element');
-    $instance->elementsValidator = $container->get('webform.elements_validator');
-    return $instance;
+    return new static(
+      $container->get('renderer'),
+      $container->get('plugin.manager.webform.element'),
+      $container->get('webform.elements_validator')
+    );
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Delete form.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -155,9 +174,9 @@ class WebformUiElementDeleteForm extends WebformDeleteFormBase {
     }
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Form methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -209,9 +228,9 @@ class WebformUiElementDeleteForm extends WebformDeleteFormBase {
     $form_state->setRedirectUrl($this->webform->toUrl('edit-form', ['query' => $query]));
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Helper methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Get deleted elements as item list.

@@ -140,13 +140,13 @@ class FilterDateTest extends BrowserTestBase {
     $this->getSession()->getPage()->findField($this->fieldName . '_value')->selectOption(1);
     $this->getSession()->getPage()->pressButton('Apply');
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(1, $results);
+    $this->assertEquals(1, count($results));
 
     // Filter the Preview by 'not empty'.
     $this->getSession()->getPage()->findField($this->fieldName . '_value')->selectOption(2);
     $this->getSession()->getPage()->pressButton('Apply');
     $results = $this->cssSelect('.view-content .field-content');
-    $this->assertCount(3, $results);
+    $this->assertEquals(3, count($results));
   }
 
 }

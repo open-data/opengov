@@ -207,7 +207,6 @@ class Block extends DisplayPluginBase {
           '#default_value' => $this->getOption('block_description'),
         ];
         break;
-
       case 'block_category':
         $form['#title'] .= $this->t('Block category');
         $form['block_category'] = [
@@ -217,7 +216,6 @@ class Block extends DisplayPluginBase {
           '#default_value' => $this->getOption('block_category'),
         ];
         break;
-
       case 'block_hide_empty':
         $form['#title'] .= $this->t('Block empty settings');
 
@@ -228,7 +226,6 @@ class Block extends DisplayPluginBase {
           '#default_value' => $this->getOption('block_hide_empty'),
         ];
         break;
-
       case 'exposed_form_options':
         $this->view->initHandlers();
         if (!$this->usesExposed() && parent::usesExposed()) {
@@ -238,7 +235,6 @@ class Block extends DisplayPluginBase {
           ];
         }
         break;
-
       case 'allow':
         $form['#title'] .= $this->t('Allow settings in the block configuration');
 
@@ -306,18 +302,10 @@ class Block extends DisplayPluginBase {
             '#title' => $this->t('Items per block'),
             '#options' => [
               'none' => $this->t('@count (default setting)', ['@count' => $this->getPlugin('pager')->getItemsPerPage()]),
-              1 => 1,
-              2 => 2,
-              3 => 3,
-              4 => 4,
               5 => 5,
-              6 => 6,
               10 => 10,
-              12 => 12,
               20 => 20,
-              24 => 24,
               40 => 40,
-              48 => 48,
             ],
             '#default_value' => $block_configuration['items_per_page'],
           ];

@@ -215,7 +215,7 @@ Component documentation:
  * [JSON representation](doc/component/JSON_representation.markdown)
    * JSON encoding and decoding of ASTs
  * [Performance](doc/component/Performance.markdown)
-   * Disabling Xdebug
+   * Disabling XDebug
    * Reusing objects
    * Garbage collection impact
  * [Frequently asked questions](doc/component/FAQ.markdown)

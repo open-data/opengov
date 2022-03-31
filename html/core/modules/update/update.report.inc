@@ -7,8 +7,6 @@
 
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
-use Drupal\update\UpdateFetcherInterface;
-use Drupal\update\UpdateManagerInterface;
 
 /**
  * Prepares variables for project status report templates.
@@ -62,21 +60,19 @@ function template_preprocess_update_report(&$variables) {
 
     // Add project status class attribute to the table row.
     switch ($project['status']) {
-      case UpdateManagerInterface::CURRENT:
+      case UPDATE_CURRENT:
         $rows[$project['project_type']][$row_key]['#attributes'] = ['class' => ['color-success']];
         break;
-
-      case UpdateFetcherInterface::UNKNOWN:
-      case UpdateFetcherInterface::FETCH_PENDING:
-      case UpdateFetcherInterface::NOT_FETCHED:
-      case UpdateManagerInterface::NOT_SECURE:
-      case UpdateManagerInterface::REVOKED:
-      case UpdateManagerInterface::NOT_SUPPORTED:
+      case UPDATE_UNKNOWN:
+      case UPDATE_FETCH_PENDING:
+      case UPDATE_NOT_FETCHED:
+      case UPDATE_NOT_SECURE:
+      case UPDATE_REVOKED:
+      case UPDATE_NOT_SUPPORTED:
         $rows[$project['project_type']][$row_key]['#attributes'] = ['class' => ['color-error']];
         break;
-
-      case UpdateFetcherInterface::NOT_CHECKED:
-      case UpdateManagerInterface::NOT_CURRENT:
+      case UPDATE_NOT_CHECKED:
+      case UPDATE_NOT_CURRENT:
       default:
         $rows[$project['project_type']][$row_key]['#attributes'] = ['class' => ['color-warning']];
         break;
@@ -161,7 +157,7 @@ function template_preprocess_update_project_status(&$variables) {
   $security_class = [];
   $version_class = [];
   if (isset($project['recommended'])) {
-    if ($project['status'] != UpdateManagerInterface::CURRENT || $project['existing_version'] !== $project['recommended']) {
+    if ($project['status'] != UPDATE_CURRENT || $project['existing_version'] !== $project['recommended']) {
 
       // First, figure out what to recommend.
       // If there's only 1 security update and it has the same version we're
@@ -220,7 +216,7 @@ function template_preprocess_update_project_status(&$variables) {
       ];
     }
     if ($project['install_type'] == 'dev'
-      && $project['status'] != UpdateManagerInterface::CURRENT
+      && $project['status'] != UPDATE_CURRENT
       && isset($project['dev_version'])
       && $project['recommended'] !== $project['dev_version']) {
       $versions_inner[] = [
@@ -273,23 +269,19 @@ function template_preprocess_update_project_status(&$variables) {
   // Set the project status details.
   $status_label = NULL;
   switch ($project['status']) {
-    case UpdateManagerInterface::NOT_SECURE:
+    case UPDATE_NOT_SECURE:
       $status_label = t('Security update required!');
       break;
-
-    case UpdateManagerInterface::REVOKED:
+    case UPDATE_REVOKED:
       $status_label = t('Revoked!');
       break;
-
-    case UpdateManagerInterface::NOT_SUPPORTED:
+    case UPDATE_NOT_SUPPORTED:
       $status_label = t('Not supported!');
       break;
-
-    case UpdateManagerInterface::NOT_CURRENT:
+    case UPDATE_NOT_CURRENT:
       $status_label = t('Update available');
       break;
-
-    case UpdateManagerInterface::CURRENT:
+    case UPDATE_CURRENT:
       $status_label = t('Up to date');
       break;
   }
@@ -298,27 +290,24 @@ function template_preprocess_update_project_status(&$variables) {
   $variables['status']['reason'] = (isset($project['reason'])) ? $project['reason'] : NULL;
 
   switch ($project['status']) {
-    case UpdateManagerInterface::CURRENT:
+    case UPDATE_CURRENT:
       $uri = 'core/misc/icons/73b355/check.svg';
       $text = t('Ok');
       break;
-
-    case UpdateFetcherInterface::UNKNOWN:
-    case UpdateFetcherInterface::FETCH_PENDING:
-    case UpdateFetcherInterface::NOT_FETCHED:
+    case UPDATE_UNKNOWN:
+    case UPDATE_FETCH_PENDING:
+    case UPDATE_NOT_FETCHED:
       $uri = 'core/misc/icons/e29700/warning.svg';
       $text = t('Warning');
       break;
-
-    case UpdateManagerInterface::NOT_SECURE:
-    case UpdateManagerInterface::REVOKED:
-    case UpdateManagerInterface::NOT_SUPPORTED:
+    case UPDATE_NOT_SECURE:
+    case UPDATE_REVOKED:
+    case UPDATE_NOT_SUPPORTED:
       $uri = 'core/misc/icons/e32700/error.svg';
       $text = t('Error');
       break;
-
-    case UpdateFetcherInterface::NOT_CHECKED:
-    case UpdateManagerInterface::NOT_CURRENT:
+    case UPDATE_NOT_CHECKED:
+    case UPDATE_NOT_CURRENT:
     default:
       $uri = 'core/misc/icons/e29700/warning.svg';
       $text = t('Warning');

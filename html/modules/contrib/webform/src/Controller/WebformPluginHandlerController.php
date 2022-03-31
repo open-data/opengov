@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Controller;
 
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
@@ -25,12 +26,22 @@ class WebformPluginHandlerController extends ControllerBase implements Container
   protected $pluginManager;
 
   /**
+   * Constructs a WebformPluginHandlerController object.
+   *
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $plugin_manager
+   *   A webform handler plugin manager.
+   */
+  public function __construct(PluginManagerInterface $plugin_manager) {
+    $this->pluginManager = $plugin_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->pluginManager = $container->get('plugin.manager.webform.handler');
-    return $instance;
+    return new static(
+      $container->get('plugin.manager.webform.handler')
+    );
   }
 
   /**

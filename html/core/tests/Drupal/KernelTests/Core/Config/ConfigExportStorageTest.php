@@ -40,8 +40,13 @@ class ConfigExportStorageTest extends KernelTestBase {
     }
 
     // Test that the export storage is read-only.
-    $this->expectException(\BadMethodCallException::class);
-    $export->deleteAll();
+    try {
+      $export->deleteAll();
+      $this->fail("export storage must not allow editing");
+    }
+    catch (\BadMethodCallException $exception) {
+      $this->pass("Exception is thrown.");
+    }
   }
 
 }

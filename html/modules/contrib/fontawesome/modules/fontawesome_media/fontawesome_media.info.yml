@@ -3,12 +3,11 @@ type: module
 description: 'Adds a Font Awesome Media Entity Type.'
 
 core: 8.x
-core_version_requirement: ^8 || ^9
 dependencies:
   - fontawesome:fontawesome
   - drupal:svg_image
 
-# Information added by Drupal.org packaging script on 2022-03-18
-version: '8.x-2.21'
+# Information added by Drupal.org packaging script on 2020-01-07
+version: '8.x-2.15'
 project: 'fontawesome'
-datestamp: 1647616837
+datestamp: 1578431894

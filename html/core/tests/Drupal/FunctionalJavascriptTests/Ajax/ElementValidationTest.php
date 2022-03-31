@@ -44,7 +44,7 @@ class ElementValidationTest extends WebDriverTestBase {
     $this->assertNotNull($placeholder_text, 'A callback successfully echoed back a string.');
 
     $this->drupalGet('ajax_validation_test');
-    // Partially complete the form with a number.
+    // Partialy complete the form with a number.
     $page->fillField('drivernumber', '12345');
     $page->findField('spare_required_field')->focus();
 

@@ -204,7 +204,10 @@ class PHP_Token_Stream implements ArrayAccess, Countable, SeekableIterator
                                       $this->linesOfCode['cloc'];
     }
 
-    public function count(): int
+    /**
+     * @return int
+     */
+    public function count()
     {
         return count($this->tokens);
     }
@@ -474,42 +477,61 @@ class PHP_Token_Stream implements ArrayAccess, Countable, SeekableIterator
         return $this->linesOfCode;
     }
 
-    public function rewind(): void
+    /**
+     */
+    public function rewind()
     {
         $this->position = 0;
     }
 
-    public function valid(): bool
+    /**
+     * @return bool
+     */
+    public function valid()
     {
         return isset($this->tokens[$this->position]);
     }
 
-    #[\ReturnTypeWillChange]
+    /**
+     * @return int
+     */
     public function key()
     {
         return $this->position;
     }
 
-    #[\ReturnTypeWillChange]
+    /**
+     * @return PHP_Token
+     */
     public function current()
     {
         return $this->tokens[$this->position];
     }
 
-    public function next(): void
+    /**
+     */
+    public function next()
     {
         $this->position++;
     }
 
     /**
      * @param int $offset
+     *
+     * @return bool
      */
-    public function offsetExists($offset): bool
+    public function offsetExists($offset)
     {
         return isset($this->tokens[$offset]);
     }
 
-    #[\ReturnTypeWillChange]
+    /**
+     * @param int $offset
+     *
+     * @return mixed
+     *
+     * @throws OutOfBoundsException
+     */
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
@@ -528,7 +550,7 @@ class PHP_Token_Stream implements ArrayAccess, Countable, SeekableIterator
      * @param int   $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, $value)
     {
         $this->tokens[$offset] = $value;
     }
@@ -538,7 +560,7 @@ class PHP_Token_Stream implements ArrayAccess, Countable, SeekableIterator
      *
      * @throws OutOfBoundsException
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset($offset)
     {
         if (!$this->offsetExists($offset)) {
             throw new OutOfBoundsException(
@@ -559,7 +581,7 @@ class PHP_Token_Stream implements ArrayAccess, Countable, SeekableIterator
      *
      * @throws OutOfBoundsException
      */
-    public function seek($position): void
+    public function seek($position)
     {
         $this->position = $position;
 

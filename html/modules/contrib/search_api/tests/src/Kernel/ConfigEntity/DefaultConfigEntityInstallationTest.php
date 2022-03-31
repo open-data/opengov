@@ -20,7 +20,7 @@ class DefaultConfigEntityInstallationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'entity_test',
     'search_api',
     'search_api_test',

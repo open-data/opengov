@@ -12,7 +12,6 @@ namespace PHP_CodeSniffer\Files;
 use PHP_CodeSniffer\Ruleset;
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Util\Cache;
-use PHP_CodeSniffer\Util\Common;
 
 class LocalFile extends File
 {
@@ -30,7 +29,7 @@ class LocalFile extends File
     public function __construct($path, Ruleset $ruleset, Config $config)
     {
         $this->path = trim($path);
-        if (Common::isReadable($this->path) === false) {
+        if (is_readable($this->path) === false) {
             parent::__construct($this->path, $ruleset, $config);
             $error = 'Error opening file; file no longer exists or you do not have access to read the file';
             $this->addMessage(true, $error, 1, 1, 'Internal.LocalFile', [], 5, false);

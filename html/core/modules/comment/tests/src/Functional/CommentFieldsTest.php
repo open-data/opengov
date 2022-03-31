@@ -45,7 +45,7 @@ class CommentFieldsTest extends CommentTestBase {
     // Check that the 'comment_body' field is not deleted since it is persisted
     // even if it has no fields.
     $field_storage = FieldStorageConfig::loadByName('comment', 'comment_body');
-    $this->assertInstanceOf(FieldStorageConfig::class, $field_storage);
+    $this->assertInstanceOf(FieldStorageConfig::class, $field_storage, 'The comment_body field storage was not deleted');
 
     // Create a new content type.
     $type_name = 'test_node_type_2';
@@ -55,7 +55,7 @@ class CommentFieldsTest extends CommentTestBase {
     // Check that the 'comment_body' field exists and has an instance on the
     // new comment bundle.
     $field_storage = FieldStorageConfig::loadByName('comment', 'comment_body');
-    $this->assertInstanceOf(FieldStorageConfig::class, $field_storage);
+    $this->assertInstanceOf(FieldStorageConfig::class, $field_storage, 'The comment_body field exists');
     $field = FieldConfig::loadByName('comment', 'comment', 'comment_body');
     $this->assertTrue(isset($field), new FormattableMarkup('The comment_body field is present for comments on type @type', ['@type' => $type_name]));
 
@@ -86,13 +86,13 @@ class CommentFieldsTest extends CommentTestBase {
 
     $this->drupalGet('node/' . $node->nid->value);
     $elements = $this->cssSelect('.field--type-comment');
-    $this->assertCount(2, $elements, 'There are two comment fields on the node.');
+    $this->assertEqual(2, count($elements), 'There are two comment fields on the node.');
 
     // Delete the first comment field.
     FieldStorageConfig::loadByName('node', 'comment')->delete();
     $this->drupalGet('node/' . $node->nid->value);
     $elements = $this->cssSelect('.field--type-comment');
-    $this->assertCount(1, $elements, 'There is one comment field on the node.');
+    $this->assertEqual(1, count($elements), 'There is one comment field on the node.');
   }
 
   /**
@@ -191,10 +191,7 @@ class CommentFieldsTest extends CommentTestBase {
    */
   public function testCommentInstallAfterContentModule() {
     // Create a user to do module administration.
-    $this->adminUser = $this->drupalCreateUser([
-      'access administration pages',
-      'administer modules',
-    ]);
+    $this->adminUser = $this->drupalCreateUser(['access administration pages', 'administer modules']);
     $this->drupalLogin($this->adminUser);
 
     // Drop default comment field added in CommentTestBase::setup().
@@ -236,12 +233,7 @@ class CommentFieldsTest extends CommentTestBase {
     // Try to post a comment on each node. A failure will be triggered if the
     // comment body is missing on one of these forms, due to postComment()
     // asserting that the body is actually posted correctly.
-    $this->webUser = $this->drupalCreateUser([
-      'access content',
-      'access comments',
-      'post comments',
-      'skip comment approval',
-    ]);
+    $this->webUser = $this->drupalCreateUser(['access content', 'access comments', 'post comments', 'skip comment approval']);
     $this->drupalLogin($this->webUser);
     $this->postComment($book_node, $this->randomMachineName(), $this->randomMachineName());
   }

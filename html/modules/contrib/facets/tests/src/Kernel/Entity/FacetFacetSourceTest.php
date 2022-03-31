@@ -80,6 +80,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
     $displays = $this->container
       ->get('plugin.manager.search_api.display')
       ->getDefinitions();
+    $this->assertTrue(isset($displays['views_page:search_api_test_view__page_1']));
     $this->assertArrayHasKey('views_page:search_api_test_view__page_1', $displays);
 
     // Check that has transformed into a facet source as expected.
@@ -112,7 +113,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
     $entity->setWidget('links');
     $entity->setFacetSourceId('search_api:views_page__search_api_test_view__page_1');
 
-    $this->expectException(InvalidQueryTypeException::class);
+    $this->setExpectedException(InvalidQueryTypeException::class);
     $entity->getQueryType();
   }
 
@@ -144,7 +145,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
     $entity->setFacetSourceId('search_api:views_page__search_api_test_view__page_1');
     $entity->setFieldIdentifier('name');
 
-    $this->expectException(InvalidQueryTypeException::class);
+    $this->setExpectedException(InvalidQueryTypeException::class);
     $entity->getQueryType();
   }
 
@@ -165,7 +166,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
       'settings' => [],
     ]);
 
-    $this->expectException(InvalidQueryTypeException::class);
+    $this->setExpectedException(InvalidQueryTypeException::class);
     $entity->getQueryType();
   }
 
@@ -187,7 +188,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
     ];
     $entity->addProcessor($processor);
 
-    $this->expectException(InvalidQueryTypeException::class);
+    $this->setExpectedException(InvalidQueryTypeException::class);
     $entity->getQueryType();
   }
 
@@ -207,7 +208,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
     $this->assertInstanceOf(DataDefinitionInterface::class, $entity->getFacetSource()->getDataDefinition('category'));
 
     // When trying to get a field that doesn't exist, an error should be thrown.
-    $this->expectException(Exception::class);
+    $this->setExpectedException(Exception::class);
     $entity->getFacetSource()->getDataDefinition('llama');
   }
 

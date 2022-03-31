@@ -143,7 +143,6 @@ abstract class FileManagedTestBase extends BrowserTestBase {
    * @param string $scheme
    *   Optional string indicating the stream scheme to use. Drupal core includes
    *   public, private, and temporary. The public wrapper is the default.
-   *
    * @return \Drupal\file\FileInterface
    *   File entity.
    */
@@ -195,7 +194,7 @@ abstract class FileManagedTestBase extends BrowserTestBase {
     }
 
     file_put_contents($filepath, $contents);
-    $this->assertFileExists($filepath);
+    $this->assertTrue(is_file($filepath), t('The test file exists on the disk.'), 'Create test file');
     return $filepath;
   }
 

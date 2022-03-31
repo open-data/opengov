@@ -21,10 +21,6 @@ class RangeSliderWidget extends SliderWidget {
   public function build(FacetInterface $facet) {
     $build = parent::build($facet);
 
-    if (empty($facet->getResults())) {
-      return $build;
-    }
-
     $active = $facet->getActiveItems();
     $facet_settings = &$build['#attached']['drupalSettings']['facets']['sliders'][$facet->id()];
 

@@ -21,38 +21,27 @@ class FileCommentUnitTest extends AbstractSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
-     * @param string $testFile The name of the file being tested.
-     *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='FileCommentUnitTest.inc')
+    public function getErrorList()
     {
-        switch ($testFile) {
-        case 'FileCommentUnitTest.1.inc':
-            return [
-                21 => 1,
-                23 => 2,
-                24 => 1,
-                26 => 1,
-                28 => 1,
-                29 => 1,
-                30 => 1,
-                31 => 1,
-                32 => 2,
-                33 => 1,
-                34 => 1,
-                35 => 1,
-                40 => 2,
-                41 => 2,
-                43 => 1,
-            ];
-
-        case 'FileCommentUnitTest.2.inc':
-            return [1 => 1];
-
-        default:
-            return [];
-        }//end switch
+        return [
+            21 => 1,
+            23 => 2,
+            24 => 1,
+            26 => 1,
+            28 => 1,
+            29 => 1,
+            30 => 1,
+            31 => 1,
+            32 => 2,
+            33 => 1,
+            34 => 1,
+            35 => 1,
+            40 => 2,
+            41 => 2,
+            43 => 1,
+        ];
 
     }//end getErrorList()
 
@@ -63,24 +52,16 @@ class FileCommentUnitTest extends AbstractSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
      *
-     * @param string $testFile The name of the file being tested.
-     *
      * @return array<int, int>
      */
-    public function getWarningList($testFile='FileCommentUnitTest.inc')
+    public function getWarningList()
     {
-        switch ($testFile) {
-        case 'FileCommentUnitTest.1.inc':
-            return [
-                29 => 1,
-                30 => 1,
-                34 => 1,
-                43 => 1,
-            ];
-
-        default:
-            return [];
-        }//end switch
+        return [
+            29 => 1,
+            30 => 1,
+            34 => 1,
+            43 => 1,
+        ];
 
     }//end getWarningList()
 

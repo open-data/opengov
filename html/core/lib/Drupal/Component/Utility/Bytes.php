@@ -35,8 +35,7 @@ class Bytes {
       return round($size * pow(self::KILOBYTE, stripos('bkmgtpezy', $unit[0])));
     }
     else {
-      // Ensure size is a proper number type.
-      return round((float) $size);
+      return round($size);
     }
   }
 

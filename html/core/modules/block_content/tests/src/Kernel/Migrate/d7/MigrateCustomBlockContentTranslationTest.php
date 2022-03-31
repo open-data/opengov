@@ -21,6 +21,8 @@ class MigrateCustomBlockContentTranslationTest extends MigrateDrupal7TestBase {
     'filter',
     'language',
     'text',
+    // Required for translation migrations.
+    'migrate_drupal_multilingual',
   ];
 
   /**

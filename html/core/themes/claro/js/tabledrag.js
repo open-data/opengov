@@ -41,7 +41,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     this.oldRowElement = null;
 
-    this.oldY = null;
+    this.oldY = 0;
 
     this.changed = false;
 
@@ -74,8 +74,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       this.indentCount = 1;
 
       var indent = Drupal.theme('tableDragIndentation');
-      var testRow = $('<tr></tr>').addClass('draggable').appendTo(table);
-      var testCell = $('<td></td>').appendTo(testRow).prepend(indent).prepend(indent);
+      var testRow = $('<tr/>').addClass('draggable').appendTo(table);
+      var testCell = $('<td/>').appendTo(testRow).prepend(indent).prepend(indent);
       var $indentation = testCell.find('.js-indentation');
 
       this.indentAmount = $indentation.get(1).offsetLeft - $indentation.get(0).offsetLeft;
@@ -433,8 +433,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       if (self.oldRowElement) {
         $(self.oldRowElement).removeClass('drag-previous');
       }
-
-      self.oldY = self.pointerCoords(event).y;
     },
     dragRow: function dragRow(event, self) {
       if (self.dragObject) {
@@ -977,10 +975,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       return '<a href="#" class="tabledrag-handle"></a>';
     },
     tableDragCellItemsWrapper: function tableDragCellItemsWrapper() {
-      return '<div class="tabledrag-cell-content"></div>';
+      return '<div class="tabledrag-cell-content"/>';
     },
     tableDragCellContentWrapper: function tableDragCellContentWrapper() {
-      return '<div class="tabledrag-cell-content__item"></div>';
+      return '<div class="tabledrag-cell-content__item"/>';
     },
     tableDragToggle: function tableDragToggle(action, text) {
       var classes = ['action-link', 'action-link--extrasmall', 'tabledrag-toggle-weight'];

@@ -103,7 +103,6 @@ EOD;
     switch (static::check()) {
       case 'mb_strlen':
         return Unicode::STATUS_SINGLEBYTE;
-
       case '':
         return Unicode::STATUS_MULTIBYTE;
     }
@@ -537,16 +536,16 @@ EOD;
    */
   public static function mimeHeaderDecode($header) {
     $callback = function ($matches) {
-      $data = (strtolower($matches[2]) == 'b') ? base64_decode($matches[3]) : str_replace('_', ' ', quoted_printable_decode($matches[3]));
+      $data = ($matches[2] == 'B') ? base64_decode($matches[3]) : str_replace('_', ' ', quoted_printable_decode($matches[3]));
       if (strtolower($matches[1]) != 'utf-8') {
         $data = static::convertToUtf8($data, $matches[1]);
       }
       return $data;
     };
     // First step: encoded chunks followed by other encoded chunks (need to collapse whitespace)
-    $header = preg_replace_callback('/=\?([^?]+)\?([Qq]|[Bb])\?([^?]+|\?(?!=))\?=\s+(?==\?)/', $callback, $header);
+    $header = preg_replace_callback('/=\?([^?]+)\?(Q|B)\?([^?]+|\?(?!=))\?=\s+(?==\?)/', $callback, $header);
     // Second step: remaining chunks (do not collapse whitespace)
-    return preg_replace_callback('/=\?([^?]+)\?([Qq]|[Bb])\?([^?]+|\?(?!=))\?=/', $callback, $header);
+    return preg_replace_callback('/=\?([^?]+)\?(Q|B)\?([^?]+|\?(?!=))\?=/', $callback, $header);
   }
 
   /**

@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Query\LocalParameters;
 
 /**
@@ -109,18 +102,6 @@ class LocalParameter implements LocalParameterInterface
     public function getType(): string
     {
         return $this->type;
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return \Solarium\Core\Query\LocalParameters\LocalParameterInterface
-     */
-    public function setValues(array $values): LocalParameterInterface
-    {
-        $this->clearValues();
-
-        return $this->addValues($values);
     }
 
     /**

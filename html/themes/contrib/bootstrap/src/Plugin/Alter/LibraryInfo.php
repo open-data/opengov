@@ -37,11 +37,6 @@ class LibraryInfo extends PluginBase implements AlterInterface {
 
       // Alter the framework library based on currently set CDN Provider.
       $this->theme->getCdnProvider()->alterFrameworkLibrary($libraries['framework']);
-
-      // Add back deprecated library dependencies that are only available in D8.
-      if (((int) substr(\Drupal::VERSION, 0, 1)) < 9) {
-        $libraries['drupal.vertical-tabs']['dependencies'][] = 'core/matchmedia';
-      }
     }
     // Core replacements.
     elseif ($extension === 'core') {

@@ -13,10 +13,7 @@ class UserRolesAssignmentTest extends BrowserTestBase {
 
   protected function setUp() {
     parent::setUp();
-    $admin_user = $this->drupalCreateUser([
-      'administer permissions',
-      'administer users',
-    ]);
+    $admin_user = $this->drupalCreateUser(['administer permissions', 'administer users']);
     $this->drupalLogin($admin_user);
   }
 

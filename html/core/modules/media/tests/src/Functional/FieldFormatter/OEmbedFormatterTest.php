@@ -119,16 +119,6 @@ class OEmbedFormatterTest extends MediaFunctionalTestBase {
           ],
         ],
       ],
-      'Flickr photo (no dimensions)' => [
-        'https://www.flickr.com/photos/amazeelabs/26497866357',
-        'photo_flickr_no_dimensions.json',
-        [],
-        [
-          'img' => [
-            'src' => '/core/misc/druplicon.png',
-          ],
-        ],
-      ],
     ];
   }
 
@@ -204,7 +194,7 @@ class OEmbedFormatterTest extends MediaFunctionalTestBase {
       $element = $assert->elementExists('css', $selector);
       foreach ($attributes as $attribute => $value) {
         if (isset($value)) {
-          $this->assertStringContainsString($value, $element->getAttribute($attribute));
+          $this->assertContains($value, $element->getAttribute($attribute));
         }
         else {
           $this->assertFalse($element->hasAttribute($attribute));

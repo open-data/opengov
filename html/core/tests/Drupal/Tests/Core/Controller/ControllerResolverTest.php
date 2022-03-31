@@ -220,10 +220,10 @@ class ControllerResolverTest extends UnitTestCase {
    */
   protected function assertCallableController($controller, $class, $output) {
     if ($class) {
-      $this->assertIsObject($controller[0]);
+      $this->assertTrue(is_object($controller[0]));
       $this->assertInstanceOf($class, $controller[0]);
     }
-    $this->assertIsCallable($controller);
+    $this->assertTrue(is_callable($controller));
     $this->assertSame($output, call_user_func($controller));
   }
 

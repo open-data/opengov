@@ -30,7 +30,7 @@ class IndexBreakLockForm extends EntityConfirmFormBase {
   protected $tempStore;
 
   /**
-   * The entity type manager.
+   * The entity manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
@@ -49,7 +49,7 @@ class IndexBreakLockForm extends EntityConfirmFormBase {
    * @param \Drupal\Core\TempStore\SharedTempStoreFactory $temp_store_factory
    *   The factory for shared temporary storages.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
+   *   The Entity manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer to use.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
@@ -93,8 +93,7 @@ class IndexBreakLockForm extends EntityConfirmFormBase {
    */
   public function getDescription() {
     $locked = $this->tempStore->getMetadata($this->entity->id());
-    $owner_id = $locked->getOwnerId();
-    $account = $this->entityTypeManager->getStorage('user')->load($owner_id);
+    $account = $this->entityTypeManager->getStorage('user')->load($locked->owner);
     $username = [
       '#theme' => 'username',
       '#account' => $account,

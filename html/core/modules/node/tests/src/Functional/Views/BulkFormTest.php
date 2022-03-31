@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\node\Functional\Views;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\views\Views;
 
@@ -59,6 +60,7 @@ class BulkFormTest extends NodeTestBase {
         'promote' => FALSE,
       ];
       $node = $this->drupalCreateNode($values);
+      $this->pass(new FormattableMarkup('Node %title created with language %langcode.', ['%title' => $node->label(), '%langcode' => $node->language()->getId()]));
       $this->nodes[] = $node;
     }
 
@@ -69,6 +71,7 @@ class BulkFormTest extends NodeTestBase {
         if (!$node->hasTranslation($langcode)) {
           $title = $this->randomMachineName() . ' [' . $node->id() . ':' . $langcode . ']';
           $translation = $node->addTranslation($langcode, ['title' => $title, 'promote' => FALSE]);
+          $this->pass(new FormattableMarkup('Translation %title created with language %langcode.', ['%title' => $translation->label(), '%langcode' => $translation->language()->getId()]));
         }
       }
       $node->save();
@@ -79,22 +82,19 @@ class BulkFormTest extends NodeTestBase {
     $langcode = 'en';
     $title = $this->randomMachineName() . ' [' . $node->id() . ':' . $langcode . ']';
     $translation = $node->addTranslation($langcode, ['title' => $title]);
+    $this->pass(new FormattableMarkup('Translation %title created with language %langcode.', ['%title' => $translation->label(), '%langcode' => $translation->language()->getId()]));
     $node->save();
 
     // Check that all created translations are selected by the test view.
     $view = Views::getView('test_node_bulk_form');
     $view->execute();
-    $this->assertCount(10, $view->result, 'All created translations are selected.');
+    $this->assertEqual(count($view->result), 10, 'All created translations are selected.');
 
     // Check the operations are accessible to the logged in user.
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer nodes',
-      'access content overview',
-      'bypass node access',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer nodes', 'access content overview', 'bypass node access']));
     $this->drupalGet('test-node-bulk-form');
     $elements = $this->xpath('//select[@id="edit-action"]//option');
-    $this->assertCount(8, $elements, 'All node operations are found.');
+    $this->assertIdentical(count($elements), 8, 'All node operations are found.');
   }
 
   /**

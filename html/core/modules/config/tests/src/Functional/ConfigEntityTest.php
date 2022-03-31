@@ -69,7 +69,7 @@ class ConfigEntityTest extends BrowserTestBase {
       $this->fail('EntityMalformedException was thrown.');
     }
     catch (EntityMalformedException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('EntityMalformedException was thrown.');
     }
 
     // Verify that an empty entity cannot be saved.
@@ -78,7 +78,7 @@ class ConfigEntityTest extends BrowserTestBase {
       $this->fail('EntityMalformedException was thrown.');
     }
     catch (EntityMalformedException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('EntityMalformedException was thrown.');
     }
 
     // Verify that an entity with an empty ID string is considered empty, too.
@@ -91,7 +91,7 @@ class ConfigEntityTest extends BrowserTestBase {
       $this->fail('EntityMalformedException was thrown.');
     }
     catch (EntityMalformedException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('EntityMalformedException was thrown.');
     }
 
     // Verify properties on a newly created entity.
@@ -116,6 +116,7 @@ class ConfigEntityTest extends BrowserTestBase {
     // Verify that the entity can be saved.
     try {
       $status = $config_test->save();
+      $this->pass('EntityMalformedException was not thrown.');
     }
     catch (EntityMalformedException $e) {
       $this->fail('EntityMalformedException was not thrown.');
@@ -150,6 +151,9 @@ class ConfigEntityTest extends BrowserTestBase {
     ]);
     try {
       $id_length_config_test->save();
+      $this->pass(new FormattableMarkup("config_test entity with ID length @length was saved.", [
+        '@length' => strlen($id_length_config_test->id()),
+      ]));
     }
     catch (ConfigEntityIdLengthException $e) {
       $this->fail($e->getMessage());
@@ -161,6 +165,9 @@ class ConfigEntityTest extends BrowserTestBase {
     ]);
     try {
       $id_length_config_test->save();
+      $this->pass(new FormattableMarkup("config_test entity with ID length @length was saved.", [
+        '@length' => strlen($id_length_config_test->id()),
+      ]));
     }
     catch (ConfigEntityIdLengthException $e) {
       $this->fail($e->getMessage());
@@ -178,7 +185,10 @@ class ConfigEntityTest extends BrowserTestBase {
       ]));
     }
     catch (ConfigEntityIdLengthException $e) {
-      // Expected exception; just continue testing.
+      $this->pass(new FormattableMarkup("config_test entity with ID length @length exceeding the maximum allowed length of @max failed to save", [
+        '@length' => strlen($id_length_config_test->id()),
+        '@max' => static::MAX_ID_LENGTH,
+      ]));
     }
 
     // Ensure that creating an entity with the same id as an existing one is not
@@ -192,7 +202,7 @@ class ConfigEntityTest extends BrowserTestBase {
       $this->fail('Not possible to overwrite an entity entity.');
     }
     catch (EntityStorageException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Not possible to overwrite an entity entity.');
     }
 
     // Verify that renaming the ID returns correct status and properties.
@@ -226,9 +236,7 @@ class ConfigEntityTest extends BrowserTestBase {
    * Tests CRUD operations through the UI.
    */
   public function testCRUDUI() {
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer site configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer site configuration']));
 
     $id = strtolower($this->randomMachineName());
     $label1 = $this->randomMachineName();
@@ -245,7 +253,7 @@ class ConfigEntityTest extends BrowserTestBase {
     ];
     $this->drupalPostForm('admin/structure/config_test/add', $edit, 'Save');
     $this->assertUrl('admin/structure/config_test');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertRaw($message_insert);
     $this->assertNoRaw($message_update);
     $this->assertLinkByHref("admin/structure/config_test/manage/$id");
@@ -256,7 +264,7 @@ class ConfigEntityTest extends BrowserTestBase {
     ];
     $this->drupalPostForm("admin/structure/config_test/manage/$id", $edit, 'Save');
     $this->assertUrl('admin/structure/config_test');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertNoRaw($message_insert);
     $this->assertRaw($message_update);
     $this->assertLinkByHref("admin/structure/config_test/manage/$id");
@@ -268,7 +276,7 @@ class ConfigEntityTest extends BrowserTestBase {
     $this->assertUrl("admin/structure/config_test/manage/$id/delete");
     $this->drupalPostForm(NULL, [], 'Delete');
     $this->assertUrl('admin/structure/config_test');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertNoRaw($message_update);
     $this->assertRaw($message_delete);
     $this->assertNoText($label1);
@@ -281,7 +289,7 @@ class ConfigEntityTest extends BrowserTestBase {
     ];
     $this->drupalPostForm('admin/structure/config_test/add', $edit, 'Save');
     $this->assertUrl('admin/structure/config_test');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertText($label1);
     $this->assertLinkByHref("admin/structure/config_test/manage/$id");
 
@@ -292,7 +300,7 @@ class ConfigEntityTest extends BrowserTestBase {
     ];
     $this->drupalPostForm("admin/structure/config_test/manage/$id", $edit, 'Save');
     $this->assertUrl('admin/structure/config_test');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertNoText($label1);
     $this->assertNoText($label2);
     $this->assertText($label3);
@@ -306,7 +314,7 @@ class ConfigEntityTest extends BrowserTestBase {
       'label' => '0',
     ];
     $this->drupalPostForm('admin/structure/config_test/add', $edit, 'Save');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $message_insert = new FormattableMarkup('%label configuration has been created.', ['%label' => $edit['label']]);
     $this->assertRaw($message_insert);
     $this->assertLinkByHref('admin/structure/config_test/manage/0');

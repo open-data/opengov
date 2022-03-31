@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Stats;
 
 use Solarium\Core\Configurable;
@@ -45,7 +38,6 @@ class Field extends Configurable
     public function setKey(string $value): self
     {
         $this->setOption('key', $value);
-
         return $this;
     }
 
@@ -73,7 +65,7 @@ class Field extends Configurable
      */
     public function addPivots($pivots): self
     {
-        if (\is_string($pivots)) {
+        if (is_string($pivots)) {
             $pivots = explode(',', $pivots);
             $pivots = array_map('trim', $pivots);
         }

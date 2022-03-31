@@ -4,11 +4,13 @@ namespace Drupal\webform_access;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
 use Drupal\webform\Element\WebformHtmlEditor;
-use Drupal\webform\EntityListBuilder\WebformEntityListBuilderSortLabelTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -18,8 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see \Drupal\webform\Entity\WebformOption
  */
 class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
-
-  use WebformEntityListBuilderSortLabelTrait;
 
   /**
    * {@inheritdoc}
@@ -41,13 +41,33 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
   protected $entityTypeManager;
 
   /**
+   * Constructs a new WebformListBuilder object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The entity storage class.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($entity_type, $storage);
+    $this->currentUser = $current_user;
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    $instance = parent::createInstance($container, $entity_type);
-    $instance->currentUser = $container->get('current_user');
-    $instance->entityTypeManager = $container->get('entity_type.manager');
-    return $instance;
+    return new static(
+      $entity_type,
+      $container->get('entity_type.manager')->getStorage($entity_type->id()),
+      $container->get('current_user'),
+      $container->get('entity_type.manager')
+    );
   }
 
   /**
@@ -112,7 +132,7 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
     }
 
     return [
-      '#markup' => $this->formatPlural($total, '@count access group', '@count access groups'),
+      '#markup' => $this->formatPlural($total, '@total access group', '@total access groups', ['@total' => $total]),
       '#prefix' => '<div class="webform-access-group-summary">',
       '#suffix' => '</div>',
     ];
@@ -199,7 +219,7 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
     if ($entity->access('duplicate')) {
       $operations['duplicate'] = [
         'title' => $this->t('Duplicate'),
-        'weight' => 20,
+        'weight' => 23,
         'url' => Url::fromRoute('entity.webform_access_group.duplicate_form', ['webform_access_group' => $entity->id()]),
       ];
     }
@@ -231,7 +251,7 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
    */
   public function load() {
     $entity_ids = $this->getEntityIds();
-    /** @var \Drupal\webform\WebformInterface[] $entities */
+    /* @var $entities \Drupal\webform\WebformInterface[] */
     $entities = $this->storage->loadMultiple($entity_ids);
 
     // If the user is not a webform admin, check access to each access group.
@@ -246,9 +266,9 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
     return $entities;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Helper methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Build a renderable array of email addresses.
@@ -294,8 +314,7 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
   public static function buildEntities(array $entity_references) {
     $items = [];
     foreach ($entity_references as $entity_reference) {
-      // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable
-      [$entity_type, $entity_id, $field_name, $webform_id] = explode(':', $entity_reference);
+      list($entity_type, $entity_id, $field_name, $webform_id) = explode(':', $entity_reference);
       $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($entity_id);
       $webform = \Drupal::entityTypeManager()->getStorage('webform')->load($webform_id);
       if ($entity && $webform) {

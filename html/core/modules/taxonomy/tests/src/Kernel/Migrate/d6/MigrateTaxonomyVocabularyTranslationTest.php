@@ -18,6 +18,8 @@ class MigrateTaxonomyVocabularyTranslationTest extends MigrateDrupal6TestBase {
     'config_translation',
     'language',
     'taxonomy',
+    // Required for translation migrations.
+    'migrate_drupal_multilingual',
   ];
 
   /**

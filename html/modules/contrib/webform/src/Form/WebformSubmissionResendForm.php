@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Element\WebformAjaxElementTrait;
 use Drupal\webform\Plugin\WebformHandlerMessageInterface;
+use Drupal\webform\WebformRequestInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -16,13 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class WebformSubmissionResendForm extends FormBase {
 
   use WebformAjaxElementTrait;
-
-  /**
-   * The webform request handler.
-   *
-   * @var \Drupal\webform\WebformRequestInterface
-   */
-  protected $requestHandler;
 
   /**
    * A webform submission.
@@ -46,12 +40,29 @@ class WebformSubmissionResendForm extends FormBase {
   }
 
   /**
+   * The webform request handler.
+   *
+   * @var \Drupal\webform\WebformRequestInterface
+   */
+  protected $requestHandler;
+
+  /**
+   * Constructs a WebformResultsResendForm object.
+   *
+   * @param \Drupal\webform\WebformRequestInterface $request_handler
+   *   The webform request handler.
+   */
+  public function __construct(WebformRequestInterface $request_handler) {
+    $this->requestHandler = $request_handler;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->requestHandler = $container->get('webform.request');
-    return $instance;
+    return new static(
+      $container->get('webform.request')
+    );
   }
 
   /**
@@ -181,9 +192,9 @@ class WebformSubmissionResendForm extends FormBase {
     return $this->webformSubmission->getWebform()->getHandler($message_handler_id);
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Helper methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Get a webform submission's message handlers as options.
@@ -228,9 +239,9 @@ class WebformSubmissionResendForm extends FormBase {
     return $options;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Change message ajax callbacks.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}

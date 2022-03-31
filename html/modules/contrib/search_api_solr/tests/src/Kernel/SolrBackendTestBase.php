@@ -10,6 +10,7 @@ use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
+defined('TRAVIS_BUILD_DIR') || define('TRAVIS_BUILD_DIR', getenv('TRAVIS_BUILD_DIR') ?: '.');
 defined('SOLR_CLOUD') || define('SOLR_CLOUD', getenv('SOLR_CLOUD') ?: 'false');
 
 /**
@@ -27,7 +28,9 @@ abstract class SolrBackendTestBase extends BackendTestBase {
    * @var string[]
    */
   public static $modules = [
+    'devel',
     'search_api_solr',
+    'search_api_solr_devel',
     'search_api_solr_test',
   ];
 
@@ -53,9 +56,14 @@ abstract class SolrBackendTestBase extends BackendTestBase {
   protected $logger;
 
   /**
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $travisLogger;
+
+  /**
    * {@inheritdoc}
    */
-  public function setUp(): void {
+  public function setUp() {
     if ('true' === SOLR_CLOUD) {
       $this->serverId .= '_cloud';
       $this->indexId .= '_cloud';
@@ -68,6 +76,10 @@ abstract class SolrBackendTestBase extends BackendTestBase {
 
     $this->logger = new InMemoryLogger();
     \Drupal::service('logger.factory')->addLogger($this->logger);
+
+    $this->travisLogger = new Logger('search_api_solr');
+    $this->travisLogger->pushHandler(new StreamHandler(TRAVIS_BUILD_DIR . '/solr_query.log', Logger::DEBUG));
+    \Drupal::service('search_api_solr_devel.solarium_request_logger')->setLogger($this->travisLogger);
   }
 
   /**
@@ -75,6 +87,7 @@ abstract class SolrBackendTestBase extends BackendTestBase {
    */
   protected function installConfigs() {
     $this->installConfig([
+      'devel',
       'search_api_solr',
       'search_api_solr_test',
     ]);
@@ -88,7 +101,7 @@ abstract class SolrBackendTestBase extends BackendTestBase {
   /**
    * Clear the index after every test.
    */
-  public function tearDown(): void {
+  public function tearDown() {
     $this->clearIndex();
     parent::tearDown();
   }

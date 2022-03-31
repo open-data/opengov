@@ -26,10 +26,8 @@ class ObjectInstantiationUnitTest extends AbstractSniffUnitTest
     public function getErrorList()
     {
         return [
-            5  => 1,
-            8  => 1,
-            31 => 1,
-            39 => 2,
+            5 => 1,
+            8 => 1,
         ];
 
     }//end getErrorList()

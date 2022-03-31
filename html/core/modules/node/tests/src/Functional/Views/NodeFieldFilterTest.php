@@ -54,7 +54,7 @@ class NodeFieldFilterTest extends NodeTestBase {
     $this->nodeTitles = [
       'en' => 'Food in Paris',
       'es' => 'Comida en Paris',
-      'fr' => 'Nourriture en Paris',
+      'fr' => 'Nouriture en Paris',
     ];
 
     // Create node with translations.

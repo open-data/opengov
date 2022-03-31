@@ -73,16 +73,9 @@ class MethodProphecy
             $this->withArguments($arguments);
         }
 
-        $hasTentativeReturnType = method_exists($reflectedMethod, 'hasTentativeReturnType')
-            && $reflectedMethod->hasTentativeReturnType();
+        if (true === $reflectedMethod->hasReturnType()) {
 
-        if (true === $reflectedMethod->hasReturnType() || $hasTentativeReturnType) {
-            if ($hasTentativeReturnType) {
-                $reflectionType = $reflectedMethod->getTentativeReturnType();
-            }
-            else {
-                $reflectionType = $reflectedMethod->getReturnType();
-            }
+            $reflectionType = $reflectedMethod->getReturnType();
 
             if ($reflectionType instanceof ReflectionNamedType) {
                 $types = [$reflectionType];
@@ -234,13 +227,12 @@ class MethodProphecy
 
     /**
      * @param array $items
-     * @param mixed $return
      *
      * @return $this
      *
      * @throws \Prophecy\Exception\InvalidArgumentException
      */
-    public function willYield($items, $return = null)
+    public function willYield($items)
     {
         if ($this->voidReturnType) {
             throw new MethodProphecyException(
@@ -256,10 +248,10 @@ class MethodProphecy
             ));
         }
 
-        $generator =  function() use ($items, $return) {
-            yield from $items;
-
-            return $return;
+        $generator =  function() use ($items) {
+            foreach ($items as $key => $value) {
+                yield $key => $value;
+            }
         };
 
         return $this->will($generator);

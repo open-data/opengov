@@ -1,6 +1,6 @@
 name: 'Content Translation'
 type: module
-description: 'Allows users to translate content.'
+description: 'Allows users to translate content entities.'
 dependencies:
   - drupal:language
 package: Multilingual

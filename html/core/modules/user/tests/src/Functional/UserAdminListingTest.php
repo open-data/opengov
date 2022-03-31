@@ -22,9 +22,8 @@ class UserAdminListingTest extends BrowserTestBase {
    * Tests the listing.
    */
   public function testUserListing() {
-    // Ensure the anonymous user cannot access the admin listing.
     $this->drupalGet('admin/people');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403, 'Anonymous user does not have access to the user admin listing.');
 
     // Create a bunch of users.
     $accounts = [];
@@ -63,9 +62,8 @@ class UserAdminListingTest extends BrowserTestBase {
 
     $this->drupalLogin($admin_user);
 
-    // Ensure the admin user can access the admin listing.
     $this->drupalGet('admin/people');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'The admin user has access to the user admin listing.');
 
     $result = $this->xpath('//table[contains(@class, "responsive-enabled")]/tbody/tr');
     $result_accounts = [];

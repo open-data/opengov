@@ -29,7 +29,7 @@ class WebformNodeReferencesAddForm extends FormBase {
   }
 
   /**
-   * Constructs a WebformNodeReferencesAddForm object.
+   * Constructs a new WebformNodeReferencesAddForm object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.

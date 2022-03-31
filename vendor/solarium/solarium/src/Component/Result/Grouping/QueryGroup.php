@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Result\Grouping;
 
 use Solarium\Core\Query\AbstractQuery;
@@ -42,7 +35,7 @@ class QueryGroup implements \IteratorAggregate, \Countable
     /**
      * Maximum score in group.
      *
-     * @var float|null
+     * @var float
      */
     protected $maximumScore;
 
@@ -111,9 +104,9 @@ class QueryGroup implements \IteratorAggregate, \Countable
     /**
      * Get maximumScore value.
      *
-     * @return float|null
+     * @return float
      */
-    public function getMaximumScore(): ?float
+    public function getMaximumScore(): float
     {
         return $this->maximumScore;
     }
@@ -145,6 +138,6 @@ class QueryGroup implements \IteratorAggregate, \Countable
      */
     public function count(): int
     {
-        return \count($this->getDocuments());
+        return count($this->getDocuments());
     }
 }

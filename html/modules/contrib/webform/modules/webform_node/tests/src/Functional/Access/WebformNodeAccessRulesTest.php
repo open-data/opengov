@@ -25,8 +25,6 @@ class WebformNodeAccessRulesTest extends WebformNodeBrowserTestBase {
    * @see \Drupal\webform\Tests\WebformEntityAccessControlsTest::testAccessRules
    */
   public function testAccessRules() {
-    $assert_session = $this->assertSession();
-
     /** @var \Drupal\webform\WebformAccessRulesManagerInterface $access_rules_manager */
     $access_rules_manager = \Drupal::service('webform.access_rules_manager');
     $default_access_rules = $access_rules_manager->getDefaultAccessRules();
@@ -40,7 +38,7 @@ class WebformNodeAccessRulesTest extends WebformNodeBrowserTestBase {
     $rid = $account->getRoles(TRUE)[0];
     $uid = $account->id();
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Log in normal user and get their rid.
     $this->drupalLogin($account);
@@ -57,8 +55,8 @@ class WebformNodeAccessRulesTest extends WebformNodeBrowserTestBase {
     // Check create authenticated/anonymous access.
     $webform->setAccessRules($default_access_rules)->save();
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldValueEquals('name', $account->getAccountName());
-    $assert_session->fieldValueEquals('email', $account->getEmail());
+    $this->assertFieldByName('name', $account->getAccountName());
+    $this->assertFieldByName('email', $account->getEmail());
 
     $access_rules = [
       'create' => [
@@ -70,8 +68,8 @@ class WebformNodeAccessRulesTest extends WebformNodeBrowserTestBase {
 
     // Check no access.
     $this->drupalGet('/node/' . $node->id());
-    $assert_session->fieldNotExists('name');
-    $assert_session->fieldNotExists('email');
+    $this->assertNoFieldByName('name', $account->getAccountName());
+    $this->assertNoFieldByName('email', $account->getEmail());
 
     $any_tests = [
       'node/{node}/webform/results/submissions' => 'view_any',
@@ -90,7 +88,7 @@ class WebformNodeAccessRulesTest extends WebformNodeBrowserTestBase {
       $path = str_replace('{webform_submission}', $sid, $path);
 
       $this->drupalGet($path);
-      $assert_session->statusCodeEquals(403);
+      $this->assertResponse(403, 'Webform returns access denied');
     }
 
     // Check access rules by role and user id.
@@ -107,7 +105,7 @@ class WebformNodeAccessRulesTest extends WebformNodeBrowserTestBase {
       ] + $default_access_rules;
       $webform->setAccessRules($access_rules)->save();
       $this->drupalGet($path);
-      $assert_session->statusCodeEquals(200);
+      $this->assertResponse(200, 'Webform allows access via role access rules');
 
       // Check access rule via role.
       $access_rules = [
@@ -118,7 +116,7 @@ class WebformNodeAccessRulesTest extends WebformNodeBrowserTestBase {
       ] + $default_access_rules;
       $webform->setAccessRules($access_rules)->save();
       $this->drupalGet($path);
-      $assert_session->statusCodeEquals(200);
+      $this->assertResponse(200, 'Webform allows access via user access rules');
     }
   }
 

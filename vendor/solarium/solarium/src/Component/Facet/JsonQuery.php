@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\FacetSetInterface;
@@ -17,7 +10,7 @@ use Solarium\Core\Query\Helper;
 /**
  * Facet query.
  *
- * @see https://solr.apache.org/guide/json-facet-api.html#query-facet
+ * @see https://lucene.apache.org/solr/guide/7_3/json-facet-api.html
  */
 class JsonQuery extends AbstractFacet implements JsonFacetInterface, FacetSetInterface, QueryInterface
 {
@@ -55,15 +48,11 @@ class JsonQuery extends AbstractFacet implements JsonFacetInterface, FacetSetInt
         return new Helper();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize()
     {
         $options = $this->jsonFacetTraitSerialize();
         $options['q'] = $options['query'];
         unset($options['query']);
-
         return $options;
     }
 }

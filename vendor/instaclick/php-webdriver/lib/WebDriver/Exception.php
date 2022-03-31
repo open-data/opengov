@@ -86,7 +86,6 @@ abstract class Exception extends \Exception
     const UNEXPECTED_PARAMETERS = -5;
     const INVALID_REQUEST = -6;
     const UNKNOWN_LOCATOR_STRATEGY = -7;
-    const W3C_WEBDRIVER_ERROR = -8;
 
     private static $errs = array(
 //      self::SUCCESS => array('Success', 'This should never be thrown!'),
@@ -137,18 +136,18 @@ abstract class Exception extends \Exception
     public static function factory($code, $message = null, $previousException = null)
     {
         // unknown error
-        if (! isset(self::$errs[$code])) {
-            $code = self::UNKNOWN_ERROR;
+        if (!isset(self::$errs[$code])) {
+            if (trim($message) === '') {
+                $message = 'Unknown Error';
+            }
+
+            return new \Exception($message, $code, $previousException);
         }
 
         $errorDefinition = self::$errs[$code];
 
         if (trim($message) === '') {
             $message = $errorDefinition[1];
-        }
-
-        if (! is_numeric($code)) {
-            $code = self::W3C_WEBDRIVER_ERROR;
         }
 
         $className = __CLASS__ . '\\' . $errorDefinition[0];

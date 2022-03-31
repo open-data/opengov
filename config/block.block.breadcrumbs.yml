@@ -9,7 +9,7 @@ dependencies:
 id: breadcrumbs
 theme: gcweb
 region: breadcrumb
-weight: -8
+weight: 0
 provider: null
 plugin: system_breadcrumb_block
 settings:

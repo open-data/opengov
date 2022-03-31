@@ -84,17 +84,3 @@ EOD
     ) {
         break;
     }
-
-match (
-    $expr1 &&
-    $expr2 &&
-    $expr3
-    ) {
-    // structure body
-};
-
-match ($expr1 &&
-$expr2 &&
-  $expr3) {
-      // structure body
-};

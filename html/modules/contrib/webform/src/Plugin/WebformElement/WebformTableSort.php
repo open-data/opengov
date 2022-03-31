@@ -32,7 +32,7 @@ class WebformTableSort extends OptionsBase {
     return $properties;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -51,7 +51,7 @@ class WebformTableSort extends OptionsBase {
   /**
    * {@inheritdoc}
    */
-  public function getItemsDefaultFormat() {
+  public function getItemDefaultFormat() {
     return 'ol';
   }
 

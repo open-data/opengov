@@ -52,7 +52,7 @@ class MenuLinkContentDeleteFormTest extends BrowserTestBase {
     $menu_link = MenuLinkContent::load(1);
     $this->drupalGet($menu_link->toUrl('delete-form'));
     $this->assertRaw(t('Are you sure you want to delete the custom menu link %name?', ['%name' => $menu_link->label()]));
-    $this->assertSession()->linkExists(t('Cancel'));
+    $this->assertLink(t('Cancel'));
     // Make sure cancel link points to link edit
     $this->assertLinkByHref($menu_link->toUrl('edit-form')->toString());
 

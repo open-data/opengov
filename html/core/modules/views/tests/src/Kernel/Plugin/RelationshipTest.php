@@ -38,18 +38,8 @@ class RelationshipTest extends RelationshipJoinTestBase {
   public function testRelationshipQuery() {
     $connection = Database::getConnection();
     // Set the first entry to have the admin as author.
-    $connection->update('views_test_data')
-      ->fields([
-        'uid' => 1,
-      ])
-      ->condition('id', 1)
-      ->execute();
-    $connection->update('views_test_data')
-      ->fields([
-        'uid' => 2,
-      ])
-      ->condition('id', 1, '<>')
-      ->execute();
+    $connection->query("UPDATE {views_test_data} SET uid = 1 WHERE id = 1");
+    $connection->query("UPDATE {views_test_data} SET uid = 2 WHERE id <> 1");
 
     $view = Views::getView('test_view');
     $view->setDisplay();
@@ -146,26 +136,11 @@ class RelationshipTest extends RelationshipJoinTestBase {
   public function testRelationshipRender() {
     $connection = Database::getConnection();
     $author1 = $this->createUser();
-    $connection->update('views_test_data')
-      ->fields([
-        'uid' => $author1->id(),
-      ])
-      ->condition('id', 1)
-      ->execute();
+    $connection->query("UPDATE {views_test_data} SET uid = :uid WHERE id = 1", [':uid' => $author1->id()]);
     $author2 = $this->createUser();
-    $connection->update('views_test_data')
-      ->fields([
-        'uid' => $author2->id(),
-      ])
-      ->condition('id', 2)
-      ->execute();
+    $connection->query("UPDATE {views_test_data} SET uid = :uid WHERE id = 2", [':uid' => $author2->id()]);
     // Set uid to non-existing author uid for row 3.
-    $connection->update('views_test_data')
-      ->fields([
-        'uid' => $author2->id() + 123,
-      ])
-      ->condition('id', 3)
-      ->execute();
+    $connection->query("UPDATE {views_test_data} SET uid = :uid WHERE id = 3", [':uid' => $author2->id() + 123]);
 
     $view = Views::getView('test_view');
     // Add a relationship for authors.
@@ -198,9 +173,9 @@ class RelationshipTest extends RelationshipJoinTestBase {
 
     // Check that the output contains correct values.
     $xpath = '//div[@class="views-row" and div[@class="views-field views-field-id"]=:id and div[@class="views-field views-field-author"]=:author]';
-    $this->assertCount(1, $this->xpath($xpath, [':id' => 1, ':author' => $author1->getAccountName()]));
-    $this->assertCount(1, $this->xpath($xpath, [':id' => 2, ':author' => $author2->getAccountName()]));
-    $this->assertCount(1, $this->xpath($xpath, [':id' => 3, ':author' => '']));
+    $this->assertEqual(1, count($this->xpath($xpath, [':id' => 1, ':author' => $author1->getAccountName()])));
+    $this->assertEqual(1, count($this->xpath($xpath, [':id' => 2, ':author' => $author2->getAccountName()])));
+    $this->assertEqual(1, count($this->xpath($xpath, [':id' => 3, ':author' => ''])));
   }
 
 }

@@ -7,7 +7,7 @@ dependencies:
     - media.type.image
     - node.type.theme_and_topic_page
   content:
-    - 'media:image:1adfedda-9fab-4d8a-bd3c-b683c7069187'
+    - 'media:image:d2e4b29e-3d99-47c3-a477-89a006917f0f'
 id: node.theme_and_topic_page.field_media
 field_name: field_media
 entity_type: node
@@ -18,8 +18,7 @@ required: false
 translatable: true
 default_value:
   -
-    weight: '0'
-    target_uuid: 1adfedda-9fab-4d8a-bd3c-b683c7069187
+    target_uuid: d2e4b29e-3d99-47c3-a477-89a006917f0f
 default_value_callback: ''
 settings:
   handler: 'default:media'

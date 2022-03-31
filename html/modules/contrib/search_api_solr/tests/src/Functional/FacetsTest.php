@@ -40,7 +40,7 @@ class FacetsTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function tearDown(): void {
+  protected function tearDown() {
     if ($this->indexId) {
       $index = Index::load($this->indexId);
       $index->clear();
@@ -78,8 +78,7 @@ class FacetsTest extends SearchApiBrowserTestBase {
     // Create a facet, enable 'show numbers'.
     $this->createFacet('Owl', 'owl');
     $edit = ['widget' => 'links', 'widget_config[show_numbers]' => '1'];
-    $this->drupalGet('admin/config/search/facets/owl/edit');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('admin/config/search/facets/owl/edit', $edit, 'Save');
 
     // Verify that the facet results are correct.
     $this->drupalGet('search-api-test-fulltext');

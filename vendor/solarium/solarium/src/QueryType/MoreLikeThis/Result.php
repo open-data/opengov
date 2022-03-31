@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\MoreLikeThis;
 
 use Solarium\Exception\UnexpectedValueException;
@@ -16,15 +9,15 @@ use Solarium\QueryType\Select\Result\Result as SelectResult;
 /**
  * MoreLikeThis query result.
  *
- * This is the standard resulttype for a MoreLikeThis query. Example usage:
+ * This is the standard resulttype for a moreLikeThis query. Example usage:
  * <code>
- * // total Solr MLT results
+ * // total solr mlt results
  * $result->getNumFound();
  *
  * // results fetched
  * count($result);
  *
- * // iterate over fetched MLT docs
+ * // iterate over fetched mlt docs
  * foreach ($result as $doc) {
  *    ....
  * }
@@ -45,17 +38,10 @@ class Result extends SelectResult
     /**
      * Get MLT interesting terms.
      *
-     * This will show what "interesting" terms are used for the MoreLikeThis
-     * query. These are the top TF/IDF terms.
-     *
-     * If mlt.interestingTerms was 'list', a flat list is returned.
-     *
-     * If mlt.interestingTerms was 'details',
+     * this will show what "interesting" terms are used for the MoreLikeThis
+     * query. These are the top tf/idf terms. NOTE: if you select 'details',
      * this shows you the term and boost used for each term. Unless
-     * mlt.boost was true all terms will have boost=1.0.
-     *
-     * If mlt.interestingTerms was 'none', the terms aren't available
-     * and an exception is thrown.
+     * mlt.boost=true all terms will have boost=1.0
      *
      * @throws UnexpectedValueException
      *
@@ -64,7 +50,7 @@ class Result extends SelectResult
     public function getInterestingTerms()
     {
         $query = $this->getQuery();
-        if ('none' === $query->getInterestingTerms()) {
+        if ('none' == $query->getInterestingTerms()) {
             throw new UnexpectedValueException('interestingterms is none');
         }
         $this->parseResponse();

@@ -26,6 +26,8 @@ class MigrateUrlAliasTest extends MigrateDrupal6TestBase {
     'path',
     'path_alias',
     'menu_ui',
+    // Required for translation migrations.
+    'migrate_drupal_multilingual',
   ];
 
   /**

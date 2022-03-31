@@ -27,18 +27,17 @@ class RouterPermissionTest extends BrowserTestBase {
    * Tests permission requirements on routes.
    */
   public function testPermissionAccess() {
-    // Ensure 403 Access Denied for a route without permission.
-    $this->drupalGet('router_test/test7');
-    $this->assertSession()->statusCodeEquals(403);
+    $path = 'router_test/test7';
+    $this->drupalGet($path);
+    $this->assertResponse(403, "Access denied for a route where we don't have a permission");
 
-    // Ensure 403 Access Denied by default if no access specified.
     $this->drupalGet('router_test/test8');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403, 'Access denied by default if no access specified');
 
     $user = $this->drupalCreateUser(['access test7']);
     $this->drupalLogin($user);
     $this->drupalGet('router_test/test7');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertNoRaw('Access denied');
     $this->assertRaw('test7text', 'The correct string was returned because the route was successful.');
   }

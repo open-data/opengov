@@ -3,7 +3,6 @@
 namespace Drupal\search_api_db\DatabaseCompatibility;
 
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Database\Query\SelectInterface;
 
 /**
  * Bundles methods for resolving DBMS-specific differences.
@@ -70,13 +69,5 @@ interface DatabaseCompatibilityHandlerInterface {
    *   canonical base form when inserted into a table of the given type.
    */
   public function preprocessIndexValue($value, $type = 'text');
-
-  /**
-   * Applies a random sort to the query.
-   *
-   * @param \Drupal\Core\Database\Query\SelectInterface $query
-   *   The search query.
-   */
-  public function orderByRandom(SelectInterface $query);
 
 }

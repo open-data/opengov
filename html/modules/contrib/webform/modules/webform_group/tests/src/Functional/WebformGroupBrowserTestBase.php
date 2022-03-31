@@ -5,6 +5,7 @@ namespace Drupal\Tests\webform_group\Functional;
 use Drupal\group\Entity\GroupRole;
 use Drupal\Tests\group\Functional\GroupBrowserTestBase;
 use Drupal\Tests\webform\Traits\WebformBrowserTestTrait;
+use Drupal\Tests\webform\Traits\WebformAssertLegacyTrait;
 use Drupal\Tests\webform_node\Traits\WebformNodeBrowserTestTrait;
 
 /**
@@ -12,6 +13,7 @@ use Drupal\Tests\webform_node\Traits\WebformNodeBrowserTestTrait;
  */
 abstract class WebformGroupBrowserTestBase extends GroupBrowserTestBase {
 
+  use WebformAssertLegacyTrait;
   use WebformBrowserTestTrait;
   use WebformNodeBrowserTestTrait;
 

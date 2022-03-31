@@ -3,202 +3,164 @@
 namespace Drupal\simple_sitemap\Queue;
 
 use Drupal\Component\Utility\Timer;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Lock\LockBackendInterface;
-use Drupal\simple_sitemap\Entity\SimpleSitemap;
-use Drupal\simple_sitemap\Settings;
+use Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator\SitemapGeneratorBase;
+use Drupal\simple_sitemap\SimplesitemapSettings;
+use Drupal\simple_sitemap\SimplesitemapManager;
 use Drupal\Core\State\StateInterface;
 use Drupal\simple_sitemap\Logger;
 
-/**
- * The simple_sitemap.queue_worker service.
- */
+
 class QueueWorker {
 
   use BatchTrait;
 
-  protected const REBUILD_QUEUE_CHUNK_ITEM_SIZE = 5000;
-  public const LOCK_ID = 'simple_sitemap:generation';
-  public const GENERATE_LOCK_TIMEOUT = 3600;
-
-  public const GENERATE_TYPE_FORM = 'form';
-  public const GENERATE_TYPE_DRUSH = 'drush';
-  public const GENERATE_TYPE_CRON = 'cron';
-  public const GENERATE_TYPE_BACKEND = 'backend';
+  const REBUILD_QUEUE_CHUNK_ITEM_SIZE = 5000;
 
   /**
-   * The simple_sitemap.settings service.
-   *
-   * @var \Drupal\simple_sitemap\Settings
+   * @var \Drupal\simple_sitemap\SimplesitemapSettings
    */
   protected $settings;
 
   /**
-   * The state key/value store.
-   *
+   * @var \Drupal\simple_sitemap\SimplesitemapManager
+   */
+  protected $manager;
+
+  /**
    * @var \Drupal\Core\State\StateInterface
    */
   protected $state;
 
   /**
-   * Simple XML Sitemap queue handler.
-   *
-   * @var \Drupal\simple_sitemap\Queue\SimpleSitemapQueue
+   * @var \Drupal\simple_sitemap\Queue\SimplesitemapQueue
    */
   protected $queue;
 
   /**
-   * Simple XML Sitemap logger.
-   *
    * @var \Drupal\simple_sitemap\Logger
    */
   protected $logger;
 
   /**
-   * The module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var string|null
    */
-  protected $moduleHandler;
+  protected $variantProcessedNow;
 
   /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var string|null
    */
-  protected $entityTypeManager;
+  protected $generatorProcessedNow;
 
   /**
-   * The lock backend that should be used.
-   *
-   * @var \Drupal\Core\Lock\LockBackendInterface
-   */
-  protected $lock;
-
-  /**
-   * The sitemap entity.
-   *
-   * @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface
-   */
-  protected $sitemapProcessedNow;
-
-  /**
-   * The local cache of results.
-   *
    * @var array
    */
   protected $results = [];
 
   /**
-   * The local cache of processed results.
-   *
-   * @var array
-   */
-  protected $processedResults = [];
-
-  /**
-   * The local cache of processed paths.
-   *
    * @var array
    */
   protected $processedPaths = [];
 
   /**
-   * Sitemap generator settings.
-   *
    * @var array
    */
   protected $generatorSettings;
 
   /**
-   * Maximum links in a sitemap.
-   *
    * @var int|null
    */
   protected $maxLinks;
 
   /**
-   * The number of remaining elements.
-   *
    * @var int|null
    */
   protected $elementsRemaining;
 
   /**
-   * The initial number of queue items.
-   *
    * @var int|null
    */
   protected $elementsTotal;
 
   /**
    * QueueWorker constructor.
-   *
-   * @param \Drupal\simple_sitemap\Settings $settings
-   *   The simple_sitemap.settings service.
+   * @param \Drupal\simple_sitemap\SimplesitemapSettings $settings
+   * @param \Drupal\simple_sitemap\SimplesitemapManager $manager
    * @param \Drupal\Core\State\StateInterface $state
-   *   The state key/value store.
-   * @param \Drupal\simple_sitemap\Queue\SimpleSitemapQueue $element_queue
-   *   Simple XML Sitemap queue handler.
+   * @param \Drupal\simple_sitemap\Queue\SimplesitemapQueue $element_queue
    * @param \Drupal\simple_sitemap\Logger $logger
-   *   Simple XML Sitemap logger.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler service.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\Core\Lock\LockBackendInterface $lock
-   *   The lock backend that should be used.
    */
-  public function __construct(Settings $settings,
+  public function __construct(SimplesitemapSettings $settings,
+                              SimplesitemapManager $manager,
                               StateInterface $state,
-                              SimpleSitemapQueue $element_queue,
-                              Logger $logger,
-                              ModuleHandlerInterface $module_handler,
-                              EntityTypeManagerInterface $entity_type_manager,
-                              LockBackendInterface $lock) {
+                              SimplesitemapQueue $element_queue,
+                              Logger $logger) {
     $this->settings = $settings;
+    $this->manager = $manager;
     $this->state = $state;
     $this->queue = $element_queue;
     $this->logger = $logger;
-    $this->moduleHandler = $module_handler;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->lock = $lock;
   }
 
   /**
-   * Queues links from variants.
-   *
-   * @param string[]|string|null $variants
-   *   The sitemap variants.
-   *
    * @return $this
-   *
+   */
+  public function deleteQueue() {
+    $this->queue->deleteQueue();
+    SitemapGeneratorBase::purgeSitemapVariants(NULL, 'unpublished');
+    $this->variantProcessedNow = NULL;
+    $this->generatorProcessedNow = NULL;
+    $this->results = [];
+    $this->processedPaths = [];
+    $this->state->set('simple_sitemap.queue_items_initial_amount', 0);
+    $this->state->delete('simple_sitemap.queue_stashed_results');
+    $this->elementsTotal = NULL;
+    $this->elementsRemaining = NULL;
+
+    return $this;
+  }
+
+  /**
+   * @param string[]|string|null $variants
+   * @return $this
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function queue($variants = NULL): QueueWorker {
-    $variants = $variants !== NULL ? (array) $variants : NULL;
-
-    /** @var \Drupal\simple_sitemap\Entity\SimpleSitemap[] $sitemaps */
-    $sitemaps = $this->entityTypeManager->getStorage('simple_sitemap')->loadMultiple($variants);
-
-    $empty_variants = array_fill_keys(array_keys($sitemaps), TRUE);
+  public function queue($variants = NULL) {
+    $type_definitions = $this->manager->getSitemapTypes();
     $all_data_sets = [];
 
-    foreach ($sitemaps as $variant => $sitemap) {
-      foreach ($sitemap->getType()->getUrlGenerators() as $url_generator_id => $url_generator) {
-        // @todo Automatically set sitemap.
-        foreach ($url_generator->setSitemap($sitemap)->getDataSets() as $data_set) {
-          unset($empty_variants[$variant]);
-          $all_data_sets[] = [
-            'data' => $data_set,
-            'sitemap' => $variant,
-            'url_generator' => $url_generator_id,
-          ];
+    // Gather variant data of variants chosen for this rebuild.
+    $queue_variants = NULL === $variants
+      ? $this->manager->getSitemapVariants()
+      : array_filter(
+        $this->manager->getSitemapVariants(),
+        function($name) use ($variants) { return in_array($name, (array) $variants); },
+        ARRAY_FILTER_USE_KEY
+      );
 
-          if (count($all_data_sets) === self::REBUILD_QUEUE_CHUNK_ITEM_SIZE) {
-            $this->queueElements($all_data_sets);
-            $all_data_sets = [];
+    foreach ($queue_variants as $variant_name => $variant_definition) {
+      $type = $variant_definition['type'];
+
+      // Adding generate_sitemap operations for all data sets.
+      foreach ($type_definitions[$type]['urlGenerators'] as $url_generator_id) {
+
+        $data_sets = $this->manager->getUrlGenerator($url_generator_id)
+          ->setSitemapVariant($variant_name)
+          ->getDataSets();
+
+        if (!empty($data_sets)) {
+          $queue_variants[$variant_name]['data'] = TRUE;
+          foreach ($data_sets as $data_set) {
+            $all_data_sets[] = [
+              'data' => $data_set,
+              'sitemap_variant' => $variant_name,
+              'url_generator' => $url_generator_id,
+              'sitemap_generator' => $type_definitions[$type]['sitemapGenerator'],
+            ];
+
+            if (count($all_data_sets) === self::REBUILD_QUEUE_CHUNK_ITEM_SIZE) {
+              $this->queueElements($all_data_sets);
+              $all_data_sets = [];
+            }
           }
         }
       }
@@ -209,71 +171,46 @@ class QueueWorker {
     }
     $this->getQueuedElementCount(TRUE);
 
-    // Remove all sitemap content of variants which did not yield any queue
-    // elements.
-    foreach ($empty_variants as $variant => $is_empty) {
-      $sitemaps[$variant]->deleteContent();
-    }
+    // Remove all sitemap instances of variants which did not yield any queue elements.
+    $this->manager->removeSitemap(array_keys(array_filter($queue_variants, function($e) { return empty($e['data']); })));
 
     return $this;
   }
 
   /**
-   * Deletes the queue and queues links from variants.
-   *
    * @param string[]|string|null $variants
-   *   The sitemap variants.
-   *
    * @return $this
-   *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function rebuildQueue($variants = NULL): QueueWorker {
-    if (!$this->lock->acquire(static::LOCK_ID)) {
-      throw new \RuntimeException('Unable to acquire a lock for sitemap queue rebuilding');
-    }
+  public function rebuildQueue($variants = NULL) {
     $this->deleteQueue();
     $this->queue($variants);
-    $this->lock->release(static::LOCK_ID);
 
     return $this;
   }
 
-  /**
-   * Stores items to the queue.
-   *
-   * @param mixed $elements
-   *   Datasets to process.
-   *
-   * @throws \Exception
-   */
-  protected function queueElements($elements): void {
+  protected function queueElements($elements) {
     $this->queue->createItems($elements);
     $this->state->set('simple_sitemap.queue_items_initial_amount', ($this->state->get('simple_sitemap.queue_items_initial_amount') + count($elements)));
   }
 
   /**
-   * Generates all sitemaps.
-   *
    * @param string $from
-   *   The source of generation.
-   *
    * @return $this
-   *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function generate(string $from = self::GENERATE_TYPE_FORM): QueueWorker {
+  public function generateSitemap($from = 'form') {
 
     $this->generatorSettings = [
-      'base_url' => $this->settings->get('base_url', ''),
-      'xsl' => $this->settings->get('xsl', TRUE),
-      'default_variant' => $this->settings->get('default_variant'),
-      'skip_untranslated' => $this->settings->get('skip_untranslated', FALSE),
-      'remove_duplicates' => $this->settings->get('remove_duplicates', TRUE),
-      'excluded_languages' => $this->settings->get('excluded_languages', []),
+      'base_url' => $this->settings->getSetting('base_url', ''),
+      'xsl' => $this->settings->getSetting('xsl', TRUE),
+      'default_variant' => $this->settings->getSetting('default_variant', NULL),
+      'skip_untranslated' => $this->settings->getSetting('skip_untranslated', FALSE),
+      'remove_duplicates' => $this->settings->getSetting('remove_duplicates', TRUE),
+      'excluded_languages' => $this->settings->getSetting('excluded_languages', []),
     ];
-    $this->maxLinks = $this->settings->get('max_links', 2000);
-    $max_execution_time = $this->settings->get('generate_duration', 10000);
+    $this->maxLinks = $this->settings->getSetting('max_links');
+    $max_execution_time = $this->settings->getSetting('generate_duration', 10000);
     Timer::start('simple_sitemap_generator');
 
     $this->unstashResults();
@@ -282,67 +219,58 @@ class QueueWorker {
       $this->rebuildQueue();
     }
 
-    // Acquire a lock for max execution time + 5 seconds. If max_execution time
-    // is unlimited then lock for 1 hour.
-    $lock_timeout = $max_execution_time > 0 ? ($max_execution_time / 1000) + 5 : static::GENERATE_LOCK_TIMEOUT;
-    if (!$this->lock->acquire(static::LOCK_ID, $lock_timeout)) {
-      throw new \RuntimeException('Unable to acquire a lock for sitemap generation');
-    }
-
-    foreach ($this->queue->yieldItem() as $element) {
+    while ($element = $this->queue->claimItem()) {
 
       if (!empty($max_execution_time) && Timer::read('simple_sitemap_generator') >= $max_execution_time) {
         break;
       }
 
       try {
-        if ($this->sitemapProcessedNow === NULL || $element->data['sitemap'] !== $this->sitemapProcessedNow->id()) {
+        if ($element->data['sitemap_variant'] !== $this->variantProcessedNow) {
 
-          if (NULL !== $this->sitemapProcessedNow) {
-            $this->generateSitemapChunksFromResults(TRUE);
-            $this->publishCurrentSitemap();
+          if (NULL !== $this->variantProcessedNow) {
+            $this->generateVariantChunksFromResults(TRUE);
+            $this->publishCurrentVariant();
           }
 
-          $this->sitemapProcessedNow = $this->entityTypeManager->getStorage('simple_sitemap')->load($element->data['sitemap']);
+          $this->variantProcessedNow = $element->data['sitemap_variant'];
+          $this->generatorProcessedNow = $element->data['sitemap_generator'];
           $this->processedPaths = [];
         }
 
         $this->generateResultsFromElement($element);
 
         if (!empty($this->maxLinks) && count($this->results) >= $this->maxLinks) {
-          $this->generateSitemapChunksFromResults();
+          $this->generateVariantChunksFromResults();
         }
       }
       catch (\Exception $e) {
         watchdog_exception('simple_sitemap', $e);
       }
 
-      // @todo May want to use deleteItems() instead.
-      $this->queue->deleteItem($element);
+      $this->queue->deleteItem($element); //todo May want to use deleteItems() instead.
       $this->elementsRemaining--;
     }
 
     if ($this->getQueuedElementCount() === 0) {
-      $this->generateSitemapChunksFromResults(TRUE);
-      $this->publishCurrentSitemap();
+      $this->generateVariantChunksFromResults(TRUE);
+      $this->publishCurrentVariant();
     }
     else {
       $this->stashResults();
     }
-    $this->lock->release(static::LOCK_ID);
 
     return $this;
   }
 
   /**
-   * Generates results from the given element.
-   *
-   * @param mixed $element
-   *   Element to process.
+   * @param $element
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  protected function generateResultsFromElement($element): void {
-    $results = $this->sitemapProcessedNow->getType()->getUrlGenerators()[$element->data['url_generator']]
-      ->setSitemap($this->sitemapProcessedNow)
+  protected function generateResultsFromElement($element) {
+    $results = $this->manager->getUrlGenerator($element->data['url_generator'])
+      ->setSitemapVariant($this->variantProcessedNow)
+      ->setSettings($this->generatorSettings)
       ->generate($element->data['data']);
 
     $this->removeDuplicates($results);
@@ -350,12 +278,9 @@ class QueueWorker {
   }
 
   /**
-   * Removes duplicates from results.
-   *
    * @param array $results
-   *   Results to process.
    */
-  protected function removeDuplicates(array &$results): void {
+  protected function removeDuplicates(&$results) {
     if ($this->generatorSettings['remove_duplicates'] && !empty($results)) {
       $result = $results[key($results)];
       if (isset($result['meta']['path'])) {
@@ -370,109 +295,64 @@ class QueueWorker {
   }
 
   /**
-   * Generates sitemap chunks from results.
-   *
    * @param bool $complete
-   *   The complete flag.
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  protected function generateSitemapChunksFromResults(bool $complete = FALSE): void {
+  protected function generateVariantChunksFromResults($complete = FALSE) {
     if (!empty($this->results)) {
-      $processed_results = $this->results;
-      $this->moduleHandler->alter('simple_sitemap_links', $processed_results, $this->sitemapProcessedNow);
-      $this->processedResults = array_merge($this->processedResults, $processed_results);
-      $this->results = [];
-    }
+      $generator = $this->manager->getSitemapGenerator($this->generatorProcessedNow)
+        ->setSitemapVariant($this->variantProcessedNow)
+        ->setSettings($this->generatorSettings);
 
-    if (empty($this->processedResults)) {
-      return;
-    }
-
-    if (!empty($this->maxLinks)) {
-      foreach (array_chunk($this->processedResults, $this->maxLinks, TRUE) as $chunk_links) {
-        if ($complete || count($chunk_links) === $this->maxLinks) {
-          $this->sitemapProcessedNow->addChunk($chunk_links);
-          $this->processedResults = array_diff_key($this->processedResults, $chunk_links);
+      if (empty($this->maxLinks) || $complete) {
+        $generator->generate($this->results);
+        $this->results = [];
+      }
+      else {
+        foreach (array_chunk($this->results, $this->maxLinks, TRUE) as $chunk_links) {
+          if (count($chunk_links) === $this->maxLinks || $complete) {
+            $generator->generate($chunk_links);
+            $this->results = array_diff_key($this->results, $chunk_links);
+          }
         }
       }
-    }
-    else {
-      $this->sitemapProcessedNow->addChunk($this->processedResults);
-      $this->processedResults = [];
-    }
+    };
   }
 
-  /**
-   * Publishes the current sitemap.
-   */
-  protected function publishCurrentSitemap(): void {
-    if ($this->sitemapProcessedNow !== NULL) {
-      $this->sitemapProcessedNow->generateIndex()->publish();
+  protected function publishCurrentVariant() {
+    if ($this->variantProcessedNow !== NULL) {
+      $this->manager->getSitemapGenerator($this->generatorProcessedNow)
+        ->setSitemapVariant($this->variantProcessedNow)
+        ->setSettings($this->generatorSettings)
+        ->generateIndex()
+        ->publish();
     }
   }
 
-  /**
-   * Resets the local cache.
-   */
-  protected function resetWorker() {
-    $this->results = [];
-    $this->processedPaths = [];
-    $this->processedResults = [];
-    $this->sitemapProcessedNow = NULL;
-    $this->elementsTotal = NULL;
-    $this->elementsRemaining = NULL;
-  }
-
-  /**
-   * Deletes a queue and every item in the queue.
-   *
-   * @return $this
-   */
-  public function deleteQueue(): QueueWorker {
-    $this->queue->deleteQueue();
-    SimpleSitemap::purgeContent(NULL, SimpleSitemap::FETCH_BY_STATUS_UNPUBLISHED);
-    $this->state->set('simple_sitemap.queue_items_initial_amount', 0);
-    $this->state->delete('simple_sitemap.queue_stashed_results');
-    $this->resetWorker();
-
-    return $this;
-  }
-
-  /**
-   * Stashes the current results.
-   */
-  protected function stashResults(): void {
+  protected function stashResults() {
     $this->state->set('simple_sitemap.queue_stashed_results', [
-      'variant' => $this->sitemapProcessedNow->id(),
+      'variant' => $this->variantProcessedNow,
+      'generator' => $this->generatorProcessedNow,
       'results' => $this->results,
-      'processed_results' => $this->processedResults,
       'processed_paths' => $this->processedPaths,
     ]);
-    $this->resetWorker();
+    $this->results = [];
+    $this->processedPaths = [];
+    $this->generatorProcessedNow = NULL;
+    $this->variantProcessedNow = NULL;
   }
 
-  /**
-   * Unstashes results.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   */
-  protected function unstashResults(): void {
+  protected function unstashResults() {
     if (NULL !== $results = $this->state->get('simple_sitemap.queue_stashed_results')) {
       $this->state->delete('simple_sitemap.queue_stashed_results');
       $this->results = !empty($results['results']) ? $results['results'] : [];
-      $this->processedResults = !empty($results['processed_results']) ? $results['processed_results'] : [];
       $this->processedPaths = !empty($results['processed_paths']) ? $results['processed_paths'] : [];
-      $this->sitemapProcessedNow = $this->entityTypeManager->getStorage('simple_sitemap')->load($results['variant']);
+      $this->variantProcessedNow = $results['variant'];
+      $this->generatorProcessedNow = $results['generator'];
     }
   }
 
-  /**
-   * Gets the initial number of queue items.
-   *
-   * @return int
-   *   The initial number of queue items.
-   */
-  public function getInitialElementCount(): ?int {
+  public function getInitialElementCount() {
     if (NULL === $this->elementsTotal) {
       $this->elementsTotal = (int) $this->state->get('simple_sitemap.queue_items_initial_amount', 0);
     }
@@ -481,15 +361,10 @@ class QueueWorker {
   }
 
   /**
-   * Retrieves the number of items in the queue.
-   *
    * @param bool $force_recount
-   *   TRUE to force the recount.
-   *
    * @return int
-   *   An integer estimate of the number of items in the queue.
    */
-  public function getQueuedElementCount(bool $force_recount = FALSE): ?int {
+  public function getQueuedElementCount($force_recount = FALSE) {
     if ($force_recount || NULL === $this->elementsRemaining) {
       $this->elementsRemaining = $this->queue->numberOfItems();
     }
@@ -498,24 +373,16 @@ class QueueWorker {
   }
 
   /**
-   * Gets the number of stashed results.
-   *
    * @return int
-   *   The number of stashed results.
    */
-  public function getStashedResultCount(): int {
-    $results = $this->state->get('simple_sitemap.queue_stashed_results', []);
-    return (!empty($results['results']) ? count($results['results']) : 0)
-      + (!empty($results['processed_results']) ? count($results['processed_results']) : 0);
+  public function getStashedResultCount() {
+    return count($this->state->get('simple_sitemap.queue_stashed_results', ['results' => []])['results']);
   }
 
   /**
-   * Gets the number of processed elements.
-   *
    * @return int
-   *   the number of processed elements.
    */
-  public function getProcessedElementCount(): ?int {
+  public function getProcessedElementCount() {
     $initial = $this->getInitialElementCount();
     $remaining = $this->getQueuedElementCount();
 
@@ -523,13 +390,10 @@ class QueueWorker {
   }
 
   /**
-   * Determines whether the generation is in progress.
-   *
    * @return bool
-   *   TRUE if generation is in progress and FALSE otherwise.
    */
-  public function generationInProgress(): bool {
+  public function generationInProgress() {
     return 0 < ($this->getQueuedElementCount() + $this->getStashedResultCount());
   }
-
 }
+

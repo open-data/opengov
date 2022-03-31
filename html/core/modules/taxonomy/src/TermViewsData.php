@@ -157,10 +157,10 @@ class TermViewsData extends EntityViewsData {
       'help' => $this->t('Relate all content tagged with a term.'),
       'relationship' => [
         'id' => 'standard',
-        'base' => 'node_field_data',
+        'base' => 'node',
         'base field' => 'nid',
         'label' => $this->t('node'),
-        'skip base' => 'node_field_data',
+        'skip base' => 'node',
       ],
     ];
 

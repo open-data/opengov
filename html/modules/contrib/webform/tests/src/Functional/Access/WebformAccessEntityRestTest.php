@@ -23,8 +23,6 @@ class WebformAccessEntityRestTest extends WebformBrowserTestBase {
    * Tests webform entity REST acces.
    */
   public function testRestAccess() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('contact');
 
     $account = $this->drupalCreateUser();
@@ -33,30 +31,30 @@ class WebformAccessEntityRestTest extends WebformBrowserTestBase {
       'access any webform configuration',
     ]);
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Check anonymous access denied to webform via _format=hal_json.
     $this->drupalGet('/webform/contact', ['query' => ['_format' => 'hal_json']]);
-    $assert_session->responseContains('{"message":"Access to webform configuration is required."}');
+    $this->assertRaw('{"message":"Access to webform configuration is required."}');
 
     // Login authenticated user.
     $this->drupalLogin($account);
 
     // Check authenticated access allowed to webform via _format=html.
     $this->drupalGet('/webform/contact');
-    $assert_session->fieldExists('subject');
+    $this->assertFieldByName('subject');
 
     // Check authenticated access denied to webform via _format=hal_json.
     $this->drupalGet('/webform/contact', ['query' => ['_format' => 'hal_json']]);
-    $assert_session->responseContains('{"message":"Access to webform configuration is required."}');
+    $this->assertRaw('{"message":"Access to webform configuration is required."}');
 
     // Login rest (permission) user.
     $this->drupalLogin($configuration_account);
 
     // Check rest access allowed to webform via _format=hal_json.
     $this->drupalGet('/webform/contact', ['query' => ['_format' => 'hal_json']]);
-    $assert_session->responseNotContains('{"message":"Access to webform configuration is required."}');
-    $assert_session->responseContains('"id":"contact","title":"Contact"');
+    $this->assertNoRaw('{"message":"Access to webform configuration is required."}');
+    $this->assertRaw('"id":"contact","title":"Contact"');
 
     // Allow anonymous role to access webform configuration.
     $access_rules = $webform->getAccessRules();
@@ -69,14 +67,14 @@ class WebformAccessEntityRestTest extends WebformBrowserTestBase {
 
     // Check anonymous access allowed to webform via _format=hal_json.
     $this->drupalGet('/webform/contact', ['query' => ['_format' => 'hal_json']]);
-    $assert_session->responseNotContains('{"message":"Access to webform configuration is required."}');
+    $this->assertNoRaw('{"message":"Access to webform configuration is required."}');
 
     // Login authenticated user.
     $this->drupalLogin($account);
 
     // Check authenticated access allowed to webform via _format=hal_json.
     $this->drupalGet('/webform/contact', ['query' => ['_format' => 'hal_json']]);
-    $assert_session->responseNotContains('{"message":"Access to webform configuration is required."}');
+    $this->assertNoRaw('{"message":"Access to webform configuration is required."}');
   }
 
 }

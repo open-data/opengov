@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Result\Stats;
 
 /**
@@ -14,14 +7,19 @@ namespace Solarium\Component\Result\Stats;
  */
 class FacetValue
 {
-    use ResultTrait;
-
     /**
      * Facet value.
      *
      * @var string
      */
     protected $value;
+
+    /**
+     * Stats data.
+     *
+     * @var array
+     */
+    protected $stats;
 
     /**
      * Constructor.
@@ -46,14 +44,92 @@ class FacetValue
     }
 
     /**
+     * Get min value.
+     *
+     * @return float|null
+     */
+    public function getMin(): ?float
+    {
+        return $this->stats['min'];
+    }
+
+    /**
+     * Get max value.
+     *
+     * @return float|null
+     */
+    public function getMax(): ?float
+    {
+        return $this->stats['max'];
+    }
+
+    /**
+     * Get sum value.
+     *
+     * @return float
+     */
+    public function getSum(): float
+    {
+        return $this->stats['sum'];
+    }
+
+    /**
+     * Get count value.
+     *
+     * @return int
+     */
+    public function getCount(): int
+    {
+        return (int) $this->stats['count'];
+    }
+
+    /**
+     * Get missing value.
+     *
+     * @return string
+     */
+    public function getMissing(): string
+    {
+        return $this->stats['missing'];
+    }
+
+    /**
+     * Get sumOfSquares value.
+     *
+     * @return float
+     */
+    public function getSumOfSquares(): float
+    {
+        return $this->stats['sumOfSquares'];
+    }
+
+    /**
+     * Get mean value.
+     *
+     * @return string|float
+     */
+    public function getMean()
+    {
+        return $this->stats['mean'];
+    }
+
+    /**
+     * Get stddev value.
+     *
+     * @return float
+     */
+    public function getStddev(): float
+    {
+        return $this->stats['stddev'];
+    }
+
+    /**
      * Get facet stats.
      *
-     * @return array|null
-     *
-     * @deprecated Will be removed in Solarium 7
+     * @return array
      */
-    public function getFacets(): ?array
+    public function getFacets(): array
     {
-        return null;
+        return $this->stats['facets'];
     }
 }

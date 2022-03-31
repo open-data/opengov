@@ -41,7 +41,7 @@ class RedisLockTest extends LockTest {
   /**
    * {@inheritdoc}
    */
-  protected function setUp(): void {
+  protected function setUp() {
     parent::setUp();
     $this->lock = $this->container->get('lock');
   }

@@ -48,9 +48,6 @@ class ContentAccessTest extends ProcessorTestBase {
   public function setUp($processor = NULL) {
     parent::setUp('content_access');
 
-    // Activate our custom grant.
-    \Drupal::state()->set('search_api_test_add_node_access_grant', TRUE);
-
     // Create a node type for testing.
     $type = NodeType::create(['type' => 'page', 'name' => 'page']);
     $type->save();
@@ -359,8 +356,8 @@ class ContentAccessTest extends ProcessorTestBase {
   public function testAlterPropertyDefinitions() {
     // Check for added properties when no datasource is given.
     $properties = $this->processor->getPropertyDefinitions(NULL);
-    $this->assertArrayHasKey('search_api_node_grants', $properties, 'The Properties where modified with the "search_api_node_grants".');
-    $this->assertInstanceOf(DataDefinitionInterface::class, $properties['search_api_node_grants'], 'The "search_api_node_grants" key contains a valid DataDefinition instance.');
+    $this->assertTrue(array_key_exists('search_api_node_grants', $properties), 'The Properties where modified with the "search_api_node_grants".');
+    $this->assertTrue(($properties['search_api_node_grants'] instanceof DataDefinitionInterface), 'The "search_api_node_grants" key contains a valid DataDefinition instance.');
     $this->assertEquals('string', $properties['search_api_node_grants']->getDataType(), 'Correct DataType set in the DataDefinition.');
 
     // Verify that there are no properties if a datasource is given.
@@ -378,7 +375,7 @@ class ContentAccessTest extends ProcessorTestBase {
    *   The new user object.
    */
   protected function createUser(array $permissions) {
-    $role = Role::create(['id' => 'role', 'label' => 'Role test']);
+    $role = Role::create(['id' => 'role', 'name' => 'Role test']);
     $role->save();
     user_role_grant_permissions($role->id(), $permissions);
 

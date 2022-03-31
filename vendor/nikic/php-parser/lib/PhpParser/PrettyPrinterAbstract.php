@@ -824,11 +824,7 @@ abstract class PrettyPrinterAbstract
                     return null;
                 }
 
-                // We go multiline if the original code was multiline,
-                // or if it's an array item with a comment above it.
-                if ($insertStr === ', ' &&
-                    ($this->isMultiline($origNodes) || $arrItem->getComments())
-                ) {
+                if ($insertStr === ', ' && $this->isMultiline($origNodes)) {
                     $insertStr = ',';
                     $insertNewline = true;
                 }
@@ -846,11 +842,11 @@ abstract class PrettyPrinterAbstract
                 $this->setIndentLevel($lastElemIndentLevel);
 
                 if ($insertNewline) {
-                    $result .= $insertStr . $this->nl;
                     $comments = $arrItem->getComments();
                     if ($comments) {
-                        $result .= $this->pComments($comments) . $this->nl;
+                        $result .= $this->nl . $this->pComments($comments);
                     }
+                    $result .= $insertStr . $this->nl;
                 } else {
                     $result .= $insertStr;
                 }
@@ -1078,8 +1074,7 @@ abstract class PrettyPrinterAbstract
              . ($modifiers & Stmt\Class_::MODIFIER_PRIVATE   ? 'private '   : '')
              . ($modifiers & Stmt\Class_::MODIFIER_STATIC    ? 'static '    : '')
              . ($modifiers & Stmt\Class_::MODIFIER_ABSTRACT  ? 'abstract '  : '')
-             . ($modifiers & Stmt\Class_::MODIFIER_FINAL     ? 'final '     : '')
-             . ($modifiers & Stmt\Class_::MODIFIER_READONLY  ? 'readonly '  : '');
+             . ($modifiers & Stmt\Class_::MODIFIER_FINAL     ? 'final '     : '');
     }
 
     /**
@@ -1128,8 +1123,7 @@ abstract class PrettyPrinterAbstract
         for ($i = 0; $i < 256; $i++) {
             // Since PHP 7.1 The lower range is 0x80. However, we also want to support code for
             // older versions.
-            $chr = chr($i);
-            $this->labelCharMap[$chr] = $i >= 0x7f || ctype_alnum($chr);
+            $this->labelCharMap[chr($i)] = $i >= 0x7f || ctype_alnum($i);
         }
     }
 
@@ -1248,7 +1242,7 @@ abstract class PrettyPrinterAbstract
     /**
      * Lazily initializes the removal map.
      *
-     * The removal map is used to determine which additional tokens should be removed when a
+     * The removal map is used to determine which additional tokens should be returned when a
      * certain node is replaced by null.
      */
     protected function initializeRemovalMap() {
@@ -1275,8 +1269,6 @@ abstract class PrettyPrinterAbstract
             'Stmt_Catch->var' => $stripLeft,
             'Stmt_ClassMethod->returnType' => $stripColon,
             'Stmt_Class->extends' => ['left' => \T_EXTENDS],
-            'Stmt_Enum->scalarType' => $stripColon,
-            'Stmt_EnumCase->expr' => $stripEquals,
             'Expr_PrintableNewAnonClass->extends' => ['left' => \T_EXTENDS],
             'Stmt_Continue->num' => $stripBoth,
             'Stmt_Foreach->keyVar' => $stripDoubleArrow,
@@ -1315,8 +1307,6 @@ abstract class PrettyPrinterAbstract
             'Stmt_Catch->var' => [null, false, ' ', null],
             'Stmt_ClassMethod->returnType' => [')', false, ' : ', null],
             'Stmt_Class->extends' => [null, false, ' extends ', null],
-            'Stmt_Enum->scalarType' => [null, false, ' : ', null],
-            'Stmt_EnumCase->expr' => [null, false, ' = ', null],
             'Expr_PrintableNewAnonClass->extends' => [null, ' extends ', null],
             'Stmt_Continue->num' => [\T_CONTINUE, false, ' ', null],
             'Stmt_Foreach->keyVar' => [\T_AS, false, null, ' => '],
@@ -1347,7 +1337,6 @@ abstract class PrettyPrinterAbstract
             //'Scalar_Encapsed->parts' => '',
             'Stmt_Catch->types' => '|',
             'UnionType->types' => '|',
-            'IntersectionType->types' => '&',
             'Stmt_If->elseifs' => ' ',
             'Stmt_TryCatch->catches' => ' ',
 
@@ -1367,7 +1356,6 @@ abstract class PrettyPrinterAbstract
             'Stmt_ClassConst->consts' => ', ',
             'Stmt_ClassMethod->params' => ', ',
             'Stmt_Class->implements' => ', ',
-            'Stmt_Enum->implements' => ', ',
             'Expr_PrintableNewAnonClass->implements' => ', ',
             'Stmt_Const->consts' => ', ',
             'Stmt_Declare->declares' => ', ',
@@ -1394,7 +1382,6 @@ abstract class PrettyPrinterAbstract
             'Stmt_Case->stmts' => "\n",
             'Stmt_Catch->stmts' => "\n",
             'Stmt_Class->stmts' => "\n",
-            'Stmt_Enum->stmts' => "\n",
             'Expr_PrintableNewAnonClass->stmts' => "\n",
             'Stmt_Interface->stmts' => "\n",
             'Stmt_Trait->stmts' => "\n",
@@ -1410,8 +1397,6 @@ abstract class PrettyPrinterAbstract
             'Stmt_If->stmts' => "\n",
             'Stmt_Namespace->stmts' => "\n",
             'Stmt_Class->attrGroups' => "\n",
-            'Stmt_Enum->attrGroups' => "\n",
-            'Stmt_EnumCase->attrGroups' => "\n",
             'Stmt_Interface->attrGroups' => "\n",
             'Stmt_Trait->attrGroups' => "\n",
             'Stmt_Function->attrGroups' => "\n",
@@ -1450,7 +1435,6 @@ abstract class PrettyPrinterAbstract
             'Expr_PrintableNewAnonClass->implements' => [null, ' implements ', ''],
             'Expr_StaticCall->args' => ['(', '', ''],
             'Stmt_Class->implements' => [null, ' implements ', ''],
-            'Stmt_Enum->implements' => [null, ' implements ', ''],
             'Stmt_ClassMethod->params' => ['(', '', ''],
             'Stmt_Interface->extends' => [null, ' extends ', ''],
             'Stmt_Function->params' => ['(', '', ''],

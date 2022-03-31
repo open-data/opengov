@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Result;
 
 use Solarium\Component\Result\Facet\FacetResultInterface;
@@ -14,7 +7,7 @@ use Solarium\Component\Result\Facet\FacetResultInterface;
 /**
  * Select component facetset result.
  */
-class FacetSet implements \IteratorAggregate, \Countable, FacetResultInterface
+class FacetSet implements \IteratorAggregate, \Countable
 {
     /**
      * Facet array.
@@ -60,7 +53,7 @@ class FacetSet implements \IteratorAggregate, \Countable, FacetResultInterface
      *
      * @return \ArrayIterator
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator()
     {
         return new \ArrayIterator($this->facets);
     }
@@ -70,8 +63,8 @@ class FacetSet implements \IteratorAggregate, \Countable, FacetResultInterface
      *
      * @return int
      */
-    public function count(): int
+    public function count()
     {
-        return \count($this->facets);
+        return count($this->facets);
     }
 }

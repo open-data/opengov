@@ -31,7 +31,7 @@ class FieldFileTest extends UnitTestCase {
 
     $options = [
       'alt' => 'Foobaz',
-      'title' => 'Bar',
+      'title' => 'Wambooli',
     ];
     $value = [
       'fid' => 1,
@@ -45,7 +45,7 @@ class FieldFileTest extends UnitTestCase {
       'display' => TRUE,
       'description' => '',
       'alt' => 'Foobaz',
-      'title' => 'Bar',
+      'title' => 'Wambooli',
     ];
     $this->assertSame($expected, $transformed);
   }

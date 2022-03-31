@@ -43,8 +43,6 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
    * Tests webform submission form confirmation.
    */
   public function testConfirmation() {
-    $assert_session = $this->assertSession();
-
     // Login the admin user.
     $this->drupalLogin($this->rootUser);
 
@@ -54,33 +52,31 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
 
     // Check confirmation message.
     $this->postSubmission($webform_confirmation_message);
-    $assert_session->responseContains('This is a <b>custom</b> confirmation message.');
-    $assert_session->responseNotContains('New submission added to <em class="placeholder">Test: Confirmation: Message</em>');
-    $assert_session->addressEquals('webform/test_confirmation_message');
+    $this->assertRaw('This is a <b>custom</b> confirmation message.');
+    $this->assertNoRaw('New submission added to <em class="placeholder">Test: Confirmation: Message</em>');
+    $this->assertUrl('webform/test_confirmation_message');
 
     // Check confirmation page with custom query parameters.
     $sid = $this->postSubmission($webform_confirmation_message, [], NULL, ['query' => ['custom' => 'param']]);
-    $assert_session->addressEquals('webform/test_confirmation_message', ['query' => ['custom' => 'param']]);
+    $this->assertUrl('webform/test_confirmation_message', ['query' => ['custom' => 'param']]);
 
     // Sleep for 1 second to ensure the submission's timestamp indicates
     // it was update.
     sleep(1);
 
     // Check default message when submission is updated.
-    $this->drupalGet("/admin/structure/webform/manage/test_confirmation_message/submission/$sid/edit");
-    $this->submitForm([], 'Save');
-    $assert_session->responseNotContains('This is a <b>custom</b> confirmation message. (test: )');
-    $assert_session->responseContains('Submission updated in <em class="placeholder">Test: Confirmation: Message</em>.');
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_message/submission/$sid/edit", [], 'Save');
+    $this->assertNoRaw('This is a <b>custom</b> confirmation message. (test: )');
+    $this->assertRaw('Submission updated in <em class="placeholder">Test: Confirmation: Message</em>.');
 
     // Set display confirmation when submission is updated.
     $webform_confirmation_message->setSetting('confirmation_update', TRUE)
       ->save();
 
     // Check default message when submission is updated.
-    $this->drupalGet("/admin/structure/webform/manage/test_confirmation_message/submission/$sid/edit");
-    $this->submitForm([], 'Save');
-    $assert_session->responseContains('This is a <b>custom</b> confirmation message. (test: )');
-    $assert_session->responseNotContains('Submission updated in <em class="placeholder">Test: Confirmation: Message</em>.');
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_message/submission/$sid/edit", [], 'Save');
+    $this->assertRaw('This is a <b>custom</b> confirmation message. (test: )');
+    $this->assertNoRaw('Submission updated in <em class="placeholder">Test: Confirmation: Message</em>.');
 
     /* Test confirmation message (confirmation_type=modal) */
 
@@ -88,43 +84,38 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
 
     // Check confirmation modal.
     $sid = $this->postSubmission($webform_confirmation_modal, ['test' => 'value']);
-    $assert_session->responseContains('This is a <b>custom</b> confirmation modal.');
-    $assert_session->responseContains('<div class="js-hide webform-confirmation-modal js-webform-confirmation-modal webform-message js-webform-message js-form-wrapper form-wrapper" data-drupal-selector="edit-webform-confirmation-modal" id="edit-webform-confirmation-modal">');
-    $assert_session->responseContains('<div role="contentinfo" aria-label="Status message">');
-    $assert_session->responseContains('<b class="webform-confirmation-modal--title">Custom confirmation modal</b><br />');
-    $assert_session->responseContains('<div class="webform-confirmation-modal--content">This is a <b>custom</b> confirmation modal. (test: value)</div>');
-    $assert_session->addressEquals('webform/test_confirmation_modal');
+    $this->assertRaw('This is a <b>custom</b> confirmation modal.');
+    $this->assertRaw('<div class="js-hide webform-confirmation-modal js-webform-confirmation-modal webform-message js-webform-message js-form-wrapper form-wrapper" data-drupal-selector="edit-webform-confirmation-modal" id="edit-webform-confirmation-modal">');
+    $this->assertRaw('<div role="contentinfo" aria-label="Status message">');
+    $this->assertRaw('<b class="webform-confirmation-modal--title">Custom confirmation modal</b><br />');
+    $this->assertRaw('<div class="webform-confirmation-modal--content">This is a <b>custom</b> confirmation modal. (test: value)</div>');
+    $this->assertUrl('webform/test_confirmation_modal');
 
     // Check confirmation modal update does not display modal.
-    $this->drupalGet("/admin/structure/webform/manage/test_confirmation_modal/submission/$sid/edit");
-    $this->submitForm([], 'Save');
-    $assert_session->responseContains('Submission updated in <em class="placeholder">Test: Confirmation: Modal</em>.');
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_modal/submission/$sid/edit", [], 'Save');
+    $this->assertRaw('Submission updated in <em class="placeholder">Test: Confirmation: Modal</em>.');
 
     // Set display confirmation modal when submission is updated.
     $webform_confirmation_modal->setSetting('confirmation_update', TRUE)
       ->save();
 
     // Check confirmation modal update does display modal.
-    $this->drupalGet("/admin/structure/webform/manage/test_confirmation_modal/submission/$sid/edit");
-    $this->submitForm([], 'Save');
-    $assert_session->responseContains('<b class="webform-confirmation-modal--title">Custom confirmation modal</b><br /><div class="webform-confirmation-modal--content">This is a <b>custom</b> confirmation modal. (test: value)</div>');
+    $this->drupalPostForm("/admin/structure/webform/manage/test_confirmation_modal/submission/$sid/edit", [], 'Save');
+    $this->assertRaw('<b class="webform-confirmation-modal--title">Custom confirmation modal</b><br /><div class="webform-confirmation-modal--content">This is a <b>custom</b> confirmation modal. (test: value)</div>');
 
     /* Test confirmation inline (confirmation_type=inline) */
 
     $webform_confirmation_inline = Webform::load('test_confirmation_inline');
 
     // Check confirmation inline.
-    $this->drupalGet('/webform/test_confirmation_inline');
-    $this->submitForm([], 'Submit');
-    $assert_session->responseContains('<a href="' . $webform_confirmation_inline->toUrl('canonical', ['absolute' => TRUE])->toString() . '" rel="prev">Back to form</a>');
-    $assert_session->addressEquals('webform/test_confirmation_inline');
+    $this->drupalPostForm('/webform/test_confirmation_inline', [], 'Submit');
+    $this->assertRaw('<a href="' . $webform_confirmation_inline->toUrl('canonical', ['absolute' => TRUE])->toString() . '" rel="prev">Back to form</a>');
+    $this->assertUrl('webform/test_confirmation_inline');
 
     // Check confirmation inline with custom query parameters.
-    $options = ['query' => ['custom' => 'param']];
-    $this->drupalGet('/webform/test_confirmation_inline', $options);
-    $this->submitForm([], 'Submit');
-    $assert_session->responseContains('<a href="' . $webform_confirmation_inline->toUrl('canonical', ['absolute' => TRUE, 'query' => ['custom' => 'param']])->toString() . '" rel="prev">Back to form</a>');
-    $assert_session->addressEquals('webform/test_confirmation_inline', ['query' => ['custom' => 'param']]);
+    $this->drupalPostForm('/webform/test_confirmation_inline', [], 'Submit', ['query' => ['custom' => 'param']]);
+    $this->assertRaw('<a href="' . $webform_confirmation_inline->toUrl('canonical', ['absolute' => TRUE, 'query' => ['custom' => 'param']])->toString() . '" rel="prev">Back to form</a>');
+    $this->assertUrl('webform/test_confirmation_inline', ['query' => ['custom' => 'param']]);
 
     /* Test confirmation page (confirmation_type=page) */
 
@@ -133,9 +124,9 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
     // Check confirmation page.
     $sid = $this->postSubmission($webform_confirmation_page);
     $webform_submission = WebformSubmission::load($sid);
-    $assert_session->responseContains('This is a custom confirmation page.');
-    $assert_session->responseContains('<a href="' . $webform_confirmation_page->toUrl('canonical', ['absolute' => TRUE])->toString() . '" rel="prev">Back to form</a>');
-    $assert_session->addressEquals('webform/test_confirmation_page/confirmation', ['query' => ['token' => $webform_submission->getToken()]]);
+    $this->assertRaw('This is a custom confirmation page.');
+    $this->assertRaw('<a href="' . $webform_confirmation_page->toUrl('canonical', ['absolute' => TRUE])->toString() . '" rel="prev">Back to form</a>');
+    $this->assertUrl('webform/test_confirmation_page/confirmation', ['query' => ['token' => $webform_submission->getToken()]]);
 
     // Check that the confirmation page's 'Back to form 'link includes custom
     // query parameters.
@@ -144,24 +135,22 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
     // Check confirmation page with custom query parameters.
     $sid = $this->postSubmission($webform_confirmation_page, [], NULL, ['query' => ['custom' => 'param']]);
     $webform_submission = WebformSubmission::load($sid);
-    $assert_session->addressEquals('webform/test_confirmation_page/confirmation', ['query' => ['custom' => 'param', 'token' => $webform_submission->getToken()]]);
+    $this->assertUrl('webform/test_confirmation_page/confirmation', ['query' => ['custom' => 'param', 'token' => $webform_submission->getToken()]]);
 
     // Check confirmation page with token excluded.
     $webform_confirmation_page->setSetting('confirmation_exclude_token', TRUE);
     $webform_confirmation_page->save();
     $this->postSubmission($webform_confirmation_page, [], NULL, ['query' => ['custom' => 'param']]);
-    $assert_session->addressEquals('webform/test_confirmation_page/confirmation', ['query' => ['custom' => 'param']]);
+    $this->assertUrl('webform/test_confirmation_page/confirmation', ['query' => ['custom' => 'param']]);
 
     // Check confirmation page with token and query excluded.
     $webform_confirmation_page->setSetting('confirmation_exclude_query', TRUE);
     $webform_confirmation_page->save();
     $this->postSubmission($webform_confirmation_page);
-    $assert_session->addressEquals('webform/test_confirmation_page/confirmation');
+    $this->assertUrl('webform/test_confirmation_page/confirmation');
 
-    // phpcs:disable
-    // @todo (TESTING) Figure out why the inline confirmation link is not including the query string parameters.
-    // $assert_session->responseContains('<a href="' . $webform_confirmation_page->toUrl()->toString() . '?custom=param">Back to form</a>');.
-    // phpcs:enable
+    // TODO: (TESTING) Figure out why the inline confirmation link is not including the query string parameters.
+    // $this->assertRaw('<a href="' . $webform_confirmation_page->toUrl()->toString() . '?custom=param">Back to form</a>');.
 
     /* Test confirmation page custom (confirmation_type=page) */
 
@@ -169,66 +158,31 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
 
     // Check custom confirmation page.
     $this->postSubmission($webform_confirmation_page_custom);
-    $assert_session->responseContains('<h1>Custom confirmation page title</h1>');
-    $assert_session->responseContains('<div style="border: 10px solid red; padding: 1em;" class="webform-confirmation">');
-    $assert_session->responseContains('<a href="' . $webform_confirmation_page_custom->toUrl()->setAbsolute()->toString() . '" rel="prev" class="button">Custom back to link</a>');
+    $this->assertRaw('<h1>Custom confirmation page title</h1>');
+    $this->assertRaw('<div style="border: 10px solid red; padding: 1em;" class="webform-confirmation">');
+    $this->assertRaw('<a href="' . $webform_confirmation_page_custom->toUrl()->setAbsolute()->toString() . '" rel="prev" class="button">Custom back to link</a>');
 
     // Check back link is hidden.
     $webform_confirmation_page_custom->setSetting('confirmation_back', FALSE);
     $webform_confirmation_page_custom->save();
     $this->postSubmission($webform_confirmation_page_custom);
-    $assert_session->responseNotContains('<a href="' . $webform_confirmation_page_custom->toUrl()->toString() . '" rel="prev" class="button">Custom back to link</a>');
+    $this->assertNoRaw('<a href="' . $webform_confirmation_page_custom->toUrl()->toString() . '" rel="prev" class="button">Custom back to link</a>');
 
     /* Test confirmation URL (confirmation_type=url) */
 
     $webform_confirmation_url = Webform::load('test_confirmation_url');
 
-    // Check confirmation URL using special path <front>.
+    // Check confirmation URL.
     $this->postSubmission($webform_confirmation_url);
-    $assert_session->responseNotContains('<h2 class="visually-hidden">Status message</h2>');
-    $assert_session->addressEquals('/');
+    $this->assertNoRaw('<h2 class="visually-hidden">Status message</h2>');
+    $this->assertUrl('/');
 
     // Check confirmation URL using an internal: URI.
     $webform_confirmation_url
       ->setSetting('confirmation_url', 'internal:/some-internal-path')
       ->save();
     $this->postSubmission($webform_confirmation_url);
-    $assert_session->addressEquals('/some-internal-path');
-
-    // Check confirmation URL using absolute path.
-    $webform_confirmation_url
-      ->setSetting('confirmation_url', '/some-absolute-path')
-      ->save();
-    $this->postSubmission($webform_confirmation_url);
-    $assert_session->addressEquals('/some-absolute-path');
-
-    // Check confirmation URL using absolute path with querystring.
-    $webform_confirmation_url
-      ->setSetting('confirmation_url', '/some-absolute-path?some=parameter')
-      ->setSetting('confirmation_exclude_token', TRUE)
-      ->save();
-    $this->postSubmission($webform_confirmation_url);
-    $this->assertEquals(parse_url($this->getSession()->getCurrentUrl(), PHP_URL_QUERY), 'some=parameter');
-    $this->postSubmission($webform_confirmation_url, [], NULL, ['query' => ['test' => 'parameter']]);
-    $this->assertEquals(parse_url($this->getSession()->getCurrentUrl(), PHP_URL_QUERY), 'some=parameter&test=parameter');
-
-    // Check confirmation URL using relative path with querystring.
-    $webform_confirmation_url
-      ->setSetting('confirmation_url', 'webform/test_confirmation_url?some=parameter')
-      ->setSetting('confirmation_exclude_token', TRUE)
-      ->save();
-    $this->postSubmission($webform_confirmation_url);
-    $this->assertEquals(parse_url($this->getSession()->getCurrentUrl(), PHP_URL_QUERY), 'some=parameter');
-    $this->postSubmission($webform_confirmation_url, [], NULL, ['query' => ['test' => 'parameter']]);
-    $this->assertEquals(parse_url($this->getSession()->getCurrentUrl(), PHP_URL_QUERY), 'some=parameter&test=parameter');
-
-    // Check confirmation URL using invalid path.
-    $webform_confirmation_url
-      ->setSetting('confirmation_url', 'invalid')
-      ->save();
-    $sid = $this->postSubmission($webform_confirmation_url);
-    $assert_session->responseContains('Confirmation URL <em class="placeholder">invalid</em> is not valid.');
-    $assert_session->addressEquals('/webform/test_confirmation_url');
+    $this->assertUrl('/some-internal-path');
 
     /* Test confirmation URL (confirmation_type=url_message) */
 
@@ -236,9 +190,9 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
 
     // Check confirmation URL.
     $this->postSubmission($webform_confirmation_url_message);
-    $assert_session->responseContains('<h2 class="visually-hidden">Status message</h2>');
-    $assert_session->responseContains('This is a custom confirmation message.');
-    $assert_session->addressEquals('/');
+    $this->assertRaw('<h2 class="visually-hidden">Status message</h2>');
+    $this->assertRaw('This is a custom confirmation message.');
+    $this->assertUrl('/');
 
     /* Test confirmation none (confirmation_type=none) */
 
@@ -247,7 +201,7 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
 
     // Check no confirmation message.
     $this->postSubmission($webform_confirmation_url_message);
-    $assert_session->responseNotContains('<h2 class="visually-hidden">Status message</h2>');
+    $this->assertNoRaw('<h2 class="visually-hidden">Status message</h2>');
 
   }
 

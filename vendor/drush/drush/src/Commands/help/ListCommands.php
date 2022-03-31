@@ -12,7 +12,6 @@ use Symfony\Component\Console\Descriptor\JsonDescriptor;
 use Symfony\Component\Console\Descriptor\XmlDescriptor;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Terminal;
 
 class ListCommands extends DrushCommands
 {
@@ -153,20 +152,26 @@ class ListCommands extends DrushCommands
             }
         }
         $formatterManager = new FormatterManager();
+        list($terminalWidth,) = $application->getTerminalDimensions();
         $opts = [
             FormatterOptions::INCLUDE_FIELD_LABELS => false,
             FormatterOptions::TABLE_STYLE => 'compact',
-            FormatterOptions::TERMINAL_WIDTH => self::getTerminalWidth(),
+            FormatterOptions::TERMINAL_WIDTH => $terminalWidth,
         ];
         $formatterOptions = new FormatterOptions([], $opts);
 
         $formatterManager->write($output, 'table', new RowsOfFields($rows), $formatterOptions);
     }
 
-    public static function getTerminalWidth()
+    public function getTerminalWidth()
     {
-        $term = new Terminal();
-        return $term->getWidth();
+        // From \Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption::getTerminalWidth
+        $application = Drush::getApplication();
+        $dimensions = $application->getTerminalDimensions();
+        if ($dimensions[0] == null) {
+            return 0;
+        }
+        return $dimensions[0];
     }
 
     /**
@@ -188,20 +193,19 @@ class ListCommands extends DrushCommands
      * @param Command[] $all
      * @param string $separator
      *
-     * @return Command[]
+     * @return array
      */
     public static function categorize($all, $separator = ':')
     {
         foreach ($all as $key => $command) {
             if (!in_array($key, $command->getAliases()) && !$command->isHidden()) {
                 $parts = explode($separator, $key);
-                $namespace = array_shift($parts);
+                $namespace = count($parts) >= 2 ? array_shift($parts) : '_global';
                 $namespaced[$namespace][$key] = $command;
             }
         }
 
         // Avoid solo namespaces.
-        $namespaced['_global'] = [];
         foreach ($namespaced as $namespace => $commands) {
             if (count($commands) == 1) {
                 $namespaced['_global'] += $commands;

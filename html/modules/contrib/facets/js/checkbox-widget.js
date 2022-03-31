@@ -33,12 +33,11 @@
 
         // Transform links to checkboxes.
         $widgetLinks.each(Drupal.facets.makeCheckbox);
-
-        // We have to trigger attaching of behaviours, so that Facets JS API can
-        // register handlers on checkbox widgets.
-        Drupal.attachBehaviors(this.parentNode, Drupal.settings);
       });
 
+      // We have to trigger attaching of behaviours, so that Facets JS API can
+      // register handlers on checkbox widgets.
+      Drupal.attachBehaviors(context, Drupal.settings);
     }
 
     // Set indeterminate value on parents having an active trail.

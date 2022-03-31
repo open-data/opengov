@@ -23,9 +23,6 @@ function fn() {}
 /* testNestedOuter */
 $fn = fn($x) => /* testNestedInner */ fn($y) => $x * $y + $z;
 
-/* testNestedSharedCloserOuter */
-$foo = foo(fn() => /* testNestedSharedCloserInner */ fn() => bar() === true);
-
 /* testFunctionCall */
 $extended = fn($c) => $callable($factory($c), $c);
 
@@ -43,9 +40,6 @@ $extended = fn($c) => $callable(function() {
     echo 'done';
 }, $c);
 
-/* testArrayIndex */
-$found = in_array_cb($needle, $haystack, fn($array, $needle) => $array[2] === $needle);
-
 $result = array_map(
     /* testReturnType */
     static fn(int $number) : int => $number + 1,
@@ -61,11 +55,6 @@ fn&($x) => $x;
 /* testArrayValue */
 $a = [
     'a' => fn() => return 1,
-];
-
-/* testArrayValueNoTrailingComma */
-$a = [
-    'a' => fn() => foo()
 ];
 
 /* testYield */
@@ -92,57 +81,8 @@ fn(array $a) : array => $a;
 /* testStaticReturnType */
 fn(array $a) : static => $a;
 
-/* testUnionParamType */
-$arrowWithUnionParam = fn(int|float $param) : SomeClass => new SomeClass($param);
-
-/* testUnionReturnType */
-$arrowWithUnionReturn = fn($param) : int|float => $param | 10;
-
 /* testTernary */
 $fn = fn($a) => $a ? /* testTernaryThen */ fn() : string => 'a' : /* testTernaryElse */ fn() : string => 'b';
-
-/* testTernaryWithTypes */
-$fn = fn(int|null $a) : array|null => $a ? null : [];
-
-function matchInArrow($x) {
-    /* testWithMatchValue */
-    $fn = fn($x) => match(true) {
-        1, 2, 3, 4, 5 => 'foo',
-        default => 'bar',
-    };
-}
-
-function matchInArrowAndMore($x) {
-    /* testWithMatchValueAndMore */
-    $fn = fn($x) => match(true) {
-        1, 2, 3, 4, 5 => 'foo',
-        default => 'bar',
-    } . 'suffix';
-}
-
-function arrowFunctionInMatchWithTrailingComma($x) {
-    return match ($x) {
-        /* testInMatchNotLastValue */
-        1 => fn($y) => callMe($y),
-        /* testInMatchLastValueWithTrailingComma */
-        default => fn($y) => callThem($y),
-    };
-}
-
-function arrowFunctionInMatchNoTrailingComma1($x) {
-    return match ($x) {
-        1 => fn($y) => callMe($y),
-        /* testInMatchLastValueNoTrailingComma1 */
-        default => fn($y) => callThem($y)
-    };
-}
-
-function arrowFunctionInMatchNoTrailingComma2($x) {
-    return match ($x) {
-        /* testInMatchLastValueNoTrailingComma2 */
-        default => fn($y) => 5 * $y
-    };
-}
 
 /* testConstantDeclaration */
 const FN = 'a';
@@ -189,9 +129,6 @@ $a = MyNS\Sub\Fn($param);
 
 /* testNonArrowNamespaceOperatorFunctionCall */
 $a = namespace\fn($param);
-
-/* testNonArrowFunctionNameWithUnionTypes */
-function fn(int|float $param) : string|null {}
 
 /* testLiveCoding */
 // Intentional parse error. This has to be the last test in the file.

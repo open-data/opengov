@@ -22,7 +22,6 @@ use Drupal\Core\StreamWrapper\StreamWrapperManager;
  *
  * @param $uri
  *   The URI of the file.
- *
  * @return
  *   If the user does not have permission to access the file, return -1. If the
  *   user has permission, return an array with the appropriate headers. If the

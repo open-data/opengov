@@ -22,8 +22,6 @@ class WebformElementSubmittedValueTest extends WebformElementBrowserTestBase {
    * Tests submitted value.
    */
   public function testSubmittedValue() {
-    $assert_session = $this->assertSession();
-
     $this->drupalLogin($this->rootUser);
 
     // Create a submission.
@@ -32,10 +30,10 @@ class WebformElementSubmittedValueTest extends WebformElementBrowserTestBase {
 
     // Check the option 'three' is selected.
     $this->drupalGet("/webform/test_element_submission_value/submissions/$sid/edit");
-    $this->assertEquals($assert_session->optionExists('edit-select', 'three')->getText(), 'Three');
-    $this->assertTrue($assert_session->optionExists('edit-select', 'three')->hasAttribute('selected'));
-    $this->assertTrue($assert_session->optionExists('edit-select-multiple', 'three')->hasAttribute('selected'));
-    $assert_session->checkboxChecked('edit-checkboxes-three');
+    $this->assertRaw('<option value="three" selected="selected">Three</option>');
+    $this->assertOptionSelected('edit-select', 'three');
+    $this->assertOptionSelected('edit-select-multiple', 'three');
+    $this->assertFieldChecked('edit-checkboxes-three');
 
     // Remove option 'three' from all elements.
     $elements = $webform->getElementsDecoded();
@@ -48,11 +46,11 @@ class WebformElementSubmittedValueTest extends WebformElementBrowserTestBase {
     // Check the option 'three' is still available and selected but
     // the label is now just the value.
     $this->drupalGet("/webform/test_element_submission_value/submissions/$sid/edit");
-    $this->assertNotEquals($assert_session->optionExists('edit-select', 'three')->getText(), 'Three');
-    $this->assertEquals($assert_session->optionExists('edit-select', 'three')->getText(), 'three');
-    $this->assertTrue($assert_session->optionExists('edit-select', 'three')->hasAttribute('selected'));
-    $this->assertTrue($assert_session->optionExists('edit-select-multiple', 'three')->hasAttribute('selected'));
-    $assert_session->checkboxChecked('edit-checkboxes-three');
+    $this->assertNoRaw('<option value="three" selected="selected">Three</option>');
+    $this->assertRaw('<option value="three" selected="selected">three</option>');
+    $this->assertOptionSelected('edit-select', 'three');
+    $this->assertOptionSelected('edit-select-multiple', 'three');
+    $this->assertFieldChecked('edit-checkboxes-three');
   }
 
 }

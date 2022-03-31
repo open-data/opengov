@@ -38,11 +38,4 @@ class WebformAutocomplete extends Textfield {
     return $element;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function defineTranslatableProperties() {
-    return array_merge(parent::defineTranslatableProperties(), ['autocomplete_items']);
-  }
-
 }

@@ -1,16 +1,8 @@
 /**
- * Add spacing to top and bottom of pages.
+ * Add spacing to bottom of pages
  */
-
 .page-content {
-  margin-top: 1.5rem;
   margin-bottom: 80px;
-}
-
-@media screen and (min-width: 38em) {
-  .page-content {
-    margin-top: 2rem;
-  }
 }
 
 /**

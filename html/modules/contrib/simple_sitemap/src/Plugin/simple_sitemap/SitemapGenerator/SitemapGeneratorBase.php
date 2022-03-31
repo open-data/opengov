@@ -2,50 +2,66 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator;
 
-use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
-use Drupal\simple_sitemap\Entity\SimpleSitemapInterface;
-use Drupal\simple_sitemap\Settings;
+use Drupal\Core\Url;
+use Drupal\simple_sitemap\Plugin\simple_sitemap\SimplesitemapPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Extension\ModuleHandler;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Component\Datetime\Time;
+use Drupal\Core\Language\LanguageInterface;
 
 /**
- * Provides a base class for SitemapGenerator plugins.
+ * Class SitemapGeneratorBase
+ * @package Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator
  */
-abstract class SitemapGeneratorBase extends SimpleSitemapPluginBase implements SitemapGeneratorInterface {
+abstract class SitemapGeneratorBase extends SimplesitemapPluginBase implements SitemapGeneratorInterface {
 
-  protected const XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
+  const FIRST_CHUNK_DELTA = 1;
+  const INDEX_DELTA = 0;
+  const XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
 
   /**
-   * The module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $db;
+
+  /**
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * @var \Drupal\Core\Extension\ModuleHandler
    */
   protected $moduleHandler;
 
   /**
-   * The simple_sitemap.settings service.
-   *
-   * @var \Drupal\simple_sitemap\Settings
+   * @var \Drupal\Component\Datetime\Time
+   */
+  protected $time;
+
+  /**
+   * @var array
    */
   protected $settings;
 
   /**
-   * Sitemap XML writer.
-   *
    * @var \Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator\SitemapWriter
    */
   protected $writer;
 
   /**
-   * The sitemap entity.
-   *
-   * @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface
+   * @var string
    */
-  protected $sitemap;
+  protected $sitemapVariant;
 
   /**
-   * An array of index attributes.
-   *
+   * @var array
+   */
+  protected $sitemapUrlSettings;
+
+  /**
    * @var array
    */
   protected static $indexAttributes = [
@@ -54,74 +70,91 @@ abstract class SitemapGeneratorBase extends SimpleSitemapPluginBase implements S
 
   /**
    * SitemapGeneratorBase constructor.
-   *
    * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler service.
+   * @param \Drupal\Core\Database\Connection $database
+   * @param \Drupal\Core\Extension\ModuleHandler $module_handler
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   * @param \Drupal\Component\Datetime\Time $time
    * @param \Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator\SitemapWriter $sitemap_writer
-   *   Sitemap XML writer.
-   * @param \Drupal\simple_sitemap\Settings $settings
-   *   The simple_sitemap.settings service.
    */
   public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    ModuleHandlerInterface $module_handler,
-    SitemapWriter $sitemap_writer,
-    Settings $settings
+    Connection $database,
+    ModuleHandler $module_handler,
+    LanguageManagerInterface $language_manager,
+    Time $time,
+    SitemapWriter $sitemap_writer
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->db = $database;
     $this->moduleHandler = $module_handler;
+    $this->languageManager = $language_manager;
+    $this->time = $time;
     $this->writer = $sitemap_writer;
-    $this->settings = $settings;
+    $this->sitemapVariant = $this->settings['default_variant'];
+
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): SimpleSitemapPluginBase {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $container->get('database'),
       $container->get('module_handler'),
-      $container->get('simple_sitemap.sitemap_writer'),
-      $container->get('simple_sitemap.settings')
+      $container->get('language_manager'),
+      $container->get('datetime.time'),
+      $container->get('simple_sitemap.sitemap_writer')
     );
   }
 
   /**
-   * {@inheritdoc}
+   * @param string $sitemap_variant
+   * @return $this
    */
-  public function setSitemap(SimpleSitemapInterface $sitemap): SitemapGeneratorInterface {
-    $this->sitemap = $sitemap;
-
+  public function setSitemapVariant($sitemap_variant) {
+    $this->sitemapVariant = $sitemap_variant;
     return $this;
   }
 
   /**
-   * {@inheritdoc}
+   * @return bool
    */
-  abstract public function getChunkContent(array $links): string;
+  protected function isDefaultVariant() {
+    return $this->sitemapVariant === $this->settings['default_variant'];
+  }
 
   /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Core\Entity\EntityMalformedException
+   * @param array $links
+   * @return string
    */
-  public function getIndexContent(): string {
+  abstract protected function getXml(array $links);
+
+  protected function getChunkInfo() {
+    return $this->db->select('simple_sitemap', 's')
+      ->fields('s', ['delta', 'sitemap_created', 'type'])
+      ->condition('s.type', $this->sitemapVariant)
+      ->condition('s.delta', self::INDEX_DELTA, '<>')
+      ->condition('s.status', 0)
+      ->execute()
+      ->fetchAllAssoc('delta');
+  }
+
+  /**
+   * @param array $chunk_info
+   * @return string
+   */
+  protected function getIndexXml(array $chunk_info) {
     $this->writer->openMemory();
     $this->writer->setIndent(TRUE);
     $this->writer->startSitemapDocument();
 
     // Add the XML stylesheet to document if enabled.
-    if ($this->settings->get('xsl')) {
+    if ($this->settings['xsl']) {
       $this->writer->writeXsl();
     }
 
@@ -130,17 +163,17 @@ abstract class SitemapGeneratorBase extends SimpleSitemapPluginBase implements S
 
     // Add attributes to document.
     $attributes = self::$indexAttributes;
-    $this->moduleHandler->alter('simple_sitemap_index_attributes', $attributes, $this->sitemap);
+    $sitemap_variant = $this->sitemapVariant;
+    $this->moduleHandler->alter('simple_sitemap_index_attributes', $attributes, $sitemap_variant);
     foreach ($attributes as $name => $value) {
       $this->writer->writeAttribute($name, $value);
     }
 
     // Add sitemap chunk locations to document.
-    for ($delta = 1; $delta <= $this->sitemap->fromUnpublished()->getChunkCount(); $delta++) {
+    foreach ($chunk_info as $chunk_data) {
       $this->writer->startElement('sitemap');
-      $this->writer->writeElement('loc', $this->sitemap->toUrl('canonical', ['delta' => $delta])->toString());
-      // @todo Should this be current time instead?
-      $this->writer->writeElement('lastmod', date('c', $this->sitemap->fromUnpublished()->getCreated()));
+      $this->writer->writeElement('loc', $this->getSitemapUrl($chunk_data->delta));
+      $this->writer->writeElement('lastmod', date('c', $chunk_data->sitemap_created));
       $this->writer->endElement();
     }
 
@@ -148,6 +181,168 @@ abstract class SitemapGeneratorBase extends SimpleSitemapPluginBase implements S
     $this->writer->endDocument();
 
     return $this->writer->outputMemory();
+  }
+
+  /**
+   * @param string $mode
+   * @return $this
+   */
+  public function remove($mode = 'all') {
+    self::purgeSitemapVariants($this->sitemapVariant, $mode);
+
+    return $this;
+  }
+
+  public static function purgeSitemapVariants($variants = NULL, $mode = 'all') {
+    if (NULL === $variants || !empty((array) $variants)) {
+      $delete_query = \Drupal::database()->delete('simple_sitemap');
+
+      switch($mode) {
+        case 'published':
+          $delete_query->condition('status', 1);
+          break;
+
+        case 'unpublished':
+          $delete_query->condition('status', 0);
+          break;
+
+        case 'all':
+          break;
+
+        default:
+          //todo: throw error
+      }
+
+      if (NULL !== $variants) {
+        $delete_query->condition('type', (array) $variants, 'IN');
+      }
+
+      $delete_query->execute();
+    }
+  }
+
+  /**
+   * @param array $links
+   * @return $this
+   * @throws \Exception
+   */
+  public function generate(array $links) {
+    $highest_id = $this->db->query('SELECT MAX(id) FROM {simple_sitemap}')->fetchField();
+    $highest_delta = $this->db->query('SELECT MAX(delta) FROM {simple_sitemap} WHERE type = :type AND status = :status', [':type' => $this->sitemapVariant, ':status' => 0])
+      ->fetchField();
+
+    $this->db->insert('simple_sitemap')->fields([
+      'id' => NULL === $highest_id ? 0 : $highest_id + 1,
+      'delta' => NULL === $highest_delta ? self::FIRST_CHUNK_DELTA : $highest_delta + 1,
+      'type' =>  $this->sitemapVariant,
+      'sitemap_string' => $this->getXml($links),
+      'sitemap_created' => $this->time->getRequestTime(),
+      'status' => 0,
+    ])->execute();
+
+    return $this;
+  }
+
+  /**
+   * @return $this
+   * @throws \Exception
+   */
+  public function generateIndex() {
+    if (!empty($chunk_info = $this->getChunkInfo()) && count($chunk_info) > 1) {
+      $index_xml = $this->getIndexXml($chunk_info);
+      $highest_id = $this->db->query('SELECT MAX(id) FROM {simple_sitemap}')->fetchField();
+      $this->db->merge('simple_sitemap')
+        ->keys([
+          'delta' => self::INDEX_DELTA,
+          'type' => $this->sitemapVariant,
+          'status' => 0
+        ])
+        ->insertFields([
+          'id' => NULL === $highest_id ? 0 : $highest_id + 1,
+          'delta' => self::INDEX_DELTA,
+          'type' =>  $this->sitemapVariant,
+          'sitemap_string' => $index_xml,
+          'sitemap_created' => $this->time->getRequestTime(),
+          'status' => 0,
+        ])
+        ->updateFields([
+          'sitemap_string' => $index_xml,
+          'sitemap_created' => $this->time->getRequestTime(),
+        ])
+        ->execute();
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  public function publish() {
+    $unpublished_chunk = $this->db->query('SELECT MAX(id) FROM {simple_sitemap} WHERE type = :type AND status = :status', [
+      ':type' => $this->sitemapVariant, ':status' => 0
+    ])->fetchField();
+
+    // Only allow publishing a sitemap variant if there is an unpublished
+    // sitemap variant, as publishing involves deleting the currently published
+    // variant.
+    if (FALSE !== $unpublished_chunk) {
+      $this->remove('published');
+      $this->db->query('UPDATE {simple_sitemap} SET status = :status WHERE type = :type', [':type' => $this->sitemapVariant, ':status' => 1]);
+    }
+
+    return $this;
+  }
+
+  /**
+   * @param array $settings
+   * @return $this
+   */
+  public function setSettings(array $settings) {
+    $this->settings = $settings;
+
+    return $this;
+  }
+
+  /**
+   * @return string
+   */
+  protected function getCustomBaseUrl() {
+    $customBaseUrl = $this->settings['base_url'];
+
+    return !empty($customBaseUrl) ? $customBaseUrl : $GLOBALS['base_url'];
+  }
+
+  protected function getSitemapUrlSettings() {
+    if (NULL === $this->sitemapUrlSettings) {
+      $this->sitemapUrlSettings = [
+        'absolute' => TRUE,
+        'base_url' => $this->getCustomBaseUrl(),
+        'language' => $this->languageManager->getLanguage(LanguageInterface::LANGCODE_NOT_APPLICABLE),
+      ];
+    }
+
+    return $this->sitemapUrlSettings;
+  }
+
+  /**
+   * @param null $delta
+   * @return \Drupal\Core\GeneratedUrl|string
+   */
+  public function getSitemapUrl($delta = NULL) {
+    $parameters = NULL !== $delta ? ['page' => $delta] : [];
+    $url = $this->isDefaultVariant()
+      ? Url::fromRoute(
+        'simple_sitemap.sitemap_default',
+        $parameters,
+        $this->getSitemapUrlSettings())
+      : Url::fromRoute(
+        'simple_sitemap.sitemap_variant',
+        $parameters + ['variant' => $this->sitemapVariant],
+        $this->getSitemapUrlSettings()
+      );
+
+    return $url->toString();
   }
 
 }

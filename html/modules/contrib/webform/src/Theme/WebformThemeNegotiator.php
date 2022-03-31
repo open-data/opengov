@@ -44,10 +44,11 @@ class WebformThemeNegotiator implements ThemeNegotiatorInterface {
    * @param \Drupal\webform\WebformRequestInterface $request_handler
    *   The webform request handler.
    */
-  public function __construct(AccountInterface $user, ConfigFactoryInterface $config_factory, WebformRequestInterface $request_handler) {
+  public function __construct(AccountInterface $user, ConfigFactoryInterface $config_factory, WebformRequestInterface $request_handler = NULL) {
     $this->user = $user;
     $this->configFactory = $config_factory;
-    $this->requestHandler = $request_handler;
+    // @todo Webform 8.x-6.x: Require request handler.
+    $this->requestHandler = $request_handler ?: \Drupal::service('webform.request');
 
   }
 
@@ -76,10 +77,6 @@ class WebformThemeNegotiator implements ThemeNegotiatorInterface {
    */
   protected function getActiveTheme(RouteMatchInterface $route_match) {
     $route_name = $route_match->getRouteName();
-    if (empty($route_name)) {
-      return '';
-    }
-
     if (strpos($route_name, 'webform') === FALSE) {
       return '';
     }

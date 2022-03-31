@@ -24,8 +24,6 @@ class WebformExampleCompositeTest extends WebformBrowserTestBase {
    * Tests webform example element.
    */
   public function testWebformExampleComposite() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('webform_example_composite');
 
     // Check form element rendering.
@@ -33,39 +31,39 @@ class WebformExampleCompositeTest extends WebformBrowserTestBase {
     // NOTE:
     // This is a very lazy but easy way to check that the element is rendering
     // as expected.
-    $assert_session->responseContains('<label for="edit-webform-example-composite-first-name">First name</label>');
-    $assert_session->fieldExists('edit-webform-example-composite-first-name');
-    $assert_session->responseContains('<label for="edit-webform-example-composite-last-name">Last name</label>');
-    $assert_session->fieldExists('edit-webform-example-composite-last-name');
-    $assert_session->responseContains('<label for="edit-webform-example-composite-date-of-birth">Date of birth</label>');
-    $assert_session->fieldExists('edit-webform-example-composite-date-of-birth');
-    $assert_session->responseContains('<label for="edit-webform-example-composite-sex">Sex</label>');
-    $assert_session->fieldExists('edit-webform-example-composite-sex');
+    $this->assertRaw('<label for="edit-webform-example-composite-first-name">First name</label>');
+    $this->assertFieldById('edit-webform-example-composite-first-name');
+    $this->assertRaw('<label for="edit-webform-example-composite-last-name">Last name</label>');
+    $this->assertFieldById('edit-webform-example-composite-last-name');
+    $this->assertRaw('<label for="edit-webform-example-composite-date-of-birth">Date of birth</label>');
+    $this->assertFieldById('edit-webform-example-composite-date-of-birth');
+    $this->assertRaw('<label for="edit-webform-example-composite-gender">Gender</label>');
+    $this->assertFieldById('edit-webform-example-composite-gender');
 
     // Check webform element submission.
     $edit = [
       'webform_example_composite[first_name]' => 'John',
       'webform_example_composite[last_name]' => 'Smith',
-      'webform_example_composite[sex]' => 'Male',
+      'webform_example_composite[gender]' => 'Male',
       'webform_example_composite[date_of_birth]' => '1910-01-01',
       'webform_example_composite_multiple[items][0][first_name]' => 'Jane',
       'webform_example_composite_multiple[items][0][last_name]' => 'Doe',
-      'webform_example_composite_multiple[items][0][sex]' => 'Female',
+      'webform_example_composite_multiple[items][0][gender]' => 'Female',
       'webform_example_composite_multiple[items][0][date_of_birth]' => '1920-12-01',
     ];
     $sid = $this->postSubmission($webform, $edit);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertEquals($webform_submission->getElementData('webform_example_composite'), [
+    $this->assertEqual($webform_submission->getElementData('webform_example_composite'), [
       'first_name' => 'John',
       'last_name' => 'Smith',
-      'sex' => 'Male',
+      'gender' => 'Male',
       'date_of_birth' => '1910-01-01',
     ]);
-    $this->assertEquals($webform_submission->getElementData('webform_example_composite_multiple'), [
+    $this->assertEqual($webform_submission->getElementData('webform_example_composite_multiple'), [
       [
         'first_name' => 'Jane',
         'last_name' => 'Doe',
-        'sex' => 'Female',
+        'gender' => 'Female',
         'date_of_birth' => '1920-12-01',
       ],
     ]);

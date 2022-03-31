@@ -22,11 +22,10 @@ class AutocompleteTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'entity_test',
     'field',
     'system',
-    'filter',
     'text',
     'user',
     'search_api',
@@ -130,7 +129,13 @@ class AutocompleteTest extends KernelTestBase {
   protected function assertSuggestionsEqual(array $expected, array $suggestions) {
     $terms = [];
     foreach ($suggestions as $suggestion) {
-      $terms[$suggestion->getSuggestedKeys()] = $suggestion->getResultsCount();
+      $keys = $suggestion->getSuggestedKeys();
+      if ($keys === NULL) {
+        $keys = $suggestion->getSuggestionPrefix();
+        $keys .= $suggestion->getUserInput();
+        $keys .= $suggestion->getSuggestionSuffix();
+      }
+      $terms[$keys] = $suggestion->getResultsCount();
     }
     $this->assertEquals($expected, $terms);
   }

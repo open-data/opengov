@@ -32,7 +32,6 @@ interface DeriverInterface {
    *
    * @param array $base_plugin_definition
    *   The definition array of the base plugin.
-   *
    * @return array
    *   An array of full derivative definitions keyed on derivative id.
    *

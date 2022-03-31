@@ -46,9 +46,3 @@ for (
 if ( $condition === true // comment
     && $anotherCondition === false
 ) {}
-
-$match = match($foo // comment
-    && $bar
-) {
-    1 => 1, // comment
-};

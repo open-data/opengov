@@ -12,7 +12,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 abstract class ManageConditions extends FormBase {
 
   /**
@@ -32,7 +31,6 @@ abstract class ManageConditions extends FormBase {
    */
   protected $machine_name;
 
-
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.condition'),
@@ -40,8 +38,7 @@ abstract class ManageConditions extends FormBase {
     );
   }
 
-
-  public function __construct(PluginManagerInterface $manager, FormBuilderInterface $form_builder) {
+  function __construct(PluginManagerInterface $manager, FormBuilderInterface $form_builder) {
     $this->manager = $manager;
     $this->formBuilder = $form_builder;
   }
@@ -65,15 +62,15 @@ abstract class ManageConditions extends FormBase {
     foreach ($this->manager->getDefinitionsForContexts($contexts) as $plugin_id => $definition) {
       $options[$plugin_id] = (string) $definition['label'];
     }
-    $form['items'] = [
+    $form['items'] = array(
       '#type' => 'markup',
       '#prefix' => '<div id="configured-conditions">',
       '#suffix' => '</div>',
       '#theme' => 'table',
-      '#header' => [$this->t('Plugin Id'), $this->t('Summary'), $this->t('Operations')],
+      '#header' => array($this->t('Plugin Id'), $this->t('Summary'), $this->t('Operations')),
       '#rows' => $this->renderRows($cached_values),
-      '#empty' => $this->t('No required conditions have been configured.'),
-    ];
+      '#empty' => $this->t('No required conditions have been configured.')
+    );
     $form['conditions'] = [
       '#type' => 'select',
       '#options' => $options,
@@ -88,7 +85,7 @@ abstract class ManageConditions extends FormBase {
       ],
       '#submit' => [
         'callback' => [$this, 'submitForm'],
-      ],
+      ]
     ];
     return $form;
   }
@@ -101,7 +98,6 @@ abstract class ManageConditions extends FormBase {
     list(, $route_parameters) = $this->getOperationsRouteInfo($cached_values, $this->machine_name, $form_state->getValue('conditions'));
     $form_state->setRedirect($this->getAddRoute($cached_values), $route_parameters);
   }
-
 
   public function add(array &$form, FormStateInterface $form_state) {
     $condition = $form_state->getValue('conditions');
@@ -118,7 +114,7 @@ abstract class ManageConditions extends FormBase {
     $url = Url::fromRoute($route_name, $route_parameters, $route_options);
     $content['submit']['#attached']['drupalSettings']['ajax'][$content['submit']['#id']]['url'] = $url->toString();
     $response = new AjaxResponse();
-    $response->addCommand(new OpenModalDialogCommand($this->t('Configure Required Context'), $content, ['width' => '700']));
+    $response->addCommand(new OpenModalDialogCommand($this->t('Configure Required Context'), $content, array('width' => '700')));
     return $response;
   }
 
@@ -128,53 +124,52 @@ abstract class ManageConditions extends FormBase {
    * @return array
    */
   public function renderRows($cached_values) {
-    $configured_conditions = [];
+    $configured_conditions = array();
     foreach ($this->getConditions($cached_values) as $row => $condition) {
       /** @var $instance \Drupal\Core\Condition\ConditionInterface */
       $instance = $this->manager->createInstance($condition['id'], $condition);
       list($route_name, $route_parameters) = $this->getOperationsRouteInfo($cached_values, $cached_values['id'], $row);
-      $build = [
+      $build = array(
         '#type' => 'operations',
         '#links' => $this->getOperations($route_name, $route_parameters),
-      ];
-      $configured_conditions[] = [
+      );
+      $configured_conditions[] = array(
         $instance->getPluginId(),
         $instance->summary(),
         'operations' => [
           'data' => $build,
         ],
-      ];
+      );
     }
     return $configured_conditions;
   }
 
-
-  protected function getOperations($route_name_base, array $route_parameters = []) {
-    $operations['edit'] = [
+  protected function getOperations($route_name_base, array $route_parameters = array()) {
+    $operations['edit'] = array(
       'title' => $this->t('Edit'),
       'url' => new Url($route_name_base . '.edit', $route_parameters),
       'weight' => 10,
-      'attributes' => [
+      'attributes' => array(
         'class' => ['use-ajax'],
         'data-dialog-type' => 'modal',
         'data-dialog-options' => Json::encode([
           'width' => 700,
         ]),
-      ],
-    ];
+      ),
+    );
     $route_parameters['id'] = $route_parameters['condition'];
-    $operations['delete'] = [
+    $operations['delete'] = array(
       'title' => $this->t('Delete'),
       'url' => new Url($route_name_base . '.delete', $route_parameters),
       'weight' => 100,
-      'attributes' => [
-        'class' => ['use-ajax'],
+      'attributes' => array(
+        'class' => array('use-ajax'),
         'data-dialog-type' => 'modal',
         'data-dialog-options' => Json::encode([
           'width' => 700,
         ]),
-      ],
-    ];
+      ),
+    );
     return $operations;
   }
 

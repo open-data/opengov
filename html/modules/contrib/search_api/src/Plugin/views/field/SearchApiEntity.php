@@ -4,7 +4,6 @@ namespace Drupal\search_api\Plugin\views\field;
 
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfo;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\views\FieldAPIHandlerTrait;
@@ -30,13 +29,6 @@ class SearchApiEntity extends SearchApiStandard {
   protected $entityDisplayRepository;
 
   /**
-   * The entity type bundle info.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeBundleInfo|null
-   */
-  protected $entityTypeBundleInfo;
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -44,7 +36,6 @@ class SearchApiEntity extends SearchApiStandard {
     $field = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
     $field->setEntityDisplayRepository($container->get('entity_display.repository'));
-    $field->setEntityTypeBundleInfo($container->get('entity_type.bundle.info'));
 
     return $field;
   }
@@ -73,29 +64,6 @@ class SearchApiEntity extends SearchApiStandard {
   }
 
   /**
-   * Retrieves the entity type bundle info.
-   *
-   * @return \Drupal\Core\Entity\EntityTypeBundleInfo
-   *   The entity type bundle info.
-   */
-  public function getEntityTypeBundleInfo() {
-    return $this->entityTypeBundleInfo ?: \Drupal::service('entity_type.bundle.info');
-  }
-
-  /**
-   * Sets the entity type bundle info.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfo $entity_type_bundle_info
-   *   The new entity type bundle info.
-   *
-   * @return $this
-   */
-  public function setEntityTypeBundleInfo(EntityTypeBundleInfo $entity_type_bundle_info) {
-    $this->entityTypeBundleInfo = $entity_type_bundle_info;
-    return $this;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function defineOptions() {
@@ -116,8 +84,7 @@ class SearchApiEntity extends SearchApiStandard {
     $view_modes = [];
     $bundles = [];
     if ($entity_type_id) {
-      $bundles = $this->getEntityTypeBundleInfo()
-        ->getBundleInfo($entity_type_id);
+      $bundles = $this->getEntityManager()->getBundleInfo($entity_type_id);
       // In case the field definition specifies the bundles to expect, restrict
       // the displayed bundles to those.
       $settings = $this->getFieldDefinition()->getSettings();
@@ -230,7 +197,7 @@ class SearchApiEntity extends SearchApiStandard {
       return;
     }
 
-    $entities = $this->getEntityTypeManager()
+    $entities = $this->getEntityManager()
       ->getStorage($this->getTargetEntityTypeId())
       ->loadMultiple(array_keys($to_load));
     $account = $this->getQuery()->getAccessAccount();
@@ -291,9 +258,6 @@ class SearchApiEntity extends SearchApiStandard {
    *   NULL if the entity should not be displayed. Otherwise, an associative
    *   array with at least "value" set, to either a string or a render array,
    *   and possibly also additional alter options.
-   *
-   * @throws \Drupal\Core\Entity\EntityMalformedException
-   *   Thrown if the entity is malformed and a URL needs to be generated.
    */
   protected function getItem(EntityInterface $entity) {
     $bundle = $entity->bundle();
@@ -319,7 +283,7 @@ class SearchApiEntity extends SearchApiStandard {
     }
 
     $view_mode = $this->options['display_methods'][$bundle]['view_mode'];
-    $build = $this->getEntityTypeManager()
+    $build = $this->getEntityManager()
       ->getViewBuilder($entity->getEntityTypeId())
       ->view($entity, $view_mode);
     return [
@@ -338,7 +302,10 @@ class SearchApiEntity extends SearchApiStandard {
    *   selected yet.
    */
   protected function getDisplayMethod($bundle) {
-    return $this->options['display_methods'][$bundle]['display_method'] ?? NULL;
+    if (!isset($this->options['display_methods'][$bundle]['display_method'])) {
+      return NULL;
+    }
+    return $this->options['display_methods'][$bundle]['display_method'];
   }
 
 }

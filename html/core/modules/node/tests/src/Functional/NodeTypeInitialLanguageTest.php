@@ -26,14 +26,7 @@ class NodeTypeInitialLanguageTest extends NodeTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $web_user = $this->drupalCreateUser([
-      'bypass node access',
-      'administer content types',
-      'administer node fields',
-      'administer node form display',
-      'administer node display',
-      'administer languages',
-    ]);
+    $web_user = $this->drupalCreateUser(['bypass node access', 'administer content types', 'administer node fields', 'administer node form display', 'administer node display', 'administer languages']);
     $this->drupalLogin($web_user);
   }
 

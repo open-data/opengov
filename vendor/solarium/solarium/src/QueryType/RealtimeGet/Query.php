@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\RealtimeGet;
 
 use Solarium\Core\Client\Client;
@@ -21,7 +14,7 @@ use Solarium\QueryType\Select\Result\Document;
  *
  * Realtime Get query for one or multiple document IDs
  *
- * @see https://solr.apache.org/guide/realtime-get.html
+ * @see http://wiki.apache.org/solr/RealTimeGet
  */
 class Query extends BaseQuery
 {
@@ -97,7 +90,7 @@ class Query extends BaseQuery
      */
     public function addIds($ids): self
     {
-        if (\is_string($ids)) {
+        if (is_string($ids)) {
             $ids = explode(',', $ids);
             $ids = array_map('trim', $ids);
         }
@@ -176,7 +169,6 @@ class Query extends BaseQuery
     public function setDocumentClass(string $value): self
     {
         $this->setOption('documentclass', $value);
-
         return $this;
     }
 

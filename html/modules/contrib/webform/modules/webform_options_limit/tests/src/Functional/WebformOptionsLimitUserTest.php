@@ -25,8 +25,6 @@ class WebformOptionsLimitUserTest extends WebformBrowserTestBase {
    * Test options limit user.
    */
   public function testOptionsLimitUserTest() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('test_handler_options_limit_user');
 
     // Create authenticated user.
@@ -35,19 +33,19 @@ class WebformOptionsLimitUserTest extends WebformBrowserTestBase {
 
     // Check that options limit is not met for authenticated user.
     $this->drupalGet('/webform/test_handler_options_limit_user');
-    $assert_session->responseContains('A [1 remaining]');
-    $assert_session->responseContains('B [2 remaining]');
-    $assert_session->responseContains('C [3 remaining]');
-    $assert_session->responseNotContains('options_limit_user is not available.');
+    $this->assertRaw('A [1 remaining]');
+    $this->assertRaw('B [2 remaining]');
+    $this->assertRaw('C [3 remaining]');
+    $this->assertNoRaw('options_limit_user is not available.');
 
     // Check that options limit is reached for authenticated user.
     $this->postSubmission($webform);
     $this->postSubmission($webform);
     $this->postSubmission($webform);
-    $assert_session->responseContains('A [0 remaining]');
-    $assert_session->responseContains('B [0 remaining]');
-    $assert_session->responseContains('C [0 remaining]');
-    $assert_session->responseContains('options_limit_user is not available.');
+    $this->assertRaw('A [0 remaining]');
+    $this->assertRaw('B [0 remaining]');
+    $this->assertRaw('C [0 remaining]');
+    $this->assertRaw('options_limit_user is not available.');
 
     // Create another authenticated user.
     $user = $this->drupalCreateUser();
@@ -55,19 +53,19 @@ class WebformOptionsLimitUserTest extends WebformBrowserTestBase {
 
     // Check that options limit is not met for authenticated user.
     $this->drupalGet('/webform/test_handler_options_limit_user');
-    $assert_session->responseContains('A [1 remaining]');
-    $assert_session->responseContains('B [2 remaining]');
-    $assert_session->responseContains('C [3 remaining]');
-    $assert_session->responseNotContains('options_limit_user is not available.');
+    $this->assertRaw('A [1 remaining]');
+    $this->assertRaw('B [2 remaining]');
+    $this->assertRaw('C [3 remaining]');
+    $this->assertNoRaw('options_limit_user is not available.');
 
     // Check that options limit is reached for authenticated user.
     $this->postSubmission($webform);
     $this->postSubmission($webform);
     $this->postSubmission($webform);
-    $assert_session->responseContains('A [0 remaining]');
-    $assert_session->responseContains('B [0 remaining]');
-    $assert_session->responseContains('C [0 remaining]');
-    $assert_session->responseContains('options_limit_user is not available.');
+    $this->assertRaw('A [0 remaining]');
+    $this->assertRaw('B [0 remaining]');
+    $this->assertRaw('C [0 remaining]');
+    $this->assertRaw('options_limit_user is not available.');
 
     // Logout.
     // NOTE:
@@ -77,24 +75,24 @@ class WebformOptionsLimitUserTest extends WebformBrowserTestBase {
 
     // Check that options limit is not met for anonymous user.
     $this->drupalGet('/webform/test_handler_options_limit_user');
-    $assert_session->responseContains('A [1 remaining]');
-    $assert_session->responseContains('B [2 remaining]');
-    $assert_session->responseContains('C [3 remaining]');
-    $assert_session->responseNotContains('options_limit_user is not available.');
+    $this->assertRaw('A [1 remaining]');
+    $this->assertRaw('B [2 remaining]');
+    $this->assertRaw('C [3 remaining]');
+    $this->assertNoRaw('options_limit_user is not available.');
 
     // Check that options limit is reached for anonymous user.
     $this->postSubmission($webform);
     $this->postSubmission($webform);
     $this->postSubmission($webform);
-    $assert_session->responseContains('A [0 remaining]');
-    $assert_session->responseContains('B [0 remaining]');
-    $assert_session->responseContains('C [0 remaining]');
-    $assert_session->responseContains('options_limit_user is not available.');
+    $this->assertRaw('A [0 remaining]');
+    $this->assertRaw('B [0 remaining]');
+    $this->assertRaw('C [0 remaining]');
+    $this->assertRaw('options_limit_user is not available.');
 
     // Check that Options limit report is not available.
     $this->drupalLogin($this->rootUser);
     $this->drupalGet('/admin/structure/webform/manage/test_handler_options_limit_user/results/options-limit');
-    $assert_session->statusCodeEquals(403);
+    $this->assertResponse(403);
   }
 
 }

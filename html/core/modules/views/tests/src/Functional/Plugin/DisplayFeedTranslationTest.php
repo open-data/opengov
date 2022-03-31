@@ -161,7 +161,7 @@ class DisplayFeedTranslationTest extends ViewTestBase {
     }
 
     $this->drupalGet('test-feed-display-fields.xml');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
 
     $items = $this->getSession()->getDriver()->find('//channel/item');
     // There should only be 3 items in the feed.

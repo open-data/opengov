@@ -13,7 +13,6 @@ use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Util\Common;
 
 class JavaScriptLintSniff implements Sniff
 {
@@ -57,7 +56,7 @@ class JavaScriptLintSniff implements Sniff
 
         $fileName = $phpcsFile->getFilename();
 
-        $cmd = '"'.Common::escapeshellcmd($jslPath).'" -nologo -nofilelisting -nocontext -nosummary -output-format __LINE__:__ERROR__ -process '.escapeshellarg($fileName);
+        $cmd = '"'.escapeshellcmd($jslPath).'" -nologo -nofilelisting -nocontext -nosummary -output-format __LINE__:__ERROR__ -process '.escapeshellarg($fileName);
         $msg = exec($cmd, $output, $retval);
 
         // Variable $exitCode is the last line of $output if no error occurs, on

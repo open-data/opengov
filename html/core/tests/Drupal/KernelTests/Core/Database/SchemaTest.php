@@ -433,7 +433,7 @@ class SchemaTest extends KernelTestBase {
       $this->fail('\Drupal\Core\Database\SchemaObjectExistsException exception missed.');
     }
     catch (SchemaObjectExistsException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('\Drupal\Core\Database\SchemaObjectExistsException thrown when index already exists.');
     }
 
     try {
@@ -441,7 +441,7 @@ class SchemaTest extends KernelTestBase {
       $this->fail('\Drupal\Core\Database\SchemaObjectDoesNotExistException exception missed.');
     }
     catch (SchemaObjectDoesNotExistException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('\Drupal\Core\Database\SchemaObjectDoesNotExistException thrown when index already exists.');
     }
 
     // Get index information.
@@ -687,6 +687,7 @@ class SchemaTest extends KernelTestBase {
       'primary key' => ['serial_column'],
     ];
     $this->schema->createTable($table_name, $table_spec);
+    $this->pass(new FormattableMarkup('Table %table created.', ['%table' => $table_name]));
 
     // Check the characteristics of the field.
     $this->assertFieldCharacteristics($table_name, 'test_field', $field_spec);
@@ -704,6 +705,7 @@ class SchemaTest extends KernelTestBase {
       'primary key' => ['serial_column'],
     ];
     $this->schema->createTable($table_name, $table_spec);
+    $this->pass(new FormattableMarkup('Table %table created.', ['%table' => $table_name]));
 
     // Insert some rows to the table to test the handling of initial values.
     for ($i = 0; $i < 3; $i++) {
@@ -721,6 +723,7 @@ class SchemaTest extends KernelTestBase {
       ->execute();
 
     $this->schema->addField($table_name, 'test_field', $field_spec);
+    $this->pass(new FormattableMarkup('Column %column created.', ['%column' => 'test_field']));
 
     // Check the characteristics of the field.
     $this->assertFieldCharacteristics($table_name, 'test_field', $field_spec);
@@ -1022,6 +1025,7 @@ class SchemaTest extends KernelTestBase {
       'primary key' => ['serial_column'],
     ];
     $this->schema->createTable($table_name, $table_spec);
+    $this->pass(new FormattableMarkup('Table %table created.', ['%table' => $table_name]));
 
     // Check the characteristics of the field.
     $this->assertFieldCharacteristics($table_name, 'test_field', $old_spec);

@@ -2,8 +2,7 @@
 
 namespace Drupal\search_api\Plugin;
 
-use Drupal\Component\Plugin\ConfigurableInterface;
-use Drupal\Component\Plugin\DependentPluginInterface;
+use Drupal\Component\Plugin\ConfigurablePluginInterface as DrupalConfigurablePluginInterface;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -17,7 +16,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  * @see \Drupal\Core\Plugin\PluginFormInterface
  * @see \Drupal\search_api\Plugin\PluginFormTrait
  */
-interface ConfigurablePluginInterface extends HideablePluginInterface, PluginInspectionInterface, DerivativeInspectionInterface, ConfigurableInterface, DependentPluginInterface, ContainerFactoryPluginInterface {
+interface ConfigurablePluginInterface extends HideablePluginInterface, PluginInspectionInterface, DerivativeInspectionInterface, DrupalConfigurablePluginInterface, ContainerFactoryPluginInterface {
 
   /**
    * Returns the label for use on the administration pages.

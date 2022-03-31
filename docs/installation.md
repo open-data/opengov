@@ -33,10 +33,10 @@ To start the php-fpm service, run
 Composer is a tool used to manage dependencies in your Drupal project. To install, run the following commands from your terminal:
 
 ```
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
+	$ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+	$ php -r "if (hash_file('sha384', 'composer-setup.php') === 'a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+	$ php composer-setup.php
+	$ php -r "unlink('composer-setup.php');"
 ```
 This will download the setup file and run it, producing a composer.phar file.
 
@@ -146,9 +146,9 @@ NGINX is the webserver we will be using. To install and run nginx
 
 ### 7. Solr
 ```
-	$ wget https://downloads.apache.org/lucene/solr/8.11.1/solr-8.11.1.tgz
-	$ tar xzf solr-8.11.1.tgz solr-8.11.1/bin/install_solr_service.sh --strip-components=2
-	$ sudo bash ./install_solr_service.sh solr-8.11.1.tgz
+	$ wget http://apache.org/dist/lucene/solr/8.2.0/solr-8.2.0.tgz
+	$ tar xzf solr-8.2.0.tgz solr-8.2.0/bin/install_solr_service.sh --strip-components=2
+	$ sudo bash ./install_solr_service.sh solr-8.2.0.tgz
 ```
 This will automatically start the solr service on port 8983. However, for some reason this process
 can't be controlled using the systemctl commands. To fix that, terminate the process and restart

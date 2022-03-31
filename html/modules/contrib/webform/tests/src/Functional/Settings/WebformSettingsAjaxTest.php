@@ -26,13 +26,11 @@ class WebformSettingsAjaxTest extends WebformBrowserTestBase {
    * Test webform submission form Ajax setting.
    */
   public function testAjax() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('contact');
 
     // Check that Ajax is not enabled.
     $this->drupalGet('/webform/contact');
-    $assert_session->responseNotContains('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
+    $this->assertNoRaw('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
     $this->assertNoCssSelect('#webform-submission-contact-form-ajax');
 
     // Set 'Use Ajax' for the individual webform.
@@ -41,9 +39,9 @@ class WebformSettingsAjaxTest extends WebformBrowserTestBase {
 
     // Check that Ajax is enabled for the individual webform.
     $this->drupalGet('/webform/contact');
-    $assert_session->responseContains('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
+    $this->assertRaw('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
     $this->assertCssSelect('#webform-submission-contact-form-ajax');
-    $assert_session->responseContains('"effect":"fade","speed":500');
+    $this->assertRaw('"effect":"fade","speed":500');
 
     // Unset 'Use Ajax' for the individual webform.
     $webform->setSetting('ajax', FALSE);
@@ -51,7 +49,7 @@ class WebformSettingsAjaxTest extends WebformBrowserTestBase {
 
     // Check that Ajax is not enabled for the individual webform.
     $this->drupalGet('/webform/contact');
-    $assert_session->responseNotContains('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
+    $this->assertNoRaw('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="fade" data-progress-type="throbber">');
 
     // Globally enable Ajax for all webforms.
     \Drupal::configFactory()->getEditable('webform.settings')
@@ -63,8 +61,8 @@ class WebformSettingsAjaxTest extends WebformBrowserTestBase {
 
     // Check that Ajax is enabled for all webforms.
     $this->drupalGet('/webform/contact');
-    $assert_session->responseContains('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="slide" data-progress-type="fullscreen">');
-    $assert_session->responseContains('"effect":"slide","speed":1500');
+    $this->assertRaw('<div id="webform-submission-contact-form-ajax" class="webform-ajax-form-wrapper" data-effect="slide" data-progress-type="fullscreen">');
+    $this->assertRaw('"effect":"slide","speed":1500');
 
     // Check webform node Ajax wrapper.
     $node = $this->createWebformNode('contact');

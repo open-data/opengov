@@ -23,13 +23,11 @@ class WebformElementSameTest extends WebformElementBrowserTestBase {
    * Test same element.
    */
   public function testSame() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('test_element_same');
 
     // Check same checked.
     $this->postSubmission($webform);
-    $assert_session->responseContains("textfield_source: '{some value}'
+    $this->assertRaw("textfield_source: '{some value}'
 textfield_same: 1
 textfield_destination: '{some value}'
 webform_name_source:
@@ -62,9 +60,9 @@ textfield_multiple_destination:
       'textfield_multiple_same' => FALSE,
     ];
     $this->postSubmission($webform, $edit);
-    $assert_session->responseContains('textfield_destination field is required.');
-    $assert_session->responseContains('webform_name_destination field is required.');
-    $assert_session->responseContains('textfield_multiple_destination field is required.');
+    $this->assertRaw('textfield_destination field is required.');
+    $this->assertRaw('webform_name_destination field is required.');
+    $this->assertRaw('textfield_multiple_destination field is required.');
 
     // Check same not checked throw validate errors.
     $edit = [
@@ -81,7 +79,7 @@ textfield_multiple_destination:
       'textfield_multiple_destination[items][0][_item_]' => '{three value}',
     ];
     $sid = $this->postSubmission($webform, $edit);
-    $assert_session->responseContains("textfield_source: '{some value}'
+    $this->assertRaw("textfield_source: '{some value}'
 textfield_same: 0
 textfield_destination: '{some other value}'
 webform_name_source:
@@ -108,10 +106,10 @@ textfield_multiple_destination:
 
     $webform_submission = WebformSubmission::load($sid);
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     // Check textfield source and destination are not equal.
-    $this->assertNotEquals(
+    $this->assertNotEqual(
       $webform_submission->getElementData('textfield_source'),
       $webform_submission->getElementData('textfield_destination')
     );
@@ -122,7 +120,7 @@ textfield_multiple_destination:
     $webform_submission->save();
 
     // Check textfield source and destination are now equal.
-    $this->assertEquals(
+    $this->assertEqual(
       $webform_submission->getElementData('textfield_source'),
       $webform_submission->getElementData('textfield_destination')
     );

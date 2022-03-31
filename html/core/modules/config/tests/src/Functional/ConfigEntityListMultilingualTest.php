@@ -41,10 +41,7 @@ class ConfigEntityListMultilingualTest extends BrowserTestBase {
    */
   public function testListUI() {
     // Log in as an administrative user to access the full menu trail.
-    $this->drupalLogin($this->drupalCreateUser([
-      'access administration pages',
-      'administer site configuration',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['access administration pages', 'administer site configuration']));
 
     // Get the list page.
     $this->drupalGet('admin/structure/config_test');

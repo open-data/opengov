@@ -115,9 +115,7 @@ abstract class Storage extends AbstractWebDriver
 
         // delete key from storage
         if (func_num_args() === 1) {
-            $this->deleteKey(func_get_arg(0));
-
-            return $this;
+            return $this->deleteKey(func_get_arg(0));
         }
 
         throw WebDriverException::factory(WebDriverException::UNEXPECTED_PARAMETERS);

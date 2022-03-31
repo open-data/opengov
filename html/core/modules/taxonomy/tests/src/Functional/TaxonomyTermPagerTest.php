@@ -33,10 +33,7 @@ class TaxonomyTermPagerTest extends TaxonomyTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->drupalLogin($this->drupalCreateUser([
-      'administer taxonomy',
-      'bypass node access',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['administer taxonomy', 'bypass node access']));
     $this->vocabulary = $this->createVocabulary();
   }
 
@@ -63,13 +60,13 @@ class TaxonomyTermPagerTest extends TaxonomyTestBase {
       $this->createTerm($this->vocabulary);
     }
 
-    // Ensure that pager is visible on page 1.
+    // Get Page 1.
     $this->drupalGet('admin/structure/taxonomy/manage/' . $this->vocabulary->id() . '/overview');
-    $this->assertPattern('|<nav class="pager" [^>]*>|');
+    $this->assertPattern('|<nav class="pager" [^>]*>|', 'Pager is visible on page 1');
 
-    // Ensure that pager is visible on page 2.
+    // Get Page 2.
     $this->drupalGet('admin/structure/taxonomy/manage/' . $this->vocabulary->id() . '/overview', ['query' => ['page' => 1]]);
-    $this->assertPattern('|<nav class="pager" [^>]*>|');
+    $this->assertPattern('|<nav class="pager" [^>]*>|', 'Pager is visible on page 2');
   }
 
 }

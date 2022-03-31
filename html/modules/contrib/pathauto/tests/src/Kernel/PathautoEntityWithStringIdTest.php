@@ -36,7 +36,6 @@ class PathautoEntityWithStringIdTest extends KernelTestBase {
     'field',
     'token',
     'path',
-    'path_alias',
     'pathauto',
     'pathauto_string_id_test',
   ];

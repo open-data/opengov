@@ -36,8 +36,6 @@ class WebformBrowserTestBaseTest extends WebformBrowserTestBase {
    * Test base  helper methods.
    */
   public function testWebformBase() {
-    $assert_session = $this->assertSession();
-
     // Check that test webform is installed.
     $this->assertNotNull(Webform::load('test_ajax'));
 
@@ -75,9 +73,9 @@ class WebformBrowserTestBaseTest extends WebformBrowserTestBase {
     // Check place blocks.
     $this->placeBlocks();
     $this->drupalGet('/webform/contact');
-    $assert_session->responseContains('<h1>Contact</h1>');
-    $assert_session->responseContains('<h2 id="system-breadcrumb" class="visually-hidden">Breadcrumb</h2>');
-    $assert_session->responseContains('<h2 class="visually-hidden">Primary tabs</h2>');
+    $this->assertRaw('<h1>Contact</h1>');
+    $this->assertRaw('<h2 id="system-breadcrumb" class="visually-hidden">Breadcrumb</h2>');
+    $this->assertRaw('<h2 class="visually-hidden">Primary tabs</h2>');
   }
 
 }

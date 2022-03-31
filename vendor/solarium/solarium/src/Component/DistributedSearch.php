@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component;
 
 use Solarium\Component\RequestBuilder\ComponentRequestBuilderInterface;
@@ -15,8 +8,8 @@ use Solarium\Component\RequestBuilder\DistributedSearch as RequestBuilder;
 /**
  * Distributed Search (sharding) component.
  *
- * @see https://solr.apache.org/guide/distributed-search-with-index-sharding.html
- * @see https://solr.apache.org/guide/solrcloud.html
+ * @see http://wiki.apache.org/solr/DistributedSearch
+ * @see http://wiki.apache.org/solr/SolrCloud/
  */
 class DistributedSearch extends AbstractComponent
 {
@@ -69,7 +62,7 @@ class DistributedSearch extends AbstractComponent
      *
      * @return self Provides fluent interface
      *
-     * @see https://solr.apache.org/guide/distributed-search-with-index-sharding.html
+     * @see http://wiki.apache.org/solr/DistributedSearch
      */
     public function addShard(string $key, string $shard): self
     {
@@ -206,7 +199,7 @@ class DistributedSearch extends AbstractComponent
      *
      * @return self Provides fluent interface
      *
-     * @see https://solr.apache.org/guide/solrcloud.html
+     * @see http://wiki.apache.org/solr/SolrCloud/
      */
     public function addCollection(string $key, string $collection): self
     {
@@ -222,7 +215,7 @@ class DistributedSearch extends AbstractComponent
      *
      * @return self Provides fluent interface
      */
-    public function addCollections(array $collections): self
+    public function addCollections(array $collections)
     {
         foreach ($collections as $key => $collection) {
             $this->addCollection($key, $collection);
@@ -294,7 +287,7 @@ class DistributedSearch extends AbstractComponent
      *
      * @return self Provides fluent interface
      *
-     * @see https://solr.apache.org/guide/distributed-requests.html
+     * @see https://cwiki.apache.org/confluence/display/solr/Distributed+Requests
      */
     public function addReplica(string $key, string $replica): self
     {

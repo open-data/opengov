@@ -1,17 +1,9 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Query\Result;
 
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\AbstractQuery;
-use Solarium\Core\Query\Status4xxNoExceptionInterface;
 use Solarium\Exception\HttpException;
 use Solarium\Exception\RuntimeException;
 use Solarium\Exception\UnexpectedValueException;
@@ -50,6 +42,7 @@ class Result implements ResultInterface
     /**
      * Constructor.
      *
+     *
      * @param AbstractQuery $query
      * @param Response      $response
      *
@@ -60,16 +53,8 @@ class Result implements ResultInterface
         $this->query = $query;
         $this->response = $response;
 
-        // by default, a status of 400 or above is considered an error
-        $errorStatus = 400;
-
-        // some query types expect 4xx statuses as a valid response
-        if ($query instanceof Status4xxNoExceptionInterface) {
-            $errorStatus = 500;
-        }
-
-        // check status for error
-        if ($response->getStatusCode() >= $errorStatus) {
+        // check status for error (range of 400 and 500)
+        if ($response->getStatusCode() >= 400) {
             throw new HttpException($response->getStatusMessage(), $response->getStatusCode(), $response->getBody());
         }
     }
@@ -117,7 +102,7 @@ class Result implements ResultInterface
                     $this->data = json_decode($this->response->getBody(), true);
                     break;
                 default:
-                    throw new RuntimeException(sprintf('Responseparser cannot handle %s', $this->query->getResponseWriter()));
+                    throw new RuntimeException('Responseparser cannot handle '.$this->query->getResponseWriter());
             }
 
             if (null === $this->data) {

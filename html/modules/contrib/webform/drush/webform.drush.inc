@@ -3,7 +3,7 @@
 // @codingStandardsIgnoreFile
 
 /**
- * This is file was generated using Drush. DO NOT EDIT.
+ * This is file was generated using Drush. DO NOT EDIT. 
  *
  * @see drush webform-generate-commands
  * @see \Drupal\webform\Commands\DrushCliServiceBase::generate_commands_drush8
@@ -44,7 +44,6 @@ function webform_drush_command() {
         'range-latest' => 'Integer specifying the latest X submissions will be downloaded. Used if "range-type" is "latest" or no other range options are provided.',
         'range-start' => 'The submission ID or start date at which to start exporting.',
         'range-end' => 'The submission ID or end date at which to end exporting.',
-        'uid' => 'The ID of the user who submitted the form.',
         'order' => 'The submission order "asc" (default) or "desc".',
         'state' => 'Submission state to be included: "completed", "draft" or "all" (default).',
         'sticky' => 'Flagged/starred submission status.',
@@ -134,6 +133,20 @@ function webform_drush_command() {
       'aliases' => array(
         'wfls',
         'webform:libraries:status',
+      ),
+    ),
+    'webform-libraries-make' => array(
+      'description' => 'Generates libraries YAML to be included in a drush.make.yml files.',
+      'core' => array(
+        '8+',
+      ),
+      'bootstrap' => 1,
+      'examples' => array(
+        'webform-libraries-make' => 'Generates libraries YAML to be included in a drush.make.yml file.',
+      ),
+      'aliases' => array(
+        'wflm',
+        'webform:libraries:make',
       ),
     ),
     'webform-libraries-composer' => array(
@@ -233,7 +246,7 @@ function webform_drush_command() {
       ),
       'bootstrap' => 1,
       'examples' => array(
-        'webform-docs' => "Generates HTML documentation used by the Webform module's documentation pages.",
+        'webform-repair' => "Generates HTML documentation used by the Webform module's documentation pages.",
       ),
       'aliases' => array(
         'wfd',
@@ -274,9 +287,9 @@ function webform_drush_command() {
   );
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-export. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND_validate().
@@ -292,9 +305,9 @@ function drush_webform_export() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_export'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-import. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND_validate().
@@ -310,9 +323,9 @@ function drush_webform_import() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_import'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-purge. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND_validate().
@@ -328,9 +341,9 @@ function drush_webform_purge() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_purge'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-tidy. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND_validate().
@@ -346,9 +359,9 @@ function drush_webform_tidy() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_tidy'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-libraries-status. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND().
@@ -357,9 +370,20 @@ function drush_webform_libraries_status() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_libraries_status'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
+// drush webform-libraries-make. DO NOT EDIT.
+/******************************************************************************/
+
+/**
+ * Implements drush_hook_COMMAND().
+ */
+function drush_webform_libraries_make() {
+  return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_libraries_make'], func_get_args());
+}
+
+/******************************************************************************/
 // drush webform-libraries-composer. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND().
@@ -368,9 +392,9 @@ function drush_webform_libraries_composer() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_libraries_composer'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-libraries-download. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND().
@@ -379,9 +403,9 @@ function drush_webform_libraries_download() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_libraries_download'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-libraries-remove. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND().
@@ -390,9 +414,9 @@ function drush_webform_libraries_remove() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_libraries_remove'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-generate. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND_validate().
@@ -408,9 +432,9 @@ function drush_webform_generate() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_generate'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-repair. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND().
@@ -419,9 +443,9 @@ function drush_webform_repair() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_repair'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-remove-orphans. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND().
@@ -430,9 +454,9 @@ function drush_webform_remove_orphans() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_remove_orphans'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-docs. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND_validate().
@@ -448,9 +472,9 @@ function drush_webform_docs() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_docs'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-composer-update. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND_validate().
@@ -466,9 +490,9 @@ function drush_webform_composer_update() {
   return call_user_func_array([\Drupal::service('webform.cli_service'), 'drush_webform_composer_update'], func_get_args());
 }
 
-/* ************************************************************************** */
+/******************************************************************************/
 // drush webform-generate-commands. DO NOT EDIT.
-/* ************************************************************************** */
+/******************************************************************************/
 
 /**
  * Implements drush_hook_COMMAND().

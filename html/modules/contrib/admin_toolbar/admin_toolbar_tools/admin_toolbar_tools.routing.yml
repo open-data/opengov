@@ -11,7 +11,7 @@ admin_toolbar_tools.cssjs:
   path: '/admin/flush/cssjs'
   defaults:
     _controller: '\Drupal\admin_toolbar_tools\Controller\ToolbarController::flushJsCss'
-    _title: 'Flush CSS and JavaScript'
+    _title: 'Flush Css and Javascript'
   requirements:
     _permission: 'administer site configuration'
     _csrf_token: 'TRUE'
@@ -70,15 +70,6 @@ admin_toolbar_tools.flush_twig:
     _permission: 'administer site configuration'
     _csrf_token: 'TRUE'
 
-admin_toolbar_tools.theme_rebuild:
-  path: '/admin/flush/theme_rebuild'
-  defaults:
-    _controller: '\Drupal\admin_toolbar_tools\Controller\ToolbarController::themeRebuild'
-    _title: 'Theme Rebuild'
-  requirements:
-    _permission: 'administer site configuration'
-    _csrf_token: 'TRUE'
-
 admin_toolbar.run.cron:
   path: '/run-cron'
   defaults:
@@ -88,10 +79,9 @@ admin_toolbar.run.cron:
     _permission: 'administer site configuration'
     _csrf_token: 'TRUE'
 
-admin_toolbar_tools.settings:
-  path: '/admin/config/user-interface/admin-toolbar-tools'
+admin_toolbar.search:
+  path: '/admin/admin-toolbar-search'
   defaults:
-    _form: '\Drupal\admin_toolbar_tools\Form\AdminToolbarToolsSettingsForm'
-    _title: 'Admin Toolbar Tools settings'
+    _controller: '\Drupal\admin_toolbar_tools\Controller\ToolbarController::search'
   requirements:
     _permission: 'administer site configuration'

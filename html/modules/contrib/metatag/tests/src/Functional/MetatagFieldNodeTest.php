@@ -12,7 +12,7 @@ class MetatagFieldNodeTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     // Needed for token handling.
     'token',
 

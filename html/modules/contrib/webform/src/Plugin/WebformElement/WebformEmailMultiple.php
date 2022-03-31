@@ -3,7 +3,6 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\webform\WebformSubmissionInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'email_multiple' element.
@@ -16,22 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class WebformEmailMultiple extends Email {
-
-  /**
-   * The path validator service.
-   *
-   * @var \Drupal\Core\Path\PathValidatorInterface
-   */
-  protected $pathValidator;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->pathValidator = $container->get('path.validator');
-    return $instance;
-  }
 
   /**
    * {@inheritdoc}
@@ -47,7 +30,7 @@ class WebformEmailMultiple extends Email {
     return $properties;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -70,7 +53,7 @@ class WebformEmailMultiple extends Email {
           $links[] = [
             '#type' => 'link',
             '#title' => $email,
-            '#url' => $this->pathValidator->getUrlIfValid('mailto:' . $email),
+            '#url' => \Drupal::pathValidator()->getUrlIfValid('mailto:' . $email),
             '#suffix' => (++$i !== $total) ? ', ' : '',
           ];
         }

@@ -8,11 +8,8 @@
 namespace Drupal\Console\Utils;
 
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\DrupalKernel;
-use Drupal\Core\PhpStorage\PhpStorageFactory;
 use Symfony\Component\DomCrawler\Crawler;
 use GuzzleHttp\Client;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class DrupalHelper
@@ -242,12 +239,12 @@ class DrupalApi
      *
      * @param \Composer\Autoload\ClassLoader            $class_loader
      *   The class loader.
-     * @param Request $request
+     * @param \Symfony\Component\HttpFoundation\Request $request
      *   The current request.
      *
      * @see rebuild.php
      */
-    public function drupal_rebuild($class_loader, Request $request)
+    public function drupal_rebuild($class_loader, \Symfony\Component\HttpFoundation\Request $request)
     {
         // Remove Drupal's error and exception handlers; they rely on a working
         // service container and other subsystems and will only cause a fatal error
@@ -256,21 +253,17 @@ class DrupalApi
         restore_exception_handler();
 
         // Force kernel to rebuild php cache.
-        PhpStorageFactory::get('twig')->deleteAll();
+        \Drupal\Core\PhpStorage\PhpStorageFactory::get('twig')->deleteAll();
 
         // Bootstrap up to where caches exist and clear them.
-        $kernel = new DrupalKernel('prod', $class_loader);
-        $kernel->setSitePath(DrupalKernel::findSitePath($request));
+        $kernel = new \Drupal\Core\DrupalKernel('prod', $class_loader);
+        $kernel->setSitePath(\Drupal\Core\DrupalKernel::findSitePath($request));
 
         // Invalidate the container.
         $kernel->invalidateContainer();
 
         // Prepare a NULL request.
-        $kernel->boot();
-        $kernel->preHandle($request);
-        if (method_exists($kernel, 'prepareLegacyRequest')) {
-            $kernel->prepareLegacyRequest($request);
-        }
+        $kernel->prepareLegacyRequest($request);
 
         foreach (Cache::getBins() as $bin) {
             $bin->deleteAll();

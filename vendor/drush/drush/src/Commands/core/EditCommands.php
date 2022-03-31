@@ -6,15 +6,13 @@ use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
-use Drush\Exec\ExecTrait;
 
 class EditCommands extends DrushCommands implements SiteAliasManagerAwareInterface
 {
     use SiteAliasManagerAwareTrait;
-    use ExecTrait;
 
     /**
-     * Edit drush.yml, site alias, and Drupal settings.php files.
+     * Edit drushrc, site alias, and Drupal settings.php files.
      *
      * @command core:edit
      * @bootstrap max
@@ -47,7 +45,7 @@ class EditCommands extends DrushCommands implements SiteAliasManagerAwareInterfa
             }
         }
 
-        $editor = self::getEditor();
+        $editor = drush_get_editor();
         if (count($all) == 1) {
             $filepath = current($all);
         } else {
@@ -87,7 +85,7 @@ class EditCommands extends DrushCommands implements SiteAliasManagerAwareInterfa
             // @todo filter out any files that are within Drush.
             $rcs = array_combine($rcs, $rcs);
             if ($headers) {
-                $rcs_header = ['drushyml' => '-- drush.yml --'];
+                $rcs_header = ['drushrc' => '-- Drushrc --'];
             }
         }
 
@@ -98,18 +96,15 @@ class EditCommands extends DrushCommands implements SiteAliasManagerAwareInterfa
                 $aliases_header = ['aliases' => '-- Aliases --'];
             }
         }
-
-        if (Drush::bootstrapManager()->hasBootstrapped(DRUSH_BOOTSTRAP_DRUPAL_FULL)) {
-            $site_root = \Drupal::service('kernel')->getSitePath();
+        if ($site_root = Drush::bootstrap()->confPath()) {
             $path = realpath($site_root . '/settings.php');
             $drupal[$path] = $path;
             if (file_exists($site_root . '/settings.local.php')) {
                 $path = realpath($site_root . '/settings.local.php');
                 $drupal[$path] = $path;
             }
-            if ($path = realpath(DRUPAL_ROOT . '/.htaccess')) {
-                $drupal[$path] = $path;
-            }
+            $path = realpath(DRUPAL_ROOT . '/.htaccess');
+            $drupal[$path] = $path;
             if ($headers) {
                 $drupal_header = ['drupal' => '-- Drupal --'];
             }
@@ -120,8 +115,21 @@ class EditCommands extends DrushCommands implements SiteAliasManagerAwareInterfa
 
     public static function phpIniFiles()
     {
-        $paths[] = php_ini_loaded_file();
-        return $paths;
+        $ini_files = [];
+        $path = php_ini_loaded_file();
+        $ini_files[$path] = $path;
+        if ($drush_ini = getenv('DRUSH_INI')) {
+            if (file_exists($drush_ini)) {
+                $ini_files[$drush_ini] = $drush_ini;
+            }
+        }
+        foreach ([DRUSH_BASE_PATH, '/etc/drush', Drush::config()->user() . '/.drush'] as $ini_dir) {
+            if (file_exists($ini_dir . "/drush.ini")) {
+                $path = realpath($ini_dir . "/drush.ini");
+                $ini_files[$path] = $path;
+            }
+        }
+        return $ini_files;
     }
 
     public function bashFiles()

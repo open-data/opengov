@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Server\CoreAdmin;
 
 use Solarium\Core\Query\AbstractResponseParser as ResponseParserAbstract;
@@ -18,7 +11,7 @@ use Solarium\QueryType\Server\CoreAdmin\Result\Result;
 use Solarium\QueryType\Server\CoreAdmin\Result\StatusResult;
 
 /**
- * Parse CoreAdmin response data.
+ * Parse Core Admin response data.
  */
 class ResponseParser extends ResponseParserAbstract implements ResponseParserInterface
 {
@@ -27,28 +20,27 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
      *
      * @param Result|ResultInterface $result
      *
-     * @throws \Exception
-     *
      * @return array
+     *
+     * @throws \Exception
      */
     public function parse(ResultInterface $result): array
     {
         $data = $result->getData();
         $data = $this->parseStatus($data, $result);
         $data = $this->addHeaderInfo($data, $data);
-
         return $data;
     }
 
     /**
-     * @param array                  $data
-     * @param Result|ResultInterface $result
-     *
-     * @throws \Exception
+     * @param array  $data
+     * @param Result $result
      *
      * @return array
+     *
+     * @throws \Exception
      */
-    protected function parseStatus(array $data, ResultInterface $result): array
+    protected function parseStatus(array $data, Result $result): array
     {
         /** @var Query $query */
         $query = $result->getQuery();
@@ -56,13 +48,14 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
         $action = $query->getAction();
         $type = $action->getType();
 
-        $data = parent::parseStatus($data, $result);
+        $data['wasSuccessful'] = 200 === $result->getResponse()->getStatusCode();
+        $data['statusMessage'] = $result->getResponse()->getStatusMessage();
 
         if (Query::ACTION_STATUS !== $type) {
             return $data;
         }
 
-        if (!\is_array($data['status'])) {
+        if (!is_array($data['status'])) {
             return $data;
         }
 

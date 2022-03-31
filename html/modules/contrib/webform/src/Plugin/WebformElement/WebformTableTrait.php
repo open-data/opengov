@@ -84,8 +84,8 @@ trait WebformTableTrait {
     ];
 
     $form['form']['display_container']['title_display']['#options'] = [
-      'header' => $this->t('Header'),
-    ] + $form['form']['display_container']['title_display']['#options'];
+        'header' => $this->t('Header'),
+      ] + $form['form']['display_container']['title_display']['#options'];
 
     return $form;
   }
@@ -140,15 +140,11 @@ trait WebformTableTrait {
     $element['#attributes']['class'][] = 'webform-tableselect';
     $element['#attributes']['class'][] = 'js-webform-tableselect';
     $element['#attached']['library'][] = 'webform/webform.element.tableselect';
-    if (!empty($element['#required'])) {
-      $element['#attributes']['class'][] = 'required';
-    }
-    $element['#attributes']['multiple'] = !empty($element['#multiple']);
     return $element;
   }
 
   /**
-   * Process table selected options.
+   * Process table selected options and add #title to the table's options.
    *
    * @param array $element
    *   An associative array containing the properties and children of
@@ -161,25 +157,11 @@ trait WebformTableTrait {
    */
   public static function processTableSelectOptions(array $element) {
     foreach ($element['#options'] as $key => $choice) {
-      if (!isset($element[$key])) {
-        continue;
-      }
-
-      // Add #title to the table's options.
-      if (empty($element[$key]['#title'])) {
+      if (isset($element[$key]) && empty($element[$key]['#title'])) {
         if ($title = static::getTableSelectOptionTitle($choice)) {
           $element[$key]['#title'] = $title;
           $element[$key]['#title_display'] = 'invisible';
         }
-      }
-
-      // Suppress inline error messages from appearing below
-      // checkboxes and radios.
-      $element[$key]['#error_no_message'] = TRUE;
-
-      // Add required attribute to table select radios.
-      if (!empty($element['#required']) && empty($element['#multiple'])) {
-        $element[$key]['#attributes']['required'] = TRUE;
       }
     }
     return $element;

@@ -15,7 +15,7 @@ class FieldIntegrationTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'entity_test',
     'search_api_test_db',
   ];

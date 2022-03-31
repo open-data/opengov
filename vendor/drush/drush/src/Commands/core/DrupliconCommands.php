@@ -23,9 +23,10 @@ class DrupliconCommands extends DrushCommands
      */
     public function druplicon($result, CommandData $commandData)
     {
-        // If one command does a Drush::drush() to another command,
+        // If one command does a drush_invoke to another command,
         // then this hook will be called multiple times. Only print
-        // once.
+        // once.  (n.b. If drush_invoke_process passes along the
+        // --druplicon option, then we still get multiple output)
         if ($this->printed) {
             return;
         }

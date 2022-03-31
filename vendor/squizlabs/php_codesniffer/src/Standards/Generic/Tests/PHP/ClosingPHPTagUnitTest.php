@@ -21,22 +21,11 @@ class ClosingPHPTagUnitTest extends AbstractSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
-     * @param string $testFile The name of the file being tested.
-     *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList()
     {
-        switch ($testFile) {
-        case 'ClosingPHPTagUnitTest.1.inc':
-            return [9 => 1];
-        case 'ClosingPHPTagUnitTest.2.inc':
-            return [5 => 1];
-            break;
-        default:
-            return [];
-            break;
-        }
+        return [9 => 1];
 
     }//end getErrorList()
 

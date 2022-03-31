@@ -12,7 +12,6 @@ namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Debug;
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Util\Common;
 
 class ClosureLinterSniff implements Sniff
 {
@@ -72,7 +71,7 @@ class ClosureLinterSniff implements Sniff
 
         $fileName = $phpcsFile->getFilename();
 
-        $lintPath = Common::escapeshellcmd($lintPath);
+        $lintPath = escapeshellcmd($lintPath);
         $cmd      = $lintPath.' --nosummary --notime --unix_mode '.escapeshellarg($fileName);
         exec($cmd, $output, $retval);
 

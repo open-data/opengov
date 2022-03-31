@@ -32,7 +32,7 @@ trait AssertButtonsTrait {
       // Dropbutton elements.
       /** @var \Behat\Mink\Element\NodeElement[] $elements */
       $elements = $this->xpath('//div[@class="dropbutton-wrapper"]//input[@type="submit"]');
-      $this->assertCount($count, $elements);
+      $this->assertEqual($count, count($elements));
       foreach ($elements as $element) {
         $value = $element->getValue() ?: '';
         $this->assertEqual($buttons[$i], $value);

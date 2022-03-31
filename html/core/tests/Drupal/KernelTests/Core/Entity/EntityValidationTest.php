@@ -111,7 +111,7 @@ class EntityValidationTest extends EntityKernelTestBase {
     foreach ($cached_discoveries as $cached_discovery) {
       $cached_discovery_classes[] = get_class($cached_discovery);
     }
-    $this->assertContains('Drupal\Core\Validation\ConstraintManager', $cached_discovery_classes);
+    $this->assertTrue(in_array('Drupal\Core\Validation\ConstraintManager', $cached_discovery_classes));
 
     // All entity variations have to have the same results.
     foreach (entity_test_entity_types() as $entity_type) {
@@ -205,7 +205,7 @@ class EntityValidationTest extends EntityKernelTestBase {
 
     // Make sure we can determine this is composite constraint.
     $constraint = $violations[0]->getConstraint();
-    $this->assertInstanceOf(CompositeConstraintBase::class, $constraint);
+    $this->assertTrue($constraint instanceof CompositeConstraintBase, 'Constraint is composite constraint.');
     $this->assertEqual('type', $violations[0]->getPropertyPath());
 
     /** @var \Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase $constraint */

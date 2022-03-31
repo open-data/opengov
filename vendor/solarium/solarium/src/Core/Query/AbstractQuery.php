@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Core\Query;
 
 use Solarium\Core\Configurable;
@@ -79,7 +72,7 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
     {
         $this->setOption('resultclass', $classname);
 
-        return $this;
+        return  $this;
     }
 
     /**
@@ -177,7 +170,7 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
     /**
      * Removes a param that was previously added by addParam.
      *
-     * Note: This can not be used to remove known default parameters of the Solarium API.
+     * Note: This can not be used to remove known default parameters of the solarium api.
      *
      * @param string $name
      *
@@ -317,29 +310,5 @@ abstract class AbstractQuery extends Configurable implements QueryInterface
     public function getDistrib(): ?bool
     {
         return $this->getOption('distrib');
-    }
-
-    /**
-     * Set ie (input encoding) option.
-     *
-     * @param string $encoding
-     *
-     * @return self Provides fluent interface
-     */
-    public function setInputEncoding(string $encoding): self
-    {
-        $this->setOption('ie', $encoding);
-
-        return $this;
-    }
-
-    /**
-     * Get ie (input encoding) option.
-     *
-     * @return string|null
-     */
-    public function getInputEncoding(): ?string
-    {
-        return $this->getOption('ie');
     }
 }

@@ -31,7 +31,7 @@ class MigrateFieldWidgetSettingsTest extends MigrateDrupal6TestBase {
   public function testWidgetSettings() {
     // Test the config can be loaded.
     $form_display = EntityFormDisplay::load('node.story.default');
-    $this->assertNotNull($form_display);
+    $this->assertIdentical(FALSE, is_null($form_display), "Form display node.story.default loaded with config.");
 
     // Text field.
     $component = $form_display->getComponent('field_test');
@@ -107,22 +107,22 @@ class MigrateFieldWidgetSettingsTest extends MigrateDrupal6TestBase {
 
     $component = $display_repository->getFormDisplay('node', 'employee', 'default')
       ->getComponent('field_company');
-    $this->assertIsArray($component);
+    $this->assertInternalType('array', $component);
     $this->assertSame('options_select', $component['type']);
 
     $component = $display_repository->getFormDisplay('node', 'employee', 'default')
       ->getComponent('field_company_2');
-    $this->assertIsArray($component);
+    $this->assertInternalType('array', $component);
     $this->assertSame('options_buttons', $component['type']);
 
     $component = $display_repository->getFormDisplay('node', 'employee', 'default')
       ->getComponent('field_company_3');
-    $this->assertIsArray($component);
+    $this->assertInternalType('array', $component);
     $this->assertSame('entity_reference_autocomplete_tags', $component['type']);
 
     $component = $display_repository->getFormDisplay('node', 'employee', 'default')
       ->getComponent('field_commander');
-    $this->assertIsArray($component);
+    $this->assertInternalType('array', $component);
     $this->assertSame('options_select', $component['type']);
   }
 

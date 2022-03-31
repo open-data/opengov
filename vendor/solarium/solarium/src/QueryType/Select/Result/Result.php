@@ -1,24 +1,16 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Select\Result;
 
 use Solarium\Component\ComponentAwareQueryInterface;
-use Solarium\Component\Result\Analytics\Result as AnalyticsResult;
 use Solarium\Component\Result\Debug\Result as DebugResult;
 use Solarium\Component\Result\FacetSet as FacetSetResult;
 use Solarium\Component\Result\Grouping\Result as GroupingResult;
 use Solarium\Component\Result\Highlighting\Highlighting;
 use Solarium\Component\Result\MoreLikeThis\MoreLikeThis;
 use Solarium\Component\Result\Spellcheck\Result as SpellcheckResult;
-use Solarium\Component\Result\Stats\Stats;
 use Solarium\Component\Result\Suggester\Result as SuggesterResult;
+use Solarium\Component\Result\Stats\Stats;
 use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\Result\QueryType as BaseResult;
 
@@ -27,7 +19,7 @@ use Solarium\Core\Query\Result\QueryType as BaseResult;
  *
  * This is the standard resulttype for a select query. Example usage:
  * <code>
- * // total Solr results
+ * // total solr results
  * $result->getNumFound();
  *
  * // results fetched
@@ -207,7 +199,7 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     {
         $this->parseResponse();
 
-        return \count($this->documents);
+        return count($this->documents);
     }
 
     /**
@@ -226,8 +218,6 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      * Get a component result by key.
      *
      * @param string $key
-     *
-     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return mixed
      */
@@ -332,17 +322,5 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     public function getDebug(): ?DebugResult
     {
         return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_DEBUG);
-    }
-
-    /**
-     * Get analytics component result.
-     *
-     * This is a convenience method that maps presets to getComponent
-     *
-     * @return \Solarium\Component\Result\Analytics\Result|null
-     */
-    public function getAnalytics(): ?AnalyticsResult
-    {
-        return $this->getComponent(ComponentAwareQueryInterface::COMPONENT_ANALYTICS);
     }
 }

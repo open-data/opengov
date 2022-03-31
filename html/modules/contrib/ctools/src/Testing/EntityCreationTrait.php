@@ -4,7 +4,6 @@ namespace Drupal\ctools\Testing;
 
 use Drupal\Component\Render\FormattableMarkup;
 
-
 trait EntityCreationTrait {
 
   /**
@@ -26,7 +25,7 @@ trait EntityCreationTrait {
    * @return \Drupal\Core\Entity\EntityInterface
    *   Created entity.
    */
-  protected function createEntity($entity_type, array $values = []) {
+  protected function createEntity($entity_type, array $values = array()) {
     $storage = $this->getEntityTypeManager()->getStorage($entity_type);
     $entity = $storage->create($values);
     $status = $entity->save();

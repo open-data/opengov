@@ -3,6 +3,7 @@
 namespace Drupal\Tests\media\FunctionalJavascript;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Url;
 use Drupal\editor\Entity\Editor;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\file\Entity\File;
@@ -452,8 +453,8 @@ class CKEditorIntegrationTest extends WebDriverTestBase {
     $this->pressEditorButton('source');
     $source = $assert_session->elementExists('css', "textarea.cke_source");
     $value = $source->getValue();
-    $this->assertStringContainsString('https://www.drupal.org/project/drupal', $value);
-    $this->assertStringNotContainsString('data-cke-saved-href', $value);
+    $this->assertContains('https://www.drupal.org/project/drupal', $value);
+    $this->assertNotContains('data-cke-saved-href', $value);
 
     // Save the entity.
     $assert_session->buttonExists('Save')->press();
@@ -1026,13 +1027,14 @@ class CKEditorIntegrationTest extends WebDriverTestBase {
    * @dataProvider previewAccessProvider
    */
   public function testEmbedPreviewAccess($media_embed_enabled, $can_use_format) {
-    // Reconfigure the host entity's text format to suit our needs.
-    /** @var \Drupal\filter\FilterFormatInterface $format */
-    $format = FilterFormat::load($this->host->body->format);
-    $format->set('filters', [
-      'filter_align' => ['status' => TRUE],
-      'filter_caption' => ['status' => TRUE],
-      'media_embed' => ['status' => $media_embed_enabled],
+    $format = FilterFormat::create([
+      'format' => $this->randomMachineName(),
+      'name' => $this->randomString(),
+      'filters' => [
+        'filter_align' => ['status' => TRUE],
+        'filter_caption' => ['status' => TRUE],
+        'media_embed' => ['status' => $media_embed_enabled],
+      ],
     ]);
     $format->save();
 
@@ -1043,23 +1045,24 @@ class CKEditorIntegrationTest extends WebDriverTestBase {
       $permissions[] = $format->getPermissionName();
     }
     $this->drupalLogin($this->drupalCreateUser($permissions));
-    $this->drupalGet($this->host->toUrl('edit-form'));
+
+    $text = '<drupal-media data-caption="baz" data-entity-type="media" data-entity-uuid="' . $this->media->uuid() . '"></drupal-media>';
+    $route_parameters = ['filter_format' => $format->id()];
+    $options = [
+      'query' => [
+        'text' => $text,
+        'uuid' => $this->media->uuid(),
+      ],
+    ];
+    $this->drupalGet(Url::fromRoute('media.filter.preview', $route_parameters, $options));
 
     $assert_session = $this->assertSession();
-    if ($can_use_format) {
-      $this->waitForEditor();
-      $this->assignNameToCkeditorIframe();
-      $this->getSession()->switchToIFrame('ckeditor');
-      if ($media_embed_enabled) {
-        $this->assertNotEmpty($assert_session->waitForElementVisible('css', 'article.media'));
-      }
-      else {
-        $assert_session->assertWaitOnAjaxRequest();
-        $assert_session->elementNotExists('css', 'article.media');
-      }
+    if ($media_embed_enabled && $can_use_format) {
+      $assert_session->elementExists('css', 'img');
+      $assert_session->responseContains('baz');
     }
     else {
-      $assert_session->pageTextContains('This field has been disabled because you do not have sufficient permissions to edit it.');
+      $assert_session->responseContains('You are not authorized to access this page.');
     }
   }
 

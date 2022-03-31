@@ -54,7 +54,7 @@ class BigPipeStrategyTest extends UnitTestCase {
       }
     }
     else {
-      $this->assertCount(0, $processed_placeholders);
+      $this->assertSame(0, count($processed_placeholders));
     }
   }
 

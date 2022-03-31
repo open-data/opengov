@@ -2,7 +2,6 @@
 
 namespace Drupal\bootstrap\Plugin\Preprocess;
 
-use Drupal\bootstrap\Utility\Crypt;
 use Drupal\bootstrap\Utility\Element;
 use Drupal\bootstrap\Utility\Unicode;
 use Drupal\bootstrap\Utility\Variables;
@@ -118,17 +117,17 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
           $child->setAttribute('formnovalidate', 'formnovalidate');
         }
 
-        // Generate the unique suffix to use with identifiers. This helps
+        // Generate the current timestamp to use with identifiers. This helps
         // eliminate any render cache issues when dealing with multiple
         // dropdown elements on the same page, as in a listing.
         // @see https://www.drupal.org/project/bootstrap/issues/2939166
-        $suffix = Crypt::randomBytesBase64(8);
+        $current_time = \Drupal::time()->getCurrentTime();
 
         // The first item is always the "primary link".
         if ($i === 0) {
           // Must generate an ID for this child because the toggle will use it.
           if (!$child->getAttribute('id')) {
-            $child->setAttribute('id', $child->getProperty('id', Html::getUniqueId("dropdown-item-$suffix")));
+            $child->setAttribute('id', $child->getProperty('id', Html::getUniqueId("dropdown-item-$current_time")));
           }
           $primary_action = $child->addClass('hidden');
         }
@@ -142,7 +141,7 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
           // events to the "dropdown-target" (the original element).
           $id = $child->getAttribute('id');
           if (!$id) {
-            $id = $child->getProperty('id', Html::getUniqueId("dropdown-item-$suffix"));
+            $id = $child->getProperty('id', Html::getUniqueId("dropdown-item-$current_time"));
             $child->setAttribute('id', $id);
           }
 
@@ -165,7 +164,7 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
 
         // If no HTML ID was found, automatically create one.
         if ($child->hasProperty('ajax') && !$child->hasProperty('ajax_processed') && !$child->hasProperty('id')) {
-          $child->setProperty('id', $child->getAttribute('id', Html::getUniqueId("ajax-link-$suffix")));
+          $child->setProperty('id', $child->getAttribute('id', Html::getUniqueId("ajax-link-$current_time")));
         }
 
         $items->$key = $child->getArrayCopy();

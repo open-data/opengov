@@ -2,7 +2,7 @@
     "name":         "behat/mink-goutte-driver",
     "description":  "Goutte driver for Mink framework",
     "keywords":     ["goutte", "headless", "testing", "browser"],
-    "homepage":     "https://mink.behat.org/",
+    "homepage":     "http://mink.behat.org/",
     "type":         "mink-driver",
     "license":      "MIT",
 
@@ -15,13 +15,14 @@
     ],
 
     "require": {
-        "php":                           ">=5.4",
+        "php":                           ">=5.3.1",
+        "behat/mink":                    "~1.6@dev",
         "behat/mink-browserkit-driver":  "~1.2@dev",
         "fabpot/goutte":                 "~1.0.4|~2.0|~3.1"
     },
 
     "require-dev": {
-        "mink/driver-testsuite": "dev-master"
+        "symfony/phpunit-bridge": "~2.7|~3.0"
     },
 
     "autoload": {
@@ -38,7 +39,7 @@
 
     "extra": {
         "branch-alias": {
-            "dev-master": "1.x-dev"
+            "dev-master": "1.2.x-dev"
         }
     }
 }

@@ -210,7 +210,7 @@ class BigPipeStrategy implements PlaceholderStrategyInterface {
         'library' => [
           'big_pipe/big_pipe',
         ],
-        // Inform BigPipe' JavaScript known BigPipe placeholder IDs.
+        // Inform BigPipe' JavaScript known BigPipe placeholder IDs (a whitelist).
         'drupalSettings' => [
           'bigPipePlaceholderIds' => [$big_pipe_placeholder_id => TRUE],
         ],

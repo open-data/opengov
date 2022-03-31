@@ -23,8 +23,6 @@ class WebformHandlerEmailRolesTest extends WebformBrowserTestBase {
    * Test email roles handler.
    */
   public function testEmailRoles() {
-    $assert_session = $this->assertSession();
-
     // Enable all authenticated roles.
     \Drupal::configFactory()
       ->getEditable('webform.settings')
@@ -55,23 +53,23 @@ class WebformHandlerEmailRolesTest extends WebformBrowserTestBase {
 
     // Check email all authenticated users.
     $this->postSubmission($webform, ['role' => 'authenticated']);
-    $assert_session->responseContains('<em class="placeholder">Webform submission from: Test: Handler: Email roles</em> sent to <em class="placeholder">admin@example.com,administrator@example.com,authenticated@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
+    $this->assertRaw('<em class="placeholder">Webform submission from: Test: Handler: Email roles</em> sent to <em class="placeholder">admin@example.com,administrator@example.com,authenticated@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
 
     // Check that blocked user is never emailed.
-    $assert_session->responseNotContains('blocked@example.com');
+    $this->assertNoRaw('blocked@example.com');
 
     // Check that unblocked user is never emailed.
     $blocked_user->activate()->save();
     $this->postSubmission($webform, ['role' => 'authenticated']);
-    $assert_session->responseContains('blocked@example.com');
+    $this->assertRaw('blocked@example.com');
 
     // Check email administrator user.
     $this->postSubmission($webform, ['role' => 'administrator']);
-    $assert_session->responseContains('<em class="placeholder">Webform submission from: Test: Handler: Email roles</em> sent to <em class="placeholder">administrator@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
+    $this->assertRaw('<em class="placeholder">Webform submission from: Test: Handler: Email roles</em> sent to <em class="placeholder">administrator@example.com</em> from <em class="placeholder">Drupal</em> [<em class="placeholder">simpletest@example.com</em>].');
 
     // Check that missing 'other' role does not send any emails.
     $this->postSubmission($webform, ['role' => 'other']);
-    $assert_session->responseContains('<em class="placeholder">Test: Handler: Email roles</em>: Email not sent for <em class="placeholder">Email</em> handler because a <em>To</em>, <em>CC</em>, or <em>BCC</em> email was not provided.');
+    $this->assertRaw('<em class="placeholder">Test: Handler: Email roles</em>: Email not sent for <em class="placeholder">Email</em> handler because a <em>To</em>, <em>CC</em>, or <em>BCC</em> email was not provided.');
 
     // Check that authenticated role is no longer available.
     // Enable only administrator role.
@@ -80,7 +78,7 @@ class WebformHandlerEmailRolesTest extends WebformBrowserTestBase {
       ->set('mail.roles', ['administrator'])
       ->save();
     $this->postSubmission($webform, ['role' => 'authenticated']);
-    $assert_session->responseContains('<em class="placeholder">Test: Handler: Email roles</em>: Email not sent for <em class="placeholder">Email</em> handler because a <em>To</em>, <em>CC</em>, or <em>BCC</em> email was not provided.');
+    $this->assertRaw('<em class="placeholder">Test: Handler: Email roles</em>: Email not sent for <em class="placeholder">Email</em> handler because a <em>To</em>, <em>CC</em>, or <em>BCC</em> email was not provided.');
   }
 
 }

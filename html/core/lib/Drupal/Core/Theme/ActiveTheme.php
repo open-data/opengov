@@ -209,18 +209,11 @@ class ActiveTheme {
   /**
    * Returns the removed stylesheets by the theme.
    *
-   * This method is used as a BC layer to access the contents of the deprecated
-   * stylesheets-remove key in theme info.yml files. It will be removed once it
-   * is no longer needed in Drupal 10.
-   *
    * @return mixed
-   *   The removed stylesheets.
+   *
+   * @deprecated in drupal:8.0.0 and is removed from drupal:9.0.0.
    *
    * @see https://www.drupal.org/node/2497313
-   *
-   * @todo Remove in Drupal 10.0.x.
-   *
-   * @internal
    */
   public function getStyleSheetsRemove() {
     return $this->styleSheetsRemove;

@@ -77,8 +77,9 @@ class EntityCrudHookTest extends EntityKernelTestBase {
     foreach ($messages as $message) {
       // Verify that each message is found and record its position.
       $position = array_search($message, $GLOBALS['entity_crud_hook_test']);
-      $this->assertNotFalse($position, $message);
-      $positions[] = $position;
+      if ($this->assertTrue($position !== FALSE, $message)) {
+        $positions[] = $position;
+      }
     }
 
     // Sort the positions and ensure they remain in the same order.
@@ -551,7 +552,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
       $this->fail('Expected exception has not been thrown.');
     }
     catch (\Exception $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Expected exception has been thrown.');
     }
 
     if (Database::getConnection()->supportsTransactions()) {

@@ -16,10 +16,8 @@ echo 'tests done';
 ?>
 --CLEAN--
 <?php
-@unlink('testme/a/file1.txt');
-@unlink('testme/b/symlink.txt');
-@rmdir('testme/a');
-@rmdir('testme/b');
+@unlink('testme/file1.txt');
+@unlink('testme/symlink.txt');
 @rmdir('testme');
 ?>
 --EXPECT--

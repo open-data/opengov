@@ -63,7 +63,6 @@ if (!interface_exists('MyInterface')) {
     interface MyInterface {}
 }
 
-#[\Attribute]
 namespace {
     class A {}
 }

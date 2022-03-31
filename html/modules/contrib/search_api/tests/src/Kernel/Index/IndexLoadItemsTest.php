@@ -26,7 +26,7 @@ class IndexLoadItemsTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'search_api',
     'search_api_test',
     'user',

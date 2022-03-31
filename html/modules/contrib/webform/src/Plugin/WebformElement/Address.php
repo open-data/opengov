@@ -12,7 +12,6 @@ use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'address' element.
@@ -33,46 +32,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see \Drupal\address\Element\Address
  */
 class Address extends WebformCompositeBase {
-
-  /**
-   * The language manager service.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
-   */
-  protected $languageManager;
-
-  /**
-   * The renderer.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
-
-  /**
-   * The address format repository service.
-   *
-   * @var \CommerceGuys\Addressing\AddressFormat\AddressFormatRepositoryInterfacey
-   */
-  protected $addressFormatRepository;
-
-  /**
-   * The address county repository service.
-   *
-   * @var \CommerceGuys\Addressing\Country\CountryRepositoryInterface
-   */
-  protected $addressCountryRepository;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->languageManager = $container->get('language_manager');
-    $instance->renderer = $container->get('renderer');
-    $instance->addressFormatRepository = $container->get('address.address_format_repository');
-    $instance->addressCountryRepository = $container->get('address.country_repository');
-    return $instance;
-  }
 
   /**
    * {@inheritdoc}
@@ -111,7 +70,7 @@ class Address extends WebformCompositeBase {
     return $properties;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -249,7 +208,7 @@ class Address extends WebformCompositeBase {
     $format = $this->getItemFormat($element);
     if ($format === 'value') {
       $build = $this->buildAddress($element, $webform_submission, $options);
-      $html = $this->renderer->renderPlain($build);
+      $html = \Drupal::service('renderer')->renderPlain($build);
       return trim(MailFormatHelper::htmlToText($html));
     }
     else {
@@ -277,6 +236,11 @@ class Address extends WebformCompositeBase {
    * @see \Drupal\address\Plugin\Field\FieldFormatter\AddressDefaultFormatter::viewElement
    */
   protected function buildAddress(array $element, WebformSubmissionInterface $webform_submission, array $options) {
+    /** @var \CommerceGuys\Addressing\AddressFormat\AddressFormatRepositoryInterface $address_format_repository */
+    $address_format_repository = \Drupal::service('address.address_format_repository');
+    /** @var \CommerceGuys\Addressing\Country\CountryRepositoryInterface $country_repository */
+    $country_repository = \Drupal::service('address.country_repository');
+
     $value = $this->getValue($element, $webform_submission, $options);
     // Skip if value or country code is empty.
     if (empty($value) || empty($value['country_code'])) {
@@ -299,8 +263,8 @@ class Address extends WebformCompositeBase {
 
     // @see \Drupal\address\Plugin\Field\FieldFormatter\AddressDefaultFormatter::viewElement
     $country_code = $value['country_code'];
-    $countries = $this->addressCountryRepository->getList();
-    $address_format = $this->addressFormatRepository->get($country_code);
+    $countries = $country_repository->getList();
+    $address_format = $address_format_repository->get($country_code);
 
     $build += [
       '#address_format' => $address_format,
@@ -345,12 +309,11 @@ class Address extends WebformCompositeBase {
       '#title' => $this->t('Address settings'),
     ];
 
-    /* ********************************************************************** */
-    // Copied from: AddressItem::fieldSettingsForm.
-    // @see \Drupal\address\Plugin\Field\FieldType\AddressItem::fieldSettingsForm
-    /* ********************************************************************** */
+    /**************************************************************************/
+    // Copied from: \Drupal\address\Plugin\Field\FieldType\AddressItem::fieldSettingsForm
+    /**************************************************************************/
 
-    $languages = $this->languageManager->getLanguages(LanguageInterface::STATE_ALL);
+    $languages = \Drupal::languageManager()->getLanguages(LanguageInterface::STATE_ALL);
     $language_options = [];
     foreach ($languages as $langcode => $language) {
       if (!$language->isLocked()) {
@@ -362,7 +325,7 @@ class Address extends WebformCompositeBase {
       '#type' => 'select',
       '#title' => $this->t('Available countries'),
       '#description' => $this->t('If no countries are selected, all countries will be available.'),
-      '#options' => $this->addressCountryRepository->getList(),
+      '#options' => \Drupal::service('address.country_repository')->getList(),
       '#multiple' => TRUE,
       '#size' => 10,
       '#select2' => TRUE,
@@ -374,7 +337,7 @@ class Address extends WebformCompositeBase {
       '#description' => $this->t('Ensures entered addresses are always formatted in the same language.'),
       '#options' => $language_options,
       '#empty_option' => $this->t('- No override -'),
-      '#access' => $this->languageManager->isMultilingual(),
+      '#access' => \Drupal::languageManager()->isMultilingual(),
     ];
     $form['address']['field_overrides_title'] = [
       '#type' => 'item',
@@ -391,7 +354,7 @@ class Address extends WebformCompositeBase {
       '#access' => TRUE,
     ];
     foreach (LabelHelper::getGenericFieldLabels() as $field_name => $label) {
-      $override = $field_overrides[$field_name] ?? '';
+      $override = isset($field_overrides[$field_name]) ? $field_overrides[$field_name] : '';
       $form['address']['field_overrides'][$field_name] = [
         '#access' => TRUE,
         'field_label' => [

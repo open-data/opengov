@@ -114,14 +114,7 @@ HELP
             // If we didn't get a target and Reflector, maybe we got a filename?
             $target = $e->getTarget();
             if (\is_string($target) && \is_file($target) && $code = @\file_get_contents($target)) {
-                $file = \realpath($target);
-                if ($file !== $this->context->get('__file')) {
-                    $this->context->setCommandScopeVariables([
-                        '__file' => $file,
-                        '__dir'  => \dirname($file),
-                    ]);
-                }
-
+                // @todo maybe set $__file to $target?
                 return $output->page(CodeFormatter::formatCode($code));
             } else {
                 throw $e;

@@ -1,5 +1,4 @@
-export type IconPrefix = "fas" | "far" | "fal" | "fat" | "fad" | "fab" | "fak" ;
-export type IconPathData = string | string[]
+export type IconPrefix = "fas" | "fab" | "far" | "fal";
 
 export interface IconLookup {
   prefix: IconPrefix;
@@ -13,7 +12,7 @@ export interface IconDefinition extends IconLookup {
     number, // height
     string[], // ligatures
     string, // unicode
-    IconPathData // svgPathData
+    string // svgPathData
   ];
 }
 
@@ -21,12 +20,12 @@ export interface IconPack {
   [key: string]: IconDefinition;
 }
 
-export type IconName = '42-group' | 
-  'innosoft' | 
-  '500px' | 
+export type IconName = '500px' | 
   'accessible-icon' | 
   'accusoft' | 
+  'acquisitions-incorporated' | 
   'adn' | 
+  'adobe' | 
   'adversal' | 
   'affiliatetheme' | 
   'airbnb' | 
@@ -56,7 +55,6 @@ export type IconName = '42-group' |
   'battle-net' | 
   'behance' | 
   'behance-square' | 
-  'bilibili' | 
   'bimobject' | 
   'bitbucket' | 
   'bitcoin' | 
@@ -68,11 +66,9 @@ export type IconName = '42-group' |
   'bluetooth' | 
   'bluetooth-b' | 
   'bootstrap' | 
-  'bots' | 
   'btc' | 
   'buffer' | 
   'buromobelexperte' | 
-  'buy-n-large' | 
   'buysellads' | 
   'canadian-maple-leaf' | 
   'cc-amazon-pay' | 
@@ -89,17 +85,14 @@ export type IconName = '42-group' |
   'centos' | 
   'chrome' | 
   'chromecast' | 
-  'cloudflare' | 
   'cloudscale' | 
   'cloudsmith' | 
   'cloudversify' | 
-  'cmplid' | 
   'codepen' | 
   'codiepie' | 
   'confluence' | 
   'connectdevelop' | 
   'contao' | 
-  'cotton-bureau' | 
   'cpanel' | 
   'creative-commons' | 
   'creative-commons-by' | 
@@ -121,9 +114,7 @@ export type IconName = '42-group' |
   'cuttlefish' | 
   'd-and-d' | 
   'd-and-d-beyond' | 
-  'dailymotion' | 
   'dashcube' | 
-  'deezer' | 
   'delicious' | 
   'deploydog' | 
   'deskpro' | 
@@ -146,7 +137,6 @@ export type IconName = '42-group' |
   'earlybirds' | 
   'ebay' | 
   'edge' | 
-  'edge-legacy' | 
   'elementor' | 
   'ello' | 
   'ember' | 
@@ -166,7 +156,6 @@ export type IconName = '42-group' |
   'fedora' | 
   'figma' | 
   'firefox' | 
-  'firefox-browser' | 
   'first-order' | 
   'first-order-alt' | 
   'firstdraft' | 
@@ -174,6 +163,7 @@ export type IconName = '42-group' |
   'flipboard' | 
   'fly' | 
   'font-awesome' | 
+  'font-awesome-alt' | 
   'font-awesome-flag' | 
   'font-awesome-logo-full' | 
   'fonticons' | 
@@ -202,12 +192,10 @@ export type IconName = '42-group' |
   'glide' | 
   'glide-g' | 
   'gofore' | 
-  'golang' | 
   'goodreads' | 
   'goodreads-g' | 
   'google' | 
   'google-drive' | 
-  'google-pay' | 
   'google-play' | 
   'google-plus' | 
   'google-plus-g' | 
@@ -217,26 +205,20 @@ export type IconName = '42-group' |
   'grav' | 
   'gripfire' | 
   'grunt' | 
-  'guilded' | 
   'gulp' | 
   'hacker-news' | 
   'hacker-news-square' | 
   'hackerrank' | 
-  'hashnode' | 
   'hips' | 
   'hire-a-helper' | 
-  'hive' | 
   'hooli' | 
   'hornbill' | 
   'hotjar' | 
   'houzz' | 
   'html5' | 
   'hubspot' | 
-  'ideal' | 
   'imdb' | 
   'instagram' | 
-  'instagram-square' | 
-  'instalod' | 
   'intercom' | 
   'internet-explorer' | 
   'invision' | 
@@ -276,7 +258,6 @@ export type IconName = '42-group' |
   'markdown' | 
   'mastodon' | 
   'maxcdn' | 
-  'mdb' | 
   'medapps' | 
   'medium' | 
   'medium-m' | 
@@ -284,25 +265,20 @@ export type IconName = '42-group' |
   'meetup' | 
   'megaport' | 
   'mendeley' | 
-  'microblog' | 
   'microsoft' | 
   'mix' | 
   'mixcloud' | 
-  'mixer' | 
   'mizuni' | 
   'modx' | 
   'monero' | 
   'napster' | 
   'neos' | 
-  'nfc-directional' | 
-  'nfc-symbol' | 
   'nimblr' | 
   'node' | 
   'node-js' | 
   'npm' | 
   'ns8' | 
   'nutritionix' | 
-  'octopus-deploy' | 
   'odnoklassniki' | 
   'odnoklassniki-square' | 
   'old-republic' | 
@@ -310,15 +286,13 @@ export type IconName = '42-group' |
   'openid' | 
   'opera' | 
   'optin-monster' | 
-  'orcid' | 
   'osi' | 
-  'padlet' | 
   'page4' | 
   'pagelines' | 
   'palfed' | 
   'patreon' | 
   'paypal' | 
-  'perbyte' | 
+  'penny-arcade' | 
   'periscope' | 
   'phabricator' | 
   'phoenix-framework' | 
@@ -328,11 +302,9 @@ export type IconName = '42-group' |
   'pied-piper-alt' | 
   'pied-piper-hat' | 
   'pied-piper-pp' | 
-  'pied-piper-square' | 
   'pinterest' | 
   'pinterest-p' | 
   'pinterest-square' | 
-  'pix' | 
   'playstation' | 
   'product-hunt' | 
   'pushed' | 
@@ -359,24 +331,20 @@ export type IconName = '42-group' |
   'rev' | 
   'rocketchat' | 
   'rockrms' | 
-  'rust' | 
   'safari' | 
   'salesforce' | 
   'sass' | 
   'schlix' | 
-  'screenpal' | 
   'scribd' | 
   'searchengin' | 
   'sellcast' | 
   'sellsy' | 
   'servicestack' | 
   'shirtsinbulk' | 
-  'shopify' | 
   'shopware' | 
   'simplybuilt' | 
   'sistrix' | 
   'sith' | 
-  'sitrox' | 
   'sketch' | 
   'skyatlas' | 
   'skype' | 
@@ -391,9 +359,6 @@ export type IconName = '42-group' |
   'speakap' | 
   'speaker-deck' | 
   'spotify' | 
-  'square-font-awesome' | 
-  'square-font-awesome-stroke' | 
-  'font-awesome-alt' | 
   'squarespace' | 
   'stack-exchange' | 
   'stack-overflow' | 
@@ -412,7 +377,6 @@ export type IconName = '42-group' |
   'superpowers' | 
   'supple' | 
   'suse' | 
-  'swift' | 
   'symfony' | 
   'teamspeak' | 
   'telegram' | 
@@ -422,9 +386,9 @@ export type IconName = '42-group' |
   'themeco' | 
   'themeisle' | 
   'think-peaks' | 
-  'tiktok' | 
   'trade-federation' | 
   'trello' | 
+  'tripadvisor' | 
   'tumblr' | 
   'tumblr-square' | 
   'twitch' | 
@@ -434,11 +398,7 @@ export type IconName = '42-group' |
   'uber' | 
   'ubuntu' | 
   'uikit' | 
-  'umbraco' | 
-  'uncharted' | 
   'uniregistry' | 
-  'unity' | 
-  'unsplash' | 
   'untappd' | 
   'ups' | 
   'usb' | 
@@ -456,7 +416,6 @@ export type IconName = '42-group' |
   'vk' | 
   'vnv' | 
   'vuejs' | 
-  'watchman-monitoring' | 
   'waze' | 
   'weebly' | 
   'weibo' | 
@@ -466,11 +425,8 @@ export type IconName = '42-group' |
   'whmcs' | 
   'wikipedia-w' | 
   'windows' | 
-  'wirsindhandwerk' | 
-  'wsh' | 
   'wix' | 
   'wizards-of-the-coast' | 
-  'wodu' | 
   'wolf-pack-battalion' | 
   'wordpress' | 
   'wordpress-simple' | 
@@ -493,636 +449,320 @@ export type IconName = '42-group' |
   'youtube-square' | 
   'zhihu' | 
   'address-book' | 
-  'contact-book' | 
   'address-card' | 
-  'contact-card' | 
-  'vcard' | 
+  'angry' | 
+  'arrow-alt-circle-down' | 
+  'arrow-alt-circle-left' | 
+  'arrow-alt-circle-right' | 
+  'arrow-alt-circle-up' | 
   'bell' | 
   'bell-slash' | 
   'bookmark' | 
   'building' | 
   'calendar' | 
-  'calendar-check' | 
-  'calendar-days' | 
   'calendar-alt' | 
+  'calendar-check' | 
   'calendar-minus' | 
   'calendar-plus' | 
-  'calendar-xmark' | 
   'calendar-times' | 
+  'caret-square-down' | 
+  'caret-square-left' | 
+  'caret-square-right' | 
+  'caret-square-up' | 
   'chart-bar' | 
-  'bar-chart' | 
-  'chess-bishop' | 
-  'chess-king' | 
-  'chess-knight' | 
-  'chess-pawn' | 
-  'chess-queen' | 
-  'chess-rook' | 
-  'circle' | 
-  'circle-check' | 
   'check-circle' | 
-  'circle-dot' | 
-  'dot-circle' | 
-  'circle-down' | 
-  'arrow-alt-circle-down' | 
-  'circle-left' | 
-  'arrow-alt-circle-left' | 
-  'circle-pause' | 
-  'pause-circle' | 
-  'circle-play' | 
-  'play-circle' | 
-  'circle-question' | 
-  'question-circle' | 
-  'circle-right' | 
-  'arrow-alt-circle-right' | 
-  'circle-stop' | 
-  'stop-circle' | 
-  'circle-up' | 
-  'arrow-alt-circle-up' | 
-  'circle-user' | 
-  'user-circle' | 
-  'circle-xmark' | 
-  'times-circle' | 
-  'xmark-circle' | 
+  'check-square' | 
+  'circle' | 
   'clipboard' | 
   'clock' | 
-  'clock-four' | 
   'clone' | 
   'closed-captioning' | 
   'comment' | 
+  'comment-alt' | 
   'comment-dots' | 
-  'commenting' | 
   'comments' | 
   'compass' | 
   'copy' | 
   'copyright' | 
   'credit-card' | 
-  'credit-card-alt' | 
+  'dizzy' | 
+  'dot-circle' | 
+  'edit' | 
   'envelope' | 
   'envelope-open' | 
   'eye' | 
   'eye-slash' | 
-  'face-angry' | 
-  'angry' | 
-  'face-dizzy' | 
-  'dizzy' | 
-  'face-flushed' | 
-  'flushed' | 
-  'face-frown' | 
-  'frown' | 
-  'face-frown-open' | 
-  'frown-open' | 
-  'face-grimace' | 
-  'grimace' | 
-  'face-grin' | 
-  'grin' | 
-  'face-grin-beam' | 
-  'grin-beam' | 
-  'face-grin-beam-sweat' | 
-  'grin-beam-sweat' | 
-  'face-grin-hearts' | 
-  'grin-hearts' | 
-  'face-grin-squint' | 
-  'grin-squint' | 
-  'face-grin-squint-tears' | 
-  'grin-squint-tears' | 
-  'face-grin-stars' | 
-  'grin-stars' | 
-  'face-grin-tears' | 
-  'grin-tears' | 
-  'face-grin-tongue' | 
-  'grin-tongue' | 
-  'face-grin-tongue-squint' | 
-  'grin-tongue-squint' | 
-  'face-grin-tongue-wink' | 
-  'grin-tongue-wink' | 
-  'face-grin-wide' | 
-  'grin-alt' | 
-  'face-grin-wink' | 
-  'grin-wink' | 
-  'face-kiss' | 
-  'kiss' | 
-  'face-kiss-beam' | 
-  'kiss-beam' | 
-  'face-kiss-wink-heart' | 
-  'kiss-wink-heart' | 
-  'face-laugh' | 
-  'laugh' | 
-  'face-laugh-beam' | 
-  'laugh-beam' | 
-  'face-laugh-squint' | 
-  'laugh-squint' | 
-  'face-laugh-wink' | 
-  'laugh-wink' | 
-  'face-meh' | 
-  'meh' | 
-  'face-meh-blank' | 
-  'meh-blank' | 
-  'face-rolling-eyes' | 
-  'meh-rolling-eyes' | 
-  'face-sad-cry' | 
-  'sad-cry' | 
-  'face-sad-tear' | 
-  'sad-tear' | 
-  'face-smile' | 
-  'smile' | 
-  'face-smile-beam' | 
-  'smile-beam' | 
-  'face-smile-wink' | 
-  'smile-wink' | 
-  'face-surprise' | 
-  'surprise' | 
-  'face-tired' | 
-  'tired' | 
   'file' | 
+  'file-alt' | 
+  'file-archive' | 
   'file-audio' | 
   'file-code' | 
   'file-excel' | 
   'file-image' | 
-  'file-lines' | 
-  'file-alt' | 
-  'file-text' | 
   'file-pdf' | 
   'file-powerpoint' | 
   'file-video' | 
   'file-word' | 
-  'file-zipper' | 
-  'file-archive' | 
   'flag' | 
-  'floppy-disk' | 
-  'save' | 
+  'flushed' | 
   'folder' | 
-  'folder-blank' | 
-  'folder-closed' | 
   'folder-open' | 
-  'font-awesome' | 
-  'font-awesome-flag' | 
   'font-awesome-logo-full' | 
+  'frown' | 
+  'frown-open' | 
   'futbol' | 
-  'futbol-ball' | 
-  'soccer-ball' | 
   'gem' | 
-  'hand' | 
-  'hand-paper' | 
-  'hand-back-fist' | 
-  'hand-rock' | 
+  'grimace' | 
+  'grin' | 
+  'grin-alt' | 
+  'grin-beam' | 
+  'grin-beam-sweat' | 
+  'grin-hearts' | 
+  'grin-squint' | 
+  'grin-squint-tears' | 
+  'grin-stars' | 
+  'grin-tears' | 
+  'grin-tongue' | 
+  'grin-tongue-squint' | 
+  'grin-tongue-wink' | 
+  'grin-wink' | 
   'hand-lizard' | 
+  'hand-paper' | 
   'hand-peace' | 
   'hand-point-down' | 
   'hand-point-left' | 
   'hand-point-right' | 
   'hand-point-up' | 
   'hand-pointer' | 
+  'hand-rock' | 
   'hand-scissors' | 
   'hand-spock' | 
   'handshake' | 
-  'hard-drive' | 
   'hdd' | 
   'heart' | 
   'hospital' | 
-  'hospital-alt' | 
-  'hospital-wide' | 
   'hourglass' | 
-  'hourglass2' | 
-  'hourglass-half' | 
   'id-badge' | 
   'id-card' | 
-  'drivers-license' | 
   'image' | 
   'images' | 
   'keyboard' | 
+  'kiss' | 
+  'kiss-beam' | 
+  'kiss-wink-heart' | 
+  'laugh' | 
+  'laugh-beam' | 
+  'laugh-squint' | 
+  'laugh-wink' | 
   'lemon' | 
   'life-ring' | 
   'lightbulb' | 
+  'list-alt' | 
   'map' | 
-  'message' | 
-  'comment-alt' | 
-  'money-bill-1' | 
+  'meh' | 
+  'meh-blank' | 
+  'meh-rolling-eyes' | 
+  'minus-square' | 
   'money-bill-alt' | 
   'moon' | 
   'newspaper' | 
-  'note-sticky' | 
-  'sticky-note' | 
   'object-group' | 
   'object-ungroup' | 
   'paper-plane' | 
-  'paste' | 
-  'file-clipboard' | 
-  'pen-to-square' | 
-  'edit' | 
-  'rectangle-list' | 
-  'list-alt' | 
-  'rectangle-xmark' | 
-  'rectangle-times' | 
-  'times-rectangle' | 
-  'window-close' | 
+  'pause-circle' | 
+  'play-circle' | 
+  'plus-square' | 
+  'question-circle' | 
   'registered' | 
-  'share-from-square' | 
+  'sad-cry' | 
+  'sad-tear' | 
+  'save' | 
   'share-square' | 
+  'smile' | 
+  'smile-beam' | 
+  'smile-wink' | 
   'snowflake' | 
   'square' | 
-  'square-caret-down' | 
-  'caret-square-down' | 
-  'square-caret-left' | 
-  'caret-square-left' | 
-  'square-caret-right' | 
-  'caret-square-right' | 
-  'square-caret-up' | 
-  'caret-square-up' | 
-  'square-check' | 
-  'check-square' | 
-  'square-full' | 
-  'square-minus' | 
-  'minus-square' | 
-  'square-plus' | 
-  'plus-square' | 
   'star' | 
   'star-half' | 
-  'star-half-stroke' | 
-  'star-half-alt' | 
+  'sticky-note' | 
+  'stop-circle' | 
   'sun' | 
+  'surprise' | 
   'thumbs-down' | 
   'thumbs-up' | 
-  'trash-can' | 
+  'times-circle' | 
+  'tired' | 
   'trash-alt' | 
   'user' | 
+  'user-circle' | 
+  'window-close' | 
   'window-maximize' | 
   'window-minimize' | 
   'window-restore' | 
-  '0' | 
-  '1' | 
-  '2' | 
-  '3' | 
-  '4' | 
-  '5' | 
-  '6' | 
-  '7' | 
-  '8' | 
-  '9' | 
-  'a' | 
+  'ad' | 
   'address-book' | 
-  'contact-book' | 
   'address-card' | 
-  'contact-card' | 
-  'vcard' | 
+  'adjust' | 
+  'air-freshener' | 
   'align-center' | 
   'align-justify' | 
   'align-left' | 
   'align-right' | 
+  'allergies' | 
+  'ambulance' | 
+  'american-sign-language-interpreting' | 
   'anchor' | 
-  'anchor-circle-check' | 
-  'anchor-circle-exclamation' | 
-  'anchor-circle-xmark' | 
-  'anchor-lock' | 
+  'angle-double-down' | 
+  'angle-double-left' | 
+  'angle-double-right' | 
+  'angle-double-up' | 
   'angle-down' | 
   'angle-left' | 
   'angle-right' | 
   'angle-up' | 
-  'angles-down' | 
-  'angle-double-down' | 
-  'angles-left' | 
-  'angle-double-left' | 
-  'angles-right' | 
-  'angle-double-right' | 
-  'angles-up' | 
-  'angle-double-up' | 
+  'angry' | 
   'ankh' | 
-  'apple-whole' | 
   'apple-alt' | 
+  'archive' | 
   'archway' | 
+  'arrow-alt-circle-down' | 
+  'arrow-alt-circle-left' | 
+  'arrow-alt-circle-right' | 
+  'arrow-alt-circle-up' | 
+  'arrow-circle-down' | 
+  'arrow-circle-left' | 
+  'arrow-circle-right' | 
+  'arrow-circle-up' | 
   'arrow-down' | 
-  'arrow-down-1-9' | 
-  'sort-numeric-asc' | 
-  'sort-numeric-down' | 
-  'arrow-down-9-1' | 
-  'sort-numeric-desc' | 
-  'sort-numeric-down-alt' | 
-  'arrow-down-a-z' | 
-  'sort-alpha-asc' | 
-  'sort-alpha-down' | 
-  'arrow-down-long' | 
-  'long-arrow-down' | 
-  'arrow-down-short-wide' | 
-  'sort-amount-desc' | 
-  'sort-amount-down-alt' | 
-  'arrow-down-up-across-line' | 
-  'arrow-down-up-lock' | 
-  'arrow-down-wide-short' | 
-  'sort-amount-asc' | 
-  'sort-amount-down' | 
-  'arrow-down-z-a' | 
-  'sort-alpha-desc' | 
-  'sort-alpha-down-alt' | 
   'arrow-left' | 
-  'arrow-left-long' | 
-  'long-arrow-left' | 
-  'arrow-pointer' | 
-  'mouse-pointer' | 
   'arrow-right' | 
-  'arrow-right-arrow-left' | 
-  'exchange' | 
-  'arrow-right-from-bracket' | 
-  'sign-out' | 
-  'arrow-right-long' | 
-  'long-arrow-right' | 
-  'arrow-right-to-bracket' | 
-  'sign-in' | 
-  'arrow-right-to-city' | 
-  'arrow-rotate-left' | 
-  'arrow-left-rotate' | 
-  'arrow-rotate-back' | 
-  'arrow-rotate-backward' | 
-  'undo' | 
-  'arrow-rotate-right' | 
-  'arrow-right-rotate' | 
-  'arrow-rotate-forward' | 
-  'redo' | 
-  'arrow-trend-down' | 
-  'arrow-trend-up' | 
-  'arrow-turn-down' | 
-  'level-down' | 
-  'arrow-turn-up' | 
-  'level-up' | 
   'arrow-up' | 
-  'arrow-up-1-9' | 
-  'sort-numeric-up' | 
-  'arrow-up-9-1' | 
-  'sort-numeric-up-alt' | 
-  'arrow-up-a-z' | 
-  'sort-alpha-up' | 
-  'arrow-up-from-bracket' | 
-  'arrow-up-from-ground-water' | 
-  'arrow-up-from-water-pump' | 
-  'arrow-up-long' | 
-  'long-arrow-up' | 
-  'arrow-up-right-dots' | 
-  'arrow-up-right-from-square' | 
-  'external-link' | 
-  'arrow-up-short-wide' | 
-  'sort-amount-up-alt' | 
-  'arrow-up-wide-short' | 
-  'sort-amount-up' | 
-  'arrow-up-z-a' | 
-  'sort-alpha-up-alt' | 
-  'arrows-down-to-line' | 
-  'arrows-down-to-people' | 
-  'arrows-left-right' | 
-  'arrows-h' | 
-  'arrows-left-right-to-line' | 
-  'arrows-rotate' | 
-  'refresh' | 
-  'sync' | 
-  'arrows-spin' | 
-  'arrows-split-up-and-left' | 
-  'arrows-to-circle' | 
-  'arrows-to-dot' | 
-  'arrows-to-eye' | 
-  'arrows-turn-right' | 
-  'arrows-turn-to-dots' | 
-  'arrows-up-down' | 
-  'arrows-v' | 
-  'arrows-up-down-left-right' | 
-  'arrows' | 
-  'arrows-up-to-line' | 
+  'arrows-alt' | 
+  'arrows-alt-h' | 
+  'arrows-alt-v' | 
+  'assistive-listening-systems' | 
   'asterisk' | 
   'at' | 
+  'atlas' | 
   'atom' | 
   'audio-description' | 
-  'austral-sign' | 
   'award' | 
-  'b' | 
   'baby' | 
   'baby-carriage' | 
-  'carriage-baby' | 
+  'backspace' | 
   'backward' | 
-  'backward-fast' | 
-  'fast-backward' | 
-  'backward-step' | 
-  'step-backward' | 
   'bacon' | 
-  'bacteria' | 
-  'bacterium' | 
-  'bag-shopping' | 
-  'shopping-bag' | 
-  'bahai' | 
-  'baht-sign' | 
+  'balance-scale' | 
+  'balance-scale-left' | 
+  'balance-scale-right' | 
   'ban' | 
-  'cancel' | 
-  'ban-smoking' | 
-  'smoking-ban' | 
-  'bandage' | 
   'band-aid' | 
   'barcode' | 
   'bars' | 
-  'navicon' | 
-  'bars-progress' | 
-  'tasks-alt' | 
-  'bars-staggered' | 
-  'reorder' | 
-  'stream' | 
-  'baseball' | 
   'baseball-ball' | 
-  'baseball-bat-ball' | 
-  'basket-shopping' | 
-  'shopping-basket' | 
-  'basketball' | 
   'basketball-ball' | 
   'bath' | 
-  'bathtub' | 
   'battery-empty' | 
-  'battery0' | 
   'battery-full' | 
-  'battery' | 
-  'battery5' | 
   'battery-half' | 
-  'battery3' | 
   'battery-quarter' | 
-  'battery2' | 
   'battery-three-quarters' | 
-  'battery4' | 
   'bed' | 
-  'bed-pulse' | 
-  'procedures' | 
-  'beer-mug-empty' | 
   'beer' | 
   'bell' | 
-  'bell-concierge' | 
-  'concierge-bell' | 
   'bell-slash' | 
   'bezier-curve' | 
+  'bible' | 
   'bicycle' | 
+  'biking' | 
   'binoculars' | 
   'biohazard' | 
-  'bitcoin-sign' | 
+  'birthday-cake' | 
   'blender' | 
   'blender-phone' | 
+  'blind' | 
   'blog' | 
   'bold' | 
   'bolt' | 
-  'zap' | 
-  'bolt-lightning' | 
   'bomb' | 
   'bone' | 
   'bong' | 
   'book' | 
-  'book-atlas' | 
-  'atlas' | 
-  'book-bible' | 
-  'bible' | 
-  'book-bookmark' | 
-  'book-journal-whills' | 
-  'journal-whills' | 
+  'book-dead' | 
   'book-medical' | 
   'book-open' | 
-  'book-open-reader' | 
   'book-reader' | 
-  'book-quran' | 
-  'quran' | 
-  'book-skull' | 
-  'book-dead' | 
   'bookmark' | 
   'border-all' | 
   'border-none' | 
-  'border-top-left' | 
   'border-style' | 
-  'bore-hole' | 
-  'bottle-droplet' | 
-  'bottle-water' | 
-  'bowl-food' | 
-  'bowl-rice' | 
   'bowling-ball' | 
   'box' | 
-  'box-archive' | 
-  'archive' | 
   'box-open' | 
-  'box-tissue' | 
-  'boxes-packing' | 
-  'boxes-stacked' | 
   'boxes' | 
-  'boxes-alt' | 
   'braille' | 
   'brain' | 
-  'brazilian-real-sign' | 
   'bread-slice' | 
-  'bridge' | 
-  'bridge-circle-check' | 
-  'bridge-circle-exclamation' | 
-  'bridge-circle-xmark' | 
-  'bridge-lock' | 
-  'bridge-water' | 
   'briefcase' | 
   'briefcase-medical' | 
+  'broadcast-tower' | 
   'broom' | 
-  'broom-ball' | 
-  'quidditch' | 
-  'quidditch-broom-ball' | 
   'brush' | 
-  'bucket' | 
   'bug' | 
-  'bug-slash' | 
-  'bugs' | 
   'building' | 
-  'building-circle-arrow-right' | 
-  'building-circle-check' | 
-  'building-circle-exclamation' | 
-  'building-circle-xmark' | 
-  'building-columns' | 
-  'bank' | 
-  'institution' | 
-  'museum' | 
-  'university' | 
-  'building-flag' | 
-  'building-lock' | 
-  'building-ngo' | 
-  'building-shield' | 
-  'building-un' | 
-  'building-user' | 
-  'building-wheat' | 
   'bullhorn' | 
   'bullseye' | 
-  'burger' | 
-  'hamburger' | 
-  'burst' | 
+  'burn' | 
   'bus' | 
-  'bus-simple' | 
   'bus-alt' | 
   'business-time' | 
-  'briefcase-clock' | 
-  'c' | 
-  'cake-candles' | 
-  'birthday-cake' | 
-  'cake' | 
   'calculator' | 
   'calendar' | 
+  'calendar-alt' | 
   'calendar-check' | 
   'calendar-day' | 
-  'calendar-days' | 
-  'calendar-alt' | 
   'calendar-minus' | 
   'calendar-plus' | 
-  'calendar-week' | 
-  'calendar-xmark' | 
   'calendar-times' | 
+  'calendar-week' | 
   'camera' | 
-  'camera-alt' | 
   'camera-retro' | 
-  'camera-rotate' | 
   'campground' | 
   'candy-cane' | 
   'cannabis' | 
   'capsules' | 
   'car' | 
-  'automobile' | 
-  'car-battery' | 
-  'battery-car' | 
-  'car-burst' | 
-  'car-crash' | 
-  'car-on' | 
-  'car-rear' | 
   'car-alt' | 
+  'car-battery' | 
+  'car-crash' | 
   'car-side' | 
-  'car-tunnel' | 
-  'caravan' | 
   'caret-down' | 
   'caret-left' | 
   'caret-right' | 
+  'caret-square-down' | 
+  'caret-square-left' | 
+  'caret-square-right' | 
+  'caret-square-up' | 
   'caret-up' | 
   'carrot' | 
   'cart-arrow-down' | 
-  'cart-flatbed' | 
-  'dolly-flatbed' | 
-  'cart-flatbed-suitcase' | 
-  'luggage-cart' | 
   'cart-plus' | 
-  'cart-shopping' | 
-  'shopping-cart' | 
   'cash-register' | 
   'cat' | 
-  'cedi-sign' | 
-  'cent-sign' | 
   'certificate' | 
   'chair' | 
   'chalkboard' | 
-  'blackboard' | 
-  'chalkboard-user' | 
   'chalkboard-teacher' | 
-  'champagne-glasses' | 
-  'glass-cheers' | 
   'charging-station' | 
   'chart-area' | 
-  'area-chart' | 
   'chart-bar' | 
-  'bar-chart' | 
-  'chart-column' | 
-  'chart-gantt' | 
   'chart-line' | 
-  'line-chart' | 
   'chart-pie' | 
-  'pie-chart' | 
-  'chart-simple' | 
   'check' | 
+  'check-circle' | 
   'check-double' | 
-  'check-to-slot' | 
-  'vote-yea' | 
+  'check-square' | 
   'cheese' | 
   'chess' | 
   'chess-bishop' | 
@@ -1132,170 +772,79 @@ export type IconName = '42-group' |
   'chess-pawn' | 
   'chess-queen' | 
   'chess-rook' | 
+  'chevron-circle-down' | 
+  'chevron-circle-left' | 
+  'chevron-circle-right' | 
+  'chevron-circle-up' | 
   'chevron-down' | 
   'chevron-left' | 
   'chevron-right' | 
   'chevron-up' | 
   'child' | 
-  'child-dress' | 
-  'child-reaching' | 
-  'child-rifle' | 
-  'children' | 
   'church' | 
   'circle' | 
-  'circle-arrow-down' | 
-  'arrow-circle-down' | 
-  'circle-arrow-left' | 
-  'arrow-circle-left' | 
-  'circle-arrow-right' | 
-  'arrow-circle-right' | 
-  'circle-arrow-up' | 
-  'arrow-circle-up' | 
-  'circle-check' | 
-  'check-circle' | 
-  'circle-chevron-down' | 
-  'chevron-circle-down' | 
-  'circle-chevron-left' | 
-  'chevron-circle-left' | 
-  'circle-chevron-right' | 
-  'chevron-circle-right' | 
-  'circle-chevron-up' | 
-  'chevron-circle-up' | 
-  'circle-dollar-to-slot' | 
-  'donate' | 
-  'circle-dot' | 
-  'dot-circle' | 
-  'circle-down' | 
-  'arrow-alt-circle-down' | 
-  'circle-exclamation' | 
-  'exclamation-circle' | 
-  'circle-h' | 
-  'hospital-symbol' | 
-  'circle-half-stroke' | 
-  'adjust' | 
-  'circle-info' | 
-  'info-circle' | 
-  'circle-left' | 
-  'arrow-alt-circle-left' | 
-  'circle-minus' | 
-  'minus-circle' | 
-  'circle-nodes' | 
   'circle-notch' | 
-  'circle-pause' | 
-  'pause-circle' | 
-  'circle-play' | 
-  'play-circle' | 
-  'circle-plus' | 
-  'plus-circle' | 
-  'circle-question' | 
-  'question-circle' | 
-  'circle-radiation' | 
-  'radiation-alt' | 
-  'circle-right' | 
-  'arrow-alt-circle-right' | 
-  'circle-stop' | 
-  'stop-circle' | 
-  'circle-up' | 
-  'arrow-alt-circle-up' | 
-  'circle-user' | 
-  'user-circle' | 
-  'circle-xmark' | 
-  'times-circle' | 
-  'xmark-circle' | 
   'city' | 
-  'clapperboard' | 
+  'clinic-medical' | 
   'clipboard' | 
   'clipboard-check' | 
   'clipboard-list' | 
-  'clipboard-question' | 
-  'clipboard-user' | 
   'clock' | 
-  'clock-four' | 
-  'clock-rotate-left' | 
-  'history' | 
   'clone' | 
   'closed-captioning' | 
   'cloud' | 
-  'cloud-arrow-down' | 
-  'cloud-download' | 
   'cloud-download-alt' | 
-  'cloud-arrow-up' | 
-  'cloud-upload' | 
-  'cloud-upload-alt' | 
-  'cloud-bolt' | 
-  'thunderstorm' | 
   'cloud-meatball' | 
   'cloud-moon' | 
   'cloud-moon-rain' | 
   'cloud-rain' | 
   'cloud-showers-heavy' | 
-  'cloud-showers-water' | 
   'cloud-sun' | 
   'cloud-sun-rain' | 
-  'clover' | 
+  'cloud-upload-alt' | 
+  'cocktail' | 
   'code' | 
   'code-branch' | 
-  'code-commit' | 
-  'code-compare' | 
-  'code-fork' | 
-  'code-merge' | 
-  'code-pull-request' | 
+  'coffee' | 
+  'cog' | 
+  'cogs' | 
   'coins' | 
-  'colon-sign' | 
+  'columns' | 
   'comment' | 
+  'comment-alt' | 
   'comment-dollar' | 
   'comment-dots' | 
-  'commenting' | 
   'comment-medical' | 
   'comment-slash' | 
-  'comment-sms' | 
-  'sms' | 
   'comments' | 
   'comments-dollar' | 
   'compact-disc' | 
   'compass' | 
-  'compass-drafting' | 
-  'drafting-compass' | 
   'compress' | 
-  'computer' | 
-  'computer-mouse' | 
-  'mouse' | 
+  'compress-arrows-alt' | 
+  'concierge-bell' | 
   'cookie' | 
   'cookie-bite' | 
   'copy' | 
   'copyright' | 
   'couch' | 
-  'cow' | 
   'credit-card' | 
-  'credit-card-alt' | 
   'crop' | 
-  'crop-simple' | 
   'crop-alt' | 
   'cross' | 
   'crosshairs' | 
   'crow' | 
   'crown' | 
   'crutch' | 
-  'cruzeiro-sign' | 
   'cube' | 
   'cubes' | 
-  'cubes-stacked' | 
-  'd' | 
+  'cut' | 
   'database' | 
-  'delete-left' | 
-  'backspace' | 
+  'deaf' | 
   'democrat' | 
   'desktop' | 
-  'desktop-alt' | 
   'dharmachakra' | 
-  'diagram-next' | 
-  'diagram-predecessor' | 
-  'diagram-project' | 
-  'project-diagram' | 
-  'diagram-successor' | 
-  'diamond' | 
-  'diamond-turn-right' | 
-  'directions' | 
+  'diagnoses' | 
   'dice' | 
   'dice-d20' | 
   'dice-d6' | 
@@ -1305,31 +854,24 @@ export type IconName = '42-group' |
   'dice-six' | 
   'dice-three' | 
   'dice-two' | 
-  'disease' | 
-  'display' | 
+  'digital-tachograph' | 
+  'directions' | 
   'divide' | 
+  'dizzy' | 
   'dna' | 
   'dog' | 
   'dollar-sign' | 
-  'dollar' | 
-  'usd' | 
   'dolly' | 
-  'dolly-box' | 
-  'dong-sign' | 
+  'dolly-flatbed' | 
+  'donate' | 
   'door-closed' | 
   'door-open' | 
+  'dot-circle' | 
   'dove' | 
-  'down-left-and-up-right-to-center' | 
-  'compress-alt' | 
-  'down-long' | 
-  'long-arrow-alt-down' | 
   'download' | 
+  'drafting-compass' | 
   'dragon' | 
   'draw-polygon' | 
-  'droplet' | 
-  'tint' | 
-  'droplet-slash' | 
-  'tint-slash' | 
   'drum' | 
   'drum-steelpan' | 
   'drumstick-bite' | 
@@ -1337,748 +879,350 @@ export type IconName = '42-group' |
   'dumpster' | 
   'dumpster-fire' | 
   'dungeon' | 
-  'e' | 
-  'ear-deaf' | 
-  'deaf' | 
-  'deafness' | 
-  'hard-of-hearing' | 
-  'ear-listen' | 
-  'assistive-listening-systems' | 
-  'earth-africa' | 
-  'globe-africa' | 
-  'earth-americas' | 
-  'earth' | 
-  'earth-america' | 
-  'globe-americas' | 
-  'earth-asia' | 
-  'globe-asia' | 
-  'earth-europe' | 
-  'globe-europe' | 
-  'earth-oceania' | 
-  'globe-oceania' | 
+  'edit' | 
   'egg' | 
   'eject' | 
-  'elevator' | 
-  'ellipsis' | 
   'ellipsis-h' | 
-  'ellipsis-vertical' | 
   'ellipsis-v' | 
   'envelope' | 
-  'envelope-circle-check' | 
   'envelope-open' | 
   'envelope-open-text' | 
-  'envelopes-bulk' | 
-  'mail-bulk' | 
+  'envelope-square' | 
   'equals' | 
   'eraser' | 
   'ethernet' | 
   'euro-sign' | 
-  'eur' | 
-  'euro' | 
+  'exchange-alt' | 
   'exclamation' | 
+  'exclamation-circle' | 
+  'exclamation-triangle' | 
   'expand' | 
-  'explosion' | 
+  'expand-arrows-alt' | 
+  'external-link-alt' | 
+  'external-link-square-alt' | 
   'eye' | 
   'eye-dropper' | 
-  'eye-dropper-empty' | 
-  'eyedropper' | 
-  'eye-low-vision' | 
-  'low-vision' | 
   'eye-slash' | 
-  'f' | 
-  'face-angry' | 
-  'angry' | 
-  'face-dizzy' | 
-  'dizzy' | 
-  'face-flushed' | 
-  'flushed' | 
-  'face-frown' | 
-  'frown' | 
-  'face-frown-open' | 
-  'frown-open' | 
-  'face-grimace' | 
-  'grimace' | 
-  'face-grin' | 
-  'grin' | 
-  'face-grin-beam' | 
-  'grin-beam' | 
-  'face-grin-beam-sweat' | 
-  'grin-beam-sweat' | 
-  'face-grin-hearts' | 
-  'grin-hearts' | 
-  'face-grin-squint' | 
-  'grin-squint' | 
-  'face-grin-squint-tears' | 
-  'grin-squint-tears' | 
-  'face-grin-stars' | 
-  'grin-stars' | 
-  'face-grin-tears' | 
-  'grin-tears' | 
-  'face-grin-tongue' | 
-  'grin-tongue' | 
-  'face-grin-tongue-squint' | 
-  'grin-tongue-squint' | 
-  'face-grin-tongue-wink' | 
-  'grin-tongue-wink' | 
-  'face-grin-wide' | 
-  'grin-alt' | 
-  'face-grin-wink' | 
-  'grin-wink' | 
-  'face-kiss' | 
-  'kiss' | 
-  'face-kiss-beam' | 
-  'kiss-beam' | 
-  'face-kiss-wink-heart' | 
-  'kiss-wink-heart' | 
-  'face-laugh' | 
-  'laugh' | 
-  'face-laugh-beam' | 
-  'laugh-beam' | 
-  'face-laugh-squint' | 
-  'laugh-squint' | 
-  'face-laugh-wink' | 
-  'laugh-wink' | 
-  'face-meh' | 
-  'meh' | 
-  'face-meh-blank' | 
-  'meh-blank' | 
-  'face-rolling-eyes' | 
-  'meh-rolling-eyes' | 
-  'face-sad-cry' | 
-  'sad-cry' | 
-  'face-sad-tear' | 
-  'sad-tear' | 
-  'face-smile' | 
-  'smile' | 
-  'face-smile-beam' | 
-  'smile-beam' | 
-  'face-smile-wink' | 
-  'smile-wink' | 
-  'face-surprise' | 
-  'surprise' | 
-  'face-tired' | 
-  'tired' | 
   'fan' | 
-  'faucet' | 
-  'faucet-drip' | 
+  'fast-backward' | 
+  'fast-forward' | 
   'fax' | 
   'feather' | 
-  'feather-pointed' | 
   'feather-alt' | 
-  'ferry' | 
+  'female' | 
+  'fighter-jet' | 
   'file' | 
-  'file-arrow-down' | 
-  'file-download' | 
-  'file-arrow-up' | 
-  'file-upload' | 
+  'file-alt' | 
+  'file-archive' | 
   'file-audio' | 
-  'file-circle-check' | 
-  'file-circle-exclamation' | 
-  'file-circle-minus' | 
-  'file-circle-plus' | 
-  'file-circle-question' | 
-  'file-circle-xmark' | 
   'file-code' | 
   'file-contract' | 
   'file-csv' | 
+  'file-download' | 
   'file-excel' | 
   'file-export' | 
-  'arrow-right-from-file' | 
   'file-image' | 
   'file-import' | 
-  'arrow-right-to-file' | 
   'file-invoice' | 
   'file-invoice-dollar' | 
-  'file-lines' | 
-  'file-alt' | 
-  'file-text' | 
   'file-medical' | 
+  'file-medical-alt' | 
   'file-pdf' | 
-  'file-pen' | 
-  'file-edit' | 
   'file-powerpoint' | 
   'file-prescription' | 
-  'file-shield' | 
   'file-signature' | 
+  'file-upload' | 
   'file-video' | 
-  'file-waveform' | 
-  'file-medical-alt' | 
   'file-word' | 
-  'file-zipper' | 
-  'file-archive' | 
   'fill' | 
   'fill-drip' | 
   'film' | 
   'filter' | 
-  'filter-circle-dollar' | 
-  'funnel-dollar' | 
-  'filter-circle-xmark' | 
   'fingerprint' | 
   'fire' | 
-  'fire-burner' | 
-  'fire-extinguisher' | 
-  'fire-flame-curved' | 
   'fire-alt' | 
-  'fire-flame-simple' | 
-  'burn' | 
+  'fire-extinguisher' | 
+  'first-aid' | 
   'fish' | 
-  'fish-fins' | 
+  'fist-raised' | 
   'flag' | 
   'flag-checkered' | 
   'flag-usa' | 
   'flask' | 
-  'flask-vial' | 
-  'floppy-disk' | 
-  'save' | 
-  'florin-sign' | 
+  'flushed' | 
   'folder' | 
-  'folder-blank' | 
-  'folder-closed' | 
   'folder-minus' | 
   'folder-open' | 
   'folder-plus' | 
-  'folder-tree' | 
   'font' | 
-  'font-awesome' | 
-  'font-awesome-flag' | 
   'font-awesome-logo-full' | 
-  'football' | 
   'football-ball' | 
   'forward' | 
-  'forward-fast' | 
-  'fast-forward' | 
-  'forward-step' | 
-  'step-forward' | 
-  'franc-sign' | 
   'frog' | 
+  'frown' | 
+  'frown-open' | 
+  'funnel-dollar' | 
   'futbol' | 
-  'futbol-ball' | 
-  'soccer-ball' | 
-  'g' | 
   'gamepad' | 
   'gas-pump' | 
-  'gauge' | 
-  'dashboard' | 
-  'gauge-med' | 
-  'tachometer-alt-average' | 
-  'gauge-high' | 
-  'tachometer-alt' | 
-  'tachometer-alt-fast' | 
-  'gauge-simple' | 
-  'gauge-simple-med' | 
-  'tachometer-average' | 
-  'gauge-simple-high' | 
-  'tachometer' | 
-  'tachometer-fast' | 
   'gavel' | 
-  'legal' | 
-  'gear' | 
-  'cog' | 
-  'gears' | 
-  'cogs' | 
   'gem' | 
   'genderless' | 
   'ghost' | 
   'gift' | 
   'gifts' | 
-  'glass-water' | 
-  'glass-water-droplet' | 
+  'glass-cheers' | 
+  'glass-martini' | 
+  'glass-martini-alt' | 
+  'glass-whiskey' | 
   'glasses' | 
   'globe' | 
-  'golf-ball-tee' | 
+  'globe-africa' | 
+  'globe-americas' | 
+  'globe-asia' | 
+  'globe-europe' | 
   'golf-ball' | 
   'gopuram' | 
   'graduation-cap' | 
-  'mortar-board' | 
   'greater-than' | 
   'greater-than-equal' | 
-  'grip' | 
+  'grimace' | 
+  'grin' | 
+  'grin-alt' | 
+  'grin-beam' | 
+  'grin-beam-sweat' | 
+  'grin-hearts' | 
+  'grin-squint' | 
+  'grin-squint-tears' | 
+  'grin-stars' | 
+  'grin-tears' | 
+  'grin-tongue' | 
+  'grin-tongue-squint' | 
+  'grin-tongue-wink' | 
+  'grin-wink' | 
   'grip-horizontal' | 
   'grip-lines' | 
   'grip-lines-vertical' | 
   'grip-vertical' | 
-  'group-arrows-rotate' | 
-  'guarani-sign' | 
   'guitar' | 
-  'gun' | 
-  'h' | 
+  'h-square' | 
+  'hamburger' | 
   'hammer' | 
   'hamsa' | 
-  'hand' | 
-  'hand-paper' | 
-  'hand-back-fist' | 
-  'hand-rock' | 
-  'hand-dots' | 
-  'allergies' | 
-  'hand-fist' | 
-  'fist-raised' | 
   'hand-holding' | 
-  'hand-holding-dollar' | 
-  'hand-holding-usd' | 
-  'hand-holding-droplet' | 
-  'hand-holding-water' | 
-  'hand-holding-hand' | 
   'hand-holding-heart' | 
-  'hand-holding-medical' | 
+  'hand-holding-usd' | 
   'hand-lizard' | 
   'hand-middle-finger' | 
+  'hand-paper' | 
   'hand-peace' | 
   'hand-point-down' | 
   'hand-point-left' | 
   'hand-point-right' | 
   'hand-point-up' | 
   'hand-pointer' | 
+  'hand-rock' | 
   'hand-scissors' | 
-  'hand-sparkles' | 
   'hand-spock' | 
-  'handcuffs' | 
   'hands' | 
-  'sign-language' | 
-  'signing' | 
-  'hands-asl-interpreting' | 
-  'american-sign-language-interpreting' | 
-  'asl-interpreting' | 
-  'hands-american-sign-language-interpreting' | 
-  'hands-bound' | 
-  'hands-bubbles' | 
-  'hands-wash' | 
-  'hands-clapping' | 
-  'hands-holding' | 
-  'hands-holding-child' | 
-  'hands-holding-circle' | 
-  'hands-praying' | 
-  'praying-hands' | 
-  'handshake' | 
-  'handshake-angle' | 
   'hands-helping' | 
-  'handshake-simple' | 
-  'handshake-alt' | 
-  'handshake-simple-slash' | 
-  'handshake-alt-slash' | 
-  'handshake-slash' | 
+  'handshake' | 
   'hanukiah' | 
-  'hard-drive' | 
-  'hdd' | 
+  'hard-hat' | 
   'hashtag' | 
-  'hat-cowboy' | 
-  'hat-cowboy-side' | 
   'hat-wizard' | 
-  'head-side-cough' | 
-  'head-side-cough-slash' | 
-  'head-side-mask' | 
-  'head-side-virus' | 
+  'haykal' | 
+  'hdd' | 
   'heading' | 
-  'header' | 
   'headphones' | 
-  'headphones-simple' | 
   'headphones-alt' | 
   'headset' | 
   'heart' | 
-  'heart-circle-bolt' | 
-  'heart-circle-check' | 
-  'heart-circle-exclamation' | 
-  'heart-circle-minus' | 
-  'heart-circle-plus' | 
-  'heart-circle-xmark' | 
-  'heart-crack' | 
   'heart-broken' | 
-  'heart-pulse' | 
   'heartbeat' | 
   'helicopter' | 
-  'helicopter-symbol' | 
-  'helmet-safety' | 
-  'hard-hat' | 
-  'hat-hard' | 
-  'helmet-un' | 
   'highlighter' | 
-  'hill-avalanche' | 
-  'hill-rockslide' | 
+  'hiking' | 
   'hippo' | 
+  'history' | 
   'hockey-puck' | 
   'holly-berry' | 
+  'home' | 
   'horse' | 
   'horse-head' | 
   'hospital' | 
   'hospital-alt' | 
-  'hospital-wide' | 
-  'hospital-user' | 
-  'hot-tub-person' | 
+  'hospital-symbol' | 
   'hot-tub' | 
   'hotdog' | 
   'hotel' | 
   'hourglass' | 
-  'hourglass2' | 
-  'hourglass-half' | 
-  'hourglass-empty' | 
   'hourglass-end' | 
-  'hourglass3' | 
+  'hourglass-half' | 
   'hourglass-start' | 
-  'hourglass1' | 
-  'house' | 
-  'home' | 
-  'home-alt' | 
-  'home-lg-alt' | 
-  'house-chimney' | 
-  'home-lg' | 
-  'house-chimney-crack' | 
   'house-damage' | 
-  'house-chimney-medical' | 
-  'clinic-medical' | 
-  'house-chimney-user' | 
-  'house-chimney-window' | 
-  'house-circle-check' | 
-  'house-circle-exclamation' | 
-  'house-circle-xmark' | 
-  'house-crack' | 
-  'house-fire' | 
-  'house-flag' | 
-  'house-flood-water' | 
-  'house-flood-water-circle-arrow-right' | 
-  'house-laptop' | 
-  'laptop-house' | 
-  'house-lock' | 
-  'house-medical' | 
-  'house-medical-circle-check' | 
-  'house-medical-circle-exclamation' | 
-  'house-medical-circle-xmark' | 
-  'house-medical-flag' | 
-  'house-signal' | 
-  'house-tsunami' | 
-  'house-user' | 
-  'home-user' | 
-  'hryvnia-sign' | 
   'hryvnia' | 
-  'hurricane' | 
-  'i' | 
   'i-cursor' | 
   'ice-cream' | 
   'icicles' | 
   'icons' | 
-  'heart-music-camera-bolt' | 
   'id-badge' | 
   'id-card' | 
-  'drivers-license' | 
-  'id-card-clip' | 
   'id-card-alt' | 
   'igloo' | 
   'image' | 
-  'image-portrait' | 
-  'portrait' | 
   'images' | 
   'inbox' | 
   'indent' | 
-  'indian-rupee-sign' | 
-  'indian-rupee' | 
-  'inr' | 
   'industry' | 
   'infinity' | 
   'info' | 
+  'info-circle' | 
   'italic' | 
-  'j' | 
-  'jar' | 
-  'jar-wheat' | 
   'jedi' | 
-  'jet-fighter' | 
-  'fighter-jet' | 
-  'jet-fighter-up' | 
   'joint' | 
-  'jug-detergent' | 
-  'k' | 
+  'journal-whills' | 
   'kaaba' | 
   'key' | 
   'keyboard' | 
   'khanda' | 
-  'kip-sign' | 
-  'kit-medical' | 
-  'first-aid' | 
-  'kitchen-set' | 
+  'kiss' | 
+  'kiss-beam' | 
+  'kiss-wink-heart' | 
   'kiwi-bird' | 
-  'l' | 
-  'land-mine-on' | 
   'landmark' | 
-  'landmark-dome' | 
-  'landmark-alt' | 
-  'landmark-flag' | 
   'language' | 
   'laptop' | 
   'laptop-code' | 
-  'laptop-file' | 
   'laptop-medical' | 
-  'lari-sign' | 
+  'laugh' | 
+  'laugh-beam' | 
+  'laugh-squint' | 
+  'laugh-wink' | 
   'layer-group' | 
   'leaf' | 
-  'left-long' | 
-  'long-arrow-alt-left' | 
-  'left-right' | 
-  'arrows-alt-h' | 
   'lemon' | 
   'less-than' | 
   'less-than-equal' | 
+  'level-down-alt' | 
+  'level-up-alt' | 
   'life-ring' | 
   'lightbulb' | 
-  'lines-leaning' | 
   'link' | 
-  'chain' | 
-  'link-slash' | 
-  'chain-broken' | 
-  'chain-slash' | 
-  'unlink' | 
   'lira-sign' | 
   'list' | 
-  'list-squares' | 
-  'list-check' | 
-  'tasks' | 
+  'list-alt' | 
   'list-ol' | 
-  'list12' | 
-  'list-numeric' | 
   'list-ul' | 
-  'list-dots' | 
-  'litecoin-sign' | 
   'location-arrow' | 
-  'location-crosshairs' | 
-  'location' | 
-  'location-dot' | 
-  'map-marker-alt' | 
-  'location-pin' | 
-  'map-marker' | 
-  'location-pin-lock' | 
   'lock' | 
   'lock-open' | 
-  'locust' | 
-  'lungs' | 
-  'lungs-virus' | 
-  'm' | 
+  'long-arrow-alt-down' | 
+  'long-arrow-alt-left' | 
+  'long-arrow-alt-right' | 
+  'long-arrow-alt-up' | 
+  'low-vision' | 
+  'luggage-cart' | 
+  'magic' | 
   'magnet' | 
-  'magnifying-glass' | 
-  'search' | 
-  'magnifying-glass-arrow-right' | 
-  'magnifying-glass-chart' | 
-  'magnifying-glass-dollar' | 
-  'search-dollar' | 
-  'magnifying-glass-location' | 
-  'search-location' | 
-  'magnifying-glass-minus' | 
-  'search-minus' | 
-  'magnifying-glass-plus' | 
-  'search-plus' | 
-  'manat-sign' | 
+  'mail-bulk' | 
+  'male' | 
   'map' | 
-  'map-location' | 
   'map-marked' | 
-  'map-location-dot' | 
   'map-marked-alt' | 
+  'map-marker' | 
+  'map-marker-alt' | 
   'map-pin' | 
+  'map-signs' | 
   'marker' | 
   'mars' | 
-  'mars-and-venus' | 
-  'mars-and-venus-burst' | 
   'mars-double' | 
   'mars-stroke' | 
-  'mars-stroke-right' | 
   'mars-stroke-h' | 
-  'mars-stroke-up' | 
   'mars-stroke-v' | 
-  'martini-glass' | 
-  'glass-martini-alt' | 
-  'martini-glass-citrus' | 
-  'cocktail' | 
-  'martini-glass-empty' | 
-  'glass-martini' | 
   'mask' | 
-  'mask-face' | 
-  'mask-ventilator' | 
-  'masks-theater' | 
-  'theater-masks' | 
-  'mattress-pillow' | 
-  'maximize' | 
-  'expand-arrows-alt' | 
   'medal' | 
+  'medkit' | 
+  'meh' | 
+  'meh-blank' | 
+  'meh-rolling-eyes' | 
   'memory' | 
   'menorah' | 
   'mercury' | 
-  'message' | 
-  'comment-alt' | 
   'meteor' | 
   'microchip' | 
   'microphone' | 
-  'microphone-lines' | 
   'microphone-alt' | 
-  'microphone-lines-slash' | 
   'microphone-alt-slash' | 
   'microphone-slash' | 
   'microscope' | 
-  'mill-sign' | 
-  'minimize' | 
-  'compress-arrows-alt' | 
   'minus' | 
-  'subtract' | 
+  'minus-circle' | 
+  'minus-square' | 
   'mitten' | 
   'mobile' | 
-  'mobile-android' | 
-  'mobile-phone' | 
-  'mobile-button' | 
-  'mobile-retro' | 
-  'mobile-screen' | 
-  'mobile-android-alt' | 
-  'mobile-screen-button' | 
   'mobile-alt' | 
   'money-bill' | 
-  'money-bill-1' | 
   'money-bill-alt' | 
-  'money-bill-1-wave' | 
-  'money-bill-wave-alt' | 
-  'money-bill-transfer' | 
-  'money-bill-trend-up' | 
   'money-bill-wave' | 
-  'money-bill-wheat' | 
-  'money-bills' | 
+  'money-bill-wave-alt' | 
   'money-check' | 
-  'money-check-dollar' | 
   'money-check-alt' | 
   'monument' | 
   'moon' | 
   'mortar-pestle' | 
   'mosque' | 
-  'mosquito' | 
-  'mosquito-net' | 
   'motorcycle' | 
-  'mound' | 
   'mountain' | 
-  'mountain-city' | 
-  'mountain-sun' | 
+  'mouse-pointer' | 
   'mug-hot' | 
-  'mug-saucer' | 
-  'coffee' | 
   'music' | 
-  'n' | 
-  'naira-sign' | 
   'network-wired' | 
   'neuter' | 
   'newspaper' | 
   'not-equal' | 
-  'note-sticky' | 
-  'sticky-note' | 
   'notes-medical' | 
-  'o' | 
   'object-group' | 
   'object-ungroup' | 
   'oil-can' | 
-  'oil-well' | 
   'om' | 
   'otter' | 
   'outdent' | 
-  'dedent' | 
-  'p' | 
   'pager' | 
-  'paint-roller' | 
-  'paintbrush' | 
   'paint-brush' | 
+  'paint-roller' | 
   'palette' | 
   'pallet' | 
-  'panorama' | 
   'paper-plane' | 
   'paperclip' | 
   'parachute-box' | 
   'paragraph' | 
+  'parking' | 
   'passport' | 
+  'pastafarianism' | 
   'paste' | 
-  'file-clipboard' | 
   'pause' | 
+  'pause-circle' | 
   'paw' | 
   'peace' | 
   'pen' | 
-  'pen-clip' | 
   'pen-alt' | 
   'pen-fancy' | 
   'pen-nib' | 
-  'pen-ruler' | 
-  'pencil-ruler' | 
-  'pen-to-square' | 
-  'edit' | 
-  'pencil' | 
+  'pen-square' | 
   'pencil-alt' | 
-  'people-arrows-left-right' | 
-  'people-arrows' | 
-  'people-carry-box' | 
+  'pencil-ruler' | 
   'people-carry' | 
-  'people-group' | 
-  'people-line' | 
-  'people-pulling' | 
-  'people-robbery' | 
-  'people-roof' | 
   'pepper-hot' | 
   'percent' | 
   'percentage' | 
-  'person' | 
-  'male' | 
-  'person-arrow-down-to-line' | 
-  'person-arrow-up-from-line' | 
-  'person-biking' | 
-  'biking' | 
   'person-booth' | 
-  'person-breastfeeding' | 
-  'person-burst' | 
-  'person-cane' | 
-  'person-chalkboard' | 
-  'person-circle-check' | 
-  'person-circle-exclamation' | 
-  'person-circle-minus' | 
-  'person-circle-plus' | 
-  'person-circle-question' | 
-  'person-circle-xmark' | 
-  'person-digging' | 
-  'digging' | 
-  'person-dots-from-line' | 
-  'diagnoses' | 
-  'person-dress' | 
-  'female' | 
-  'person-dress-burst' | 
-  'person-drowning' | 
-  'person-falling' | 
-  'person-falling-burst' | 
-  'person-half-dress' | 
-  'person-harassing' | 
-  'person-hiking' | 
-  'hiking' | 
-  'person-military-pointing' | 
-  'person-military-rifle' | 
-  'person-military-to-person' | 
-  'person-praying' | 
-  'pray' | 
-  'person-pregnant' | 
-  'person-rays' | 
-  'person-rifle' | 
-  'person-running' | 
-  'running' | 
-  'person-shelter' | 
-  'person-skating' | 
-  'skating' | 
-  'person-skiing' | 
-  'skiing' | 
-  'person-skiing-nordic' | 
-  'skiing-nordic' | 
-  'person-snowboarding' | 
-  'snowboarding' | 
-  'person-swimming' | 
-  'swimmer' | 
-  'person-through-window' | 
-  'person-walking' | 
-  'walking' | 
-  'person-walking-arrow-loop-left' | 
-  'person-walking-arrow-right' | 
-  'person-walking-dashed-line-arrow-right' | 
-  'person-walking-luggage' | 
-  'person-walking-with-cane' | 
-  'blind' | 
-  'peseta-sign' | 
-  'peso-sign' | 
   'phone' | 
-  'phone-flip' | 
   'phone-alt' | 
   'phone-slash' | 
+  'phone-square' | 
+  'phone-square-alt' | 
   'phone-volume' | 
-  'volume-control-phone' | 
-  'photo-film' | 
   'photo-video' | 
   'piggy-bank' | 
   'pills' | 
@@ -2086,611 +1230,330 @@ export type IconName = '42-group' |
   'place-of-worship' | 
   'plane' | 
   'plane-arrival' | 
-  'plane-circle-check' | 
-  'plane-circle-exclamation' | 
-  'plane-circle-xmark' | 
   'plane-departure' | 
-  'plane-lock' | 
-  'plane-slash' | 
-  'plane-up' | 
-  'plant-wilt' | 
-  'plate-wheat' | 
   'play' | 
+  'play-circle' | 
   'plug' | 
-  'plug-circle-bolt' | 
-  'plug-circle-check' | 
-  'plug-circle-exclamation' | 
-  'plug-circle-minus' | 
-  'plug-circle-plus' | 
-  'plug-circle-xmark' | 
   'plus' | 
-  'add' | 
-  'plus-minus' | 
+  'plus-circle' | 
+  'plus-square' | 
   'podcast' | 
+  'poll' | 
+  'poll-h' | 
   'poo' | 
   'poo-storm' | 
-  'poo-bolt' | 
   'poop' | 
+  'portrait' | 
+  'pound-sign' | 
   'power-off' | 
+  'pray' | 
+  'praying-hands' | 
   'prescription' | 
   'prescription-bottle' | 
-  'prescription-bottle-medical' | 
   'prescription-bottle-alt' | 
   'print' | 
-  'pump-medical' | 
-  'pump-soap' | 
+  'procedures' | 
+  'project-diagram' | 
   'puzzle-piece' | 
-  'q' | 
   'qrcode' | 
   'question' | 
+  'question-circle' | 
+  'quidditch' | 
   'quote-left' | 
-  'quote-left-alt' | 
   'quote-right' | 
-  'quote-right-alt' | 
-  'r' | 
+  'quran' | 
   'radiation' | 
-  'radio' | 
+  'radiation-alt' | 
   'rainbow' | 
-  'ranking-star' | 
+  'random' | 
   'receipt' | 
-  'record-vinyl' | 
-  'rectangle-ad' | 
-  'ad' | 
-  'rectangle-list' | 
-  'list-alt' | 
-  'rectangle-xmark' | 
-  'rectangle-times' | 
-  'times-rectangle' | 
-  'window-close' | 
   'recycle' | 
+  'redo' | 
+  'redo-alt' | 
   'registered' | 
-  'repeat' | 
+  'remove-format' | 
   'reply' | 
-  'mail-reply' | 
   'reply-all' | 
-  'mail-reply-all' | 
   'republican' | 
   'restroom' | 
   'retweet' | 
   'ribbon' | 
-  'right-from-bracket' | 
-  'sign-out-alt' | 
-  'right-left' | 
-  'exchange-alt' | 
-  'right-long' | 
-  'long-arrow-alt-right' | 
-  'right-to-bracket' | 
-  'sign-in-alt' | 
   'ring' | 
   'road' | 
-  'road-barrier' | 
-  'road-bridge' | 
-  'road-circle-check' | 
-  'road-circle-exclamation' | 
-  'road-circle-xmark' | 
-  'road-lock' | 
-  'road-spikes' | 
   'robot' | 
   'rocket' | 
-  'rotate' | 
-  'sync-alt' | 
-  'rotate-left' | 
-  'rotate-back' | 
-  'rotate-backward' | 
-  'undo-alt' | 
-  'rotate-right' | 
-  'redo-alt' | 
-  'rotate-forward' | 
   'route' | 
   'rss' | 
-  'feed' | 
+  'rss-square' | 
   'ruble-sign' | 
-  'rouble' | 
-  'rub' | 
-  'ruble' | 
-  'rug' | 
   'ruler' | 
   'ruler-combined' | 
   'ruler-horizontal' | 
   'ruler-vertical' | 
+  'running' | 
   'rupee-sign' | 
-  'rupee' | 
-  'rupiah-sign' | 
-  's' | 
-  'sack-dollar' | 
-  'sack-xmark' | 
-  'sailboat' | 
+  'sad-cry' | 
+  'sad-tear' | 
   'satellite' | 
   'satellite-dish' | 
-  'scale-balanced' | 
-  'balance-scale' | 
-  'scale-unbalanced' | 
-  'balance-scale-left' | 
-  'scale-unbalanced-flip' | 
-  'balance-scale-right' | 
+  'save' | 
   'school' | 
-  'school-circle-check' | 
-  'school-circle-exclamation' | 
-  'school-circle-xmark' | 
-  'school-flag' | 
-  'school-lock' | 
-  'scissors' | 
-  'cut' | 
   'screwdriver' | 
-  'screwdriver-wrench' | 
-  'tools' | 
   'scroll' | 
-  'scroll-torah' | 
-  'torah' | 
   'sd-card' | 
-  'section' | 
+  'search' | 
+  'search-dollar' | 
+  'search-location' | 
+  'search-minus' | 
+  'search-plus' | 
   'seedling' | 
-  'sprout' | 
   'server' | 
   'shapes' | 
-  'triangle-circle-square' | 
   'share' | 
-  'arrow-turn-right' | 
-  'mail-forward' | 
-  'share-from-square' | 
-  'share-square' | 
-  'share-nodes' | 
   'share-alt' | 
-  'sheet-plastic' | 
+  'share-alt-square' | 
+  'share-square' | 
   'shekel-sign' | 
-  'ils' | 
-  'shekel' | 
-  'sheqel' | 
-  'sheqel-sign' | 
-  'shield' | 
-  'shield-blank' | 
-  'shield-cat' | 
-  'shield-dog' | 
-  'shield-halved' | 
   'shield-alt' | 
-  'shield-heart' | 
-  'shield-virus' | 
   'ship' | 
-  'shirt' | 
-  't-shirt' | 
-  'tshirt' | 
+  'shipping-fast' | 
   'shoe-prints' | 
-  'shop' | 
-  'store-alt' | 
-  'shop-lock' | 
-  'shop-slash' | 
-  'store-alt-slash' | 
+  'shopping-bag' | 
+  'shopping-basket' | 
+  'shopping-cart' | 
   'shower' | 
-  'shrimp' | 
-  'shuffle' | 
-  'random' | 
-  'shuttle-space' | 
-  'space-shuttle' | 
-  'sign-hanging' | 
+  'shuttle-van' | 
   'sign' | 
+  'sign-in-alt' | 
+  'sign-language' | 
+  'sign-out-alt' | 
   'signal' | 
-  'signal5' | 
-  'signal-perfect' | 
   'signature' | 
-  'signs-post' | 
-  'map-signs' | 
   'sim-card' | 
-  'sink' | 
   'sitemap' | 
+  'skating' | 
+  'skiing' | 
+  'skiing-nordic' | 
   'skull' | 
   'skull-crossbones' | 
   'slash' | 
   'sleigh' | 
-  'sliders' | 
   'sliders-h' | 
+  'smile' | 
+  'smile-beam' | 
+  'smile-wink' | 
   'smog' | 
   'smoking' | 
+  'smoking-ban' | 
+  'sms' | 
+  'snowboarding' | 
   'snowflake' | 
   'snowman' | 
   'snowplow' | 
-  'soap' | 
   'socks' | 
   'solar-panel' | 
   'sort' | 
-  'unsorted' | 
+  'sort-alpha-down' | 
+  'sort-alpha-down-alt' | 
+  'sort-alpha-up' | 
+  'sort-alpha-up-alt' | 
+  'sort-amount-down' | 
+  'sort-amount-down-alt' | 
+  'sort-amount-up' | 
+  'sort-amount-up-alt' | 
   'sort-down' | 
-  'sort-desc' | 
+  'sort-numeric-down' | 
+  'sort-numeric-down-alt' | 
+  'sort-numeric-up' | 
+  'sort-numeric-up-alt' | 
   'sort-up' | 
-  'sort-asc' | 
   'spa' | 
-  'spaghetti-monster-flying' | 
-  'pastafarianism' | 
+  'space-shuttle' | 
   'spell-check' | 
   'spider' | 
   'spinner' | 
   'splotch' | 
-  'spoon' | 
-  'utensil-spoon' | 
   'spray-can' | 
-  'spray-can-sparkles' | 
-  'air-freshener' | 
   'square' | 
-  'square-arrow-up-right' | 
-  'external-link-square' | 
-  'square-caret-down' | 
-  'caret-square-down' | 
-  'square-caret-left' | 
-  'caret-square-left' | 
-  'square-caret-right' | 
-  'caret-square-right' | 
-  'square-caret-up' | 
-  'caret-square-up' | 
-  'square-check' | 
-  'check-square' | 
-  'square-envelope' | 
-  'envelope-square' | 
   'square-full' | 
-  'square-h' | 
-  'h-square' | 
-  'square-minus' | 
-  'minus-square' | 
-  'square-nfi' | 
-  'square-parking' | 
-  'parking' | 
-  'square-pen' | 
-  'pen-square' | 
-  'pencil-square' | 
-  'square-person-confined' | 
-  'square-phone' | 
-  'phone-square' | 
-  'square-phone-flip' | 
-  'phone-square-alt' | 
-  'square-plus' | 
-  'plus-square' | 
-  'square-poll-horizontal' | 
-  'poll-h' | 
-  'square-poll-vertical' | 
-  'poll' | 
-  'square-root-variable' | 
   'square-root-alt' | 
-  'square-rss' | 
-  'rss-square' | 
-  'square-share-nodes' | 
-  'share-alt-square' | 
-  'square-up-right' | 
-  'external-link-square-alt' | 
-  'square-virus' | 
-  'square-xmark' | 
-  'times-square' | 
-  'xmark-square' | 
-  'staff-aesculapius' | 
-  'rod-asclepius' | 
-  'rod-snake' | 
-  'staff-snake' | 
-  'stairs' | 
   'stamp' | 
   'star' | 
   'star-and-crescent' | 
   'star-half' | 
-  'star-half-stroke' | 
   'star-half-alt' | 
   'star-of-david' | 
   'star-of-life' | 
-  'sterling-sign' | 
-  'gbp' | 
-  'pound-sign' | 
+  'step-backward' | 
+  'step-forward' | 
   'stethoscope' | 
+  'sticky-note' | 
   'stop' | 
+  'stop-circle' | 
   'stopwatch' | 
-  'stopwatch-20' | 
   'store' | 
-  'store-slash' | 
+  'store-alt' | 
+  'stream' | 
   'street-view' | 
   'strikethrough' | 
   'stroopwafel' | 
   'subscript' | 
+  'subway' | 
   'suitcase' | 
-  'suitcase-medical' | 
-  'medkit' | 
   'suitcase-rolling' | 
   'sun' | 
-  'sun-plant-wilt' | 
   'superscript' | 
+  'surprise' | 
   'swatchbook' | 
+  'swimmer' | 
+  'swimming-pool' | 
   'synagogue' | 
+  'sync' | 
+  'sync-alt' | 
   'syringe' | 
-  't' | 
   'table' | 
-  'table-cells' | 
-  'th' | 
-  'table-cells-large' | 
-  'th-large' | 
-  'table-columns' | 
-  'columns' | 
-  'table-list' | 
-  'th-list' | 
-  'table-tennis-paddle-ball' | 
-  'ping-pong-paddle-ball' | 
   'table-tennis' | 
   'tablet' | 
-  'tablet-android' | 
-  'tablet-button' | 
-  'tablet-screen-button' | 
   'tablet-alt' | 
   'tablets' | 
-  'tachograph-digital' | 
-  'digital-tachograph' | 
+  'tachometer-alt' | 
   'tag' | 
   'tags' | 
   'tape' | 
-  'tarp' | 
-  'tarp-droplet' | 
+  'tasks' | 
   'taxi' | 
-  'cab' | 
   'teeth' | 
   'teeth-open' | 
-  'temperature-arrow-down' | 
-  'temperature-down' | 
-  'temperature-arrow-up' | 
-  'temperature-up' | 
-  'temperature-empty' | 
-  'temperature0' | 
-  'thermometer0' | 
-  'thermometer-empty' | 
-  'temperature-full' | 
-  'temperature4' | 
-  'thermometer4' | 
-  'thermometer-full' | 
-  'temperature-half' | 
-  'temperature2' | 
-  'thermometer2' | 
-  'thermometer-half' | 
   'temperature-high' | 
   'temperature-low' | 
-  'temperature-quarter' | 
-  'temperature1' | 
-  'thermometer1' | 
-  'thermometer-quarter' | 
-  'temperature-three-quarters' | 
-  'temperature3' | 
-  'thermometer3' | 
-  'thermometer-three-quarters' | 
-  'tenge-sign' | 
   'tenge' | 
-  'tent' | 
-  'tent-arrow-down-to-line' | 
-  'tent-arrow-left-right' | 
-  'tent-arrow-turn-left' | 
-  'tent-arrows-down' | 
-  'tents' | 
   'terminal' | 
   'text-height' | 
-  'text-slash' | 
-  'remove-format' | 
   'text-width' | 
+  'th' | 
+  'th-large' | 
+  'th-list' | 
+  'theater-masks' | 
   'thermometer' | 
+  'thermometer-empty' | 
+  'thermometer-full' | 
+  'thermometer-half' | 
+  'thermometer-quarter' | 
+  'thermometer-three-quarters' | 
   'thumbs-down' | 
   'thumbs-up' | 
   'thumbtack' | 
-  'thumb-tack' | 
-  'ticket' | 
-  'ticket-simple' | 
   'ticket-alt' | 
-  'timeline' | 
+  'times' | 
+  'times-circle' | 
+  'tint' | 
+  'tint-slash' | 
+  'tired' | 
   'toggle-off' | 
   'toggle-on' | 
   'toilet' | 
   'toilet-paper' | 
-  'toilet-paper-slash' | 
-  'toilet-portable' | 
-  'toilets-portable' | 
   'toolbox' | 
+  'tools' | 
   'tooth' | 
+  'torah' | 
   'torii-gate' | 
-  'tornado' | 
-  'tower-broadcast' | 
-  'broadcast-tower' | 
-  'tower-cell' | 
-  'tower-observation' | 
   'tractor' | 
   'trademark' | 
   'traffic-light' | 
-  'trailer' | 
   'train' | 
-  'train-subway' | 
-  'subway' | 
-  'train-tram' | 
   'tram' | 
   'transgender' | 
   'transgender-alt' | 
   'trash' | 
-  'trash-arrow-up' | 
-  'trash-restore' | 
-  'trash-can' | 
   'trash-alt' | 
-  'trash-can-arrow-up' | 
+  'trash-restore' | 
   'trash-restore-alt' | 
   'tree' | 
-  'tree-city' | 
-  'triangle-exclamation' | 
-  'exclamation-triangle' | 
-  'warning' | 
   'trophy' | 
-  'trowel' | 
-  'trowel-bricks' | 
   'truck' | 
-  'truck-arrow-right' | 
-  'truck-droplet' | 
-  'truck-fast' | 
-  'shipping-fast' | 
-  'truck-field' | 
-  'truck-field-un' | 
-  'truck-front' | 
-  'truck-medical' | 
-  'ambulance' | 
+  'truck-loading' | 
   'truck-monster' | 
   'truck-moving' | 
   'truck-pickup' | 
-  'truck-plane' | 
-  'truck-ramp-box' | 
-  'truck-loading' | 
+  'tshirt' | 
   'tty' | 
-  'teletype' | 
-  'turkish-lira-sign' | 
-  'try' | 
-  'turkish-lira' | 
-  'turn-down' | 
-  'level-down-alt' | 
-  'turn-up' | 
-  'level-up-alt' | 
   'tv' | 
-  'television' | 
-  'tv-alt' | 
-  'u' | 
   'umbrella' | 
   'umbrella-beach' | 
   'underline' | 
+  'undo' | 
+  'undo-alt' | 
   'universal-access' | 
+  'university' | 
+  'unlink' | 
   'unlock' | 
-  'unlock-keyhole' | 
   'unlock-alt' | 
-  'up-down' | 
-  'arrows-alt-v' | 
-  'up-down-left-right' | 
-  'arrows-alt' | 
-  'up-long' | 
-  'long-arrow-alt-up' | 
-  'up-right-and-down-left-from-center' | 
-  'expand-alt' | 
-  'up-right-from-square' | 
-  'external-link-alt' | 
   'upload' | 
   'user' | 
+  'user-alt' | 
+  'user-alt-slash' | 
   'user-astronaut' | 
   'user-check' | 
+  'user-circle' | 
   'user-clock' | 
-  'user-doctor' | 
-  'user-md' | 
-  'user-gear' | 
   'user-cog' | 
-  'user-graduate' | 
-  'user-group' | 
+  'user-edit' | 
   'user-friends' | 
+  'user-graduate' | 
   'user-injured' | 
-  'user-large' | 
-  'user-alt' | 
-  'user-large-slash' | 
-  'user-alt-slash' | 
   'user-lock' | 
+  'user-md' | 
   'user-minus' | 
   'user-ninja' | 
   'user-nurse' | 
-  'user-pen' | 
-  'user-edit' | 
   'user-plus' | 
   'user-secret' | 
   'user-shield' | 
   'user-slash' | 
   'user-tag' | 
   'user-tie' | 
-  'user-xmark' | 
   'user-times' | 
   'users' | 
-  'users-between-lines' | 
-  'users-gear' | 
   'users-cog' | 
-  'users-line' | 
-  'users-rays' | 
-  'users-rectangle' | 
-  'users-slash' | 
-  'users-viewfinder' | 
+  'utensil-spoon' | 
   'utensils' | 
-  'cutlery' | 
-  'v' | 
-  'van-shuttle' | 
-  'shuttle-van' | 
-  'vault' | 
   'vector-square' | 
   'venus' | 
   'venus-double' | 
   'venus-mars' | 
-  'vest' | 
-  'vest-patches' | 
   'vial' | 
-  'vial-circle-check' | 
-  'vial-virus' | 
   'vials' | 
   'video' | 
-  'video-camera' | 
   'video-slash' | 
   'vihara' | 
-  'virus' | 
-  'virus-covid' | 
-  'virus-covid-slash' | 
-  'virus-slash' | 
-  'viruses' | 
   'voicemail' | 
-  'volcano' | 
-  'volleyball' | 
   'volleyball-ball' | 
-  'volume-high' | 
-  'volume-up' | 
-  'volume-low' | 
   'volume-down' | 
-  'volume-off' | 
-  'volume-xmark' | 
   'volume-mute' | 
-  'volume-times' | 
+  'volume-off' | 
+  'volume-up' | 
+  'vote-yea' | 
   'vr-cardboard' | 
-  'w' | 
-  'walkie-talkie' | 
+  'walking' | 
   'wallet' | 
-  'wand-magic' | 
-  'magic' | 
-  'wand-magic-sparkles' | 
-  'magic-wand-sparkles' | 
-  'wand-sparkles' | 
   'warehouse' | 
   'water' | 
-  'water-ladder' | 
-  'ladder-water' | 
-  'swimming-pool' | 
   'wave-square' | 
-  'weight-hanging' | 
-  'weight-scale' | 
   'weight' | 
-  'wheat-awn' | 
-  'wheat-alt' | 
-  'wheat-awn-circle-exclamation' | 
+  'weight-hanging' | 
   'wheelchair' | 
-  'wheelchair-move' | 
-  'wheelchair-alt' | 
-  'whiskey-glass' | 
-  'glass-whiskey' | 
   'wifi' | 
-  'wifi3' | 
-  'wifi-strong' | 
   'wind' | 
+  'window-close' | 
   'window-maximize' | 
   'window-minimize' | 
   'window-restore' | 
   'wine-bottle' | 
   'wine-glass' | 
-  'wine-glass-empty' | 
   'wine-glass-alt' | 
   'won-sign' | 
-  'krw' | 
-  'won' | 
-  'worm' | 
   'wrench' | 
-  'x' | 
   'x-ray' | 
-  'xmark' | 
-  'close' | 
-  'multiply' | 
-  'remove' | 
-  'times' | 
-  'xmarks-lines' | 
-  'y' | 
   'yen-sign' | 
-  'cny' | 
-  'jpy' | 
-  'rmb' | 
-  'yen' | 
-  'yin-yang' | 
-  'z';
+  'yin-yang';

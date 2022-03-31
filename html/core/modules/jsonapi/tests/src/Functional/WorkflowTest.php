@@ -52,7 +52,7 @@ class WorkflowTest extends ResourceTestBase {
   protected function createEntity() {
     $workflow = Workflow::create([
       'id' => 'rest_workflow',
-      'label' => 'REST Workflow',
+      'label' => 'REST Worklow',
       'type' => 'workflow_type_complex_test',
     ]);
     $workflow
@@ -96,7 +96,7 @@ class WorkflowTest extends ResourceTestBase {
               'workflow_type_test',
             ],
           ],
-          'label' => 'REST Workflow',
+          'label' => 'REST Worklow',
           'langcode' => 'en',
           'status' => TRUE,
           'workflow_type' => 'workflow_type_complex_test',

@@ -30,11 +30,10 @@ class WebformSubmissionListBuilderJavaScriptTest extends WebformWebDriverTestBas
 
     $assert_session = $this->assertSession();
 
-    /* ********************************************************************** */
+    /**************************************************************************/
 
     $submit = $this->getWebformSubmitButtonLabel($webform);
-    $this->drupalGet('/webform/' . $webform->id());
-    $this->submitForm([], $submit);
+    $this->drupalPostForm('/webform/' . $webform->id(), [], $submit);
     $sid = $this->getLastSubmissionId($webform);
     $this->drupalLogin($this->createUser([
       'view any webform submission',

@@ -90,7 +90,7 @@ class TestBlockVariantTrait {
   protected $uuidGenerator;
 
   /**
-   * @param \Drupal\ctools\Plugin\BlockPluginCollection $block_plugin_collection
+   * @param BlockPluginCollection $block_plugin_collection
    *
    * @return $this
    */

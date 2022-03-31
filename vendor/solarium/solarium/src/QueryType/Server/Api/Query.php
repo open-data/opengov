@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\QueryType\Server\Api;
 
 use Solarium\Core\Client\Client;
@@ -52,7 +45,6 @@ class Query extends AbstractQuery
     public function setVersion(string $version): self
     {
         $this->setOption('version', $version);
-
         return $this;
     }
 
@@ -76,7 +68,6 @@ class Query extends AbstractQuery
     public function setMethod(string $method): self
     {
         $this->setOption('method', $method);
-
         return $this;
     }
 
@@ -100,7 +91,6 @@ class Query extends AbstractQuery
     public function setAccept(string $accept): self
     {
         $this->setOption('accept', $accept);
-
         return $this;
     }
 
@@ -124,7 +114,6 @@ class Query extends AbstractQuery
     public function setContentType(string $contentType): self
     {
         $this->setOption('contenttype', $contentType);
-
         return $this;
     }
 
@@ -148,7 +137,6 @@ class Query extends AbstractQuery
     public function setRawData(string $rawData): self
     {
         $this->setOption('rawdata', $rawData);
-
         return $this;
     }
 

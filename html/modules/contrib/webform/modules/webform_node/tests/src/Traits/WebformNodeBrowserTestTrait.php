@@ -31,12 +31,9 @@ trait WebformNodeBrowserTestTrait {
     /** @var \Drupal\webform\WebformEntityReferenceManagerInterface $entity_reference_manager */
     $entity_reference_manager = \Drupal::service('webform.entity_reference_manager');
 
-    $this->drupalGet('/node/' . $node->id(), $options);
-
     $webform = $entity_reference_manager->getWebform($node);
     $submit = $this->getWebformSubmitButtonLabel($webform, $submit);
-    $this->submitForm($edit, $submit);
-
+    $this->drupalPostForm('/node/' . $node->id(), $edit, $submit, $options);
     return $this->getLastSubmissionId($webform);
   }
 
@@ -63,8 +60,7 @@ trait WebformNodeBrowserTestTrait {
 
     $webform = $entity_reference_manager->getWebform($node);
     $submit = $this->getWebformSubmitButtonLabel($webform, $submit);
-    $this->drupalGet('/node/' . $node->id() . '/webform/test', $options);
-    $this->submitForm($edit, $submit);
+    $this->drupalPostForm('/node/' . $node->id() . '/webform/test', $edit, $submit, $options);
     return $this->getLastSubmissionId($webform);
   }
 

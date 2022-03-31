@@ -66,8 +66,8 @@ class Link implements RenderableInterface {
   /**
    * Creates a Link object from a given Url object.
    *
-   * @param string|array|\Drupal\Component\Render\MarkupInterface $text
-   *   The link text for the anchor tag as a translated string or render array.
+   * @param string $text
+   *   The text of the link.
    * @param \Drupal\Core\Url $url
    *   The Url to create the link for.
    *

@@ -105,23 +105,37 @@ class QueryHelper implements QueryHelperInterface {
    * {@inheritdoc}
    */
   public function getResults($search_id) {
-    return $this->results[$this->getCurrentRequest()][$search_id] ?? NULL;
+    $request = $this->getCurrentRequest();
+    if (isset($this->results[$request])) {
+      $results = $this->results[$request];
+      if (!empty($results[$search_id])) {
+        return $this->results[$request][$search_id];
+      }
+    }
+    return NULL;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getAllResults() {
-    return $this->results[$this->getCurrentRequest()] ?? [];
+    $request = $this->getCurrentRequest();
+    if (isset($this->results[$request])) {
+      return $this->results[$request];
+    }
+    return [];
   }
 
   /**
    * {@inheritdoc}
    */
   public function removeResults($search_id) {
-    $results = $this->results[$this->getCurrentRequest()];
-    unset($results[$search_id]);
-    $this->results[$this->getCurrentRequest()] = $results;
+    $request = $this->getCurrentRequest();
+    if (isset($this->results[$request])) {
+      $cache = $this->results[$request];
+      unset($cache[$search_id]);
+      $this->results[$request] = $cache;
+    }
   }
 
   /**

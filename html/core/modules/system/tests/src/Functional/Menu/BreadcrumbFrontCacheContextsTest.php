@@ -89,7 +89,7 @@ class BreadcrumbFrontCacheContextsTest extends BrowserTestBase {
     $this->drupalGet($this->nodeWithAlias->path->alias);
     $breadcrumbs = $this->assertSession()->elementExists('css', '.block-system-breadcrumb-block');
     $crumbs = $breadcrumbs->findAll('css', 'ol li');
-    $this->assertCount(1, $crumbs);
+    $this->assertTrue(count($crumbs) === 1);
     $this->assertTrue($crumbs[0]->getText() === 'Home');
   }
 

@@ -57,10 +57,7 @@ class CKEditorStylesComboTranslationTest extends BrowserTestBase {
     ]);
     $editor->save();
 
-    $this->adminUser = $this->drupalCreateUser([
-      'administer filters',
-      'translate configuration',
-    ]);
+    $this->adminUser = $this->drupalCreateUser(['administer filters', 'translate configuration']);
 
     ConfigurableLanguage::createFromLangcode('de')->save();
   }

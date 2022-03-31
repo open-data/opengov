@@ -13,7 +13,6 @@ use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\Plugin\WebformElementBase;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'mapping' element.
@@ -28,22 +27,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class WebformMapping extends WebformElementBase {
-
-  /**
-   * The webform submission generation service.
-   *
-   * @var \Drupal\webform\WebformSubmissionGenerateInterface
-   */
-  protected $generate;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->generate = $container->get('webform_submission.generate');
-    return $instance;
-  }
 
   /**
    * {@inheritdoc}
@@ -93,7 +76,7 @@ class WebformMapping extends WebformElementBase {
     return array_merge(parent::defineTranslatableProperties(), ['source', 'destination']);
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -137,7 +120,7 @@ class WebformMapping extends WebformElementBase {
       case 'raw':
         $items = [];
         foreach ($element['#source'] as $source_key => $source_title) {
-          $destination_value = $value[$source_key] ?? NULL;
+          $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $items[$source_key] = ['#markup' => "$source_key $arrow $destination_value"];
         }
         return [
@@ -159,8 +142,8 @@ class WebformMapping extends WebformElementBase {
 
         $rows = [];
         foreach ($element['#source'] as $source_key => $source_text) {
-          [$source_title] = WebformOptionsHelper::splitOption($source_text);
-          $destination_value = $value[$source_key] ?? NULL;
+          list($source_title) = WebformOptionsHelper::splitOption($source_text);
+          $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $destination_title = ($destination_value) ? WebformOptionsHelper::getOptionText($destination_value, $element['#destination']) : $this->t('[blank]');
           $rows[$source_key] = [
             $source_title,
@@ -182,8 +165,8 @@ class WebformMapping extends WebformElementBase {
       case 'list':
         $items = [];
         foreach ($element['#source'] as $source_key => $source_text) {
-          [$source_title] = WebformOptionsHelper::splitOption($source_text);
-          $destination_value = $value[$source_key] ?? NULL;
+          list($source_title) = WebformOptionsHelper::splitOption($source_text);
+          $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $destination_title = ($destination_value) ? WebformOptionsHelper::getOptionText($destination_value, $element['#destination']) : $this->t('[blank]');
           $items[$source_key] = ['#markup' => "$source_title $arrow $destination_title"];
         }
@@ -216,7 +199,7 @@ class WebformMapping extends WebformElementBase {
       case 'raw':
         $list = [];
         foreach ($element['#source'] as $source_key => $source_title) {
-          $destination_value = $value[$source_key] ?? NULL;
+          $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $list[$source_key] = "$source_key $arrow $destination_value";
         }
         return implode(PHP_EOL, $list);
@@ -227,8 +210,8 @@ class WebformMapping extends WebformElementBase {
       case 'list':
         $list = [];
         foreach ($element['#source'] as $source_key => $source_text) {
-          [$source_title] = WebformOptionsHelper::splitOption($source_text);
-          $destination_value = $value[$source_key] ?? NULL;
+          list($source_title) = WebformOptionsHelper::splitOption($source_text);
+          $destination_value = (isset($value[$source_key])) ? $value[$source_key] : NULL;
           $destination_title = ($destination_value) ? WebformOptionsHelper::getOptionText($destination_value, $element['#destination']) : $this->t('[blank]');
           $list[] = "$source_title $arrow $destination_title";
         }
@@ -274,7 +257,7 @@ class WebformMapping extends WebformElementBase {
 
     $record = [];
     foreach ($element['#source'] as $source_key => $source_title) {
-      $record[] = $value[$source_key] ?? NULL;
+      $record[] = (isset($value[$source_key])) ? $value[$source_key] : NULL;
     }
     return $record;
   }
@@ -332,7 +315,7 @@ class WebformMapping extends WebformElementBase {
     if (isset($options['source_key'])) {
       $source_key = $options['source_key'];
       $value = $this->getValue($element, $webform_submission);
-      $question_value = $value[$source_key] ?? '';
+      $question_value = (isset($value[$source_key])) ? $value[$source_key] : '';
       return (isset($element['#destination'])) ? WebformOptionsHelper::getOptionText($question_value, $element['#destination']) : NULL;
     }
     else {
@@ -344,10 +327,13 @@ class WebformMapping extends WebformElementBase {
    * {@inheritdoc}
    */
   public function getTestValues(array $element, WebformInterface $webform, array $options = []) {
+    /** @var \Drupal\webform\WebformSubmissionGenerateInterface $generate */
+    $generate = \Drupal::service('webform_submission.generate');
+
     $form_state = new FormState();
     $form_completed = [];
     $element += [
-      '#name' => $element['#webform_key'] ?? '',
+      '#name' => (isset($element['#webform_key'])) ? $element['#webform_key'] : '',
       '#required' => FALSE,
     ];
     $element = WebformMappingElement::processWebformMapping($element, $form_state, $form_completed);
@@ -356,7 +342,7 @@ class WebformMapping extends WebformElementBase {
     for ($i = 1; $i <= 3; $i++) {
       $value = [];
       foreach (RenderElement::children($element['table']) as $source_key) {
-        $value[$source_key] = $this->generate->getTestValue($webform, $source_key, $element['table'][$source_key][$source_key], $options);
+        $value[$source_key] = $generate->getTestValue($webform, $source_key, $element['table'][$source_key][$source_key], $options);
       }
       $values[] = $value;
     }

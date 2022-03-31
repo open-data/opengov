@@ -405,10 +405,6 @@ class Migration extends PluginBase implements MigrationInterface, RequirementsIn
       if (isset($configuration['plugin'])) {
         $configuration = [$configuration];
       }
-      if (!is_array($configuration)) {
-        $migration_id = $this->getPluginId();
-        throw new MigrateException("Invalid process for destination '$destination' in migration '$migration_id'");
-      }
       $normalized_configurations[$destination] = $configuration;
     }
     return $normalized_configurations;

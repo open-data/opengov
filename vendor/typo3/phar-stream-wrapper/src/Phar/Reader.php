@@ -101,10 +101,6 @@ class Reader
 
         while (!feof($resource)) {
             $line = fgets($resource);
-            // stop processing in case the system fails to read from a stream
-            if ($line === false) {
-                break;
-            }
             // stop reading file when manifest can be extracted
             if ($manifestLength !== null && $manifestContent !== null && strlen($manifestContent) >= $manifestLength) {
                 break;

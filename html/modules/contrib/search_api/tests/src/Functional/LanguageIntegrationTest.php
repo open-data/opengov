@@ -15,7 +15,7 @@ class LanguageIntegrationTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'node',
     'search_api',
     'search_api_test',

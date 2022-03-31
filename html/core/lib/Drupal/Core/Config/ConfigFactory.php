@@ -160,7 +160,7 @@ class ConfigFactory implements ConfigFactoryInterface, EventSubscriberInterface 
 
     // Pre-load remaining configuration files.
     if (!empty($names)) {
-      // Initialize override information.
+      // Initialise override information.
       $module_overrides = [];
       $storage_data = $this->storage->readMultiple($names);
 

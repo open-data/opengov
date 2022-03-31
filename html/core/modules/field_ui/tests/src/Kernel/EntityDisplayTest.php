@@ -638,13 +638,14 @@ class EntityDisplayTest extends KernelTestBase {
     $this->assertTrue($form_display->get('hidden')[$field_name]);
     // The correct warning message has been logged.
     $arguments = ['@display' => (string) t('Entity form display'), '@id' => $form_display->id(), '@name' => $field_name];
-    $variables = Database::getConnection()->select('watchdog', 'w')
-      ->fields('w', ['variables'])
+    $logged = (bool) Database::getConnection()->select('watchdog', 'w')
+      ->fields('w', ['wid'])
       ->condition('type', 'system')
       ->condition('message', "@display '@id': Component '@name' was disabled because its settings depend on removed dependencies.")
+      ->condition('variables', serialize($arguments))
       ->execute()
-      ->fetchField();
-    $this->assertEquals($arguments, unserialize($variables));
+      ->fetchAll();
+    $this->assertTrue($logged);
   }
 
   /**

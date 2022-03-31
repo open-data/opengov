@@ -6,11 +6,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Password\PasswordInterface;
 use Drupal\user\UserInterface;
 
-/**
- * Manipulates Password Policy Validator.
- *
- * @package Drupal\password_policy
- */
 class PasswordPolicyValidator implements PasswordPolicyValidatorInterface {
 
   /**
@@ -46,7 +41,7 @@ class PasswordPolicyValidator implements PasswordPolicyValidatorInterface {
   /**
    * {@inheritdoc}
    */
-  public function validatePassword(string $password, UserInterface $user, array $edited_user_roles = []): PasswordPolicyValidationReport {
+  public function validatePassword(string $password, UserInterface $user, array $edited_user_roles = []): bool {
     // Stop before policy-based validation if password exceeds maximum length.
     if (strlen($password) > PasswordInterface::PASSWORD_MAX_LENGTH) {
       return TRUE;
@@ -66,12 +61,11 @@ class PasswordPolicyValidator implements PasswordPolicyValidatorInterface {
     $original_roles = array_combine($original_roles, $original_roles);
 
     $force_failure = FALSE;
-    if (!empty(array_diff($edited_user_roles, $original_roles)) && $password === '' && !empty($applicable_policies)) {
+    if ($edited_user_roles !== $original_roles && $password === '' && !empty($applicable_policies)) {
       // New role has been added and applicable policies are available.
       $force_failure = TRUE;
     }
 
-    $validationReport = new PasswordPolicyValidationReport();
     foreach ($applicable_policies as $policy) {
       $policy_constraints = $policy->getConstraints();
 
@@ -84,15 +78,15 @@ class PasswordPolicyValidator implements PasswordPolicyValidatorInterface {
 
         if ($valid && $password !== '' && !$validation->isValid()) {
           // Throw error to ensure form will not submit.
-          $validationReport->invalidate($validation->getErrorMessage());
+          $valid = FALSE;
         }
         elseif ($force_failure) {
-          $validationReport->invalidate($validation->getErrorMessage());
+          $valid = FALSE;
         }
       }
     }
 
-    return $validationReport;
+    return $valid;
   }
 
   /**
@@ -156,13 +150,13 @@ class PasswordPolicyValidator implements PasswordPolicyValidatorInterface {
   /**
    * Gets policies applicable to the given roles.
    *
-   * @param array $roles
+   * @param $roles
    *   Roles.
    *
    * @return array
    *   Applicable policies.
    */
-  protected function getApplicablePolicies(array $roles): array {
+  protected function getApplicablePolicies($roles): array {
     $applicable_policies = [];
 
     foreach ($roles as $role) {

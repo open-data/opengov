@@ -2,11 +2,16 @@
 
 namespace Drupal\webform_access;
 
+use Drupal\Component\Uuid\UuidInterface;
+use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -14,8 +19,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Storage controller class for "webform_access_group" configuration entities.
  */
 class WebformAccessGroupStorage extends ConfigEntityStorage implements WebformAccessGroupStorageInterface {
-
-  use WebformEntityStorageTrait;
 
   /**
    * Active database connection.
@@ -25,13 +28,51 @@ class WebformAccessGroupStorage extends ConfigEntityStorage implements WebformAc
   protected $database;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a WebformAccessGroupStorage object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory service.
+   * @param \Drupal\Component\Uuid\UuidInterface $uuid_service
+   *   The UUID service.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection to be used.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
+   *   The memory cache.
+   *
+   * @todo Webform 8.x-6.x: Move $memory_cache right after $language_manager.
+   */
+  public function __construct(EntityTypeInterface $entity_type, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, Connection $database, EntityTypeManagerInterface $entity_type_manager, MemoryCacheInterface $memory_cache = NULL) {
+    parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager, $memory_cache);
+    $this->database = $database;
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    $instance = parent::createInstance($container, $entity_type);
-    $instance->database = $container->get('database');
-    $instance->entityTypeManager = $container->get('entity_type.manager');
-    return $instance;
+    return new static(
+      $entity_type,
+      $container->get('config.factory'),
+      $container->get('uuid'),
+      $container->get('language_manager'),
+      $container->get('database'),
+      $container->get('entity_type.manager'),
+      $container->get('entity.memory_cache')
+    );
   }
 
   /**
@@ -53,7 +94,7 @@ class WebformAccessGroupStorage extends ConfigEntityStorage implements WebformAc
       $admins[$record['group_id']][] = $record['uid'];
     }
     foreach ($webform_access_groups as $group_id => $webform_access_group) {
-      $webform_access_group->setAdminIds($admins[$group_id] ?? []);
+      $webform_access_group->setAdminIds((isset($admins[$group_id])) ? $admins[$group_id] : []);
     }
 
     // Load users.
@@ -68,7 +109,7 @@ class WebformAccessGroupStorage extends ConfigEntityStorage implements WebformAc
       $users[$record['group_id']][] = $record['uid'];
     }
     foreach ($webform_access_groups as $group_id => $webform_access_group) {
-      $webform_access_group->setUserIds($users[$group_id] ?? []);
+      $webform_access_group->setUserIds((isset($users[$group_id])) ? $users[$group_id] : []);
     }
 
     // Load entities.
@@ -84,7 +125,7 @@ class WebformAccessGroupStorage extends ConfigEntityStorage implements WebformAc
       $entities[$group_id][] = implode(':', $record);
     }
     foreach ($webform_access_groups as $group_id => $webform_access_group) {
-      $webform_access_group->setEntityIds($entities[$group_id] ?? []);
+      $webform_access_group->setEntityIds((isset($entities[$group_id])) ? $entities[$group_id] : []);
     }
 
     return $webform_access_groups;
@@ -137,7 +178,7 @@ class WebformAccessGroupStorage extends ConfigEntityStorage implements WebformAc
       ->fields(['group_id', 'entity_type', 'entity_id', 'field_name', 'webform_id']);
     $values = ['group_id' => $entity->id()];
     foreach ($entities as $entity) {
-      [$values['entity_type'], $values['entity_id'], $values['field_name'], $values['webform_id']] = explode(':', $entity);
+      list($values['entity_type'], $values['entity_id'], $values['field_name'], $values['webform_id']) = explode(':', $entity);
       $query->values($values);
     }
     $query->execute();
@@ -212,13 +253,13 @@ class WebformAccessGroupStorage extends ConfigEntityStorage implements WebformAc
     foreach ($webform_access_groups as $webform_access_group) {
       $entities = $webform_access_group->getEntityIds();
       foreach ($entities as $entity) {
-        [$source_entity_type, $source_entity_id] = explode(':', $entity);
+        list($source_entity_type, $source_entity_id) = explode(':', $entity);
         if (!$entity_type || $source_entity_type === $entity_type) {
           $source_entity_ids[] = $source_entity_id;
         }
       }
     }
-    return $this->getEntityStorage($entity_type)->loadMultiple($source_entity_ids);
+    return $this->entityTypeManager->getStorage($entity_type)->loadMultiple($source_entity_ids);
   }
 
 }

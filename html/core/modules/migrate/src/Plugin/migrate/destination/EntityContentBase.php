@@ -85,7 +85,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   validate: true
  * @endcode
  *
- * @see \Drupal\migrate\Plugin\migrate\destination\Entity
  * @see \Drupal\migrate\Plugin\migrate\destination\EntityRevision
  */
 class EntityContentBase extends Entity implements HighestIdInterface, MigrateValidatableEntityInterface {

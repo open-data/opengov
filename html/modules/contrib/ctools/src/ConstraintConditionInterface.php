@@ -10,17 +10,17 @@ interface ConstraintConditionInterface {
    *
    * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
    *
-   * @return null
+   * @return NULL
    */
-  public function applyConstraints(array $contexts = []);
+  public function applyConstraints(array $contexts = array());
 
   /**
    * Removes constraints for this condition from the injected contexts.
    *
    * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
    *
-   * @return null
+   * @return NULL
    */
-  public function removeConstraints(array $contexts = []);
+  public function removeConstraints(array $contexts = array());
 
 }

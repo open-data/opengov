@@ -41,7 +41,7 @@ abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements Url
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityManagerInterface
    */
   protected $entityTypeManager;
 

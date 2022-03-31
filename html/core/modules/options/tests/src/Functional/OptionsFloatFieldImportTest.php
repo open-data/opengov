@@ -35,17 +35,7 @@ class OptionsFloatFieldImportTest extends FieldTestBase {
     parent::setUp();
 
     // Create test user.
-    $admin_user = $this->drupalCreateUser([
-      'synchronize configuration',
-      'access content',
-      'access administration pages',
-      'administer site configuration',
-      'administer content types',
-      'administer nodes',
-      'bypass node access',
-      'administer node fields',
-      'administer node display',
-    ]);
+    $admin_user = $this->drupalCreateUser(['synchronize configuration', 'access content', 'access administration pages', 'administer site configuration', 'administer content types', 'administer nodes', 'bypass node access', 'administer node fields', 'administer node display']);
     $this->drupalLogin($admin_user);
   }
 

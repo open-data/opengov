@@ -115,7 +115,7 @@ class EntityAutocompleteTest extends EntityKernelTestBase {
       $this->fail('Non-existent selection settings key throws an exception.');
     }
     catch (AccessDeniedHttpException $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Non-existent selection settings key throws an exception.');
     }
 
     try {
@@ -129,7 +129,12 @@ class EntityAutocompleteTest extends EntityKernelTestBase {
       $entity_reference_controller->handleAutocomplete($request, $this->entityType, 'default', $selection_settings_key);
     }
     catch (AccessDeniedHttpException $e) {
-      $this->assertSame('Invalid selection settings key.', $e->getMessage());
+      if ($e->getMessage() == 'Invalid selection settings key.') {
+        $this->pass('Invalid selection settings key throws an exception.');
+      }
+      else {
+        $this->fail('Invalid selection settings key throws an exception.');
+      }
     }
 
   }

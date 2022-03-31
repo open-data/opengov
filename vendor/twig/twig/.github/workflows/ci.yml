@@ -15,7 +15,7 @@ jobs:
 
         runs-on: 'ubuntu-latest'
 
-        continue-on-error: ${{ matrix.experimental }}
+        continue-on-error: true
 
         strategy:
             matrix:
@@ -24,10 +24,6 @@ jobs:
                     - '7.3'
                     - '7.4'
                     - '8.0'
-                composer-options: ['']
-                experimental: [false]
-                include:
-                  - { php-version: '8.1', experimental: true, composer-options: '--ignore-platform-req=php' }
 
         steps:
             - name: "Checkout code"
@@ -55,7 +51,7 @@ jobs:
                   key: ${{ runner.os }}-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
                   restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
 
-            - run: composer install ${{ matrix.composer-options }}
+            - run: composer install
 
             - name: "Install PHPUnit"
               run: vendor/bin/simple-phpunit install
@@ -94,5 +90,5 @@ jobs:
                   ini-values: memory_limit=-1
                   tools: composer:v2
 
-            - run: bash ./tests/drupal_test.sh
+            - run: ./drupal_test.sh
               shell: "bash"

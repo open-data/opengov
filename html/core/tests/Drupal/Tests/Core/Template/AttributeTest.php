@@ -348,7 +348,7 @@ class AttributeTest extends UnitTestCase {
     $this->assertID('example-id', $html);
     $this->assertNoID('example-id2', $html);
 
-    $this->assertStringContainsString('enabled', $html);
+    $this->assertTrue(strpos($html, 'enabled') !== FALSE);
   }
 
   /**

@@ -4,6 +4,7 @@ namespace Drupal\webform\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\webform\WebformHelpManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,12 +20,22 @@ class WebformHelpController extends ControllerBase implements ContainerInjection
   protected $help;
 
   /**
+   * Constructs a WebformHelpController object.
+   *
+   * @param \Drupal\webform\WebformHelpManagerInterface $help
+   *   The webform help manager.
+   */
+  public function __construct(WebformHelpManagerInterface $help) {
+    $this->help = $help;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->help = $container->get('webform.help_manager');
-    return $instance;
+    return new static(
+      $container->get('webform.help_manager')
+    );
   }
 
   /**

@@ -294,12 +294,12 @@ class ConfigTranslationUiTest extends BrowserTestBase {
     $this->drupalLogout();
     $this->drupalLogin($this->translatorUser);
     $this->drupalGet('admin/config/system/site-information');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // While translator can access the translation page, the edit link is not
     // present due to lack of permissions.
     $this->drupalGet($translation_base_url);
-    $this->assertSession()->linkNotExists(t('Edit'));
+    $this->assertNoLink(t('Edit'));
 
     // Check 'Add' link for French.
     $this->assertLinkByHref("$translation_base_url/fr/add");
@@ -331,7 +331,7 @@ class ConfigTranslationUiTest extends BrowserTestBase {
 
     // Make sure translate tab is present.
     $this->drupalGet('admin/structure/contact/manage/feedback');
-    $this->assertSession()->linkExists(t('Translate @type', ['@type' => 'contact form']));
+    $this->assertLink(t('Translate @type', ['@type' => 'contact form']));
 
     // Visit the form to confirm the changes.
     $this->drupalGet('contact/feedback');
@@ -339,7 +339,7 @@ class ConfigTranslationUiTest extends BrowserTestBase {
 
     foreach ($this->langcodes as $langcode) {
       $this->drupalGet($translation_base_url);
-      $this->assertSession()->linkExists(t('Translate @type', ['@type' => 'contact form']));
+      $this->assertLink(t('Translate @type', ['@type' => 'contact form']));
 
       // 'Add' link should be present for $langcode translation.
       $translation_page_url = "$translation_base_url/$langcode/add";
@@ -430,12 +430,12 @@ class ConfigTranslationUiTest extends BrowserTestBase {
     $this->drupalLogout();
     $this->drupalLogin($this->translatorUser);
     $this->drupalGet('admin/structure/contact/manage/feedback');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // While translator can access the translation page, the edit link is not
     // present due to lack of permissions.
     $this->drupalGet($translation_base_url);
-    $this->assertSession()->linkNotExists(t('Edit'));
+    $this->assertNoLink(t('Edit'));
 
     // Check 'Add' link for French.
     $this->assertLinkByHref("$translation_base_url/fr/add");
@@ -516,10 +516,10 @@ class ConfigTranslationUiTest extends BrowserTestBase {
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/people/accounts');
-    $this->assertSession()->linkExists(t('Translate @type', ['@type' => 'account settings']));
+    $this->assertLink(t('Translate @type', ['@type' => 'account settings']));
 
     $this->drupalGet('admin/config/people/accounts/translate');
-    $this->assertSession()->linkExists(t('Translate @type', ['@type' => 'account settings']));
+    $this->assertLink(t('Translate @type', ['@type' => 'account settings']));
     $this->assertLinkByHref('admin/config/people/accounts/translate/fr/add');
 
     // Update account settings fields for French.
@@ -552,7 +552,7 @@ class ConfigTranslationUiTest extends BrowserTestBase {
     // Loading translation page for not-specified language (und)
     // should return 403.
     $this->drupalGet('admin/config/system/site-information/translate/und/add');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // Check the source language doesn't have 'Add' or 'Delete' link and
     // make sure source language edit goes to original configuration page
@@ -565,15 +565,15 @@ class ConfigTranslationUiTest extends BrowserTestBase {
 
     // Translation addition to source language should return 403.
     $this->drupalGet('admin/config/system/site-information/translate/en/add');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // Translation editing in source language should return 403.
     $this->drupalGet('admin/config/system/site-information/translate/en/edit');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // Translation deletion in source language should return 403.
     $this->drupalGet('admin/config/system/site-information/translate/en/delete');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // Set default language of site information to not-specified language (und).
     $this->config('system.site')
@@ -586,7 +586,7 @@ class ConfigTranslationUiTest extends BrowserTestBase {
 
     // If source language is not specified, translation page should be 403.
     $this->drupalGet('admin/config/system/site-information/translate');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertResponse(403);
   }
 
   /**
@@ -877,7 +877,7 @@ class ConfigTranslationUiTest extends BrowserTestBase {
     // Visit account setting translation page, this should not
     // throw any notices.
     $this->drupalGet('admin/config/people/accounts/translate');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
   }
 
   /**
@@ -1156,7 +1156,9 @@ class ConfigTranslationUiTest extends BrowserTestBase {
       ':id' => $id,
     ]);
     $textarea = reset($textarea);
-    $this->assertInstanceOf(NodeElement::class, $textarea);
+    $this->assertTrue($textarea instanceof NodeElement, new FormattableMarkup('Disabled field @id exists.', [
+      '@id' => $id,
+    ]));
     $expected = 'This field has been disabled because you do not have sufficient permissions to edit it.';
     $this->assertEqual($textarea->getText(), $expected, new FormattableMarkup('Disabled textarea @id hides text in an inaccessible text format.', [
       '@id' => $id,

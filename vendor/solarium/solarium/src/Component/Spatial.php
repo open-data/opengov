@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component;
 
 use Solarium\Component\RequestBuilder\ComponentRequestBuilderInterface;
@@ -15,7 +8,7 @@ use Solarium\Component\RequestBuilder\Spatial as RequestBuilder;
 /**
  * Spatial component.
  *
- * @see https://solr.apache.org/guide/spatial-search.html
+ * @see https://cwiki.apache.org/confluence/display/solr/Spatial+Search
  */
 class Spatial extends AbstractComponent
 {
@@ -47,7 +40,6 @@ class Spatial extends AbstractComponent
     public function setField(string $sfield): self
     {
         $this->setOption('sfield', $sfield);
-
         return $this;
     }
 
@@ -59,7 +51,6 @@ class Spatial extends AbstractComponent
     public function setDistance(int $distance): self
     {
         $this->setOption('d', $distance);
-
         return $this;
     }
 
@@ -69,10 +60,9 @@ class Spatial extends AbstractComponent
      *
      * @return self Provides fluent interface
      */
-    public function setPoint(string $point): self
+    public function setPoint(string $point)
     {
         $this->setOption('pt', $point);
-
         return $this;
     }
 

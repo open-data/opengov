@@ -134,7 +134,10 @@ class Transliteration extends FieldsProcessorPluginBase {
    * {@inheritdoc}
    */
   protected function process(&$value) {
-    $value = $this->getTransliterator()->transliterate($value, $this->getLangcode());
+    // We don't touch integers, NULL values or the like.
+    if (is_string($value)) {
+      $value = $this->getTransliterator()->transliterate($value, $this->getLangcode());
+    }
   }
 
 }

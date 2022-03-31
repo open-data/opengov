@@ -5,11 +5,8 @@ namespace Drupal\ckeditor_codemirror\Plugin\CKEditorPlugin;
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
 use Drupal\ckeditor\CKEditorPluginContextualInterface;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\editor\Entity\Editor;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the "CodeMirror" plugin.
@@ -20,34 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   module = "ckeditor_codemirror"
  * )
  */
-class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface, ContainerFactoryPluginInterface {
-
-  /**
-   * File system service.
-   *
-   * @var \Drupal\Core\File\FileSystemInterface
-   */
-  protected $fileSystem;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, FileSystemInterface $file_system) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->fileSystem = $file_system;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('file_system')
-    );
-  }
+class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface {
 
   /**
    * {@inheritdoc}
@@ -189,7 +159,7 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
     $themes_directory = _ckeditor_codemirror_get_library_path()
       . '/codemirror/theme';
     if (is_dir($themes_directory)) {
-      $theme_css_files = $this->fileSystem->scanDirectory($themes_directory, '/\.css/i');
+      $theme_css_files = file_scan_directory($themes_directory, '/\.css/i');
       foreach ($theme_css_files as $file) {
         $theme_options[$file->name] = $file->name;
       }

@@ -37,7 +37,7 @@ class ResourceCheckerConfigCache implements ConfigCacheInterface
      * @param string                              $file             The absolute cache path
      * @param iterable|ResourceCheckerInterface[] $resourceCheckers The ResourceCheckers to use for the freshness check
      */
-    public function __construct(string $file, iterable $resourceCheckers = [])
+    public function __construct($file, $resourceCheckers = [])
     {
         $this->file = $file;
         $this->resourceCheckers = $resourceCheckers;
@@ -144,18 +144,21 @@ class ResourceCheckerConfigCache implements ConfigCacheInterface
 
     /**
      * Gets the meta file path.
+     *
+     * @return string The meta file path
      */
-    private function getMetaFile(): string
+    private function getMetaFile()
     {
         return $this->file.'.meta';
     }
 
-    private function safelyUnserialize(string $file)
+    private function safelyUnserialize($file)
     {
+        $e = null;
         $meta = false;
         $content = file_get_contents($file);
         $signalingException = new \UnexpectedValueException();
-        $prevUnserializeHandler = ini_set('unserialize_callback_func', self::class.'::handleUnserializeCallback');
+        $prevUnserializeHandler = ini_set('unserialize_callback_func', '');
         $prevErrorHandler = set_error_handler(function ($type, $msg, $file, $line, $context = []) use (&$prevErrorHandler, $signalingException) {
             if (__FILE__ === $file) {
                 throw $signalingException;
@@ -166,23 +169,15 @@ class ResourceCheckerConfigCache implements ConfigCacheInterface
 
         try {
             $meta = unserialize($content);
-        } catch (\Throwable $e) {
-            if ($e !== $signalingException) {
-                throw $e;
-            }
-        } finally {
-            restore_error_handler();
-            ini_set('unserialize_callback_func', $prevUnserializeHandler);
+        } catch (\Error $e) {
+        } catch (\Exception $e) {
+        }
+        restore_error_handler();
+        ini_set('unserialize_callback_func', $prevUnserializeHandler);
+        if (null !== $e && $e !== $signalingException) {
+            throw $e;
         }
 
         return $meta;
-    }
-
-    /**
-     * @internal
-     */
-    public static function handleUnserializeCallback($class)
-    {
-        trigger_error('Class not found: '.$class);
     }
 }

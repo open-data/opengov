@@ -6,7 +6,10 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\webform\Element\WebformMessage;
+use Drupal\webform\WebformAddonsManagerInterface;
+use Drupal\webform\WebformThemeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Provides route responses for Webform add-ons.
@@ -35,14 +38,30 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
   protected $addons;
 
   /**
+   * Constructs a WebformAddonsController object.
+   *
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
+   * @param \Drupal\webform\WebformThemeManagerInterface $theme_manager
+   *   The webform theme manager.
+   * @param \Drupal\webform\WebformAddonsManagerInterface $addons
+   *   The webform add-ons manager.
+   */
+  public function __construct(RequestStack $request_stack, WebformThemeManagerInterface $theme_manager, WebformAddonsManagerInterface $addons) {
+    $this->request = $request_stack->getCurrentRequest();
+    $this->themeManager = $theme_manager;
+    $this->addons = $addons;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->request = $container->get('request_stack')->getCurrentRequest();
-    $instance->themeManager = $container->get('webform.theme_manager');
-    $instance->addons = $container->get('webform.addons_manager');
-    return $instance;
+    return new static(
+      $container->get('request_stack'),
+      $container->get('webform.theme_manager'),
+      $container->get('webform.addons_manager')
+    );
   }
 
   /**
@@ -58,11 +77,6 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
         'class' => ['webform-addons'],
       ],
     ];
-
-    // Support.
-    if (!$this->config('webform.settings')->get('ui.support_disabled')) {
-      $build['support'] = ['#theme' => 'webform_help_support'];
-    }
 
     // Filter.
     $is_claro_theme = $this->themeManager->isActiveTheme('claro');
@@ -120,6 +134,21 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
       ];
       $projects = $this->addons->getProjects($category_name);
       foreach ($projects as $project_name => &$project) {
+        // Append (Experimental) to title.
+        if (!empty($project['experimental'])) {
+          $project['title'] .= ' [' . $this->t('EXPERIMENTAL') . ']';
+        }
+        // Prepend logo to title.
+        if (isset($project['logo'])) {
+          $project['title'] = Markup::create('<img src="' . $project['logo']->toString() . '" alt="' . $project['title'] . '"/>' . $project['title']);
+        }
+        $project['description'] .= '<br /><small>' . $project['url']->toString() . '</small>';
+
+        // Append recommended to project's description.
+        if (!empty($project['recommended'])) {
+          $project['description'] .= '<br /><b class="color-success"> ★' . $this->t('Recommended') . '</b>';
+        }
+
         if (!empty($project['install']) && !$this->moduleHandler()->moduleExists($project_name)) {
           // If current user can install module then display a dismissible warning.
           if ($this->currentUser()->hasPermission('administer modules')) {
@@ -134,21 +163,6 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
               '#weight' => -100,
             ];
           }
-        }
-
-        // Append (Experimental) to title.
-        if (!empty($project['experimental'])) {
-          $project['title'] .= ' [' . $this->t('EXPERIMENTAL') . ']';
-        }
-        // Prepend logo to title.
-        if (isset($project['logo'])) {
-          $project['title'] = Markup::create('<img src="' . $project['logo']->toString() . '" alt="' . $project['title'] . '"/>' . $project['title']);
-        }
-        $project['description'] .= '<br /><small>' . $project['url']->toString() . '</small>';
-
-        // Append recommended to project's description.
-        if (!empty($project['recommended'])) {
-          $project['description'] .= '<br /><b class="color-success"> ★' . $this->t('Recommended') . '</b>';
         }
       }
 

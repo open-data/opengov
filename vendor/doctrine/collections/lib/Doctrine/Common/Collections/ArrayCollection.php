@@ -5,9 +5,7 @@ namespace Doctrine\Common\Collections;
 use ArrayIterator;
 use Closure;
 use Doctrine\Common\Collections\Expr\ClosureExpressionVisitor;
-use ReturnTypeWillChange;
-use Traversable;
-
+use const ARRAY_FILTER_USE_BOTH;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -26,8 +24,6 @@ use function reset;
 use function spl_object_hash;
 use function uasort;
 
-use const ARRAY_FILTER_USE_BOTH;
-
 /**
  * An ArrayCollection is a Collection implementation that wraps a regular PHP array.
  *
@@ -36,11 +32,11 @@ use const ARRAY_FILTER_USE_BOTH;
  * serialize a collection use {@link toArray()} and reconstruct the collection
  * manually.
  *
+ * @phpstan-template TKey
  * @psalm-template TKey of array-key
  * @psalm-template T
  * @template-implements Collection<TKey,T>
  * @template-implements Selectable<TKey,T>
- * @psalm-consistent-constructor
  */
 class ArrayCollection implements Collection, Selectable
 {
@@ -48,7 +44,7 @@ class ArrayCollection implements Collection, Selectable
      * An array containing the entries of this collection.
      *
      * @psalm-var array<TKey,T>
-     * @var mixed[]
+     * @var array
      */
     private $elements;
 
@@ -56,6 +52,7 @@ class ArrayCollection implements Collection, Selectable
      * Initializes a new ArrayCollection.
      *
      * @param array $elements
+     *
      * @psalm-param array<TKey,T> $elements
      */
     public function __construct(array $elements = [])
@@ -86,13 +83,11 @@ class ArrayCollection implements Collection, Selectable
      * instance should be created when constructor semantics have changed.
      *
      * @param array $elements Elements.
-     * @psalm-param array<K,V> $elements
      *
      * @return static
-     * @psalm-return static<K,V>
      *
-     * @psalm-template K of array-key
-     * @psalm-template V
+     * @psalm-param array<TKey,T> $elements
+     * @psalm-return static<TKey,T>
      */
     protected function createFrom(array $elements)
     {
@@ -168,10 +163,7 @@ class ArrayCollection implements Collection, Selectable
      * {@inheritDoc}
      *
      * @psalm-param TKey $offset
-     *
-     * @return bool
      */
-    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->containsKey($offset);
@@ -183,10 +175,7 @@ class ArrayCollection implements Collection, Selectable
      * {@inheritDoc}
      *
      * @psalm-param TKey $offset
-     *
-     * @return mixed
      */
-    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -196,10 +185,7 @@ class ArrayCollection implements Collection, Selectable
      * Required by interface ArrayAccess.
      *
      * {@inheritDoc}
-     *
-     * @return void
      */
-    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (! isset($offset)) {
@@ -217,10 +203,7 @@ class ArrayCollection implements Collection, Selectable
      * {@inheritDoc}
      *
      * @psalm-param TKey $offset
-     *
-     * @return void
      */
-    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->remove($offset);
@@ -290,10 +273,7 @@ class ArrayCollection implements Collection, Selectable
 
     /**
      * {@inheritDoc}
-     *
-     * @return int
      */
-    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->elements);
@@ -331,12 +311,10 @@ class ArrayCollection implements Collection, Selectable
     }
 
     /**
-     * {@inheritDoc}
+     * Required by interface IteratorAggregate.
      *
-     * @return Traversable<int|string, mixed>
-     * @psalm-return Traversable<TKey,T>
+     * {@inheritDoc}
      */
-    #[ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->elements);
@@ -345,12 +323,11 @@ class ArrayCollection implements Collection, Selectable
     /**
      * {@inheritDoc}
      *
-     * @psalm-param Closure(T=):U $func
-     *
      * @return static
-     * @psalm-return static<TKey, U>
      *
      * @psalm-template U
+     * @psalm-param Closure(T=):U $func
+     * @psalm-return static<TKey, U>
      */
     public function map(Closure $func)
     {
@@ -361,6 +338,7 @@ class ArrayCollection implements Collection, Selectable
      * {@inheritDoc}
      *
      * @return static
+     *
      * @psalm-return static<TKey,T>
      */
     public function filter(Closure $p)

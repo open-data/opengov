@@ -59,7 +59,7 @@ class WorkspaceToolbarIntegrationTest extends OffCanvasTestBase {
   }
 
   /**
-   * Test workspace switch and landing page behavior.
+   * Test workspace switch and landing page behaviour.
    */
   public function testWorkspaceSwitch() {
     $page = $this->getSession()->getPage();

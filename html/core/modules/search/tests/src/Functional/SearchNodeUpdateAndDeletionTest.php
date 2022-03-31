@@ -36,10 +36,7 @@ class SearchNodeUpdateAndDeletionTest extends BrowserTestBase {
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
     // Create a test user and log in.
-    $this->testUser = $this->drupalCreateUser([
-      'access content',
-      'search content',
-    ]);
+    $this->testUser = $this->drupalCreateUser(['access content', 'search content']);
     $this->drupalLogin($this->testUser);
   }
 
@@ -100,11 +97,7 @@ class SearchNodeUpdateAndDeletionTest extends BrowserTestBase {
 
     // Get the node info from the search index tables.
     $connection = Database::getConnection();
-    $search_index_dataset = $connection->select('search_index', 'si')
-      ->fields('si', ['sid'])
-      ->condition('type', 'node_search')
-      ->condition('word', 'dragons')
-      ->execute()
+    $search_index_dataset = $connection->query("SELECT sid FROM {search_index} WHERE type = 'node_search' AND  word = :word", [':word' => 'dragons'])
       ->fetchField();
     $this->assertNotEqual($search_index_dataset, FALSE, t('Node info found on the search_index'));
 
@@ -112,11 +105,7 @@ class SearchNodeUpdateAndDeletionTest extends BrowserTestBase {
     $node->delete();
 
     // Check if the node info is gone from the search table.
-    $search_index_dataset = $connection->select('search_index', 'si')
-      ->fields('si', ['sid'])
-      ->condition('type', 'node_search')
-      ->condition('word', 'dragons')
-      ->execute()
+    $search_index_dataset = $connection->query("SELECT sid FROM {search_index} WHERE type = 'node_search' AND  word = :word", [':word' => 'dragons'])
       ->fetchField();
     $this->assertFalse($search_index_dataset, t('Node info successfully removed from search_index'));
 

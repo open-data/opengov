@@ -27,11 +27,7 @@ class LanguagePathMonolingualTest extends BrowserTestBase {
     parent::setUp();
 
     // Create and log in user.
-    $web_user = $this->drupalCreateUser([
-      'administer languages',
-      'access administration pages',
-      'administer site configuration',
-    ]);
+    $web_user = $this->drupalCreateUser(['administer languages', 'access administration pages', 'administer site configuration']);
     $this->drupalLogin($web_user);
 
     // Enable French language.
@@ -75,7 +71,7 @@ class LanguagePathMonolingualTest extends BrowserTestBase {
 
     // Verify that links in this page can be followed and work.
     $this->clickLink(t('Languages'));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'Clicked link results in a valid page');
     $this->assertText(t('Add language'), 'Page contains the add language text');
   }
 

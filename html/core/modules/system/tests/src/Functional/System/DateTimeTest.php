@@ -159,8 +159,7 @@ class DateTimeTest extends BrowserTestBase {
     $date_format->save();
 
     $this->drupalGet(Url::fromRoute('entity.date_format.collection'));
-    // Ensure that the date format is properly escaped.
-    $this->assertEscaped("<script>alert('XSS');</script>");
+    $this->assertEscaped("<script>alert('XSS');</script>", 'The date format was properly escaped');
 
     // Add a new date format with HTML in it.
     $date_format_id = strtolower($this->randomMachineName(8));
@@ -186,7 +185,7 @@ class DateTimeTest extends BrowserTestBase {
     $this->drupalCreateContentType(['type' => 'page_with_date', 'name' => 'Page with date']);
 
     $this->drupalGet('admin/structure/types/manage/page_with_date');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'Content type created.');
 
     $this->drupalGet('admin/structure/types/manage/page_with_date/fields/add-field');
     $edit = [
@@ -217,9 +216,7 @@ class DateTimeTest extends BrowserTestBase {
     $this->drupalLogout();
 
     // Now log in as a regular editor.
-    $this->drupalLogin($this->drupalCreateUser([
-      'create page_with_date content',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['create page_with_date content']));
 
     $this->drupalGet('node/add/page_with_date');
     $edit = [

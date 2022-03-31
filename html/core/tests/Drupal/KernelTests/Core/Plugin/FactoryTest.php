@@ -31,8 +31,11 @@ class FactoryTest extends PluginTestBase {
       $this->testPluginManager->createInstance('non_existing');
       $this->fail('Drupal\Component\Plugin\Exception\ExceptionInterface expected');
     }
+    catch (ExceptionInterface $e) {
+      $this->pass('Drupal\Component\Plugin\Exception\ExceptionInterface expected and caught.');
+    }
     catch (\Exception $e) {
-      $this->assertInstanceOf(ExceptionInterface::class, $e);
+      $this->fail('Drupal\Component\Plugin\Exception\ExceptionInterface expected, but ' . get_class($e) . ' was thrown.');
     }
   }
 
@@ -65,8 +68,11 @@ class FactoryTest extends PluginTestBase {
         $this->mockBlockManager->createInstance($invalid_id);
         $this->fail('Drupal\Component\Plugin\Exception\ExceptionInterface expected');
       }
+      catch (ExceptionInterface $e) {
+        $this->pass('Drupal\Component\Plugin\Exception\ExceptionInterface expected and caught.');
+      }
       catch (\Exception $e) {
-        $this->assertInstanceOf(ExceptionInterface::class, $e);
+        $this->fail('An unexpected Exception of type "' . get_class($e) . '" was thrown with message ' . $e->getMessage());
       }
     }
   }

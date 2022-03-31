@@ -19,7 +19,7 @@ class AjaxTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'node',
     'search_api',
     'search_api_db',
@@ -28,11 +28,6 @@ class AjaxTest extends WebDriverTestBase {
     'link',
     'image',
   ];
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}

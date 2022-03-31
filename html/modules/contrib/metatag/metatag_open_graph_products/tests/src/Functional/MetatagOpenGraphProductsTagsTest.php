@@ -14,12 +14,7 @@ class MetatagOpenGraphProductsTagsTest extends MetatagTagsTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['metatag_open_graph_products'];
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $tags = [
+  private $tags = [
     'product_price_amount',
     'product_price_currency',
   ];
@@ -27,17 +22,25 @@ class MetatagOpenGraphProductsTagsTest extends MetatagTagsTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $testTag = 'meta';
+  private $testTag = 'meta';
 
   /**
    * {@inheritdoc}
    */
-  protected $testNameAttribute = 'property';
+  private $testNameAttribute = 'property';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    parent::$modules[] = 'metatag_open_graph_products';
+    parent::setUp();
+  }
 
   /**
    * Each of these meta tags has a different tag name vs its internal name.
    */
-  protected function getTestTagName($tag_name) {
+  private function getTestTagName($tag_name) {
     // Replace the underlines with a colon.
     $tag_name = str_replace('_', ':', $tag_name);
 

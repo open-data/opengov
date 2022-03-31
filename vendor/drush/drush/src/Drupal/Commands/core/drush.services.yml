@@ -9,11 +9,7 @@ services:
       -  { name: drush.command }
   drupal.commands:
     class: \Drush\Drupal\Commands\core\DrupalCommands
-    arguments: ['@cron', '@module_handler', '@router.route_provider']
-    tags:
-      -  { name: drush.command }
-  deploy_hook.commands:
-    class: \Drush\Drupal\Commands\core\DeployHookCommands
+    arguments: ['@cron', '@module_handler']
     tags:
       -  { name: drush.command }
   entity.commands:
@@ -41,14 +37,10 @@ services:
       -  { name: drush.command }
   messenger.commands:
       class: \Drush\Drupal\Commands\core\MessengerCommands
-      arguments: ['@messenger']
+      # Uncomment when Drupal 8.4 gets unsupported.
+      # arguments: ['@messenger']
       tags:
         -  { name: drush.command }
-  migrate_runner.commands:
-    class: Drush\Drupal\Commands\core\MigrateRunnerCommands
-    arguments: ['@date.formatter', '@keyvalue']
-    tags:
-      -  { name: drush.command }
   queue.commands:
     class: \Drush\Drupal\Commands\core\QueueCommands
     arguments: ['@plugin.manager.queue_worker', '@queue']
@@ -70,7 +62,6 @@ services:
       -  { name: drush.command }
   user.commands:
     class: \Drush\Drupal\Commands\core\UserCommands
-    arguments: ['@date.formatter']
     tags:
       -  { name: drush.command }
   views.commands:

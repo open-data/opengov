@@ -4,14 +4,15 @@ namespace Drupal\webform;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Url;
 use Drupal\webform\Entity\WebformOptions;
-use Drupal\webform\EntityListBuilder\WebformEntityListBuilderSortLabelTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Defines a class to build a listing of webform options entities.
@@ -19,8 +20,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * @see \Drupal\webform\Entity\WebformOption
  */
 class WebformOptionsListBuilder extends ConfigEntityListBuilder {
-
-  use WebformEntityListBuilderSortLabelTrait;
 
   /**
    * Search keys.
@@ -37,24 +36,32 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
   protected $category;
 
   /**
-   * {@inheritdoc}
+   * Constructs a new WebformOptionsListBuilder object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The entity storage class.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
    */
-  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    /** @var \Drupal\webform\WebformOptionsListBuilder $instance */
-    $instance = parent::createInstance($container, $entity_type);
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, RequestStack $request_stack) {
+    parent::__construct($entity_type, $storage);
+    $this->request = $request_stack->getCurrentRequest();
 
-    $instance->request = $container->get('request_stack')->getCurrentRequest();
-
-    $instance->initialize();
-    return $instance;
+    $this->keys = $this->request->query->get('search');
+    $this->category = $this->request->query->get('category');
   }
 
   /**
-   * Initialize WebformOptionsListBuilder object.
+   * {@inheritdoc}
    */
-  protected function initialize() {
-    $this->keys = $this->request->query->get('search');
-    $this->category = $this->request->query->get('category');
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    return new static(
+      $entity_type,
+      $container->get('entity.manager')->getStorage($entity_type->id()),
+      $container->get('request_stack')
+    );
   }
 
   /**
@@ -110,7 +117,7 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
     }
 
     return [
-      '#markup' => $this->formatPlural($total, '@count option', '@count options'),
+      '#markup' => $this->formatPlural($total, '@total option', '@total options', ['@total' => $total]),
       '#prefix' => '<div>',
       '#suffix' => '</div>',
     ];
@@ -160,7 +167,7 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
     if ($entity->access('duplicate')) {
       $operations['duplicate'] = [
         'title' => $this->t('Duplicate'),
-        'weight' => 20,
+        'weight' => 23,
         'url' => Url::fromRoute('entity.webform_options.duplicate_form', ['webform_options' => $entity->id()]),
       ];
     }

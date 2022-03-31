@@ -29,7 +29,6 @@
         "forum": "https://drupal.stackexchange.com/questions/tagged/webform"
     },
     "require": {
-        "composer/installers": "*",
         "algolia/places": "*",
         "choices/choices": "*",
         "ckeditor/autogrow": "*",
@@ -52,14 +51,7 @@
         "jquery/toggles": "*",
         "progress-tracker/progress-tracker": "*",
         "signature_pad/signature_pad": "*",
-        "svg-pan-zoom/svg-pan-zoom": "*",
-        "tabby/tabby": "*",
-        "tippyjs/5.x": "*",
-        "tippyjs/6.x": "*"
-    },
-    "suggest": {
-        "drupal/jquery_ui_checkboxradio": "Provides jQuery UI Checkboxradio library. Required by the Webform jQueryUI Buttons module. The Webform jQueryUI Buttons module is deprecated because jQueryUI is no longer maintained.",
-        "drupal/jquery_ui_datepicker": "Provides jQuery UI Datepicker library. Required to support datepickers. The Webform jQueryUI Datepicker module is deprecated because jQueryUI is no longer maintained."
+        "svg-pan-zoom/svg-pan-zoom": "*"
     },
     "repositories": {
         "algolia.places": {
@@ -74,6 +66,9 @@
                 "dist": {
                     "url": "https://registry.npmjs.org/places.js/-/places.js-1.19.0.tgz",
                     "type": "tar"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -89,6 +84,9 @@
                 "dist": {
                     "url": "https://github.com/jshjohnson/Choices/archive/v9.0.1.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -96,14 +94,17 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/autogrow",
-                "version": "4.17.1",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.autogrow"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/autogrow/releases/autogrow_4.17.1.zip",
+                    "url": "https://download.ckeditor.com/autogrow/releases/autogrow_4.14.1.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -119,6 +120,9 @@
                 "dist": {
                     "url": "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/releases/download/v1.17.12/CKEditor-CodeMirror-Plugin.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -126,14 +130,17 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/fakeobjects",
-                "version": "4.17.1",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.fakeobjects"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/fakeobjects/releases/fakeobjects_4.17.1.zip",
+                    "url": "https://download.ckeditor.com/fakeobjects/releases/fakeobjects_4.14.1.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -141,14 +148,17 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/image",
-                "version": "4.17.1",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.image"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/image/releases/image_4.17.1.zip",
+                    "url": "https://download.ckeditor.com/image/releases/image_4.14.1.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -156,14 +166,17 @@
             "type": "package",
             "package": {
                 "name": "ckeditor/link",
-                "version": "4.17.1",
+                "version": "4.14.1",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "ckeditor.link"
                 },
                 "dist": {
-                    "url": "https://download.ckeditor.com/link/releases/link_4.17.1.zip",
+                    "url": "https://download.ckeditor.com/link/releases/link_4.14.1.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -171,14 +184,17 @@
             "type": "package",
             "package": {
                 "name": "codemirror/codemirror",
-                "version": "5.61.1",
+                "version": "5.53.2",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "codemirror"
                 },
                 "dist": {
-                    "url": "https://github.com/components/codemirror/archive/5.61.1.zip",
+                    "url": "https://github.com/components/codemirror/archive/5.53.2.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -194,6 +210,9 @@
                 "dist": {
                     "url": "https://github.com/harvesthq/chosen/releases/download/v1.8.7/chosen_v1.8.7.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -209,6 +228,9 @@
                 "dist": {
                     "url": "https://github.com/ubilabs/geocomplete/archive/1.7.0.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -224,6 +246,9 @@
                 "dist": {
                     "url": "https://github.com/jeresig/jquery.hotkeys/archive/0.2.0.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -237,8 +262,11 @@
                     "installer-name": "jquery.icheck"
                 },
                 "dist": {
-                    "url": "https://github.com/dargullin/icheck/archive/refs/tags/1.0.2.zip",
+                    "url": "https://github.com/fronteed/icheck/archive/1.0.2.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -254,6 +282,9 @@
                 "dist": {
                     "url": "https://github.com/rvera/image-picker/archive/0.3.1.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -261,14 +292,17 @@
             "type": "package",
             "package": {
                 "name": "jquery/inputmask",
-                "version": "5.0.6",
+                "version": "5.0.5",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.inputmask"
                 },
                 "dist": {
-                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/5.0.6.zip",
+                    "url": "https://github.com/RobinHerbots/jquery.inputmask/archive/5.0.5.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -284,6 +318,9 @@
                 "dist": {
                     "url": "https://github.com/jackocnr/intl-tel-input/archive/v16.1.0.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -299,6 +336,9 @@
                 "dist": {
                     "url": "https://github.com/gjunge/rateit.js/archive/1.1.3.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -314,6 +354,9 @@
                 "dist": {
                     "url": "https://github.com/select2/select2/archive/4.0.13.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -329,6 +372,9 @@
                 "dist": {
                     "url": "https://github.com/ractoon/jQuery-Text-Counter/archive/0.9.0.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -336,14 +382,17 @@
             "type": "package",
             "package": {
                 "name": "jquery/timepicker",
-                "version": "1.13.18",
+                "version": "1.13.14",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "jquery.timepicker"
                 },
                 "dist": {
-                    "url": "https://github.com/jonthornton/jquery-timepicker/archive/1.13.18.zip",
+                    "url": "https://github.com/jonthornton/jquery-timepicker/archive/1.13.14.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -359,6 +408,9 @@
                 "dist": {
                     "url": "https://github.com/simontabor/jquery-toggles/archive/v4.0.0.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -366,14 +418,17 @@
             "type": "package",
             "package": {
                 "name": "progress-tracker/progress-tracker",
-                "version": "2.0.7",
+                "version": "1.4.0",
                 "type": "drupal-library",
                 "extra": {
                     "installer-name": "progress-tracker"
                 },
                 "dist": {
-                    "url": "https://github.com/NigelOToole/progress-tracker/archive/2.0.7.zip",
+                    "url": "https://github.com/NigelOToole/progress-tracker/archive/v1.4.0.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -389,6 +444,9 @@
                 "dist": {
                     "url": "https://github.com/szimek/signature_pad/archive/v2.3.0.zip",
                     "type": "zip"
+                },
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         },
@@ -404,51 +462,9 @@
                 "dist": {
                     "url": "https://github.com/ariutta/svg-pan-zoom/archive/3.6.1.zip",
                     "type": "zip"
-                }
-            }
-        },
-        "tabby": {
-            "type": "package",
-            "package": {
-                "name": "tabby/tabby",
-                "version": "12.0.3",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "tabby"
                 },
-                "dist": {
-                    "url": "https://github.com/cferdinandi/tabby/archive/v12.0.3.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        "tippyjs/5.x": {
-            "type": "package",
-            "package": {
-                "name": "tippyjs/5.x",
-                "version": "5.2.1",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "tippyjs/5.x"
-                },
-                "dist": {
-                    "url": "https://unpkg.com/tippy.js@5.2.1/dist/tippy-bundle.iife.min.js",
-                    "type": "file"
-                }
-            }
-        },
-        "tippyjs/6.x": {
-            "type": "package",
-            "package": {
-                "name": "tippyjs/6.x",
-                "version": "6.2.6",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "tippyjs/6.x"
-                },
-                "dist": {
-                    "url": "https://unpkg.com/tippy.js@6.2.6/dist/tippy-bundle.umd.min.js",
-                    "type": "file"
+                "require": {
+                    "composer/installers": "~1.0"
                 }
             }
         }

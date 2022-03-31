@@ -82,7 +82,7 @@ class BlockContentCreationTest extends BlockContentTestBase {
     $this->assertRaw(new FormattableMarkup('A custom block with block description %value already exists.', [
       '%value' => $edit['info[0][value]'],
     ]));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
   }
 
   /**
@@ -164,7 +164,7 @@ class BlockContentCreationTest extends BlockContentTestBase {
     $this->assertRaw(new FormattableMarkup('A custom block with block description %value already exists.', [
       '%value' => $edit['info[0][value]'],
     ]));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
   }
 
   /**
@@ -204,7 +204,7 @@ class BlockContentCreationTest extends BlockContentTestBase {
       $this->fail('Expected exception has not been thrown.');
     }
     catch (\Exception $e) {
-      // Expected exception; just continue testing.
+      $this->pass('Expected exception has been thrown.');
     }
 
     $connection = Database::getConnection();
@@ -256,7 +256,7 @@ class BlockContentCreationTest extends BlockContentTestBase {
     $block = BlockContent::load(1);
 
     // Test getInstances method.
-    $this->assertCount(1, $block->getInstances());
+    $this->assertEqual(1, count($block->getInstances()));
 
     // Navigate to home page.
     $this->drupalGet('');

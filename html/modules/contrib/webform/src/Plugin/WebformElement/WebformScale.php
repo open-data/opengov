@@ -47,13 +47,6 @@ class WebformScale extends NumericBase {
   /**
    * {@inheritdoc}
    */
-  protected function defineTranslatableProperties() {
-    return array_merge(parent::defineTranslatableProperties(), ['min_text', 'max_text']);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function preview() {
     return parent::preview() + [
       '#min' => 1,

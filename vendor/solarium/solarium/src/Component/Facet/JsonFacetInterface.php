@@ -1,18 +1,11 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Facet;
 
 /**
- * JSON facets.
+ * Json facets.
  *
- * @see https://solr.apache.org/guide/json-facet-api.html
+ * @see https://lucene.apache.org/solr/guide/7_3/json-facet-api.html
  */
 interface JsonFacetInterface
 {

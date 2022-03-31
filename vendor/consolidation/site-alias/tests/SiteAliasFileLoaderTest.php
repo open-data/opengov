@@ -137,9 +137,7 @@ class SiteAliasFileLoaderTest extends TestCase
         $this->sut->addSearchLocation($this->fixturesDir() . '/sitealiases/other');
 
         $all = $this->sut->loadAll();
-        $actualKeys = array_keys($all);
-        sort($all);
-        $this->assertEquals('@other.bob.dev,@other.bob.other,@other.fred.dev,@other.fred.other,@other.single.dev,@other.single.other,@single.alternate,@single.dev,@single.empty,@wild.*,@wild.dev', implode(',', $actualKeys));
+        $this->assertEquals('@other.bob.dev,@other.bob.other,@other.fred.dev,@other.fred.other,@other.single.dev,@other.single.other,@single.alternate,@single.dev,@single.empty,@wild.*,@wild.dev', implode(',', array_keys($all)));
     }
 
     public function testLoadMultiple()
@@ -157,20 +155,6 @@ class SiteAliasFileLoaderTest extends TestCase
         $this->sut->addSearchLocation($this->fixturesDir() . '/sitealiases/other');
 
         $aliases = $this->sut->loadLocation('other');
-        $actualKeys = array_keys($aliases);
-        sort($actualKeys);
-        $this->assertEquals('@other.bob.dev,@other.bob.other,@other.fred.dev,@other.fred.other,@other.single.dev,@other.single.other', implode(',', $actualKeys));
-    }
-
-    public function testLoadOverrideSelf()
-    {
-        $this->sut->setRoot($this->fixturesDir() . '/sitealiases/self-override');
-        $this->sut->addSearchLocation($this->fixturesDir() . '/sitealiases/self-override/drush/sites');
-
-        // Specified site alias data should take precedence of @self data.
-        $name = new SiteAliasName('foo', 'prod');
-        $result = $this->sut->load($name);
-        $this->assertTrue($result instanceof SiteAlias);
-        $this->assertEquals('overridden', $result->get('bar'));
+        $this->assertEquals('@other.bob.dev,@other.bob.other,@other.fred.dev,@other.fred.other,@other.single.dev,@other.single.other', implode(',', array_keys($aliases)));
     }
 }

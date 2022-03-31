@@ -20,13 +20,4 @@ abstract class HierarchyPluginBase extends ProcessorPluginBase implements Hierar
     return new static($configuration, $plugin_id, $plugin_definition, $request);
   }
 
-  /**
-   * Provide a default implementation for backward compatibility.
-   *
-   * {@inheritdoc}
-   */
-  public function getSiblingIds(array $ids, array $activeIds = [], bool $parentSiblings = TRUE) {
-    return [];
-  }
-
 }

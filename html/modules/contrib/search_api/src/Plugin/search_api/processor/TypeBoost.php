@@ -6,7 +6,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Processor\ProcessorPluginBase;
-use Drupal\search_api\Utility\Utility;
 
 /**
  * Adds a boost to indexed items based on their datasource and/or bundle.
@@ -25,6 +24,27 @@ class TypeBoost extends ProcessorPluginBase implements PluginFormInterface {
   use PluginFormTrait;
 
   /**
+   * The available boost factors.
+   *
+   * @var string[]
+   */
+  protected static $boost_factors = [
+    '0.0' => '0.0',
+    '0.1' => '0.1',
+    '0.2' => '0.2',
+    '0.3' => '0.3',
+    '0.5' => '0.5',
+    '0.8' => '0.8',
+    '1.0' => '1.0',
+    '2.0' => '2.0',
+    '3.0' => '3.0',
+    '5.0' => '5.0',
+    '8.0' => '8.0',
+    '13.0' => '13.0',
+    '21.0' => '21.0',
+  ];
+
+  /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
@@ -37,27 +57,22 @@ class TypeBoost extends ProcessorPluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $formState) {
-    $datasource_configurations = [];
-    $additional_factors = [];
-    foreach ($this->index->getDatasources() as $datasource_id => $datasource) {
-      $datasource_configuration = $this->configuration['boosts'][$datasource_id] ?? [];
-      $datasource_configuration += [
-        'datasource_boost' => Utility::formatBoostFactor(1),
-        'bundle_boosts' => [],
-      ];
-      $datasource_configurations[$datasource_id] = $datasource_configuration;
-      $additional_factors = array_merge(
-        $additional_factors,
-        [$datasource_configuration['datasource_boost']],
-        $datasource_configuration['bundle_boosts']
-      );
-    }
-
-    $boost_factors = Utility::getBoostFactors($additional_factors);
     $bundle_boost_options = [
       '' => $this->t('Use datasource default'),
-    ] + $boost_factors;
+    ] + static::$boost_factors;
+
     foreach ($this->index->getDatasources() as $datasource_id => $datasource) {
+      $datasource_configuration = [];
+      if (isset($this->configuration['boosts'][$datasource_id])) {
+        $datasource_configuration = $this->configuration['boosts'][$datasource_id];
+      }
+      $datasource_configuration += [
+        'datasource_boost' => 1.0,
+        'bundle_boosts' => [],
+      ];
+      $datasource_boost = $datasource_configuration['datasource_boost'];
+      $bundle_boosts = $datasource_configuration['bundle_boosts'];
+
       $form['boosts'][$datasource_id] = [
         '#type' => 'details',
         '#title' => $this->t('Boost settings for %datasource', ['%datasource' => $datasource->label()]),
@@ -65,9 +80,9 @@ class TypeBoost extends ProcessorPluginBase implements PluginFormInterface {
         'datasource_boost' => [
           '#type' => 'select',
           '#title' => $this->t('Default boost for items from this datasource'),
-          '#options' => $boost_factors,
-          '#description' => $this->t('A boost of 1.00 is the default. Assign a boost of 0.00 to not score the item at all.'),
-          '#default_value' => $datasource_configurations[$datasource_id]['datasource_boost'],
+          '#options' => static::$boost_factors,
+          '#description' => $this->t('A boost of 1 is the default. Assign a boost of 0 to not score the item at all.'),
+          '#default_value' => sprintf('%.1f', $datasource_boost),
         ],
       ];
 
@@ -80,9 +95,9 @@ class TypeBoost extends ProcessorPluginBase implements PluginFormInterface {
         unset($bundles[$datasource_id], $bundles[$datasource->getEntityTypeId()]);
       }
 
-      $bundle_boosts = $datasource_configurations[$datasource_id]['bundle_boosts'];
       foreach ($bundles as $bundle => $bundle_label) {
-        $bundle_boost = Utility::formatBoostFactor($bundle_boosts[$bundle] ?? 0);
+        $has_value = isset($bundle_boosts[$bundle]);
+        $bundle_boost = $has_value ? sprintf('%.1f', $bundle_boosts[$bundle]) : '';
         $form['boosts'][$datasource_id]['bundle_boosts'][$bundle] = [
           '#type' => 'select',
           '#title' => $this->t('Boost for the %bundle bundle', ['%bundle' => $bundle_label]),
@@ -101,13 +116,15 @@ class TypeBoost extends ProcessorPluginBase implements PluginFormInterface {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     foreach ($this->index->getDatasourceIds() as $datasource_id) {
-      foreach ($values['boosts'][$datasource_id]['bundle_boosts'] ?? [] as $bundle => $boost) {
-        if ($boost === '') {
-          unset($values['boosts'][$datasource_id]['bundle_boosts'][$bundle]);
+      if (!empty($values['boosts'][$datasource_id]['bundle_boosts'])) {
+        foreach ($values['boosts'][$datasource_id]['bundle_boosts'] as $bundle => $boost) {
+          if ($boost === '') {
+            unset($values['boosts'][$datasource_id]['bundle_boosts'][$bundle]);
+          }
         }
-      }
-      if (empty($values['boosts'][$datasource_id]['bundle_boosts'])) {
-        unset($values['boosts'][$datasource_id]['bundle_boosts']);
+        if (!$values['boosts'][$datasource_id]['bundle_boosts']) {
+          unset($values['boosts'][$datasource_id]['bundle_boosts']);
+        }
       }
     }
     $form_state->setValues($values);
@@ -125,7 +142,7 @@ class TypeBoost extends ProcessorPluginBase implements PluginFormInterface {
       $datasource_id = $item->getDatasourceId();
       $bundle = $item->getDatasource()->getItemBundle($item->getOriginalObject());
 
-      $item_boost = (double) ($boosts[$datasource_id]['datasource_boost'] ?? 1.0);
+      $item_boost = (double) isset($boosts[$datasource_id]['datasource_boost']) ? $boosts[$datasource_id]['datasource_boost'] : 1.0;
       if ($bundle && isset($boosts[$datasource_id]['bundle_boosts'][$bundle])) {
         $item_boost = (double) $boosts[$datasource_id]['bundle_boosts'][$bundle];
       }

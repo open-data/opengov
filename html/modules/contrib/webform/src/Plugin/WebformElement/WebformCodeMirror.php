@@ -38,14 +38,7 @@ class WebformCodeMirror extends WebformElementBase {
     return $properties;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function defineTranslatableProperties() {
-    return array_merge(parent::defineTranslatableProperties(), ['default_value']);
-  }
-
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -139,10 +132,10 @@ class WebformCodeMirror extends WebformElementBase {
         'yaml' => $this->t('YAML'),
         'html' => $this->t('HTML'),
         'htmlmixed' => $this->t('HTML (CSS & JavaScript)'),
-        'css' => $this->t('CSS'),
-        'javascript' => $this->t('JavaScript'),
-        'php' => $this->t('PHP'),
-        'twig' => $this->t('Twig'),
+        'css' => 'CSS',
+        'javascript' => 'JavaScript',
+        'php' => 'PHP',
+        'twig' => 'Twig',
       ],
       '#required' => TRUE,
     ];

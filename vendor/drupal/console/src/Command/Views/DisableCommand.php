@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\Console\Core\Command\Command;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Query\QueryFactory;
 
 /**
  * Class DisableCommand
@@ -26,14 +27,22 @@ class DisableCommand extends Command
     protected $entityTypeManager;
 
     /**
+     * @var QueryFactory
+     */
+    protected $entityQuery;
+
+    /**
      * DisableCommand constructor.
      *
      * @param EntityTypeManagerInterface $entityTypeManager
+     * @param QueryFactory               $entityQuery
      */
     public function __construct(
-        EntityTypeManagerInterface $entityTypeManager
+        EntityTypeManagerInterface $entityTypeManager,
+        QueryFactory $entityQuery
     ) {
         $this->entityTypeManager = $entityTypeManager;
+        $this->entityQuery = $entityQuery;
         parent::__construct();
     }
 
@@ -60,9 +69,10 @@ class DisableCommand extends Command
     {
         $viewId = $input->getArgument('view-id');
         if (!$viewId) {
-            $query = $this->entityTypeManager->getStorage('view')->getQuery();
-            $views = $query->condition('status', 1)->execute();
-
+            $views = $this->entityQuery
+                ->get('view')
+                ->condition('status', 1)
+                ->execute();
             $viewId = $this->getIo()->choiceNoList(
                 $this->trans('commands.debug.views.arguments.view-id'),
                 $views
@@ -77,10 +87,12 @@ class DisableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $viewId = $input->getArgument('view-id');
+
         $view = $this->entityTypeManager->getStorage('view')->load($viewId);
 
         if (empty($view)) {
             $this->getIo()->error(sprintf($this->trans('commands.debug.views.messages.not-found'), $viewId));
+
             return 1;
         }
 

@@ -56,10 +56,7 @@ class BlockCacheTest extends BrowserTestBase {
     parent::setUp();
 
     // Create an admin user, log in and enable test blocks.
-    $this->adminUser = $this->drupalCreateUser([
-      'administer blocks',
-      'access administration pages',
-    ]);
+    $this->adminUser = $this->drupalCreateUser(['administer blocks', 'access administration pages']);
     $this->drupalLogin($this->adminUser);
 
     // Create additional users to test caching modes.
@@ -213,10 +210,10 @@ class BlockCacheTest extends BrowserTestBase {
     \Drupal::state()->set('block_test.content', $current_content);
 
     $this->drupalGet('user');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertNoText($old_content, 'Block content cached for the test page does not show up for the user page.');
     $this->drupalGet('test-page');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->assertText($old_content, 'Block content cached for the test page.');
   }
 

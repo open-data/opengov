@@ -93,7 +93,6 @@ interface SolrConfigInterface extends ConfigEntityInterface {
 
   /**
    * Indicates if a Config Entity is recommended to be used.
-   *
    * @return bool
    */
   public function isRecommended(): bool;

@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the Solarium package.
- *
- * For the full copyright and license information, please view the COPYING
- * file that was distributed with this source code.
- */
-
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\FacetSetInterface;
@@ -15,9 +8,9 @@ use Solarium\Core\Query\Helper;
 use Solarium\Exception\InvalidArgumentException;
 
 /**
- * JSON facets.
+ * Json facets.
  *
- * @see https://solr.apache.org/guide/json-facet-api.html
+ * @see https://lucene.apache.org/solr/guide/7_3/json-facet-api.html
  */
 trait JsonFacetTrait
 {
@@ -47,7 +40,6 @@ trait JsonFacetTrait
     public function getDomainFilter()
     {
         $domain = $this->getOption('domain');
-
         return $domain['filter'] ?? null;
     }
 
@@ -59,7 +51,7 @@ trait JsonFacetTrait
      * @param string $query
      * @param array  $bind  Bind values for placeholders in the query string
      *
-     * @return \Solarium\Component\FacetSetInterface
+     * @return self Provides fluent interface
      */
     public function setDomainFilterQuery(string $query, array $bind = null): FacetSetInterface
     {
@@ -69,22 +61,20 @@ trait JsonFacetTrait
         }
 
         $filter = $this->getDomainFilter();
-        if (!$filter || \is_string($filter)) {
+        if (!$filter || is_string($filter)) {
             return $this->setOption('domain', ['filter' => $query]);
         }
 
-        foreach ($filter as &$paramOrQuery) {
-            if (\is_string($paramOrQuery)) {
-                $paramOrQuery = $query;
-
+        foreach ($filter as &$param_or_query) {
+            if (is_string($param_or_query)) {
+                $param_or_query = $query;
                 return $this->setOption('domain', ['filter' => $filter]);
             }
         }
-        unset($paramOrQuery);
+        unset($param_or_query);
 
         /* @noinspection UnsupportedStringOffsetOperationsInspection */
         $filter[] = $query;
-
         return $this->setOption('domain', ['filter' => $filter]);
     }
 
@@ -102,20 +92,19 @@ trait JsonFacetTrait
             return $this->setOption('domain', ['filter' => ['param' => $param]]);
         }
 
-        if (\is_string($filter) || 1 === \count($filter)) {
+        if (is_string($filter) || 1 == count($filter)) {
             return $this->setOption('domain', ['filter' => [$filter, ['param' => $param]]]);
         }
 
-        foreach ($filter as &$paramOrQuery) {
-            if (\is_array($paramOrQuery) && $paramOrQuery['param'] === $param) {
+        foreach ($filter as &$param_or_query) {
+            if (is_array($param_or_query) && $param_or_query['param'] == $param) {
                 return $this;
             }
         }
-        unset($paramOrQuery);
+        unset($param_or_query);
 
         /* @noinspection UnsupportedStringOffsetOperationsInspection */
         $filter[] = ['param' => $param];
-
         return $this->setOption('domain', ['filter' => $filter]);
     }
 
@@ -148,6 +137,7 @@ trait JsonFacetTrait
 
     /**
      * Add a facet.
+     *
      *
      * @param FacetInterface|array $facet
      *

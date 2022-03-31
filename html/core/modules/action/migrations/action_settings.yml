@@ -10,11 +10,7 @@ source:
     - actions_max_stack
   source_module: system
 process:
-  recursion_limit:
-    plugin: skip_on_empty
-    method: row
-    source: empty
+  recursion_limit: actions_max_stack
 destination:
   plugin: config
-  config_name: null
-  destination_module: action
+  config_name: action.settings

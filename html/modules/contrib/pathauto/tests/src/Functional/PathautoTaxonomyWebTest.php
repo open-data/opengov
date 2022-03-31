@@ -14,11 +14,6 @@ class PathautoTaxonomyWebTest extends BrowserTestBase {
   use PathautoTestHelperTrait;
 
   /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stable';
-
-  /**
    * Modules to enable.
    *
    * @var array
@@ -35,7 +30,7 @@ class PathautoTaxonomyWebTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  function setUp() {
     parent::setUp();
 
     // Allow other modules to add additional permissions for the admin user.
@@ -54,12 +49,12 @@ class PathautoTaxonomyWebTest extends BrowserTestBase {
   /**
    * Basic functional testing of Pathauto with taxonomy terms.
    */
-  public function testTermEditing() {
+  function testTermEditing() {
     $this->drupalGet('admin/structure');
     $this->drupalGet('admin/structure/taxonomy');
 
     // Add vocabulary "tags".
-    $this->addVocabulary(['name' => 'tags', 'vid' => 'tags']);
+    $vocabulary = $this->addVocabulary(['name' => 'tags', 'vid' => 'tags']);
 
     // Create term for testing.
     $name = 'Testing: term name [';

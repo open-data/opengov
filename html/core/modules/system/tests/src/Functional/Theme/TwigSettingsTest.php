@@ -132,9 +132,9 @@ class TwigSettingsTest extends BrowserTestBase {
     $this->rebuildContainer();
 
     $this->drupalGet('theme-test/inline-template-test');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $this->drupalGet('theme-test/inline-template-test');
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
   }
 
 }

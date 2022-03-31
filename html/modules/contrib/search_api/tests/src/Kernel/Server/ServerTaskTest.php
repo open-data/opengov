@@ -44,7 +44,7 @@ class ServerTaskTest extends KernelTestBase {
    *
    * @var string[]
    */
-  protected static $modules = [
+  public static $modules = [
     'user',
     'search_api',
     'search_api_test',
@@ -334,9 +334,9 @@ class ServerTaskTest extends KernelTestBase {
    * Verifies that no more than 100 items will be executed at once.
    */
   public function testTaskCountLimit() {
-    // Create 101 tasks.
+    // Create 100 tasks.
     for ($i = 0; $i < 101; ++$i) {
-      $this->taskManager->addTask('deleteItems', $this->server, $this->index, [$i]);
+      $this->taskManager->addTask('deleteItems', $this->server, $this->index, ['']);
     }
 
     // Verify that a new operation cannot be executed.

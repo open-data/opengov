@@ -22,13 +22,11 @@ class WebformElementCheckboxValueTest extends WebformElementBrowserTestBase {
    * Tests checkbox value element.
    */
   public function testCheckboxValue() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('test_element_checkbox_value');
 
     // Check submitted values.
     $this->postSubmission($webform);
-    $assert_session->responseContains("checkbox_value_empty: ''
+    $this->assertRaw("checkbox_value_empty: ''
 checkbox_value_filled: '{default_value}'
 checkbox_value_select_other: Four");
 
@@ -37,7 +35,7 @@ checkbox_value_select_other: Four");
       'checkbox_value_empty[checkbox]' => TRUE,
     ];
     $this->postSubmission($webform, $edit);
-    $assert_session->responseContains('Enter a value field is required.');
+    $this->assertRaw('Enter a value field is required.');
 
   }
 

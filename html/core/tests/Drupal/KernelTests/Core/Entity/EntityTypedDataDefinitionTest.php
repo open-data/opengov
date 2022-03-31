@@ -49,11 +49,11 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
   public function testFields() {
     $field_definition = BaseFieldDefinition::create('integer');
     // Fields are lists of complex data.
-    $this->assertInstanceOf(ListDataDefinitionInterface::class, $field_definition);
-    $this->assertNotInstanceOf(ComplexDataDefinitionInterface::class, $field_definition);
+    $this->assertTrue($field_definition instanceof ListDataDefinitionInterface);
+    $this->assertFalse($field_definition instanceof ComplexDataDefinitionInterface);
     $field_item_definition = $field_definition->getItemDefinition();
-    $this->assertNotInstanceOf(ListDataDefinitionInterface::class, $field_item_definition);
-    $this->assertInstanceOf(ComplexDataDefinitionInterface::class, $field_item_definition);
+    $this->assertFalse($field_item_definition instanceof ListDataDefinitionInterface);
+    $this->assertTrue($field_item_definition instanceof ComplexDataDefinitionInterface);
 
     // Derive metadata about field item properties.
     $this->assertEqual(array_keys($field_item_definition->getPropertyDefinitions()), ['value']);
@@ -62,7 +62,7 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
     $this->assertNull($field_item_definition->getPropertyDefinition('invalid'));
 
     // Test accessing field item property metadata via the field definition.
-    $this->assertInstanceOf(FieldDefinitionInterface::class, $field_definition);
+    $this->assertTrue($field_definition instanceof FieldDefinitionInterface);
     $this->assertEqual(array_keys($field_definition->getPropertyDefinitions()), ['value']);
     $this->assertEqual($field_definition->getPropertyDefinition('value')->getDataType(), 'integer');
     $this->assertEqual($field_definition->getMainPropertyName(), 'value');
@@ -70,15 +70,15 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
 
     // Test using the definition factory for field item lists and field items.
     $field_item = $this->typedDataManager->createDataDefinition('field_item:integer');
-    $this->assertNotInstanceOf(ListDataDefinitionInterface::class, $field_item);
-    $this->assertInstanceOf(ComplexDataDefinitionInterface::class, $field_item);
+    $this->assertFalse($field_item instanceof ListDataDefinitionInterface);
+    $this->assertTrue($field_item instanceof ComplexDataDefinitionInterface);
     // Comparison should ignore the internal static cache, so compare the
     // serialized objects instead.
     $this->assertEqual(serialize($field_item_definition), serialize($field_item));
 
     $field_definition2 = $this->typedDataManager->createListDataDefinition('field_item:integer');
-    $this->assertInstanceOf(ListDataDefinitionInterface::class, $field_definition2);
-    $this->assertNotInstanceOf(ComplexDataDefinitionInterface::class, $field_definition2);
+    $this->assertTrue($field_definition2 instanceof ListDataDefinitionInterface);
+    $this->assertFalse($field_definition2 instanceof ComplexDataDefinitionInterface);
     $this->assertEqual(serialize($field_definition), serialize($field_definition2));
   }
 
@@ -94,8 +94,8 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
     $entity_definition = EntityDataDefinition::create('node');
     $bundle_definition = EntityDataDefinition::create('node', 'article');
     // Entities are complex data.
-    $this->assertNotInstanceOf(ListDataDefinitionInterface::class, $entity_definition);
-    $this->assertInstanceOf(ComplexDataDefinitionInterface::class, $entity_definition);
+    $this->assertFalse($entity_definition instanceof ListDataDefinitionInterface);
+    $this->assertTrue($entity_definition instanceof ComplexDataDefinitionInterface);
 
     // Entity definitions should inherit their labels from the entity type.
     $this->assertEquals('Content', $entity_definition->getLabel());
@@ -110,8 +110,8 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
     $this->assertNull($entity_definition->getPropertyDefinition('invalid'));
 
     $entity_definition2 = $this->typedDataManager->createDataDefinition('entity:node');
-    $this->assertNotInstanceOf(ListDataDefinitionInterface::class, $entity_definition2);
-    $this->assertInstanceOf(ComplexDataDefinitionInterface::class, $entity_definition2);
+    $this->assertFalse($entity_definition2 instanceof ListDataDefinitionInterface);
+    $this->assertTrue($entity_definition2 instanceof ComplexDataDefinitionInterface);
     $this->assertEqual(serialize($entity_definition), serialize($entity_definition2));
 
     // Test that the definition factory creates the right definitions for all
@@ -129,15 +129,15 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
    */
   public function testEntityReferences() {
     $reference_definition = DataReferenceDefinition::create('entity');
-    $this->assertInstanceOf(DataReferenceDefinitionInterface::class, $reference_definition);
+    $this->assertTrue($reference_definition instanceof DataReferenceDefinitionInterface);
 
     // Test retrieving metadata about the referenced data.
     $this->assertEqual($reference_definition->getTargetDefinition()->getDataType(), 'entity');
-    $this->assertInstanceOf(EntityDataDefinitionInterface::class, $reference_definition->getTargetDefinition());
+    $this->assertTrue($reference_definition->getTargetDefinition() instanceof EntityDataDefinitionInterface);
 
     // Test that the definition factory creates the right definition object.
     $reference_definition2 = $this->typedDataManager->createDataDefinition('entity_reference');
-    $this->assertInstanceOf(DataReferenceDefinitionInterface::class, $reference_definition2);
+    $this->assertTrue($reference_definition2 instanceof DataReferenceDefinitionInterface);
     $this->assertEqual(serialize($reference_definition2), serialize($reference_definition));
   }
 

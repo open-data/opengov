@@ -173,7 +173,7 @@ class BlockForm extends EntityForm {
       $form['theme'] = [
         '#type' => 'select',
         '#options' => $theme_options,
-        '#title' => $this->t('Theme'),
+        '#title' => t('Theme'),
         '#default_value' => $theme,
         '#ajax' => [
           'callback' => '::themeSwitch',

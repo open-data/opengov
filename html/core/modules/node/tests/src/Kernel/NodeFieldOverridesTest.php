@@ -57,7 +57,7 @@ class NodeFieldOverridesTest extends EntityKernelTestBase {
     /** @var \Drupal\node\NodeInterface $node */
     $node = Node::create(['type' => 'ponies']);
     $owner = $node->getOwner();
-    $this->assertInstanceOf(UserInterface::class, $owner);
+    $this->assertTrue($owner instanceof UserInterface);
     $this->assertEqual($owner->id(), $this->user->id());
   }
 

@@ -10,19 +10,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class Helpers {
   /**
-   * return int[]
-   */
-  public static function getPossibleEndOfFileTokens() {
-    return array_merge(
-      array_values(Tokens::$emptyTokens),
-      [
-        T_INLINE_HTML,
-        T_CLOSE_TAG,
-      ]
-    );
-  }
-
-  /**
    * @param int|bool $value
    *
    * @return ?int
@@ -103,25 +90,6 @@ class Helpers {
   }
 
   /**
-   * @param (int|string)[] $conditions
-   *
-   * @return int|string|null
-   */
-  public static function getClosestIfPositionIfBeforeOtherConditions(array $conditions) {
-    // Return true if the token conditions are within an if block before
-    // they are within a class or function.
-    $conditionsInsideOut = array_reverse($conditions, true);
-    if (empty($conditions)) {
-      return null;
-    }
-    $scopeCode = reset($conditionsInsideOut);
-    if ($scopeCode === T_IF) {
-      return key($conditionsInsideOut);
-    }
-    return null;
-  }
-
-  /**
    * @param File $phpcsFile
    * @param int $stackPtr
    *
@@ -178,7 +146,7 @@ class Helpers {
       return null;
     }
 
-    $nonFunctionTokenTypes = Tokens::$emptyTokens;
+    $nonFunctionTokenTypes = array_values(Tokens::$emptyTokens);
     $nonFunctionTokenTypes[] = T_STRING;
     $nonFunctionTokenTypes[] = T_BITWISE_AND;
     $functionPtr = self::getIntOrNull($phpcsFile->findPrevious($nonFunctionTokenTypes, $startOfArguments - 1, null, true, null, true));
@@ -218,7 +186,7 @@ class Helpers {
   public static function getUseIndexForUseImport(File $phpcsFile, $stackPtr) {
     $tokens = $phpcsFile->getTokens();
 
-    $nonUseTokenTypes = Tokens::$emptyTokens;
+    $nonUseTokenTypes = array_values(Tokens::$emptyTokens);
     $nonUseTokenTypes[] = T_VARIABLE;
     $nonUseTokenTypes[] = T_ELLIPSIS;
     $nonUseTokenTypes[] = T_COMMA;
@@ -747,10 +715,8 @@ class Helpers {
    */
   public static function isVariableInsideElseCondition(File $phpcsFile, $stackPtr) {
     $tokens = $phpcsFile->getTokens();
-    $nonFunctionTokenTypes = Tokens::$emptyTokens;
+    $nonFunctionTokenTypes = array_values(Tokens::$emptyTokens);
     $nonFunctionTokenTypes[] = T_OPEN_PARENTHESIS;
-    $nonFunctionTokenTypes[] = T_INLINE_HTML;
-    $nonFunctionTokenTypes[] = T_CLOSE_TAG;
     $nonFunctionTokenTypes[] = T_VARIABLE;
     $nonFunctionTokenTypes[] = T_ELLIPSIS;
     $nonFunctionTokenTypes[] = T_COMMA;
@@ -871,7 +837,7 @@ class Helpers {
   public static function getLastNonEmptyTokenIndexInFile(File $phpcsFile) {
     $tokens = $phpcsFile->getTokens();
     foreach (array_reverse($tokens, true) as $index => $token) {
-      if (! in_array($token['code'], self::getPossibleEndOfFileTokens(), true)) {
+      if (! in_array($token['code'], Tokens::$emptyTokens, true)) {
         return $index;
       }
     }
@@ -955,7 +921,7 @@ class Helpers {
       return null;
     }
 
-    $nonFunctionTokenTypes = Tokens::$emptyTokens;
+    $nonFunctionTokenTypes = array_values(Tokens::$emptyTokens);
     $functionPtr = self::getIntOrNull($phpcsFile->findPrevious($nonFunctionTokenTypes, $startOfArguments - 1, null, true, null, true));
     if (! is_int($functionPtr) || ! isset($tokens[$functionPtr]['code'])) {
       return null;
@@ -999,7 +965,7 @@ class Helpers {
    */
   public static function isVariableArrayPushShortcut(File $phpcsFile, $stackPtr) {
     $tokens = $phpcsFile->getTokens();
-    $nonFunctionTokenTypes = Tokens::$emptyTokens;
+    $nonFunctionTokenTypes = array_values(Tokens::$emptyTokens);
 
     $arrayPushOperatorIndex1 = self::getIntOrNull($phpcsFile->findNext($nonFunctionTokenTypes, $stackPtr + 1, null, true, null, true));
     if (! is_int($arrayPushOperatorIndex1)) {

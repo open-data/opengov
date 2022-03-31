@@ -272,7 +272,7 @@ class FunctionCallSignatureSniff implements Sniff
                 $requiredSpacesBeforeClose,
                 $spaceBeforeClose,
             ];
-            $fix   = $phpcsFile->addFixableError($error, $closer, 'SpaceBeforeCloseBracket', $data);
+            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpaceBeforeCloseBracket', $data);
             if ($fix === true) {
                 $padding = str_repeat(' ', $requiredSpacesBeforeClose);
 
@@ -581,7 +581,7 @@ class FunctionCallSignatureSniff implements Sniff
 
                 if ($inArg === false) {
                     $argStart = $nextCode;
-                    $argEnd   = $phpcsFile->findEndOfStatement($nextCode, [T_COLON]);
+                    $argEnd   = $phpcsFile->findEndOfStatement($nextCode);
                 }
             }//end if
 
@@ -618,7 +618,7 @@ class FunctionCallSignatureSniff implements Sniff
                 }//end if
 
                 $argStart = $next;
-                $argEnd   = $phpcsFile->findEndOfStatement($next, [T_COLON]);
+                $argEnd   = $phpcsFile->findEndOfStatement($next);
             }//end if
         }//end for
 

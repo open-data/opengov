@@ -121,7 +121,6 @@ class FormTestMachineNameValidationForm extends FormBase {
    * Loading stub for machine name
    *
    * @param $machine_name
-   *
    * @return bool
    */
   public function load($machine_name) {

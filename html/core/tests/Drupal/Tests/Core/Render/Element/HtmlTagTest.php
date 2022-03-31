@@ -75,7 +75,7 @@ class HtmlTagTest extends RendererTestBase {
     $element['#noscript'] = TRUE;
     $tags['noscript'] = [$element, '<noscript><div class="test" id="id">value</div>' . "\n" . '</noscript>'];
 
-    // Ensure that #tag is sanitized.
+    // Ensure that #tag is sanitised.
     $element = [
       '#tag' => 'p><script>alert()</script><p',
       '#value' => 'value',

@@ -37,7 +37,6 @@ abstract class DatabaseTestBase extends KernelTestBase {
       'test_serialized',
       'test_special_columns',
       'TEST_UPPERCASE',
-      'virtual',
     ]);
     self::addSampleData();
   }
@@ -162,13 +161,6 @@ abstract class DatabaseTestBase extends KernelTestBase {
       ->fields([
         'id' => 1,
         'offset' => 'Offset value 1',
-        'function' => 'Function value 1',
-      ])
-      ->execute();
-
-    $connection->insert('virtual')
-      ->fields([
-        'id' => 1,
         'function' => 'Function value 1',
       ])
       ->execute();

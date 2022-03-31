@@ -70,5 +70,3 @@ try {
 }
 
 if (true) {} elseif (false) {}
-
-match($foo) {};

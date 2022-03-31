@@ -37,7 +37,7 @@ body.drag {
 .tabledrag-changed.tabledrag-changed {
   border-bottom: none;
 }
-/* Don't display the abbreviation of 'add-new' table rows. */
+/* Dont display the abbreviation of 'add-new' table rows. */
 .add-new .tabledrag-changed {
   display: none;
 }

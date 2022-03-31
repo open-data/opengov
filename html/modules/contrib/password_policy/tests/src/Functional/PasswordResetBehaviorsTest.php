@@ -4,7 +4,6 @@ namespace Drupal\Tests\password_policy\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\Traits\Core\CronRunTrait;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\user\Entity\User;
 
 /**
@@ -14,18 +13,8 @@ use Drupal\user\Entity\User;
  */
 class PasswordResetBehaviorsTest extends BrowserTestBase {
 
-  /**
-   * Set default theme to stark.
-   *
-   * @var string
-   */
-  protected $defaultTheme = 'stark';
-
   use CronRunTrait;
 
-  /**
-   * {@inheritdoc}
-   */
   public static $modules = [
     'system',
     'user',
@@ -44,28 +33,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     'password_policy',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected $profile = 'standard';
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::setUp();
-
-    // Set module install date far in the past so it does not affect regular
-    // password expiration behaviors tested here.
-    /* @see password_policy_install */
-    $timestamp = \Drupal::service("date.formatter")->format(
-      0,
-      'custom',
-      DateTimeItemInterface::DATETIME_STORAGE_FORMAT,
-      DateTimeItemInterface::STORAGE_TIMEZONE
-    );
-    \Drupal::state()->set('password_policy.install_time', $timestamp);
-  }
 
   /**
    * Test password reset behaviors.
@@ -105,7 +73,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
       'pass[pass1]' => 'pass',
       'pass[pass2]' => 'pass',
     ];
-    $this->submitForm($edit, 'Create new account');
+    $this->drupalPostForm(NULL, $edit, 'Create new account');
 
     // Grab the user info.
     $user_array = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => 'testuser1']);
@@ -116,7 +84,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     $edit = [
       'field_last_password_reset[0][value][date]' => date('Y-m-d', strtotime('-90 days')),
     ];
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm(NULL, $edit, 'Save');
 
     // Create new password reset policy for role.
     $this->drupalGet('admin/config/security/password-policy/add');
@@ -126,14 +94,14 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
       'password_reset' => '1',
     ];
     // Set reset and policy info.
-    $this->submitForm($edit, 'Next');
+    $this->drupalPostForm(NULL, $edit, 'Next');
     // No constraints needed for reset, continue.
-    $this->submitForm([], 'Next');
+    $this->drupalPostForm(NULL, [], 'Next');
     // Set the roles for the policy.
     $edit = [
       'roles[' . $rid . ']' => $rid,
     ];
-    $this->submitForm($edit, 'Finish');
+    $this->drupalPostForm(NULL, $edit, 'Finish');
 
     // Time to kick this popsicle stand.
     $this->drupalLogout();
@@ -142,8 +110,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     $this->cronRun();
 
     // User should be redirected to the user entity edit page after login.
-    $this->drupalGet('user/login');
-    $this->submitForm(['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
+    $this->drupalPostForm('user/login', ['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
     $this->assertUrl($user2->toUrl('edit-form'), [], 'User should be sent to their account form after expiration');
     $this->drupalLogout();
 
@@ -162,7 +129,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
 
     // Verify if user tries to go to node, they are forced back.
     $this->drupalGet('user/login');
-    $this->submitForm(['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
+    $this->drupalPostForm(NULL, ['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
     $this->drupalGet($node->toUrl()->toString());
     // Workaround for webtest sometimes returning an extra leading value in the
     // route base path.  Does not seem to ever happen on local testing, only on
@@ -180,7 +147,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     $edit['pass[pass1]'] = '1';
     $edit['pass[pass2]'] = '1';
     $edit['current_pass'] = 'pass';
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm(NULL, $edit, 'Save');
 
     // Verify expiration is unset.
     $user_instance = User::load($user2->id());

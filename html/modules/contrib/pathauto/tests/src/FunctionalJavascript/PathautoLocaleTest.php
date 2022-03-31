@@ -19,11 +19,6 @@ class PathautoLocaleTest extends WebDriverTestBase {
   use PathautoTestHelperTrait;
 
   /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stable';
-
-  /**
    * Modules to enable.
    *
    * @var array
@@ -44,7 +39,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
    * Test that when an English node is updated, its old English alias is
    * updated and its newer French alias is left intact.
    */
-  public function testLanguageAliases() {
+  function testLanguageAliases() {
 
     $this->createPattern('node', '/content/[node:title]');
 
@@ -60,8 +55,8 @@ class PathautoLocaleTest extends WebDriverTestBase {
       ]],
      ];
     $node = $this->drupalCreateNode($node);
-    $english_alias = $this->loadPathAliasByConditions(['alias' => '/english-node', 'langcode' => 'en']);
-    $this->assertNotEmpty($english_alias, 'Alias created with proper language.');
+    $english_alias = \Drupal::service('path.alias_storage')->load(['alias' => '/english-node', 'langcode' => 'en']);
+    $this->assertTrue($english_alias, 'Alias created with proper language.');
 
     // Also save a French alias that should not be left alone, even though
     // it is the newer alias.
@@ -69,7 +64,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
 
     // Add an alias with the soon-to-be generated alias, causing the upcoming
     // alias update to generate a unique alias with the '-0' suffix.
-    $this->createPathAlias('/node/invalid', '/content/english-node', Language::LANGCODE_NOT_SPECIFIED);
+    $this->saveAlias('/node/invalid', '/content/english-node', Language::LANGCODE_NOT_SPECIFIED);
 
     // Update the node, triggering a change in the English alias.
     $node->path->pathauto = PathautoState::CREATE;
@@ -78,7 +73,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
     // Check that the new English alias replaced the old one.
     $this->assertEntityAlias($node, '/content/english-node-0', 'en');
     $this->assertEntityAlias($node, '/french-node', 'fr');
-    $this->assertAliasExists(['id' => $english_alias->id(), 'alias' => '/content/english-node-0']);
+    $this->assertAliasExists(['pid' => $english_alias['pid'], 'alias' => '/content/english-node-0']);
 
     // Create a new node with the same title as before but without
     // specifying a language.
@@ -92,7 +87,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
   /**
    * Test that patterns work on multilingual content.
    */
-  public function testLanguagePatterns() {
+  function testLanguagePatterns() {
 
     // Allow other modules to add additional permissions for the admin user.
     $permissions = [

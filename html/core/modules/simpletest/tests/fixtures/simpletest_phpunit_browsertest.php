@@ -1,7 +1,5 @@
 <?php
 
-// phpcs:ignoreFile
-
 namespace Drupal\Tests\simpletest\Functional;
 
 use Drupal\Tests\BrowserTestBase;

@@ -56,9 +56,6 @@ class BytesTest extends TestCase {
       ['76MRandomStringThatShouldBeIgnoredByParseSize.', 79691776],
       // 76.24 GB (with typo).
       ['76.24 Giggabyte', 81862076662],
-      ['1.5', 2],
-      ['2.4', 2],
-      ['', 0],
     ];
   }
 

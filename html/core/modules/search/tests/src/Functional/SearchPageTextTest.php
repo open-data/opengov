@@ -39,11 +39,7 @@ class SearchPageTextTest extends BrowserTestBase {
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
     // Create user.
-    $this->searchingUser = $this->drupalCreateUser([
-      'search content',
-      'access user profiles',
-      'use advanced search',
-    ]);
+    $this->searchingUser = $this->drupalCreateUser(['search content', 'access user profiles', 'use advanced search']);
     $this->drupalPlaceBlock('local_tasks_block');
     $this->drupalPlaceBlock('page_title_block');
   }
@@ -56,7 +52,7 @@ class SearchPageTextTest extends BrowserTestBase {
   public function testSearchLabelXSS() {
     $this->drupalLogin($this->drupalCreateUser(['administer search']));
 
-    $keys['label'] = '<script>alert("Don\'t Panic");</script>';
+    $keys['label'] = '<script>alert("Dont Panic");</script>';
     $this->drupalPostForm('admin/config/search/pages/manage/node_search', $keys, t('Save search page'));
 
     $this->drupalLogin($this->searchingUser);
@@ -161,13 +157,13 @@ class SearchPageTextTest extends BrowserTestBase {
     // Test that if you search for a URL with .. in it, you still end up at
     // the search page. See issue https://www.drupal.org/node/890058.
     $this->drupalPostForm('search/node', ['keys' => '../../admin'], t('Search'));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'Searching for ../../admin with non-admin user does not lead to a 403 error');
     $this->assertText('no results', 'Searching for ../../admin with non-admin user gives you a no search results page');
 
     // Test that if you search for a URL starting with "./", you still end up
     // at the search page. See issue https://www.drupal.org/node/1421560.
     $this->drupalPostForm('search/node', ['keys' => '.something'], t('Search'));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200, 'Searching for .something does not lead to a 403 error');
     $this->assertText('no results', 'Searching for .something gives you a no search results page');
   }
 

@@ -20,6 +20,8 @@ class MigrateUserProfileFieldInstanceTranslationTest extends MigrateDrupal6TestB
     'locale',
     'language',
     'field',
+    // Required for translation migrations.
+    'migrate_drupal_multilingual',
   ];
 
   /**

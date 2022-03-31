@@ -43,8 +43,7 @@ function webform_test_test_example_elements() {
         '#open' => TRUE,
       ];
     }
-    $element_key = str_replace(':', '_', $element_type);
-    $data[$category_id][$element_key] = $element;
+    $data[$category_id][$element_type] = $element;
 
     // Multiple value composite.
     if ($webform_element->supportsMultipleValues() && !$webform_element->hasMultipleValues($element)) {
@@ -58,7 +57,7 @@ function webform_test_test_example_elements() {
           if ($property === 'multiple' && $webform_element->hasProperty('select2')) {
             $multiple_element['#select2'] = TRUE;
           }
-          $data[$category_id][$element_key . '_' . $property] = $multiple_element;
+          $data[$category_id][$element_type . '_' . $property] = $multiple_element;
         }
       }
     }

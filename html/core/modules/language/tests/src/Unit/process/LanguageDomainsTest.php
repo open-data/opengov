@@ -55,7 +55,7 @@ class LanguageDomainsTest extends MigrateProcessTestCase {
       'es' => 'es.example.com',
       'hu' => 'hu.example.com',
     ];
-    $value = $this->plugin->transform($source, $this->migrateExecutable, $this->row, 'destination_property');
+    $value = $this->plugin->transform($source, $this->migrateExecutable, $this->row, 'destinationproperty');
     $this->assertSame($value, $expected);
   }
 

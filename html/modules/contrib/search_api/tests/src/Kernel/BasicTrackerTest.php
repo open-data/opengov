@@ -21,7 +21,7 @@ class BasicTrackerTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'user',
     'search_api',
     'system',
@@ -86,7 +86,7 @@ class BasicTrackerTest extends KernelTestBase {
   public function testTracking($indexing_order) {
     // Add a logger that throws an exception when used, so a caught exception
     // within any of the tracker methods will still cause a test fail.
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Log\LoggerInterface $logger */
+    /** @var \PHPUnit_Framework_MockObject_MockObject|\Psr\Log\LoggerInterface $logger */
     $logger = $this->createMock(LoggerInterface::class);
     $logger->method('log')
       ->willReturnCallback(function ($level, $message, array $variables) {
@@ -291,11 +291,14 @@ class BasicTrackerTest extends KernelTestBase {
    *   The method to test.
    * @param array $args
    *   (optional) The arguments to pass to the method.
+   * @param bool $uses_transaction
+   *   (optional) Whether the method is expected to use a transaction (and roll
+   *   it back upon encountering an exception).
    *
    * @dataProvider exceptionHandlingDataProvider
    */
-  public function testExceptionHandling($tracker_method, array $args = []) {
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Drupal\Core\Database\Connection $connection */
+  public function testExceptionHandling($tracker_method, array $args = [], $uses_transaction = FALSE) {
+    /** @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\Database\Connection $connection */
     $connection = $this->getMockBuilder(Connection::class)
       ->disableOriginalConstructor()
       ->getMock();
@@ -313,7 +316,7 @@ class BasicTrackerTest extends KernelTestBase {
     $connection->method('startTransaction')->willReturn($transaction);
     $this->tracker->setDatabaseConnection($connection);
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Log\LoggerInterface $logger */
+    /** @var \PHPUnit_Framework_MockObject_MockObject|\Psr\Log\LoggerInterface $logger */
     $logger = $this->createMock(LoggerInterface::class);
     $log = [];
     $logger->method('log')->willReturnCallback(function () use (&$log) {
@@ -326,7 +329,9 @@ class BasicTrackerTest extends KernelTestBase {
     $this->assertCount(1, $log);
     $this->assertStringStartsWith('%type', $log[0][1]);
 
-    $this->assertFalse($rolled_back);
+    if ($uses_transaction) {
+      $this->assertEquals(TRUE, $rolled_back);
+    }
   }
 
   /**
@@ -339,12 +344,12 @@ class BasicTrackerTest extends KernelTestBase {
    */
   public function exceptionHandlingDataProvider() {
     return [
-      'trackItemsInserted()' => ['trackItemsInserted', [['']]],
-      'trackItemsUpdated()' => ['trackItemsUpdated', [['']]],
-      'trackAllItemsUpdated()' => ['trackAllItemsUpdated'],
-      'trackItemsIndexed()' => ['trackItemsIndexed', [['']]],
-      'trackItemsDeleted()' => ['trackItemsDeleted'],
-      'trackAllItemsDeleted()' => ['trackAllItemsDeleted'],
+      'trackItemsInserted()' => ['trackItemsInserted', [['']], TRUE],
+      'trackItemsUpdated()' => ['trackItemsUpdated', [['']], TRUE],
+      'trackAllItemsUpdated()' => ['trackAllItemsUpdated', [], TRUE],
+      'trackItemsIndexed()' => ['trackItemsIndexed', [['']], TRUE],
+      'trackItemsDeleted()' => ['trackItemsDeleted', [], TRUE],
+      'trackAllItemsDeleted()' => ['trackAllItemsDeleted', [], TRUE],
       'getRemainingItems()' => ['getRemainingItems'],
       'getTotalItemsCount()' => ['getTotalItemsCount'],
       'getIndexedItemsCount()' => ['getIndexedItemsCount'],

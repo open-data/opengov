@@ -17,11 +17,6 @@ class EnsureDevelWorks extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'stark';
-
-  /**
-   * {@inheritdoc}
-   */
   public static $modules = [
     // Modules for core functionality.
     'node',

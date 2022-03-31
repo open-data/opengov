@@ -6,6 +6,7 @@ use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\ctools\Plugin\BlockPluginCollection;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\Argument;
 
 /**
  * Tests the block plugin collection.
@@ -61,6 +62,7 @@ class BlockPluginCollectionTest extends UnitTestCase {
         ->willReturn($plugin->reveal())
         ->shouldBeCalled();
     }
+
 
     $block_plugin_collection = new BlockPluginCollection($block_manager->reveal(), $blocks);
     $expected = [

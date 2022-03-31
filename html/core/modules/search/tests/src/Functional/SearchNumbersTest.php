@@ -71,12 +71,7 @@ class SearchNumbersTest extends BrowserTestBase {
 
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
-    $this->testUser = $this->drupalCreateUser([
-      'search content',
-      'access content',
-      'administer nodes',
-      'access site reports',
-    ]);
+    $this->testUser = $this->drupalCreateUser(['search content', 'access content', 'administer nodes', 'access site reports']);
     $this->drupalLogin($this->testUser);
 
     foreach ($this->numbers as $doc => $num) {

@@ -46,6 +46,7 @@ EOF;
   protected function setUpProfile() {
     // This is the form we are testing so wait until the test method to do
     // assertions.
+    return;
   }
 
   /**
@@ -53,6 +54,7 @@ EOF;
    */
   protected function setUpRequirementsProblem() {
     // This form will never be reached.
+    return;
   }
 
   /**
@@ -60,6 +62,7 @@ EOF;
    */
   protected function setUpSettings() {
     // This form will never be reached.
+    return;
   }
 
   /**
@@ -67,6 +70,7 @@ EOF;
    */
   protected function setUpSite() {
     // This form will never be reached.
+    return;
   }
 
   /**

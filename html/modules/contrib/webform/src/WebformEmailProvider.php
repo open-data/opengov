@@ -33,7 +33,7 @@ class WebformEmailProvider implements WebformEmailProviderInterface {
   protected $mailManager;
 
   /**
-   * Constructs a WebformEmailProvider object.
+   * Constructs a WebformEmailProvider.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration object factory.

@@ -6,7 +6,7 @@ class OctoberInstaller extends BaseInstaller
     protected $locations = array(
         'module'    => 'modules/{$name}/',
         'plugin'    => 'plugins/{$vendor}/{$name}/',
-        'theme'     => 'themes/{$vendor}-{$name}/'
+        'theme'     => 'themes/{$name}/'
     );
 
     /**
@@ -41,7 +41,6 @@ class OctoberInstaller extends BaseInstaller
     protected function inflectThemeVars($vars)
     {
         $vars['name'] = preg_replace('/^oc-|-theme$/', '', $vars['name']);
-        $vars['vendor'] = preg_replace('/[^a-z0-9_]/i', '', $vars['vendor']);
 
         return $vars;
     }

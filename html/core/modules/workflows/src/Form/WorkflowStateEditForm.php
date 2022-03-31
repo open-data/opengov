@@ -125,7 +125,7 @@ class WorkflowStateEditForm extends EntityForm {
         ]),
       ];
       $links['delete'] = [
-        'title' => $this->t('Delete'),
+        'title' => t('Delete'),
         'url' => Url::fromRoute('entity.workflow.delete_transition_form', [
           'workflow' => $workflow->id(),
           'workflow_transition' => $transition->id(),

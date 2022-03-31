@@ -25,8 +25,6 @@ class WebformOptionsLimitAccessTest extends WebformBrowserTestBase {
    * Test options limit access.
    */
   public function testAccess() {
-    $assert_session = $this->assertSession();
-
     $webform = Webform::load('test_handler_options_limit');
 
     $this->postSubmission($webform);
@@ -35,18 +33,18 @@ class WebformOptionsLimitAccessTest extends WebformBrowserTestBase {
 
     // Check that no one can access the options summary page.
     $this->drupalGet('/admin/structure/webform/manage/test_handler_options_limit/results/options-limit');
-    $assert_session->statusCodeEquals(403);
+    $this->assertResponse(403);
 
     // Check that user with 'view any webform submission' permission can access
     // the options summary page.
     $this->drupalLogin($this->createUser(['view any webform submission']));
     $this->drupalGet('/admin/structure/webform/manage/test_handler_options_limit/results/options-limit');
-    $assert_session->statusCodeEquals(200);
+    $this->assertResponse(200);
 
     // Check that options summary page is only available to webforms with
     // options limit handler.
     $this->drupalGet('/admin/structure/webform/manage/contact/results/options-limit');
-    $assert_session->statusCodeEquals(403);
+    $this->assertResponse(403);
   }
 
 }

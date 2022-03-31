@@ -32,12 +32,11 @@ class WebformMultiple extends FormElement {
       '#access' => TRUE,
       '#key' => NULL,
       '#header' => NULL,
-      '#header_label' => '',
       '#element' => [
         '#type' => 'textfield',
-        '#title' => $this->t('Item value'),
+        '#title' => t('Item value'),
         '#title_display' => 'invisible',
-        '#placeholder' => $this->t('Enter value…'),
+        '#placeholder' => t('Enter value…'),
       ],
       '#cardinality' => FALSE,
       '#min_items' => NULL,
@@ -362,7 +361,7 @@ class WebformMultiple extends FormElement {
     /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
     $element_manager = \Drupal::service('plugin.manager.webform.element');
     foreach ($child_keys as $child_key) {
-      $sub_element = &$sub_elements[$child_key];
+      $sub_element =& $sub_elements[$child_key];
 
       $element_plugin = $element_manager->getElementInstance($sub_element);
 
@@ -423,18 +422,9 @@ class WebformMultiple extends FormElement {
     }
 
     if (empty($element['#header'])) {
-      if (!empty($element['#header_label'])) {
-        $header_label = $element['#header_label'];
-      }
-      elseif (!empty($element['#title'])) {
-        $header_label = WebformAccessibilityHelper::buildVisuallyHidden($element['#title']);
-      }
-      else {
-        $header_label = [];
-      }
       return [
         [
-          'data' => $header_label,
+          'data' => (!empty($element['#title'])) ? WebformAccessibilityHelper::buildVisuallyHidden($element['#title']) : [],
           'colspan' => ($colspan + 1),
         ],
       ];
@@ -472,11 +462,6 @@ class WebformMultiple extends FormElement {
         ['data' => $element['#header'], 'colspan' => ($element['#child_keys']) ? count($element['#child_keys']) + $colspan : $colspan + 1],
       ];
     }
-    elseif (!empty($element['#header_label'])) {
-      return [
-        ['data' => $element['#header_label'], 'colspan' => ($element['#child_keys']) ? count($element['#child_keys']) + $colspan : $colspan + 1],
-      ];
-    }
     else {
       $header = [];
 
@@ -509,7 +494,7 @@ class WebformMultiple extends FormElement {
       }
       else {
         $header['item'] = [
-          'data' => $element['#element']['#title'] ?? '',
+          'data' => (isset($element['#element']['#title'])) ? $element['#element']['#title'] : '',
           'class' => ["$table_id--item", "webform-multiple-table--item"],
         ];
       }
@@ -681,7 +666,7 @@ class WebformMultiple extends FormElement {
         $row['_operations_']['add'] = [
           '#type' => 'image_button',
           '#title' => t('Add new @item after @item @number', ['@number' => $row_index + 1, '@item' => $element['#item_label']]),
-          '#src' => \Drupal::service('extension.list.module')->getPath('webform') . '/images/icons/plus.svg',
+          '#src' => drupal_get_path('module', 'webform') . '/images/icons/plus.svg',
           '#limit_validation_errors' => [],
           '#submit' => [[get_called_class(), 'addItemSubmit']],
           '#ajax' => $ajax_settings,
@@ -696,7 +681,7 @@ class WebformMultiple extends FormElement {
         $row['_operations_']['remove'] = [
           '#type' => 'image_button',
           '#title' => t('Remove @item @number', ['@number' => $row_index + 1, '@item' => $element['#item_label']]),
-          '#src' => \Drupal::service('extension.list.module')->getPath('webform') . '/images/icons/minus.svg',
+          '#src' => drupal_get_path('module', 'webform') . '/images/icons/minus.svg',
           '#limit_validation_errors' => [],
           '#submit' => [[get_called_class(), 'removeItemSubmit']],
           '#ajax' => $ajax_settings,
@@ -797,9 +782,9 @@ class WebformMultiple extends FormElement {
     }
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Callbacks.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Webform submission handler for adding more items.
@@ -962,9 +947,9 @@ class WebformMultiple extends FormElement {
     $form_state->setValueForElement($element, $items);
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Helper functions.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Get unique key used to store the number of items for an element.
@@ -1084,7 +1069,7 @@ class WebformMultiple extends FormElement {
 
       if (isset($unique_keys[$key_value])) {
         $elements = WebformElementHelper::getFlattened($element['#element']);
-        $key_title = $elements[$key_name]['#title'] ?? $key_name;
+        $key_title = isset($elements[$key_name]['#title']) ? $elements[$key_name]['#title'] : $key_name;
         $t_args = ['@key' => $key_value, '%title' => $key_title];
         return t("The %title '@key' is already in use. It must be unique.", $t_args);
       }

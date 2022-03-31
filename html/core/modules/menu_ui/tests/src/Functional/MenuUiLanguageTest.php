@@ -38,10 +38,7 @@ class MenuUiLanguageTest extends BrowserTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->drupalLogin($this->drupalCreateUser([
-      'access administration pages',
-      'administer menu',
-    ]));
+    $this->drupalLogin($this->drupalCreateUser(['access administration pages', 'administer menu']));
 
     // Add some custom languages.
     foreach (['aa', 'bb', 'cc', 'cs'] as $language_code) {

@@ -39,7 +39,6 @@ class EmptyStatementUnitTest extends AbstractSniffUnitTest
             64 => 1,
             68 => 1,
             72 => 2,
-            74 => 1,
         ];
 
     }//end getErrorList()

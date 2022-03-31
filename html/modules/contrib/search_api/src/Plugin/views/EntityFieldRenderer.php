@@ -95,7 +95,8 @@ class EntityFieldRenderer extends ViewsEntityFieldRenderer {
         && $field->relationship === $this->relationship
         && $field->getDatasourceId() === $this->datasourceId
         && $field->getParentPath() === $this->parentPath
-        && ($field->definition['entity_type'] ?? '') === $this->getEntityTypeId()) {
+        && !empty($field->definition['entity_type'])
+        && $field->definition['entity_type'] === $this->getEntityTypeId()) {
       return TRUE;
     }
 
@@ -107,7 +108,7 @@ class EntityFieldRenderer extends ViewsEntityFieldRenderer {
    */
   protected function getEntityTranslationRenderer() {
     if (!isset($this->entityTranslationRenderer)) {
-      $entity_type = $this->getEntityTypeManager()
+      $entity_type = $this->getEntityManager()
         ->getDefinition($this->getEntityTypeId());
       $this->entityTranslationRenderer = new EntityTranslationRenderer($this->view, $this->getLanguageManager(), $entity_type);
     }

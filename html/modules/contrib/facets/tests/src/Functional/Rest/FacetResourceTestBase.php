@@ -28,11 +28,6 @@ abstract class FacetResourceTestBase extends EntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'stark';
-
-  /**
-   * {@inheritdoc}
-   */
   protected function setUpAuthorization($method) {
     $this->grantPermissionsToTestedRole(['administer facets']);
   }
@@ -64,8 +59,7 @@ abstract class FacetResourceTestBase extends EntityResourceTestBase {
       'dependencies' => [],
       'empty_behavior' => ['behavior' => 'none'],
       'enable_parent_when_child_gets_disabled' => TRUE,
-      'exclude' => FALSE,
-      'keep_hierarchy_parents_active' => FALSE,
+      'exclude' => NULL,
       'expand_hierarchy' => FALSE,
       'facet_source_id' => NULL,
       'field_identifier' => NULL,

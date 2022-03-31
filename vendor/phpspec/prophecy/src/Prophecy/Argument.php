@@ -218,20 +218,20 @@ class Argument
      * @return Token\InArrayToken
      */
 
-    public static function in($value)
+    public function in($value)
     {
         return new Token\InArrayToken($value);
     }
 
     /**
-     * Checks that argument is not in array.
+     * Checks that argument is in array.
      *
      * @param array $value
      *
-     * @return Token\NotInArrayToken
+     * @return Token\InArrayToken
      */
 
-    public static function notIn($value)
+    public function notIn($value)
     {
         return new Token\NotInArrayToken($value);
     }

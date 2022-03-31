@@ -93,8 +93,7 @@ function webform_test_test_element_title_display() {
       unset($title_displays['inline']);
     }
 
-    $element_key = str_replace(':', '_', $element_type);
-    $data[$category_id][$element_key . '_title'] = [
+    $data[$category_id][$element_type . '_title'] = [
       '#markup' => $element['#title'] . ' (' . $element_type . ')',
       '#prefix' => '<h3>',
       '#suffix' => '</h3>',
@@ -103,9 +102,9 @@ function webform_test_test_element_title_display() {
       $example_element = $element;
       $example_element['#title'] .= ' (' . $title_display . ')';
       $example_element['#title_display'] = $title_display;
-      $data[$category_id][$element_key . '_' . $title_display] = $example_element;
+      $data[$category_id][$element_type . '_' . $title_display] = $example_element;
     }
-    $data[$category_id][$element_key . '_hr'] = ['#type' => 'webform_horizontal_rule'];
+    $data[$category_id][$element_type . '_hr'] = ['#type' => 'webform_horizontal_rule'];
 
   }
 

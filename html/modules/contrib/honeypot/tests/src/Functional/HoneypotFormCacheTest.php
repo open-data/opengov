@@ -34,9 +34,11 @@ class HoneypotFormCacheTest extends BrowserTestBase {
   protected $node;
 
   /**
-   * {@inheritdoc}
+   * Modules to enable.
+   *
+   * @var array
    */
-  protected static $modules = ['honeypot', 'node', 'comment', 'contact'];
+  public static $modules = ['honeypot', 'node', 'comment', 'contact'];
 
   /**
    * {@inheritdoc}

@@ -5,8 +5,6 @@
  * Code required only when fetching information about available updates.
  */
 
-use Drupal\update\UpdateManagerInterface;
-
 /**
  * Performs any notifications that should be done once cron fetches new data.
  *
@@ -25,7 +23,7 @@ function _update_cron_notify() {
   foreach (['core', 'contrib'] as $report_type) {
     $type = 'update_' . $report_type;
     if (isset($status[$type]['severity'])
-        && ($status[$type]['severity'] == REQUIREMENT_ERROR || ($notify_all && $status[$type]['reason'] == UpdateManagerInterface::NOT_CURRENT))) {
+        && ($status[$type]['severity'] == REQUIREMENT_ERROR || ($notify_all && $status[$type]['reason'] == UPDATE_NOT_CURRENT))) {
       $params[$report_type] = $status[$type]['reason'];
     }
   }

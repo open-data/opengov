@@ -657,8 +657,9 @@ class UndoNamespacedNameSingleTokenTest extends AbstractMethodUnitTest
                         'type'    => 'T_STRING',
                         'content' => 'Name',
                     ],
+                    // TODO: change this to T_TYPE_UNION when #3032 is merged.
                     [
-                        'type'    => 'T_TYPE_UNION',
+                        'type'    => 'T_BITWISE_OR',
                         'content' => '|',
                     ],
                     [
@@ -707,8 +708,9 @@ class UndoNamespacedNameSingleTokenTest extends AbstractMethodUnitTest
                         'type'    => 'T_STRING',
                         'content' => 'Unqualified',
                     ],
+                    // TODO: change this to T_TYPE_UNION when #3032 is merged.
                     [
-                        'type'    => 'T_TYPE_UNION',
+                        'type'    => 'T_BITWISE_OR',
                         'content' => '|',
                     ],
                     [

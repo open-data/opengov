@@ -116,11 +116,7 @@ class LocaleJavascriptTranslationTest extends BrowserTestBase {
    */
   public function testLocaleTranslationJsDependencies() {
     // User to add and remove language.
-    $admin_user = $this->drupalCreateUser([
-      'administer languages',
-      'access administration pages',
-      'translate interface',
-    ]);
+    $admin_user = $this->drupalCreateUser(['administer languages', 'access administration pages', 'translate interface']);
 
     // Add custom language.
     $this->drupalLogin($admin_user);

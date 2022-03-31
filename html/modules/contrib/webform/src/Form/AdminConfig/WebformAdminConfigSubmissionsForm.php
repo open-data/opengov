@@ -2,8 +2,11 @@
 
 namespace Drupal\webform\Form\AdminConfig;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Element\WebformMessage;
+use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -33,13 +36,30 @@ class WebformAdminConfigSubmissionsForm extends WebformAdminConfigBaseForm {
   }
 
   /**
+   * Constructs a WebformAdminConfigSubmissionsForm object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
+   *   The webform token manager.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, WebformTokenManagerInterface $token_manager) {
+    parent::__construct($config_factory);
+    $this->moduleHandler = $module_handler;
+    $this->tokenManager = $token_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->moduleHandler = $container->get('module_handler');
-    $instance->tokenManager = $container->get('webform.token_manager');
-    return $instance;
+    return new static(
+      $container->get('config.factory'),
+      $container->get('module_handler'),
+      $container->get('webform.token_manager')
+    );
   }
 
   /**
@@ -108,14 +128,10 @@ class WebformAdminConfigSubmissionsForm extends WebformAdminConfigBaseForm {
       '#tree' => TRUE,
     ];
     $behavior_elements = [
-      'default_form_disable_remote_addr' => [
-        'title' => $this->t('Disable the tracking of user IP addresses for all webforms'),
-        'description' => $this->t("If checked, a user's IP address will not be recorded for all webforms."),
-      ],
       'default_submission_log' => [
         'title' => $this->t('Log all submission events for all webforms'),
         'description' => $this->t('If checked, all submission events will be logged to dedicated submission log available to all webforms and submissions.') . '<br/><br/>' .
-          '<em>' . $this->t('The webform submission log will track more detailed user information including email addresses and subjects.') . '</em>',
+          '<em>' . t('The webform submission log will track more detailed user information including email addresses and subjects.') . '</em>',
       ],
       'default_results_customize' => [
         'title' => $this->t('Allow users to customize the submission results table'),
@@ -216,9 +232,6 @@ class WebformAdminConfigSubmissionsForm extends WebformAdminConfigBaseForm {
       '#description' => $this->t('Enter the amount of submissions to be purged during single cron run. You may want to lower this number if you are facing memory or timeout issues when purging via cron.'),
     ];
 
-    // Bulk operation settings.
-    $form['bulk_form_settings'] = $this->buildBulkOperations($settings, 'webform_submission');
-
     // Submission views.
     $form['views_settings'] = [
       '#type' => 'details',
@@ -259,7 +272,6 @@ class WebformAdminConfigSubmissionsForm extends WebformAdminConfigBaseForm {
       + $form_state->getValue('submission_behaviors')
       + $form_state->getValue('submission_limits')
       + $form_state->getValue('draft_settings')
-      + $form_state->getValue('bulk_form_settings')
       + $form_state->getValue('views_settings');
 
     // Update config and submit form.

@@ -20,13 +20,11 @@ class WebformElementExcludedColumnsTest extends WebformElementBrowserTestBase {
    * Test excluded columns element.
    */
   public function testExcluedElements() {
-    $assert_session = $this->assertSession();
-
     $this->drupalGet('/webform/test_element_excluded_columns');
 
-    $assert_session->fieldExists('webform_excluded_columns[tableselect][textfield]');
-    $assert_session->fieldNotExists('webform_excluded_columns[tableselect][markup]');
-    $assert_session->fieldNotExists('webform_excluded_columns[tableselect][details]');
+    $this->assertFieldByName('webform_excluded_columns[tableselect][textfield]');
+    $this->assertNoFieldByName('webform_excluded_columns[tableselect][markup]');
+    $this->assertNoFieldByName('webform_excluded_columns[tableselect][details]');
   }
 
 }

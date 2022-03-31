@@ -18,7 +18,7 @@ class MetatagCustomRouteTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
+  public static $modules = [
     'node',
     // Dependencies.
     'token',
@@ -29,11 +29,6 @@ class MetatagCustomRouteTest extends BrowserTestBase {
     'metatag_test_custom_route',
     'entity_test',
   ];
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stark';
 
   /**
    * Run tests on the custom route.
@@ -53,10 +48,10 @@ class MetatagCustomRouteTest extends BrowserTestBase {
     ])->save();
 
     $this->drupalGet('metatag_test_custom_route/' . $entity_test->id());
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertResponse(200);
     $xpath = $this->xpath("//meta[@name='keywords']");
-    $this->assertCount(1, $xpath);
-    $this->assertEquals('test', $xpath[0]->getAttribute('content'));
+    $this->assertEqual(count($xpath), 1);
+    $this->assertEqual($xpath[0]->getAttribute('content'), 'test');
   }
 
 }

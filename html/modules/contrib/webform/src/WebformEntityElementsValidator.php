@@ -64,13 +64,6 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
   protected $elementKeys;
 
   /**
-   * The configuration object factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
    * The 'renderer' service.
    *
    * @var \Drupal\Core\Render\RendererInterface
@@ -99,6 +92,13 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
   protected $formBuilder;
 
   /**
+   * The configuration object factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * Element keys/names that are reserved.
    *
    * @var array
@@ -114,8 +114,6 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
   /**
    * Constructs a WebformEntityElementsValidator object.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration object factory.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The 'renderer' service.
    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
@@ -124,13 +122,17 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
    *   The 'entity_type.manager' service.
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The 'form_builder' service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration object factory.
+   *
+   * @todo Webform 8.x-6.x: Move $config_factory before $renderer.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, RendererInterface $renderer, WebformElementManagerInterface $element_manager, EntityTypeManagerInterface $entity_type_manager, FormBuilderInterface $form_builder) {
-    $this->configFactory = $config_factory;
+  public function __construct(RendererInterface $renderer, WebformElementManagerInterface $element_manager, EntityTypeManagerInterface $entity_type_manager, FormBuilderInterface $form_builder, ConfigFactoryInterface $config_factory = NULL) {
     $this->renderer = $renderer;
     $this->elementManager = $element_manager;
     $this->entityTypeManager = $entity_type_manager;
     $this->formBuilder = $form_builder;
+    $this->configFactory = $config_factory ?: \Drupal::configFactory();
   }
 
   /**
@@ -496,7 +498,7 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
     foreach ($elements as $key => $element) {
       $plugin_id = $this->elementManager->getElementPluginId($element);
       /** @var \Drupal\webform\Plugin\WebformElementInterface $webform_element */
-      $webform_element = $this->elementManager->createInstance($plugin_id);
+      $webform_element = $this->elementManager->createInstance($plugin_id, $element);
 
       $t_args = [
         '%title' => (!empty($element['#title'])) ? $element['#title'] : $key,
@@ -534,7 +536,7 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
   protected function validatePages() {
     if (strpos($this->elementsRaw, "'#type': webform_card") !== FALSE
       && strpos($this->elementsRaw, "'#type': webform_wizard_page") !== FALSE) {
-      return [$this->t('Pages and cards cannot be used in the same webform. Please remove or convert the pages/cards to the same element type.')];
+        return [$this->t('Pages and cards cannot be used in the same webform. Please remove or convert the pages/cards to the same element type.')];
     }
     else {
       return NULL;
@@ -599,9 +601,9 @@ class WebformEntityElementsValidator implements WebformEntityElementsValidatorIn
     return $message;
   }
 
-  /* ************************************************************************ */
+  /****************************************************************************/
   // Helper methods.
-  /* ************************************************************************ */
+  /****************************************************************************/
 
   /**
    * Recurse through elements and collect an associative array of deleted element keys.

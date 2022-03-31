@@ -90,6 +90,7 @@ class Preflight
         // Define legacy constants, and include legacy files that Drush still needs
         LegacyPreflight::includeCode($this->environment->drushBasePath());
         LegacyPreflight::defineConstants($this->environment, $this->preflightArgs->applicationPath());
+        LegacyPreflight::setContexts($this->environment);
     }
 
     /**
@@ -176,6 +177,19 @@ class Preflight
         $this->configLocator->addDrushConfig($environment->drushBasePath());
     }
 
+    /**
+     * Start code coverage collection
+     */
+    public function startCoverage()
+    {
+        if ($coverage_file = $this->preflightArgs->coverageFile()) {
+            // TODO: modernize code coverage handling
+            drush_set_context('DRUSH_CODE_COVERAGE', $coverage_file);
+            xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
+            register_shutdown_function('drush_coverage_shutdown');
+        }
+    }
+
     public function createInput()
     {
         return $this->preflightArgs->createInput();
@@ -221,6 +235,9 @@ class Preflight
 
         // Do legacy initialization (load static includes, define old constants, etc.)
         $this->init();
+
+        // Start code coverage
+        $this->startCoverage();
 
         // Get the config files provided by prepareConfig()
         $config = $this->config();

@@ -368,15 +368,7 @@ display:
           entity_type: node
           entity_field: revision_uid
           plugin_id: user_name
-      sorts:
-        vid:
-          id: vid
-          table: node_field_revision
-          field: vid
-          order: ASC
-          plugin_id: field
-          entity_type: node
-          entity_field: vid
+      sorts: {  }
       header: {  }
       footer: {  }
       empty: {  }

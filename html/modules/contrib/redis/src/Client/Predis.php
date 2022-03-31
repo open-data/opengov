@@ -11,13 +11,12 @@ use Predis\Client;
  */
 class Predis implements ClientInterface {
 
-  public function getClient($host = NULL, $port = NULL, $base = NULL, $password = NULL, $replicationHosts = [], $persistent = FALSE) {
+  public function getClient($host = NULL, $port = NULL, $base = NULL, $password = NULL, $replicationHosts = NULL) {
     $connectionInfo = [
       'password' => $password,
       'host'     => $host,
       'port'     => $port,
-      'database' => $base,
-      'persistent' => $persistent
+      'database' => $base
     ];
 
     foreach ($connectionInfo as $key => $value) {
@@ -33,19 +32,17 @@ class Predis implements ClientInterface {
     date_default_timezone_set(@date_default_timezone_get());
 
     // If we are passed in an array of $replicationHosts, we should attempt a clustered client connection.
-    if (!empty($replicationHosts)) {
+    if ($replicationHosts !== NULL) {
       $parameters = [];
 
       foreach ($replicationHosts as $replicationHost) {
-        $param = 'tcp://' . $replicationHost['host'] . ':' . $replicationHost['port']
-          . '?persistent=' . (($persistent) ? 'true' : 'false');
-
         // Configure master.
         if ($replicationHost['role'] === 'primary') {
-          $param .= '&alias=master';
+          $parameters[] = 'tcp://' . $replicationHost['host'] . ':' . $replicationHost['port'] . '?alias=master';
         }
-
-        $parameters[] = $param;
+        else {
+          $parameters[] = 'tcp://' . $replicationHost['host'] . ':' . $replicationHost['port'];
+        }
       }
 
       $options = ['replication' => true];

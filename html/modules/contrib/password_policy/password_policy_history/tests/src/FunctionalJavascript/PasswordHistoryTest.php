@@ -11,13 +11,6 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  */
 class PasswordHistoryTest extends WebDriverTestBase {
 
-  /**
-   * Set default theme to stark.
-   *
-   * @var string
-   */
-  protected $defaultTheme = 'stark';
-
   public static $modules = ['password_policy', 'password_policy_history'];
 
   /**

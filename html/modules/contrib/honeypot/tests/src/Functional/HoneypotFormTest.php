@@ -5,7 +5,6 @@ namespace Drupal\Tests\honeypot\Functional;
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\contact\Entity\ContactForm;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\user\UserInterface;
 
@@ -17,7 +16,6 @@ use Drupal\user\UserInterface;
 class HoneypotFormTest extends BrowserTestBase {
 
   use CommentTestTrait;
-  use StringTranslationTrait;
 
   /**
    * Admin user.
@@ -48,9 +46,11 @@ class HoneypotFormTest extends BrowserTestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * {@inheritdoc}
+   * Modules to enable.
+   *
+   * @var array
    */
-  protected static $modules = ['honeypot', 'node', 'comment', 'contact'];
+  public static $modules = ['honeypot', 'node', 'comment', 'contact'];
 
   /**
    * {@inheritdoc}
@@ -124,8 +124,7 @@ class HoneypotFormTest extends BrowserTestBase {
     // Set up form and submit it.
     $edit['name'] = $this->randomMachineName();
     $edit['mail'] = $edit['name'] . '@example.com';
-    $this->drupalGet('user/register');
-    $this->submitForm($edit, 'Create new account');
+    $this->drupalPostForm('user/register', $edit, t('Create new account'));
 
     // Form should have been submitted successfully.
     $this->assertSession()->pageTextContains('A welcome message with further instructions has been sent to your email address.');
@@ -139,8 +138,7 @@ class HoneypotFormTest extends BrowserTestBase {
     $edit['name'] = $this->randomMachineName();
     $edit['mail'] = $edit['name'] . '@example.com';
     $edit['url'] = 'http://www.example.com/';
-    $this->drupalGet('user/register');
-    $this->submitForm($edit, 'Create new account');
+    $this->drupalPostForm('user/register', $edit, t('Create new account'));
 
     // Form should have error message.
     $this->assertSession()->pageTextContains('There was a problem with your form submission. Please refresh the page and try again.');
@@ -157,8 +155,8 @@ class HoneypotFormTest extends BrowserTestBase {
     $edit['mail'] = $edit['name'] . '@example.com';
     $this->drupalGet('user/register');
     sleep(2);
-    $this->submitForm($edit, 'Create new account');
-    $this->assertNoText($this->t('There was a problem with your form submission.'));
+    $this->drupalPostForm(NULL, $edit, t('Create new account'));
+    $this->assertNoText(t('There was a problem with your form submission.'));
 
     // Set the time limit a bit higher so we can trigger honeypot.
     \Drupal::configFactory()->getEditable('honeypot.settings')->set('time_limit', 5)->save();
@@ -166,8 +164,7 @@ class HoneypotFormTest extends BrowserTestBase {
     // Set up form and submit it.
     $edit['name'] = $this->randomMachineName();
     $edit['mail'] = $edit['name'] . '@example.com';
-    $this->drupalGet('user/register');
-    $this->submitForm($edit, 'Create new account');
+    $this->drupalPostForm('user/register', $edit, t('Create new account'));
 
     // Form should have error message.
     $this->assertSession()->pageTextContains('There was a problem with your form submission. Please wait 6 seconds and try again.');
@@ -184,9 +181,8 @@ class HoneypotFormTest extends BrowserTestBase {
     // Any value that is not strictly empty should trigger Honeypot.
     foreach (['0', ' '] as $value) {
       $edit['url'] = $value;
-      $this->drupalGet('user/register');
-      $this->submitForm($edit, 'Create new account');
-      $this->assertText($this->t('There was a problem with your form submission. Please refresh the page and try again.'), "Honeypot protection is triggered when the honeypot field contains '{$value}'.");
+      $this->drupalPostForm('user/register', $edit, t('Create new account'));
+      $this->assertText(t('There was a problem with your form submission. Please refresh the page and try again.'), "Honeypot protection is triggered when the honeypot field contains '{$value}'.");
     }
   }
 
@@ -204,8 +200,7 @@ class HoneypotFormTest extends BrowserTestBase {
 
     // Set up form and submit it.
     $edit["comment_body[0][value]"] = $comment;
-    $this->drupalGet('comment/reply/node/' . $this->node->id() . '/comment');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('comment/reply/node/' . $this->node->id() . '/comment', $edit, t('Save'));
     $this->assertSession()->pageTextContains('Your comment has been queued for review');
   }
 
@@ -221,8 +216,7 @@ class HoneypotFormTest extends BrowserTestBase {
     // Set up form and submit it.
     $edit["comment_body[0][value]"] = $comment;
     $edit['url'] = 'http://www.example.com/';
-    $this->drupalGet('comment/reply/node/' . $this->node->id() . '/comment');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('comment/reply/node/' . $this->node->id() . '/comment', $edit, t('Save'));
     $this->assertSession()->pageTextContains('There was a problem with your form submission. Please refresh the page and try again.');
   }
 
@@ -250,8 +244,7 @@ class HoneypotFormTest extends BrowserTestBase {
 
     // Set up the form and submit it.
     $edit["title[0][value]"] = 'Test Page';
-    $this->drupalGet('node/add/article');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('node/add/article', $edit, t('Save'));
     $this->assertSession()->pageTextContains('There was a problem with your form submission.');
   }
 
@@ -264,8 +257,7 @@ class HoneypotFormTest extends BrowserTestBase {
 
     // Post a node form using the 'Preview' button and make sure it's allowed.
     $edit["title[0][value]"] = 'Test Page';
-    $this->drupalGet('node/add/article');
-    $this->submitForm($edit, 'Preview');
+    $this->drupalPostForm('node/add/article', $edit, t('Preview'));
     $this->assertSession()->pageTextNotContains('There was a problem with your form submission.');
   }
 
@@ -294,11 +286,9 @@ class HoneypotFormTest extends BrowserTestBase {
     $contact_settings->set('default_form', 'feedback')->save();
 
     // Submit the admin form so we can verify the right forms are displayed.
-    $this->drupalGet('admin/config/content/honeypot');
-    $this->submitForm(
-      ['form_settings[contact_message_feedback_form]' => TRUE],
-      'Save configuration'
-    );
+    $this->drupalPostForm('admin/config/content/honeypot', [
+      'form_settings[contact_message_feedback_form]' => TRUE,
+    ], t('Save configuration'));
 
     $this->drupalLogin($this->webUser);
     $this->drupalGet('contact/feedback');
