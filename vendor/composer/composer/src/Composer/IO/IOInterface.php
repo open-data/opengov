@@ -13,13 +13,14 @@
 namespace Composer\IO;
 
 use Composer\Config;
+use Psr\Log\LoggerInterface;
 
 /**
  * The Input/Output helper interface.
  *
  * @author François Pluchino <francois.pluchino@opendisplay.com>
  */
-interface IOInterface
+interface IOInterface extends LoggerInterface
 {
     const QUIET = 1;
     const NORMAL = 2;
@@ -65,38 +66,68 @@ interface IOInterface
     /**
      * Writes a message to the output.
      *
-     * @param string|array $messages  The message as an array of lines or a single string
-     * @param bool         $newline   Whether to add a newline or not
-     * @param int          $verbosity Verbosity level from the VERBOSITY_* constants
+     * @param string|string[] $messages  The message as an array of lines or a single string
+     * @param bool            $newline   Whether to add a newline or not
+     * @param int             $verbosity Verbosity level from the VERBOSITY_* constants
+     *
+     * @return void
      */
     public function write($messages, $newline = true, $verbosity = self::NORMAL);
 
     /**
      * Writes a message to the error output.
      *
-     * @param string|array $messages  The message as an array of lines or a single string
-     * @param bool         $newline   Whether to add a newline or not
-     * @param int          $verbosity Verbosity level from the VERBOSITY_* constants
+     * @param string|string[] $messages  The message as an array of lines or a single string
+     * @param bool            $newline   Whether to add a newline or not
+     * @param int             $verbosity Verbosity level from the VERBOSITY_* constants
+     *
+     * @return void
      */
     public function writeError($messages, $newline = true, $verbosity = self::NORMAL);
 
     /**
+     * Writes a message to the output, without formatting it.
+     *
+     * @param string|string[] $messages  The message as an array of lines or a single string
+     * @param bool            $newline   Whether to add a newline or not
+     * @param int             $verbosity Verbosity level from the VERBOSITY_* constants
+     *
+     * @return void
+     */
+    public function writeRaw($messages, $newline = true, $verbosity = self::NORMAL);
+
+    /**
+     * Writes a message to the error output, without formatting it.
+     *
+     * @param string|string[] $messages  The message as an array of lines or a single string
+     * @param bool            $newline   Whether to add a newline or not
+     * @param int             $verbosity Verbosity level from the VERBOSITY_* constants
+     *
+     * @return void
+     */
+    public function writeErrorRaw($messages, $newline = true, $verbosity = self::NORMAL);
+
+    /**
      * Overwrites a previous message to the output.
      *
-     * @param string|array $messages  The message as an array of lines or a single string
-     * @param bool         $newline   Whether to add a newline or not
-     * @param int          $size      The size of line
-     * @param int          $verbosity Verbosity level from the VERBOSITY_* constants
+     * @param string|string[] $messages  The message as an array of lines or a single string
+     * @param bool            $newline   Whether to add a newline or not
+     * @param int             $size      The size of line
+     * @param int             $verbosity Verbosity level from the VERBOSITY_* constants
+     *
+     * @return void
      */
     public function overwrite($messages, $newline = true, $size = null, $verbosity = self::NORMAL);
 
     /**
      * Overwrites a previous message to the error output.
      *
-     * @param string|array $messages  The message as an array of lines or a single string
-     * @param bool         $newline   Whether to add a newline or not
-     * @param int          $size      The size of line
-     * @param int          $verbosity Verbosity level from the VERBOSITY_* constants
+     * @param string|string[] $messages  The message as an array of lines or a single string
+     * @param bool            $newline   Whether to add a newline or not
+     * @param int             $size      The size of line
+     * @param int             $verbosity Verbosity level from the VERBOSITY_* constants
+     *
+     * @return void
      */
     public function overwriteError($messages, $newline = true, $size = null, $verbosity = self::NORMAL);
 
@@ -107,7 +138,7 @@ interface IOInterface
      * @param string $default  The default answer if none is given by the user
      *
      * @throws \RuntimeException If there is no data to read in the input stream
-     * @return string            The user answer
+     * @return string|null       The user answer
      */
     public function ask($question, $default = null);
 
@@ -145,7 +176,7 @@ interface IOInterface
      *
      * @param string $question The question to ask
      *
-     * @return string The answer
+     * @return string|null The answer
      */
     public function askAndHideAnswer($question);
 
@@ -153,21 +184,21 @@ interface IOInterface
      * Asks the user to select a value.
      *
      * @param string      $question     The question to ask
-     * @param array       $choices      List of choices to pick from
+     * @param string[]    $choices      List of choices to pick from
      * @param bool|string $default      The default answer if the user enters nothing
      * @param bool|int    $attempts     Max number of times to ask before giving up (false by default, which means infinite)
      * @param string      $errorMessage Message which will be shown if invalid value from choice list would be picked
      * @param bool        $multiselect  Select more than one value separated by comma
      *
      * @throws \InvalidArgumentException
-     * @return int|string|array          The selected value or values (the key of the choices array)
+     * @return int|string|string[]|bool     The selected value or values (the key of the choices array)
      */
     public function select($question, $choices, $default, $attempts = false, $errorMessage = 'Value "%s" is invalid', $multiselect = false);
 
     /**
      * Get all authentication information entered.
      *
-     * @return array The map of authentication data
+     * @return array<string, array{username: string|null, password: string|null}> The map of authentication data
      */
     public function getAuthentications();
 
@@ -185,16 +216,18 @@ interface IOInterface
      *
      * @param string $repositoryName The unique name of repository
      *
-     * @return array The 'username' and 'password'
+     * @return array{username: string|null, password: string|null}
      */
     public function getAuthentication($repositoryName);
 
     /**
      * Set the authentication information for the repository.
      *
-     * @param string $repositoryName The unique name of repository
-     * @param string $username       The username
-     * @param string $password       The password
+     * @param string  $repositoryName The unique name of repository
+     * @param string  $username       The username
+     * @param ?string $password       The password
+     *
+     * @return void
      */
     public function setAuthentication($repositoryName, $username, $password = null);
 
@@ -202,6 +235,8 @@ interface IOInterface
      * Loads authentications from a config instance
      *
      * @param Config $config
+     *
+     * @return void
      */
     public function loadConfiguration(Config $config);
 }

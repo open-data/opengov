@@ -15,16 +15,13 @@ use function unserialize;
 
 /**
  * Serializable version of SplStack
- *
- * @template TValue
- * @extends \SplStack<TValue>
  */
 class SplStack extends \SplStack implements Serializable
 {
     /**
      * Serialize to an array representing the stack
      *
-     * @return list<TValue>
+     * @return array
      */
     public function toArray()
     {
@@ -49,7 +46,7 @@ class SplStack extends \SplStack implements Serializable
     /**
      * Magic method used for serializing of an instance.
      *
-     * @return list<TValue>
+     * @return array
      */
     #[ReturnTypeWillChange]
     public function __serialize()
@@ -80,7 +77,7 @@ class SplStack extends \SplStack implements Serializable
    /**
     * Magic method used to rebuild an instance.
     *
-    * @param array<array-key, TValue> $data Data array.
+    * @param array $data Data array.
     * @return void
     */
     #[ReturnTypeWillChange]

@@ -1,5 +1,5 @@
 # Composer files
-/composer.lock
+#/composer.lock
 /html/**/.git
 /html/**/.gitignore
 /vendor/**/.git

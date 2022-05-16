@@ -46,13 +46,13 @@ class CookieJar
         foreach ($this->cookieJar as $cookieDomain => $pathCookies) {
             if ($cookieDomain && $domain) {
                 $cookieDomain = '.'.ltrim($cookieDomain, '.');
-                if ($cookieDomain !== substr('.'.$domain, -\strlen($cookieDomain))) {
+                if (!str_ends_with('.'.$domain, $cookieDomain)) {
                     continue;
                 }
             }
 
             foreach ($pathCookies as $cookiePath => $namedCookies) {
-                if (0 !== strpos($path, $cookiePath)) {
+                if (!str_starts_with($path, $cookiePath)) {
                     continue;
                 }
                 if (isset($namedCookies[$name])) {
@@ -142,8 +142,7 @@ class CookieJar
     /**
      * Updates the cookie jar from a Response object.
      *
-     * @param Response $response A Response object
-     * @param string   $uri      The base URL
+     * @param string $uri The base URL
      */
     public function updateFromResponse(Response $response, $uri = null)
     {

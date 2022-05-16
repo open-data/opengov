@@ -7,6 +7,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\CallableTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\ConditionalTypeForParameterNode;
+use PHPStan\PhpDocParser\Ast\Type\ConditionalTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ConstTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
@@ -88,7 +90,6 @@ class ReturnTypeHintSniff implements Sniff
 
 	/**
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-	 * @param File $phpcsFile
 	 * @param int $pointer
 	 */
 	public function process(File $phpcsFile, $pointer): void
@@ -128,10 +129,6 @@ class ReturnTypeHintSniff implements Sniff
 	}
 
 	/**
-	 * @param File $phpcsFile
-	 * @param int $functionPointer
-	 * @param TypeHint|null $returnTypeHint
-	 * @param ReturnAnnotation|null $returnAnnotation
 	 * @param ReturnAnnotation[] $prefixedReturnAnnotations
 	 */
 	private function checkFunctionTypeHint(
@@ -200,27 +197,28 @@ class ReturnTypeHintSniff implements Sniff
 				!$hasReturnAnnotation
 				|| $isAnnotationReturnTypeVoid
 			)
-			&& !$isSuppressedNativeTypeHint
 		) {
-			$message = !$hasReturnAnnotation
-				? sprintf(
-					'%s %s() does not have void return type hint.',
-					FunctionHelper::getTypeLabel($phpcsFile, $functionPointer),
-					FunctionHelper::getFullyQualifiedName($phpcsFile, $functionPointer)
-				)
-				: sprintf(
-					'%s %s() does not have native return type hint for its return value but it should be possible to add it based on @return annotation "%s".',
-					FunctionHelper::getTypeLabel($phpcsFile, $functionPointer),
-					FunctionHelper::getFullyQualifiedName($phpcsFile, $functionPointer),
-					AnnotationTypeHelper::export($returnTypeNode)
-				);
+			if (!$isSuppressedNativeTypeHint) {
+				$message = !$hasReturnAnnotation
+					? sprintf(
+						'%s %s() does not have void return type hint.',
+						FunctionHelper::getTypeLabel($phpcsFile, $functionPointer),
+						FunctionHelper::getFullyQualifiedName($phpcsFile, $functionPointer)
+					)
+					: sprintf(
+						'%s %s() does not have native return type hint for its return value but it should be possible to add it based on @return annotation "%s".',
+						FunctionHelper::getTypeLabel($phpcsFile, $functionPointer),
+						FunctionHelper::getFullyQualifiedName($phpcsFile, $functionPointer),
+						AnnotationTypeHelper::export($returnTypeNode)
+					);
 
-			$fix = $phpcsFile->addFixableError($message, $functionPointer, self::getSniffName(self::CODE_MISSING_NATIVE_TYPE_HINT));
+				$fix = $phpcsFile->addFixableError($message, $functionPointer, self::getSniffName(self::CODE_MISSING_NATIVE_TYPE_HINT));
 
-			if ($fix) {
-				$phpcsFile->fixer->beginChangeset();
-				$phpcsFile->fixer->addContent($phpcsFile->getTokens()[$functionPointer]['parenthesis_closer'], ': void');
-				$phpcsFile->fixer->endChangeset();
+				if ($fix) {
+					$phpcsFile->fixer->beginChangeset();
+					$phpcsFile->fixer->addContent($phpcsFile->getTokens()[$functionPointer]['parenthesis_closer'], ': void');
+					$phpcsFile->fixer->endChangeset();
+				}
 			}
 
 			return;
@@ -406,10 +404,6 @@ class ReturnTypeHintSniff implements Sniff
 	}
 
 	/**
-	 * @param File $phpcsFile
-	 * @param int $functionPointer
-	 * @param TypeHint|null $returnTypeHint
-	 * @param ReturnAnnotation|null $returnAnnotation
 	 * @param ReturnAnnotation[] $prefixedReturnAnnotations
 	 */
 	private function checkFunctionTraversableTypeHintSpecification(
@@ -588,8 +582,7 @@ class ReturnTypeHintSniff implements Sniff
 	}
 
 	/**
-	 * @param ReturnAnnotation|null $returnAnnotation
-	 * @return GenericTypeNode|CallableTypeNode|IntersectionTypeNode|UnionTypeNode|ArrayTypeNode|ArrayShapeNode|IdentifierTypeNode|ThisTypeNode|NullableTypeNode|ConstTypeNode|null
+	 * @return GenericTypeNode|CallableTypeNode|IntersectionTypeNode|UnionTypeNode|ArrayTypeNode|ArrayShapeNode|IdentifierTypeNode|ThisTypeNode|NullableTypeNode|ConstTypeNode|ConditionalTypeNode|ConditionalTypeForParameterNode|null
 	 */
 	private function getReturnTypeNode(?ReturnAnnotation $returnAnnotation): ?TypeNode
 	{

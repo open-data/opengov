@@ -15,17 +15,13 @@ use function unserialize;
 
 /**
  * Serializable version of SplQueue
- *
- * @template TKey of array-key
- * @template TValue
- * @extends \SplQueue<TValue>
  */
 class SplQueue extends \SplQueue implements Serializable
 {
     /**
      * Return an array representing the queue
      *
-     * @return list<TValue>
+     * @return array
      */
     public function toArray()
     {
@@ -50,7 +46,7 @@ class SplQueue extends \SplQueue implements Serializable
     /**
      * Magic method used for serializing of an instance.
      *
-     * @return list<TValue>
+     * @return array
      */
     #[ReturnTypeWillChange]
     public function __serialize()
@@ -81,7 +77,7 @@ class SplQueue extends \SplQueue implements Serializable
    /**
     * Magic method used to rebuild an instance.
     *
-    * @param array<array-key, TValue> $data Data array.
+    * @param array $data Data array.
     * @return void
     */
     #[ReturnTypeWillChange]

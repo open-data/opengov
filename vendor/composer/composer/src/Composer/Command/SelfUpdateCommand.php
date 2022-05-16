@@ -15,12 +15,14 @@ namespace Composer\Command;
 use Composer\Composer;
 use Composer\Factory;
 use Composer\Config;
+use Composer\Pcre\Preg;
 use Composer\Util\Filesystem;
 use Composer\Util\Platform;
 use Composer\SelfUpdate\Keys;
 use Composer\SelfUpdate\Versions;
 use Composer\IO\IOInterface;
 use Composer\Downloader\FilesystemException;
+use Composer\Downloader\TransportException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -37,6 +39,9 @@ class SelfUpdateCommand extends BaseCommand
     const HOMEPAGE = 'getcomposer.org';
     const OLD_INSTALL_EXT = '-old.phar';
 
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this
@@ -54,6 +59,7 @@ class SelfUpdateCommand extends BaseCommand
                 new InputOption('snapshot', null, InputOption::VALUE_NONE, 'Force an update to the snapshot channel'),
                 new InputOption('1', null, InputOption::VALUE_NONE, 'Force an update to the stable channel, but only use 1.x versions'),
                 new InputOption('2', null, InputOption::VALUE_NONE, 'Force an update to the stable channel, but only use 2.x versions'),
+                new InputOption('2.2', null, InputOption::VALUE_NONE, 'Force an update to the stable channel, but only use 2.2.x LTS versions'),
                 new InputOption('set-channel-only', null, InputOption::VALUE_NONE, 'Only store the channel as the default one and then exit'),
             ))
             ->setHelp(
@@ -69,8 +75,17 @@ EOT
         ;
     }
 
+    /**
+     * @return int
+     * @throws FilesystemException
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // trigger autoloading of a few classes which may be needed when verifying/swapping the phar file
+        // to ensure we do not try to load them from the new phar, see https://github.com/composer/composer/issues/10252
+        class_exists('Composer\Util\Platform');
+        class_exists('Composer\Downloader\FilesystemException');
+
         $config = Factory::createConfig();
 
         if ($config->get('disable-tls') === true) {
@@ -80,9 +95,9 @@ EOT
         }
 
         $io = $this->getIO();
-        $remoteFilesystem = Factory::createRemoteFilesystem($io, $config);
+        $httpDownloader = Factory::createHttpDownloader($io, $config);
 
-        $versionsUtil = new Versions($config, $remoteFilesystem);
+        $versionsUtil = new Versions($config, $httpDownloader);
 
         // switch channel if requested
         $requestedChannel = null;
@@ -126,8 +141,8 @@ EOT
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
             $composeUser = posix_getpwuid(posix_geteuid());
             $homeOwner = posix_getpwuid(fileowner($home));
-            if (isset($composeUser['name']) && isset($homeOwner['name']) && $composeUser['name'] !== $homeOwner['name']) {
-                $io->writeError('<warning>You are running composer as "'.$composeUser['name'].'", while "'.$home.'" is owned by "'.$homeOwner['name'].'"</warning>');
+            if (isset($composeUser['name'], $homeOwner['name']) && $composeUser['name'] !== $homeOwner['name']) {
+                $io->writeError('<warning>You are running Composer as "'.$composeUser['name'].'", while "'.$home.'" is owned by "'.$homeOwner['name'].'"</warning>');
             }
         }
 
@@ -144,9 +159,9 @@ EOT
         }
         $latestVersion = $latest['version'];
         $updateVersion = $input->getArgument('version') ?: $latestVersion;
-        $currentMajorVersion = preg_replace('{^(\d+).*}', '$1', Composer::getVersion());
-        $updateMajorVersion = preg_replace('{^(\d+).*}', '$1', $updateVersion);
-        $previewMajorVersion = preg_replace('{^(\d+).*}', '$1', $latestPreview['version']);
+        $currentMajorVersion = Preg::replace('{^(\d+).*}', '$1', Composer::getVersion());
+        $updateMajorVersion = Preg::replace('{^(\d+).*}', '$1', $updateVersion);
+        $previewMajorVersion = Preg::replace('{^(\d+).*}', '$1', $latestPreview['version']);
 
         if ($versionsUtil->getChannel() === 'stable' && !$input->getArgument('version')) {
             // if requesting stable channel and no specific version, avoid automatically upgrading to the next major
@@ -168,11 +183,15 @@ EOT
             }
         }
 
-        if ($requestedChannel && is_numeric($requestedChannel) && substr($latestStable['version'], 0, 1) !== $requestedChannel) {
-            $io->writeError('<warning>Warning: You forced the install of '.$latestVersion.' via --'.$requestedChannel.', but '.$latestStable['version'].' is the latest stable version. Updating to it via composer self-update --stable is recommended.</warning>');
+        $effectiveChannel = $requestedChannel === null ? $versionsUtil->getChannel() : $requestedChannel;
+        if (is_numeric($effectiveChannel) && strpos($latestStable['version'], $effectiveChannel) !== 0) {
+            $io->writeError('<warning>Warning: You forced the install of '.$latestVersion.' via --'.$effectiveChannel.', but '.$latestStable['version'].' is the latest stable version. Updating to it via composer self-update --stable is recommended.</warning>');
+        }
+        if (isset($latest['eol'])) {
+            $io->writeError('<warning>Warning: Version '.$latestVersion.' is EOL / End of Life. '.$latestStable['version'].' is the latest stable version. Updating to it via composer self-update --stable is recommended.</warning>');
         }
 
-        if (preg_match('{^[0-9a-f]{40}$}', $updateVersion) && $updateVersion !== $latestVersion) {
+        if (Preg::isMatch('{^[0-9a-f]{40}$}', $updateVersion) && $updateVersion !== $latestVersion) {
             $io->writeError('<error>You can not update to a specific SHA-1 as those phars are not available for download</error>');
 
             return 1;
@@ -186,7 +205,7 @@ EOT
         if (Composer::VERSION === $updateVersion) {
             $io->writeError(
                 sprintf(
-                    '<info>You are already using composer version %s (%s channel).</info>',
+                    '<info>You are already using the latest available Composer version %s (%s channel).</info>',
                     $updateVersion,
                     $channelString
                 )
@@ -200,22 +219,29 @@ EOT
             return 0;
         }
 
-        $tempFilename = $tmpDir . '/' . basename($localFilename, '.phar').'-temp.phar';
+        $tempFilename = $tmpDir . '/' . basename($localFilename, '.phar').'-temp'.rand(0, 10000000).'.phar';
         $backupFile = sprintf(
             '%s/%s-%s%s',
             $rollbackDir,
             strtr(Composer::RELEASE_DATE, ' :', '_-'),
-            preg_replace('{^([0-9a-f]{7})[0-9a-f]{33}$}', '$1', Composer::VERSION),
+            Preg::replace('{^([0-9a-f]{7})[0-9a-f]{33}$}', '$1', Composer::VERSION),
             self::OLD_INSTALL_EXT
         );
 
-        $updatingToTag = !preg_match('{^[0-9a-f]{40}$}', $updateVersion);
+        $updatingToTag = !Preg::isMatch('{^[0-9a-f]{40}$}', $updateVersion);
 
-        $io->write(sprintf("Updating to version <info>%s</info> (%s channel).", $updateVersion, $channelString));
+        $io->write(sprintf("Upgrading to version <info>%s</info> (%s channel).", $updateVersion, $channelString));
         $remoteFilename = $baseUrl . ($updatingToTag ? "/download/{$updateVersion}/composer.phar" : '/composer.phar');
-        $signature = $remoteFilesystem->getContents(self::HOMEPAGE, $remoteFilename.'.sig', false);
+        try {
+            $signature = $httpDownloader->get($remoteFilename.'.sig')->getBody();
+        } catch (TransportException $e) {
+            if ($e->getStatusCode() === 404) {
+                throw new \InvalidArgumentException('Version "'.$updateVersion.'" could not be found.', 0, $e);
+            }
+            throw $e;
+        }
         $io->writeError('   ', false);
-        $remoteFilesystem->copy(self::HOMEPAGE, $remoteFilename, $tempFilename, !$input->getOption('no-progress'));
+        $httpDownloader->copy($remoteFilename, $tempFilename);
         $io->writeError('');
 
         if (!file_exists($tempFilename) || !$signature) {
@@ -318,6 +344,10 @@ TAGSPUBKEY
         return 0;
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     protected function fetchKeys(IOInterface $io, Config $config)
     {
         if (!$io->isInteractive()) {
@@ -327,7 +357,7 @@ TAGSPUBKEY
         $io->write('Open <info>https://composer.github.io/pubkeys.html</info> to find the latest keys');
 
         $validator = function ($value) {
-            if (!preg_match('{^-----BEGIN PUBLIC KEY-----$}', trim($value))) {
+            if (!Preg::isMatch('{^-----BEGIN PUBLIC KEY-----$}', trim($value))) {
                 throw new \UnexpectedValueException('Invalid input');
             }
 
@@ -335,7 +365,7 @@ TAGSPUBKEY
         };
 
         $devKey = '';
-        while (!preg_match('{(-----BEGIN PUBLIC KEY-----.+?-----END PUBLIC KEY-----)}s', $devKey, $match)) {
+        while (!Preg::isMatch('{(-----BEGIN PUBLIC KEY-----.+?-----END PUBLIC KEY-----)}s', $devKey, $match)) {
             $devKey = $io->askAndValidate('Enter Dev / Snapshot Public Key (including lines with -----): ', $validator);
             while ($line = $io->ask('')) {
                 $devKey .= trim($line)."\n";
@@ -348,7 +378,7 @@ TAGSPUBKEY
         $io->write('Stored key with fingerprint: ' . Keys::fingerprint($keyPath));
 
         $tagsKey = '';
-        while (!preg_match('{(-----BEGIN PUBLIC KEY-----.+?-----END PUBLIC KEY-----)}s', $tagsKey, $match)) {
+        while (!Preg::isMatch('{(-----BEGIN PUBLIC KEY-----.+?-----END PUBLIC KEY-----)}s', $tagsKey, $match)) {
             $tagsKey = $io->askAndValidate('Enter Tags Public Key (including lines with -----): ', $validator);
             while ($line = $io->ask('')) {
                 $tagsKey .= trim($line)."\n";
@@ -363,6 +393,12 @@ TAGSPUBKEY
         $io->write('Public keys stored in '.$config->get('home'));
     }
 
+    /**
+     * @param string $rollbackDir
+     * @param string $localFilename
+     * @return int
+     * @throws FilesystemException
+     */
     protected function rollback(OutputInterface $output, $rollbackDir, $localFilename)
     {
         $rollbackVersion = $this->getLastBackupVersion($rollbackDir);
@@ -375,7 +411,7 @@ TAGSPUBKEY
         if (!is_file($oldFile)) {
             throw new FilesystemException('Composer rollback failed: "'.$oldFile.'" could not be found');
         }
-        if (!is_readable($oldFile)) {
+        if (!Filesystem::isReadable($oldFile)) {
             throw new FilesystemException('Composer rollback failed: "'.$oldFile.'" could not be read');
         }
 
@@ -391,11 +427,11 @@ TAGSPUBKEY
     /**
      * Checks if the downloaded/rollback phar is valid then moves it
      *
-     * @param  string $localFilename The composer.phar location
-     * @param  string $newFilename The downloaded or backup phar
-     * @param  string $backupTarget The filename to use for the backup
-     * @throws \FilesystemException If the file cannot be moved
-     * @return bool Whether the phar is valid and has been moved
+     * @param  string              $localFilename The composer.phar location
+     * @param  string              $newFilename   The downloaded or backup phar
+     * @param  string              $backupTarget  The filename to use for the backup
+     * @throws FilesystemException If the file cannot be moved
+     * @return bool                Whether the phar is valid and has been moved
      */
     protected function setLocalPhar($localFilename, $newFilename, $backupTarget = null)
     {
@@ -443,6 +479,12 @@ TAGSPUBKEY
         }
     }
 
+    /**
+     * @param string $rollbackDir
+     * @param string|null $except
+     *
+     * @return void
+     */
     protected function cleanBackups($rollbackDir, $except = null)
     {
         $finder = $this->getOldInstallationFinder($rollbackDir);
@@ -459,6 +501,10 @@ TAGSPUBKEY
         }
     }
 
+    /**
+     * @param string $rollbackDir
+     * @return string|false
+     */
     protected function getLastBackupVersion($rollbackDir)
     {
         $finder = $this->getOldInstallationFinder($rollbackDir);
@@ -472,28 +518,30 @@ TAGSPUBKEY
         return false;
     }
 
+    /**
+     * @param string $rollbackDir
+     * @return Finder
+     */
     protected function getOldInstallationFinder($rollbackDir)
     {
-        $finder = Finder::create()
+        return Finder::create()
             ->depth(0)
             ->files()
             ->name('*' . self::OLD_INSTALL_EXT)
             ->in($rollbackDir);
-
-        return $finder;
     }
 
     /**
      * Validates the downloaded/backup phar file
      *
-     * @param string $pharFile The downloaded or backup phar
-     * @param null|string $error Set by method on failure
+     * @param string      $pharFile The downloaded or backup phar
+     * @param null|string $error    Set by method on failure
      *
      * Code taken from getcomposer.org/installer. Any changes should be made
      * there and replicated here
      *
-     * @return bool If the operation succeeded
      * @throws \Exception
+     * @return bool       If the operation succeeded
      */
     protected function validatePhar($pharFile, &$error)
     {
@@ -540,9 +588,9 @@ TAGSPUBKEY
      *
      * Uses a .vbs script to elevate and run the cmd.exe copy command.
      *
-     * @param string $localFilename The composer.phar location
-     * @param string $newFilename The downloaded or backup phar
-     * @return bool Whether composer.phar has been updated
+     * @param  string $localFilename The composer.phar location
+     * @param  string $newFilename   The downloaded or backup phar
+     * @return bool   Whether composer.phar has been updated
      */
     protected function tryAsWindowsAdmin($localFilename, $newFilename)
     {
@@ -579,7 +627,7 @@ EOT;
         @unlink($script);
 
         // see if the file was copied and is still accessible
-        if ($result = is_readable($localFilename) && (hash_file('sha256', $localFilename) === $checksum)) {
+        if ($result = Filesystem::isReadable($localFilename) && (hash_file('sha256', $localFilename) === $checksum)) {
             $io->writeError('<info>Operation succeeded.</info>');
             @unlink($newFilename);
         } else {

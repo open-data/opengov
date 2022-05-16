@@ -20,12 +20,13 @@ use Composer\Util\Filesystem;
  */
 class ZipArchiver implements ArchiverInterface
 {
+    /** @var array<string, bool> */
     protected static $formats = array(
-        'zip' => 1,
+        'zip' => true,
     );
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function archive($sources, $target, $format, array $excludes = array(), $ignoreFilters = false)
     {
@@ -39,7 +40,10 @@ class ZipArchiver implements ArchiverInterface
             foreach ($files as $file) {
                 /** @var \SplFileInfo $file */
                 $filepath = strtr($file->getPath()."/".$file->getFilename(), '\\', '/');
-                $localname = str_replace($sources.'/', '', $filepath);
+                $localname = $filepath;
+                if (strpos($localname, $sources . '/') === 0) {
+                    $localname = substr($localname, strlen($sources . '/'));
+                }
                 if ($file->isDir()) {
                     $zip->addEmptyDir($localname);
                 } else {
@@ -48,8 +52,9 @@ class ZipArchiver implements ArchiverInterface
 
                 /**
                  * ZipArchive::setExternalAttributesName is available from >= PHP 5.6
+                 * setExternalAttributesName() is only available with libzip 0.11.2 or above
                  */
-                if (PHP_VERSION_ID >= 50600) {
+                if (PHP_VERSION_ID >= 50600 && method_exists($zip, 'setExternalAttributesName')) {
                     $perms = fileperms($filepath);
 
                     /**
@@ -72,13 +77,16 @@ class ZipArchiver implements ArchiverInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function supports($format, $sourceType)
     {
         return isset(static::$formats[$format]) && $this->compressionAvailable();
     }
 
+    /**
+     * @return bool
+     */
     private function compressionAvailable()
     {
         return class_exists('ZipArchive');

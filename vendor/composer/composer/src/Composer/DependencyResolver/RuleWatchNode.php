@@ -21,9 +21,12 @@ namespace Composer\DependencyResolver;
  */
 class RuleWatchNode
 {
+    /** @var int */
     public $watch1;
+    /** @var int */
     public $watch2;
 
+    /** @var Rule */
     protected $rule;
 
     /**
@@ -31,13 +34,13 @@ class RuleWatchNode
      *
      * @param Rule $rule The rule to wrap
      */
-    public function __construct($rule)
+    public function __construct(Rule $rule)
     {
         $this->rule = $rule;
 
         $literals = $rule->getLiterals();
 
-        $literalCount = count($literals);
+        $literalCount = \count($literals);
         $this->watch1 = $literalCount > 0 ? $literals[0] : 0;
         $this->watch2 = $literalCount > 1 ? $literals[1] : 0;
     }
@@ -49,13 +52,14 @@ class RuleWatchNode
      * likely to quickly lead to further decisions.
      *
      * @param Decisions $decisions The decisions made so far by the solver
+     * @return void
      */
     public function watch2OnHighest(Decisions $decisions)
     {
         $literals = $this->rule->getLiterals();
 
         // if there are only 2 elements, both are being watched anyway
-        if (count($literals) < 3) {
+        if (\count($literals) < 3 || $this->rule instanceof MultiConflictRule) {
             return;
         }
 
@@ -101,6 +105,7 @@ class RuleWatchNode
      *
      * @param int $from The previously watched literal
      * @param int $to   The literal to be watched now
+     * @return void
      */
     public function moveWatch($from, $to)
     {

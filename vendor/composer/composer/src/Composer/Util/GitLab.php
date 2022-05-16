@@ -16,32 +16,36 @@ use Composer\IO\IOInterface;
 use Composer\Config;
 use Composer\Factory;
 use Composer\Downloader\TransportException;
-use Composer\Json\JsonFile;
+use Composer\Pcre\Preg;
 
 /**
  * @author Roshan Gautam <roshan.gautam@hotmail.com>
  */
 class GitLab
 {
+    /** @var IOInterface */
     protected $io;
+    /** @var Config */
     protected $config;
+    /** @var ProcessExecutor */
     protected $process;
-    protected $remoteFilesystem;
+    /** @var HttpDownloader */
+    protected $httpDownloader;
 
     /**
      * Constructor.
      *
-     * @param IOInterface      $io               The IO instance
-     * @param Config           $config           The composer configuration
-     * @param ProcessExecutor  $process          Process instance, injectable for mocking
-     * @param RemoteFilesystem $remoteFilesystem Remote Filesystem, injectable for mocking
+     * @param IOInterface     $io             The IO instance
+     * @param Config          $config         The composer configuration
+     * @param ProcessExecutor $process        Process instance, injectable for mocking
+     * @param HttpDownloader  $httpDownloader Remote Filesystem, injectable for mocking
      */
-    public function __construct(IOInterface $io, Config $config, ProcessExecutor $process = null, RemoteFilesystem $remoteFilesystem = null)
+    public function __construct(IOInterface $io, Config $config, ProcessExecutor $process = null, HttpDownloader $httpDownloader = null)
     {
         $this->io = $io;
         $this->config = $config;
         $this->process = $process ?: new ProcessExecutor($io);
-        $this->remoteFilesystem = $remoteFilesystem ?: Factory::createRemoteFilesystem($this->io, $config);
+        $this->httpDownloader = $httpDownloader ?: Factory::createHttpDownloader($this->io, $config);
     }
 
     /**
@@ -54,7 +58,7 @@ class GitLab
     public function authorizeOAuth($originUrl)
     {
         // before composer 1.9, origin URLs had no port number in them
-        $bcOriginUrl = preg_replace('{:\d+}', '', $originUrl);
+        $bcOriginUrl = Preg::replace('{:\d+}', '', $originUrl);
 
         if (!in_array($originUrl, $this->config->get('gitlab-domains'), true) && !in_array($bcOriginUrl, $this->config->get('gitlab-domains'), true)) {
             return false;
@@ -67,17 +71,28 @@ class GitLab
             return true;
         }
 
-        // if available use token from composer config
-        $authTokens = $this->config->get('gitlab-token');
-
-        if (isset($authTokens[$originUrl])) {
-            $this->io->setAuthentication($originUrl, $authTokens[$originUrl], 'private-token');
+        // if available use deploy token from git config
+        if (0 === $this->process->execute('git config gitlab.deploytoken.user', $tokenUser) && 0 === $this->process->execute('git config gitlab.deploytoken.token', $tokenPassword)) {
+            $this->io->setAuthentication($originUrl, trim($tokenUser), trim($tokenPassword));
 
             return true;
         }
 
+        // if available use token from composer config
+        $authTokens = $this->config->get('gitlab-token');
+
+        if (isset($authTokens[$originUrl])) {
+            $token = $authTokens[$originUrl];
+        }
+
         if (isset($authTokens[$bcOriginUrl])) {
-            $this->io->setAuthentication($originUrl, $authTokens[$bcOriginUrl], 'private-token');
+            $token = $authTokens[$bcOriginUrl];
+        }
+
+        if (isset($token)) {
+            $username = is_array($token) && array_key_exists("username", $token) ? $token["username"] : $token;
+            $password = is_array($token) && array_key_exists("token", $token) ? $token["token"] : 'private-token';
+            $this->io->setAuthentication($originUrl, $username, $password);
 
             return true;
         }
@@ -104,7 +119,7 @@ class GitLab
         }
 
         $this->io->writeError(sprintf('A token will be created and stored in "%s", your password will never be stored', $this->config->getAuthConfigSource()->getName()));
-        $this->io->writeError('To revoke access to this token you can visit '.$scheme.'://'.$originUrl.'/profile/applications');
+        $this->io->writeError('To revoke access to this token you can visit '.$scheme.'://'.$originUrl.'/-/profile/personal_access_tokens');
 
         $attemptCounter = 0;
 
@@ -146,6 +161,14 @@ class GitLab
         throw new \RuntimeException('Invalid GitLab credentials 5 times in a row, aborting.');
     }
 
+    /**
+     * @param string $scheme
+     * @param string $originUrl
+     *
+     * @return array{access_token: non-empty-string, token_type: non-empty-string, expires_in: positive-int}
+     *
+     * @see https://docs.gitlab.com/ee/api/oauth2.html#resource-owner-password-credentials-flow
+     */
     private function createToken($scheme, $originUrl)
     {
         $username = $this->io->ask('Username: ');
@@ -158,7 +181,7 @@ class GitLab
             'username' => $username,
             'password' => $password,
             'grant_type' => 'password',
-        ), null, '&');
+        ), '', '&');
         $options = array(
             'retry-auth-failure' => false,
             'http' => array(
@@ -168,10 +191,10 @@ class GitLab
             ),
         );
 
-        $json = $this->remoteFilesystem->getContents($originUrl, $scheme.'://'.$apiUrl.'/oauth/token', false, $options);
+        $token = $this->httpDownloader->get($scheme.'://'.$apiUrl.'/oauth/token', $options)->decodeJson();
 
         $this->io->writeError('Token successfully created');
 
-        return JsonFile::parseJson($json);
+        return $token;
     }
 }

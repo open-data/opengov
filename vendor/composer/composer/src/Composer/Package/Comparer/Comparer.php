@@ -19,20 +19,39 @@ namespace Composer\Package\Comparer;
  */
 class Comparer
 {
+    /** @var string Source directory */
     private $source;
+    /** @var string Target directory */
     private $update;
+    /** @var array{changed?: string[], removed?: string[], added?: string[]} */
     private $changed;
 
+    /**
+     * @param string $source
+     *
+     * @return void
+     */
     public function setSource($source)
     {
         $this->source = $source;
     }
 
+    /**
+     * @param string $update
+     *
+     * @return void
+     */
     public function setUpdate($update)
     {
         $this->update = $update;
     }
 
+    /**
+     * @param bool $toString
+     * @param bool $explicated
+     *
+     * @return array{changed?: string[], removed?: string[], added?: string[]}|string|false false if no change, string only if $toString is true
+     */
     public function getChanged($toString = false, $explicated = false)
     {
         $changed = $this->changed;
@@ -48,17 +67,21 @@ class Comparer
         }
 
         if ($toString) {
+            $strings = array();
             foreach ($changed as $sectionKey => $itemSection) {
                 foreach ($itemSection as $itemKey => $item) {
-                    $changed['string'][] = $item."\r\n";
+                    $strings[] = $item."\r\n";
                 }
             }
-            $changed = implode("\r\n", $changed['string']);
+            $changed = implode("\r\n", $strings);
         }
 
         return $changed;
     }
 
+    /**
+     * @return void
+     */
     public function doCompare()
     {
         $source = array();
@@ -97,6 +120,12 @@ class Comparer
         }
     }
 
+    /**
+     * @param string $dir
+     * @param mixed $array
+     *
+     * @return array<string, array<string, string|false>>|false
+     */
     private function doTree($dir, &$array)
     {
         if ($dh = opendir($dir)) {
@@ -112,7 +141,6 @@ class Comparer
                             return false;
                         }
                     } elseif (is_file($dir.'/'.$file) && filesize($dir.'/'.$file)) {
-                        set_time_limit(30);
                         $array[$dir][$file] = md5_file($dir.'/'.$file);
                     }
                 }

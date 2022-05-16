@@ -30,7 +30,7 @@ abstract class StringUtils
     /**
      * Ordered list of registered string wrapper instances
      *
-     * @var list<class-string<StringWrapperInterface>>|null
+     * @var list<class-string<StringWrapperInterface>>
      */
     protected static $wrapperRegistry;
 
@@ -108,8 +108,7 @@ abstract class StringUtils
     public static function registerWrapper($wrapper)
     {
         $wrapper = (string) $wrapper;
-        // using getRegisteredWrappers() here to ensure that the list is initialized
-        if (! in_array($wrapper, static::getRegisteredWrappers(), true)) {
+        if (! in_array($wrapper, static::$wrapperRegistry, true)) {
             static::$wrapperRegistry[] = $wrapper;
         }
     }
@@ -122,8 +121,7 @@ abstract class StringUtils
      */
     public static function unregisterWrapper($wrapper)
     {
-        // using getRegisteredWrappers() here to ensure that the list is initialized
-        $index = array_search((string) $wrapper, static::getRegisteredWrappers(), true);
+        $index = array_search((string) $wrapper, static::$wrapperRegistry, true);
         if ($index !== false) {
             unset(static::$wrapperRegistry[$index]);
         }

@@ -6,12 +6,22 @@
 
 ## Synopsis
 
-At times it may be necessary for a package to require additional actions during
+At times, it may be necessary for a package to require additional actions during
 installation, such as installing packages outside of the default `vendor`
 library.
 
 In these cases you could consider creating a Custom Installer to handle your
 specific logic.
+
+## Alternative to custom installers with Composer 2.1+
+
+As of Composer 2.1, the `Composer\InstalledVersions` class has a
+[`getInstalledPackagesByType`](https://getcomposer.org/doc/07-runtime.md#knowing-which-packages-of-a-given-type-are-installed)
+method which can let you figure out at runtime which plugins/modules/extensions are installed.
+
+It is highly recommended to use that instead of building new custom
+installers if you are building a new application. This has the advantage of leaving
+all vendor code in the vendor directory, and not requiring custom installer code.
 
 ## Calling a Custom Installer
 
@@ -68,7 +78,7 @@ requirements:
 1. the [type][1] attribute must be `composer-plugin`.
 2. the [extra][2] attribute must contain an element `class` defining the
    class name of the plugin (including namespace). If a package contains
-   multiple plugins this can be array of class names.
+   multiple plugins, this can be an array of class names.
 
 Example:
 
@@ -149,6 +159,7 @@ source for the exact signature):
   when the package needs to be removed.
 * **getInstallPath()**, this method should return the location where the
   package is to be installed, _relative from the location of composer.json._
+  The path _must not end with a slash._
 
 Example:
 
@@ -163,7 +174,7 @@ use Composer\Installer\LibraryInstaller;
 class TemplateInstaller extends LibraryInstaller
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getInstallPath(PackageInterface $package)
     {
@@ -180,7 +191,7 @@ class TemplateInstaller extends LibraryInstaller
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function supports($packageType)
     {
@@ -199,6 +210,6 @@ different installation path.
 
 [1]: ../04-schema.md#type
 [2]: ../04-schema.md#extra
-[3]: https://github.com/composer/composer/blob/master/src/Composer/Plugin/PluginInterface.php
-[4]: https://github.com/composer/composer/blob/master/src/Composer/Installer/InstallerInterface.php
-[5]: https://github.com/composer/composer/blob/master/src/Composer/Installer/LibraryInstaller.php
+[3]: https://github.com/composer/composer/blob/main/src/Composer/Plugin/PluginInterface.php
+[4]: https://github.com/composer/composer/blob/main/src/Composer/Installer/InstallerInterface.php
+[5]: https://github.com/composer/composer/blob/main/src/Composer/Installer/LibraryInstaller.php

@@ -12,28 +12,36 @@
 
 namespace Composer\SelfUpdate;
 
-use Composer\Util\RemoteFilesystem;
+use Composer\Pcre\Preg;
+use Composer\Util\HttpDownloader;
 use Composer\Config;
-use Composer\Json\JsonFile;
 
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
 class Versions
 {
-    public static $channels = array('stable', 'preview', 'snapshot', '1', '2');
+    /** @var string[] */
+    public static $channels = array('stable', 'preview', 'snapshot', '1', '2', '2.2');
 
-    private $rfs;
+    /** @var HttpDownloader */
+    private $httpDownloader;
+    /** @var Config */
     private $config;
+    /** @var string */
     private $channel;
-    private $versionsData;
+    /** @var array<string, array<int, array{path: string, version: string, min-php: int, eol?: true}>>|null */
+    private $versionsData = null;
 
-    public function __construct(Config $config, RemoteFilesystem $rfs)
+    public function __construct(Config $config, HttpDownloader $httpDownloader)
     {
-        $this->rfs = $rfs;
+        $this->httpDownloader = $httpDownloader;
         $this->config = $config;
     }
 
+    /**
+     * @return string
+     */
     public function getChannel()
     {
         if ($this->channel) {
@@ -43,7 +51,7 @@ class Versions
         $channelFile = $this->config->get('home').'/update-channel';
         if (file_exists($channelFile)) {
             $channel = trim(file_get_contents($channelFile));
-            if (in_array($channel, array('stable', 'preview', 'snapshot'), true)) {
+            if (in_array($channel, array('stable', 'preview', 'snapshot', '2.2'), true)) {
                 return $this->channel = $channel;
             }
         }
@@ -51,6 +59,11 @@ class Versions
         return $this->channel = 'stable';
     }
 
+    /**
+     * @param string $channel
+     *
+     * @return void
+     */
     public function setChannel($channel)
     {
         if (!in_array($channel, self::$channels, true)) {
@@ -59,9 +72,15 @@ class Versions
 
         $channelFile = $this->config->get('home').'/update-channel';
         $this->channel = $channel;
-        file_put_contents($channelFile, (is_numeric($channel) ? 'stable' : $channel).PHP_EOL);
+        // rewrite '2' and '1' channels to stable for future self-updates, but LTS ones like '2.2' remain pinned
+        file_put_contents($channelFile, (Preg::isMatch('{^\d+$}D', $channel) ? 'stable' : $channel).PHP_EOL);
     }
 
+    /**
+     * @param string|null $channel
+     *
+     * @return array{path: string, version: string, min-php: int, eol?: true}
+     */
     public function getLatest($channel = null)
     {
         $versions = $this->getVersionsData();
@@ -75,16 +94,19 @@ class Versions
         throw new \UnexpectedValueException('There is no version of Composer available for your PHP version ('.PHP_VERSION.')');
     }
 
+    /**
+     * @return array<string, array<int, array{path: string, version: string, min-php: int, eol?: true}>>
+     */
     private function getVersionsData()
     {
-        if (!$this->versionsData) {
+        if (null === $this->versionsData) {
             if ($this->config->get('disable-tls') === true) {
                 $protocol = 'http';
             } else {
                 $protocol = 'https';
             }
 
-            $this->versionsData = JsonFile::parseJson($this->rfs->getContents('getcomposer.org', $protocol . '://getcomposer.org/versions', false));
+            $this->versionsData = $this->httpDownloader->get($protocol . '://getcomposer.org/versions')->decodeJson();
         }
 
         return $this->versionsData;

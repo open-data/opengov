@@ -13,6 +13,7 @@
 namespace Composer\Util;
 
 use Composer\CaBundle\CaBundle;
+use Composer\Pcre\Preg;
 
 /**
  * @author Chris Smith <chris@cs278.org>
@@ -57,7 +58,7 @@ final class TlsHelper
      *
      * @param mixed $certificate X.509 certificate
      *
-     * @return array|null
+     * @return array{cn: string, san: string[]}|null
      */
     public static function getCertificateNames($certificate)
     {
@@ -75,7 +76,7 @@ final class TlsHelper
         $subjectAltNames = array();
 
         if (isset($info['extensions']['subjectAltName'])) {
-            $subjectAltNames = preg_split('{\s*,\s*}', $info['extensions']['subjectAltName']);
+            $subjectAltNames = Preg::split('{\s*,\s*}', $info['extensions']['subjectAltName']);
             $subjectAltNames = array_filter(array_map(function ($name) {
                 if (0 === strpos($name, 'DNS:')) {
                     return strtolower(ltrim(substr($name, 4)));
@@ -98,7 +99,7 @@ final class TlsHelper
      * By Kevin McArthur of StormTide Digital Studios Inc.
      * @KevinSMcArthur / https://github.com/StormTide
      *
-     * See http://tools.ietf.org/html/draft-ietf-websec-key-pinning-02
+     * See https://tools.ietf.org/html/draft-ietf-websec-key-pinning-02
      *
      * This method was adapted from Sslurp.
      * https://github.com/EvanDotPro/Sslurp
@@ -130,6 +131,9 @@ final class TlsHelper
      * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
      * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
      * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     *
+     * @param string $certificate
+     * @return string
      */
     public static function getCertificateFingerprint($certificate)
     {
@@ -162,7 +166,7 @@ final class TlsHelper
      *
      * @param string $certName CN/SAN
      *
-     * @return callable|void
+     * @return callable|null
      */
     private static function certNameMatcher($certName)
     {
@@ -180,14 +184,14 @@ final class TlsHelper
 
             if (3 > count($components)) {
                 // Must have 3+ components
-                return;
+                return null;
             }
 
             $firstComponent = $components[0];
 
             // Wildcard must be the last character.
             if ('*' !== $firstComponent[strlen($firstComponent) - 1]) {
-                return;
+                return null;
             }
 
             $wildcardRegex = preg_quote($certName);
@@ -195,8 +199,10 @@ final class TlsHelper
             $wildcardRegex = "{^{$wildcardRegex}$}";
 
             return function ($hostname) use ($wildcardRegex) {
-                return 1 === preg_match($wildcardRegex, $hostname);
+                return Preg::isMatch($wildcardRegex, $hostname);
             };
         }
+
+        return null;
     }
 }

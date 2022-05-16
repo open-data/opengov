@@ -18,6 +18,7 @@ use Composer\Package\Loader\InvalidPackageException;
 use Composer\Json\JsonValidationException;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
+use Composer\Pcre\Preg;
 use Composer\Spdx\SpdxLicenses;
 
 /**
@@ -28,6 +29,9 @@ use Composer\Spdx\SpdxLicenses;
  */
 class ConfigValidator
 {
+    const CHECK_VERSION = 1;
+
+    /** @var IOInterface */
     private $io;
 
     public function __construct(IOInterface $io)
@@ -40,10 +44,11 @@ class ConfigValidator
      *
      * @param string $file                       The path to the file
      * @param int    $arrayLoaderValidationFlags Flags for ArrayLoader validation
+     * @param int    $flags                      Flags for validation
      *
-     * @return array a triple containing the errors, publishable errors, and warnings
+     * @return array{list<string>, list<string>, list<string>} a triple containing the errors, publishable errors, and warnings
      */
-    public function validate($file, $arrayLoaderValidationFlags = ValidatingArrayLoader::CHECK_ALL)
+    public function validate($file, $arrayLoaderValidationFlags = ValidatingArrayLoader::CHECK_ALL, $flags = self::CHECK_VERSION)
     {
         $errors = array();
         $publishErrors = array();
@@ -89,12 +94,12 @@ class ConfigValidator
             foreach ($licenses as $license) {
                 $spdxLicense = $licenseValidator->getLicenseByIdentifier($license);
                 if ($spdxLicense && $spdxLicense[3]) {
-                    if (preg_match('{^[AL]?GPL-[123](\.[01])?\+$}i', $license)) {
+                    if (Preg::isMatch('{^[AL]?GPL-[123](\.[01])?\+$}i', $license)) {
                         $warnings[] = sprintf(
                             'License "%s" is a deprecated SPDX license identifier, use "'.str_replace('+', '', $license).'-or-later" instead',
                             $license
                         );
-                    } elseif (preg_match('{^[AL]?GPL-[123](\.[01])?$}i', $license)) {
+                    } elseif (Preg::isMatch('{^[AL]?GPL-[123](\.[01])?$}i', $license)) {
                         $warnings[] = sprintf(
                             'License "%s" is a deprecated SPDX license identifier, use "'.$license.'-only" or "'.$license.'-or-later" instead',
                             $license
@@ -109,12 +114,12 @@ class ConfigValidator
             }
         }
 
-        if (isset($manifest['version'])) {
+        if (($flags & self::CHECK_VERSION) && isset($manifest['version'])) {
             $warnings[] = 'The version field is present, it is recommended to leave it out if the package is published on Packagist.';
         }
 
-        if (!empty($manifest['name']) && preg_match('{[A-Z]}', $manifest['name'])) {
-            $suggestName = preg_replace('{(?:([a-z])([A-Z])|([A-Z])([A-Z][a-z]))}', '\\1\\3-\\2\\4', $manifest['name']);
+        if (!empty($manifest['name']) && Preg::isMatch('{[A-Z]}', $manifest['name'])) {
+            $suggestName = Preg::replace('{(?:([a-z])([A-Z])|([A-Z])([A-Z][a-z]))}', '\\1\\3-\\2\\4', $manifest['name']);
             $suggestName = strtolower($suggestName);
 
             $publishErrors[] = sprintf(
@@ -129,7 +134,7 @@ class ConfigValidator
         }
 
         // check for require-dev overrides
-        if (isset($manifest['require']) && isset($manifest['require-dev'])) {
+        if (isset($manifest['require'], $manifest['require-dev'])) {
             $requireOverrides = array_intersect_key($manifest['require'], $manifest['require-dev']);
 
             if (!empty($requireOverrides)) {
@@ -137,7 +142,6 @@ class ConfigValidator
                 $warnings[] = implode(', ', array_keys($requireOverrides)). " {$plural} required both in require and require-dev, this can lead to unexpected behavior";
             }
         }
-
 
         // check for meaningless provide/replace satisfying requirements
         foreach (array('provide', 'replace') as $linkType) {
@@ -159,7 +163,7 @@ class ConfigValidator
         $requireDev = isset($manifest['require-dev']) ? $manifest['require-dev'] : array();
         $packages = array_merge($require, $requireDev);
         foreach ($packages as $package => $version) {
-            if (preg_match('/#/', $version) === 1) {
+            if (Preg::isMatch('/#/', $version)) {
                 $warnings[] = sprintf(
                     'The package "%s" is pointing to a commit-ref, this is bad practice and can cause unforeseen issues.',
                     $package
@@ -187,8 +191,8 @@ class ConfigValidator
             $warnings[] = "Defining autoload.psr-4 with an empty namespace prefix is a bad idea for performance";
         }
 
+        $loader = new ValidatingArrayLoader(new ArrayLoader(), true, null, $arrayLoaderValidationFlags);
         try {
-            $loader = new ValidatingArrayLoader(new ArrayLoader(), true, null, $arrayLoaderValidationFlags);
             if (!isset($manifest['version'])) {
                 $manifest['version'] = '1.0.0';
             }

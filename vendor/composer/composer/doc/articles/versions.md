@@ -78,7 +78,20 @@ If you want Composer to check out a branch instead of a tag, you need to point i
 
 In the above example, if you wanted to check out the `my-feature` branch, you would specify `dev-my-feature` as the version constraint in your `require` clause. This would result in Composer cloning the `my-library` repository into my `vendor` directory and checking out the `my-feature` branch.
 
-When branch names look like versions, we have to clarify for composer that we're trying to check out a branch and not a tag. In the above example, we have two version branches: `v1` and `v2`. To get Composer to check out one of these branches, you must specify a version constraint that looks like this: `v1.x-dev`. The `.x` is an arbitrary string that Composer requires to tell it that we're talking about the `v1` branch and not a `v1` tag (alternatively, you can name the branch `v1.x` instead of `v1`). In the case of a branch with a version-like name (`v1`, in this case), you append `-dev` as a suffix, rather than using `dev-` as a prefix.
+When branch names look like versions, we have to clarify for Composer that we're trying to check out a branch and not a tag. In the above example, we have two version branches: `v1` and `v2`. To get Composer to check out one of these branches, you must specify a version constraint that looks like this: `v1.x-dev`. The `.x` is an arbitrary string that Composer requires to tell it that we're talking about the `v1` branch and not a `v1` tag (alternatively, you can name the branch `v1.x` instead of `v1`). In the case of a branch with a version-like name (`v1`, in this case), you append `-dev` as a suffix, rather than using `dev-` as a prefix.
+
+### Stabilities
+
+Composer recognizes the following stabilities (in order of stability): dev,
+alpha, beta, RC, and stable where RC stands for release candidate. The stability
+of a version is defined by its suffix e.g version `v1.1-BETA` has a stability of
+`beta` and `v1.1-RC1` has a stability of `RC`. If such a suffix is missing
+e.g. version `v1.1` then Composer considers that version `stable`. In addition
+to that Composer automatically adds a `-dev` suffix to all numeric branches and
+prefixes all other branches imported from a VCS repository with `dev-`. In both
+cases the stability `dev` gets assigned.
+
+Keeping this in mind will help you in the next section.
 
 ### Minimum Stability
 
@@ -111,13 +124,18 @@ will be treated as a **logical OR**. AND has higher precedence than OR.
 > unexpectedly installing versions that break backwards compatibility.
 > Consider using the [caret](#caret-version-range-) operator instead for safety.
 
+<!--blank line followed by comment markup to separate the block quotes-->
+> **Note:** In older versions of Composer the single pipe (`|`) was the
+> recommended alternative to the **logical OR**. Thus for backwards compatibility
+> the single pipe (`|`) will still be treated as a **logical OR**.
+
 Examples:
 
 * `>=1.0`
 * `>=1.0 <2.0`
 * `>=1.0 <1.1 || >=1.2`
 
-### Hyphenated Version Range ( - )
+### Hyphenated Version Range (` - `)
 
 Inclusive set of versions. Partial versions on the right include are completed
 with a wildcard. For example `1.0 - 2.0` is equivalent to `>=1.0.0 <2.1` as the
@@ -126,7 +144,7 @@ with a wildcard. For example `1.0 - 2.0` is equivalent to `>=1.0.0 <2.1` as the
 
 Example: `1.0 - 2.0`
 
-### Wildcard Version Range (.*)
+### Wildcard Version Range (`.*`)
 
 You can specify a pattern with a `*` wildcard. `1.0.*` is the equivalent of
 `>=1.0 <1.1`.
@@ -135,7 +153,7 @@ Example: `1.0.*`
 
 ## Next Significant Release Operators
 
-### Tilde Version Range (~)
+### Tilde Version Range (`~`)
 
 The `~` operator is best explained by example: `~1.2` is equivalent to
 `>=1.2 <2.0.0`, while `~1.2.3` is equivalent to `>=1.2.3 <1.3.0`. As you can see
@@ -157,9 +175,9 @@ Example: `~1.2`
 > it will not allow the major number to increase trying to keep backwards
 > compatibility.
 
-### Caret Version Range (^)
+### Caret Version Range (`^`)
 
-The `^` operator behaves very similarly but it sticks closer to semantic
+The `^` operator behaves very similarly, but it sticks closer to semantic
 versioning, and will always allow non-breaking updates. For example `^1.2.3`
 is equivalent to `>=1.2.3 <2.0.0` as none of the releases until 2.0 should
 break backwards compatibility. For pre-1.0 versions it also acts with safety
@@ -195,13 +213,13 @@ Examples:
 
 To allow various stabilities without enforcing them at the constraint level
 however, you may use [stability-flags](../04-schema.md#package-links) like
-`@<stability>` (e.g. `@dev`) to let composer know that a given package
+`@<stability>` (e.g. `@dev`) to let Composer know that a given package
 can be installed in a different stability than your default minimum-stability
 setting. All available stability flags are listed on the minimum-stability
 section of the [schema page](../04-schema.md#minimum-stability).
 
 ## Summary
-```json
+```jsonc
 "require": {
     "vendor/package": "1.3.2", // exactly 1.3.2
 

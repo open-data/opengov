@@ -89,7 +89,7 @@ Add this to your project's root `composer.json`:
 }
 ```
 
-Or let composer add it for you with:
+Or let Composer add it for you with:
 
 ```
 php composer.phar require monolog/monolog:"dev-bugfix as 1.0.x-dev"
@@ -107,5 +107,5 @@ and alias it to `1.0.x-dev`.
 > inline-aliased again in A's `composer.json`.
 
 > **Note:** Inline aliasing should be avoided, especially for published
-> packages/libraries. If you found a bug, try and get your fix merged upstream.
+> packages/libraries. If you found a bug, try to get your fix merged upstream.
 > This helps to avoid issues for users of your package.

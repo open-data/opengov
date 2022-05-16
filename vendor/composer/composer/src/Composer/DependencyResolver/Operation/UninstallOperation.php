@@ -19,20 +19,17 @@ use Composer\Package\PackageInterface;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class UninstallOperation extends SolverOperation
+class UninstallOperation extends SolverOperation implements OperationInterface
 {
-    protected $package;
+    const TYPE = 'uninstall';
 
     /**
-     * Initializes operation.
-     *
-     * @param PackageInterface $package package instance
-     * @param string           $reason  operation reason
+     * @var PackageInterface
      */
-    public function __construct(PackageInterface $package, $reason = null)
-    {
-        parent::__construct($reason);
+    protected $package;
 
+    public function __construct(PackageInterface $package)
+    {
         $this->package = $package;
     }
 
@@ -47,20 +44,19 @@ class UninstallOperation extends SolverOperation
     }
 
     /**
-     * Returns job type.
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function getJobType()
+    public function show($lock)
     {
-        return 'uninstall';
+        return self::format($this->package, $lock);
     }
 
     /**
-     * {@inheritDoc}
+     * @param bool $lock
+     * @return string
      */
-    public function __toString()
+    public static function format(PackageInterface $package, $lock = false)
     {
-        return 'Uninstalling '.$this->package->getPrettyName().' ('.$this->formatVersion($this->package).')';
+        return 'Removing <info>'.$package->getPrettyName().'</info> (<comment>'.$package->getFullPrettyVersion().'</comment>)';
     }
 }

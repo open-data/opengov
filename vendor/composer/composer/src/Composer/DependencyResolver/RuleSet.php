@@ -12,46 +12,53 @@
 
 namespace Composer\DependencyResolver;
 
+use Composer\Repository\RepositorySet;
+
 /**
  * @author Nils Adermann <naderman@naderman.de>
+ * @implements \IteratorAggregate<Rule>
  */
 class RuleSet implements \IteratorAggregate, \Countable
 {
     // highest priority => lowest number
     const TYPE_PACKAGE = 0;
-    const TYPE_JOB = 1;
+    const TYPE_REQUEST = 1;
     const TYPE_LEARNED = 4;
 
     /**
      * READ-ONLY: Lookup table for rule id to rule object
      *
-     * @var Rule[]
+     * @var array<int, Rule>
      */
-    public $ruleById;
+    public $ruleById = array();
 
+    /** @var array<0|1|4, string> */
     protected static $types = array(
-        255 => 'UNKNOWN',
         self::TYPE_PACKAGE => 'PACKAGE',
-        self::TYPE_JOB => 'JOB',
+        self::TYPE_REQUEST => 'REQUEST',
         self::TYPE_LEARNED => 'LEARNED',
     );
 
+    /** @var array<self::TYPE_*, Rule[]> */
     protected $rules;
-    protected $nextRuleId;
 
-    protected $rulesByHash;
+    /** @var int */
+    protected $nextRuleId = 0;
+
+    /** @var array<int|string, Rule|Rule[]> */
+    protected $rulesByHash = array();
 
     public function __construct()
     {
-        $this->nextRuleId = 0;
-
         foreach ($this->getTypes() as $type) {
             $this->rules[$type] = array();
         }
-
-        $this->rulesByHash = array();
     }
 
+    /**
+     * @param self::TYPE_* $type
+     * @return void
+     */
     public function add(Rule $rule, $type)
     {
         if (!isset(self::$types[$type])) {
@@ -63,7 +70,7 @@ class RuleSet implements \IteratorAggregate, \Countable
         // Do not add if rule already exists
         if (isset($this->rulesByHash[$hash])) {
             $potentialDuplicates = $this->rulesByHash[$hash];
-            if (is_array($potentialDuplicates)) {
+            if (\is_array($potentialDuplicates)) {
                 foreach ($potentialDuplicates as $potentialDuplicate) {
                     if ($rule->equals($potentialDuplicate)) {
                         return;
@@ -88,7 +95,7 @@ class RuleSet implements \IteratorAggregate, \Countable
 
         if (!isset($this->rulesByHash[$hash])) {
             $this->rulesByHash[$hash] = $rule;
-        } elseif (is_array($this->rulesByHash[$hash])) {
+        } elseif (\is_array($this->rulesByHash[$hash])) {
             $this->rulesByHash[$hash][] = $rule;
         } else {
             $originalRule = $this->rulesByHash[$hash];
@@ -96,33 +103,52 @@ class RuleSet implements \IteratorAggregate, \Countable
         }
     }
 
+    /**
+     * @return int
+     */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->nextRuleId;
     }
 
+    /**
+     * @param int $id
+     * @return Rule
+     */
     public function ruleById($id)
     {
         return $this->ruleById[$id];
     }
 
+    /** @return array<self::TYPE_*, Rule[]> */
     public function getRules()
     {
         return $this->rules;
     }
 
+    /**
+     * @return RuleSetIterator
+     */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new RuleSetIterator($this->getRules());
     }
 
+    /**
+     * @param  self::TYPE_*|array<self::TYPE_*> $types
+     * @return RuleSetIterator
+     */
     public function getIteratorFor($types)
     {
-        if (!is_array($types)) {
+        if (!\is_array($types)) {
             $types = array($types);
         }
 
         $allRules = $this->getRules();
+
+        /** @var array<self::TYPE_*, Rule[]> $rules */
         $rules = array();
 
         foreach ($types as $type) {
@@ -132,9 +158,13 @@ class RuleSet implements \IteratorAggregate, \Countable
         return new RuleSetIterator($rules);
     }
 
+    /**
+     * @param array<self::TYPE_*>|self::TYPE_* $types
+     * @return RuleSetIterator
+     */
     public function getIteratorWithout($types)
     {
-        if (!is_array($types)) {
+        if (!\is_array($types)) {
             $types = array($types);
         }
 
@@ -147,21 +177,25 @@ class RuleSet implements \IteratorAggregate, \Countable
         return new RuleSetIterator($rules);
     }
 
+    /** @return array{0: 0, 1: 1, 2: 4} */
     public function getTypes()
     {
         $types = self::$types;
-        unset($types[255]);
 
         return array_keys($types);
     }
 
-    public function getPrettyString(Pool $pool = null)
+    /**
+     * @param bool $isVerbose
+     * @return string
+     */
+    public function getPrettyString(RepositorySet $repositorySet = null, Request $request = null, Pool $pool = null, $isVerbose = false)
     {
         $string = "\n";
         foreach ($this->rules as $type => $rules) {
             $string .= str_pad(self::$types[$type], 8, ' ') . ": ";
             foreach ($rules as $rule) {
-                $string .= ($pool ? $rule->getPrettyString($pool) : $rule)."\n";
+                $string .= ($repositorySet && $request && $pool ? $rule->getPrettyString($repositorySet, $request, $pool, $isVerbose) : $rule)."\n";
             }
             $string .= "\n\n";
         }
@@ -171,6 +205,6 @@ class RuleSet implements \IteratorAggregate, \Countable
 
     public function __toString()
     {
-        return $this->getPrettyString(null);
+        return $this->getPrettyString();
     }
 }

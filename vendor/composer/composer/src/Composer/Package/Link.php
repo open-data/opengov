@@ -21,6 +21,38 @@ use Composer\Semver\Constraint\ConstraintInterface;
  */
 class Link
 {
+    const TYPE_REQUIRE = 'requires';
+    const TYPE_DEV_REQUIRE = 'devRequires';
+    const TYPE_PROVIDE = 'provides';
+    const TYPE_CONFLICT = 'conflicts';
+    const TYPE_REPLACE = 'replaces';
+
+    /**
+     * Special type
+     * @internal
+     */
+    const TYPE_DOES_NOT_REQUIRE = 'does not require';
+    /**
+     * TODO should be marked private once 5.3 is dropped
+     * @private
+     */
+    const TYPE_UNKNOWN = 'relates to';
+
+    /**
+     * Will be converted into a constant once the min PHP version allows this
+     *
+     * @internal
+     * @var string[]
+     * @phpstan-var array<self::TYPE_REQUIRE|self::TYPE_DEV_REQUIRE|self::TYPE_PROVIDE|self::TYPE_CONFLICT|self::TYPE_REPLACE>
+     */
+    public static $TYPES = array(
+        self::TYPE_REQUIRE,
+        self::TYPE_DEV_REQUIRE,
+        self::TYPE_PROVIDE,
+        self::TYPE_CONFLICT,
+        self::TYPE_REPLACE,
+    );
+
     /**
      * @var string
      */
@@ -32,35 +64,41 @@ class Link
     protected $target;
 
     /**
-     * @var ConstraintInterface|null
+     * @var ConstraintInterface
      */
     protected $constraint;
 
     /**
      * @var string
+     * @phpstan-var string $description
      */
     protected $description;
 
     /**
-     * @var string|null
+     * @var ?string
      */
     protected $prettyConstraint;
 
     /**
      * Creates a new package link.
      *
-     * @param string                   $source
-     * @param string                   $target
-     * @param ConstraintInterface|null $constraint       Constraint applying to the target of this link
-     * @param string                   $description      Used to create a descriptive string representation
-     * @param string|null              $prettyConstraint
+     * @param string              $source
+     * @param string              $target
+     * @param ConstraintInterface $constraint       Constraint applying to the target of this link
+     * @param self::TYPE_*        $description      Used to create a descriptive string representation
+     * @param string|null         $prettyConstraint
      */
-    public function __construct($source, $target, ConstraintInterface $constraint = null, $description = 'relates to', $prettyConstraint = null)
-    {
+    public function __construct(
+        $source,
+        $target,
+        ConstraintInterface $constraint,
+        $description = self::TYPE_UNKNOWN,
+        $prettyConstraint = null
+    ) {
         $this->source = strtolower($source);
         $this->target = strtolower($target);
         $this->constraint = $constraint;
-        $this->description = $description;
+        $this->description = self::TYPE_DEV_REQUIRE === $description ? 'requires (for development)' : $description;
         $this->prettyConstraint = $prettyConstraint;
     }
 
@@ -89,7 +127,7 @@ class Link
     }
 
     /**
-     * @return ConstraintInterface|null
+     * @return ConstraintInterface
      */
     public function getConstraint()
     {
@@ -123,6 +161,6 @@ class Link
      */
     public function getPrettyString(PackageInterface $sourcePackage)
     {
-        return $sourcePackage->getPrettyString().' '.$this->description.' '.$this->target.' '.$this->constraint->getPrettyString().'';
+        return $sourcePackage->getPrettyString().' '.$this->description.' '.$this->target.' '.$this->constraint->getPrettyString();
     }
 }

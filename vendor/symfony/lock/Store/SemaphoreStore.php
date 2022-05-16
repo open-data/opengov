@@ -11,39 +11,27 @@
 
 namespace Symfony\Component\Lock\Store;
 
+use Symfony\Component\Lock\BlockingStoreInterface;
 use Symfony\Component\Lock\Exception\InvalidArgumentException;
 use Symfony\Component\Lock\Exception\LockConflictedException;
-use Symfony\Component\Lock\Exception\NotSupportedException;
 use Symfony\Component\Lock\Key;
 use Symfony\Component\Lock\StoreInterface;
 
 /**
- * SemaphoreStore is a StoreInterface implementation using Semaphore as store engine.
+ * SemaphoreStore is a PersistingStoreInterface implementation using Semaphore as store engine.
  *
  * @author Jérémy Derussé <jeremy@derusse.com>
  */
-class SemaphoreStore implements StoreInterface
+class SemaphoreStore implements StoreInterface, BlockingStoreInterface
 {
     /**
      * Returns whether or not the store is supported.
      *
-     * @param bool|null $blocking when not null, checked again the blocking mode
-     *
-     * @return bool
-     *
      * @internal
      */
-    public static function isSupported($blocking = null)
+    public static function isSupported(): bool
     {
-        if (!\extension_loaded('sysvsem')) {
-            return false;
-        }
-
-        if (false === $blocking && \PHP_VERSION_ID < 50601) {
-            return false;
-        }
-
-        return true;
+        return \extension_loaded('sysvsem');
     }
 
     public function __construct()
@@ -69,26 +57,19 @@ class SemaphoreStore implements StoreInterface
         $this->lock($key, true);
     }
 
-    private function lock(Key $key, $blocking)
+    private function lock(Key $key, bool $blocking)
     {
         if ($key->hasState(__CLASS__)) {
             return;
         }
 
-        $keyId = crc32($key);
-        $resource = sem_get($keyId);
-
-        if (\PHP_VERSION_ID >= 50601) {
-            $acquired = @sem_acquire($resource, !$blocking);
-        } elseif (!$blocking) {
-            throw new NotSupportedException(sprintf('The store "%s" does not supports non blocking locks.', static::class));
-        } else {
-            $acquired = @sem_acquire($resource);
-        }
+        $keyId = unpack('i', md5($key, true))[1];
+        $resource = @sem_get($keyId);
+        $acquired = $resource && @sem_acquire($resource, !$blocking);
 
         while ($blocking && !$acquired) {
-            $resource = sem_get($keyId);
-            $acquired = @sem_acquire($resource);
+            $resource = @sem_get($keyId);
+            $acquired = $resource && @sem_acquire($resource);
         }
 
         if (!$acquired) {

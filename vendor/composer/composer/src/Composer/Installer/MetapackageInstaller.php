@@ -14,8 +14,10 @@ namespace Composer\Installer;
 
 use Composer\Repository\InstalledRepositoryInterface;
 use Composer\Package\PackageInterface;
-use Composer\Package\Version\VersionParser;
 use Composer\IO\IOInterface;
+use Composer\DependencyResolver\Operation\UpdateOperation;
+use Composer\DependencyResolver\Operation\InstallOperation;
+use Composer\DependencyResolver\Operation\UninstallOperation;
 
 /**
  * Metapackage installation manager.
@@ -24,6 +26,7 @@ use Composer\IO\IOInterface;
  */
 class MetapackageInstaller implements InstallerInterface
 {
+    /** @var IOInterface */
     private $io;
 
     public function __construct(IOInterface $io)
@@ -32,7 +35,7 @@ class MetapackageInstaller implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function supports($packageType)
     {
@@ -40,7 +43,7 @@ class MetapackageInstaller implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isInstalled(InstalledRepositoryInterface $repo, PackageInterface $package)
     {
@@ -48,17 +51,46 @@ class MetapackageInstaller implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function install(InstalledRepositoryInterface $repo, PackageInterface $package)
+    public function download(PackageInterface $package, PackageInterface $prevPackage = null)
     {
-        $this->io->writeError("  - Installing <info>" . $package->getName() . "</info> (<comment>" . $package->getFullPrettyVersion() . "</comment>)");
-
-        $repo->addPackage(clone $package);
+        // noop
+        return \React\Promise\resolve();
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
+     */
+    public function prepare($type, PackageInterface $package, PackageInterface $prevPackage = null)
+    {
+        // noop
+        return \React\Promise\resolve();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function cleanup($type, PackageInterface $package, PackageInterface $prevPackage = null)
+    {
+        // noop
+        return \React\Promise\resolve();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function install(InstalledRepositoryInterface $repo, PackageInterface $package)
+    {
+        $this->io->writeError("  - " . InstallOperation::format($package));
+
+        $repo->addPackage(clone $package);
+
+        return \React\Promise\resolve();
+    }
+
+    /**
+     * @inheritDoc
      */
     public function update(InstalledRepositoryInterface $repo, PackageInterface $initial, PackageInterface $target)
     {
@@ -66,18 +98,16 @@ class MetapackageInstaller implements InstallerInterface
             throw new \InvalidArgumentException('Package is not installed: '.$initial);
         }
 
-        $name = $target->getName();
-        $from = $initial->getFullPrettyVersion();
-        $to = $target->getFullPrettyVersion();
-        $actionName = VersionParser::isUpgrade($initial->getVersion(), $target->getVersion()) ? 'Updating' : 'Downgrading';
-        $this->io->writeError("  - " . $actionName . " <info>" . $name . "</info> (<comment>" . $from . "</comment> => <comment>" . $to . "</comment>)");
+        $this->io->writeError("  - " . UpdateOperation::format($initial, $target));
 
         $repo->removePackage($initial);
         $repo->addPackage(clone $target);
+
+        return \React\Promise\resolve();
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function uninstall(InstalledRepositoryInterface $repo, PackageInterface $package)
     {
@@ -85,13 +115,15 @@ class MetapackageInstaller implements InstallerInterface
             throw new \InvalidArgumentException('Package is not installed: '.$package);
         }
 
-        $this->io->writeError("  - Removing <info>" . $package->getName() . "</info> (<comment>" . $package->getFullPrettyVersion() . "</comment>)");
+        $this->io->writeError("  - " . UninstallOperation::format($package));
 
         $repo->removePackage($package);
+
+        return \React\Promise\resolve();
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getInstallPath(PackageInterface $package)
     {

@@ -14,12 +14,16 @@ namespace Composer\Util;
 
 use Composer\Config;
 use Composer\IO\IOInterface;
+use Composer\Pcre\Preg;
 
 /**
  * @author Jonas Renaudot <jonas.renaudot@gmail.com>
  */
 class Hg
 {
+    /** @var string|false|null */
+    private static $version = false;
+
     /**
      * @var \Composer\IO\IOInterface
      */
@@ -42,6 +46,13 @@ class Hg
         $this->process = $process;
     }
 
+    /**
+     * @param callable    $commandCallable
+     * @param string      $url
+     * @param string|null $cwd
+     *
+     * @return void
+     */
     public function runCommand($commandCallable, $url, $cwd)
     {
         $this->config->prohibitUrlByConfig($url, $this->io);
@@ -54,7 +65,7 @@ class Hg
         }
 
         // Try with the authentication information available
-        if (preg_match('{^(https?)://((.+)(?:\:(.+))?@)?([^/]+)(/.*)?}mi', $url, $match) && $this->io->hasAuthentication($match[5])) {
+        if (Preg::isMatch('{^(https?)://((.+)(?:\:(.+))?@)?([^/]+)(/.*)?}mi', $url, $match) && $this->io->hasAuthentication($match[5])) {
             $auth = $this->io->getAuthentication($match[5]);
             $authenticatedUrl = $match[1] . '://' . rawurlencode($auth['username']) . ':' . rawurlencode($auth['password']) . '@' . $match[5] . (!empty($match[6]) ? $match[6] : null);
 
@@ -72,23 +83,35 @@ class Hg
         $this->throwException('Failed to clone ' . $url . ', ' . "\n\n" . $error, $url);
     }
 
-    public static function sanitizeUrl($message)
-    {
-        return preg_replace_callback('{://(?P<user>[^@]+?):(?P<password>.+?)@}', function ($m) {
-            if (preg_match('{^[a-f0-9]{12,}$}', $m[1])) {
-                return '://***:***@';
-            }
-
-            return '://' . $m[1] . ':***@';
-        }, $message);
-    }
-
+    /**
+     * @param non-empty-string $message
+     * @param string           $url
+     *
+     * @return never
+     */
     private function throwException($message, $url)
     {
-        if (0 !== $this->process->execute('hg --version', $ignoredOutput)) {
-            throw new \RuntimeException(self::sanitizeUrl('Failed to clone ' . $url . ', hg was not found, check that it is installed and in your PATH env.' . "\n\n" . $this->process->getErrorOutput()));
+        if (null === self::getVersion($this->process)) {
+            throw new \RuntimeException(Url::sanitize('Failed to clone ' . $url . ', hg was not found, check that it is installed and in your PATH env.' . "\n\n" . $this->process->getErrorOutput()));
         }
 
-        throw new \RuntimeException(self::sanitizeUrl($message));
+        throw new \RuntimeException(Url::sanitize($message));
+    }
+
+    /**
+     * Retrieves the current hg version.
+     *
+     * @return string|null The hg version number, if present.
+     */
+    public static function getVersion(ProcessExecutor $process)
+    {
+        if (false === self::$version) {
+            self::$version = null;
+            if (0 === $process->execute('hg --version', $output) && Preg::isMatch('/^.+? (\d+(?:\.\d+)+)\)?\r?\n/', $output, $matches)) {
+                self::$version = $matches[1];
+            }
+        }
+
+        return self::$version;
     }
 }
