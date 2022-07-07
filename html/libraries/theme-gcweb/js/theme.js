@@ -1,10 +1,9 @@
-/**
- * @title WET-BOEW Template polyfill
- * @overview The <template> element hold elements for Javascript and templating usage. Based on code from http://ironlasso.com/template-tag-polyfill-for-internet-explorer/
+/*!
+ * @title Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
  * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
-( function( $, document, wb ) {
+ * v11.0.0 - 2022-05-19
+ *
+ */( function( $, document, wb ) {
 "use strict";
 
 /*
@@ -72,12 +71,6 @@ wb.add( selector );
 
 } )( jQuery, document, wb );
 
-/**
- * @title WET-BOEW GC Subway map mutator
- * @overview Plugin used to mutate DOM elements depending on viewport size, in order to follow order accessibility criteria while respecting UI
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @gormfrank
- */
 ( function( $, window, wb ) {
 "use strict";
 
@@ -202,12 +195,6 @@ wb.add( selector );
 
 } )( jQuery, window, wb );
 
-/**
- * @title WET-BOEW JSON Fetch [ json-fetch ]
- * @overview Load and filter data from a JSON file
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 /*global jsonpointer */
 ( function( $, wb ) {
 "use strict";
@@ -340,6 +327,25 @@ $document.on( fetchEvent, function( event ) {
 					}
 				}
 
+				// Ensure we only receive JSON data and don't allow jsonp
+				// jQuery will raise an error if other data format is received
+				fetchOpts.dataType = "json";
+				if ( fetchOpts.jsonp ) {
+					fetchOpts.jsonp = false;
+				}
+
+				// Sending Data
+				if ( fetchOpts.data ) {
+					try {
+						fetchOpts.data = ( typeof fetchOpts.data === "string" ? fetchOpts.data : JSON.stringify( fetchOpts.data ) );
+					} catch ( err ) {
+						throw "JSON fetch - Data being sent to server - " + err;
+					}
+
+					fetchOpts.method = fetchOpts.method || "POST";
+					fetchOpts.contentType = fetchOpts.contentType || "application/json";
+				}
+
 				$.ajax( fetchOpts )
 					.done( function( response, status, xhr ) {
 						var i, i_len, i_cache, backlog;
@@ -384,12 +390,6 @@ $document.on( fetchEvent, function( event ) {
 
 } )( jQuery, wb );
 
-/**
- * @title WET-BOEW Action Manager
- * @overview API that coordinate actions with other wet-boew plugin
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 ( function( $, wb, document ) {
 "use strict";
 
@@ -679,7 +679,10 @@ var $document = wb.doc,
 			fetch: {
 				url: fileUrl,
 				nocache: data.nocache,
-				nocachekey: data.nocachekey
+				nocachekey: data.nocachekey,
+				data: data.data,
+				contentType: data.contenttype,
+				method: data.method
 			}
 		} );
 
@@ -983,12 +986,6 @@ wb.add( selectorPreset );
 
 } )( jQuery, wb, document );
 
-/**
- * @title WET-BOEW Chat Wizard plugin container
- * @overview Plugin used to translate a form into a conversational form, hence a Chat Wizard
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @gormfrank
- */
 ( function( $, window, wb ) {
 "use strict";
 
@@ -1815,13 +1812,6 @@ wb.add( selector );
 
 } )( jQuery, window, wb );
 
-/**
- * @title WET-BOEW Data Json [data-json-after], [data-json-append],
- * [data-json-before], [data-json-prepend], [data-json-replace], [data-json-replacewith] and [data-wb-json]
- * @overview Insert content extracted from JSON file.
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 /*global jsonpointer */
 ( function( $, window, wb ) {
 "use strict";
@@ -1916,34 +1906,23 @@ var componentName = "wb-data-json",
 			i_len = lstCall.length;
 			for ( i = 0; i !== i_len; i += 1 ) {
 				i_cache = lstCall[ i ];
-				loadJSON( elm, i_cache.url, i, i_cache.nocache, i_cache.nocachekey );
+				loadJSON( elm, i_cache.url, i, i_cache.nocache, i_cache.nocachekey, i_cache.data, i_cache.contenttype, i_cache.method );
 			}
 
 		}
 	},
 
-	loadJSON = function( elm, url, refId, nocache, nocachekey ) {
+	loadJSON = function( elm, url, refId, nocache, nocachekey, data, contentType, method ) {
 		var $elm = $( elm ),
 			fetchObj = {
 				url: url,
 				refId: refId,
 				nocache: nocache,
-				nocachekey: nocachekey
-			},
-			settings = window[ componentName ],
-			urlParts;
-
-		// Detect CORS requests
-		if ( settings && ( url.substr( 0, 4 ) === "http" || url.substr( 0, 2 ) === "//" ) ) {
-			urlParts = wb.getUrlParts( url );
-			if ( ( wb.pageUrlParts.protocol !== urlParts.protocol || wb.pageUrlParts.host !== urlParts.host ) && ( !Modernizr.cors || settings.forceCorsFallback ) ) {
-				if ( typeof settings.corsFallback === "function" ) {
-					fetchObj.dataType = "jsonp";
-					fetchObj.jsonp = "callback";
-					fetchObj = settings.corsFallback( fetchObj );
-				}
-			}
-		}
+				nocachekey: nocachekey,
+				data: data,
+				contentType: contentType,
+				method: method
+			};
 
 		$elm.trigger( {
 			type: "json-fetch.wb",
@@ -2034,7 +2013,33 @@ var componentName = "wb-data-json",
 			elmClass = elm.className,
 			elmAppendTo = elm,
 			dataTable,
+			dataTableAddRow,
 			template = settings.source ? document.querySelector( settings.source ) : elm.querySelector( "template" );
+
+		// If combined with wb-tables plugin
+		if ( elm.tagName === "TABLE" && elmClass.indexOf( "wb-tables" ) !== -1 ) {
+
+			//  Wait for its initialization before to applyTemplate
+			if ( elmClass.indexOf( "wb-tables-inited" ) === -1 ) {
+				$( elm ).one( "wb-ready.wb-tables,init.dt", function( ) {
+					applyTemplate( elm, settings, content );
+				} );
+				return;
+			}
+
+			// Edge case, when both plugin are ready at the same time, just wait for the next tick
+			if ( !$.fn.dataTable.isDataTable( elm ) && elmClass.indexOf( componentName + "-dtwait" ) === -1 ) {
+				elm.classList.add( componentName + "-dtwait" );
+				setTimeout( function( ) {
+					applyTemplate( elm, settings, content );
+				}, 50 );
+				return;
+			}
+
+			dataTable = $( elm ).dataTable( { "retrieve": true } ).api();
+			dataTableAddRow = dataTable.row.add;
+			selectorToClone = "tr"; // Only table row can be added
+		}
 
 		if ( !$.isArray( content ) ) {
 			if ( typeof content !== "object" ) {
@@ -2061,28 +2066,6 @@ var componentName = "wb-data-json",
 			mapping = [ mapping ];
 		}
 		mapping_len = mapping.length;
-
-		// Special support for adding row to a wb-table
-		// Condition must be meet:
-		//  * The element need to be a table
-		//  * Data-table need to be initialized
-		//  * The mapping need to be an array of string
-		if ( elm.tagName === "TABLE" && mapping && elmClass.indexOf( "wb-tables-inited" ) !== -1 && typeof mapping[ 0 ] === "string" ) {
-			dataTable = $( elm ).dataTable( { "retrieve": true } ).api();
-			for ( i = 0; i < i_len; i += 1 ) {
-				i_cache = content[ i ];
-				if ( filterPassJSON( i_cache, filterTrueness, filterFaslseness ) ) {
-					basePntr = "/" + i;
-					cached_value = [];
-					for ( j = 0; j < mapping_len; j += 1 ) {
-						cached_value.push( jsonpointer.get( content, basePntr + mapping[ j ] ) );
-					}
-					dataTable.row.add( cached_value );
-				}
-			}
-			dataTable.draw();
-			return;
-		}
 
 		if ( !template ) {
 			return;
@@ -2158,8 +2141,19 @@ var componentName = "wb-data-json",
 					}
 				}
 
-				elmAppendTo.appendChild( clone );
+				if ( dataTableAddRow ) {
+
+					// If wb-tables, use its API to add rows
+					dataTableAddRow( $( clone ) );
+				} else {
+					elmAppendTo.appendChild( clone );
+				}
 			}
+		}
+
+		// Refresh the dataTable display
+		if ( dataTableAddRow ) {
+			dataTable.draw();
 		}
 	},
 
@@ -2322,12 +2316,6 @@ for ( s = 0; s !== selectorsLength; s += 1 ) {
 
 } )( jQuery, window, wb );
 
-/**
- * @title WET-BOEW URL mapping
- * @overview Execute pre-configured action based on url query string
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 ( function( $, window, wb ) {
 "use strict";
 
@@ -2384,12 +2372,6 @@ $document.on( "click", selector, function( event ) {
 
 } )( jQuery, window, wb );
 
-/**
- * @title WET-BOEW Field Flow
- * @overview Transform a basic list into a selectable list.
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 ( function( $, document, wb ) {
 "use strict";
 
@@ -2520,7 +2502,10 @@ var componentName = "wb-fieldflow",
 			// Transform the list into a select, use the first paragrap content for the label, and extract for i18n the name of the button action.
 			var bodyID = wb.getId(),
 				stdOut,
-				formElm, $form;
+				formElm,
+				$form,
+				btnStyle = config.btnStyle && [ "default", "primary", "success", "info", "warning", "danger", "link" ].indexOf( config.btnStyle ) >= 0 ? config.btnStyle : "default",
+				showLabel = !!config.showLabel;
 
 			if ( config.noForm ) {
 				stdOut = "<div class='mrgn-tp-md'><div id='" + bodyID + "'></div></div>";
@@ -2532,11 +2517,11 @@ var componentName = "wb-fieldflow",
 				}
 				$( formElm.parentElement ).addClass( formComponent );
 			} else if ( config.inline && !config.renderas ) {
-				stdOut = "<div class='wb-frmvld " + formComponent + "'><form><div class='input-group'><div id='" + bodyID + "'>";
-				stdOut = stdOut + "</div><span class='input-group-btn'><input type=\"submit\" value=\"" + i18n.btn + "\" class=\"btn btn-default mrgn-bttm-md\" /></span></div> </form></div>";
+				stdOut = "<div class='wb-frmvld mrgn-bttm-md " + formComponent + "'><form><div class='input-group'><div id='" + bodyID + "'>";
+				stdOut = stdOut + "</div><span class='input-group-btn" + ( showLabel ? " align-bottom" : "" ) + "'><input type=\"submit\" value=\"" + wb.escapeAttribute( i18n.btn ) + "\" class=\"btn btn-" + btnStyle + "\" /></span></div> </form></div>";
 			} else {
 				stdOut = "<div class='wb-frmvld " + formComponent + "'><form><div id='" + bodyID + "'>";
-				stdOut = stdOut + "</div><input type=\"submit\" value=\"" + i18n.btn + "\" class=\"btn btn-primary mrgn-bttm-md\" /> </form></div>";
+				stdOut = stdOut + "</div><input type=\"submit\" value=\"" + wb.escapeAttribute( i18n.btn ) + "\" class=\"btn btn-primary mrgn-bttm-md\" /> </form></div>";
 			}
 			$elm.addClass( "hidden" );
 			stdOut = $( stdOut );
@@ -2928,7 +2913,8 @@ var componentName = "wb-fieldflow",
 				noreqlabel: data.noreqlabel,
 				items: $items,
 				inline: data.inline,
-				gcChckbxrdio: data.gcChckbxrdio
+				gcChckbxrdio: data.gcChckbxrdio,
+				showLabel: data.showLabel
 			} );
 		}
 	},
@@ -2947,7 +2933,7 @@ var componentName = "wb-fieldflow",
 			i18n = $elm.data( configData ).i18n,
 			autoID = wb.getId(),
 			labelPrefix = "<label for='" + autoID + "'",
-			labelInvisible = data.inline ? " wb-inv" : "",
+			labelInvisible = ( data.inline && !data.showLabel ) ? " wb-inv" : "",
 			labelSuffix = "</span>",
 			$out, $tmpLabel,
 			selectOut, $selectOut,
@@ -3231,7 +3217,7 @@ var componentName = "wb-fieldflow",
 	},
 	buildSelectOption = function( data ) {
 		var label = data.label,
-			out = "<option value='" + label + "'";
+			out = "<option value='" + wb.escapeAttribute( label ) + "'";
 
 		out += buildDataAttribute( data );
 
@@ -3258,7 +3244,7 @@ var componentName = "wb-fieldflow",
 		var fieldID = wb.getId(),
 			labelTxt = data.label,
 			label = "<label for='" + fieldID + "'>",
-			input = "<input id='" + fieldID + "' type='" + inputType + "' name='" + fieldName + "' value='" + labelTxt + "'" + buildDataAttribute( data ),
+			input = "<input id='" + fieldID + "' type='" + inputType + "' name='" + fieldName + "' value='" + wb.escapeAttribute( labelTxt ) + "'" + buildDataAttribute( data ),
 			tag = !isInline && isGcChckbxrdio ? "li" : "div",
 			out = "<" + tag + " class='" + inputType;
 
@@ -3577,7 +3563,7 @@ $document.on( "submit", selectorForm + " form", function( event ) {
 						cacheName = items[ 0 ];
 						cacheParam = items[ 1 ];
 					}
-					$hdnField = $( "<input type='hidden' name='" + cacheName + "' value='" + cacheParam + "' />" );
+					$hdnField = $( "<input type='hidden' name='" + cacheName + "' value='" + wb.escapeAttribute( cacheParam ) + "' />" );
 					$elm.append( $hdnField );
 					wbRegisteredHidden.push( $hdnField.get( 0 ) );
 				}
@@ -3758,12 +3744,6 @@ wb.add( selector );
 
 } )( jQuery, document, wb );
 
-/**
- * @title WET-BOEW JSON Manager
- * @overview Manage JSON dataset, execute JSON patch operation.
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 /*global jsonpointer, jsonpatch */
 ( function( $, window, wb ) {
 "use strict";
@@ -4020,7 +4000,10 @@ var componentName = "wb-jsonmanager",
 							fetch: {
 								url: url,
 								nocache: elmData.nocache,
-								nocachekey: elmData.nocachekey
+								nocachekey: elmData.nocachekey,
+								data: elmData.data,
+								contentType: elmData.contenttype,
+								method: elmData.method
 							}
 						} );
 
@@ -4486,14 +4469,6 @@ wb.add( selector );
 
 } )( jQuery, window, wb );
 
-/*
- * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
- * wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- *
- * @author: duboisp
- * @description: Load suggestions from an array of string in a JSON file.
- *
- */
 ( function( $, document, wb ) {
 "use strict";
 
@@ -4764,12 +4739,6 @@ wb.add( selector );
 
 } )( jQuery, document, wb );
 
-/**
- * @title WET-BOEW URL mapping
- * @overview Execute pre-configured action based on url query string
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 ( function( $, window, wb ) {
 "use strict";
 
@@ -4879,12 +4848,6 @@ wb.add( selector );
 
 } )( jQuery, window, wb );
 
-/**
- * @title WB5 Click postback adapter
- * @overview WB5 Click postback adapter toward wb-postback plugin
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 ( function( $, window, wb ) {
 "use strict";
 
@@ -4960,12 +4923,6 @@ wb.add( selector );
 
 } )( jQuery, window, wb );
 
-/**
- * @title Menu for GCWeb v5
- * @overview Menu keyboard and mouse interaction with supporting responsiveness
- * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * @author @duboisp
- */
 ( function( $, wb ) {
 "use strict";
 
