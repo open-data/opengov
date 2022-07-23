@@ -53,7 +53,6 @@
         "drupal/core": "^9",
         "drupal/core-composer-scaffold": "^9.4.0",
         "drupal/core-recommended": "^9",
-        "drush/drush": "^10.0.0",
         "opengov/og": "dev-drupal9-compatibility",
         "symfony/event-dispatcher": "^4.4",
         "webflo/drupal-finder": "^1.0.0",

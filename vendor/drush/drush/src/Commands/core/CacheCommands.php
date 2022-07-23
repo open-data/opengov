@@ -1,6 +1,8 @@
 <?php
+
 namespace Drush\Commands\core;
 
+use Drupal\Core\Routing\RouteBuilderInterface;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
@@ -22,7 +24,6 @@ use Symfony\Component\Filesystem\Exception\IOException;
  */
 class CacheCommands extends DrushCommands implements CustomEventAwareInterface, AutoloaderAwareInterface, StdinAwareInterface
 {
-
     use CustomEventAwareTrait;
     use AutoloaderAwareTrait;
     use StdinAwareTrait;
@@ -48,9 +49,8 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
      *   checksum: Checksum
      *   valid: Valid
      * @default-fields cid,data,created,expire,tags
-     * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
      */
-    public function get($cid, $bin = 'default', $options = ['format' => 'json'])
+    public function get($cid, $bin = 'default', $options = ['format' => 'json']): PropertyList
     {
         $result = \Drupal::cache($bin)->get($cid);
         if (empty($result)) {
@@ -69,7 +69,7 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
      * @usage drush cache:tag node:12,user:4
      *   Purge content associated with two cache tags.
      */
-    public function tags($tags)
+    public function tags(string $tags): void
     {
         $tags = StringUtils::csvToArray($tags);
         Cache::invalidateTags($tags);
@@ -92,7 +92,7 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
      * @usage drush cc bin entity,bootstrap
      *   Clear the entity and bootstrap cache bins.
      */
-    public function clear($type, array $args, $options = ['cache-clear' => true])
+    public function clear(string $type, array $args, $options = ['cache-clear' => true])
     {
         $boot_manager = Drush::bootstrapManager();
 
@@ -114,7 +114,7 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
     /**
      * @hook interact cache-clear
      */
-    public function interact($input, $output)
+    public function interact($input, $output): void
     {
         $boot_manager = Drush::bootstrapManager();
         if (empty($input->getArgument('type'))) {
@@ -212,37 +212,28 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
             $this->logger()->info(dt("Skipping cache-clear operation due to --no-cache-clear option."));
             return true;
         }
-        chdir(DRUPAL_ROOT);
 
         // We no longer clear APC and similar caches as they are useless on CLI.
         // See https://github.com/drush-ops/drush/pull/2450
-
-        $autoloader = $this->loadDrupalAutoloader(DRUPAL_ROOT);
+        $root  = Drush::bootstrapManager()->getRoot();
+        $autoloader = $this->loadDrupalAutoloader($root);
         require_once DRUSH_DRUPAL_CORE . '/includes/utility.inc';
 
         $request = Drush::bootstrap()->getRequest();
-        // Manually resemble early bootstrap of DrupalKernel::boot().
-        require_once DRUSH_DRUPAL_CORE . '/includes/bootstrap.inc';
         DrupalKernel::bootEnvironment();
 
-        // Avoid 'Only variables should be passed by reference'
-        $root  = DRUPAL_ROOT;
         $site_path = DrupalKernel::findSitePath($request);
         Settings::initialize($root, $site_path, $autoloader);
 
         // drupal_rebuild() calls drupal_flush_all_caches() itself, so we don't do it manually.
         drupal_rebuild($autoloader, $request);
         $this->logger()->success(dt('Cache rebuild complete.'));
-
-        // As this command replaces `drush cache-clear all` for Drupal 8 users, clear
-        // the Drush cache as well, for consistency with that behavior.
-        CacheCommands::clearDrush();
     }
 
     /**
      * @hook validate cache-clear
      */
-    public function validate(CommandData $commandData)
+    public function validate(CommandData $commandData): void
     {
         $boot_manager = Drush::bootstrapManager();
         $types = $this->getTypes($boot_manager->hasBootstrapped(DRUSH_BOOTSTRAP_DRUPAL_FULL));
@@ -250,7 +241,7 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
         // Check if the provided type ($type) is a valid cache type.
         if ($type && !array_key_exists($type, $types)) {
             if ($type === 'all') {
-                throw new \Exception(dt('`cache-clear all` is deprecated for Drupal 8 and later. Please use the `cache-rebuild` command instead.'));
+                throw new \Exception(dt('`cache-clear all` is deprecated for Drupal 8 and later. Please use the `cache:rebuild` command instead.'));
             }
             // If we haven't done a full bootstrap, provide a more
             // specific message with instructions to the user on
@@ -270,7 +261,7 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
     /**
      * Types of caches available for clearing. Contrib commands can hook in their own.
      */
-    public function getTypes($include_bootstrapped_types = false)
+    public function getTypes($include_bootstrapped_types = false): array
     {
         $types = [
             'drush' => [$this, 'clearDrush'],
@@ -297,11 +288,10 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
     /**
      * Clear caches internal to Drush core.
      */
-    public static function clearDrush()
+    public static function clearDrush(): void
     {
         try {
-            drush_cache_clear_all(null, 'default');// No longer used by Drush core, but still cleared for backward compat.
-            drush_cache_clear_all(null, 'factory'); // command info from annotated-command library (i.e. parsed annotations)
+            Drush::logger()->info(dt('Deprecation notice - Drush no longer caches anything.'));
         } catch (IOException $e) {
             // Sometimes another process writes files into a bin dir and \Drush\Cache\FileCache::clear fails.
             // That is not considered an error. https://github.com/drush-ops/drush/pull/4535.
@@ -312,7 +302,7 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
     /**
      * Clear one or more cache bins.
      */
-    public static function clearBins($args = ['default'])
+    public static function clearBins($args = ['default']): void
     {
         $bins = StringUtils::csvToArray($args);
         foreach ($bins as $bin) {
@@ -321,19 +311,19 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
         }
     }
 
-    public static function clearThemeRegistry()
+    public static function clearThemeRegistry(): void
     {
         \Drupal::service('theme.registry')->reset();
     }
 
-    public static function clearRouter()
+    public static function clearRouter(): void
     {
-        /** @var \Drupal\Core\Routing\RouteBuilderInterface $router_builder */
+        /** @var RouteBuilderInterface $router_builder */
         $router_builder = \Drupal::service('router.builder');
         $router_builder->rebuild();
     }
 
-    public static function clearCssJs()
+    public static function clearCssJs(): void
     {
         _drupal_flush_css_js();
         \Drupal::service('asset.css.collection_optimizer')->deleteAll();
@@ -343,12 +333,12 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
     /**
      * Clears the render cache entries.
      */
-    public static function clearRender()
+    public static function clearRender(): void
     {
         Cache::invalidateTags(['rendered']);
     }
 
-    public static function clearPlugin()
+    public static function clearPlugin(): void
     {
         \Drupal::getContainer()->get('plugin.cache_clearer')->clearCachedDefinitions();
     }
@@ -360,7 +350,7 @@ class CacheCommands extends DrushCommands implements CustomEventAwareInterface, 
     {
         static $autoloader = false;
 
-        $autoloadFilePath = $drupal_root .'/autoload.php';
+        $autoloadFilePath = $drupal_root . '/autoload.php';
         if (!$autoloader && file_exists($autoloadFilePath)) {
             $autoloader = require $autoloadFilePath;
         }

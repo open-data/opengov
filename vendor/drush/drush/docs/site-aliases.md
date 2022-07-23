@@ -75,10 +75,6 @@ drush:
       - /etc/drush/sites
 ```
 
-The command `drush core:init` will automatically configure your
-~/.drush/drush.yml configuration file to add `~/.drush/sites` and
-`/etc/drush/sites` as locations where alias files may be placed.
-
 A canonical alias named _example_ that points to a local
 Drupal site named at http://example.com like this:
 
@@ -119,7 +115,7 @@ Site aliases may reference environment variables, just like any Drush config
 file. For example, `${env.PROJECT_SSH_USER}` will be replaced by the value
 of the `PROJECT_SSH_USER` environment value.
 
-SSH site aliases may set environment variables via the `env-var` key.
+SSH site aliases may set environment variables via the `env-vars` key.
 See below.
 
 ### Additional Site Alias Options
@@ -242,7 +238,7 @@ With a wildcard record, any environment name may be used, and will always
 match. This is not desirable in instances where the specified environment
 does not exist (e.g. if the user made a typo). An alias alter hook in a
 policy file may be used to catch these mistakes and report an error.
-See [SiteAliasAlterCommands](../examples/Commands/SiteAliasAlterCommands.php) for an example on how to do this.
+See [SiteAliasAlterCommands](https://www.drush.org/latest/examples/SiteAliasAlterCommands.php/) for an example on how to do this.
 
 ### Docker Compose and other transports
 
