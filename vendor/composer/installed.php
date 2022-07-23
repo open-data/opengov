@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '50e71c67b4cb5fc930e062bbdad749bfcab5e7dd',
+        'reference' => 'f2f553499f2728afe16bf6f793121b1034a934b3',
         'name' => 'opengov/opengov-project',
         'dev' => true,
     ),
@@ -1548,7 +1548,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '50e71c67b4cb5fc930e062bbdad749bfcab5e7dd',
+            'reference' => 'f2f553499f2728afe16bf6f793121b1034a934b3',
             'dev_requirement' => false,
         ),
         'orno/di' => array(
@@ -1731,8 +1731,8 @@
         'psr/container-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '^1.0',
+                0 => '^1.0',
+                1 => '1.0',
             ),
         ),
         'psr/event-dispatcher' => array(
