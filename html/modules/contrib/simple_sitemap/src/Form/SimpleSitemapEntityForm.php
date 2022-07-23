@@ -53,6 +53,13 @@ class SimpleSitemapEntityForm extends EntityForm {
       '#default_value' => $this->entity->label(),
     ];
 
+    $form['status'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enabled'),
+      '#description' => $this->t('Include this sitemap during generation'),
+      '#default_value' => $this->entity->isEnabled(),
+    ];
+
     $form['id'] = [
       '#type' => 'machine_name',
       '#default_value' => $this->entity->id(),

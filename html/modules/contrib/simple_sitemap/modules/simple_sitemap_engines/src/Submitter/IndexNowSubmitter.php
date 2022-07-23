@@ -3,6 +3,7 @@
 namespace Drupal\simple_sitemap_engines\Submitter;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\SynchronizableInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\simple_sitemap_engines\Entity\SimpleSitemapEngine;
 
@@ -110,10 +111,14 @@ class IndexNowSubmitter extends SubmitterBase {
    */
   public function submitIfSubmittable(EntityInterface $entity) {
     if ($this->config->get('simple_sitemap_engines.settings')->get('index_now_enabled')) {
+      // Do not act on syncing operations (migration/import/...)
+      if ($entity instanceof SynchronizableInterface && $entity->isSyncing()) {
+        return;
+      }
 
       // Entity was saved outside its entity form - indexing depending
       // on module and entity inclusion settings.
-      if (!isset($entity->_index_now)) {
+      if (!isset($entity->_simple_sitemap_index_now)) {
         if ($this->config->get('simple_sitemap_engines.settings')->get('index_now_on_entity_save')
           && $this->config->get("simple_sitemap_engines.bundle_settings.{$entity->getEntityTypeId()}.{$entity->bundle()}")->get('index_now')) {
           $this->submit($entity);
@@ -123,10 +128,10 @@ class IndexNowSubmitter extends SubmitterBase {
       // Form submission occurred, so we are indexing the entity depending
       // on the form settings.
       else {
-        if ($entity->_index_now) {
+        if ($entity->_simple_sitemap_index_now) {
           $this->submit($entity);
         }
-        unset($entity->_index_now);
+        unset($entity->_simple_sitemap_index_now);
       }
     }
   }

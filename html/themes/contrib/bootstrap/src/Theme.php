@@ -351,11 +351,8 @@ class Theme {
     $hash = Crypt::generateBase64HashIdentifier($options, [$mask, $path]);
 
     if (!$cache->has($hash)) {
-      if ($fileSystem = Bootstrap::fileSystem('scanDirectory')) {
+      if ($fileSystem = \Drupal::service('file_system')) {
         $files = $fileSystem->scanDirectory($path, $mask, $options);
-      }
-      else {
-        $files = file_scan_directory($path, $mask, $options);
       }
       $cache->set($hash, $files);
     }
@@ -667,7 +664,7 @@ class Theme {
     if (!isset($includes[$include])) {
       $includes[$include] = !!@include_once $include;
       if (!$includes[$include]) {
-        Bootstrap::message(t('Could not include file: @include', ['@include' => $include]), 'error');
+        \Drupal::messenger()->addMessage(t('Could not include file: @include', ['@include' => $include]), 'error');
       }
     }
     return $includes[$include];
@@ -774,9 +771,7 @@ class Theme {
   }
 
   /****************************************************************************
-   *
-   * Deprecated methods
-   *
+   * Deprecated methods.
    ***************************************************************************/
 
   /**

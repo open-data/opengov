@@ -3,6 +3,7 @@
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 
 use Drupal\Core\Url;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\simple_sitemap\Entity\EntityHelper;
 use Drupal\simple_sitemap\Exception\SkipElementException;
 use Drupal\simple_sitemap\Logger;
@@ -147,7 +148,6 @@ class CustomUrlGenerator extends EntityUrlGeneratorBase {
     }
 
     $url_object = Url::fromUserInput($data_set['path'])->setAbsolute();
-    $path = $url_object->getInternalPath();
 
     $entity = $this->entityHelper->getEntityFromUrlObject($url_object);
 
@@ -162,9 +162,13 @@ class CustomUrlGenerator extends EntityUrlGeneratorBase {
       ? $this->getEntityImageData($entity)
       : [],
       'meta' => [
-        'path' => $path,
+        'path' => $url_object->getInternalPath(),
       ],
     ];
+
+    if (($query = $url_object->getOption('query')) && is_array($query)) {
+      $path_data['meta']['query'] = UrlHelper::buildQuery($query);
+    }
 
     // Additional info useful in hooks.
     if (!empty($entity)) {

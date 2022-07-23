@@ -26,7 +26,7 @@ class SearchApiGranularTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $processor_id = 'granularity_item';

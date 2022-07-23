@@ -15,6 +15,7 @@ use Drupal\simple_sitemap\Logger;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AnonymousUserSession;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 
 /**
  * Provides a base class for entity UrlGenerator plugins.
@@ -268,13 +269,17 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
    */
   protected function getEntityImageData(ContentEntityInterface $entity): array {
     $image_data = [];
+
+    /** @var FileUrlGeneratorInterface $file_url_generator */
+    $file_url_generator = \Drupal::service('file_url_generator');
+
     foreach ($entity->getFieldDefinitions() as $field) {
       if ($field->getType() === 'image') {
         foreach ($entity->get($field->getName())->getValue() as $value) {
           if (NULL !== ($file = File::load($value['target_id']))) {
             $image_data[] = [
               'path' => $this->replaceBaseUrlWithCustom(
-                file_create_url($file->getFileUri())
+                $file_url_generator->generateAbsoluteString($file->getFileUri())
               ),
               'alt' => $value['alt'],
               'title' => $value['title'],

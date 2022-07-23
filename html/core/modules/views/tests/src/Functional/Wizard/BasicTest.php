@@ -18,8 +18,8 @@ class BasicTest extends WizardTestBase {
    */
   protected $defaultTheme = 'stark';
 
-  protected function setUp($import_test_views = TRUE): void {
-    parent::setUp($import_test_views);
+  protected function setUp($import_test_views = TRUE, $modules = []): void {
+    parent::setUp($import_test_views, $modules);
 
     $this->drupalPlaceBlock('page_title_block');
   }
@@ -154,9 +154,6 @@ class BasicTest extends WizardTestBase {
     $this->drupalGet('user');
     $this->assertSession()->pageTextContains($node1->label());
     $this->assertSession()->pageTextNotContains($node2->label());
-
-    // Make sure the listing page doesn't show disabled default views.
-    $this->assertSession()->pageTextNotContains('tracker');
 
     // Create a view with only a REST export.
     $view4 = [];

@@ -3,6 +3,7 @@
 namespace Drupal\facets\UrlProcessor;
 
 use Drupal\facets\FacetInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Interface UrlProcessorInterface.
@@ -59,6 +60,14 @@ interface UrlProcessorInterface {
   public function getSeparator();
 
   /**
+   * Returns the multi-value delimiter.
+   *
+   * @return string
+   *   A string containing the multi-value delimiter.
+   */
+  public function getDelimiter(): string;
+
+  /**
    * Returns the active filters.
    *
    * @return array
@@ -78,5 +87,13 @@ interface UrlProcessorInterface {
    *   value being an array of raw values.
    */
   public function setActiveFilters(array $active_filters);
+
+  /**
+   * Returns the request.
+   *
+   * @return \Symfony\Component\HttpFoundation\Request
+   *   The request.
+   */
+  public function getRequest(): Request;
 
 }

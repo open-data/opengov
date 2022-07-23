@@ -41,7 +41,7 @@ class EntitiesForm extends SimpleSitemapFormBase {
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
    * @param \Drupal\simple_sitemap\Form\FormHelper $form_helper
-   *   Simple XML Sitemap form helper.
+   *   Helper class for working with forms.
    * @param \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper
    *   Helper class for working with entities.
    * @param \Drupal\simple_sitemap\Manager\EntityManager $entity_manager
@@ -157,7 +157,7 @@ class EntitiesForm extends SimpleSitemapFormBase {
       'entity_types' => $table,
     ];
 
-    $this->formHelper->displayRegenerateNow($form);
+    $form = $this->formHelper->regenerateNowForm($form);
 
     return parent::buildForm($form, $form_state);
   }
@@ -178,14 +178,6 @@ class EntitiesForm extends SimpleSitemapFormBase {
     }
 
     parent::submitForm($form, $form_state);
-
-    // Regenerate sitemaps according to user setting.
-    if ($form_state->getValue('simple_sitemap_regenerate_now')) {
-      $this->generator
-        ->setVariants()
-        ->rebuildQueue()
-        ->generate();
-    }
   }
 
   /**

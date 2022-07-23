@@ -104,6 +104,9 @@ simple_sitemap.sitemap.*:
     weight:
       label: 'Weight'
       type: integer
+    status:
+      label: 'Status'
+      type: boolean
 
 simple_sitemap.type.*:
   label: 'Sitemap types'

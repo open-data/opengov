@@ -14,7 +14,7 @@ class DropdownWidgetTest extends WidgetTestBase {
   /**
    * Creates a new processor object for use in the tests.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->widget = new DropdownWidget(['show_numbers' => TRUE], 'dropdown_widget', []);

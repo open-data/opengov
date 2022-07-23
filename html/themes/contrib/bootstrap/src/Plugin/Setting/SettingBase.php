@@ -211,7 +211,7 @@ class SettingBase extends PluginBase implements SettingInterface {
       }
       if (!empty($links)) {
         $description .= '<br>';
-        $description .= t('See also:');
+        $description .= $this->t('See also:');
         $description .= ' ' . implode(', ', $links);
         $group->$plugin_id->setProperty('description', $description);
       }

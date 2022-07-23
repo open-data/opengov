@@ -28,7 +28,7 @@ class FacetTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'facets',
     'taxonomy',
   ];
@@ -36,7 +36,7 @@ class FacetTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('facets_facet');
   }
@@ -380,6 +380,7 @@ class FacetTest extends KernelTestBase {
     $entity->setEnableParentWhenChildGetsDisabled(TRUE);
     $this->assertTrue($entity->getEnableParentWhenChildGetsDisabled());
 
+    $entity->setHierarchy('taxonomy');
     $manager = $entity->getHierarchyManager();
     $this->assertInstanceOf(HierarchyPluginManager::class, $manager);
     $this->assertInstanceOf(Taxonomy::class, $entity->getHierarchyInstance());

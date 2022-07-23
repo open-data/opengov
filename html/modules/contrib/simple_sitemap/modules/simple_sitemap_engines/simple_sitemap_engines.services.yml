@@ -16,6 +16,8 @@ services:
   simple_sitemap.engines.form_helper:
     class: Drupal\simple_sitemap_engines\Form\FormHelper
     parent: simple_sitemap.form_helper
+    arguments:
+      - '@config.factory'
 
   simple_sitemap.engines.path_processor:
     class: Drupal\simple_sitemap_engines\PathProcessor\IndexNowPathProcessor

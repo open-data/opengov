@@ -2,104 +2,154 @@
 
 namespace Drupal\simple_sitemap_engines\Form;
 
+use Drupal\Core\DependencyInjection\ClassResolverInterface;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\simple_sitemap\Form\FormHelper as BaseFormHelper;
+use Drupal\simple_sitemap\Entity\EntityHelper;
+use Drupal\simple_sitemap\Manager\Generator;
+use Drupal\simple_sitemap\Settings;
+use Drupal\simple_sitemap_engines\Form\Handler\BundleEntityFormHandler;
+use Drupal\simple_sitemap_engines\Form\Handler\EntityFormHandler;
 
 /**
- * Slightly altered version of the Simple XML Sitemap form helper.
+ * Slightly altered version of the base form helper.
  */
 class FormHelper extends BaseFormHelper {
 
-  /**
-   * {@inheritdoc}
-   */
-  protected static $allowedFormOperations = [
-    'default',
-    'edit',
-    'add',
-    'register',
-    'delete',
-  ];
+  protected const ENTITY_FORM_HANDLER = EntityFormHandler::class;
+  protected const BUNDLE_ENTITY_FORM_HANDLER = BundleEntityFormHandler::class;
 
   /**
-   * {@inheritdoc}
+   * The configuration factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected function userAccess(): bool {
-    return \Drupal::config('simple_sitemap_engines.settings')->get('index_now_enabled')
-      && ($this->currentUser->hasPermission('administer sitemap settings')
-        || $this->currentUser->hasPermission('index entity on save'));
+  protected $configFactory;
+
+  /**
+   * FormHelper constructor.
+   *
+   * @param \Drupal\simple_sitemap\Manager\Generator $generator
+   *   The sitemap generator service.
+   * @param \Drupal\simple_sitemap\Settings $settings
+   *   The simple_sitemap.settings service.
+   * @param \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper
+   *   Helper class for working with entities.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   Proxy for the current user account.
+   * @param \Drupal\Core\DependencyInjection\ClassResolverInterface $class_resolver
+   *   The class resolver.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration factory.
+   */
+  public function __construct(
+    Generator $generator,
+    Settings $settings,
+    EntityHelper $entity_helper,
+    AccountProxyInterface $current_user,
+    ClassResolverInterface $class_resolver,
+    ConfigFactoryInterface $config_factory
+  ) {
+    parent::__construct($generator, $settings, $entity_helper, $current_user, $class_resolver);
+    $this->configFactory = $config_factory;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function displayEntitySettings(array &$form_fragment): BaseFormHelper {
-    $form_fragment['index_now'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->entityCategory === 'bundle'
-      ? t('Notify IndexNow search engines of changes <em>by default</em>')
-      : t('Notify IndexNow search engines of changes <em>now</em>'),
-      '#description' => $this->entityCategory === 'bundle'
-      ? t('Send change notice to IndexNow compatible search engines right after submitting entity forms of this type.<br/>Changes include creating, deleting and updating of an entity. This setting can be overridden on the entity form.')
-      : t('Send change notice to IndexNow compatible search engines right after submitting this form.'),
-      '#default_value' => $this->bundleName
-      ? (int) \Drupal::config("simple_sitemap_engines.bundle_settings.$this->entityTypeId.$this->bundleName")->get('index_now')
-      : 0,
-    ];
+  protected function formAlterAccess(): bool {
+    $access = parent::formAlterAccess();
 
-    // If existing form entity is unpublished on load, assume it is a draft
-    // and uncheck IndexNow. Check IndexNow when changing publishing status.
-    if ($this->entityCategory === 'instance'
-      && !$this->entityIsNew()
-      && $form_fragment['index_now']['#default_value']
-      && isset($form_fragment['status'])
-      && empty($form_fragment['status']['widget']['value']['#default_value'])) {
-      $form_fragment['index_now']['#default_value'] = 0;
-      $form_fragment['index_now']['#states'] = [
-        'checked' => [':input[name="status[value]"]' => ['checked' => TRUE]],
-      ];
-    }
-
-    // If form entity is new, only check IndexNow when publishing status
-    // is checked.
-    if ($this->entityCategory === 'instance'
-      && $this->entityIsNew()
-      && $form_fragment['index_now']['#default_value']
-      && isset($form_fragment['status'])) {
-      $form_fragment['index_now']['#states'] = [
-        'checked' => [':input[name="status[value]"]' => ['checked' => TRUE]],
-      ];
-    }
-
-    // Sensibly place the IndexNow checkbox.
-    if ($this->entityCategory === 'instance') {
-      $form_fragment['index_now']['#group'] = 'footer';
-      if (isset($form_fragment['status']['#weight'])) {
-        $form_fragment['index_now']['#weight'] = $form_fragment['status']['#weight'] + 10;
-      }
-      elseif (isset($form['actions']['submit']['#weight'])) {
-        $form_fragment['index_now']['#weight'] = $form_fragment['actions']['submit']['#weight'] - 1;
-      }
-    }
-
-    return $this;
+    return $this->configFactory->get('simple_sitemap_engines.settings')->get('index_now_enabled')
+      && ($access || $this->currentUser->hasPermission('index entity on save'));
   }
 
   /**
-   * {@inheritdoc}
+   * Alters the specific form (simple_sitemap_entities_form).
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   *
+   * @see \Drupal\simple_sitemap\Form\EntitiesForm
+   * @see simple_sitemap_engines_form_simple_sitemap_entities_form_alter()
    */
-  public static function addSubmitHandler(array &$form, callable $callback) {
-    if (isset($form['actions']['submit']['#submit'])) {
-      foreach (array_keys($form['actions']) as $action) {
-        if ($action !== 'preview'
-          && isset($form['actions'][$action]['#type'])
-          && $form['actions'][$action]['#type'] === 'submit') {
-          $form['actions'][$action]['#submit'] = array_merge([$callback], $form['actions'][$action]['#submit']);
+  public function entitiesFormAlter(array &$form) {
+    if (!$this->formAlterAccess()) {
+      return;
+    }
+
+    $table = &$form['sitemap_entities']['entity_types'];
+    $offset = array_search('bundles', array_keys($table['#header'])) + 1;
+    array_splice($table['#header'], $offset, 0, ['index_now' => $this->t('IndexNow')]);
+
+    // Add column with IndexNow status.
+    foreach (Element::children($table) as $entity_type_id) {
+      $element = ['#markup' => ''];
+
+      if ($table[$entity_type_id]['enabled']['#default_value']) {
+        $bundles = [];
+
+        foreach ($this->configFactory->listAll("simple_sitemap_engines.bundle_settings.$entity_type_id.") as $name) {
+          if ($this->configFactory->get($name)->get('index_now')) {
+            $name_parts = explode('.', $name);
+
+            $bundles[] = $this->entityHelper
+              ->getBundleLabel($entity_type_id, end($name_parts));
+          }
         }
+
+        $element['#markup'] = $bundles
+          ? '<em>' . implode(', ', $bundles) . '</em>'
+          : $this->t('Excluded');
       }
+
+      array_splice($table[$entity_type_id], $offset, 0, ['index_now' => $element]);
     }
-    // Fix for account page rendering other submit handlers not usable.
-    else {
-      $form['#submit'][] = $callback;
+  }
+
+  /**
+   * Alters the specific form (simple_sitemap_entity_bundles_form).
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   *
+   * @see \Drupal\simple_sitemap\Form\EntityBundlesForm
+   * @see simple_sitemap_engines_form_simple_sitemap_entity_bundles_form_alter()
+   */
+  public function entityBundlesFormAlter(array &$form) {
+    if (!$this->formAlterAccess()) {
+      return;
+    }
+
+    foreach ($form['settings'] as $bundle_name => &$bundle_form) {
+      $bundle_form = $this->bundleSettingsForm($bundle_form, $form['entity_type_id']['#value'], $bundle_name);
+      $bundle_form['simple_sitemap_index_now']['#tree'] = TRUE;
+    }
+
+    $form['#submit'][] = [$this, 'entityBundlesFormSubmit'];
+  }
+
+  /**
+   * Form submission handler (simple_sitemap_entity_bundles_form).
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @see \Drupal\simple_sitemap\Form\EntityBundlesForm
+   */
+  public function entityBundlesFormSubmit(array &$form, FormStateInterface $form_state) {
+    $entity_type_id = $form_state->getValue('entity_type_id');
+
+    foreach ($form_state->getValue('bundles') as $bundle_name => $settings) {
+      $this->configFactory
+        ->getEditable("simple_sitemap_engines.bundle_settings.$entity_type_id.$bundle_name")
+        ->set('index_now', $settings['simple_sitemap_index_now'])
+        ->save();
     }
   }
 

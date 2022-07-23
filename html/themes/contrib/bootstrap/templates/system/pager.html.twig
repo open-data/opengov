@@ -56,6 +56,11 @@
         </li>
       {% endif %}
 
+      {# Add an ellipsis if there are further previous pages. #}
+      {% if ellipses.previous %}
+        <li class="page-item" role="presentation"><span class="page-link">&hellip;</span></li>
+      {% endif %}
+
       {# Now generate the actual pager piece. #}
       {% for key, item in items.pages %}
         <li class="pager__item{{ current == key ? ' is-active active' : '' }}">
@@ -72,6 +77,11 @@
           </a>
         </li>
       {% endfor %}
+
+      {# Add an ellipsis if there are further next pages. #}
+      {% if ellipses.next %}
+        <li class="page-item" role="presentation"><span class="page-link">&hellip;</span></li>
+      {% endif %}
 
       {# Print next item if we are not on the last page. #}
       {% if items.next %}

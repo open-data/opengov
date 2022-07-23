@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\FacetManager\DefaultFacetManager;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
+use Drupal\facets\Hierarchy\HierarchyPluginBase;
 use Drupal\facets\Plugin\facets\facet_source\SearchApiDisplay;
 use Drupal\facets\FacetSource\SearchApiFacetSourceInterface;
 use Drupal\search_api\Plugin\search_api\display\ViewsRest;
@@ -19,6 +20,7 @@ use Drupal\facets\Widget\WidgetPluginManager;
 use Drupal\facets\Processor\SortProcessorInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Provides a form for configuring the processors of a facet.
@@ -143,6 +145,15 @@ class FacetForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
+    // Redirect to facets settings page if Field Identifier is not set.
+    if ($facets = \Drupal::routeMatch()->getParameter('facets_facet')) {
+      if ($facets->getFieldIdentifier() === NULL) {
+        $facet_settings_path = $facets->toUrl('settings-form')->toString();
+        $response = new RedirectResponse($facet_settings_path);
+        $response->send();
+        return [];
+      }
+    }
     $form['#attached']['library'][] = 'facets/drupal.facets.admin_css';
 
     /** @var \Drupal\facets\FacetInterface $facet */
@@ -397,7 +408,10 @@ class FacetForm extends EntityForm {
       '#type' => 'radios',
       '#title' => $this->t('Empty facet behavior'),
       '#default_value' => $empty_behavior_config['behavior'] ?: 'none',
-      '#options' => ['none' => $this->t('Do not display facet'), 'text' => $this->t('Display text')],
+      '#options' => [
+        'none' => $this->t('Do not display facet'),
+        'text' => $this->t('Display text'),
+      ],
       '#description' => $this->t('Take this action if a facet has no items.'),
       '#required' => TRUE,
     ];
@@ -412,7 +426,7 @@ class FacetForm extends EntityForm {
     $form['facet_settings']['empty_behavior_container']['empty_behavior_text'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Empty text'),
-      '#format' => isset($empty_behavior_config['text_format']) ? $empty_behavior_config['text_format'] : 'plain_text',
+      '#format' => $empty_behavior_config['text_format'] ?? 'plain_text',
       '#editor' => TRUE,
       '#default_value' => isset($empty_behavior_config['text_format']) ? $empty_behavior_config['text'] : '',
     ];
@@ -451,21 +465,34 @@ class FacetForm extends EntityForm {
       '#title' => $this->t('Use hierarchy'),
       '#default_value' => $facet->getUseHierarchy(),
     ];
-    if (!$facet->getFacetSource() instanceof SearchApiDisplay) {
-      $form['facet_settings']['use_hierarchy']['#disabled'] = TRUE;
-      $form['facet_settings']['use_hierarchy']['#description'] = $this->t('This setting only works with Search API based facets.');
-    }
-    else {
+    if ($facet->getFacetSource() instanceof SearchApiDisplay) {
       $processor_url = Url::fromRoute('entity.search_api_index.processors', [
         'search_api_index' => $facet->getFacetSource()->getIndex()->id(),
       ]);
-      $description = $this->t('Renders the items using hierarchy. Make sure to enable the hierarchy processor on the <a href=":processor-url">Search api index processor configuration</a> for this to work as expected. If disabled all items will be flatten.', [
+      $description = $this->t('Renders the items using hierarchy. Depending on the selected plugin below, make sure to enable the hierarchy processor on the <a href=":processor-url">Search api index processor configuration</a> for this to work as expected. If disabled all items might be flattened.', [
         ':processor-url' => $processor_url->toString(),
       ]);
-      $form['facet_settings']['use_hierarchy']['#description'] = $description;
-      $form['facet_settings']['use_hierarchy']['#description'] .= '<br />';
-      $form['facet_settings']['use_hierarchy']['#description'] .= '<strong>At this moment only hierarchical taxonomy terms are supported.</strong>';
     }
+    else {
+      $description = $this->t('Renders the items using hierarchy. Note that some of the selectable plugins below will not supports all search backends. The taxonomy plugin will only work with Search API.');
+    }
+    $form['facet_settings']['use_hierarchy']['#description'] = $description;
+
+    $hierarchy = $facet->getHierarchy();
+    $options = array_map(function (HierarchyPluginBase $plugin) {
+      return $plugin->getPluginDefinition()['label'];
+    }, $facet->getHierarchies());
+    $form['facet_settings']['hierarchy'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Hierarchy type'),
+      '#options' => $options,
+      '#default_value' => $hierarchy ? $hierarchy['type'] : '',
+      '#states' => [
+        'visible' => [
+          ':input[name="facet_settings[use_hierarchy]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
 
     $form['facet_settings']['keep_hierarchy_parents_active'] = [
       '#type' => 'checkbox',
@@ -507,8 +534,9 @@ class FacetForm extends EntityForm {
       '#type' => 'number',
       '#title' => $this->t('Minimum count'),
       '#default_value' => $facet->getMinCount(),
-      '#description' => $this->t('Only display the results if there is this minimum amount of results.'),
+      '#description' => $this->t('Only display the results if there is this minimum amount of results. The default is "1". A setting "0" might result in a list of all possible facet items, regardless of the actual search query. But the result of a minimum count of "0" is not reliable and may very on the type of the field, the Search API backend and even between different releases or runtime configurations of the backend (for example Solr). Therefore it is highly recommended to avoid any feature that depends on a minimum count of "0".'),
       '#maxlength' => 4,
+      '#min' => 0,
       '#required' => TRUE,
     ];
     if (!$facet->getFacetSource() instanceof SearchApiDisplay) {
@@ -516,6 +544,30 @@ class FacetForm extends EntityForm {
       $form['facet_settings']['min_count']['#description'] .= '<br />';
       $form['facet_settings']['min_count']['#description'] .= $this->t('This setting only works with Search API based facets.');
     }
+
+    $form['facet_settings']['missing'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show missing'),
+      '#default_value' => $facet->isMissing(),
+      '#description' => $this->t('Add a facet item that counts and selects all search results which match the current query but do not belong to any of the facet items.'),
+    ];
+    if (!$facet->getFacetSource() instanceof SearchApiDisplay) {
+      $form['facet_settings']['missing']['#disabled'] = TRUE;
+      $form['facet_settings']['missing']['#description'] .= '<br />';
+      $form['facet_settings']['missing']['#description'] .= $this->t('This setting only works with Search API based facets.');
+    }
+
+    $form['facet_settings']['missing_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Label of missing items'),
+      '#description' => $this->t('Label of the facet item for which do not belong to any of the regular items.'),
+      '#default_value' => $facet->getMissingLabel(),
+      '#states' => [
+        'visible' => [
+          ':input[name="facet_settings[missing]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
 
     $form['facet_settings']['weight'] = [
       '#type' => 'number',
@@ -569,9 +621,7 @@ class FacetForm extends EntityForm {
     foreach ($processors_by_stage as $stage => $processors) {
       /** @var \Drupal\facets\Processor\ProcessorInterface $processor */
       foreach ($processors as $processor_id => $processor) {
-        $weight = isset($processor_settings[$processor_id]['weights'][$stage])
-          ? $processor_settings[$processor_id]['weights'][$stage]
-          : $processor->getDefaultWeight($stage);
+        $weight = $processor_settings[$processor_id]['weights'][$stage] ?? $processor->getDefaultWeight($stage);
         if ($processor->isHidden()) {
           $form['processors'][$processor_id]['weights'][$stage] = [
             '#type' => 'value',
@@ -654,10 +704,10 @@ class FacetForm extends EntityForm {
 
     // Validate url alias.
     $url_alias = $form_state->getValue(['facet_settings', 'url_alias']);
-    if ($url_alias == 'page') {
+    if ($url_alias === 'page') {
       $form_state->setErrorByName('url_alias', $this->t('This URL alias is not allowed.'));
     }
-    elseif (preg_match('/[^a-zA-Z0-9_~\.\-]/', $url_alias)) {
+    elseif (preg_match('/[^a-zA-Z0-9_~.\-]/', $url_alias)) {
       $form_state->setErrorByName('url_alias', $this->t('The URL alias contains characters that are not allowed.'));
     }
   }
@@ -699,9 +749,36 @@ class FacetForm extends EntityForm {
     $facet->setWidget($form_state->getValue('widget'), $form_state->getValue('widget_config'));
     $facet->setUrlAlias($form_state->getValue(['facet_settings', 'url_alias']));
     $facet->setWeight((int) $form_state->getValue(['facet_settings', 'weight']));
-    $facet->setMinCount((int) $form_state->getValue(['facet_settings', 'min_count']));
-    $facet->setOnlyVisibleWhenFacetSourceIsVisible($form_state->getValue(['facet_settings', 'only_visible_when_facet_source_is_visible']));
-    $facet->setShowOnlyOneResult($form_state->getValue(['facet_settings', 'show_only_one_result']));
+    $facet->setMinCount((int) $form_state->getValue(
+      [
+        'facet_settings',
+        'min_count',
+      ]
+    ));
+    $facet->setMissing((bool) $form_state->getValue(
+      [
+        'facet_settings',
+        'missing',
+      ]
+    ));
+    $facet->setMissingLabel($form_state->getValue(
+      [
+        'facet_settings',
+        'missing_label',
+      ]
+    ));
+    $facet->setOnlyVisibleWhenFacetSourceIsVisible($form_state->getValue(
+      [
+        'facet_settings',
+        'only_visible_when_facet_source_is_visible',
+      ]
+    ));
+    $facet->setShowOnlyOneResult($form_state->getValue(
+      [
+        'facet_settings',
+        'show_only_one_result',
+      ]
+    ));
 
     $empty_behavior_config = [];
     $empty_behavior = $form_state->getValue(['facet_settings', 'empty_behavior']);
@@ -722,21 +799,62 @@ class FacetForm extends EntityForm {
     }
     $facet->setEmptyBehavior($empty_behavior_config);
 
-    $facet->setQueryOperator($form_state->getValue(['facet_settings', 'query_operator']));
+    $facet->setQueryOperator($form_state->getValue(
+      [
+        'facet_settings',
+        'query_operator',
+      ]
+    ));
 
     $facet->setHardLimit($form_state->getValue(['facet_settings', 'hard_limit']));
-
     $facet->setExclude($form_state->getValue(['facet_settings', 'exclude']));
-    $facet->setUseHierarchy($form_state->getValue(['facet_settings', 'use_hierarchy']));
-    $facet->setKeepHierarchyParentsActive($form_state->getValue(['facet_settings', 'keep_hierarchy_parents_active']));
-    $facet->setExpandHierarchy($form_state->getValue(['facet_settings', 'expand_hierarchy']));
-    $facet->setEnableParentWhenChildGetsDisabled($form_state->getValue(['facet_settings', 'enable_parent_when_child_gets_disabled']));
-    $facet->set('show_title', $form_state->getValue(['facet_settings', 'show_title'], FALSE));
+    
+    $facet_uses_hierarchy = $form_state->getValue(
+      [
+        'facet_settings',
+        'use_hierarchy',
+      ]
+    );
+    $facet->setUseHierarchy($facet_uses_hierarchy);
+    if ($facet_uses_hierarchy) {
+      $facet->setKeepHierarchyParentsActive($form_state->getValue(
+        [
+          'facet_settings',
+          'keep_hierarchy_parents_active',
+        ]
+      ));
+      $hierarchy_id = $form_state->getValue(['facet_settings', 'hierarchy']);
+      $facet->setHierarchy($hierarchy_id, $form_state->getValue(
+        [
+          'facet_settings',
+          $hierarchy_id,
+        ]
+      ));
+      $facet->setExpandHierarchy($form_state->getValue(
+        [
+          'facet_settings',
+          'expand_hierarchy',
+        ]
+      ));
+      $facet->setEnableParentWhenChildGetsDisabled($form_state->getValue(
+        [
+          'facet_settings',
+          'enable_parent_when_child_gets_disabled',
+        ]
+      ));
+    }
+
+    $facet->set('show_title', $form_state->getValue(
+      [
+        'facet_settings',
+        'show_title',
+      ],
+      FALSE
+    ));
 
     $facet->save();
 
     $already_enabled_facets_on_same_source = $this->facetsManager->getFacetsByFacetSourceId($facet->getFacetSourceId());
-    /** @var \Drupal\facets\FacetInterface $other */
     foreach ($already_enabled_facets_on_same_source as $other) {
       if ($other->getUrlAlias() === $facet->getUrlAlias() && $other->id() !== $facet->id()) {
         $this->messenger()->addWarning($this->t('This alias is already in use for another facet defined on the same source.'));

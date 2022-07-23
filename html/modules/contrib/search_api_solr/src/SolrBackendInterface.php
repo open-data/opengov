@@ -2,7 +2,7 @@
 
 namespace Drupal\search_api_solr;
 
-use Drupal\search_api\Backend\BackendInterface;
+use Drupal\search_api\Contrib\AutocompleteBackendInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Query\QueryInterface;
@@ -15,19 +15,19 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
  * It extends the generic \Drupal\search_api\Backend\BackendInterface and covers
  * additional Solr specific methods.
  */
-interface SolrBackendInterface extends BackendInterface {
+interface SolrBackendInterface extends AutocompleteBackendInterface {
 
   /**
    * The current Solr schema version.
    *
    * @todo replace by an automatic detection when core provides module versions.
    */
-  const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.1';
+  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.8';
 
   /**
    * The minimum required Solr schema version.
    */
-  const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.1.1';
+  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.2.8';
 
   /**
    * The separator to indicate the start of a language ID.
@@ -41,14 +41,18 @@ interface SolrBackendInterface extends BackendInterface {
    * @see http://de2.php.net/manual/en/regexp.reference.meta.php
    * @see https://www.w3.org/International/articles/language-tags/
    */
-  const SEARCH_API_SOLR_LANGUAGE_SEPARATOR = ';';
+  public const SEARCH_API_SOLR_LANGUAGE_SEPARATOR = ';';
+
+  public const FIELD_PLACEHOLDER = 'FIELD_PLACEHOLDER';
+
+  public const EMPTY_TEXT_FIELD_DUMMY_VALUE = 'aöbäcüdöeäfüg';
 
   /**
    * Creates a list of all indexed field names mapped to their Solr field names.
    *
    * The special fields "search_api_id" and "search_api_relevance" are also
    * included. Any Solr fields that exist on search results are mapped back to
-   * to their local field names in the final result set.
+   * their local field names in the final result set.
    *
    * @param \Drupal\search_api\IndexInterface $index
    *   The Search Api index.
@@ -66,8 +70,8 @@ interface SolrBackendInterface extends BackendInterface {
    *
    * @param string $language_id
    *   The language to get the mapping for.
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The Search API index entity.
+   * @param \Drupal\search_api\IndexInterface|null $index
+   *   (optional) The Search API index.
    * @param bool $reset
    *   (optional) Whether to reset the static cache.
    *
@@ -200,8 +204,10 @@ interface SolrBackendInterface extends BackendInterface {
    * In case of Solr Cloud an index might use a different Solr collection.
    *
    * @param \Drupal\search_api\IndexInterface $index
+   *  The Search API index.
    *
    * @return \Solarium\Core\Client\Endpoint
+   *   The solarium endpoint.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\search_api\SearchApiException
@@ -217,7 +223,12 @@ interface SolrBackendInterface extends BackendInterface {
    * @return array
    *   An associative array of settings.
    *
-   * @deprecated use \Drupal\search_api_solr\Utility\Utility::getIndexSolrSettings()
+   * @deprecated in search_api_solr:4.2.0 and is removed from
+   *   search_api_solr:4.3.0. Use
+   *   Utility::getIndexSolrSettings() instead.
+   *
+   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
+   * @see \Drupal\search_api_solr\Utility\Utility::getIndexSolrSettings()
    */
   public function getIndexSolrSettings(IndexInterface $index);
 
@@ -358,6 +369,7 @@ interface SolrBackendInterface extends BackendInterface {
    * Gets a list of Solr Field Types that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Field Types that are disabled for this backend.
    */
   public function getDisabledFieldTypes(): array;
 
@@ -365,6 +377,7 @@ interface SolrBackendInterface extends BackendInterface {
    * Gets a list of Solr Caches that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Caches that are disabled for this backend.
    */
   public function getDisabledCaches(): array;
 
@@ -372,6 +385,7 @@ interface SolrBackendInterface extends BackendInterface {
    * Gets a list of Solr Request Handlers that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Request Handlers.
    */
   public function getDisabledRequestHandlers(): array;
 
@@ -379,14 +393,29 @@ interface SolrBackendInterface extends BackendInterface {
    * Gets a list of Solr Request Dispatchers that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Request Dispatchers.
    */
   public function getDisabledRequestDispatchers(): array;
 
   /**
-   * Indicates if the the current Solr config should not be verified.
+   * Indicates if the current Solr config should not be verified.
    *
    * @return bool
+   *   Whether a non-drupal or an outdated config-set is allowed or not.
    */
   public function isNonDrupalOrOutdatedConfigSetAllowed(): bool;
+
+  /**
+   * Provide an easy to access event dispatcher for plugins.
+   *
+   * @param object $event
+   *   The object to process.
+   *
+   * @return object
+   *   The Event that was passed, now modified by listeners.
+   *
+   * @see \Psr\EventDispatcher\EventDispatcherInterface
+   */
+  public function dispatch(object $event): void;
 
 }

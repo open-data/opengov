@@ -1,3 +1,45 @@
+### [2.2.17] 2022-07-13
+
+  * Fixed plugins from CWD/vendor being loaded in some cases like create-project or validate even though the target directory is outside of CWD (#10935)
+  * Fixed support for legacy (Composer 1.x, e.g. hirak/prestissimo) plugins which will not warn/error anymore if not in allow-plugins, as they are anyway not loaded (#10928)
+  * Fixed pre-install check for allowed plugins not taking --no-plugins into account (#10925)
+  * Fixed support for disable_functions containing disk_free_space (#10936)
+  * Fixed RootPackageRepository usages to always clone the root package to avoid interoperability issues with plugins (#10940)
+
+### [2.2.16] 2022-07-05
+
+  * Fixed non-interactive behavior of allow-plugins to throw instead of continue with a warning to avoid broken installs (#10920)
+  * Fixed allow-plugins BC mode to ensure old lock files created pre-2.2 can be installed with only a warning but plugins fully loaded (#10920)
+  * Fixed deprecation notice (#10921)
+
+### [2.2.15] 2022-07-01
+
+  * Fixed support for `cache-read-only` where the filesystem is not writable (#10906)
+  * Fixed type error when using `allow-plugins: true` (#10909)
+  * Fixed @putenv scripts receiving arguments passed to the command (#10846)
+  * Fixed support for spaces in paths with binary proxies on Windows (#10836)
+  * Fixed type error in GitDownloader if branches cannot be listed (#10888)
+  * Fixed RootPackageInterface issue on PHP 5.3.3 (#10895)
+
+### [2.2.14] 2022-06-06
+
+  * Fixed handling of broken symlinks when checking whether a package is still installed (#6708)
+  * Fixed JSON schema regex pattern for name to be JS compatible (#10811)
+  * Fixed bin proxies to allow a proxy to include another one safely (#10823)
+  * Fixed gitlab-token JSON schema definition (#10800)
+  * Fixed openssl 3.x version parsing as it is now semver compliant
+  * Fixed type error when a json file cannot be read (#10818)
+  * Fixed parsing of multi-line arrays in funding.yml (#10784)
+
+### [2.2.13] 2022-05-25
+
+  * Fixed invalid credentials loop when setting up GitLab token (#10748)
+  * Fixed PHP 8.2 deprecations (#10766)
+  * Fixed lock file changes being output even when the lock file creation is disabled
+  * Fixed race condition when multiple requests asking for auth on the same hostname fired concurrently (#10763)
+  * Fixed quoting of commas on Windows (#10775)
+  * Fixed issue installing path repos with a disabled symlink function (#10786)
+
 ### [2.2.12] 2022-04-13
 
   * Security: Fixed command injection vulnerability in HgDriver/GitDriver (GHSA-x7cr-6qr6-2hh6 / CVE-2022-24828)
@@ -1427,6 +1469,11 @@
 
   * Initial release
 
+[2.2.17]: https://github.com/composer/composer/compare/2.2.16...2.2.17
+[2.2.16]: https://github.com/composer/composer/compare/2.2.15...2.2.16
+[2.2.15]: https://github.com/composer/composer/compare/2.2.14...2.2.15
+[2.2.14]: https://github.com/composer/composer/compare/2.2.13...2.2.14
+[2.2.13]: https://github.com/composer/composer/compare/2.2.12...2.2.13
 [2.2.12]: https://github.com/composer/composer/compare/2.2.11...2.2.12
 [2.2.11]: https://github.com/composer/composer/compare/2.2.10...2.2.11
 [2.2.10]: https://github.com/composer/composer/compare/2.2.9...2.2.10

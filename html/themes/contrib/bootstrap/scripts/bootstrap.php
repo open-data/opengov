@@ -13,11 +13,14 @@ if (class_exists('\Drupal\Core\DrupalKernel') && class_exists('\Drupal')) {
   return \Drupal::service('kernel');
 }
 
+/**
+ *
+ */
 function _find_autoloader($dir) {
   if (file_exists($autoloadFile = $dir . '/autoload.php') || file_exists($autoloadFile = $dir . '/vendor/autoload.php')) {
-    return include_once($autoloadFile);
+    return include_once $autoloadFile;
   }
-  else if (empty($dir) || $dir === DIRECTORY_SEPARATOR) {
+  elseif (empty($dir) || $dir === DIRECTORY_SEPARATOR) {
     return FALSE;
   }
   return _find_autoloader(dirname($dir));

@@ -19,7 +19,7 @@ trait VariantSetterTrait {
   /**
    * Sets the variants.
    *
-   * @param array|string|true|null $variants
+   * @param array|string|null $variants
    *   array: Array of variants to be set.
    *   string: A particular variant to be set.
    *   null: All existing variants will be set.
@@ -28,7 +28,7 @@ trait VariantSetterTrait {
    *
    * @todo Check if variants exist and throw exception.
    */
-  public function setVariants($variants = NULL) {
+  public function setVariants($variants = NULL): self {
     if ($variants === NULL) {
       // @todo No need to load all sitemaps here.
       $this->variants = array_keys(SimpleSitemap::loadMultiple());

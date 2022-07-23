@@ -49,7 +49,7 @@ class EntityBundlesForm extends SimpleSitemapFormBase {
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
    * @param \Drupal\simple_sitemap\Form\FormHelper $form_helper
-   *   Simple XML Sitemap form helper.
+   *   Helper class for working with forms.
    * @param \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper
    *   Helper class for working with entities.
    * @param \Drupal\simple_sitemap\Manager\EntityManager $entity_manager
@@ -129,10 +129,10 @@ class EntityBundlesForm extends SimpleSitemapFormBase {
       '#attached' => ['library' => ['simple_sitemap/fieldsetSummaries']],
     ];
 
-    $this->entityHelper->getBundleInfo($entity_type_id);
-
     foreach ($this->entityHelper->getBundleInfo($entity_type_id) as $bundle_name => $bundle_info) {
-      $form['settings'][$bundle_name] = [
+      $bundle_form = &$form['settings'][$bundle_name];
+
+      $bundle_form = [
         '#type' => $form['bundles']['#access'] ? 'details' : 'container',
         '#title' => $this->entityHelper->getBundleLabel($entity_type_id, $bundle_name),
         '#attributes' => ['class' => ['simple-sitemap-fieldset']],
@@ -141,15 +141,11 @@ class EntityBundlesForm extends SimpleSitemapFormBase {
         '#tree' => TRUE,
       ];
 
-      $this->formHelper
-        ->cleanUpFormInfo()
-        ->setEntityCategory('bundle')
-        ->setEntityTypeId($entity_type_id)
-        ->setBundleName($bundle_name)
-        ->displayEntitySettings($form['settings'][$bundle_name]);
+      $bundle_form = $this->formHelper
+        ->bundleSettingsForm($bundle_form, $entity_type_id, $bundle_name);
     }
 
-    $this->formHelper->displayRegenerateNow($form);
+    $form = $this->formHelper->regenerateNowForm($form);
 
     return parent::buildForm($form, $form_state);
   }
@@ -173,14 +169,6 @@ class EntityBundlesForm extends SimpleSitemapFormBase {
     }
 
     parent::submitForm($form, $form_state);
-
-    // Regenerate sitemaps according to user setting.
-    if ($form_state->getValue('simple_sitemap_regenerate_now')) {
-      $this->generator
-        ->setVariants()
-        ->rebuildQueue()
-        ->generate();
-    }
   }
 
 }

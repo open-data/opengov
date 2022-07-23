@@ -15,7 +15,7 @@ class LanguageIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'views',
     'search_api',
     'facets',
@@ -28,7 +28,7 @@ class LanguageIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->adminUser = $this->drupalCreateUser([
@@ -154,11 +154,11 @@ class LanguageIntegrationTest extends FacetsTestBase {
 
     // Translate the facet.
     $this->drupalGet('admin/config/search/facets/' . $facet_id . '/edit/translate/xx-lolspeak/add');
-    $this->drupalPostForm(NULL, ['translation[config_names][facets.facet.barn_owl][url_alias]' => 'tyto_alba'], 'Save translation');
+    $this->submitForm(['translation[config_names][facets.facet.barn_owl][url_alias]' => 'tyto_alba'], 'Save translation');
     $this->drupalGet('admin/config/search/facets/' . $facet_id . '/edit/translate/nl/add');
-    $this->drupalPostForm(NULL, ['translation[config_names][facets.facet.barn_owl][url_alias]' => 'uil'], 'Save translation');
+    $this->submitForm(['translation[config_names][facets.facet.barn_owl][url_alias]' => 'uil'], 'Save translation');
     $this->drupalGet('admin/config/search/facets/' . $facet_id . '/edit/translate/es/add');
-    $this->drupalPostForm(NULL, ['translation[config_names][facets.facet.barn_owl][url_alias]' => 'buho'], 'Save translation');
+    $this->submitForm(['translation[config_names][facets.facet.barn_owl][url_alias]' => 'buho'], 'Save translation');
 
     // Go to the search view again and check that we now have the translated
     // facet in the url.
@@ -257,13 +257,13 @@ class LanguageIntegrationTest extends FacetsTestBase {
     $this->assertSession()->pageTextContains('grape');
     $this->assertSession()->pageTextContains('rofl');
 
-    $this->drupalPostForm(NULL, ['language' => 'xx-lolspeak'], 'Search');
+    $this->submitForm(['language' => 'xx-lolspeak'], 'Search');
     $this->assertFacetBlocksAppear();
     $this->assertSession()->pageTextContains('orange');
     $this->assertSession()->pageTextContains('rofl');
     $this->assertSession()->pageTextNotContains('grape');
 
-    $this->drupalPostForm(NULL, ['language' => 'en'], 'Search');
+    $this->submitForm(['language' => 'en'], 'Search');
     $this->assertFacetBlocksAppear();
     $this->assertSession()->pageTextContains('orange');
     $this->assertSession()->pageTextContains('grape');
@@ -278,7 +278,7 @@ class LanguageIntegrationTest extends FacetsTestBase {
     $this->createFacet('Water bear', $id);
     // Translate the facet.
     $this->drupalGet('admin/config/search/facets/' . $id . '/edit/translate/xx-lolspeak/add');
-    $this->drupalPostForm(NULL, ['translation[config_names][facets.facet.water_bear][name]' => 'Tardigrade'], 'Save translation');
+    $this->submitForm(['translation[config_names][facets.facet.water_bear][name]' => 'Tardigrade'], 'Save translation');
 
     $this->drupalGet('admin/config/search/facets');
     $this->assertSession()->pageTextContains('Water bear');

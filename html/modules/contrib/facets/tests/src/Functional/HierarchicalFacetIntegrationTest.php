@@ -56,7 +56,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->drupalLogin($this->adminUser);
@@ -128,7 +128,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => TRUE,
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
 
     // Child elements should be collapsed and invisible.
     $this->drupalGet('search-api-test-fulltext');
@@ -160,7 +160,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->drupalGet('search-api-test-fulltext');
 
     // Click the first parent and make sure its children are visible.
@@ -183,7 +183,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
     $this->assertSession()->linkNotExists('Child 3');
     $this->assertSession()->linkNotExists('Child 4');
 
-    // Click the the parent and make sure its children are not active, too.
+    // Click the parent and make sure its children are not active, too.
     $this->clickLink('Parent 1');
     $this->checkFacetIsNotActive('Parent 1');
     $this->assertSession()->linkNotExists('Child 1');
@@ -204,7 +204,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->drupalGet('search-api-test-fulltext');
 
     $this->assertFacetLabel('Parent 1');
@@ -230,7 +230,8 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_sorting[count_widget_order][status]' => '0',
       'facet_sorting[active_widget_order][status]' => '0',
     ];
-    $this->drupalPostForm($this->facetEditPage, $edit, 'Save');
+    $this->drupalGet($this->facetEditPage);
+    $this->submitForm($edit, 'Save');
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertStringPosition('Parent 1', 'Parent 2');
@@ -241,7 +242,8 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
     $edit = [
       'facet_sorting[display_value_widget_order][settings][sort]' => 'DESC',
     ];
-    $this->drupalPostForm($this->facetEditPage, $edit, 'Save');
+    $this->drupalGet($this->facetEditPage);
+    $this->submitForm($edit, 'Save');
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertStringPosition('Parent 2', 'Parent 1');
@@ -258,7 +260,8 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_settings[translate_entity][status]' => '1',
       'facet_sorting[term_weight_widget_order][status]' => '1',
     ];
-    $this->drupalPostForm($this->facetEditPage, $edit, 'Save');
+    $this->drupalGet($this->facetEditPage);
+    $this->submitForm($edit, 'Save');
 
     $this->parents['Parent 1']->setWeight(15);
     $this->parents['Parent 1']->save();
@@ -292,7 +295,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->drupalGet('search-api-test-fulltext');
 
     // Enable a child under Parent 2.
@@ -314,7 +317,7 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_settings[use_hierarchy]' => '1',
       'facet_settings[translate_entity][status]' => '1',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->drupalGet('search-api-test-fulltext');
 
     $this->clickLink('Child 4');
@@ -380,14 +383,14 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
    */
   public function testHierarchyBreadcrumb() {
     $this->drupalGet('admin/config/search/facets');
-    $this->clickLink('Configure', 1);
+    $this->clickLink('Configure', 2);
     $default_config = [
       'filter_key' => 'f',
       'url_processor' => 'query_string',
       'breadcrumb[active]' => TRUE,
       'breadcrumb[group]' => TRUE,
     ];
-    $this->drupalPostForm(NULL, $default_config, 'Save');
+    $this->submitForm($default_config, 'Save');
 
     $block = [
       'region' => 'footer',
@@ -407,7 +410,8 @@ class HierarchicalFacetIntegrationTest extends FacetsTestBase {
       'facet_sorting[count_widget_order][status]' => '0',
       'facet_sorting[active_widget_order][status]' => '0',
     ];
-    $this->drupalPostForm($this->facetEditPage, $edit, 'Save');
+    $this->drupalGet($this->facetEditPage);
+    $this->submitForm($edit, 'Save');
 
     $initial_query = ['search_api_fulltext' => 'foo', 'test_param' => 1];
     $this->drupalGet('search-api-test-fulltext', ['query' => $initial_query]);

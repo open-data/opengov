@@ -125,9 +125,12 @@ class Generator {
       ? $default_variant
       : reset($variants);
 
-    $sitemap = SimpleSitemap::load($variant);
+    if (($sitemap = SimpleSitemap::load($variant)) && $sitemap->isEnabled()
+      && ($sitemap_string = $sitemap->fromPublished()->toString($delta))) {
+      return $sitemap_string;
+    }
 
-    return $sitemap ? $sitemap->fromPublished()->toString($delta) : NULL;
+    return NULL;
   }
 
   /**

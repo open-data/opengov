@@ -14,8 +14,8 @@ CONTENTS OF THIS FILE
 INTRODUCTION
 ------------
 
-The Facets module allows site builders to easily create and manage faceted search
-interfaces.
+The Facets module allows site builders to easily create and manage faceted
+search interfaces.
 
 
 REQUIREMENTS

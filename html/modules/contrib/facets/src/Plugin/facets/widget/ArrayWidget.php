@@ -21,43 +21,40 @@ class ArrayWidget extends WidgetPluginBase {
    * {@inheritdoc}
    */
   public function build(FacetInterface $facet) {
-    /** @var \Drupal\facets\Result\Result[] $results */
     $results = $facet->getResults();
-    $items = [];
 
     $configuration = $facet->getWidget();
-    $this->showNumbers = empty($configuration['show_numbers']) ? FALSE : (bool) $configuration['show_numbers'];
+    $this->showNumbers = !empty($configuration['show_numbers']);
 
-    foreach ($results as $result) {
-      if (is_null($result->getUrl())) {
-        $text = $this->generateValues($result);
-        $items[$facet->getFieldIdentifier()][] = $text;
-      }
-      else {
-        $items[$facet->getFieldIdentifier()][] = $this->buildListItems($facet, $result);
-      }
-    }
-
-    return $items;
+    return [
+      $facet->getFieldIdentifier() => $this->buildOneLevel($results),
+    ];
   }
 
   /**
-   * {@inheritdoc}
+   * Builds one level from results.
+   *
+   * @param \Drupal\facets\Result\ResultInterface[] $results
+   *   A list of results.
+   *
+   * @return array
+   *   Generated build.
    */
-  protected function buildListItems(FacetInterface $facet, ResultInterface $result) {
-    if ($children = $result->getChildren()) {
-      $items = $this->prepare($result);
+  protected function buildOneLevel(array $results): array {
+    $items = [];
 
-      $children_markup = [];
-      foreach ($children as $child) {
-        $children_markup[] = $this->buildChildren($child);
+    foreach ($results as $result) {
+      if (is_null($result->getUrl())) {
+        $items[] = $this->generateValues($result);
       }
-
-      $items['children'] = [$children_markup];
-
-    }
-    else {
-      $items = $this->prepare($result);
+      else {
+        $item = $this->prepare($result);
+        if ($children = $result->getChildren()) {
+          // @todo This is a useless nesting.
+          $item['children'][] = $this->buildOneLevel($children);
+        }
+        $items[] = $item;
+      }
     }
 
     return $items;
@@ -73,40 +70,11 @@ class ArrayWidget extends WidgetPluginBase {
    *   The results.
    */
   protected function prepare(ResultInterface $result) {
-    $values = $this->generateValues($result);
-
-    if (is_null($result->getUrl())) {
-      $facet_values = $values;
-    }
-    else {
-      $facet_values['url'] = $result->getUrl()->setAbsolute()->toString();
-      $facet_values['values'] = $values;
-    }
-
-    return $facet_values;
-  }
-
-  /**
-   * Builds an array for children results.
-   *
-   * @param \Drupal\facets\Result\ResultInterface $child
-   *   A result item.
-   *
-   * @return array
-   *   An array with the results.
-   */
-  protected function buildChildren(ResultInterface $child) {
-    $values = $this->generateValues($child);
-
-    if (!is_null($child->getUrl())) {
-      $facet_values['url'] = $child->getUrl()->setAbsolute()->toString();
-      $facet_values['values'] = $values;
-    }
-    else {
-      $facet_values = $values;
-    }
-
-    return $facet_values;
+    return [
+      'url' => $result->getUrl()->setAbsolute()->toString(),
+      'raw_value' => $result->getRawValue(),
+      'values' => $this->generateValues($result),
+    ];
   }
 
   /**

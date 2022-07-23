@@ -48,7 +48,7 @@ abstract class WidgetTestBase extends UnitTestCase {
   /**
    * Sets up the container and other variables used in all the tests.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $facet = new Facet([], 'facets_facet');

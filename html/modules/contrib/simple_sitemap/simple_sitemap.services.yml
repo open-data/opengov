@@ -17,6 +17,7 @@ services:
       - '@config.factory'
       - '@database'
       - '@entity_type.manager'
+      - '@entity_field.manager'
 
   simple_sitemap.custom_link_manager:
     class: Drupal\simple_sitemap\Manager\CustomLinkManager
@@ -73,6 +74,7 @@ services:
       - '@simple_sitemap.settings'
       - '@simple_sitemap.entity_helper'
       - '@current_user'
+      - '@class_resolver'
 
   simple_sitemap.logger:
     class: Drupal\simple_sitemap\Logger

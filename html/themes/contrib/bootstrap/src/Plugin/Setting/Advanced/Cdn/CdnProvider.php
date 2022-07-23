@@ -216,16 +216,13 @@ class CdnProvider extends CdnProviderBase {
    * @todo Import functionality is deprecated, remove in a future release.
    */
   protected function importProviderData(Element $group, FormStateInterface $form_state) {
-    if ($form_state->getValue('clicked_button') === t('Save provider data')->render()) {
+    if ($form_state->getValue('clicked_button') === $this->t('Save provider data')->render()) {
       $provider_path = ProviderManager::FILE_PATH;
 
       // FILE_CREATE_DIRECTORY = 1 | FILE_MODIFY_PERMISSIONS = 2.
       $options = 1 | 2;
-      if ($fileSystem = Bootstrap::fileSystem('prepareDirectory')) {
+      if ($fileSystem = \Drupal::service('file_system')) {
         $fileSystem->prepareDirectory($provider_path, $options);
-      }
-      else {
-        file_prepare_directory($provider_path, $options);
       }
 
       $provider = $form_state->getValue('cdn_provider', $this->theme->getSetting('cdn_provider'));
@@ -234,19 +231,13 @@ class CdnProvider extends CdnProviderBase {
       if ($import_data = $form_state->getValue('cdn_provider_import_data', FALSE)) {
         // FILE_EXISTS_REPLACE = 1.
         $replace = 1;
-        if ($fileSystem = Bootstrap::fileSystem('saveData')) {
+        if ($fileSystem = \Drupal::service('file_system')) {
           $fileSystem->saveData($import_data, $file, $replace);
-        }
-        else {
-          file_unmanaged_save_data($import_data, $file, $replace);
         }
       }
       elseif ($file && file_exists($file)) {
-        if ($fileSystem = Bootstrap::fileSystem('delete')) {
+        if ($fileSystem = \Drupal::service('file_system')) {
           $fileSystem->delete($file);
-        }
-        else {
-          file_unmanaged_delete($file);
         }
       }
 
@@ -289,8 +280,8 @@ class CdnProvider extends CdnProviderBase {
 
       $group->import = [
         '#type' => 'details',
-        '#title' => t('Imported @title data', ['@title' => $provider->getLabel()]),
-        '#description' => t('The provider will attempt to parse the data entered here each time it is saved. If no data has been entered, any saved files associated with this provider will be removed and the provider will again attempt to request the API data normally through the following URL: <a href=":provider_api" target="_blank">:provider_api</a>.', [
+        '#title' => $this->t('Imported @title data', ['@title' => $provider->getLabel()]),
+        '#description' => $this->t('The provider will attempt to parse the data entered here each time it is saved. If no data has been entered, any saved files associated with this provider will be removed and the provider will again attempt to request the API data normally through the following URL: <a href=":provider_api" target="_blank">:provider_api</a>.', [
           ':provider_api' => $provider->getPluginDefinition()['api'],
         ]),
         '#weight' => 10,
@@ -304,7 +295,7 @@ class CdnProvider extends CdnProviderBase {
 
       $group->import->submit = $this->setCdnProvidersAjax([
         '#type' => 'submit',
-        '#value' => t('Save provider data'),
+        '#value' => $this->t('Save provider data'),
         '#executes_submit_callback' => FALSE,
       ]);
     }

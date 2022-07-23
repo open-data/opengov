@@ -11,7 +11,7 @@
       $(context).find('.simple-sitemap-fieldset').drupalSetSummary(function (context) {
         let summary = '', enabledVariants = [];
 
-        $(context).find('input:checkbox[name$="[index_now]"]').each(function () {
+        $(context).find('input:checkbox[name*="simple_sitemap_index_now"]').each(function () {
           summary = (this.checked ? Drupal.t('IndexNow notification enabled') : Drupal.t('IndexNow notification disabled')) + ', ';
         });
 

@@ -40,29 +40,35 @@ class SimpleSitemapListBuilder extends DraggableListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['name']['#markup'] = '<span title="' . $entity->get('description') . '">' . $entity->label() . '</span>';
     $row['type']['#markup'] = '<span title="' . $entity->getType()->get('description') . '">' . $entity->getType()->label() . '</span>';
-    $row['status']['#markup'] = $this->t('pending');
+    $row['status']['#markup'] = $this->t('disabled');
     $row['count']['#markup'] = '';
 
-    /** @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity */
-    if (!empty($entity->fromPublishedAndUnpublished()->getChunkCount())) {
-      switch ($entity->contentStatus()) {
+    if ($entity->isEnabled()) {
+      $row['status']['#markup'] = $this->t('pending');
 
-        case SimpleSitemap::SITEMAP_UNPUBLISHED:
-          $row['status']['#markup'] = $this->t('generating');
-          break;
+      /** @var \Drupal\simple_sitemap\Entity\SimpleSitemapInterface $entity */
+      if ($entity->fromPublishedAndUnpublished()->getChunkCount()) {
+        switch ($entity->contentStatus()) {
 
-        case SimpleSitemap::SITEMAP_PUBLISHED:
-        case SimpleSitemap::SITEMAP_PUBLISHED_GENERATING:
-          $created = \Drupal::service('date.formatter')->format($entity->fromPublished()->getCreated());
+          case SimpleSitemap::SITEMAP_UNPUBLISHED:
+            $row['status']['#markup'] = $this->t('generating');
+            break;
 
-          $row['name']['#markup'] = '<a title ="' . $entity->get('description')
-            . '" href="' . $entity->toUrl()->toString() . '" target="_blank">'
-            . $entity->label() . '</a>';
-          $row['status']['#markup'] = $entity->contentStatus() === SimpleSitemap::SITEMAP_PUBLISHED
-            ? $this->t('published on @time', ['@time' => $created])
-            : $this->t('published on @time, regenerating', ['@time' => $created]);
-          $row['count']['#markup'] = $entity->fromPublished()->getLinkCount();
-          break;
+          case SimpleSitemap::SITEMAP_PUBLISHED:
+          case SimpleSitemap::SITEMAP_PUBLISHED_GENERATING:
+            $row['name']['#markup'] = '<a title ="' . $entity->get('description')
+              . '" href="' . $entity->toUrl()->toString() . '" target="_blank">'
+              . $entity->label() . '</a>';
+
+            $created = \Drupal::service('date.formatter')->format($entity->fromPublished()->getCreated());
+            $row['status']['#markup'] = $entity->contentStatus() === SimpleSitemap::SITEMAP_PUBLISHED
+              ? $this->t('published on @time', ['@time' => $created])
+              : $this->t('published on @time, regenerating', ['@time' => $created]);
+
+            $row['count']['#markup'] = $entity->fromPublished()->getLinkCount();
+
+            break;
+        }
       }
     }
 

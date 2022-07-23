@@ -4,6 +4,7 @@ namespace Drupal\simple_sitemap\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\simple_sitemap\Queue\QueueWorker;
 use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -38,6 +39,13 @@ class StatusForm extends SimpleSitemapFormBase {
   protected $queueWorker;
 
   /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
    * StatusForm constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -47,13 +55,15 @@ class StatusForm extends SimpleSitemapFormBase {
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
    * @param \Drupal\simple_sitemap\Form\FormHelper $form_helper
-   *   Simple XML Sitemap form helper.
+   *   Helper class for working with forms.
    * @param \Drupal\Core\Database\Connection $database
    *   The database connection.
    * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
    *   The date formatter service.
    * @param \Drupal\simple_sitemap\Queue\QueueWorker $queue_worker
    *   The simple_sitemap.queue_worker service.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer service.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -62,7 +72,8 @@ class StatusForm extends SimpleSitemapFormBase {
     FormHelper $form_helper,
     Connection $database,
     DateFormatter $date_formatter,
-    QueueWorker $queue_worker
+    QueueWorker $queue_worker,
+    RendererInterface $renderer
   ) {
     parent::__construct(
       $config_factory,
@@ -73,6 +84,7 @@ class StatusForm extends SimpleSitemapFormBase {
     $this->db = $database;
     $this->dateFormatter = $date_formatter;
     $this->queueWorker = $queue_worker;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -86,7 +98,8 @@ class StatusForm extends SimpleSitemapFormBase {
       $container->get('simple_sitemap.form_helper'),
       $container->get('database'),
       $container->get('date.formatter'),
-      $container->get('simple_sitemap.queue_worker')
+      $container->get('simple_sitemap.queue_worker'),
+      $container->get('renderer')
     );
   }
 
@@ -155,7 +168,7 @@ class StatusForm extends SimpleSitemapFormBase {
           '@total' => $total_count,
         ]),
       ];
-      $form['status']['progress']['bar']['#markup'] = render($index_progress);
+      $form['status']['progress']['bar']['#markup'] = $this->renderer->render($index_progress);
     }
     else {
       $form['status']['progress']['bar']['#markup'] = '<div class="description">' . $this->t('There are no items to be indexed.') . '</div>';

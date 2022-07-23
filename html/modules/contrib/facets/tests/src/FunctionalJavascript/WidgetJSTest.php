@@ -65,6 +65,8 @@ class WidgetJSTest extends JsBase {
           'settings' => [],
         ],
       ],
+      'use_hierarchy' => FALSE,
+      'hierarchy' => ['type' => 'taxonomy', 'config' => []],
     ])->save();
     $this->createBlock($id);
 
@@ -125,6 +127,8 @@ class WidgetJSTest extends JsBase {
           'settings' => [],
         ],
       ],
+      'use_hierarchy' => FALSE,
+      'hierarchy' => ['type' => 'taxonomy', 'config' => []],
     ])->save();
     $this->createBlock($id);
 
@@ -155,8 +159,18 @@ class WidgetJSTest extends JsBase {
     // leads to the updated search results. None of the checkboxes should be
     // checked.
     $expected = [
-      ['item', 3, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem', FALSE],
-      ['article', 2, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+      [
+        'item',
+        3,
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem',
+        FALSE,
+      ],
+      [
+        'article',
+        2,
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle',
+        FALSE,
+      ],
     ];
     $this->assertListItems($expected, $list_items);
 
@@ -170,8 +184,18 @@ class WidgetJSTest extends JsBase {
     // Now the chosen keyword should be checked and the hidden links should be
     // updated.
     $expected = [
-      ['item', 3, base_path() . 'search-api-test-fulltext', TRUE],
-      ['article', 2, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+      [
+        'item',
+        3,
+        base_path() . 'search-api-test-fulltext',
+        TRUE,
+      ],
+      [
+        'article',
+        2,
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle',
+        FALSE,
+      ],
     ];
     $this->assertListItems($expected, $block->findAll('css', 'ul li.facet-item'));
 
@@ -181,8 +205,18 @@ class WidgetJSTest extends JsBase {
     $current_url = $this->getSession()->getCurrentUrl();
     $this->assertStringContainsString('search-api-test-fulltext', $current_url);
     $expected = [
-      ['item', 3, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem', FALSE],
-      ['article', 2, base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+      [
+        'item',
+        3,
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem',
+        FALSE,
+      ],
+      [
+        'article',
+        2,
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle',
+        FALSE,
+      ],
     ];
     $this->assertListItems($expected, $block->findAll('css', 'ul li.facet-item'));
   }
@@ -273,6 +307,8 @@ class WidgetJSTest extends JsBase {
           'settings' => [],
         ],
       ],
+      'use_hierarchy' => FALSE,
+      'hierarchy' => ['type' => 'taxonomy', 'config' => []],
     ])->save();
     $this->createBlock($id);
 
@@ -312,13 +348,25 @@ class WidgetJSTest extends JsBase {
     $expected = [
       // The first option is the default option, it doesn't have a value and it
       // should be selected.
-      ['- All -', '', TRUE],
+      [
+        '- All -',
+        '',
+        TRUE,
+      ],
       // The second option should have the expected option text, have the URI
       // that points to the updated search result as the value, and is not
       // selected.
-      [' item (3)', base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem', FALSE],
+      [
+        'item (3)',
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aitem',
+        FALSE,
+      ],
       // The third option is similar.
-      [' article (2)', base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+      [
+        'article (2)',
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle',
+        FALSE,
+      ],
     ];
     $this->assertSelectOptions($expected, $options);
 
@@ -338,13 +386,25 @@ class WidgetJSTest extends JsBase {
     $expected = [
       // The first option is the default option, it should point to the original
       // search result (without any chosen facets) and should not be selected.
-      ['- All -', base_path() . 'search-api-test-fulltext', FALSE],
+      [
+        '- All -',
+        base_path() . 'search-api-test-fulltext',
+        FALSE,
+      ],
       // The second option should now be selected, and since clicking it again
       // would negate it, it should also link to the search page without any
       // chosen facets.
-      [' item (3)', base_path() . 'search-api-test-fulltext', TRUE],
+      [
+        'item (3)',
+        base_path() . 'search-api-test-fulltext',
+        TRUE,
+      ],
       // The third option remains unchanged.
-      [' article (2)', base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle', FALSE],
+      [
+        'article (2)',
+        base_path() . 'search-api-test-fulltext?f%5B0%5D=llama%3Aarticle',
+        FALSE,
+      ],
     ];
     $this->assertSelectOptions($expected, $options);
   }
@@ -366,7 +426,7 @@ class WidgetJSTest extends JsBase {
       $option = $options[$key];
       // There can be multiple spaces or newlines between the value text and the
       // number of results. Reduce them to a single space before asserting.
-      $this->assertEquals($text, preg_replace('/\s+/', ' ', $option->getText()));
+      $this->assertEquals($text, trim(preg_replace('/\s+/', ' ', $option->getText())));
       $this->assertEquals($value, $option->getValue());
       $this->assertEquals($selected, $option->isSelected());
     }

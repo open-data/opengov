@@ -32,7 +32,7 @@ class CustomLinksForm extends SimpleSitemapFormBase {
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
    * @param \Drupal\simple_sitemap\Form\FormHelper $form_helper
-   *   Simple XML Sitemap form helper.
+   *   Helper class for working with forms.
    * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
    *   The path validator service.
    */
@@ -119,7 +119,8 @@ class CustomLinksForm extends SimpleSitemapFormBase {
       '#options' => [0 => $this->t('No'), 1 => $this->t('Yes')],
     ];
 
-    $this->formHelper->displayRegenerateNow($form['simple_sitemap_custom']);
+    $form['simple_sitemap_custom'] = $this->formHelper
+      ->regenerateNowForm($form['simple_sitemap_custom']);
 
     return parent::buildForm($form, $form_state);
   }
@@ -138,7 +139,7 @@ class CustomLinksForm extends SimpleSitemapFormBase {
         '@path' => $link_config['path'],
         '@priority' => $link_config['priority'] ?? '',
         '@changefreq' => $link_config['changefreq'] ?? '',
-        '@changefreq_options' => implode(', ', FormHelper::getChangefreqOptions()),
+        '@changefreq_options' => implode(', ', array_keys(FormHelper::getChangefreqOptions())),
       ];
 
       // Checking if internal path exists.
@@ -180,13 +181,6 @@ class CustomLinksForm extends SimpleSitemapFormBase {
 
     $this->settings->save('custom_links_include_images', (bool) $form_state->getValue('include_images'));
     parent::submitForm($form, $form_state);
-
-    // Regenerate sitemaps according to user setting.
-    if ($form_state->getValue('simple_sitemap_regenerate_now')) {
-      $this->generator->setVariants()
-        ->rebuildQueue()
-        ->generate();
-    }
   }
 
   /**
@@ -248,7 +242,7 @@ class CustomLinksForm extends SimpleSitemapFormBase {
     foreach ($links as $custom_link) {
       $setting_string .= $custom_link['path'];
       $setting_string .= isset($custom_link['priority'])
-        ? ' ' . $this->formHelper->formatPriority($custom_link['priority'])
+        ? ' ' . FormHelper::formatPriority($custom_link['priority'])
         : '';
       $setting_string .= isset($custom_link['changefreq'])
         ? ' ' . $custom_link['changefreq']

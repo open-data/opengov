@@ -36,7 +36,10 @@ class RangeSliderWidget extends SliderWidget {
 
     $min = $facet_settings['min'];
     $max = $facet_settings['max'];
-    $facet_settings['values'] = [isset($active[0][0]) ? (float) $active[0][0] : $min, isset($active[0][1]) ? (float) $active[0][1] : $max];
+    $facet_settings['values'] = [
+      isset($active[0][0]) ? (float) $active[0][0] : $min,
+      isset($active[0][1]) ? (float) $active[0][1] : $max,
+    ];
 
     return $build;
   }

@@ -10,7 +10,7 @@ use Drupal\facets_summary\Plugin\facets_summary\processor\ShowTextWhenEmptyProce
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Class ShowTextWhenEmptyProcessorTest.
+ * Provides the ShowTextWhenEmptyProcessorTest class.
  *
  * @group facets
  * @coversDefaultClass \Drupal\facets_summary\Plugin\facets_summary\processor\ShowTextWhenEmptyProcessor
@@ -27,7 +27,7 @@ class ShowTextWhenEmptyProcessorTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $string_translation = $this->prophesize(TranslationInterface::class);
 
@@ -112,7 +112,12 @@ class ShowTextWhenEmptyProcessorTest extends UnitTestCase {
     $summary->setFacetSourceId('foo');
 
     $build = ['#items' => []];
-    $this->processor->setConfiguration(['text' => ['value' => 'Owl', 'format' => 'llama']]);
+    $this->processor->setConfiguration([
+      'text' => [
+        'value' => 'Owl',
+        'format' => 'llama',
+      ],
+    ]);
     $result = $this->processor->build($summary, $build, []);
     $this->assertSame('array', gettype($result));
     $this->assertArrayHasKey('#text', $result['#message']);

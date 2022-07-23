@@ -39,4 +39,12 @@ interface SitemapGeneratorInterface extends SimpleSitemapPluginInterface {
    */
   public function getIndexContent(): string;
 
+  /**
+   * Generates and returns sitemap XSL.
+   *
+   * @return string|null
+   *   Sitemap XSL.
+   */
+  public function getXslContent(): ?string;
+
 }

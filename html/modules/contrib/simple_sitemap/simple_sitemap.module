@@ -9,8 +9,6 @@ use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\simple_sitemap\Entity\SimpleSitemap;
-use Drupal\simple_sitemap\Form\FormHelper;
 use Drupal\simple_sitemap\Queue\QueueWorker;
 use Drupal\system\MenuInterface;
 use Drupal\language\ConfigurableLanguageInterface;
@@ -28,95 +26,11 @@ function simple_sitemap_help($route_name, RouteMatchInterface $route_match): ?Ma
  * Implements hook_form_alter().
  *
  * Adds sitemap settings to entity types that are supported via plugins.
- *
- * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
- * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function simple_sitemap_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-
-  /** @var Drupal\simple_sitemap\Form\FormHelper $f */
-  $f = \Drupal::service('simple_sitemap.form_helper');
-  if (!$f->processForm($form_state)) {
-    return;
-  }
-
-  $form['simple_sitemap'] = [
-    '#type' => 'details',
-    '#group' => isset($form['additional_settings']) ? 'additional_settings' : 'advanced',
-    '#title' => t('Simple XML Sitemap'),
-    '#description' => $f->getEntityCategory() === 'instance' ? t('Settings for this entity can be overridden here.') : '',
-    '#attributes' => ['class' => ['simple-sitemap-fieldset']],
-    '#tree' => TRUE,
-    '#weight' => 10,
-  ];
-
-  // Only attach fieldset summary js to 'additional settings' vertical tabs.
-  if (isset($form['additional_settings'])) {
-    $form['#attached']['library'][] = 'simple_sitemap/fieldsetSummaries';
-  }
-
-  $f->displayEntitySettings($form['simple_sitemap'])
-  // @todo Do not show setting when creating new bundle.
-    ->displayRegenerateNow($form['simple_sitemap']);
-
-  // Add submission handler.
-  FormHelper::addSubmitHandler($form, 'simple_sitemap_entity_form_submit');
-}
-
-/**
- * Form submission handler called in hook_form_alter.
- *
- * @param array $form
- *   An associative array containing the structure of the form.
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- *   The current state of the form.
- *
- * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
- * @throws \Drupal\Component\Plugin\Exception\PluginException
- * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
- */
-function simple_sitemap_entity_form_submit(array $form, FormStateInterface $form_state) {
-
-  /** @var Drupal\simple_sitemap\Form\FormHelper $f */
-  $f = \Drupal::service('simple_sitemap.form_helper');
-  if (!$f->processForm($form_state)) {
-    return;
-  }
-
-  $values = $form_state->getValue('simple_sitemap');
-
-  /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
-  $generator = \Drupal::service('simple_sitemap.generator');
-
-  // @todo No need to load all sitemaps here.
-  foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
-
-    // Variants may have changed since form load.
-    if (isset($values[$variant])) {
-      $generator->setVariants($variant);
-
-      switch ($f->getEntityCategory()) {
-        case 'bundle':
-          $generator->entityManager()->setBundleSettings($f->getEntityTypeId(), $f->getBundleName(), $values[$variant]);
-          break;
-
-        case 'instance':
-          // Make sure the entity is saved first for multi-step forms,
-          // see https://www.drupal.org/project/simple_sitemap/issues/3080510.
-          if (!$f->entityIsNew()) {
-            $generator->entityManager()->setEntityInstanceSettings($f->getEntityTypeId(), $f->getInstanceId(), $values[$variant]);
-          }
-          break;
-      }
-    }
-  }
-
-  // Regenerate sitemaps according to user setting.
-  if ($form_state->getValue('simple_sitemap_regenerate_now')) {
-    $generator->setVariants()
-      ->rebuildQueue()
-      ->generate();
-  }
+  /** @var \Drupal\simple_sitemap\Form\FormHelper $form_helper */
+  $form_helper = \Drupal::service('simple_sitemap.form_helper');
+  $form_helper->formAlter($form, $form_state);
 }
 
 /**
@@ -241,4 +155,31 @@ function simple_sitemap_page_attachments_alter(array &$attachments) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function simple_sitemap_entity_extra_field_info() {
+  $extra = [];
+
+  /** @var \Drupal\simple_sitemap\Entity\EntityHelper $entity_helper */
+  $entity_helper = \Drupal::service('simple_sitemap.entity_helper');
+
+  /** @var \Drupal\simple_sitemap\Manager\EntityManager $entity_manager */
+  $entity_manager = \Drupal::service('simple_sitemap.entity_manager');
+
+  foreach ($entity_helper->getSupportedEntityTypes() as $entity_type_id => $entity_type) {
+    if ($entity_type->get('field_ui_base_route') && $entity_manager->entityTypeIsEnabled($entity_type_id)) {
+
+      foreach ($entity_helper->getBundleInfo($entity_type_id) as $bundle_name => $bundle_info) {
+        $extra[$entity_type_id][$bundle_name]['form']['simple_sitemap'] = [
+          'label' => t('Simple XML Sitemap'),
+          'description' => t('Simple XML Sitemap settings'),
+          'weight' => 10,
+        ];
+      }
+    }
+  }
+  return $extra;
 }

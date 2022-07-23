@@ -23,7 +23,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'facets',
     'facets_custom_widget',
     'facets_search_api_dependency',
@@ -31,7 +31,6 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
     'search_api_db',
     'search_api_test_db',
     'search_api_test_example_content',
-    'search_api_test_views',
     'views',
     'rest',
     'serialization',
@@ -40,7 +39,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('facets_facet');
@@ -60,7 +59,7 @@ class FacetFacetSourceTest extends EntityKernelTestBase {
       'search_api_test_db',
     ]);
 
-    $this->installConfig('search_api_test_views');
+    $this->installConfig('facets_search_api_dependency');
   }
 
   /**

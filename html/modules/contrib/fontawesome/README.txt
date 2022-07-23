@@ -58,13 +58,18 @@ INSTALLATION
          (http://fontawesome.com) and place inside
          "/libraries/fontawesome" directory. The JS file should
          be at /libraries/fontawesome/js/all.js
-         Direct link for downloading latest version (current is v5.15.4) is:
-         https://use.fontawesome.com/releases/v5.15.4/fontawesome-free-5.15.4-web.zip
+         Direct link for downloading latest version is:
+         https://fontawesome.com/download
     b. Enable the module at Administer >> Site building >> Modules.
 
+PERMISSIONS
+-----------
+Access to the Font Awesome additional settings can be granted or removed under
+the permissions settings. Removing these permissions will allow the users to
+select only the icon and not additional configuration.
 
 USAGE
-_____
+-----
 Font Awesome can be used in many ways - you can manually insert Font Awesome
 tags wherever you see fit after enabling the module, but there are other ways
 as well. See

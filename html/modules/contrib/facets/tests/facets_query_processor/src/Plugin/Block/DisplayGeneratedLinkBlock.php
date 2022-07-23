@@ -10,7 +10,7 @@ use Drupal\facets\Utility\FacetsUrlGenerator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class DisplayGeneratedLinkBlock.
+ * Provides the Display Generated Link block.
  *
  * @Block(
  *   id = "display_generated_link",

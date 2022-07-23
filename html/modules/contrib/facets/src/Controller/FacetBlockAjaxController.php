@@ -6,13 +6,14 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Http\RequestStack as DrupalRequestStack;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\PathProcessor\PathProcessorManager;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\RequestStack as SymfonyRequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -126,10 +127,12 @@ class FacetBlockAjaxController extends ControllerBase {
     $facets_blocks = array_unique($facets_blocks);
 
     $new_request = Request::create($path);
-    $request_stack = new RequestStack();
-    $processed = $this->pathProcessor->processInbound($path, $new_request);
+    $request_stack = new DrupalRequestStack();
 
-    $this->currentPath->setPath($processed);
+    $processed = $this->pathProcessor->processInbound($path, $new_request);
+    $processed_request = Request::create($processed);
+
+    $this->currentPath->setPath($processed_request->getPathInfo());
     $request->attributes->add($this->router->matchRequest($new_request));
     $this->currentRouteMatch->resetRouteMatch();
     $request_stack->push($new_request);

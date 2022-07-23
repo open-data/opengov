@@ -47,18 +47,17 @@
     ],
     "require": {
         "php": ">=8",
-        "composer/installers": "^1.2",
-        "cweagans/composer-patches": "^1.6.5",
+        "composer/installers": "^1.9.0",
+        "cweagans/composer-patches": "^1.7.0",
         "drupal/console": "^1.9.8",
         "drupal/core": "^9",
-        "drupal/core-composer-scaffold": "^9",
+        "drupal/core-composer-scaffold": "^9.4.0",
         "drupal/core-recommended": "^9",
         "drush/drush": "^10.0.0",
         "opengov/og": "dev-drupal9-compatibility",
         "symfony/event-dispatcher": "^4.4",
         "webflo/drupal-finder": "^1.0.0",
-        "wikimedia/composer-merge-plugin": "2.0.1",
-        "zaporylie/composer-drupal-optimizations": "^1.2.0"
+        "wikimedia/composer-merge-plugin": "2.0.1"
     },
     "require-dev": {
         "drupal/core-dev": "^9"

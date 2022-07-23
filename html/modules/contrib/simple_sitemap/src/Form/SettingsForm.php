@@ -33,7 +33,7 @@ class SettingsForm extends SimpleSitemapFormBase {
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
    * @param \Drupal\simple_sitemap\Form\FormHelper $form_helper
-   *   Simple XML Sitemap form helper.
+   *   Helper class for working with forms.
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager.
    */
@@ -206,7 +206,8 @@ class SettingsForm extends SimpleSitemapFormBase {
       '#default_value' => $this->settings->get('entities_per_queue_item', 50),
     ];
 
-    $this->formHelper->displayRegenerateNow($form['simple_sitemap_settings']);
+    $form['simple_sitemap_settings'] = $this->formHelper
+      ->regenerateNowForm($form['simple_sitemap_settings']);
 
     return parent::buildForm($form, $form_state);
   }
@@ -243,14 +244,6 @@ class SettingsForm extends SimpleSitemapFormBase {
     $this->settings->save('generate_duration', $form_state->getValue('generate_duration') * 1000);
 
     parent::submitForm($form, $form_state);
-
-    // Regenerate sitemaps according to user setting.
-    if ($form_state->getValue('simple_sitemap_regenerate_now')) {
-      $this->generator
-        ->setVariants()
-        ->rebuildQueue()
-        ->generate();
-    }
   }
 
 }

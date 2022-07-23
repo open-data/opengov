@@ -14,7 +14,7 @@ class CheckboxWidgetTest extends WidgetTestBase {
   /**
    * Creates a new processor object for use in the tests.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->widget = new CheckboxWidget(['show_numbers' => TRUE], 'checkbox_widget', []);

@@ -2,6 +2,7 @@
 
 namespace Drupal\facets\Plugin\facets\processor;
 
+use Drupal\Core\Cache\UnchangingCacheableDependencyTrait;
 use Drupal\facets\FacetInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\Processor\BuildProcessorInterface;
@@ -21,6 +22,8 @@ use Drupal\facets\Plugin\facets\query_type\SearchApiDate;
  * )
  */
 class DateItemProcessor extends ProcessorPluginBase implements BuildProcessorInterface {
+
+  use UnchangingCacheableDependencyTrait;
 
   /**
    * {@inheritdoc}
@@ -68,6 +71,14 @@ class DateItemProcessor extends ProcessorPluginBase implements BuildProcessorInt
       '#default_value' => $this->getConfiguration()['granularity'],
       '#options' => $this->granularityOptions(),
     ];
+
+    $build['hierarchy'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Hierarchy'),
+      '#default_value' => $this->getConfiguration()['hierarchy'],
+      '#description' => $this->t('Create a hierarchical facet instead of a flat list. It is important to also activate "use hierarchy" and to select "date item hierarchy" as hierarchy type.'),
+    ];
+
     $build['date_format'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Date format'),
@@ -95,6 +106,7 @@ class DateItemProcessor extends ProcessorPluginBase implements BuildProcessorInt
     return [
       'date_display' => 'actual_date',
       'granularity' => SearchApiDate::FACETAPI_DATE_MONTH,
+      'hierarchy' => FALSE,
       'date_format' => '',
     ];
   }

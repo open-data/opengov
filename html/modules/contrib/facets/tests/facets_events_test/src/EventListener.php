@@ -6,7 +6,7 @@ use Drupal\facets\Event\QueryStringCreated;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class EventListener.
+ * Provides the EventListener class.
  */
 class EventListener implements EventSubscriberInterface {
 
@@ -15,7 +15,7 @@ class EventListener implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents() {
     return [
-      QueryStringCreated::NAME => 'queryStringCreated'
+      QueryStringCreated::NAME => 'queryStringCreated',
     ];
   }
 

@@ -322,8 +322,7 @@ class SimpleSitemapViews {
     }
 
     // Add a set of arguments to the index.
-    $options = ['return' => Database::RETURN_AFFECTED];
-    $query = $this->database->insert('simple_sitemap_views', $options);
+    $query = $this->database->insert('simple_sitemap_views');
     $query->fields([
       'view_id' => $view->id(),
       'display_id' => $view->current_display,

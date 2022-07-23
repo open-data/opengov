@@ -112,15 +112,15 @@ class FacetsSerializer extends Serializer {
     $facets_metadata = [];
     foreach ($facets as $facet) {
       $processed_facets[] = $this->facetsManager->build($facet);
-      $facets_metadata[$facet->id()] = array(
+      $facets_metadata[$facet->id()] = [
         'label' => $facet->label(),
         'weight' => $facet->getWeight(),
         'field_id' => $facet->getFieldIdentifier(),
-        'url_alias' => $facet->getUrlAlias()
-      );
+        'url_alias' => $facet->getUrlAlias(),
+      ];
     }
-    uasort($facets_metadata, function($a, $b) {
-      return $a['weight'] > $b['weight'];
+    uasort($facets_metadata, function ($a, $b) {
+      return (int) $a['weight'] - $b['weight'];
     });
 
     $rows['facets'] = array_values($processed_facets);

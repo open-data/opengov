@@ -682,7 +682,7 @@ class Element extends DrupalAttributes {
       $form_state->setError($this->array, $message);
     }
     else {
-      Bootstrap::message($message, 'error');
+      \Drupal::messenger()->addMessage($message, 'error');
     }
     return $this;
   }
@@ -831,7 +831,7 @@ class Element extends DrupalAttributes {
       || $target->hasAttribute('data-toggle')
 
       // Ignore if the target element is #disabled.
-      || $target->hasProperty('disabled')
+      || ($target->hasProperty('disabled') && $target->getProperty('disabled') === TRUE)
 
       // Ignore if either the actual element or target element has an explicit
       // #smart_description property set to FALSE.

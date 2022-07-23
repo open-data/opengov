@@ -14,7 +14,7 @@ abstract class JsBase extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'views',
     'search_api',
     'facets',
@@ -30,7 +30,7 @@ abstract class JsBase extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create the users used for the tests.
@@ -148,7 +148,10 @@ abstract class JsBase extends WebDriverTestBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createFacet($id, $field = 'type', $widget_type = 'links', array $widget_settings = ['show_numbers' => TRUE, 'soft_limit' => 0]) {
+  protected function createFacet($id, $field = 'type', $widget_type = 'links', array $widget_settings = [
+    'show_numbers' => TRUE,
+    'soft_limit' => 0,
+  ]) {
     $facet_storage = \Drupal::entityTypeManager()->getStorage('facets_facet');
     // Create and save a facet with a checkbox widget.
     $facet_storage->create([
@@ -171,6 +174,8 @@ abstract class JsBase extends WebDriverTestBase {
         ],
       ],
       'query_operator' => 'AND',
+      'use_hierarchy' => FALSE,
+      'hierarchy' => ['type' => 'taxonomy', 'config' => []],
     ])->save();
     $this->createBlock($id);
   }

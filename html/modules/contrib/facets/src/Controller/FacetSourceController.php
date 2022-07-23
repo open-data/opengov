@@ -5,7 +5,6 @@ namespace Drupal\facets\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\facets\FacetSourceInterface;
-use Drupal\facets\Form\FacetSourceEditForm;
 
 /**
  * Provides route responses for facet source configuration.

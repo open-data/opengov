@@ -19,7 +19,12 @@
       "name": "Fabiano Sant'Ana (wundo)",
       "homepage": "https://www.drupal.org/u/wundo",
       "role": "Co-maintainer"
-    }
+    },
+      {
+          "name": "Shelane French (shelane)",
+          "homepage": "https://www.drupal.org/u/shelane",
+          "role": "Co-maintainer"
+      }
   ],
   "support": {
     "docs": "https://drupal-bootstrap.org",
@@ -28,6 +33,6 @@
     "source": "https://git.drupalcode.org/project/bootstrap"
   },
   "require": {
-    "drupal/core": "^8 || ^9"
+    "drupal/core": "^9.3 || ^10"
   }
 }

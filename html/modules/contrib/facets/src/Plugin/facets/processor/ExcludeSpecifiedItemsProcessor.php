@@ -2,6 +2,7 @@
 
 namespace Drupal\facets\Plugin\facets\processor;
 
+use Drupal\Core\Cache\UnchangingCacheableDependencyTrait;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Processor\BuildProcessorInterface;
@@ -20,6 +21,8 @@ use Drupal\facets\Processor\ProcessorPluginBase;
  * )
  */
 class ExcludeSpecifiedItemsProcessor extends ProcessorPluginBase implements BuildProcessorInterface {
+
+  use UnchangingCacheableDependencyTrait;
 
   /**
    * {@inheritdoc}
@@ -79,12 +82,12 @@ class ExcludeSpecifiedItemsProcessor extends ProcessorPluginBase implements Buil
       '#default_value' => $config['regex'],
       '#description' => $this->t('Interpret each exclude list item as a regular expression pattern.<br /><small>(Slashes are escaped automatically, patterns using a comma can be wrapped in "double quotes", and if such a pattern uses double quotes itself, just make them double-double-quotes (""))</small>.'),
     ];
-    $build['invert'] = array(
-      '#title' => t('Invert - only list matched items'),
+    $build['invert'] = [
+      '#title' => $this->t('Invert - only list matched items'),
       '#type' => 'checkbox',
       '#default_value' => $config['invert'],
       '#description' => $this->t('Instead of excluding items based on the pattern specified above, only matching items will be displayed.'),
-    );
+    ];
 
     return $build;
   }

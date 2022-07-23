@@ -82,9 +82,9 @@ class Unicode extends CoreUnicode {
       $callback = implode('::', $callback);
     }
     if ($callback[0] === '\\') {
-      $callback = static::substr($callback, 1);
+      $callback = mb_substr($callback, 1);
     }
-    if ($array && static::strpos($callback, '::') !== FALSE) {
+    if ($array && mb_substr($callback, '::') !== FALSE) {
       $callback = explode('::', $callback);
     }
     return $callback;
@@ -288,7 +288,8 @@ class Unicode extends CoreUnicode {
       if ($start > 0) {
         // Count all the characters except continuation bytes from the start
         // until we have found $start characters or the end of the string.
-        $bytes = -1; $chars = -1;
+        $bytes = -1;
+        $chars = -1;
         while ($bytes < $strlen - 1 && $chars < $start) {
           $bytes++;
           $c = ord($text[$bytes]);
@@ -301,7 +302,8 @@ class Unicode extends CoreUnicode {
         // Count all the characters except continuation bytes from the end
         // until we have found abs($start) characters.
         $start = abs($start);
-        $bytes = $strlen; $chars = 0;
+        $bytes = $strlen;
+        $chars = 0;
         while ($bytes > 0 && $chars < $start) {
           $bytes--;
           $c = ord($text[$bytes]);
@@ -342,7 +344,8 @@ class Unicode extends CoreUnicode {
         // Count all the characters except continuation bytes from the end
         // until we have found abs($start) characters, then backtrace one byte.
         $length = abs($length);
-        $iend = $strlen; $chars = 0;
+        $iend = $strlen;
+        $chars = 0;
         while ($iend > 0 && $chars < $length) {
           $iend--;
           $c = ord($text[$iend]);

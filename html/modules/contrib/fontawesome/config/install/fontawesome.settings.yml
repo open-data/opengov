@@ -2,9 +2,9 @@ tag: 'i'
 method: 'svg'
 load_assets: true
 use_cdn: true
-external_svg_location: 'https://use.fontawesome.com/releases/v5.15.4/js/all.js'
+external_svg_location: 'https://use.fontawesome.com/releases/v6.1.0/js/all.js'
 use_shim: true
-external_shim_location: 'https://use.fontawesome.com/releases/v5.15.4/js/v4-shims.js'
+external_shim_location: 'https://use.fontawesome.com/releases/v6.1.0/js/v4-shims.js'
 use_solid_file: true
 use_regular_file: true
 use_light_file: true

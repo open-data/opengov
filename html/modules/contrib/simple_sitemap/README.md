@@ -13,7 +13,7 @@
 
 Author and maintainer: Pawel Ginalski (gbyte)
  * Drupal: https://www.drupal.org/u/gbyte
- * Personal: https://gbyte.dev/
+ * Homepage: https://gbyte.dev/
 
 The module generates multilingual XML sitemaps which adhere to Google's new
 hreflang standard. Out of the box the sitemaps index most of Drupal's
@@ -50,14 +50,20 @@ admin/people/permissions.
 It is possible to have several sitemap instances of different sitemap types with
 specific links accessible under certain URLs. These sitemap variants can be
 configured under admin/config/search/simplesitemap. The module comes with the
-default sitemap 'default' which is accessible under /sitemap.xml.
+default sitemap 'default' which is accessible under /sitemap.xml by default.
+
+There is also the 'sitemap index' variant which is disabled by default and which
+can be used to index all other variants. If there are multiple sitemap variants
+it may make sense to enable the sitemap index variant and make it available
+under /sitemap.xml by setting it as the default variant in the module's
+settings.
 
 ### SITEMAP TYPES ###
 
 A sitemap type is a configuration entity consisting of one sitemap generator
 plugin and several URL generator plugins. These plugins can be implemented by
-custom modules. The module comes with the default sitemap type
-'default_hreflang'. Sitemap types can be defined via the UI under
+custom modules. The module comes with the sitemap types 'default_hreflang'
+and 'index'. Sitemap types can be defined via the UI under
 admin/config/search/simplesitemap/types.
 
 ### ENTITIES ###
@@ -65,13 +71,10 @@ admin/config/search/simplesitemap/types.
 Initially only the home page is indexed in the default sitemap. To
 include content into a sitemap, visit
 admin/config/search/simplesitemap/entities to enable support for entity types
-of your choosing. Bundleless entity types can be configured right on that page,
-for bundles of entity types visit the bundle's configuration pages, e.g.
-
- * admin/structure/types/manage/[content type] for nodes
- * admin/structure/taxonomy/manage/[taxonomy vocabulary] for taxonomy terms
- * admin/structure/menu/manage/[menu] for menu items
- * ...
+of your choosing. After enabling support for an entity type, indexation settings
+for each sitemap variant can be set by pressing 'Configure'. For entity type
+bundles, one can optionally set the indexation settings right on the bundle's
+configuration pages, e.g. admin/structure/types/manage/[content type] for nodes.
 
 When including an entity type or bundle into a sitemap, the priority setting
 can be set which will set the 'priority' parameter for all entities of that
@@ -260,6 +263,9 @@ $generator
   ->generate();
 ```
 
+For querying specific info about sitemaps, use the various methods of the
+`\Drupal\simple_sitemap\Entity\SimpleSitemap` (simple_sitemap) entity.
+
 See https://gbyte.dev/projects/simple-xml-sitemap and code documentation for
 further details.
 
@@ -330,3 +336,4 @@ See https://gbyte.dev/projects/simple-xml-sitemap for further details.
 
 Current maintainers:
  * Pawel Ginalski (gbyte) - https://www.drupal.org/u/gbyte
+ * Andrey Tymchuk (WalkingDexter) - https://www.drupal.org/u/walkingdexter

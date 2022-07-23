@@ -33,7 +33,7 @@ class CountLimitProcessorTest extends UnitTestCase {
   /**
    * Creates a new processor object for use in the tests.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $facet = new Facet([], 'facets_facet');
@@ -124,16 +124,31 @@ class CountLimitProcessorTest extends UnitTestCase {
       'settings' => [],
     ]);
 
-    $this->processor->setConfiguration(['minimum_items' => 6, 'maximum_items' => 14]);
+    $this->processor->setConfiguration(
+      [
+        'minimum_items' => 6,
+        'maximum_items' => 14,
+      ]
+    );
     $sorted_results = $this->processor->build($facet, $this->originalResults);
     $this->assertCount(1, $sorted_results);
     $this->assertEquals('llama', $sorted_results[0]->getDisplayValue());
 
-    $this->processor->setConfiguration(['minimum_items' => 60, 'maximum_items' => 140]);
+    $this->processor->setConfiguration(
+      [
+        'minimum_items' => 60,
+        'maximum_items' => 140,
+      ]
+    );
     $sorted_results = $this->processor->build($facet, $this->originalResults);
     $this->assertCount(0, $sorted_results);
 
-    $this->processor->setConfiguration(['minimum_items' => 1, 'maximum_items' => 10]);
+    $this->processor->setConfiguration(
+      [
+        'minimum_items' => 1,
+        'maximum_items' => 10,
+      ]
+    );
     $sorted_results = $this->processor->build($facet, $this->originalResults);
     $this->assertCount(2, $sorted_results);
   }

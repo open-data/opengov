@@ -7,9 +7,16 @@ use Drupal\search_api\Event\QueryPreExecuteEvent;
 use Drupal\search_api\Event\SearchApiEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Provides the SearchApiSubscriber class.
+ *
+ * @package Drupal\facets\EventSubscriber
+ */
 class SearchApiSubscriber implements EventSubscriberInterface {
 
   /**
+   * The facet manager.
+   *
    * @var \Drupal\facets\FacetManager\DefaultFacetManager
    */
   private $facetManager;
@@ -18,7 +25,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
    * Constructs a new class instance.
    *
    * @param \Drupal\facets\FacetManager\DefaultFacetManager $facetManager
-   *   The messenger.
+   *   The facet manager.
    */
   public function __construct(DefaultFacetManager $facetManager) {
     $this->facetManager = $facetManager;
@@ -49,7 +56,8 @@ class SearchApiSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    // Workaround to avoid a fatal error during site install from existing config.
+    // Workaround to avoid a fatal error during site install from existing
+    // config.
     // @see https://www.drupal.org/project/facets/issues/3199156
     if (!class_exists('\Drupal\search_api\Event\SearchApiEvents', TRUE)) {
       return [];

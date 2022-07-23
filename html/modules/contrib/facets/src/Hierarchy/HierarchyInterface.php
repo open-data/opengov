@@ -3,7 +3,9 @@
 namespace Drupal\facets\Hierarchy;
 
 /**
- * Interface HierarchyInterface.
+ * Provides the Hierarchy interface.
+ *
+ * @package Drupal\facets\Hierarchy
  */
 interface HierarchyInterface {
 

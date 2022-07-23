@@ -78,14 +78,14 @@ class LanguageSwitcherLinksAlterer {
    *
    * @param array $links
    *   The links.
-   * @param $type
+   * @param string $type
    *   The language type.
    * @param \Drupal\Core\Url $url
    *   The URL the switch links will be relative to.
    *
    * @see facets_language_switch_links_alter()
    */
-  public function alter(array &$links, $type, Url $url) {
+  public function alter(array &$links, string $type, Url $url) {
     if (!$this->data) {
       $this->initializeData();
     }
@@ -97,7 +97,7 @@ class LanguageSwitcherLinksAlterer {
         continue;
       }
 
-      foreach ($this->data as $facet_id => $facet_info) {
+      foreach ($this->data as $facet_info) {
         $filter_key = $facet_info['filter_key'];
         $separator = $facet_info['separator'];
         $url_aliases = $facet_info['url_aliases'];
@@ -110,8 +110,8 @@ class LanguageSwitcherLinksAlterer {
         $untranslated_alias = $url_aliases[$this->languageManager->getCurrentLanguage()->getId()];
         $translated_alias = $url_aliases[$link['language']->getId()];
 
-        // If we don't have a translated alias, that means we're trying to create
-        // a link to the original language.
+        // If we don't have a translated alias, that means we're trying to
+        // create a link to the original language.
         if ($translated_alias === NULL) {
           $translated_alias = $url_aliases[$original_language];
         }
@@ -184,4 +184,5 @@ class LanguageSwitcherLinksAlterer {
     $this->data = $data;
     $this->cacheBackend->set('facets_language_switcher_links', $data, Cache::PERMANENT, $cache_tags);
   }
+
 }

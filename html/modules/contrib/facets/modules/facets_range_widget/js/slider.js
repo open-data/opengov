@@ -33,7 +33,7 @@
 
     $.extend(defaults, settings);
 
-    $('[id^="' + facet +'"][id$="' + facet +'"]').slider(defaults)
+    $('[id^="' + facet + '"][id$="' + facet + '"]').slider(defaults)
     .slider('pips', {
       prefix: settings.prefix,
       suffix: settings.suffix

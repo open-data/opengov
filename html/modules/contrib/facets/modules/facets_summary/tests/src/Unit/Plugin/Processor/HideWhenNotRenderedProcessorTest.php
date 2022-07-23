@@ -10,7 +10,7 @@ use Drupal\facets_summary\Plugin\facets_summary\processor\HideWhenNotRenderedPro
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Class HideWhenNotRenderedProcessorTest.
+ * Provides the HideWhenNotRenderedProcessorTest class.
  *
  * @group facets
  * @coversDefaultClass \Drupal\facets_summary\Plugin\facets_summary\processor\HideWhenNotRenderedProcessor
@@ -27,7 +27,7 @@ class HideWhenNotRenderedProcessorTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->processor = new HideWhenNotRenderedProcessor([], 'hide_when_not_rendered', []);
   }

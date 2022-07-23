@@ -3,6 +3,7 @@
 namespace Drupal\facets\Plugin\Block;
 
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -43,7 +44,7 @@ class FacetBlockDeriver implements ContainerDeriverInterface {
    */
   public function getDerivativeDefinition($derivative_id, $base_plugin_definition) {
     $derivatives = $this->getDerivativeDefinitions($base_plugin_definition);
-    return isset($derivatives[$derivative_id]) ? $derivatives[$derivative_id] : NULL;
+    return $derivatives[$derivative_id] ?? NULL;
   }
 
   /**
@@ -66,6 +67,9 @@ class FacetBlockDeriver implements ContainerDeriverInterface {
           'label' => $this->t('Facet: :facet', [':facet' => $facet->getName()]),
           'admin_label' => $facet->getName(),
           'description' => $this->t('Facet'),
+          'context_definitions' => [
+            'in_preview' => new ContextDefinition('string', $this->t('In preview'), FALSE),
+          ],
         ] + $base_plugin_definition;
       }
 

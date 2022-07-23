@@ -2,7 +2,7 @@
 
 namespace Drupal\bootstrap\Plugin\Prerender;
 
-use Drupal\bootstrap\BcSupport\TrustedCallbackInterface;
+use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\bootstrap\Utility\Element;
 
 /**

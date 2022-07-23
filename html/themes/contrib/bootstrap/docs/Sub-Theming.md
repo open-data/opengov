@@ -25,8 +25,9 @@ you've done that, you can override CSS, templates, and theme processing.
 ## Using the Starterkit {#starterkit}
 
 The starterkit provided by this base-theme supplies the basic file structure on
-how to construct a proper Bootstrap based sub-theme for use with a [CDN Provider]
-(like [jsDelivr]) or for use with compiling [Bootstrap Framework] source files.
+how to construct a proper Bootstrap based sub-theme for use with a [CDN
+Provider] (like [jsDelivr]) or for use with compiling [Bootstrap Framework]
+source files.
 
 {.alert.alert-info} **NOTE:** Using a [CDN Provider] is the preferred method
 for loading the [Bootstrap Framework] CSS and JS on simpler sites that do not
@@ -56,15 +57,16 @@ will be superseded by any enabled [CDN Provider]; **do not use both**.
    to suite your needs. Make sure to rename the library extension name as
    well: `THEMENAME/framework`.
 3. Rename `./themes/THEMENAME/THEMENAME.libraries.yml`.
-   * (Optional) If you plan on using a local precompiler (i.e. [Less] or [Sass])
-     then uncomment the appropriate JavaScript entries inside this file to
-     enable the assets provided by the [Bootstrap Framework].
+   * (Optional) If you plan on using a local precompiler (i.e., [Less] or
+     [Sass]) then uncomment the appropriate JavaScript entries inside this file
+     to enable the assets provided by the [Bootstrap Framework].
 4. Rename `./themes/THEMENAME/THEMENAME.theme`.
 5. Rename `./themes/THEMENAME/config/schema/THEMENAME.schema.yml`
-   * Open this file and rename `- THEMENAME.settings:` and `'THEMETITLE settings'`
+   * Open this file and rename `- THEMENAME.settings:` and `'THEMETITLE
+   settings'`
 6. Rename `./themes/THEMENAME/config/install/THEMENAME.settings.yml`
-   * (Optional) If you plan on using a local precompiler (i.e. [Less] or [Sass])
-     then you will need to disable the `cdn_provider`
+   * (Optional) If you plan on using a local precompiler (i.e., [Less] or
+     [Sass]) then you will need to disable the `cdn_provider`
      [`cdn_provider` theme setting](<!-- @url theme_settings#cdn_provider -->).
      You can do this several different ways, but it's recommended that you
      uncomment the following line in this file so the [CDN Provider] is
@@ -94,16 +96,16 @@ developer, to figure out which solution is best for your particular needs.
 ### LESS {#less}
 - You must understand the basic concept of using the [Less] CSS pre-processor.
 - You must use a **[local Less compiler](https://www.google.com/search?q=less+compiler)**.
-- You must use the latest `3.x.x` version of [Bootstrap Framework LESS Source Files]
-  ending in the `.less` extension, not files ending in `.css`.
+- You must use the latest `3.x.x` version of [Bootstrap Framework LESS Source
+Files] ending in the `.less` extension, not files ending in `.css`.
 - You must download a copy of [Drupal Bootstrap Styles] and copy over the `less`
   folder located at `./drupal-bootstrap-styles/src/3.x.x/8.x-3.x/less`.
 
 ### SASS {#sass}
 - You must understand the basic concept of using the [Sass] CSS pre-processor.
 - You must use a **[local Sass compiler](https://www.google.com/search?q=sass+compiler)**.
-- You must use the latest `3.x.x` version of [Bootstrap Framework SASS Source Files]
-  ending in the `.scss` extension, not files ending in `.css`.
+- You must use the latest `3.x.x` version of [Bootstrap Framework SASS Source
+Files] ending in the `.scss` extension, not files ending in `.css`.
 - You must download a copy of [Drupal Bootstrap Styles] and copy over the `scss`
   folder located at `./drupal-bootstrap-styles/src/3.x.x/8.x-3.x/scss`.
 
@@ -140,12 +142,12 @@ set default` link next to your newly created sub-theme. Now that you've
 enabled your starterkit, please refer to the starterkit's documentation page
 to customize.
 
-[Drupal Bootstrap]: https://www.drupal.org/project/bootstrap
-[Drupal Bootstrap Styles]: https://github.com/unicorn-fail/drupal-bootstrap-styles
-[Bootstrap Framework]: https://getbootstrap.com/docs/3.4/
-[Bootstrap Framework LESS Source Files]: https://github.com/twbs/bootstrap/releases
-[Bootstrap Framework SASS Source Files]: https://github.com/twbs/bootstrap-sass
-[jsDelivr]: http://www.jsdelivr.com
-[Less]: http://lesscss.org
-[Sass]: http://sass-lang.com
-[CDN Provider]: <!-- @url plugins_provider -->
+[Drupal Bootstrap](https://www.drupal.org/project/bootstrap)
+[Drupal Bootstrap Styles](https://github.com/unicorn-fail/drupal-bootstrap-styles)
+[Bootstrap Framework](https://getbootstrap.com/docs/3.4/)
+[Bootstrap Framework LESS Source Files](https://github.com/twbs/bootstrap/releases)
+[Bootstrap Framework SASS Source Files](https://github.com/twbs/bootstrap-sass)
+[jsDelivr](http://www.jsdelivr.com)
+[Less](http://lesscss.org)
+[Sass](http://sass-lang.com)
+[CDN Provider](<!-- @url plugins_provider -->)

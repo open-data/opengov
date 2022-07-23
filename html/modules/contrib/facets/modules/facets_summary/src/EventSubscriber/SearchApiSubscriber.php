@@ -7,9 +7,16 @@ use Drupal\search_api\Event\QueryPreExecuteEvent;
 use Drupal\search_api\Event\SearchApiEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Provides the SearchApiSubscriber class.
+ *
+ * @package Drupal\facets_summary\EventSubscriber
+ */
 class SearchApiSubscriber implements EventSubscriberInterface {
 
   /**
+   * The entity type manager.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   private $entityTypeManager;
@@ -52,7 +59,8 @@ class SearchApiSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    // Workaround to avoid a fatal error during site install from existing config.
+    // Workaround to avoid a fatal error during site install from existing
+    // config.
     // @see https://www.drupal.org/project/facets/issues/3199156
     if (!class_exists('\Drupal\search_api\Event\SearchApiEvents', TRUE)) {
       return [];

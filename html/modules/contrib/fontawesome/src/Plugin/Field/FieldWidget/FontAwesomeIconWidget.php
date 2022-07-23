@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\fontawesome\FontAwesomeManagerInterface;
 
 /**
@@ -41,13 +42,21 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
   protected $fontAwesomeManager;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, ConfigFactory $config_factory, FontAwesomeManagerInterface $font_awesome_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, ConfigFactory $config_factory, FontAwesomeManagerInterface $font_awesome_manager, AccountInterface $current_user) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
     $this->configFactory = $config_factory;
     $this->fontAwesomeManager = $font_awesome_manager;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -61,7 +70,8 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       $configuration['settings'],
       $configuration['third_party_settings'],
       $container->get('config.factory'),
-      $container->get('fontawesome.font_awesome_manager')
+      $container->get('fontawesome.font_awesome_manager'),
+      $container->get('current_user')
     );
   }
 
@@ -83,7 +93,11 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#field_prefix' => 'fa-',
       '#default_value' => $items[$delta]->get('icon_name')->getValue(),
       '#description' => $this->t('Name of the Font Awesome Icon. See @iconsLink for valid icon names, or begin typing for an autocomplete list. Note that all four versions of the icon will be shown - Light, Regular, Solid, Duotone, and Thin respectively. If the icon shows a question mark, that icon version is not supported in your version of Fontawesome.', [
-        '@iconsLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons'))->toString(),
+        '@iconsLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
       '#autocomplete_route_name' => 'fontawesome.autocomplete',
       '#element_validate' => [
@@ -98,24 +112,45 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#type' => 'details',
       '#open' => FALSE,
       '#title' => $this->t('Additional Font Awesome Settings'),
+      '#access' => $this->currentUser->hasPermission('access fontawesome additional settings'),
     ];
 
     // Allow user to determine style.
+    $style_options = [
+      'fas' => $this->t('Solid'),
+      'far' => $this->t('Regular'),
+      'fal' => $this->t('Light'),
+      'fad' => $this->t('Duotone'),
+      'fat' => $this->t('Thin'),
+      'fak' => $this->t('Kit Uploads'),
+    ];
+    if (is_bool($configuration_settings->get('use_solid_file')) && !$configuration_settings->get('use_solid_file')) {
+      unset($style_options['fas']);
+    }
+    if (is_bool($configuration_settings->get('use_regular_file')) && !$configuration_settings->get('use_regular_file')) {
+      unset($style_options['far']);
+    }
+    if (is_bool($configuration_settings->get('use_light_file')) && !$configuration_settings->get('use_light_file')) {
+      unset($style_options['fal']);
+    }
+    if (is_bool($configuration_settings->get('use_duotone_file')) && !$configuration_settings->get('use_duotone_file')) {
+      unset($style_options['fad']);
+    }
+    if (is_bool($configuration_settings->get('use_thin_file')) && !$configuration_settings->get('use_thin_file')) {
+      unset($style_options['fat']);
+    }
     $element['settings']['style'] = [
       '#type' => 'select',
       '#title' => $this->t('Style'),
       '#description' => $this->t('This changes the style of the icon. Please note that this is not available for all icons, and for some of the icons this is only available in the pro version. If the icon does not render properly in the , the icon does not support that style. Notably, brands do not support any styles. See @iconLink for more information.', [
-        '@iconLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
-      '#options' => [
-        'fas' => $this->t('Solid'),
-        'far' => $this->t('Regular'),
-        'fal' => $this->t('Light'),
-        'fad' => $this->t('Duotone'),
-        'fat' => $this->t('Thin'),
-        'fak' => $this->t('Kit Uploads'),
-      ],
-      '#default_value' => $items[$delta]->get('style')->getValue(),
+      '#options' => $style_options,
+      '#default_value' => $items[$delta]->get('style')->getValue() ?? array_keys($style_options)[0],
     ];
 
     // Allow user to determine size.
@@ -169,7 +204,11 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#type' => 'select',
       '#title' => $this->t('Animation'),
       '#description' => $this->t('Use spin to get any icon to rotate, and pulse to have it rotate with 8 steps. Works especially well with fa-spinner & everything in the @iconLink.', [
-        '@iconLink' => Link::fromTextAndUrl($this->t('spinner icons category'), Url::fromUri('https://fontawesome.com/icons?c=spinner-icons'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl($this->t('spinner icons category'), Url::fromUri('https://fontawesome.com/icons?c=spinner-icons', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
       '#options' => [
         '' => $this->t('None'),
@@ -201,70 +240,75 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
     ];
 
     // Allow user to edit duotone.
-    $element['settings']['duotone'] = [
-      '#type' => 'details',
-      '#open' => FALSE,
-      // Disable power transforms for webfonts.
-      '#title' => $this->t('Duotone Settings'),
-      '#description' => $this->t('Duotone provides a version of every icon in Font Awesome that has two distinct shades of color. They’re great for adding more of your brand or an illustrative quality to the icons in your project. See @duotoneLink for more information. Note that duotone only works with the Pro version of Font Awesome.', [
-        '@duotoneLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to duotone'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/duotone-icons'))->toString(),
-      ]),
-    ];
-    $element['settings']['duotone']['swap-opacity'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Swap Opacity?'),
-      '#description' => $this->t('Use to swap the default opacity of each duotone icon’s layers. This will make an icon’s primary layer have the default opacity of 40% rather than its secondary layer.'),
-      '#default_value' => isset($iconSettings['duotone']['swap-opacity']) ? $iconSettings['duotone']['swap-opacity'] : '',
-      '#return_value' => 'fa-swap-opacity',
-    ];
-    // Manual opacity.
-    $element['settings']['duotone']['opacity'] = [
-      '#type' => 'details',
-      '#open' => TRUE,
-      // Disable power transforms for webfonts.
-      '#title' => $this->t('Layer Opacity'),
-      '#description' => $this->t('By default the secondary layer in a duotone icon is set to 40% opacity (via an opacity 0.4; rule in Font Awesome’s support CSS). You can explicitly set the opacity of a duotone icon’s layer by using CSS custom properties either in your style sheets or by setting them manually below. New to custom properties? Here are some @cssLink.', [
-        '@cssLink' => Link::fromTextAndUrl($this->t('places to set them'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/duotone-icons#using-in-a-project'))->toString(),
-      ]),
-    ];
-    $element['settings']['duotone']['opacity']['primary'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Primary Layer Opacity'),
-      '#step' => 0.01,
-      '#default_value' => isset($iconSettings['duotone']['opacity']['primary']) ? $iconSettings['duotone']['opacity']['primary'] : '',
-      '#description' => $this->t('Opacity of the primary duotone layer.'),
-    ];
-    $element['settings']['duotone']['opacity']['secondary'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Secondary Layer Opacity'),
-      '#step' => 0.01,
-      '#default_value' => isset($iconSettings['duotone']['opacity']['secondary']) ? $iconSettings['duotone']['opacity']['secondary'] : '',
-      '#description' => $this->t('Opacity of the secondary duotone layer.'),
-    ];
-    // Manual opacity.
-    $element['settings']['duotone']['color'] = [
-      '#type' => 'details',
-      '#open' => TRUE,
-      // Disable power transforms for webfonts.
-      '#title' => $this->t('Layer Color'),
-      '#description' => $this->t('Like all other Font Awesome icons, duotone icons automatically inherit CSS size and color. A duotone icon consists of a primary and secondary layer. By default, The secondary layer is given an opacity of 40% so that it appears as a lighter shade of the icon’s inherited or directly set color. Using CSS custom properties, we’ve also added some color hooks to a duotone icon’s primary and secondary layers. New to custom properties? Here are some @cssLink.', [
-        '@cssLink' => Link::fromTextAndUrl($this->t('places to set them'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/duotone-icons#using-in-a-project'))->toString(),
-      ]),
-    ];
-    $element['settings']['duotone']['color']['primary'] = [
-      '#type' => 'color',
-      '#title' => $this->t('Primary Layer Color'),
-      '#step' => 0.01,
-      '#default_value' => isset($iconSettings['duotone']['color']['primary']) ? $iconSettings['duotone']['color']['primary'] : '',
-      '#description' => $this->t('Opacity of the primary duotone layer.'),
-    ];
-    $element['settings']['duotone']['color']['secondary'] = [
-      '#type' => 'color',
-      '#title' => $this->t('Secondary Layer Color'),
-      '#step' => 0.01,
-      '#default_value' => isset($iconSettings['duotone']['color']['secondary']) ? $iconSettings['duotone']['color']['secondary'] : '',
-      '#description' => $this->t('Opacity of the secondary duotone layer.'),
-    ];
+    if (is_bool($configuration_settings->get('use_duotone_file')) && $configuration_settings->get('use_duotone_file')) {
+      $element['settings']['duotone'] = [
+        '#type' => 'details',
+        '#open' => FALSE,
+        // Disable power transforms for webfonts.
+        '#title' => $this->t('Duotone Settings'),
+        '#description' => $this->t('Duotone provides a version of every icon in Font Awesome that has two distinct shades of color. They’re great for adding more of your brand or an illustrative quality to the icons in your project. See @duotoneLink for more information. Note that duotone only works with the Pro version of Font Awesome.', [
+          '@duotoneLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to duotone'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/duotone-icons'))
+            ->toString(),
+        ]),
+      ];
+      $element['settings']['duotone']['swap-opacity'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Swap Opacity?'),
+        '#description' => $this->t('Use to swap the default opacity of each duotone icon’s layers. This will make an icon’s primary layer have the default opacity of 40% rather than its secondary layer.'),
+        '#default_value' => isset($iconSettings['duotone']['swap-opacity']) ? $iconSettings['duotone']['swap-opacity'] : '',
+        '#return_value' => 'fa-swap-opacity',
+      ];
+      // Manual opacity.
+      $element['settings']['duotone']['opacity'] = [
+        '#type' => 'details',
+        '#open' => TRUE,
+        // Disable power transforms for webfonts.
+        '#title' => $this->t('Layer Opacity'),
+        '#description' => $this->t('By default the secondary layer in a duotone icon is set to 40% opacity (via an opacity 0.4; rule in Font Awesome’s support CSS). You can explicitly set the opacity of a duotone icon’s layer by using CSS custom properties either in your style sheets or by setting them manually below. New to custom properties? Here are some @cssLink.', [
+          '@cssLink' => Link::fromTextAndUrl($this->t('places to set them'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/duotone-icons#using-in-a-project'))
+            ->toString(),
+        ]),
+      ];
+      $element['settings']['duotone']['opacity']['primary'] = [
+        '#type' => 'number',
+        '#title' => $this->t('Primary Layer Opacity'),
+        '#step' => 0.01,
+        '#default_value' => isset($iconSettings['duotone']['opacity']['primary']) ? $iconSettings['duotone']['opacity']['primary'] : '',
+        '#description' => $this->t('Opacity of the primary duotone layer.'),
+      ];
+      $element['settings']['duotone']['opacity']['secondary'] = [
+        '#type' => 'number',
+        '#title' => $this->t('Secondary Layer Opacity'),
+        '#step' => 0.01,
+        '#default_value' => isset($iconSettings['duotone']['opacity']['secondary']) ? $iconSettings['duotone']['opacity']['secondary'] : '',
+        '#description' => $this->t('Opacity of the secondary duotone layer.'),
+      ];
+      // Manual opacity.
+      $element['settings']['duotone']['color'] = [
+        '#type' => 'details',
+        '#open' => TRUE,
+        // Disable power transforms for webfonts.
+        '#title' => $this->t('Layer Color'),
+        '#description' => $this->t('Like all other Font Awesome icons, duotone icons automatically inherit CSS size and color. A duotone icon consists of a primary and secondary layer. By default, The secondary layer is given an opacity of 40% so that it appears as a lighter shade of the icon’s inherited or directly set color. Using CSS custom properties, we’ve also added some color hooks to a duotone icon’s primary and secondary layers. New to custom properties? Here are some @cssLink.', [
+          '@cssLink' => Link::fromTextAndUrl($this->t('places to set them'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/duotone-icons#using-in-a-project'))
+            ->toString(),
+        ]),
+      ];
+      $element['settings']['duotone']['color']['primary'] = [
+        '#type' => 'color',
+        '#title' => $this->t('Primary Layer Color'),
+        '#step' => 0.01,
+        '#default_value' => isset($iconSettings['duotone']['color']['primary']) ? $iconSettings['duotone']['color']['primary'] : '',
+        '#description' => $this->t('Opacity of the primary duotone layer.'),
+      ];
+      $element['settings']['duotone']['color']['secondary'] = [
+        '#type' => 'color',
+        '#title' => $this->t('Secondary Layer Color'),
+        '#step' => 0.01,
+        '#default_value' => isset($iconSettings['duotone']['color']['secondary']) ? $iconSettings['duotone']['color']['secondary'] : '',
+        '#description' => $this->t('Opacity of the secondary duotone layer.'),
+      ];
+    }
 
     // Allow user to add masking.
     $element['settings']['masking'] = [
@@ -274,7 +318,11 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#disabled' => $configuration_settings->get('method') == 'webfonts',
       '#title' => $this->t('Icon Mask'),
       '#description' => $this->t('Masking is used to combine two icons to create one single-color shape. Use it with Power Transforms for some really awesome effects. Masks are great when you do want your background color to show through. See @maskingLink for more information. Note that masking only works with the SVG version of Font Awesome.', [
-        '@maskingLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to masking'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js#masking'))->toString(),
+        '@maskingLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to masking'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js#masking', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
     ];
     $element['settings']['masking']['mask'] = [
@@ -284,7 +332,11 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#field_prefix' => 'fa-',
       '#default_value' => isset($iconSettings['masking']['mask']) ? $iconSettings['masking']['mask'] : '',
       '#description' => $this->t('Name of the Font Awesome Icon. See @iconsLink for valid icon names, or begin typing for an autocomplete list.', [
-        '@iconsLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons'))->toString(),
+        '@iconsLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
       '#autocomplete_route_name' => 'fontawesome.autocomplete',
       '#element_validate' => [
@@ -295,16 +347,13 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#type' => 'select',
       '#title' => $this->t('Style'),
       '#description' => $this->t('This changes the style of the masking icon. Please note that this is not available for all icons, and for some of the icons this is only available in the pro version. If the icon does not render properly in the preview above, the icon does not support that style. Notably, brands do not support any styles. See @iconLink for more information.', [
-        '@iconLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
-      '#options' => [
-        'fas' => $this->t('Solid'),
-        'far' => $this->t('Regular'),
-        'fal' => $this->t('Light'),
-        'fad' => $this->t('Duotone'),
-        'fat' => $this->t('Thin'),
-        'fak' => $this->t('Kit Uploads'),
-      ],
+      '#options' => $style_options,
       '#default_value' => isset($iconSettings['masking']['style']) ? $iconSettings['masking']['style'] : '',
     ];
 
@@ -316,7 +365,11 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#disabled' => $configuration_settings->get('method') == 'webfonts',
       '#title' => $this->t('Power Transforms'),
       '#description' => $this->t('See @iconLink for additional information on Power Transforms. Note that these transforms only work with the SVG with JS version of Font Awesome and are disabled for Webfonts. See the @adminLink to set your version of Font Awesome.', [
-        '@iconLink' => Link::fromTextAndUrl($this->t('the Font Awesome `How to use` guide'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl($this->t('the Font Awesome `How to use` guide'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
         '@adminLink' => Link::createFromRoute($this->t('admin page'), 'fontawesome.admin_settings')->toString(),
       ]),
     ];
@@ -440,24 +493,6 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       ],
     ];
 
-    // Remove style options if they aren't being loaded.
-    if (is_bool($configuration_settings->get('use_solid_file')) && !$configuration_settings->get('use_solid_file')) {
-      unset($element['settings']['style']['#options']['fas']);
-    }
-    if (is_bool($configuration_settings->get('use_regular_file')) && !$configuration_settings->get('use_regular_file')) {
-      unset($element['settings']['style']['#options']['far']);
-    }
-    if (is_bool($configuration_settings->get('use_light_file')) && !$configuration_settings->get('use_light_file')) {
-      unset($element['settings']['style']['#options']['fal']);
-    }
-    if (is_bool($configuration_settings->get('use_duotone_file')) && !$configuration_settings->get('use_duotone_file')) {
-      unset($element['settings']['style']['#options']['fad']);
-      unset($element['settings']['duotone']);
-    }
-    if (is_bool($configuration_settings->get('use_thin_file')) && !$configuration_settings->get('use_thin_file')) {
-      unset($element['settings']['style']['#options']['fat']);
-    }
-
     return $element;
   }
 
@@ -470,18 +505,30 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
     if (!empty($values['type']) && empty($values['value'])) {
       $form_state->setError($element, t('Missing value for Font Awesome Power Transform %value. Please see @iconLink for information on correct values.', [
         '%value' => $values['type'],
-        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]));
     }
     elseif (empty($values['type']) && !empty($values['value'])) {
       $form_state->setError($element, t('Missing type value for Font Awesome Power Transform. Please see @iconLink for information on correct values.', [
-        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]));
     }
     if (!empty($values['value']) && !is_numeric($values['value'])) {
       $form_state->setError($element, t("Invalid value for Font Awesome Power Transform %value. Please see @iconLink for information on correct values.", [
         '%value' => $values['type'],
-        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/how-to-use/svg-with-js', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]));
     }
   }
@@ -509,7 +556,11 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
     if (!isset($iconData['name'])) {
       $form_state->setError($element, t("Invalid icon name %value. Please see @iconLink for correct icon names, or turn off validation in the Font Awesome settings if you are trying to use custom icon names.", [
         '%value' => $value,
-        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons'))->toString(),
+        '@iconLink' => Link::fromTextAndUrl(t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]));
     }
   }

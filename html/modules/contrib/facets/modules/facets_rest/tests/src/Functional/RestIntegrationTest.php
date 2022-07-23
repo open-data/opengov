@@ -16,7 +16,7 @@ class RestIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'rest_view',
     'views_ui',
   ];
@@ -24,7 +24,7 @@ class RestIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create the users used for the tests.
@@ -87,7 +87,7 @@ class RestIntegrationTest extends FacetsTestBase {
     $this->drupalGet($facet_edit_page);
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->drupalPostForm(NULL, ['widget' => 'array'], 'Configure widget');
+    $this->submitForm(['widget' => 'array'], 'Configure widget');
 
     $values['widget'] = 'array';
     $values['widget_config[show_numbers]'] = TRUE;
@@ -97,7 +97,7 @@ class RestIntegrationTest extends FacetsTestBase {
     $values['facet_sorting[active_widget_order][status]'] = FALSE;
     $values['facet_settings[query_operator]'] = 'or';
     $values['facet_settings[only_visible_when_facet_source_is_visible]'] = TRUE;
-    $this->drupalPostForm(NULL, $values, 'Save');
+    $this->submitForm($values, 'Save');
 
     // Add a new facet to filter by keywords.
     $this->createFacet('Keywords', 'keywords', 'keywords', 'rest_export_1', 'views_rest__search_api_rest_test_view');
@@ -107,7 +107,7 @@ class RestIntegrationTest extends FacetsTestBase {
     $this->drupalGet($facet_edit_page);
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->drupalPostForm(NULL, ['widget' => 'array'], 'Configure widget');
+    $this->submitForm(['widget' => 'array'], 'Configure widget');
 
     $values['widget'] = 'array';
     $values['widget_config[show_numbers]'] = TRUE;
@@ -117,7 +117,7 @@ class RestIntegrationTest extends FacetsTestBase {
     $values['facet_sorting[active_widget_order][status]'] = FALSE;
     $values['facet_settings[query_operator]'] = 'or';
     $values['facet_settings[only_visible_when_facet_source_is_visible]'] = TRUE;
-    $this->drupalPostForm(NULL, $values, 'Save');
+    $this->submitForm($values, 'Save');
 
     // Get the output from the rest view and decode it into an array.
     $result = $this->drupalGet('/facets-rest', $get_options);
@@ -136,6 +136,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=type%3Aarticle',
         ],
+        'raw_value' => 'article',
         'count' => 2,
       ],
       'item' => [
@@ -145,6 +146,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=type%3Aitem',
         ],
+        'raw_value' => 'item',
         'count' => 3,
       ],
     ];
@@ -152,6 +154,7 @@ class RestIntegrationTest extends FacetsTestBase {
     foreach ($json_decoded->facets[1][0]->type as $result) {
       $value = $result->values->value;
       $this->assertEquals($result->values->count, $results[$value]['count']);
+      $this->assertSame($results[$value]['raw_value'], $result->raw_value);
       foreach ($results[$value]['url'] as $url_part) {
         $this->assertNotFalse(strpos($result->url, $url_part));
       }
@@ -166,6 +169,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Abanana',
         ],
+        'raw_value' => 'banana',
         'count' => 1,
       ],
       'strawberry' => [
@@ -175,6 +179,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Astrawberry',
         ],
+        'raw_value' => 'strawberry',
         'count' => 2,
       ],
       'apple' => [
@@ -184,6 +189,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Aapple',
         ],
+        'raw_value' => 'apple',
         'count' => 2,
       ],
       'orange' => [
@@ -193,6 +199,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Aorange',
         ],
+        'raw_value' => 'orange',
         'count' => 3,
       ],
       'grape' => [
@@ -202,6 +209,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Agrape',
         ],
+        'raw_value' => 'grape',
         'count' => 3,
       ],
     ];
@@ -209,6 +217,7 @@ class RestIntegrationTest extends FacetsTestBase {
     foreach ($json_decoded->facets[0][0]->keywords as $result) {
       $value = $result->values->value;
       $this->assertEquals($result->values->count, $results[$value]['count']);
+      $this->assertSame($results[$value]['raw_value'], $result->raw_value);
       foreach ($results[$value]['url'] as $url_part) {
         $this->assertNotFalse(strpos($result->url, $url_part));
       }
@@ -230,10 +239,12 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=type%3Aarticle&f%5B1%5D=type%3Aitem',
         ],
+        'raw_value' => 'article',
         'count' => 2,
       ],
       'item' => [
         'url' => [$base_url, '/facets-rest', '_format=json'],
+        'raw_value' => 'item',
         'count' => 3,
       ],
       'banana' => [
@@ -243,6 +254,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Abanana&f%5B1%5D=type%3Aitem',
         ],
+        'raw_value' => 'banana',
         'count' => 0,
       ],
       'strawberry' => [
@@ -252,6 +264,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Astrawberry&f%5B1%5D=type%3Aitem',
         ],
+        'raw_value' => 'strawberry',
         'count' => 0,
       ],
       'apple' => [
@@ -261,6 +274,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Aapple&f%5B1%5D=type%3Aitem',
         ],
+        'raw_value' => 'apple',
         'count' => 1,
       ],
       'orange' => [
@@ -270,6 +284,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Aorange&f%5B1%5D=type%3Aitem',
         ],
+        'raw_value' => 'orange',
         'count' => 2,
       ],
       'grape' => [
@@ -279,6 +294,7 @@ class RestIntegrationTest extends FacetsTestBase {
           '_format=json',
           'f%5B0%5D=keywords%3Agrape&f%5B1%5D=type%3Aitem',
         ],
+        'raw_value' => 'grape',
         'count' => 1,
       ],
     ];
@@ -286,16 +302,18 @@ class RestIntegrationTest extends FacetsTestBase {
     foreach ($json_decoded->facets[1][0]->type as $result) {
       $value = $result->values->value;
       $this->assertEquals($results[$value]['count'], $result->values->count);
+      $this->assertSame($results[$value]['raw_value'], $result->raw_value);
       foreach ($results[$value]['url'] as $url_part) {
-        $this->assertContains($url_part, $result->url);
+        $this->assertStringContainsString($url_part, $result->url);
       }
     }
 
     foreach ($json_decoded->facets[0][0]->keywords as $result) {
       $value = $result->values->value;
       $this->assertEquals($results[$value]['count'], $result->values->count);
+      $this->assertSame($results[$value]['raw_value'], $result->raw_value);
       foreach ($results[$value]['url'] as $url_part) {
-        $this->assertContains($url_part, $result->url);
+        $this->assertStringContainsString($url_part, $result->url);
       }
     }
   }
@@ -314,10 +332,10 @@ class RestIntegrationTest extends FacetsTestBase {
     $this->drupalGet($facet_edit_page);
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->drupalPostForm(NULL, ['widget' => 'checkbox'], 'Configure widget');
+    $this->submitForm(['widget' => 'checkbox'], 'Configure widget');
     $this->assertSession()->pageTextContains('The Facet source is a Rest export. Please select a raw widget.');
 
-    $this->drupalPostForm(NULL, ['widget' => 'array'], 'Configure widget');
+    $this->submitForm(['widget' => 'array'], 'Configure widget');
     $this->assertSession()->pageTextNotContains('The Facet source is a Rest export. Please select a raw widget.');
   }
 
@@ -335,8 +353,9 @@ class RestIntegrationTest extends FacetsTestBase {
     $values['widget_config[show_numbers]'] = TRUE;
     $values['facet_settings[url_alias]'] = 'type';
     $values['facet_settings[only_visible_when_facet_source_is_visible]'] = TRUE;
-    $this->drupalPostForm('/admin/config/search/facets/type_rest/edit', ['widget' => 'array'], 'Configure widget');
-    $this->drupalPostForm(NULL, $values, 'Save');
+    $this->drupalGet('/admin/config/search/facets/type_rest/edit');
+    $this->submitForm(['widget' => 'array'], 'Configure widget');
+    $this->submitForm($values, 'Save');
 
     $this->drupalGet('facets-page');
     $this->clickLink('item');
@@ -374,8 +393,8 @@ class RestIntegrationTest extends FacetsTestBase {
     $this->assertArrayHasKey('search_results', $json_decoded);
 
     $this->drupalGet('admin/structure/views/nojs/display/search_api_rest_test_view/rest_export_1/style_options');
-    $this->drupalPostForm(NULL, ['style_options[show_facets]' => FALSE], 'Apply');
-    $this->drupalPostForm(NULL, [], 'Save');
+    $this->submitForm(['style_options[show_facets]' => FALSE], 'Apply');
+    $this->submitForm([], 'Save');
 
     $result = $this->drupalGet('facets-rest', $get_options);
     $this->assertSession()->responseHeaderEquals('content-type', 'application/json');

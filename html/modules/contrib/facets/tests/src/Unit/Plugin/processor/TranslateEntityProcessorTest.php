@@ -42,7 +42,7 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Mock language manager.
@@ -125,12 +125,12 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * Tests that node results were correctly changed.
    *
-   * @dataProvider facetDataProvider
-   *
    * @param \Drupal\facets\FacetInterface $facet
    *   A facet mock.
    * @param array $results
    *   The facet original results mock.
+   *
+   * @dataProvider facetDataProvider
    */
   public function testNodeResultsChanged(FacetInterface $facet, array $results) {
     // Mock a node and add the label to it.
@@ -175,12 +175,12 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * Tests that term results were correctly changed.
    *
-   * @dataProvider facetDataProvider
-   *
    * @param \Drupal\facets\FacetInterface $facet
    *   A facet mock.
    * @param array $results
    *   The facet original results mock.
+   *
+   * @dataProvider facetDataProvider
    */
   public function testTermResultsChanged(FacetInterface $facet, array $results) {
     // Mock term.
@@ -226,12 +226,12 @@ class TranslateEntityProcessorTest extends UnitTestCase {
   /**
    * Test that deleted entities still in index results doesn't display.
    *
-   * @dataProvider facetDataProvider
-   *
    * @param \Drupal\facets\FacetInterface $facet
    *   A facet mock.
    * @param array $results
    *   The facet original results mock.
+   *
+   * @dataProvider facetDataProvider
    */
   public function testDeletedEntityResults(FacetInterface $facet, array $results) {
     // Set original results.

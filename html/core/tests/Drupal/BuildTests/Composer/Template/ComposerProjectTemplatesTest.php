@@ -98,7 +98,44 @@ class ComposerProjectTemplatesTest extends BuildTestBase {
     //   to in the future accidentally commit a dependency that regresses our
     //   actual stability requirement without us explicitly changing this
     //   constant.
-    $this->assertSame($this->getLowestDependencyStability(), static::MINIMUM_STABILITY);
+    $root = $this->getDrupalRoot();
+    $process = $this->executeCommand("composer --working-dir=$root info --format=json");
+    $this->assertCommandSuccessful();
+    $installed = json_decode($process->getOutput(), TRUE);
+
+    // A lookup of the numerical position of each of the stability terms.
+    $stability_order_indexes = array_flip(static::STABILITY_ORDER);
+
+    $minimum_stability_order_index = $stability_order_indexes[static::MINIMUM_STABILITY];
+
+    $exclude = [
+      'drupal/core',
+      'drupal/core-project-message',
+      'drupal/core-vendor-hardening',
+    ];
+    foreach ($installed['installed'] as $project) {
+      // Exclude dependencies that are required with "self.version", since
+      // those stabilities will automatically match the corresponding Drupal
+      // release.
+      if (in_array($project['name'], $exclude, TRUE)) {
+        continue;
+      }
+
+      $project_stability = VersionParser::parseStability($project['version']);
+      $project_stability_order_index = $stability_order_indexes[$project_stability];
+
+      $project_stabilities[$project['name']] = $project_stability;
+
+      $this->assertGreaterThanOrEqual($minimum_stability_order_index, $project_stability_order_index, sprintf(
+        "Dependency %s with stability %s does not meet minimum stability %s.",
+        $project['name'],
+        $project_stability,
+        static::MINIMUM_STABILITY,
+      ));
+    }
+
+    // At least one project should be at the minimum stability.
+    $this->assertContains(static::MINIMUM_STABILITY, $project_stabilities);
   }
 
   /**
@@ -207,6 +244,14 @@ class ComposerProjectTemplatesTest extends BuildTestBase {
 
     $this->executeCommand("COMPOSER_HOME=$composer_home COMPOSER_ROOT_VERSION=$simulated_core_version composer create-project --no-ansi $project testproject $simulated_core_version -vvv --repository $repository_path");
     $this->assertCommandSuccessful();
+    // Check the output of the project creation for the absence of warnings
+    // about any non-allowed composer plugins.
+    // Note: There are different warnings for unallowed composer plugins
+    // depending on running in non-interactive mode or not. It seems the Drupal
+    // CI environment always forces composer commands to run in the
+    // non-interactive mode. The only thing these messages have in common is the
+    // following string.
+    $this->assertErrorOutputNotContains('See https://getcomposer.org/allow-plugins');
 
     // Ensure we used the project from our codebase.
     $this->assertErrorOutputContains("Installing $project ($simulated_core_version): Symlinking from $package_dir");
@@ -349,38 +394,22 @@ JSON;
             "version" => $version,
           ],
         ];
+        // Ensure composer plugins are registered correctly.
+        $package_json = json_decode(file_get_contents($full_path . '/composer.json'), TRUE);
+        if (isset($package_json['type']) && $package_json['type'] === 'composer-plugin') {
+          $packages['packages'][$name][$version]['type'] = $package_json['type'];
+          $packages['packages'][$name][$version]['require'] = $package_json['require'];
+          $packages['packages'][$name][$version]['extra'] = $package_json['extra'];
+          if (isset($package_json['autoload'])) {
+            $packages['packages'][$name][$version]['autoload'] = $package_json['autoload'];
+          }
+        }
       }
     }
 
     $json = json_encode($packages, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     mkdir(dirname($repository_path));
     file_put_contents($repository_path, $json);
-  }
-
-  /**
-   * Returns the stability of the least stable dependency.
-   */
-  protected function getLowestDependencyStability() {
-    $root = $this->getDrupalRoot();
-    $process = $this->executeCommand("composer --working-dir=$root info --format=json");
-    $this->assertCommandSuccessful();
-    $installed = json_decode($process->getOutput(), TRUE);
-
-    $lowest_stability_order_index = count(static::STABILITY_ORDER);
-    foreach ($installed['installed'] as $project) {
-      // Exclude dependencies that are required with "self.version", since
-      // those stabilities will automatically match the corresponding Drupal
-      // release.
-      $exclude = ['drupal/core', 'drupal/core-project-message', 'drupal/core-vendor-hardening'];
-      if (!in_array($project['name'], $exclude, TRUE)) {
-        $stability = VersionParser::parseStability($project['version']);
-        $stability_order_index = array_search($stability, static::STABILITY_ORDER);
-        $lowest_stability_order_index = min($lowest_stability_order_index, $stability_order_index);
-      }
-    }
-    $lowest_stability = static::STABILITY_ORDER[$lowest_stability_order_index];
-
-    return $lowest_stability;
   }
 
   /**

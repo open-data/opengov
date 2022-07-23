@@ -586,9 +586,7 @@ class ProviderBase extends PluginBase implements ProviderInterface {
   }
 
   /****************************************************************************
-   *
-   * Deprecated methods
-   *
+   * Deprecated methods.
    ***************************************************************************/
 
   /**

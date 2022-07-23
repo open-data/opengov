@@ -4,6 +4,7 @@ namespace Drupal\simple_sitemap_engines\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -28,6 +29,13 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
   protected $entityTypeManager;
 
   /**
+   * The entity field manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
    * The date formatter service.
    *
    * @var \Drupal\Core\Datetime\DateFormatter
@@ -48,6 +56,8 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
    *   The config factory service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
    * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
    *   The date formatter service.
    * @param \Drupal\Core\State\StateInterface $state
@@ -55,10 +65,12 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
    */
   public function __construct(ConfigFactoryInterface $config_factory,
                               EntityTypeManagerInterface $entity_type_manager,
+                              EntityFieldManagerInterface $entity_field_manager,
                               DateFormatter $date_formatter,
                               StateInterface $state) {
     parent::__construct($config_factory);
     $this->entityTypeManager = $entity_type_manager;
+    $this->entityFieldManager = $entity_field_manager;
     $this->dateFormatter = $date_formatter;
     $this->state = $state;
   }
@@ -70,6 +82,7 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
     return new static(
       $container->get('config.factory'),
       $container->get('entity_type.manager'),
+      $container->get('entity_field.manager'),
       $container->get('date.formatter'),
       $container->get('state')
     );
@@ -130,8 +143,8 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
       ],
     ];
 
-    $engines = SimpleSitemapEngine::loadSitemapSubmissionEngines();
-    foreach ($engines as $engine_id => $engine) {
+    $sitemaps = SimpleSitemap::loadMultiple();
+    foreach (SimpleSitemapEngine::loadSitemapSubmissionEngines() as $engine_id => $engine) {
       $form['settings']['engines'][$engine_id] = [
         '#type' => 'select',
         '#title' => $engine->label(),
@@ -139,7 +152,7 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
           function ($sitemap) {
             return $sitemap->label();
           },
-          SimpleSitemap::loadMultiple()
+          $sitemaps
         ),
         '#default_value' => $engine->sitemap_variants,
         '#multiple' => TRUE,
@@ -187,6 +200,11 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
         $text = self::getKeyStatusMessage('settings_info');
         break;
 
+      case 'settings_state':
+        $text = self::getKeyStatusMessage('settings_info');
+        $this->messenger()->addWarning(self::getKeyStatusMessage('settings_state_warning'));
+        break;
+
       case 'state':
         $text = self::getKeyStatusMessage('state_info');
         $this->messenger()->addWarning(self::getKeyStatusMessage('state_warning'));
@@ -199,9 +217,13 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
 
     $form['index_now']['key'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Generate new verification key'),
-      '#submit' => [self::class . '::generateKey'],
-      '#disabled' => $key_location === 'settings',
+      '#value' => in_array($key_location, ['state', 'settings_state'])
+        ? $this->t('Remove verification key from state')
+        : $this->t('Generate verification key'),
+      '#submit' => in_array($key_location, ['state', 'settings_state'])
+        ? [self::class . '::removeKey']
+        : [self::class . '::generateKey'],
+      '#disabled' => $key_location === 'settings' ,
       '#validate' => [],
       '#prefix' => '<p>' . $text . '</p>',
     ];
@@ -222,13 +244,16 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
     $key = \Drupal::service('simple_sitemap.engines.index_now_submitter')->getKey();
     switch ($type) {
       case 'settings_info':
-        return t('The verification key is saved in <em>settings.php</em>: @key', ['@key' => $key]);
+        return t('The IndexNow verification key is saved in <em>settings.php</em>: @key', ['@key' => $key]);
 
       case 'state_info':
-        return t('The verification key is defined in <em>Drupal state</em>: @key', ['@key' => $key]);
+        return t('The IndexNow verification key is defined in <em>Drupal state</em>: @key', ['@key' => $key]);
 
       case 'state_warning':
         return t('The IndexNow verification key is saved in <em>Drupal state</em>. Consider defining it in <em>settings.php</em> like so:<br/>@code', ['@code' => '$settings[\'simple_sitemap_engines.index_now.key\'] = ' . "'$key';"]);
+
+      case 'settings_state_warning':
+        return t('The IndexNow verification key is saved in <em>settings.php</em> and can be safely removed from <em>Drupal state</em>.');
 
       case 'missing_warning':
       default:
@@ -243,10 +268,16 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
    *   The location of the IndexNow key.
    */
   public static function getKeyLocation(): ?string {
-    if (Settings::get('simple_sitemap_engines.index_now.key')) {
+    $settings = (bool) Settings::get('simple_sitemap_engines.index_now.key');
+    $state = (bool) \Drupal::state()->get('simple_sitemap_engines.index_now.key');
+
+    if ($settings && $state) {
+      return 'settings_state';
+    }
+    if ($settings) {
       return 'settings';
     }
-    if (\Drupal::state()->get('simple_sitemap_engines.index_now.key')) {
+    if ($state) {
       return 'state';
     }
 
@@ -254,7 +285,7 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
   }
 
   /**
-   * Generates a new IndexNow key.
+   * Generates a new IndexNow key and saves it to state.
    */
   public static function generateKey(): void {
     \Drupal::messenger()->deleteByType(MessengerInterface::TYPE_WARNING);
@@ -262,6 +293,14 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
     /** @var \Drupal\Component\Uuid\UuidInterface $uuid */
     $uuid = \Drupal::service('uuid');
     \Drupal::state()->set('simple_sitemap_engines.index_now.key', $uuid->generate());
+  }
+
+  /**
+   * Removes the IndexNow key from state.
+   */
+  public static function removeKey(): void {
+    \Drupal::messenger()->deleteByType(MessengerInterface::TYPE_WARNING);
+    \Drupal::state()->delete('simple_sitemap_engines.index_now.key');
   }
 
   /**
@@ -276,18 +315,23 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
       $engine->save();
     }
 
-    $enabled = (bool) $form_state->getValue(['settings', 'enabled']);
+    $config = $this->config('simple_sitemap_engines.settings');
 
-    $this->config('simple_sitemap_engines.settings')
-      ->set('enabled', $enabled)
+    $enabled = (bool) $form_state->getValue(['settings', 'enabled']);
+    $index_now_enabled = (bool) $form_state->getValue(['index_now', 'enabled']);
+
+    // Clear necessary caches to apply field definition updates.
+    // @see simple_sitemap_engines_entity_extra_field_info()
+    if ($config->get('index_now_enabled') !== $index_now_enabled) {
+      $this->entityFieldManager->clearCachedFieldDefinitions();
+    }
+
+    $config->set('enabled', $enabled)
       ->set('submission_interval', $form_state->getValue([
         'settings',
         'submission_interval',
       ]))
-      ->set('index_now_enabled', $form_state->getValue([
-        'index_now',
-        'enabled',
-      ]))
+      ->set('index_now_enabled', $index_now_enabled)
       ->set('index_now_preferred_engine', $form_state->getValue([
         'index_now',
         'preferred_engine',

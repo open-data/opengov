@@ -2,13 +2,18 @@
 
 namespace Drupal\Tests\facets\Unit\Plugin\processor;
 
+use Drupal\Core\Config\Entity\ConfigEntityType;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\FacetManager\DefaultFacetManager;
 use Drupal\facets\Plugin\facets\processor\DependentFacetProcessor;
+use Drupal\facets\Processor\ProcessorPluginManager;
 use Drupal\facets\Result\Result;
 use Drupal\Tests\UnitTestCase;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Unit test for processor.
@@ -27,7 +32,7 @@ class DependentFacetProcessorTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     $facet = new Facet([], 'facets_facet');
     $this->results = [
       new Result($facet, 'snow_owl', 'Snow owl', 2),
@@ -36,6 +41,35 @@ class DependentFacetProcessorTest extends UnitTestCase {
       new Result($facet, 'church_owl', 'Church owl', 1),
       new Result($facet, 'barn_owl', 'Barn owl', 1),
     ];
+
+    $facet_entity_type = $this->getMockBuilder(ConfigEntityType::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $facet_entity_type->method('getConfigPrefix')
+      ->willReturn('facets.facet');
+
+    $entity_type_manager = $this->getMockBuilder(EntityTypeManager::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $entity_type_manager->method('getDefinition')
+      ->with('facets_facet')
+      ->willReturn($facet_entity_type);
+
+    $processor_plugin_manager = $this->getMockBuilder(ProcessorPluginManager::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $processor_plugin_manager->method('getDefinitions')
+      ->willReturn([]);
+
+    $event_dispatcher = $this->getMockBuilder(EventDispatcher::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $container = new ContainerBuilder();
+    $container->set('entity_type.manager', $entity_type_manager);
+    $container->set('plugin.manager.facets.processor', $processor_plugin_manager);
+    $container->set('event_dispatcher', $event_dispatcher);
+    \Drupal::setContainer($container);
   }
 
   /**
@@ -81,7 +115,7 @@ class DependentFacetProcessorTest extends UnitTestCase {
     $facet->setActiveItem('snow_owl');
 
     $facetManager = $this->prophesize(DefaultFacetManager::class);
-    $facetManager->returnProcessedFacet($facet)->willReturn($facet);
+    $facetManager->returnBuiltFacet($facet)->willReturn($facet);
 
     $entityStorage = $this->prophesize(EntityStorageInterface::class);
     $entityStorage->load('owl')->willReturn($facet);

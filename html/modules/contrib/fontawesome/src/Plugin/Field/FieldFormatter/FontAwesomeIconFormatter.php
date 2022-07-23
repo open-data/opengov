@@ -69,7 +69,11 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
       '#title' => $this->t('Display multi-value fields as layers?'),
       '#default_value' => $this->getSetting('layers'),
       '#description' => $this->t('Layers are the new way to place icons and text visually on top of each other, replacing the Font Awesome classic icons stacks. With this new approach you can use more than 2 icons. Layers are awesome when you don’t want your page’s background to show through, or when you do want to use multiple colors, layer several icons, layer text, or layer counters onto an icon. Note that layers only work with the SVG version of Font Awesome. For more information, see @layersLink.', [
-        '@layersLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to layers'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/layering'))->toString(),
+        '@layersLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to layers'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/layering', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
       // Disable power transforms for webfonts.
       '#disabled' => $configuration_settings->get('method') == 'webfonts',

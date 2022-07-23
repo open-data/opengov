@@ -5,6 +5,7 @@ namespace Drupal\simple_sitemap\Form;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\simple_sitemap\Manager\Generator;
 
@@ -28,7 +29,7 @@ abstract class SimpleSitemapFormBase extends ConfigFormBase {
   protected $settings;
 
   /**
-   * Simple XML Sitemap form helper.
+   * Helper class for working with forms.
    *
    * @var \Drupal\simple_sitemap\Form\FormHelper
    */
@@ -44,7 +45,7 @@ abstract class SimpleSitemapFormBase extends ConfigFormBase {
    * @param \Drupal\simple_sitemap\Settings $settings
    *   The simple_sitemap.settings service.
    * @param \Drupal\simple_sitemap\Form\FormHelper $form_helper
-   *   Simple XML Sitemap form helper.
+   *   Helper class for working with forms.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -76,6 +77,15 @@ abstract class SimpleSitemapFormBase extends ConfigFormBase {
    */
   protected function getEditableConfigNames(): array {
     return ['simple_sitemap.settings'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    parent::submitForm($form, $form_state);
+
+    $this->formHelper->regenerateNowFormSubmit($form, $form_state);
   }
 
 }

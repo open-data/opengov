@@ -237,9 +237,7 @@ interface ProviderInterface extends PluginInspectionInterface, DerivativeInspect
   public function trackCdnExceptions(callable $callable);
 
   /****************************************************************************
-   *
-   * Deprecated methods
-   *
+   * Deprecated methods.
    ***************************************************************************/
 
   /**

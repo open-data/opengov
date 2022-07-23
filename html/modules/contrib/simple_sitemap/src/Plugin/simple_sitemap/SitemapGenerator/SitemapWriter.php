@@ -33,7 +33,7 @@ class SitemapWriter extends \XMLWriter {
   /**
    * Adds the XML stylesheet to the XML page.
    */
-  public function writeXsl(): void {
+  public function writeXsl($generator_id): void {
     // Using this instead of URL::fromRoute() to avoid creating a path with the
     // subdomain from which creation was triggered which might lead to a CORS
     // problem.
@@ -42,11 +42,14 @@ class SitemapWriter extends \XMLWriter {
       ->getRouteByName('simple_sitemap.sitemap_xsl')
       ->getPath();
 
+    // Now substituting path placeholder as URL::fromRoute() would do.
+    $xsl_url = str_replace('{sitemap_generator}', $generator_id, $xsl_url);
+
     // The above workaround however generates an incorrect path when the site is
     // located in a subdirectory, which is why the following logic adds the base
     // path of the installation.
     // See https://www.drupal.org/project/simple_sitemap/issues/3154494.
-    // All of this seems to be an over engineered way of writing 'sitemap.xsl',
+    // All of this seems to be an over engineered way of writing '/sitemap_generator/{sitemap_generator}/sitemap.xsl',
     // but may be useful in cases where another module alters the routes.
     $xsl_url = base_path() . ltrim($xsl_url, '/');
 

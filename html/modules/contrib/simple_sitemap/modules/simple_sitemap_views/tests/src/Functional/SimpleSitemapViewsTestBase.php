@@ -58,7 +58,7 @@ abstract class SimpleSitemapViewsTestBase extends SimplesitemapTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->sitemapViews = $this->container->get('simple_sitemap.views');
