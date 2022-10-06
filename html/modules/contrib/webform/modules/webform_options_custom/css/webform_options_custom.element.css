@@ -61,20 +61,6 @@ html.js .webform-options-custom[data-select-hidden] .js-form-type-select {
   fill: #eee;
 }
 
-/**
- * Tooltip.
- */
-.ui-tooltip.webform-options-custom-tooltip {
-  max-width: 400px;
-  cursor: pointer;
-  user-select: none;
-}
 .webform-options-custom-tooltip--text {
   font-weight: bold;
-}
-
-@media only screen and (max-width : 400px) {
-  .ui-tooltip.webform-options-custom-tooltip {
-    max-width: 300px;
-  }
 }

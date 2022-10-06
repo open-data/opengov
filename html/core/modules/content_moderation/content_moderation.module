@@ -234,12 +234,11 @@ function content_moderation_entity_access(EntityInterface $entity, $operation, A
     $access_result = $valid_transition_targets ? AccessResult::neutral() : AccessResult::forbidden('No valid transitions exist for given account.');
 
     $access_result->addCacheableDependency($entity);
-    $access_result->addCacheableDependency($account);
     $workflow = $moderation_info->getWorkflowForEntity($entity);
     $access_result->addCacheableDependency($workflow);
-    foreach ($valid_transition_targets as $valid_transition_target) {
-      $access_result->addCacheableDependency($valid_transition_target);
-    }
+    // The state transition validation service returns a list of transitions
+    // based on the user's permission to use them.
+    $access_result->cachePerPermissions();
   }
 
   // Do not allow users to delete the state that is configured as the default
@@ -302,7 +301,7 @@ function content_moderation_workspace_access(WorkspaceInterface $workspace, $ope
     $workflow_type = $workflow->getTypePlugin();
     // Find all workflows which are moderating entity types of the same type to
     // those that are tracked by the workspace.
-    if ($entity_type_ids = array_intersect($workflow_type->getEntityTypes(), array_keys($tracked_revisions))) {
+    if (array_intersect($workflow_type->getEntityTypes(), array_keys($tracked_revisions))) {
       $workflow_non_default_states[$workflow->id()] = array_filter(array_map(function (ContentModerationState $state) {
         return !$state->isDefaultRevisionState() ? $state->id() : NULL;
       }, $workflow_type->getStates()));

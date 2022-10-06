@@ -12,22 +12,23 @@
 
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Crypt;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\user\Entity\User;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\google_analytics\Component\Render\GoogleAnalyticsJavaScriptSnippet;
+use Drupal\Core\File\FileSystemInterface;
 
 /**
  * Advertise the supported google analytics api details.
  */
 function google_analytics_api() {
   return [
-    'api' => 'analytics.js',
+    'api' => 'gtag.js',
   ];
 }
 
@@ -88,7 +89,7 @@ function google_analytics_page_attachments(array &$page) {
     $url_custom = '';
 
     // Add link tracking.
-    $link_settings = [];
+    $link_settings = ['account' => $id];
     if ($track_outbound = $config->get('track.outbound')) {
       $link_settings['trackOutbound'] = $track_outbound;
     }
@@ -119,8 +120,10 @@ function google_analytics_page_attachments(array &$page) {
       // Add debugging code.
       if ($debug) {
         $page['#attached']['library'][] = 'google_analytics/google_analytics.debug';
+        // phpcs:disable
         // Add the JS test in development to the page.
         // $page['#attached']['library'][] = 'google_analytics/google_analytics.test';
+        // phpcs:enable
       }
       else {
         $page['#attached']['library'][] = 'google_analytics/google_analytics';
@@ -137,12 +140,15 @@ function google_analytics_page_attachments(array &$page) {
         'error' => t('Error message'),
       ];
 
-      foreach (\Drupal::messenger()->all(NULL, FALSE) as $type => $messages) {
+      foreach (\Drupal::messenger()->all() as $type => $messages) {
         // Track only the selected message types.
         if (in_array($type, $message_types)) {
           foreach ($messages as $message) {
             // @todo: Track as exceptions?
-            $message_events .= 'ga("send", "event", ' . Json::encode(t('Messages')) . ', ' . Json::encode($status_heading[$type]) . ', ' . Json::encode(strip_tags((string) $message)) . ');';
+            $event = [];
+            $event['event_category'] = t('Messages');
+            $event['event_label'] = strip_tags((string) $message);
+            $message_events .= 'gtag("event", ' . Json::encode($status_heading[$type]) . ', ' . Json::encode($event) . ');';
           }
         }
       }
@@ -191,7 +197,8 @@ function google_analytics_page_attachments(array &$page) {
     }
 
     // Add custom dimensions and metrics.
-    $custom_var = '';
+    $custom_map = [];
+    $custom_vars = [];
     foreach (['dimension', 'metric'] as $google_analytics_custom_type) {
       $google_analytics_custom_vars = $config->get('custom.' . $google_analytics_custom_type);
       // Are there dimensions or metrics configured?
@@ -209,7 +216,7 @@ function google_analytics_page_attachments(array &$page) {
           $google_analytics_custom_var['value'] = \Drupal::token()->replace($google_analytics_custom_var['value'], $types, ['clear' => TRUE]);
 
           // Suppress empty values.
-          if (!Unicode::strlen(trim($google_analytics_custom_var['value']))) {
+          if (!mb_strlen(trim($google_analytics_custom_var['name'])) || !mb_strlen(trim($google_analytics_custom_var['value']))) {
             continue;
           }
 
@@ -217,7 +224,7 @@ function google_analytics_page_attachments(array &$page) {
           // A metric has no length limitation. It's not documented if this
           // limit means 150 bytes after url encoding or before.
           // See https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#customs
-          if ($google_analytics_custom_type == 'dimension' && Unicode::strlen($google_analytics_custom_var['value']) > 150) {
+          if ($google_analytics_custom_type == 'dimension' && mb_strlen($google_analytics_custom_var['value']) > 150) {
             $google_analytics_custom_var['value'] = substr($google_analytics_custom_var['value'], 0, 150);
           }
 
@@ -226,45 +233,34 @@ function google_analytics_page_attachments(array &$page) {
             settype($google_analytics_custom_var['value'], 'float');
           };
 
-          // Add variables to tracker.
-          $custom_var .= 'ga("set", ' . Json::encode($google_analytics_custom_type . $google_analytics_custom_var['index']) . ', ' . Json::encode($google_analytics_custom_var['value']) . ');';
+          // Build the arrays of values.
+          $custom_map['custom_map'][$google_analytics_custom_type . $google_analytics_custom_var['index']] = $google_analytics_custom_var['name'];
+          $custom_vars[$google_analytics_custom_var['name']] = $google_analytics_custom_var['value'];
         }
       }
     }
 
+    $custom_var = '';
+    if (!empty($custom_map)) {
+      // Add custom variables to tracker.
+      $custom_var .= 'gtag("config", ' . Json::encode($id) . ', ' . Json::encode($custom_map) . ');';
+      $custom_var .= 'gtag("event", "custom", ' . Json::encode($custom_vars) . ');';
+    };
+
     // Build tracker code.
-    $script = '(function(i,s,o,g,r,a,m){';
-    $script .= 'i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){';
-    $script .= '(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),';
-    $script .= 'm=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)';
-    $script .= '})(window,document,"script",';
-
-    // Which version of the tracking library should be used?
-    $library_tracker_url = 'https://www.google-analytics.com/' . ($debug ? 'analytics_debug.js' : 'analytics.js');
-
-    // Should a local cached copy of analytics.js be used?
-    if ($config->get('cache') && $url = _google_analytics_cache($library_tracker_url)) {
-      // A dummy query-string is added to filenames, to gain control over
-      // browser-caching. The string changes on every update or full cache
-      // flush, forcing browsers to load a new copy of the files, as the
-      // URL changed.
-      $query_string = '?' . (\Drupal::state()->get('system.css_js_query_string') ?: '0');
-
-      $script .= '"' . $url . $query_string . '"';
-    }
-    else {
-      $script .= '"' . $library_tracker_url . '"';
-    }
-    $script .= ',"ga");';
+    $script = 'window.dataLayer = window.dataLayer || [];';
+    $script .= 'function gtag(){dataLayer.push(arguments)};';
+    $script .= 'gtag("js", new Date());';
 
     // Add any custom code snippets if specified.
-    $codesnippet_create = $config->get('codesnippet.create');
+    $codesnippet_parameters = $config->get('codesnippet.create');
     $codesnippet_before = $config->get('codesnippet.before');
     $codesnippet_after = $config->get('codesnippet.after');
 
-    // Build the create only fields list.
-    $create_only_fields = ['cookieDomain' => 'auto'];
-    $create_only_fields = array_merge($create_only_fields, $codesnippet_create);
+    // Build the arguments fields list.
+    // https://developers.google.com/analytics/devguides/collection/gtagjs/sending-data
+    $arguments = ['groups' => 'default'];
+    $arguments = array_merge($arguments, $codesnippet_parameters);
 
     // Domain tracking type.
     global $cookie_domain;
@@ -275,61 +271,60 @@ function google_analytics_page_attachments(array &$page) {
     // first. For hosts such as 'localhost' or IP Addresses we don't set a
     // cookie domain.
     if ($domain_mode == 1 && count(explode('.', $cookie_domain)) > 2 && !is_numeric(str_replace('.', '', $cookie_domain))) {
-      $create_only_fields = array_merge($create_only_fields, ['cookieDomain' => $cookie_domain]);
+      $arguments = array_merge($arguments, ['cookie_domain' => $cookie_domain]);
       $googleanalytics_adsense_script .= 'window.google_analytics_domain_name = ' . Json::encode($cookie_domain) . ';';
     }
     elseif ($domain_mode == 2) {
-      // Cross Domain tracking. 'autoLinker' need to be enabled in 'create'.
-      $create_only_fields = array_merge($create_only_fields, ['allowLinker' => TRUE]);
+      // Cross Domain tracking
+      // https://developers.google.com/analytics/devguides/collection/gtagjs/cross-domain
+      $arguments['linker'] = [
+        'domains' => $link_settings['trackCrossDomains'],
+      ];
       $googleanalytics_adsense_script .= 'window.google_analytics_domain_name = "none";';
     }
 
     // Track logged in users across all devices.
     if ($config->get('track.userid') && $account->isAuthenticated()) {
-      $create_only_fields['userId'] = google_analytics_user_id_hash($account->id());
+      $arguments['user_id'] = google_analytics_user_id_hash($account->id());
     }
 
+    if ($config->get('privacy.anonymizeip')) {
+      $arguments['anonymize_ip'] = TRUE;
+    }
+
+    if (!empty($url_custom)) {
+      $arguments['page_path'] = 'PLACEHOLDER_URL_CUSTOM';
+    }
+
+    // Add enhanced link attribution after 'create', but before 'pageview' send.
+    // @see https://developers.google.com/analytics/devguides/collection/gtagjs/enhanced-link-attribution
+    if ($config->get('track.linkid')) {
+      $arguments['link_attribution'] = TRUE;
+    }
+
+    // Disabling display features.
+    // @see https://developers.google.com/analytics/devguides/collection/gtagjs/display-features
+    if (!$config->get('track.displayfeatures')) {
+      $arguments['allow_ad_personalization_signals'] = FALSE;
+    }
+
+    // Convert array to JSON format.
+    $arguments_json = Json::encode($arguments);
+    // Json::encode() cannot convert every data type properly.
+    $arguments_json = str_replace('"PLACEHOLDER_URL_CUSTOM"', $url_custom, $arguments_json);
+
     // Create a tracker.
-    $script .= 'ga("create", ' . Json::encode($id) . ', ' . Json::encode($create_only_fields) . ');';
+    if (!empty($codesnippet_before)) {
+      $script .= $codesnippet_before;
+    }
+    $script .= 'gtag("config", ' . Json::encode($id) . ', ' . $arguments_json . ');';
 
     // Prepare Adsense tracking.
     $googleanalytics_adsense_script .= 'window.google_analytics_uacct = ' . Json::encode($id) . ';';
 
-    // Add enhanced link attribution after 'create', but before 'pageview' send.
-    // @see https://support.google.com/analytics/answer/2558867
-    if ($config->get('track.linkid')) {
-      $script .= 'ga("require", "linkid", "linkid.js");';
-    }
-
-    // Add display features after 'create', but before 'pageview' send.
-    // @see https://support.google.com/analytics/answer/2444872
-    if ($config->get('track.displayfeatures')) {
-      $script .= 'ga("require", "displayfeatures");';
-    }
-
-    // Domain tracking type.
-    if ($domain_mode == 2) {
-      // Cross Domain tracking
-      // https://developers.google.com/analytics/devguides/collection/upgrade/reference/gajs-analyticsjs#cross-domain
-      $script .= 'ga("require", "linker");';
-      $script .= 'ga("linker:autoLink", ' . Json::encode($link_settings['trackCrossDomains']) . ');';
-    }
-
-    if ($config->get('privacy.anonymizeip')) {
-      $script .= 'ga("set", "anonymizeIp", true);';
-    }
-
     if (!empty($custom_var)) {
       $script .= $custom_var;
     }
-    if (!empty($codesnippet_before)) {
-      $script .= $codesnippet_before;
-    }
-    if (!empty($url_custom)) {
-      $script .= 'ga("set", "page", ' . $url_custom . ');';
-    }
-    $script .= 'ga("send", "pageview");';
-
     if (!empty($message_events)) {
       $script .= $message_events;
     }
@@ -343,6 +338,33 @@ function google_analytics_page_attachments(array &$page) {
       // sounds like it could be appended to $script.
       $script = $googleanalytics_adsense_script . $script;
     }
+
+    // Prepend tracking library directly before script code.
+    if ($debug) {
+      // Debug script has highest priority to load.
+      // @FIXME: Cannot find the debug URL!???
+      $library = 'https://www.googletagmanager.com/gtag/js?id=' . $id;
+    }
+    elseif ($config->get('cache') && _google_analytics_cache('https://www.googletagmanager.com/gtag/js')) {
+      // Should a local cached copy of gtag.js be used?
+      $query_string = '?' . (\Drupal::state()->get('system.css_js_query_string') ?: '0');
+      $library = file_url_transform_relative(file_create_url('public://google_analytics/gtag.js')) . $query_string;
+    }
+    else {
+      // Fallback to default.
+      $library = 'https://www.googletagmanager.com/gtag/js?id=' . $id;
+    }
+
+    $page['#attached']['html_head'][] = [
+      [
+        '#tag' => 'script',
+        '#attributes' => [
+          'async' => TRUE,
+          'src' => $library,
+        ],
+      ],
+      'google_analytics_tracking_file',
+    ];
 
     $page['#attached']['html_head'][] = [
       [
@@ -389,7 +411,10 @@ function google_analytics_entity_extra_field_info() {
  */
 function google_analytics_form_user_form_alter(&$form, FormStateInterface $form_state) {
   $config = \Drupal::config('google_analytics.settings');
-  $account = $form_state->getFormObject()->getEntity();
+  /** @var Drupal\user\ProfileForm $profileForm */
+  $profileForm = $form_state->getFormObject();
+  /** @var Drupal\user\Entity\User $account */
+  $account = $profileForm->getEntity();
 
   if ($account->hasPermission('opt-in or out of google analytics tracking') && ($visibility_user_account_mode = $config->get('visibility.user_account_mode')) != 0 && _google_analytics_visibility_roles($account)) {
     $account_data_google_analytics = \Drupal::service('user.data')->get('google_analytics', $account->id());
@@ -401,6 +426,7 @@ function google_analytics_form_user_form_alter(&$form, FormStateInterface $form_
       '#open' => TRUE,
     ];
 
+    $description = '';
     switch ($visibility_user_account_mode) {
       case 1:
         $description = t('Users are tracked by default, but you are able to opt out.');
@@ -427,7 +453,10 @@ function google_analytics_form_user_form_alter(&$form, FormStateInterface $form_
  * Submit callback for user profile form to save the Google Analytics setting.
  */
 function google_analytics_user_profile_form_submit($form, FormStateInterface $form_state) {
-  $account = $form_state->getFormObject()->getEntity();
+  /** @var Drupal\user\ProfileForm $profileForm */
+  $profileForm = $form_state->getFormObject();
+  /** @var Drupal\user\Entity\User $account */
+  $account = $profileForm->getEntity();
   if ($account->id() && $form_state->hasValue('user_account_users')) {
     \Drupal::service('user.data')->set('google_analytics', $account->id(), 'user_account_users', (int) $form_state->getValue('user_account_users'));
   }
@@ -442,7 +471,7 @@ function google_analytics_cron() {
 
   // Regenerate the tracking code file every day.
   if ($request_time - \Drupal::state()->get('google_analytics.last_cache') >= 86400 && $config->get('cache')) {
-    _google_analytics_cache('https://www.google-analytics.com/analytics.js', TRUE);
+    _google_analytics_cache('https://www.googletagmanager.com/gtag/js', TRUE);
     \Drupal::state()->set('google_analytics.last_cache', $request_time);
   }
 }
@@ -457,15 +486,17 @@ function google_analytics_preprocess_item_list__search_results(&$variables) {
 
   // Only run on search results list.
   if ($config->get('track.site_search')) {
-    // There is no search result $variable available that hold the number of
-    // items found. The variable $variables['items'] has the current page items
-    // only. But the pager item mumber can tell the number of search results.
-    global $pager_total_items;
-
+    // Get the pager manager to give us the number of items returned.
+    /** @var \Drupal\Core\Pager\PagerManagerInterface $pager_manager */
+    $pager_manager = \Drupal::service('pager.manager');
+    $items = 0;
+    if ($pager_manager->getPager()) {
+      $items = $pager_manager->getPager()->getTotalItems();
+    }
     $variables['#attached']['html_head'][] = [
       [
         '#tag' => 'script',
-        '#value' => 'window.google_analytics_search_results = ' . intval($pager_total_items[0]) . ';',
+        '#value' => 'window.google_analytics_search_results = ' . $items . ';',
         '#weight' => JS_LIBRARY - 1,
       ],
       'google_analytics_search_script',
@@ -486,7 +517,9 @@ function google_analytics_preprocess_item_list__search_results(&$variables) {
  */
 function _google_analytics_cache($location, $synchronize = FALSE) {
   $path = 'public://google_analytics';
-  $file_destination = $path . '/' . basename($location);
+
+  $file_destination = $path . '/gtag.js';
+  $filesystem = \Drupal::service('file_system');
 
   if (!file_exists($file_destination) || $synchronize) {
     // Download the latest tracking code.
@@ -500,12 +533,12 @@ function _google_analytics_cache($location, $synchronize = FALSE) {
         $data_hash_local = Crypt::hashBase64(file_get_contents($file_destination));
         $data_hash_remote = Crypt::hashBase64($data);
         // Check that the files directory is writable.
-        if ($data_hash_local != $data_hash_remote && file_prepare_directory($path)) {
+        if ($data_hash_local != $data_hash_remote && $filesystem->prepareDirectory($path)) {
           // Save updated tracking code file to disk.
-          file_unmanaged_save_data($data, $file_destination, FILE_EXISTS_REPLACE);
+          $filesystem->saveData($data, $file_destination, FileSystemInterface::EXISTS_REPLACE);
           // Based on Drupal Core class AssetDumper.
           if (extension_loaded('zlib') && \Drupal::config('system.performance')->get('js.gzip')) {
-            file_unmanaged_save_data(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', FILE_EXISTS_REPLACE);
+            $filesystem->saveData(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', FileSystemInterface::EXISTS_REPLACE);
           }
           \Drupal::logger('google_analytics')->info('Locally cached tracking code file has been updated.');
 
@@ -516,13 +549,13 @@ function _google_analytics_cache($location, $synchronize = FALSE) {
       }
       else {
         // Check that the files directory is writable.
-        if (file_prepare_directory($path, FILE_CREATE_DIRECTORY)) {
+        if ($filesystem->prepareDirectory($path, FileSystemInterface::CREATE_DIRECTORY)) {
           // There is no need to flush JS here as core refreshes JS caches
           // automatically, if new files are added.
-          file_unmanaged_save_data($data, $file_destination, FILE_EXISTS_REPLACE);
+          $filesystem->saveData($data, $file_destination, FileSystemInterface::EXISTS_REPLACE);
           // Based on Drupal Core class AssetDumper.
           if (extension_loaded('zlib') && \Drupal::config('system.performance')->get('js.gzip')) {
-            file_unmanaged_save_data(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', FILE_EXISTS_REPLACE);
+            $filesystem->saveData(gzencode($data, 9, FORCE_GZIP), $file_destination . '.gz', FileSystemInterface::EXISTS_REPLACE);
           }
           \Drupal::logger('google_analytics')->info('Locally cached tracking code file has been saved.');
 
@@ -546,9 +579,8 @@ function _google_analytics_cache($location, $synchronize = FALSE) {
  */
 function google_analytics_clear_js_cache() {
   $path = 'public://google_analytics';
-  if (file_prepare_directory($path)) {
-    file_scan_directory($path, '/.*/', ['callback' => 'file_unmanaged_delete']);
-    \Drupal::service('file_system')->rmdir($path);
+  if (is_dir($path)) {
+    \Drupal::service('file_system')->deleteRecursive($path);
 
     // Change query-strings on css/js files to enforce reload for all users.
     _drupal_flush_css_js();
@@ -649,11 +681,11 @@ function _google_analytics_visibility_pages() {
     if (!empty($visibility_request_path_pages)) {
       // Convert path to lowercase. This allows comparison of the same path
       // with different case. Ex: /Page, /page, /PAGE.
-      $pages = Unicode::strtolower($visibility_request_path_pages);
+      $pages = mb_strtolower($visibility_request_path_pages);
       if ($visibility_request_path_mode < 2) {
         // Compare the lowercase path alias (if any) and internal path.
         $path = \Drupal::service('path.current')->getPath();
-        $path_alias = Unicode::strtolower(\Drupal::service('path.alias_manager')->getAliasByPath($path));
+        $path_alias = mb_strtolower(\Drupal::service('path_alias.manager')->getAliasByPath($path));
         $page_match = \Drupal::service('path.matcher')->matchPath($path_alias, $pages) || (($path != $path_alias) && \Drupal::service('path.matcher')->matchPath($path, $pages));
         // When $visibility_request_path_mode has a value of 0, the tracking
         // code is displayed on all pages except those listed in $pages. When

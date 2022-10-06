@@ -4,9 +4,7 @@ namespace Drupal\webform_share\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\webform\Element\WebformMessage;
-use Drupal\webform\WebformRequestInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -29,26 +27,13 @@ class WebformShareEmbedForm extends FormBase {
   protected $requestHandler;
 
   /**
-   * WebformEntityReferenceLinkFormatter constructor.
-   *
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer.
-   * @param \Drupal\webform\WebformRequestInterface $request_handler
-   *   The webform request handler.
-   */
-  public function __construct(RendererInterface $renderer, WebformRequestInterface $request_handler) {
-    $this->renderer = $renderer;
-    $this->requestHandler = $request_handler;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('renderer'),
-      $container->get('webform.request')
-    );
+    $instance = parent::create($container);
+    $instance->renderer = $container->get('renderer');
+    $instance->requestHandler = $container->get('webform.request');
+    return $instance;
   }
 
   /**

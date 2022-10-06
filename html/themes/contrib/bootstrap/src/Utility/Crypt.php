@@ -8,7 +8,7 @@ use Drupal\Component\Utility\Crypt as CoreCrypt;
 /**
  * Extends \Drupal\Component\Utility\Crypt.
  *
- * @ingroup utility
+ * @ingroup utility crypt functions.
  */
 class Crypt extends CoreCrypt {
 
@@ -165,10 +165,9 @@ class Crypt extends CoreCrypt {
   }
 
   /****************************************************************************
-   *
-   * Deprecated methods
-   *
-   ***************************************************************************/
+   * Deprecated methods.
+   * ***************************************************************************.
+   */
 
   /**
    * Generates a unique hash name.
@@ -179,9 +178,9 @@ class Crypt extends CoreCrypt {
    * @return string
    *   The generated hash identifier.
    *
-   * @deprecated since 8.x-3.18. Will be removed in a future release.
-   *
-   * @see \Drupal\bootstrap\Utility\Crypt::generateBase64HashIdentifier()
+   * @deprecated in 8.x-3.18 and is removed from project:5.0.0. Use
+   *   \Drupal\bootstrap\Utility\Crypt::generateBase64HashIdentifier() instead.
+   * @see
    */
   public static function generateHash() {
     Bootstrap::deprecated();

@@ -16,7 +16,7 @@ class FileFieldRSSContentTest extends FileFieldTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'views'];
+  protected static $modules = ['node', 'views'];
 
   /**
    * {@inheritdoc}
@@ -38,7 +38,7 @@ class FileFieldRSSContentTest extends FileFieldTestBase {
     $edit = [
       "display_modes_custom[rss]" => '1',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->submitForm($edit, 'Save');
 
     // Change the format to 'RSS enclosure'.
     $this->drupalGet("admin/structure/types/manage/$type_name/display/rss");
@@ -46,7 +46,7 @@ class FileFieldRSSContentTest extends FileFieldTestBase {
       "fields[$field_name][type]" => 'file_rss_enclosure',
       "fields[$field_name][region]" => 'content',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->submitForm($edit, 'Save');
 
     // Create a new node with a file field set. Promote to frontpage
     // needs to be set so this node will appear in the RSS feed.
@@ -63,14 +63,13 @@ class FileFieldRSSContentTest extends FileFieldTestBase {
 
     // Check that the RSS enclosure appears in the RSS feed.
     $this->drupalGet('rss.xml');
-    $uploaded_filename = str_replace('public://', '', $node_file->getFileUri());
     $selector = sprintf(
-      'enclosure[@url="%s"][@length="%s"][@type="%s"]',
-      file_create_url("public://$uploaded_filename", ['absolute' => TRUE]),
+      '//enclosure[@url="%s" and @length="%s" and @type="%s"]',
+      $node_file->createFileUrl(FALSE),
       $node_file->getSize(),
       $node_file->getMimeType()
     );
-    $this->assertNotNull($this->getSession()->getDriver()->find('xpath', $selector), 'File field RSS enclosure is displayed when viewing the RSS feed.');
+    $this->assertNotEmpty($this->getSession()->getDriver()->find($selector), 'File field RSS enclosure is displayed when viewing the RSS feed.');
   }
 
 }

@@ -36,6 +36,7 @@ class PathautoEntityWithStringIdTest extends KernelTestBase {
     'field',
     'token',
     'path',
+    'path_alias',
     'pathauto',
     'pathauto_string_id_test',
   ];
@@ -58,7 +59,7 @@ class PathautoEntityWithStringIdTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installSchema('system', ['key_value']);
     $this->installConfig(['system', 'pathauto']);

@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Exception;
 
 /**
@@ -17,7 +24,7 @@ namespace Solarium\Exception;
  *
  * The getStatusMessage method will return the HTTP status message.
  */
-class HttpException extends \RuntimeException implements ExceptionInterface
+class HttpException extends \RuntimeException implements RuntimeExceptionInterface
 {
     /**
      * HTTP status message.
@@ -60,7 +67,7 @@ class HttpException extends \RuntimeException implements ExceptionInterface
             $message .= "\n".$body;
         }
 
-        parent::__construct($message, $code);
+        parent::__construct($message, $code ?? 0);
     }
 
     /**

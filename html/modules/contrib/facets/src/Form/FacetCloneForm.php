@@ -71,7 +71,7 @@ class FacetCloneForm extends EntityForm {
 
     if (strpos($facet->getFacetSourceId(), 'search_api:') === FALSE) {
       // We don't know how to clone other kinds of facets.
-      \Drupal::messenger()->addMessage($this->t('We can only clone Search API based facets.'));
+      $this->messenger()->addMessage($this->t('We can only clone Search API based facets.'));
       return [];
     }
 
@@ -150,7 +150,7 @@ class FacetCloneForm extends EntityForm {
     $facet->set('facet_source_id', $form_state->getValue('destination_facet_source'));
     $facet->save();
 
-    \Drupal::messenger()->addMessage($this->t('Facet cloned to :label', [':label' => $facet->label()]));
+    $this->messenger()->addMessage($this->t('Facet cloned to :label', [':label' => $facet->label()]));
 
     // Redirect the user to the view admin form.
     $form_state->setRedirectUrl($facet->toUrl('edit-form'));

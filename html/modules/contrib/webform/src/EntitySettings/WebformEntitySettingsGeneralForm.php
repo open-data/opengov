@@ -10,8 +10,6 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 use Drupal\webform\Plugin\WebformHandlerInterface;
 use Drupal\webform\WebformMessageManagerInterface;
-use Drupal\webform\WebformThemeManagerInterface;
-use Drupal\webform\WebformThirdPartySettingsManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -41,30 +39,14 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
   protected $themeManager;
 
   /**
-   * Constructs a WebformEntitySettingsGeneralForm.
-   *
-   * @param \Drupal\webform\WebformMessageManagerInterface $message_manager
-   *   The webform message manager.
-   * @param \Drupal\webform\WebformThirdPartySettingsManagerInterface $third_party_settings_manager
-   *   The webform third party settings manager.
-   * @param \Drupal\webform\WebformThemeManagerInterface $theme_manager
-   *   The webform theme manager.
-   */
-  public function __construct(WebformMessageManagerInterface $message_manager, WebformThirdPartySettingsManagerInterface $third_party_settings_manager, WebformThemeManagerInterface $theme_manager) {
-    $this->messageManager = $message_manager;
-    $this->thirdPartySettingsManager = $third_party_settings_manager;
-    $this->themeManager = $theme_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('webform.message_manager'),
-      $container->get('webform.third_party_settings_manager'),
-      $container->get('webform.theme_manager')
-    );
+    $instance = parent::create($container);
+    $instance->messageManager = $container->get('webform.message_manager');
+    $instance->thirdPartySettingsManager = $container->get('webform.third_party_settings_manager');
+    $instance->themeManager = $container->get('webform.theme_manager');
+    return $instance;
   }
 
   /**
@@ -186,9 +168,9 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
       '#title' => $this->t('URL path settings'),
       '#open' => TRUE,
     ];
-    $default_page_base_path = trim($default_settings['default_page_base_path'], '/');
+    $default_page_base_path = $default_settings['default_page_base_path'];
     if ($default_page_base_path) {
-      $default_page_submit_path = trim($default_settings['default_page_base_path'], '/') . '/' . str_replace('_', '-', $webform->id());
+      $default_page_submit_path = $default_page_base_path . '/' . str_replace('_', '-', $webform->id());
       $default_settings['default_page_submit_path'] = $default_page_submit_path;
       $default_settings['default_page_confirm_path'] = $default_page_submit_path . '/confirmation';
       $form_state->set('default_settings', $default_settings);
@@ -235,7 +217,9 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
       $form['page_settings']['page_submit_path'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Webform URL alias'),
-        '#description' => $this->t('Optionally specify an alternative URL by which the webform submit page can be accessed. Any value entered here will overwrite ALL aliases you may have created for this form via the <a href=":path_alias">path</a> module.', $t_args),
+        '#description' => $this->t('Optionally specify an alternative URL by which the webform submit page can be accessed. Any value entered here will overwrite ALL aliases you may have created for this form via the <a href=":path_alias">path</a> module.', $t_args)
+           . ' ' . $this->t('The URL alias has to start with a slash and cannot end with a slash.'),
+       '#pattern' => '^/.+(?<!/)$',
         '#default_value' => $settings['page_submit_path'],
         '#states' => [
           'visible' => [
@@ -246,7 +230,9 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
       $form['page_settings']['page_confirm_path'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Confirmation page URL alias'),
-        '#description' => $this->t('Optionally specify an alternative URL by which the webform confirmation page can be accessed.', $t_args),
+        '#description' => $this->t('Optionally specify an alternative URL by which the webform confirmation page can be accessed.', $t_args)
+           . ' ' . $this->t('The URL alias has to start with a slash and cannot end with a slash.'),
+       '#pattern' => '^/.+(?<!/)$',
         '#default_value' => $settings['page_confirm_path'],
         '#states' => [
           'visible' => [
@@ -582,6 +568,11 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
 
     // Set settings.
     $webform->setSettings($values);
+
+    // Reset webform categories cache.
+    /** @var \Drupal\webform\WebformEntityStorageInterface $webform_storage */
+    $webform_storage = $this->entityTypeManager->getStorage('webform');
+    $webform_storage->resetCategoriesCache();
 
     parent::save($form, $form_state);
   }

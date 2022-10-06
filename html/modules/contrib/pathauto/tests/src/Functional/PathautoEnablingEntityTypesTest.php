@@ -17,11 +17,16 @@ class PathautoEnablingEntityTypesTest extends BrowserTestBase {
   use CommentTestTrait;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stable';
+
+  /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['node', 'pathauto', 'comment'];
+  protected static $modules = ['node', 'pathauto', 'comment'];
 
   /**
    * Admin user.
@@ -33,7 +38,7 @@ class PathautoEnablingEntityTypesTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'article']);
@@ -55,7 +60,7 @@ class PathautoEnablingEntityTypesTest extends BrowserTestBase {
    * ability to define alias patterns for a given entity type works. Test with
    * the comment module, as it is not enabled by default.
    */
-  function testEnablingEntityTypes() {
+  public function testEnablingEntityTypes() {
     // Verify that the comment entity type is not available when trying to add
     // a new pattern, nor "broken".
     $this->drupalGet('/admin/config/search/path/patterns/add');
@@ -67,7 +72,7 @@ class PathautoEnablingEntityTypesTest extends BrowserTestBase {
     $edit = [
       'enabled_entity_types[comment]' => TRUE,
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save configuration');
+    $this->submitForm($edit, "Save configuration" );
     $this->createPattern('comment', '/comment/[comment:body]');
 
     // Create a node, a comment type and a comment entity.
@@ -76,7 +81,7 @@ class PathautoEnablingEntityTypesTest extends BrowserTestBase {
     $edit = [
       'comment_body[0][value]' => 'test-body',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
 
     // Verify that an alias has been generated and that the type can no longer
     // be disabled.

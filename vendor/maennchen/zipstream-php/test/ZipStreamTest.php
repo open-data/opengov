@@ -10,6 +10,7 @@ use ZipStream\File;
 use ZipStream\Option\Archive as ArchiveOptions;
 use ZipStream\Option\File as FileOptions;
 use ZipStream\Option\Method;
+use ZipStream\Stream;
 use ZipStream\ZipStream;
 
 /**
@@ -75,7 +76,7 @@ class ZipStreamTest extends TestCase
         $tmpDir = $this->validateAndExtractZip($tmp);
 
         $files = $this->getRecursiveFileList($tmpDir);
-        $this->assertEquals(['sample.txt', 'test/sample.txt'], $files);
+        $this->assertEquals(['sample.txt', 'test' . DIRECTORY_SEPARATOR . 'sample.txt'], $files);
 
         $this->assertStringEqualsFile($tmpDir . '/sample.txt', 'Sample String Data');
         $this->assertStringEqualsFile($tmpDir . '/test/sample.txt', 'More Simple Sample Data');
@@ -307,7 +308,7 @@ class ZipStreamTest extends TestCase
         $tmpDir = $this->validateAndExtractZip($tmp);
 
         $files = $this->getRecursiveFileList($tmpDir);
-        $this->assertEquals(array('sample.txt', 'test/sample.txt'), $files);
+        $this->assertEquals(array('sample.txt', 'test' . DIRECTORY_SEPARATOR . 'sample.txt'), $files);
 
         $this->assertStringEqualsFile($tmpDir . '/sample.txt', 'Sample String Data');
         $this->assertStringEqualsFile($tmpDir . '/test/sample.txt', 'More Simple Sample Data');
@@ -433,7 +434,7 @@ class ZipStreamTest extends TestCase
         $tmpDir = $this->validateAndExtractZip($tmp);
 
         $files = $this->getRecursiveFileList($tmpDir);
-        $this->assertEquals(array('sample.txt', 'test/sample.txt'), $files);
+        $this->assertEquals(array('sample.txt', 'test' . DIRECTORY_SEPARATOR . 'sample.txt'), $files);
 
         $this->assertStringEqualsFile(__FILE__, file_get_contents($tmpDir . '/sample.txt'));
         $this->assertStringEqualsFile($tmpDir . '/test/sample.txt', 'More Simple Sample Data');
@@ -504,6 +505,33 @@ class ZipStreamTest extends TestCase
         $this->assertStringEqualsFile($tmpDir . '/sample.json', $body);
     }
 
+    public function testAddFileFromPsr7StreamWithOutputToPsr7Stream(): void
+    {
+        [$tmp, $resource] = $this->getTmpFileStream();
+        $psr7OutputStream = new Stream($resource);
+
+        $options = new ArchiveOptions();
+        $options->setOutputStream($psr7OutputStream);
+
+        $zip = new ZipStream(null, $options);
+
+        $body = 'Sample String Data';
+        $response = new Response(200, [], $body);
+
+        $fileOptions = new FileOptions();
+        $fileOptions->setMethod(Method::STORE());
+
+        $zip->addFileFromPsr7Stream('sample.json', $response->getBody(), $fileOptions);
+        $zip->finish();
+        $psr7OutputStream->close();
+
+        $tmpDir = $this->validateAndExtractZip($tmp);
+        $files = $this->getRecursiveFileList($tmpDir);
+
+        $this->assertEquals(array('sample.json'), $files);
+        $this->assertStringEqualsFile($tmpDir . '/sample.json', $body);
+    }
+
     public function testAddFileFromPsr7StreamWithFileSizeSet(): void
     {
         [$tmp, $stream] = $this->getTmpFileStream();
@@ -552,9 +580,35 @@ class ZipStreamTest extends TestCase
         $tmpDir = $this->validateAndExtractZip($tmp);
 
         $files = $this->getRecursiveFileList($tmpDir);
-        $this->assertEquals(['sample.txt', 'test/sample.txt'], $files);
+        $this->assertEquals(['sample.txt', 'test' . DIRECTORY_SEPARATOR . 'sample.txt'], $files);
 
         $this->assertStringEqualsFile($tmpDir . '/sample.txt', 'Sample String Data');
         $this->assertStringEqualsFile($tmpDir . '/test/sample.txt', 'More Simple Sample Data');
+    }
+
+    public function testCreateArchiveWithOutputBufferingOffAndFlushOptionSet(): void
+    {
+        // WORKAROUND (1/2): remove phpunit's output buffer in order to run test without any buffering
+        ob_end_flush();
+        $this->assertEquals(0, ob_get_level());
+
+        [$tmp, $stream] = $this->getTmpFileStream();
+
+        $options = new ArchiveOptions();
+        $options->setOutputStream($stream);
+        $options->setFlushOutput(true);
+
+        $zip = new ZipStream(null, $options);
+
+        $zip->addFile('sample.txt', 'Sample String Data');
+
+        $zip->finish();
+        fclose($stream);
+
+        $tmpDir = $this->validateAndExtractZip($tmp);
+        $this->assertStringEqualsFile($tmpDir . '/sample.txt', 'Sample String Data');
+
+        // WORKAROUND (2/2): add back output buffering so that PHPUnit doesn't complain that it is missing
+        ob_start();
     }
 }

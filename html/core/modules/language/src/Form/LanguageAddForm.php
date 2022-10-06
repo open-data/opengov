@@ -19,7 +19,7 @@ class LanguageAddForm extends LanguageFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    // @todo Remove in favour of base method.
+    // @todo Remove in favor of base method.
     return 'language_admin_add_form';
   }
 
@@ -153,7 +153,7 @@ class LanguageAddForm extends LanguageFormBase {
     else {
       $standard_languages = LanguageManager::getStandardLanguageList();
       $label = $standard_languages[$langcode][0];
-      $direction = isset($standard_languages[$langcode][2]) ? $standard_languages[$langcode][2] : ConfigurableLanguage::DIRECTION_LTR;
+      $direction = $standard_languages[$langcode][2] ?? ConfigurableLanguage::DIRECTION_LTR;
     }
     $entity->set('id', $langcode);
     $entity->set('label', $label);

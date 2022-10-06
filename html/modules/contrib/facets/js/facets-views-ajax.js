@@ -103,6 +103,13 @@
     var settings = drupalSettings;
     var facets_blocks = facetsBlocks();
 
+    // Remove All Range Input Form Facet Blocks from being updated.
+    if(settings.facets && settings.facets.rangeInput) {
+      $.each(settings.facets.rangeInput, function (index, value) {
+        delete facets_blocks[value.facetId];
+      });
+    }
+
     // Update facet blocks.
     var facet_settings = {
       url: Drupal.url('facets-block-ajax'),
@@ -197,12 +204,12 @@
   }
 
   // Helper function to add exposed form data to facets url
-  var addExposedFiltersToFacetsUrl = function(href, view_name, view_display_id) {
+  var addExposedFiltersToFacetsUrl = function (href, view_name, view_display_id) {
     var $exposed_form = $('form#views-exposed-form-' + view_name.replace(/_/g, '-') + '-' + view_display_id.replace(/_/g, '-'));
 
     var params = Drupal.Views.parseQueryString(href);
 
-    $.each($exposed_form.serializeArray(), function() {
+    $.each($exposed_form.serializeArray(), function () {
       params[this.name] = this.value;
     });
 

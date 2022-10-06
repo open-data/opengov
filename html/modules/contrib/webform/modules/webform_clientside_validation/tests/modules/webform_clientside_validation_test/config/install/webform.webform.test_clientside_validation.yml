@@ -50,6 +50,18 @@ elements: |
         two: Two
         three: Three
       '#required': true
+    select_other:
+      '#type': webform_select_other
+      '#title': select_other
+      '#options':
+        1: first_option
+        2: second_option
+      '#other__required_error': 'Custom select_other required message.'
+      '#required': true
+    checkbox:
+      '#type': checkbox
+      '#title': checkbox
+      '#required': true
     checkboxes:
       '#type': checkboxes
       '#title': checkboxes
@@ -66,6 +78,14 @@ elements: |
         two: Two
         three: Three
       '#required': true
+    radios_other:
+      '#type': webform_radios_other
+      '#title': radios_other
+      '#options':
+        1: first_option
+        2: second_option
+      '#other__required_error': 'Custom radios_other required message.'
+      '#required': true
     checkboxes_two_columns:
       '#type': checkboxes
       '#title': checkboxes_two_columns
@@ -75,6 +95,14 @@ elements: |
         two: Two
         three: Three
         four: Four
+      '#required': true
+    checkboxes_other:
+      '#type': webform_checkboxes_other
+      '#title': checkboxes_other
+      '#options':
+        1: option_1
+        2: option_2
+      '#other__required_error': 'Custom checkboxes_other required message.'
       '#required': true
   date_elements:
     '#type': details
@@ -92,6 +120,31 @@ elements: |
       '#type': webform_time
       '#title': time
       '#required': true
+  tableselect_elements:
+    '#type': details
+    '#title': 'Table select elements'
+    '#open': true
+    tableselect_checkboxes:
+      '#type': tableselect
+      '#title': tableselect_checkboxes
+      '#required': true
+      '#options':
+        one: One
+        two: Two
+        three: Three
+        four: Four
+        five: Five
+    tableselect_radios:
+      '#type': tableselect
+      '#title': tableselect_radios
+      '#multiple': false
+      '#required': true
+      '#options':
+        one: One
+        two: Two
+        three: Three
+        four: Four
+        five: Five
   advanced_elements:
     '#type': details
     '#title': 'Advanced elements'
@@ -203,7 +256,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -224,6 +277,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

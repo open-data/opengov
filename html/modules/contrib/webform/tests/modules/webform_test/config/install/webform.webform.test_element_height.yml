@@ -63,18 +63,11 @@ elements: |
     '#feet__min': 3
     '#feet__max': 10
     '#default_value': 120
-  height_select_min_max:
-    '#type': webform_height
-    '#title': height_select_min_max
-    '#height_type': select
-    '#feet__min': 3
-    '#feet__max': 10
-    '#default_value': 120
   height_number_step:
     '#type': webform_height
     '#title': height_number_step
     '#height_type': select
-    '#inches__step': .5
+    '#inches__step': 0.5
     '#default_value': 60.5
   height_number_empty:
     '#type': webform_height
@@ -113,7 +106,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -134,6 +127,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -275,9 +271,12 @@ handlers:
   debug:
     id: debug
     label: Debug
+    notes: ''
     handler_id: debug
     status: true
     conditions: {  }
     weight: 1
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

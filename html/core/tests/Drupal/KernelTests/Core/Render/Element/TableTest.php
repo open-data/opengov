@@ -16,7 +16,7 @@ class TableTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'form_test'];
+  protected static $modules = ['system', 'form_test'];
 
   /**
    * Tableheader.js provides 'sticky' table headers, and is included by default.
@@ -33,7 +33,7 @@ class TableTest extends KernelTestBase {
     $this->render($table);
     // Make sure tableheader.js was attached.
     $tableheader = $this->xpath("//script[contains(@src, 'tableheader.js')]");
-    $this->assertEqual(count($tableheader), 1);
+    $this->assertCount(1, $tableheader);
     $this->assertRaw('sticky-enabled');
   }
 
@@ -58,7 +58,7 @@ class TableTest extends KernelTestBase {
     $this->render($table);
     // Make sure tableheader.js was not attached.
     $tableheader = $this->xpath("//script[contains(@src, 'tableheader.js')]");
-    $this->assertEqual(count($tableheader), 0);
+    $this->assertCount(0, $tableheader);
     $this->assertNoRaw('sticky-enabled');
   }
 
@@ -111,7 +111,7 @@ class TableTest extends KernelTestBase {
   }
 
   /**
-   * Test that the 'footer' option works correctly.
+   * Tests that the 'footer' option works correctly.
    */
   public function testThemeTableFooter() {
     $footer = [
@@ -305,7 +305,7 @@ class TableTest extends KernelTestBase {
     $form = \Drupal::formBuilder()->getForm('\Drupal\form_test\Form\FormTestTableForm');
     $this->render($form);
     $this->assertEscaped('Update <em>kitten</em>');
-    $this->assertRaw('Update my favourite fruit is <strong>bananas</strong>');
+    $this->assertRaw('Update my favorite fruit is <strong>bananas</strong>');
   }
 
 }

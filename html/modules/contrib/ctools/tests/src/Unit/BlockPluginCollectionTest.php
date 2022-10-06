@@ -2,11 +2,11 @@
 
 namespace Drupal\Tests\ctools\Unit;
 
+use Prophecy\PhpUnit\ProphecyTrait;
 use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\ctools\Plugin\BlockPluginCollection;
 use Drupal\Tests\UnitTestCase;
-use Prophecy\Argument;
 
 /**
  * Tests the block plugin collection.
@@ -17,6 +17,7 @@ use Prophecy\Argument;
  */
 class BlockPluginCollectionTest extends UnitTestCase {
 
+  use ProphecyTrait;
   /**
    * Tests the getAllByRegion() method.
    *
@@ -62,7 +63,6 @@ class BlockPluginCollectionTest extends UnitTestCase {
         ->willReturn($plugin->reveal())
         ->shouldBeCalled();
     }
-
 
     $block_plugin_collection = new BlockPluginCollection($block_manager->reveal(), $blocks);
     $expected = [

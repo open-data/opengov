@@ -3,19 +3,14 @@
 namespace Drupal\webform_node\Controller;
 
 use Drupal\Core\Serialization\Yaml;
-use Drupal\Core\Datetime\DateFormatterInterface;
-use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Url;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\webform\WebformEntityReferenceManagerInterface;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformSubmissionStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,33 +22,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class WebformNodeReferencesListController extends EntityListBuilder implements ContainerInjectionInterface {
 
+  use WebformEntityStorageTrait;
+
   /**
    * The date formatter service.
    *
    * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $dateFormatter;
-
-  /**
-   * The webform submission storage.
-   *
-   * @var \Drupal\webform\WebformSubmissionStorageInterface
-   */
-  protected $submissionStorage;
-
-  /**
-   * The node type storage.
-   *
-   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
-   */
-  protected $nodeTypeStorage;
-
-  /**
-   * The field config storage.
-   *
-   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
-   */
-  protected $fieldConfigStorage;
 
   /**
    * The webform entity reference manager.
@@ -104,39 +80,32 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
   }
 
   /**
-   * Constructs a new WebformNodeReferencesListController object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   The entity storage class.
-   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
-   *   The date formatter service.
-   * @param \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $node_type_storage
-   *   The node type storage class.
-   * @param \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $field_config_storage
-   *   The field config storage class.
-   * @param \Drupal\webform\WebformSubmissionStorageInterface $webform_submission_storage
-   *   The webform submission storage class.
-   * @param \Drupal\webform\WebformEntityReferenceManagerInterface $webform_entity_reference_manager
-   *   The webform entity reference manager.
+   * {@inheritdoc}
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, DateFormatterInterface $date_formatter, ConfigEntityStorageInterface $node_type_storage, ConfigEntityStorageInterface $field_config_storage, WebformSubmissionStorageInterface $webform_submission_storage, WebformEntityReferenceManagerInterface $webform_entity_reference_manager) {
-    parent::__construct($entity_type, $storage);
+  public static function create(ContainerInterface $container) {
+    /** @var web/core/lib/Drupal/Core/Entity/EntityTypeManagerInterface.php:12 $entity_type_manager */
+    $entity_type_manager = $container->get('entity_type.manager');
+    $instance = static::createInstance($container, $entity_type_manager->getDefinition('node'));
 
-    $this->dateFormatter = $date_formatter;
-    $this->nodeTypeStorage = $node_type_storage;
-    $this->fieldConfigStorage = $field_config_storage;
-    $this->submissionStorage = $webform_submission_storage;
-    $this->webformEntityReferenceManager = $webform_entity_reference_manager;
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->dateFormatter = $container->get('date.formatter');
+    $instance->webformEntityReferenceManager = $container->get('webform.entity_reference_manager');
 
+    $instance->initialize();
+    return $instance;
+  }
+
+  /**
+   * Initialize WebformNodeReferencesListController object.
+   */
+  protected function initialize() {
     $this->nodeTypes = [];
     $this->fieldNames = [];
 
     /** @var \Drupal\node\Entity\NodeType[] $node_types */
-    $node_types = $this->nodeTypeStorage->loadMultiple();
+    $node_types = $this->getEntityStorage('node_type')->loadMultiple();
     /** @var \Drupal\field\FieldConfigInterface[] $field_configs */
-    $field_configs = $this->fieldConfigStorage->loadByProperties(['entity_type' => 'node']);
+    $field_configs = $this->getEntityStorage('field_config')->loadByProperties(['entity_type' => 'node']);
     foreach ($field_configs as $field_config) {
       if ($field_config->get('field_type') === 'webform') {
         $bundle = $field_config->get('bundle');
@@ -146,21 +115,6 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
         $this->fieldNames[$field_name] = $field_name;
       }
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager')->getDefinition('node'),
-      $container->get('entity_type.manager')->getStorage('node'),
-      $container->get('date.formatter'),
-      $container->get('entity_type.manager')->getStorage('node_type'),
-      $container->get('entity_type.manager')->getStorage('field_config'),
-      $container->get('entity_type.manager')->getStorage('webform_submission'),
-      $container->get('webform.entity_reference_manager')
-    );
   }
 
   /**
@@ -252,7 +206,7 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
     $row['node_status'] = $entity->isPublished() ? $this->t('Published') : $this->t('Not published');
     $row['webform_status'] = $this->getWebformStatus($entity);
 
-    $result_total = $this->submissionStorage->getTotal($this->webform, $entity);
+    $result_total = $this->getSubmissionStorage()->getTotal($this->webform, $entity);
     $results_access = $entity->access('submission_view_any');
     $results_disabled = $this->webform->isResultsDisabled();
     if ($results_disabled || !$results_access) {
@@ -347,18 +301,21 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
       $operations['edit'] = [
         'title' => $this->t('Edit'),
         'url' => $this->ensureDestination($entity->toUrl('edit-form')),
+        'weight' => 10,
       ];
     }
     if ($entity->access('view')) {
       $operations['view'] = [
         'title' => $this->t('View'),
         'url' => $this->ensureDestination($entity->toUrl('canonical')),
+        'weight' => 20,
       ];
     }
     if ($entity->access('submission_view_any') && !$this->webform->isResultsDisabled()) {
       $operations['results'] = [
         'title' => $this->t('Results'),
         'url' => Url::fromRoute('entity.node.webform.results_submissions', $route_parameters),
+        'weight' => 30,
       ];
     }
     if ($entity->access('update')
@@ -367,12 +324,14 @@ class WebformNodeReferencesListController extends EntityListBuilder implements C
       $operations['share'] = [
         'title' => $this->t('Share'),
         'url' => Url::fromRoute('entity.node.webform.share_embed', $route_parameters),
+        'weight' => 40,
       ];
     }
     if ($entity->access('delete')) {
       $operations['delete'] = [
         'title' => $this->t('Delete'),
         'url' => $this->ensureDestination($entity->toUrl('delete-form')),
+        'weight' => 100,
       ];
     }
     return $operations;

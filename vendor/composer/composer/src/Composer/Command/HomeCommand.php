@@ -14,7 +14,7 @@ namespace Composer\Command;
 
 use Composer\Package\CompletePackageInterface;
 use Composer\Repository\RepositoryInterface;
-use Composer\Repository\ArrayRepository;
+use Composer\Repository\RootPackageRepository;
 use Composer\Repository\RepositoryFactory;
 use Composer\Util\Platform;
 use Composer\Util\ProcessExecutor;
@@ -29,7 +29,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class HomeCommand extends BaseCommand
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -56,7 +58,7 @@ EOT
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -97,6 +99,11 @@ EOT
         return $return;
     }
 
+    /**
+     * @param bool $showHomepage
+     * @param bool $showOnly
+     * @return bool
+     */
     private function handlePackage(CompletePackageInterface $package, $showHomepage, $showOnly)
     {
         $support = $package->getSupport();
@@ -122,6 +129,7 @@ EOT
      * opens a url in your system default browser
      *
      * @param string $url
+     * @return void
      */
     private function openBrowser($url)
     {
@@ -129,7 +137,9 @@ EOT
 
         $process = new ProcessExecutor($this->getIO());
         if (Platform::isWindows()) {
-            return $process->execute('start "web" explorer "' . $url . '"', $output);
+            $process->execute('start "web" explorer ' . $url, $output);
+
+            return;
         }
 
         $linux = $process->execute('which xdg-open', $output);
@@ -157,7 +167,7 @@ EOT
 
         if ($composer) {
             return array_merge(
-                array(new ArrayRepository(array($composer->getPackage()))), // root package
+                array(new RootPackageRepository(clone $composer->getPackage())), // root package
                 array($composer->getRepositoryManager()->getLocalRepository()), // installed packages
                 $composer->getRepositoryManager()->getRepositories() // remotes
             );

@@ -8,7 +8,6 @@
 use Drupal\node\NodeInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Access\AccessResult;
 
 /**
  * @addtogroup hooks
@@ -222,7 +221,7 @@ function hook_node_access_records(\Drupal\node\NodeInterface $node) {
  * @see hook_node_grants_alter()
  * @ingroup node_access
  */
-function hook_node_access_records_alter(&$grants, Drupal\node\NodeInterface $node) {
+function hook_node_access_records_alter(&$grants, \Drupal\node\NodeInterface $node) {
   // Our module allows editors to mark specific articles with the 'is_preview'
   // field. If the node being saved has a TRUE value for that field, then only
   // our grants are retained, and other grants are removed. Doing so ensures
@@ -287,79 +286,6 @@ function hook_node_grants_alter(&$grants, \Drupal\Core\Session\AccountInterface 
 }
 
 /**
- * Controls access to a node.
- *
- * Modules may implement this hook if they want to have a say in whether or not
- * a given user has access to perform a given operation on a node.
- *
- * The administrative account (user ID #1) always passes any access check, so
- * this hook is not called in that case. Users with the "bypass node access"
- * permission may always view and edit content through the administrative
- * interface.
- *
- * The access to a node can be influenced in several ways:
- * - To explicitly allow access, return an AccessResultInterface object with
- * isAllowed() returning TRUE. Other modules can override this access by
- * returning TRUE for isForbidden().
- * - To explicitly forbid access, return an AccessResultInterface object with
- * isForbidden() returning TRUE. Access will be forbidden even if your module
- * (or another module) also returns TRUE for isNeutral() or isAllowed().
- * - To neither allow nor explicitly forbid access, return an
- * AccessResultInterface object with isNeutral() returning TRUE.
- * - If your module does not return an AccessResultInterface object, neutral
- * access will be assumed.
- *
- * Also note that this function isn't called for node listings (e.g., RSS feeds,
- * the default home page at path 'node', a recent content block, etc.) See
- * @link node_access Node access rights @endlink for a full explanation.
- *
- * @param \Drupal\node\NodeInterface|string $node
- *   Either a node entity or the machine name of the content type on which to
- *   perform the access check.
- * @param string $op
- *   The operation to be performed. Possible values:
- *   - "create"
- *   - "delete"
- *   - "update"
- *   - "view"
- * @param \Drupal\Core\Session\AccountInterface $account
- *   The user object to perform the access check operation on.
- *
- * @return \Drupal\Core\Access\AccessResultInterface
- *   The access result.
- *
- * @ingroup node_access
- */
-function hook_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
-  $type = $node->bundle();
-
-  switch ($op) {
-    case 'create':
-      return AccessResult::allowedIfHasPermission($account, 'create ' . $type . ' content');
-
-    case 'update':
-      if ($account->hasPermission('edit any ' . $type . ' content')) {
-        return AccessResult::allowed()->cachePerPermissions();
-      }
-      else {
-        return AccessResult::allowedIf($account->hasPermission('edit own ' . $type . ' content') && ($account->id() == $node->getOwnerId()))->cachePerPermissions()->cachePerUser()->addCacheableDependency($node);
-      }
-
-    case 'delete':
-      if ($account->hasPermission('delete any ' . $type . ' content')) {
-        return AccessResult::allowed()->cachePerPermissions();
-      }
-      else {
-        return AccessResult::allowedIf($account->hasPermission('delete own ' . $type . ' content') && ($account->id() == $node->getOwnerId()))->cachePerPermissions()->cachePerUser()->addCacheableDependency($node);
-      }
-
-    default:
-      // No opinion.
-      return AccessResult::neutral();
-  }
-}
-
-/**
  * Act on a node being displayed as a search result.
  *
  * This hook is invoked from the node search plugin during search execution,
@@ -380,7 +306,7 @@ function hook_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Se
  * @ingroup entity_crud
  */
 function hook_node_search_result(\Drupal\node\NodeInterface $node) {
-  $rating = \Drupal::database()->query('SELECT SUM(points) FROM {my_rating} WHERE nid = :nid', ['nid' => $node->id()])->fetchField();
+  $rating = \Drupal::database()->query('SELECT SUM([points]) FROM {my_rating} WHERE [nid] = :nid', ['nid' => $node->id()])->fetchField();
   return ['rating' => \Drupal::translation()->formatPlural($rating, '1 point', '@count points')];
 }
 
@@ -400,7 +326,7 @@ function hook_node_search_result(\Drupal\node\NodeInterface $node) {
  */
 function hook_node_update_index(\Drupal\node\NodeInterface $node) {
   $text = '';
-  $ratings = \Drupal::database()->query('SELECT title, description FROM {my_ratings} WHERE nid = :nid', [':nid' => $node->id()]);
+  $ratings = \Drupal::database()->query('SELECT [title], [description] FROM {my_ratings} WHERE [nid] = :nid', [':nid' => $node->id()]);
   foreach ($ratings as $rating) {
     $text .= '<h2>' . Html::escape($rating->title) . '</h2>' . Xss::filter($rating->description);
   }

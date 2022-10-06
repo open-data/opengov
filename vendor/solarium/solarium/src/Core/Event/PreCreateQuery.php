@@ -1,17 +1,24 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Event;
 
 use Solarium\Core\Query\QueryInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * PreCreateQuery event, see Events for details.
+ * PreCreateQuery event, see {@see Events} for details.
  */
 class PreCreateQuery extends Event
 {
     /**
-     * @var null|QueryInterface
+     * @var QueryInterface|null
      */
     protected $query;
 

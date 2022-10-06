@@ -9,7 +9,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\facets\UrlProcessor\UrlProcessorPluginManager;
 use Drupal\Tests\UnitTestCase;
-use Zend\Stdlib\ArrayObject;
 
 /**
  * Unit test for url processor plugin manager.
@@ -63,20 +62,20 @@ class UrlProcessorPluginManagerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
-    $this->discovery = $this->getMock(DiscoveryInterface::class);
+  public function setUp(): void {
+    $this->discovery = $this->createMock(DiscoveryInterface::class);
 
     $this->factory = $this->getMockBuilder(DefaultFactory::class)
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->moduleHandler = $this->getMock(ModuleHandlerInterface::class);
+    $this->moduleHandler = $this->createMock(ModuleHandlerInterface::class);
 
-    $this->cache = $this->getMock(CacheBackendInterface::class);
+    $this->cache = $this->createMock(CacheBackendInterface::class);
 
-    $this->translator = $this->getMock(TranslationInterface::class);
+    $this->translator = $this->createMock(TranslationInterface::class);
 
-    $namespaces = new ArrayObject();
+    $namespaces = new \ArrayObject();
 
     $this->sut = new UrlProcessorPluginManager($namespaces, $this->cache, $this->moduleHandler, $this->translator);
     $discovery_property = new \ReflectionProperty($this->sut, 'discovery');
@@ -91,7 +90,7 @@ class UrlProcessorPluginManagerTest extends UnitTestCase {
    * Tests plugin manager constructor.
    */
   public function testConstruct() {
-    $namespaces = new ArrayObject();
+    $namespaces = new \ArrayObject();
     $sut = new UrlProcessorPluginManager($namespaces, $this->cache, $this->moduleHandler, $this->translator);
     $this->assertInstanceOf(UrlProcessorPluginManager::class, $sut);
   }

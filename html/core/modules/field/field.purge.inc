@@ -77,17 +77,8 @@ function field_purge_batch($batch_size, $field_storage_unique_id = NULL) {
 
   $fields = $deleted_fields_repository->getFieldDefinitions($field_storage_unique_id);
 
-  $info = \Drupal::entityTypeManager()->getDefinitions();
   foreach ($fields as $field) {
     $entity_type = $field->getTargetEntityTypeId();
-
-    // We cannot purge anything if the entity type is unknown (e.g. the
-    // providing module was uninstalled).
-    // @todo Revisit after https://www.drupal.org/node/2080823.
-    if (!isset($info[$entity_type])) {
-      \Drupal::logger('field')->warning("Cannot remove field @field_name because the entity type is unknown: %entity_type", ['@field_name' => $field->getName(), '%entity_type' => $entity_type]);
-      continue;
-    }
 
     $count_purged = \Drupal::entityTypeManager()->getStorage($entity_type)->purgeFieldData($field, $batch_size);
     if ($count_purged < $batch_size || $count_purged == 0) {
@@ -105,13 +96,6 @@ function field_purge_batch($batch_size, $field_storage_unique_id = NULL) {
   foreach ($deleted_fields_repository->getFieldStorageDefinitions() as $field_storage) {
     if ($field_storage_unique_id && $field_storage->getUniqueStorageIdentifier() != $field_storage_unique_id) {
       // If a specific UUID is provided, only purge the corresponding field.
-      continue;
-    }
-
-    // We cannot purge anything if the entity type is unknown (e.g. the
-    // providing module was uninstalled).
-    // @todo Revisit after https://www.drupal.org/node/2080823.
-    if (!isset($info[$field_storage->getTargetEntityTypeId()])) {
       continue;
     }
 
@@ -157,7 +141,7 @@ function field_purge_field_storage(FieldStorageDefinitionInterface $field_storag
 
   $fields = $deleted_fields_repository->getFieldDefinitions($field_storage->getUniqueStorageIdentifier());
   if (count($fields) > 0) {
-    throw new FieldException(t('Attempt to purge a field storage @field_name that still has fields.', ['@field_name' => $field_storage->getName()]));
+    throw new FieldException("Attempt to purge a field storage '{$field_storage->getName()}' that still has fields.");
   }
 
   $deleted_fields_repository->removeFieldStorageDefinition($field_storage);

@@ -14,35 +14,38 @@ class MetatagOpenGraphProductsTagsTest extends MetatagTagsTestBase {
   /**
    * {@inheritdoc}
    */
-  private $tags = [
+  protected static $modules = ['metatag_open_graph_products'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $tags = [
+    'product_availability',
+    'product_condition',
     'product_price_amount',
     'product_price_currency',
+    'product_retailer_item_id',
   ];
 
   /**
    * {@inheritdoc}
    */
-  private $testTag = 'meta';
+  protected $testTag = 'meta';
 
   /**
    * {@inheritdoc}
    */
-  private $testNameAttribute = 'property';
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::$modules[] = 'metatag_open_graph_products';
-    parent::setUp();
-  }
+  protected $testNameAttribute = 'property';
 
   /**
    * Each of these meta tags has a different tag name vs its internal name.
    */
-  private function getTestTagName($tag_name) {
-    // Replace the underlines with a colon.
-    $tag_name = str_replace('_', ':', $tag_name);
+  protected function getTestTagName($tag_name) {
+    // Replace the first underline with a colon.
+    $tag_name = str_replace('product_', 'product:', $tag_name);
+
+    // Additional meta tags.
+    $tag_name = str_replace('price_', 'price:', $tag_name);
 
     return $tag_name;
   }

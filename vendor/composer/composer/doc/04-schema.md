@@ -1,10 +1,10 @@
-# The composer.json Schema
+# The composer.json schema
 
 This chapter will explain all of the fields available in `composer.json`.
 
 ## JSON schema
 
-We have a [JSON schema](http://json-schema.org) that documents the format and
+We have a [JSON schema](https://json-schema.org) that documents the format and
 can also be used to validate your `composer.json`. In fact, it is used by the
 `validate` command. You can find it at: https://getcomposer.org/schema.json
 
@@ -34,12 +34,12 @@ separated by `/`. Examples:
 * monolog/monolog
 * igorw/event-source
 
-The name can contain any character, including white spaces, and it's case
-insensitive (`foo/bar` and `Foo/Bar` are considered the same package). In order
-to simplify its installation, it's recommended to define a short and lowercase
-name that doesn't include non-alphanumeric characters or white spaces.
+The name must be lowercase and consist of words separated by `-`, `.` or `_`.
+The complete name should match `^[a-z0-9]([_.-]?[a-z0-9]+)*/[a-z0-9](([_.]?|-{0,2})[a-z0-9]+)*$`.
 
-Required for published packages (libraries).
+The `name` property is required for published packages (libraries).
+
+> **Note:** Before Composer version 2.0, a name could contain any character, including white spaces.
 
 ### description
 
@@ -123,7 +123,7 @@ Optional.
 
 ### homepage
 
-An URL to the website of the project.
+A URL to the website of the project.
 
 Optional.
 
@@ -160,7 +160,7 @@ The recommended notation for the most common licenses is (alphabetical):
 Optional, but it is highly recommended to supply this. More identifiers are
 listed at the [SPDX Open Source License Registry](https://spdx.org/licenses/).
 
-For closed-source software, you may use `"proprietary"` as the license identifier.
+> **Note:** For closed-source software, you may use `"proprietary"` as the license identifier.
 
 An Example:
 
@@ -171,7 +171,7 @@ An Example:
 ```
 
 For a package, when there is a choice between licenses ("disjunctive license"),
-multiple can be specified as array.
+multiple can be specified as an array.
 
 An Example for disjunctive licenses:
 
@@ -184,7 +184,7 @@ An Example for disjunctive licenses:
 }
 ```
 
-Alternatively they can be separated with "or" and enclosed in parenthesis;
+Alternatively they can be separated with "or" and enclosed in parentheses;
 
 ```json
 {
@@ -192,8 +192,8 @@ Alternatively they can be separated with "or" and enclosed in parenthesis;
 }
 ```
 
-Similarly when multiple licenses need to be applied ("conjunctive license"),
-they should be separated with "and" and enclosed in parenthesis.
+Similarly, when multiple licenses need to be applied ("conjunctive license"),
+they should be separated with "and" and enclosed in parentheses.
 
 ### authors
 
@@ -214,7 +214,7 @@ An example:
         {
             "name": "Nils Adermann",
             "email": "naderman@naderman.de",
-            "homepage": "http://www.naderman.de",
+            "homepage": "https://www.naderman.de",
             "role": "Developer"
         },
         {
@@ -265,8 +265,8 @@ development of new functionality.
 
 Each entry consists of the following
 
-* **type:** The type of funding or the platform through which funding can be provided, e.g. patreon, opencollective, tidelift or github.
-* **url:** URL to a website with details and a way to fund the package.
+* **type:** The type of funding, or the platform through which funding can be provided, e.g. patreon, opencollective, tidelift or github.
+* **url:** URL to a website with details, and a way to fund the package.
 
 An example:
 
@@ -310,7 +310,7 @@ Example:
 All links are optional fields.
 
 `require` and `require-dev` additionally support _stability flags_ ([root-only](04-schema.md#root-package)).
-They take the form "_constraint_@_stability flag_". 
+They take the form "_constraint_@_stability flag_".
 These allow you to further restrict or expand the stability of a package beyond
 the scope of the [minimum-stability](#minimum-stability) setting. You can apply
 them to a constraint, or apply them to an empty _constraint_ if you want to
@@ -382,7 +382,7 @@ Example:
 ```json
 {
     "require" : {
-        "php" : "^5.5 || ^7.0",
+        "php" : ">=7.4",
         "ext-mbstring": "*"
     }
 }
@@ -401,19 +401,19 @@ Example:
 
 #### require
 
-Lists packages required by this package. The package will not be installed
+Map of packages required by this package. The package will not be installed
 unless those requirements can be met.
 
 #### require-dev <span>([root-only](04-schema.md#root-package))</span>
 
-Lists packages required for developing this package, or running
+Map of packages required for developing this package, or running
 tests, etc. The dev requirements of the root package are installed by default.
 Both `install` or `update` support the `--no-dev` option that prevents dev
 dependencies from being installed.
 
 #### conflict
 
-Lists packages that conflict with this version of this package. They
+Map of packages that conflict with this version of this package. They
 will not be allowed to be installed together with your package.
 
 Note that when specifying ranges like `<1.0 >=1.1` in a `conflict` link,
@@ -423,7 +423,7 @@ probably want to go for `<1.0 || >=1.1` in this case.
 
 #### replace
 
-Lists packages that are replaced by this package. This allows you to fork a
+Map of packages that are replaced by this package. This allows you to fork a
 package, publish it under a different name with its own version numbers, while
 packages requiring the original package continue to work with your fork because
 it replaces the original package.
@@ -441,10 +441,12 @@ that exact version, and not any other version, which would be incorrect.
 
 #### provide
 
-List of other packages that are provided by this package. This is mostly
+Map of packages that are provided by this package. This is mostly
 useful for implementations of common interfaces. A package could depend on
-some virtual `logger-implementation` package, any library that implements
-this logger interface would list it in `provide`.
+some virtual package e.g. `psr/logger-implementation`, any library that implements
+this logger interface would list it in `provide`. Implementors can then
+be [found on Packagist.org](https://packagist.org/providers/psr/log-implementation).
+
 Using `provide` with the name of an actual package rather than a virtual one
 implies that the code of that package is also shipped, in which case `replace`
 is generally a better choice. A common convention for packages providing an
@@ -477,7 +479,7 @@ Example:
 
 Autoload mapping for a PHP autoloader.
 
-[`PSR-4`](http://www.php-fig.org/psr/psr-4/) and [`PSR-0`](http://www.php-fig.org/psr/psr-0/)
+[`PSR-4`](https://www.php-fig.org/psr/psr-4/) and [`PSR-0`](http://www.php-fig.org/psr/psr-0/)
 autoloading, `classmap` generation and `files` includes are supported.
 
 PSR-4 is the recommended way since it offers greater ease of use (no need
@@ -616,6 +618,18 @@ Example:
 }
 ```
 
+Wildcards (`*`) are also supported in a classmap paths, and expand to match any directory name:
+
+Example:
+
+```json
+{
+    "autoload": {
+        "classmap": ["src/addons/*/lib/", "3rd-party/*", "Something.php"]
+    }
+}
+```
+
 #### Files
 
 If you want to require certain files explicitly on every request then you can use
@@ -661,7 +675,7 @@ for more details on how to reduce this impact.
 
 ### autoload-dev <span>([root-only](04-schema.md#root-package))</span>
 
-This section allows to define autoload rules for development purposes.
+This section allows defining autoload rules for development purposes.
 
 Classes needed to run the test suite should not be included in the main autoload
 rules to avoid polluting the autoloader in production and when other people use
@@ -776,10 +790,8 @@ The following repository types are supported:
   using the `options` parameter.
 * **vcs:** The version control system repository can fetch packages from git,
   svn, fossil and hg repositories.
-* **pear:** With this you can import any pear repository into your Composer
-  project.
 * **package:** If you depend on a project that does not have any support for
-  composer whatsoever you can define the package inline using a `package`
+  Composer whatsoever you can define the package inline using a `package`
   repository. You basically inline the `composer.json` object.
 
 For more information on any of these, see [Repositories](05-repositories.md).
@@ -805,10 +817,6 @@ Example:
         {
             "type": "vcs",
             "url": "https://github.com/Seldaek/monolog"
-        },
-        {
-            "type": "pear",
-            "url": "https://pear2.php.net"
         },
         {
             "type": "package",
@@ -876,8 +884,8 @@ Optional.
 
 ### bin
 
-A set of files that should be treated as binaries and symlinked into the `bin-dir`
-(from config).
+A set of files that should be treated as binaries and made available
+into the `bin-dir` (from config).
 
 See [Vendor Binaries](articles/vendor-binaries.md) for more details.
 
@@ -888,6 +896,21 @@ Optional.
 A set of options for creating package archives.
 
 The following options are supported:
+
+* **name:** Allows configuring base name for archive.
+  By default (if not configured, and `--file` is not passed as command-line argument),
+  `preg_replace('#[^a-z0-9-_]#i', '-', name)` is used.
+
+Example:
+
+```json
+{
+    "name": "org/strangeName",
+    "archive": {
+        "name": "Strange_name"
+    }
+}
+```
 
 * **exclude:** Allows configuring a list of patterns for excluded paths. The
   pattern syntax matches .gitignore files. A leading exclamation mark (!) will
@@ -918,8 +941,8 @@ It can be boolean or a package name/URL pointing to a recommended alternative.
 
 Examples:
 
-Use `"abandoned": true` to indicates this package is abandoned.
-Use `"abandoned": "monolog/monolog"` to indicates this package is abandoned and the
+Use `"abandoned": true` to indicate this package is abandoned.
+Use `"abandoned": "monolog/monolog"` to indicates this package is abandoned, and the
 recommended alternative is  `monolog/monolog`.
 
 Defaults to false.
@@ -934,12 +957,12 @@ that will NOT be handled as feature branches. This is an array of strings.
 If you have non-numeric branch names, for example like "latest", "current", "latest-stable"
 or something, that do not look like a version number, then Composer handles such branches
 as feature branches. This means it searches for parent branches, that look like a version
-or ends at special branches (like master) and the root package version number becomes the
+or ends at special branches (like master), and the root package version number becomes the
 version of the parent branch or at least master or something.
 
 To handle non-numeric named branches as versions instead of searching for a parent branch
 with a valid version or special branch name like master, you can set patterns for branch
-names, that should be handled as dev version branches.
+names that should be handled as dev version branches.
 
 This is really helpful when you have dependencies using "self.version", so that not dev-master,
 but the same branch is installed (in the example: latest-testing).

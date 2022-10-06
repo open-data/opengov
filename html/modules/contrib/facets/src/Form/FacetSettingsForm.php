@@ -3,10 +3,10 @@
 namespace Drupal\facets\Form;
 
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\UrlGeneratorInterface;
+use Drupal\facets\Entity\Facet;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
 use Drupal\facets\FacetSource\SearchApiFacetSourceInterface;
@@ -18,13 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a form for creating and editing facets.
  */
 class FacetSettingsForm extends EntityForm {
-
-  /**
-   * The facet storage.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $facetStorage;
 
   /**
    * The plugin manager for facet sources.
@@ -43,8 +36,6 @@ class FacetSettingsForm extends EntityForm {
   /**
    * Constructs a FacetForm object.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity manager.
    * @param \Drupal\facets\FacetSource\FacetSourcePluginManager $facet_source_plugin_manager
    *   The plugin manager for facet sources.
    * @param \Drupal\facets\Processor\ProcessorPluginManager $processor_plugin_manager
@@ -54,8 +45,7 @@ class FacetSettingsForm extends EntityForm {
    * @param \Drupal\Core\Routing\UrlGeneratorInterface $url_generator
    *   The url generator.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, FacetSourcePluginManager $facet_source_plugin_manager, ProcessorPluginManager $processor_plugin_manager, ModuleHandlerInterface $module_handler, UrlGeneratorInterface $url_generator) {
-    $this->facetStorage = $entity_type_manager->getStorage('facets_facet');
+  public function __construct(FacetSourcePluginManager $facet_source_plugin_manager, ProcessorPluginManager $processor_plugin_manager, ModuleHandlerInterface $module_handler, UrlGeneratorInterface $url_generator) {
     $this->facetSourcePluginManager = $facet_source_plugin_manager;
     $this->processorPluginManager = $processor_plugin_manager;
     $this->moduleHandler = $module_handler;
@@ -67,7 +57,6 @@ class FacetSettingsForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager'),
       $container->get('plugin.manager.facets.facet_source'),
       $container->get('plugin.manager.facets.processor'),
       $container->get('module_handler'),
@@ -175,7 +164,7 @@ class FacetSettingsForm extends EntityForm {
       '#maxlength' => 50,
       '#required' => TRUE,
       '#machine_name' => [
-        'exists' => [$this->facetStorage, 'load'],
+        'exists' => [Facet::class, 'load'],
         'source' => ['name'],
       ],
       '#disabled' => !$facet->isNew(),
@@ -288,16 +277,22 @@ class FacetSettingsForm extends EntityForm {
 
     if ($is_new) {
       if ($this->moduleHandler->moduleExists('block')) {
-        $message = $this->t('Facet %name has been created. Go to the <a href=":block_overview">Block overview page</a> to place the new block in the desired region.', ['%name' => $facet->getName(), ':block_overview' => $this->urlGenerator->generateFromRoute('block.admin_display')]);
-        \Drupal::messenger()->addMessage($message);
+        $message = $this->t(
+          'Facet %name has been created. Go to the <a href=":block_overview">Block overview page</a> to place the new block in the desired region.',
+          [
+            '%name' => $facet->getName(),
+            ':block_overview' => $this->urlGenerator->generateFromRoute('block.admin_display'),
+          ]
+        );
+        $this->messenger()->addMessage($message);
         $form_state->setRedirect('entity.facets_facet.edit_form', ['facets_facet' => $facet->id()]);
       }
     }
     else {
-      \Drupal::messenger()->addMessage($this->t('Facet %name has been updated.', ['%name' => $facet->getName()]));
+      $this->messenger()->addMessage($this->t('Facet %name has been updated.', ['%name' => $facet->getName()]));
     }
 
-    list($type,) = explode(':', $facet_source_id);
+    [$type] = explode(':', $facet_source_id);
     if ($type !== 'search_api') {
       return $facet;
     }
@@ -310,9 +305,10 @@ class FacetSettingsForm extends EntityForm {
         if ($view->display_handler instanceof Block) {
           $facet->setOnlyVisibleWhenFacetSourceIsVisible(FALSE);
         }
-        $view->display_handler->overrideOption('cache', ['type' => 'none']);
-        $view->save();
-        \Drupal::messenger()->addMessage($this->t('Caching of view %view has been disabled.', ['%view' => $view->storage->label()]));
+        $views_cache_type = $view->display_handler->getOption('cache')['type'];
+        if ($views_cache_type !== 'none') {
+          $this->messenger()->addMessage($this->t('You may experience issues, because %view use cache. In case you will try to turn set cache plugin to none.', ['%view' => $view->storage->label()]));
+        }
       }
     }
 

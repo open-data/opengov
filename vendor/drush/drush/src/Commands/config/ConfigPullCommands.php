@@ -1,4 +1,5 @@
 <?php
+
 namespace Drush\Commands\config;
 
 use Consolidation\AnnotatedCommand\CommandData;
@@ -23,21 +24,20 @@ class ConfigPullCommands extends DrushCommands implements SiteAliasManagerAwareI
      * @param array $options
      * @throws \Exception
      * @option safe Validate that there are no git uncommitted changes before proceeding
-     * @option label A config directory label (i.e. a key in \$config_directories array in settings.php). Defaults to 'sync'
-     * @option runner Where to run the rsync command; defaults to the local site. Can also be 'source' or 'destination'
+     * @option label A config directory label (i.e. a key in $config_directories array in settings.php).
+     * @option runner Where to run the rsync command; defaults to the local site. Can also be <info>source</info> or <info>destination</info>.
      * @usage drush config:pull @prod @stage
      *   Export config from @prod and transfer to @stage.
      * @usage drush config:pull @prod @self --label=vcs
-     *   Export config from @prod and transfer to the 'vcs' config directory of current site.
+     *   Export config from @prod and transfer to the <info>vcs</info> config directory of current site.
      * @usage drush config:pull @prod @self:../config/sync
      *   Export config to a custom directory. Relative paths are calculated from Drupal root.
      * @aliases cpull,config-pull
      * @topics docs:aliases,docs:config:exporting
      * @field-labels
      *  path: Path
-     * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
      */
-    public function pull($source, $destination, $options = ['safe' => false, 'label' => 'sync', 'runner' => null, 'format' => 'null'])
+    public function pull(string $source, string $destination, array $options = ['safe' => false, 'label' => 'sync', 'runner' => null, 'format' => 'null']): PropertyList
     {
         $global_options = Drush::redispatchOptions()  + ['strict' => 0];
         $sourceRecord = $this->siteAliasManager()->get($source);
@@ -83,14 +83,13 @@ class ConfigPullCommands extends DrushCommands implements SiteAliasManagerAwareI
         ];
         $process = $this->processManager()->drush($runner, 'core-rsync', $args, ['yes' => true, 'debug' => true], $options_double_dash);
         $process->mustRun();
-        drush_backend_set_result($destinationHostPath->getOriginal());
         return new PropertyList(['path' => $destinationHostPath->getOriginal()]);
     }
 
     /**
      * @hook validate config-pull
      */
-    public function validateConfigPull(CommandData $commandData)
+    public function validateConfigPull(CommandData $commandData): void
     {
         if ($commandData->input()->getOption('safe')) {
             $destinationRecord = $this->siteAliasManager()->get($commandData->input()->getArgument('destination'));

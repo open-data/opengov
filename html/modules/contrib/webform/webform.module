@@ -20,9 +20,9 @@ use Drupal\file\FileInterface;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Plugin\WebformElement\ManagedFile;
-use Drupal\webform\Utility\Mail;
+use Drupal\webform\Plugin\WebformElementFileDownloadAccessInterface;
 use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\webform\Utility\WebformFormHelper;
+use Drupal\webform\Utility\WebformMailHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\WebformInterface;
 
@@ -260,23 +260,32 @@ function webform_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableD
   }
 
   // Allow webform query string parameters to be transferred
-  // from canonical to test URL.
+  // from a canonical URL to a test URL.
+  //
+  // Please note: This behavior is only applicable when a user can
+  // test a webform.
   $route_names = [
-    'entity.webform.canonical', 'entity.webform.test_form',
-    'entity.node.canonical', 'entity.node.webform.test_form',
+    'entity.webform.test_form' => 'entity.webform.canonical',
+    'entity.node.webform.test_form' => 'entity.node.canonical',
   ];
-  if (in_array($route_name, $route_names)) {
-    if ($query = \Drupal::request()->query->all()) {
-      foreach ($route_names as $route_name) {
-        if (isset($data['tabs'][0][$route_name])) {
-          $url =& $data['tabs'][0][$route_name]['#link']['url'];
-          $url->setOption('query', $query);
+  if (in_array($route_name, $route_names) || array_key_exists($route_name, $route_names)) {
+    $query = \Drupal::request()->query->all();
+    $has_test_tab = FALSE;
+    foreach ($route_names as $test_route_name => $view_route_name) {
+      if (isset($data['tabs'][0][$test_route_name])) {
+        $has_test_tab = TRUE;
+        if ($query) {
+          $data['tabs'][0][$test_route_name]['#link']['url']
+            ->setOption('query', $query);
+          $data['tabs'][0][$view_route_name]['#link']['url']
+            ->setOption('query', $query);
         }
       }
     }
-
     // Query string to cache context webform canonical and test routes.
-    $cacheability->addCacheContexts(['url.query_args']);
+    if ($has_test_tab) {
+      $cacheability->addCacheContexts(['url.query_args']);
+    }
   }
 }
 
@@ -295,7 +304,7 @@ function webform_module_implements_alter(&$implementations, $hook) {
  * Implements hook_token_info_alter().
  */
 function webform_token_info_alter(&$data) {
-  module_load_include('inc', 'webform', 'webform.tokens.inc');
+  module_load_include('inc', 'webform', 'webform.tokens');
 
   // Append learn more about token suffixes to all webform token descriptions.
   // @see \Drupal\webform\WebformTokenManager::replace
@@ -304,6 +313,7 @@ function webform_token_info_alter(&$data) {
     '<ul>' .
     '<li>' . t('<code>:clear</code> removes the token when it is not replaced.') . '</li>' .
     '<li>' . t('<code>:urlencode</code> URL encodes returned value.') . '</li>' .
+    '<li>' . t('<code>:rawurlencode</code> Raw URL encodes returned value with only hex digits.') . '</li>' .
     '<li>' . t('<code>:xmlencode</code> XML encodes returned value.') . '</li>' .
     '<li>' . t('<code>:htmldecode</code> decodes HTML entities in returned value.') . '<br/><b>' . t('This suffix has security implications.') . '</b><br/>' . t('Use <code>:htmldecode</code> with <code>:striptags</code>.') . '</li>' .
     '<li>' . t('<code>:striptags</code> removes all HTML tags from returned value.') . '</li>' .
@@ -423,7 +433,7 @@ function webform_mail($key, &$message, $params) {
     // 'From name' is only used when the 'From mail' contains a single
     // email address.
     $from = (!empty($params['from_name']) && strpos($params['from_mail'], ',') === FALSE)
-      ? Mail::formatDisplayName($params['from_name']) . ' <' . $params['from_mail'] . '>'
+      ? WebformMailHelper::formatAddress($params['from_mail'], $params['from_name'])
       : $params['from_mail'];
     $message['from'] = $message['headers']['From'] = $from;
   }
@@ -459,7 +469,7 @@ function webform_mail($key, &$message, $params) {
   $sender_mail = $params['sender_mail'] ?: '';
   $sender_name = $params['sender_name'] ?: $params['from_name'] ?: '';
   if ($sender_mail) {
-    $message['headers']['Sender'] = ($sender_name) ? Mail::formatDisplayName($sender_name) . ' <' . $sender_mail . '>' : $sender_mail;
+    $message['headers']['Sender'] = WebformMailHelper::formatAddress($sender_mail, $sender_name);
   }
 }
 
@@ -492,56 +502,56 @@ function webform_toolbar_alter(&$items) {
  * Implements hook_menu_links_discovered_alter().
  */
 function webform_menu_links_discovered_alter(&$links) {
+  // Display Webforms as a top-level administration menu item in the toolbar.
   if (\Drupal::config('webform.settings')->get('ui.toolbar_item')) {
     $links['entity.webform.collection']['parent'] = 'system.admin';
     $links['entity.webform.collection']['weight'] = -9;
   }
 
   // Add webform local tasks as admin menu toolbar menu items.
-  // @see admin_toolbar_tools_menu_links_discovered_alter()
   if (\Drupal::moduleHandler()->moduleExists('admin_toolbar_tools')) {
+    // Get local task definitions.
     /** @var \Drupal\Core\Menu\LocalTaskManager $local_task_manager */
     $local_task_manager = \Drupal::service('plugin.manager.menu.local_task');
+    $definitions = $local_task_manager->getDefinitions();
 
-    $local_tasks = $local_task_manager->getLocalTasks('entity.webform.collection', 0);
-    foreach ($local_tasks['tabs'] as $local_task) {
-      if (!$local_task['#link']['url'] instanceof Url) {
-        continue;
+    // Set default definition.
+    $default_definition = [
+      'provider' => 'webform',
+      'menu_name' => 'admin',
+    ];
+
+    // Get keys to be copied.
+    $keys = ['title', 'route_name', 'weight'];
+    $keys_to_copy = array_combine($keys, $keys);
+
+    $menu_links = [];
+    foreach ($definitions as $task_name => $definition) {
+      if (isset($definition['base_route']) && $definition['base_route'] === 'entity.webform.collection') {
+        $menu_links[$task_name . '.item'] = $default_definition
+          + array_intersect_key($definition, $keys_to_copy)
+          + ['parent' => 'entity.webform.collection'];
       }
-
-      $menu_item_title = $local_task['#link']['title'];
-      $menu_item_route_name = $local_task['#link']['url']->getRouteName();
-      $menu_item_name = $menu_item_route_name . '.item';
-      $links[$menu_item_name] = [
-        'title' => $menu_item_title,
-        'route_name' => $menu_item_route_name,
-        'parent' => 'entity.webform.collection',
-        'weight' => $local_task['#weight'],
-        'provider' => 'webform',
-        'menu_name' => 'admin',
-      ];
-
-      if (\Drupal::config('webform.settings')->get('ui.toolbar_item')) {
-        $local_sub_tasks = $local_task_manager->getLocalTasks($menu_item_route_name, 1);
-        foreach ($local_sub_tasks['tabs'] as $local_sub_task) {
-          if (!$local_task['#link']['url'] instanceof Url) {
-            continue;
-          }
-
-          $menu_sub_item_title = $local_sub_task['#link']['title'];
-          $menu_sub_item_route_name = $local_sub_task['#link']['url']->getRouteName();
-          $menu_sub_item_name = $menu_sub_item_route_name . '.sub_item';
-          $links[$menu_sub_item_name] = [
-            'title' => $menu_sub_item_title,
-            'route_name' => $menu_sub_item_route_name,
-            'parent' => $menu_item_name,
-            'weight' => $local_sub_task['#weight'],
-            'provider' => 'webform',
-            'menu_name' => 'admin',
-          ];
+    }
+    foreach ($menu_links as $sub_link_task_name => $sub_link) {
+      foreach ($definitions as $task_name => $definition) {
+        if (isset($definition['parent_id']) && $definition['parent_id'] === preg_replace('/\.item$/', '', $sub_link_task_name)) {
+          $menu_links[$task_name . '.item'] = $default_definition
+            + array_intersect_key($definition, $keys_to_copy)
+            + ['parent' => $sub_link_task_name];
         }
       }
     }
+
+    // Make sure weight are integers and not floats which throw fatal errors
+    // for PostgreSQL.
+    // @see https://www.drupal.org/project/webform/issues/3247861
+    // @see https://www.drupal.org/project/drupal/issues/3248199
+    foreach ($menu_links as &$menu_link) {
+      $menu_link['weight'] = (int) $menu_link['weight'];
+    }
+
+    $links += $menu_links;
   }
 }
 
@@ -594,7 +604,7 @@ function _webform_page_attachments(array &$attachments) {
   $theme_manager = \Drupal::service('webform.theme_manager');
   $active_theme_names = $theme_manager->getActiveThemeNames();
   foreach ($active_theme_names as $active_theme_name) {
-    if (file_exists(drupal_get_path('module', 'webform') . "/css/webform.theme.$active_theme_name.css")) {
+    if (file_exists(__DIR__ . "/css/webform.theme.$active_theme_name.css")) {
       $attachments['#attached']['library'][] = "webform/webform.theme.$active_theme_name";
     }
   }
@@ -777,7 +787,18 @@ function webform_file_access(FileInterface $file, $operation, AccountInterface $
  * Implements hook_file_download().
  */
 function webform_file_download($uri) {
-  return ManagedFile::accessFileDownload($uri);
+  /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $webform_element_manager */
+  $webform_element_manager = \Drupal::service('plugin.manager.webform.element');
+  $webform_elements = $webform_element_manager->getInstances();
+  foreach ($webform_elements as $webform_element) {
+    if ($webform_element->isEnabled() && $webform_element instanceof WebformElementFileDownloadAccessInterface) {
+      $result = $webform_element::accessFileDownload($uri);
+      if ($result !== NULL) {
+        return $result;
+      }
+    }
+  }
+  return NULL;
 }
 
 /**
@@ -882,24 +903,9 @@ function webform_webform_access_rules() {
   ];
 }
 
-/**
- * Adds JavaScript to change the state of an element based on another element.
- *
- * @param array $elements
- *   A renderable array element having a #states property as described above.
- * @param string $key
- *   The element property to add the states attribute to.
- *
- * @deprecated Scheduled for removal in Webform 8.x-6.x
- *   Use \Drupal\Core\Form\FormHelper::processStates instead.
- */
-function webform_process_states(array &$elements, $key = '#attributes') {
-  WebformFormHelper::processStates($elements, $key);
-}
-
-/******************************************************************************/
+/* ************************************************************************** */
 // Devel generate info hooks.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_devel_generate_info_alter().
@@ -921,9 +927,9 @@ function webform_devel_generate_info_alter(array &$generators) {
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Element info hooks.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_element_info_alter().
@@ -964,7 +970,7 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
         continue;
       }
 
-      list($title, $description) = WebformOptionsHelper::splitOption($title);
+      [$title, $description] = WebformOptionsHelper::splitOption($title);
       $element[$key]['#title'] = $title;
       $element[$key]['#webform_element'] = TRUE;
       $element[$key][$description_property_name] = $description;
@@ -1026,9 +1032,9 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
   return $element;
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Private functions.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Provides custom PHP error handling when webform rendering is validated.

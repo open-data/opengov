@@ -14,7 +14,7 @@ class RangeSliderWidgetTest extends SliderWidgetTest {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->widget = new RangeSliderWidget([], 'range_slider_widget', []);
   }

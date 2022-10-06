@@ -13,6 +13,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "metatag",
  *   label = @Translation("Meta tags"),
  *   description = @Translation("This field stores code meta tags."),
+ *   list_class = "\Drupal\metatag\Plugin\Field\FieldType\MetatagFieldItemList",
  *   default_widget = "metatag_firehose",
  *   default_formatter = "metatag_empty_formatter",
  *   serialized_property_names = {
@@ -69,7 +70,7 @@ class MetatagFieldItem extends FieldItemBase {
     $current_value = $this->value;
     // Only unserialize if still serialized string.
     if (is_string($current_value)) {
-      $current_tags = unserialize($current_value);
+      $current_tags = unserialize($current_value, ['allowed_classes' => FALSE]);
     }
     else {
       $current_tags = $current_value;
@@ -83,6 +84,9 @@ class MetatagFieldItem extends FieldItemBase {
         $tags_to_save[$tag_id] = $tag_value;
       }
     }
+
+    // Sort the values prior to saving. so that they are easier to manage.
+    ksort($tags_to_save);
 
     // Update the value to only save overridden tags.
     $this->value = serialize($tags_to_save);

@@ -25,11 +25,11 @@ class MediaDisplayTest extends MediaJavascriptTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Install the optional configs from the standard profile.
-    $extension_path = drupal_get_path('profile', 'standard');
+    $extension_path = $this->container->get('extension.list.profile')->getPath('standard');
     $optional_install_path = $extension_path . '/' . InstallStorage::CONFIG_OPTIONAL_DIRECTORY;
     $storage = new FileStorage($optional_install_path);
     $this->container->get('config.installer')->installOptionalConfig($storage, '');
@@ -46,7 +46,7 @@ class MediaDisplayTest extends MediaJavascriptTestBase {
   }
 
   /**
-   * Test basic media display.
+   * Tests basic media display.
    */
   public function testMediaDisplay() {
     $assert_session = $this->assertSession();
@@ -91,6 +91,7 @@ class MediaDisplayTest extends MediaJavascriptTestBase {
       ->get('entity_type.manager')
       ->getStorage('media')
       ->getQuery()
+      ->accessCheck(FALSE)
       ->sort('mid', 'DESC')
       ->execute();
     $image_media_id = reset($image_media_id);
@@ -102,15 +103,17 @@ class MediaDisplayTest extends MediaJavascriptTestBase {
     $assert_session->elementTextContains('css', 'h1', $image_media_name);
     // Here we expect to see only the image, nothing else.
     // Assert only one element in the content region.
-    $this->assertSame(1, count($page->findAll('css', '.media--type-image > div')));
+    $this->assertCount(1, $page->findAll('css', '.media--type-image > div'));
     // Assert the image is present inside the media element.
     $media_item = $assert_session->elementExists('css', '.media--type-image > div');
     $assert_session->elementExists('css', 'img', $media_item);
     // Assert that the image src uses the large image style, the label is
     // visually hidden, and there is no link to the image file.
     $media_image = $assert_session->elementExists('css', '.media--type-image img');
-    $expected_image_src = file_url_transform_relative(file_create_url(\Drupal::token()->replace('public://styles/large/public/[date:custom:Y]-[date:custom:m]/example_1.jpeg')));
-    $this->assertContains($expected_image_src, $media_image->getAttribute('src'));
+    /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
+    $file_url_generator = \Drupal::service('file_url_generator');
+    $expected_image_src = $file_url_generator->generateString(\Drupal::token()->replace('public://styles/large/public/[date:custom:Y]-[date:custom:m]/example_1.jpeg'));
+    $this->assertStringContainsString($expected_image_src, $media_image->getAttribute('src'));
     $field = $assert_session->elementExists('css', '.field--name-field-media-image');
     $assert_session->elementExists('css', '.field__label.visually-hidden', $field);
     $assert_session->elementNotExists('css', 'a', $field);
@@ -131,7 +134,7 @@ class MediaDisplayTest extends MediaJavascriptTestBase {
     $assert_session->elementTextContains('css', 'h1', $test_filename);
     // Here we expect to see only the linked filename.
     // Assert only one element in the content region.
-    $this->assertSame(1, count($page->findAll('css', 'article.media--type-document > div')));
+    $this->assertCount(1, $page->findAll('css', 'article.media--type-document > div'));
     // Assert the file link is present, and its text matches the filename.
     $assert_session->elementExists('css', 'article.media--type-document .field--name-field-media-document a');
     $link = $page->find('css', 'article.media--type-document .field--name-field-media-document a');
@@ -195,7 +198,7 @@ class MediaDisplayTest extends MediaJavascriptTestBase {
     $assert_session->elementNotExists('css', '.field--name-name');
     $assert_session->pageTextNotContains($image_media_name);
     // Only one element is present inside the media container.
-    $this->assertSame(1, count($page->findAll('css', '.field--name-field-related-media article.media--type-image > div')));
+    $this->assertCount(1, $page->findAll('css', '.field--name-field-related-media article.media--type-image > div'));
     // Assert the image is present.
     $assert_session->elementExists('css', '.field--name-field-related-media article.media--type-image img');
   }

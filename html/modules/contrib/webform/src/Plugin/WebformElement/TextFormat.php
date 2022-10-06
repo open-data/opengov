@@ -52,7 +52,7 @@ class TextFormat extends WebformElementBase {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -220,8 +220,8 @@ class TextFormat extends WebformElementBase {
   protected function formatHtmlItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $value = $this->getValue($element, $webform_submission, $options);
 
-    $format = (isset($value['format'])) ? $value['format'] : $this->getItemFormat($element);
-    $value = (isset($value['value'])) ? $value['value'] : $value;
+    $format = $value['format'] ?? $this->getItemFormat($element);
+    $value = $value['value'] ?? $value;
     switch ($format) {
       case 'raw':
         return $value;
@@ -241,8 +241,8 @@ class TextFormat extends WebformElementBase {
   protected function formatTextItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $value = $this->getValue($element, $webform_submission, $options);
 
-    $format = (isset($value['format'])) ? $value['format'] : $this->getItemFormat($element);
-    $value = (isset($value['value'])) ? $value['value'] : $value;
+    $format = $value['format'] ?? $this->getItemFormat($element);
+    $value = $value['value'] ?? $value;
     switch ($format) {
       case 'raw':
         return $value;
@@ -293,7 +293,7 @@ class TextFormat extends WebformElementBase {
    * {@inheritdoc}
    */
   public function preview() {
-    return (\Drupal::moduleHandler()->moduleExists('filter')) ? parent::preview() : [];
+    return ($this->moduleHandler->moduleExists('filter')) ? parent::preview() : [];
   }
 
   /**

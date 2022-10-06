@@ -9,7 +9,7 @@ An alternative is to use this script which only works with UNIX utilities:
 ```bash
 #!/bin/sh
 
-EXPECTED_CHECKSUM="$(wget -q -O - https://composer.github.io/installer.sig)"
+EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
 
@@ -39,4 +39,4 @@ wget https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902c
 ```
 
 You may replace the commit hash by whatever the last commit hash is on
-https://github.com/composer/getcomposer.org/commits/master
+https://github.com/composer/getcomposer.org/commits/main

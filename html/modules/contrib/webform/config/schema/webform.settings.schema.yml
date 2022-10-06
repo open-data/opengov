@@ -39,18 +39,26 @@ webform.settings:
         default_form_open_message:
           type: text
           label: 'Default form open message'
+          webform_type: html
         default_form_close_message:
           type: text
           label: 'Default form close message'
+          webform_type: html
         default_form_exception_message:
           type: text
           label: 'Default form exception message'
+          webform_type: html
         default_form_confidential_message:
           type: text
           label: 'Default form confidential message'
+          webform_type: html
         default_form_access_denied_message:
           type: text
           label: 'Default form access denied message'
+          webform_type: html
+        default_form_disable_remote_addr:
+          type: boolean
+          label: 'Do not track user IP addresses'
         default_form_novalidate:
           type: boolean
           label: 'Disable client-side validation'
@@ -103,41 +111,50 @@ webform.settings:
           type: label
           label: 'Default preview previous page button label'
         default_preview_label:
-          type: text
+          type: label
           label: 'Default preview label'
         default_preview_title:
-          type: text
+          type: label
           label: 'Default preview page title'
         default_preview_message:
           type: text
           label: 'Default preview message'
+          webform_type: html
         default_draft_button_label:
           type: label
           label: 'Default draft button label'
         default_draft_saved_message:
           type: text
           label: 'Default draft save message'
+          webform_type: html
         default_draft_loaded_message:
           type: text
           label: 'Default draft load message'
+          webform_type: html
         default_draft_pending_single_message:
           type: text
           label: 'Default draft pending single draft message'
+          webform_type: html
         default_draft_pending_multiple_message:
           type: text
           label: 'Default drafts pending multiple drafts message'
+          webform_type: html
         default_confirmation_message:
           type: text
           label: 'Default confirmation message'
+          webform_type: html
         default_confirmation_back_label:
-          type: text
+          type: label
           label: 'Default confirmation back label'
+          webform_type: html
         default_limit_total_message:
           type: text
           label: 'Default limit total message'
+          webform_type: html
         default_limit_user_message:
           type: text
           label: 'Default limit user message'
+          webform_type: html
         default_submission_label:
           type: label
           label: 'Default submission label'
@@ -203,21 +220,27 @@ webform.settings:
         default_submission_access_denied_message:
           type: text
           label: 'Default submission access denied message'
+          webform_type: html
         default_submission_exception_message:
           type: text
           label: 'Default submission exception message'
+          webform_type: html
         default_submission_locked_message:
           type: text
           label: 'Default submission locked message'
+          webform_type: html
         default_previous_submission_message:
           type: text
           label: 'Default previous submission message'
+          webform_type: html
         default_previous_submissions_message:
           type: text
           label: 'Default previous submissions message'
+          webform_type: html
         default_autofill_message:
           type: text
           label: 'Default submission autofill message'
+          webform_type: html
         form_classes:
           type: string
           label: 'Form CSS classes '
@@ -242,6 +265,24 @@ webform.settings:
         default_share_theme_name:
           type: string
           label: 'Default shared form theme'
+        webform_bulk_form:
+          type: boolean
+          label: 'Enable webform operations bulk form'
+        webform_bulk_form_actions:
+          type: sequence
+          label: 'Webform operations bulk form actions'
+          sequence:
+            type: string
+            label: Action
+        webform_submission_bulk_form:
+          type: boolean
+          label: 'Enable submission operations bulk form'
+        webform_submission_bulk_form_actions:
+          type: sequence
+          label: 'Webform submission operations bulk form actions'
+          sequence:
+            type: string
+            label: Action
         dialog:
           type: boolean
           label: 'Enable webform dialog support'
@@ -278,6 +319,9 @@ webform.settings:
       type: mapping
       label: 'Form default settings'
       mapping:
+        limit:
+          type: integer
+          label: 'Webforms per page'
         filter_category:
           type: label
           label: 'Filter category'
@@ -365,6 +409,7 @@ webform.settings:
         file_private_redirect_message:
           type: text
           label: 'Login message when access denied to private file uploads.'
+          webform_type: html
         default_max_filesize:
           type: string
           label: 'Default maximum file upload size'
@@ -390,8 +435,18 @@ webform.settings:
           type: boolean
           label: 'Immediately deleted temporary managed webform submission files'
     format:
-      type: ignore
+      type: sequence
       label: 'Format default settings'
+      sequence:
+        type: mapping
+        label: 'Element type'
+        mapping:
+          item:
+            type: string
+            label: 'Default item format'
+          items:
+            type: string
+            label: 'Default items format'
     mail:
       type: mapping
       label: 'Email default settings'
@@ -423,9 +478,11 @@ webform.settings:
         default_body_text:
           type: text
           label: 'Default email body (Plain text)'
+          webform_type: text
         default_body_html:
           type: text
           label: 'Default email body (HTML)'
+          webform_type: html
         roles:
           type: sequence
           label: Roles
@@ -543,9 +600,11 @@ webform.settings:
         types:
           type: text
           label: 'Test types'
+          webform_type: yaml
         names:
           type: text
           label: 'Test names'
+          webform_type: yaml
     ui:
       type: mapping
       label: 'User interface settings'
@@ -565,6 +624,9 @@ webform.settings:
         promotions_disabled:
           type: boolean
           label: 'Disable promotions'
+        support_disabled:
+          type: boolean
+          label: 'Disable support options'
         details_save:
           type: boolean
           label: 'Save details open/close state'

@@ -39,9 +39,9 @@ interface WebformAccessRulesManagerInterface {
    */
   public function checkWebformSubmissionAccess($operation, AccountInterface $account, WebformSubmissionInterface $webform_submission);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Get access rules methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Returns the webform default access rules.
@@ -68,9 +68,9 @@ interface WebformAccessRulesManagerInterface {
    */
   public function getAccessRules(WebformInterface $webform);
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Check access rules methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Check access for a given operation and set of access rules.

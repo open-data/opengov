@@ -151,9 +151,9 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     \Drupal::setContainer($container);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Below test is passing locally but failing on Drupal.org.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Tests WebformBreadcrumbBuilder::applies().
@@ -451,9 +451,9 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     $this->assertLinks($route_match, $links);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Assert breadcrumb builder generates links for specified route match.
@@ -463,7 +463,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
    * @param array $links
    *   An array of breadcrumb links.
    */
-  protected function assertLinks(RouteMatchInterface $route_match, array $links) {
+  protected function assertLinks(RouteMatchInterface $route_match, array $links): void {
     $this->breadcrumbBuilder->applies($route_match);
     $breadcrumb = $this->breadcrumbBuilder->build($route_match);
     $this->assertEquals($links, $breadcrumb->getLinks());

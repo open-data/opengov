@@ -48,12 +48,27 @@ class ContentModerationStateTest extends KernelTestBase {
     'text',
     'workflows',
     'path_alias',
+    'taxonomy',
   ];
 
   /**
    * @var \Drupal\Core\Entity\EntityTypeManager
    */
   protected $entityTypeManager;
+
+  /**
+   * The state object.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
+   * The entity definition update manager.
+   *
+   * @var \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface
+   */
+  protected $entityDefinitionUpdateManager;
 
   /**
    * The ID of the revisionable entity type used in the tests.
@@ -65,7 +80,7 @@ class ContentModerationStateTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('node', 'node_access');
@@ -477,7 +492,7 @@ class ContentModerationStateTest extends KernelTestBase {
   }
 
   /**
-   * Test changing the language of content without adding a translation.
+   * Tests changing the language of content without adding a translation.
    */
   public function testChangingContentLangcode() {
     $this->createContentType([
@@ -602,7 +617,7 @@ class ContentModerationStateTest extends KernelTestBase {
     $node_type->delete();
     $workflow = Workflow::load('editorial');
     $entity_types = $workflow->getTypePlugin()->getEntityTypes();
-    $this->assertFalse(in_array('node', $entity_types));
+    $this->assertNotContains('node', $entity_types);
 
     // Uninstall entity test and ensure it's removed from the workflow.
     $this->container->get('config.manager')->uninstall('module', 'entity_test');
@@ -612,7 +627,7 @@ class ContentModerationStateTest extends KernelTestBase {
   }
 
   /**
-   * Test the content moderation workflow dependencies for non-config bundles.
+   * Tests the content moderation workflow dependencies for non-config bundles.
    */
   public function testWorkflowNonConfigBundleDependencies() {
     // Create a bundle not based on any particular configuration.
@@ -647,7 +662,7 @@ class ContentModerationStateTest extends KernelTestBase {
   }
 
   /**
-   * Test the revision default state of the moderation state entity revisions.
+   * Tests the revision default state of the moderation state entity revisions.
    *
    * @param string $entity_type_id
    *   The ID of entity type to be tested.
@@ -675,16 +690,6 @@ class ContentModerationStateTest extends KernelTestBase {
     $entity->save();
     $cms_entity = ContentModerationState::loadFromModeratedEntity($entity);
     $this->assertEquals($entity->isDefaultRevision(), $cms_entity->isDefaultRevision());
-  }
-
-  /**
-   * Tests the legacy method used as the default entity owner.
-   *
-   * @group legacy
-   * @expectedDeprecation The ::getCurrentUserId method is deprecated in 8.6.x and will be removed before 9.0.0.
-   */
-  public function testGetCurrentUserId() {
-    $this->assertEquals(['0'], ContentModerationState::getCurrentUserId());
   }
 
   /**
@@ -786,8 +791,10 @@ class ContentModerationStateTest extends KernelTestBase {
    * @param bool|null $published
    *   (optional) Whether to check if the entity is published or not. Defaults
    *   to TRUE.
+   *
+   * @internal
    */
-  protected function assertDefaultRevision(EntityInterface $entity, $revision_id, $published = TRUE) {
+  protected function assertDefaultRevision(EntityInterface $entity, int $revision_id, $published = TRUE): void {
     // Get the default revision.
     $entity = $this->reloadEntity($entity);
     $this->assertEquals($revision_id, $entity->getRevisionId());
@@ -795,6 +802,16 @@ class ContentModerationStateTest extends KernelTestBase {
     if ($published !== NULL && $entity instanceof EntityPublishedInterface) {
       $this->assertSame($published, $entity->isPublished());
     }
+  }
+
+  /**
+   * Tests that the 'taxonomy_term' entity type cannot be moderated.
+   */
+  public function testTaxonomyTermEntityTypeModeration() {
+    /** @var \Drupal\content_moderation\ModerationInformationInterface $moderation_info */
+    $moderation_info = \Drupal::service('content_moderation.moderation_information');
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('taxonomy_term');
+    $this->assertFalse($moderation_info->canModerateEntitiesOfEntityType($entity_type));
   }
 
 }

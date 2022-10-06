@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Analysis\RequestBuilder;
 
 use Solarium\Core\Client\Request;
@@ -25,6 +32,7 @@ class Document extends BaseRequestBuilder
         $request = parent::build($query);
         $request->setRawData($this->getRawData($query));
         $request->setMethod(Request::METHOD_POST);
+        $request->setContentType(Request::CONTENT_TYPE_APPLICATION_XML);
 
         return $request;
     }
@@ -44,7 +52,7 @@ class Document extends BaseRequestBuilder
             $xml .= '<doc>';
 
             foreach ($doc->getFields() as $name => $value) {
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     foreach ($value as $multival) {
                         $xml .= $this->buildFieldXml($name, $multival);
                     }
@@ -71,6 +79,8 @@ class Document extends BaseRequestBuilder
      */
     protected function buildFieldXml(string $name, string $value): string
     {
-        return '<field name="'.$name.'">'.htmlspecialchars($value, ENT_NOQUOTES).'</field>';
+        $helper = $this->getHelper();
+
+        return '<field name="'.$name.'">'.$helper->escapeXMLCharacterData($helper->filterControlCharacters($value)).'</field>';
     }
 }

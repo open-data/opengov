@@ -9,12 +9,11 @@
 @media (min-width: 768px) {
 
   .webform-flexbox {
-    display: -webkit-flex;
     display: flex;
     margin: 1em -0.5em;
   }
 
-  /**
+  /*
    * Make sure flexbox is always using 'display: flex' when toggled via #states.
    * @see https://stackoverflow.com/questions/38491653/jquery-show-a-flex-box/4121
    */
@@ -27,17 +26,14 @@
   }
 
   .webform-flexbox--flex-start {
-    -webkit-align-items: flex-start;
     align-items: flex-start;
   }
 
   .webform-flexbox--flex-end {
-    -webkit-align-items: flex-end;
     align-items: flex-end;
   }
 
   .webform-flexbox--center {
-    -webkit-align-items: center;
     align-items: center;
   }
 
@@ -60,8 +56,8 @@
 
   .container-inline .webform-flex--container > .form-item > input:not([type="checkbox"]),
   .container-inline .webform-flex--container > .form-item > select,
-  .webform-flex--container > .form-item.webform-element--title-inline  > input:not([type="checkbox"]),
-  .webform-flex--container > .form-item.webform-element--title-inline  > select {
+  .webform-flex--container > .form-item.webform-element--title-inline > input:not([type="checkbox"]),
+  .webform-flex--container > .form-item.webform-element--title-inline > select {
     width: inherit;
   }
 
@@ -93,68 +89,54 @@
   }
 
   .webform-flex--1 {
-    -webkit-flex: 1;
     flex: 1;
   }
 
   .webform-flex--2 {
-    -webkit-flex: 2;
     flex: 2;
   }
 
   .webform-flex--3 {
-    -webkit-flex: 3;
     flex: 3;
   }
 
   .webform-flex--4 {
-    -webkit-flex: 4;
     flex: 4;
   }
 
   .webform-flex--5 {
-    -webkit-flex: 5;
     flex: 5;
   }
 
   .webform-flex--6 {
-    -webkit-flex: 6;
     flex: 6;
   }
 
   .webform-flex--7 {
-    -webkit-flex: 7;
     flex: 7;
   }
 
   .webform-flex--8 {
-    -webkit-flex: 8;
     flex: 8;
   }
 
   .webform-flex--9 {
-    -webkit-flex: 9;
     flex: 9;
   }
 
   .webform-flex--10 {
-    -webkit-flex: 10;
     flex: 10;
   }
 
   .webform-flex--11 {
-    -webkit-flex: 11;
     flex: 11;
   }
 
   .webform-flex--12 {
-    -webkit-flex: 12;
     flex: 12;
   }
 
-  /**
-   * Select other.
-   */
+  /* Select other */
   .webform-flex--container > .form-type-webform-select-other select {
     width: 100%;
   }
@@ -167,23 +149,17 @@
     margin-top: 0.5em;
   }
 
-  /**
-   * Range.
-   */
+  /* Range. */
   .webform-flex--container > .form-type-range-output > .form-range-output {
     width: 66%;
   }
 
-  /**
-   * Composite.
-   */
+  /* Composite. */
   .form-composite > .webform-flexbox {
     margin: 1em -0.5em;
   }
 
-  /**
-   * Radios/checkboxes.
-   */
+  /* Radios/checkboxes. */
   .webform-flex--container .form-type-checkbox,
   .webform-flex--container .form-type-radio {
     white-space: nowrap;

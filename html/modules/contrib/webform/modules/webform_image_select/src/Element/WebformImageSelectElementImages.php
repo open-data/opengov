@@ -9,6 +9,7 @@ use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\Url;
 use Drupal\webform\Entity\WebformOptions as WebformOptionsEntity;
 use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\Utility\WebformFormHelper;
 
 /**
  * Provides a form element for managing webform element options.
@@ -113,7 +114,7 @@ class WebformImageSelectElementImages extends FormElement {
     $element['#element_validate'] = [[get_called_class(), 'validateWebformImageSelectElementImages']];
 
     if (!empty($element['#states'])) {
-      webform_process_states($element, '#wrapper_attributes');
+      WebformFormHelper::processStates($element, '#wrapper_attributes');
     }
 
     return $element;

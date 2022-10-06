@@ -35,7 +35,7 @@ class WebformFormHelper {
   }
 
   /**
-   * Build form jQuery UI tabs.
+   * Build form tabs using Tabby.
    *
    * @param array $form
    *   A form.
@@ -140,13 +140,11 @@ class WebformFormHelper {
       '#attributes' => ['class' => ['webform-tabs']],
       '#attached' => ['library' => ['webform/webform.form.tabs']],
     ];
-    if ($active_tab) {
-      $form['tabs']['#attributes']['data-tab-active'] = 'webform-tab--' . $active_tab;
-    }
 
     $form['tabs']['items'] = [
       '#theme' => 'item_list',
       '#items' => $tab_items,
+      '#attributes' => ['class' => ['webform-tabs-item-list']],
     ];
 
     return $form;

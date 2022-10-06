@@ -29,14 +29,16 @@ class WebformNodeReferencesTest extends WebformNodeBrowserTestBase {
   public function testReferences() {
     global $base_path;
 
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
     $this->drupalPlaceBlock('help_block');
 
     // Check references tab's empty message.
     $this->drupalGet('/admin/structure/webform/manage/contact/references');
-    $this->assertRaw('There are no webform node references.');
-    $this->assertLink('Add Webform');
-    $this->assertLinkByHref($base_path . 'node/add/webform?webform_id=contact');
+    $assert_session->responseContains('There are no webform node references.');
+    $assert_session->linkExists('Add Webform');
+    $assert_session->linkByHrefExists($base_path . 'node/add/webform?webform_id=contact');
 
     // Create webform node.
     $node = $this->drupalCreateNode(['type' => 'webform']);
@@ -46,39 +48,40 @@ class WebformNodeReferencesTest extends WebformNodeBrowserTestBase {
     $this->drupalGet('/admin/structure/webform/manage/contact/references');
 
     // Check references tab does not include empty message.
-    $this->assertNoRaw('There are no webform node references.');
+    $assert_session->responseNotContains('There are no webform node references.');
 
     // Check references tabs includes webform node.
-    $this->assertLink($node->label());
+    $assert_session->linkExists($node->label());
 
     // Check references tab local actions.
-    $this->assertRaw('<li><a href="' . $base_path . 'node/add/webform?webform_id=contact" class="button button-action" data-drupal-link-query="{&quot;webform_id&quot;:&quot;contact&quot;}" data-drupal-link-system-path="node/add/webform">Add Webform</a></li>');
+    $assert_session->responseContains('<li><a href="' . $base_path . 'node/add/webform?webform_id=contact" class="button button-action" data-drupal-link-query="{&quot;webform_id&quot;:&quot;contact&quot;}" data-drupal-link-system-path="node/add/webform">Add Webform</a></li>');
 
     // Check node with prepopulated webform.
     $this->drupalGet('/node/add/webform', ['query' => ['webform_id' => 'contact']]);
-    $this->assertFieldByName('webform[0][target_id]', 'contact');
+    $assert_session->fieldValueEquals('webform[0][target_id]', 'contact');
 
     // Check node without prepopulated webform warning.
     $this->drupalGet('/node/add/webform');
-    $this->assertRaw('Webforms must first be <a href="' . $base_path . 'admin/structure/webform">created</a> before referencing them.');
+    $assert_session->responseContains('Webforms must first be <a href="' . $base_path . 'admin/structure/webform">created</a> before referencing them.');
 
     // Check webform with variants.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_multiple/references');
-    $this->assertNoLinkByHref($base_path . 'node/add/webform?webform_id=test_variant_multiple');
-    $this->assertLink('Add reference');
-    $this->assertLinkByHref($base_path . 'admin/structure/webform/manage/test_variant_multiple/references/add');
+    $assert_session->linkByHrefNotExists($base_path . 'node/add/webform?webform_id=test_variant_multiple');
+    $assert_session->linkExists('Add reference');
+    $assert_session->linkByHrefExists($base_path . 'admin/structure/webform/manage/test_variant_multiple/references/add');
 
     // Check that add reference form redirects to the create content form.
+    $this->drupalGet('/admin/structure/webform/manage/test_variant_multiple/references/add');
     $edit = [
       'bundle' => 'webform',
       'webform_title' => 'Testing 123',
       'webform_default_data[letter]' => 'a',
       'webform_default_data[number]' => '1',
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_variant_multiple/references/add', $edit, 'Create content');
-    $this->assertFieldByName('title[0][value]', 'Testing 123');
-    $this->assertOptionSelected('edit-webform-0-target-id', 'test_variant_multiple');
-    $this->assertRaw('>letter: a
+    $this->submitForm($edit, 'Create content');
+    $assert_session->fieldValueEquals('title[0][value]', 'Testing 123');
+    $this->assertTrue($assert_session->optionExists('edit-webform-0-target-id', 'test_variant_multiple')->hasAttribute('selected'));
+    $assert_session->responseContains('>letter: a
 number: &#039;1&#039;
 </textarea>');
   }

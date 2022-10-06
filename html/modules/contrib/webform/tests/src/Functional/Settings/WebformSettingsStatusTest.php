@@ -16,17 +16,19 @@ class WebformSettingsStatusTest extends WebformBrowserTestBase {
    * Tests default status.
    */
   public function testStatus() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     // Check add form status = open.
     $this->drupalGet('/admin/structure/webform/add');
-    $this->assertFieldChecked('edit-status-open');
-    $this->assertNoFieldChecked('edit-status-closed');
+    $assert_session->checkboxChecked('edit-status-open');
+    $assert_session->checkboxNotChecked('edit-status-closed');
 
     // Check duplicate form status = open.
     $this->drupalGet('/admin/structure/webform/manage/contact/duplicate');
-    $this->assertFieldChecked('edit-status-open');
-    $this->assertNoFieldChecked('edit-status-closed');
+    $assert_session->checkboxChecked('edit-status-open');
+    $assert_session->checkboxNotChecked('edit-status-closed');
 
     // Set default status to closed.
     $this->config('webform.settings')
@@ -35,13 +37,13 @@ class WebformSettingsStatusTest extends WebformBrowserTestBase {
 
     // Check add form status = closed.
     $this->drupalGet('/admin/structure/webform/add');
-    $this->assertNoFieldChecked('edit-status-open');
-    $this->assertFieldChecked('edit-status-closed');
+    $assert_session->checkboxNotChecked('edit-status-open');
+    $assert_session->checkboxChecked('edit-status-closed');
 
     // Check duplicate form status = closed.
     $this->drupalGet('/admin/structure/webform/manage/contact/duplicate');
-    $this->assertNoFieldChecked('edit-status-open');
-    $this->assertFieldChecked('edit-status-closed');
+    $assert_session->checkboxNotChecked('edit-status-open');
+    $assert_session->checkboxChecked('edit-status-closed');
   }
 
 }

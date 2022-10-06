@@ -22,13 +22,13 @@ class CommentRowTest extends CommentTestBase {
   public static $testViews = ['test_comment_row'];
 
   /**
-   * Test comment row.
+   * Tests comment row.
    */
   public function testCommentRow() {
     $this->drupalGet('test-comment-row');
 
     $result = $this->xpath('//article[contains(@class, "comment")]');
-    $this->assertEqual(1, count($result), 'One rendered comment found.');
+    $this->assertCount(1, $result, 'One rendered comment found.');
   }
 
 }

@@ -11,6 +11,9 @@ use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 
+/**
+ * Required Context Form.
+ */
 abstract class RequiredContext extends FormBase {
 
   /**
@@ -40,6 +43,14 @@ abstract class RequiredContext extends FormBase {
     );
   }
 
+  /**
+   * Required Context Form constructor.
+   *
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $typed_data_manager
+   *   The Typed Data Manager.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The Form Builder.
+   */
   public function __construct(PluginManagerInterface $typed_data_manager, FormBuilderInterface $form_builder) {
     $this->typedDataManager = $typed_data_manager;
     $this->formBuilder = $form_builder;
@@ -63,15 +74,15 @@ abstract class RequiredContext extends FormBase {
     foreach ($this->typedDataManager->getDefinitions() as $plugin_id => $definition) {
       $options[$plugin_id] = (string) $definition['label'];
     }
-    $form['items'] = array(
+    $form['items'] = [
       '#type' => 'markup',
       '#prefix' => '<div id="configured-contexts">',
       '#suffix' => '</div>',
       '#theme' => 'table',
-      '#header' => array($this->t('Information'), $this->t('Description'), $this->t('Operations')),
+      '#header' => [$this->t('Information'), $this->t('Description'), $this->t('Operations')],
       '#rows' => $this->renderContexts($cached_values),
-      '#empty' => $this->t('No required contexts have been configured.')
-    );
+      '#empty' => $this->t('No required contexts have been configured.'),
+    ];
     $form['contexts'] = [
       '#type' => 'select',
       '#options' => $options,
@@ -86,7 +97,7 @@ abstract class RequiredContext extends FormBase {
       ],
       '#submit' => [
         'callback' => [$this, 'submitform'],
-      ]
+      ],
     ];
     return $form;
   }
@@ -96,7 +107,7 @@ abstract class RequiredContext extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $cached_values = $form_state->getTemporaryValue('wizard');
-    list($route_name, $route_parameters) = $this->getOperationsRouteInfo($cached_values, $this->machine_name, $form_state->getValue('contexts'));
+    [$route_name, $route_parameters] = $this->getOperationsRouteInfo($cached_values, $this->machine_name, $form_state->getValue('contexts'));
     $form_state->setRedirect($route_name . '.edit', $route_parameters);
   }
 
@@ -113,64 +124,79 @@ abstract class RequiredContext extends FormBase {
     $content = $this->formBuilder->getForm($this->getContextClass(), $context, $this->getTempstoreId(), $this->machine_name);
     $content['#attached']['library'][] = 'core/drupal.dialog.ajax';
     $response = new AjaxResponse();
-    $response->addCommand(new OpenModalDialogCommand($this->t('Configure Required Context'), $content, array('width' => '700')));
+    $response->addCommand(new OpenModalDialogCommand($this->t('Configure Required Context'), $content, ['width' => '700']));
     return $response;
   }
 
   /**
+   * Render The contexts in the form.
+   *
    * @param $cached_values
+   *   Cached context values.
    *
    * @return array
+   *   The rendered contexts.
    */
   public function renderContexts($cached_values) {
-    $configured_contexts = array();
+    $configured_contexts = [];
     foreach ($this->getContexts($cached_values) as $row => $context) {
-      list($plugin_id, $label, $machine_name, $description) = array_values($context);
-      list($route_name, $route_parameters) = $this->getOperationsRouteInfo($cached_values, $cached_values['id'], $row);
-      $build = array(
+      [$plugin_id, $label, $machine_name, $description] = array_values($context);
+      [$route_name, $route_parameters] = $this->getOperationsRouteInfo($cached_values, $cached_values['id'], $row);
+      $build = [
         '#type' => 'operations',
         '#links' => $this->getOperations($route_name, $route_parameters),
-      );
-      $configured_contexts[] = array(
+      ];
+      $configured_contexts[] = [
         $this->t('<strong>Label:</strong> @label<br /> <strong>Type:</strong> @type', ['@label' => $label, '@type' => $plugin_id]),
         $this->t('@description', ['@description' => $description]),
         'operations' => [
           'data' => $build,
         ],
-      );
+      ];
     }
     return $configured_contexts;
   }
 
-  protected function getOperations($route_name_base, array $route_parameters = array()) {
-    $operations['edit'] = array(
+  /**
+   * Retrieve Form Operations
+   *
+   * @param $route_name_base
+   *   The base route name.
+   * @param array $route_parameters
+   *   Route Parameters.
+   *
+   * @return array
+   *   The available operations.
+   */
+  protected function getOperations($route_name_base, array $route_parameters = []) {
+    $operations['edit'] = [
       'title' => $this->t('Edit'),
       'url' => new Url($route_name_base . '.edit', $route_parameters),
       'weight' => 10,
-      'attributes' => array(
-        'class' => array('use-ajax'),
+      'attributes' => [
+        'class' => ['use-ajax'],
         'data-accepts' => 'application/vnd.drupal-modal',
-        'data-dialog-options' => json_encode(array(
+        'data-dialog-options' => json_encode([
           'width' => 700,
-        )),
-      ),
-      'ajax' => [
-        ''
+        ]),
       ],
-    );
+      'ajax' => [
+        '',
+      ],
+    ];
     $route_parameters['id'] = $route_parameters['context'];
-    $operations['delete'] = array(
+    $operations['delete'] = [
       'title' => $this->t('Delete'),
       'url' => new Url($route_name_base . '.delete', $route_parameters),
       'weight' => 100,
-      'attributes' => array(
-        'class' => array('use-ajax'),
+      'attributes' => [
+        'class' => ['use-ajax'],
         'data-accepts' => 'application/vnd.drupal-modal',
-        'data-dialog-options' => json_encode(array(
+        'data-dialog-options' => json_encode([
           'width' => 700,
-        )),
-      ),
-    );
+        ]),
+      ],
+    ];
     return $operations;
   }
 
@@ -181,6 +207,7 @@ abstract class RequiredContext extends FormBase {
    * information to control the modal/redirect needs of your use case.
    *
    * @return string
+   *   The Context Class.
    */
   abstract protected function getContextClass();
 
@@ -188,6 +215,7 @@ abstract class RequiredContext extends FormBase {
    * Provide the tempstore id for your specified use case.
    *
    * @return string
+   *   The Tempstore ID.
    */
   abstract protected function getTempstoreId();
 
@@ -201,24 +229,28 @@ abstract class RequiredContext extends FormBase {
    * this approach quite seamlessly.
    *
    * @param mixed $cached_values
-   *
+   *  The Cached Values.
    * @param string $machine_name
-   *
+   *  The form machine name.
    * @param string $row
+   *  The form row to operate on.
    *
    * @return array
    *   In the format of
-   *   return ['route.base.name', ['machine_name' => $machine_name, 'context' => $row]];
+   *   return ['route.base.name',
+   *     ['machine_name' => $machine_name, 'context' => $row]];
    */
-  abstract protected function getOperationsRouteInfo($cached_values, $machine_name, $row);
+  abstract protected function getOperationsRouteInfo(mixed $cached_values, string $machine_name, string $row);
 
   /**
    * Custom logic for retrieving the contexts array from cached_values.
    *
-   * @param $cached_values
+   * @param array $cached_values
+   *   The Cached Values.
    *
    * @return array
+   *   The Contexts.
    */
-  abstract protected function getContexts($cached_values);
+  abstract protected function getContexts(array $cached_values);
 
 }

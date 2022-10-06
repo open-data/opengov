@@ -5,7 +5,6 @@ namespace Drupal\views\Plugin\views\display;
 use Drupal\Core\Url;
 use Drupal\Component\Plugin\Discovery\CachedDiscoveryInterface;
 use Drupal\Core\Block\BlockManagerInterface;
-use Drupal\Core\DependencyInjection\DeprecatedServicePropertyTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\Block\ViewsBlock;
@@ -31,12 +30,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see \Drupal\views\Plugin\Derivative\ViewsBlock
  */
 class Block extends DisplayPluginBase {
-  use DeprecatedServicePropertyTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $deprecatedProperties = ['entityManager' => 'entity.manager'];
 
   /**
    * Whether the display allows attachments.
@@ -69,7 +62,7 @@ class Block extends DisplayPluginBase {
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity manager.
+   *   The entity type manager.
    * @param \Drupal\Core\Block\BlockManagerInterface $block_manager
    *   The block manager.
    */
@@ -207,6 +200,7 @@ class Block extends DisplayPluginBase {
           '#default_value' => $this->getOption('block_description'),
         ];
         break;
+
       case 'block_category':
         $form['#title'] .= $this->t('Block category');
         $form['block_category'] = [
@@ -216,6 +210,7 @@ class Block extends DisplayPluginBase {
           '#default_value' => $this->getOption('block_category'),
         ];
         break;
+
       case 'block_hide_empty':
         $form['#title'] .= $this->t('Block empty settings');
 
@@ -226,6 +221,7 @@ class Block extends DisplayPluginBase {
           '#default_value' => $this->getOption('block_hide_empty'),
         ];
         break;
+
       case 'exposed_form_options':
         $this->view->initHandlers();
         if (!$this->usesExposed() && parent::usesExposed()) {
@@ -235,6 +231,7 @@ class Block extends DisplayPluginBase {
           ];
         }
         break;
+
       case 'allow':
         $form['#title'] .= $this->t('Allow settings in the block configuration');
 
@@ -242,7 +239,7 @@ class Block extends DisplayPluginBase {
           'items_per_page' => $this->t('Items per page'),
         ];
 
-        $allow = array_filter($this->getOption('allow'));
+        $allow = array_keys(array_filter($this->getOption('allow')));
         $form['allow'] = [
           '#type' => 'checkboxes',
           '#default_value' => $allow,
@@ -254,6 +251,7 @@ class Block extends DisplayPluginBase {
 
   /**
    * Perform any necessary changes to the form values prior to storage.
+   *
    * There is no need for this function to actually store the data.
    */
   public function submitOptionsForm(&$form, FormStateInterface $form_state) {
@@ -302,10 +300,18 @@ class Block extends DisplayPluginBase {
             '#title' => $this->t('Items per block'),
             '#options' => [
               'none' => $this->t('@count (default setting)', ['@count' => $this->getPlugin('pager')->getItemsPerPage()]),
+              1 => 1,
+              2 => 2,
+              3 => 3,
+              4 => 4,
               5 => 5,
+              6 => 6,
               10 => 10,
+              12 => 12,
               20 => 20,
+              24 => 24,
               40 => 40,
+              48 => 48,
             ],
             '#default_value' => $block_configuration['items_per_page'],
           ];
@@ -361,6 +367,13 @@ class Block extends DisplayPluginBase {
     if ($config['items_per_page'] !== 'none') {
       $this->view->setItemsPerPage($config['items_per_page']);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function usesExposedFormInBlock() {
+    return TRUE;
   }
 
   /**

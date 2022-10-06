@@ -5,11 +5,12 @@
  * Helps support Webform to Bootstrap integration.
  */
 
-use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform_bootstrap\WebformBootstrapRenderCallbacks;
+
+// phpcs:disable Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing
 
 /**
  * Implements hook_page_attachments().
@@ -25,7 +26,7 @@ function webform_bootstrap_page_attachments(array &$attachments) {
 /**
  * Implements hook_webform_element_ELEMENT_TYPE_alter().
  */
-function webform_bootstrap_webform_element_webform_terms_of_service_alter(array &$element, \Drupal\Core\Form\FormStateInterface $form_state, array $context) {
+function webform_bootstrap_webform_element_webform_terms_of_service_alter(array &$element, FormStateInterface $form_state, array $context) {
   // Terms of service agreement must always be displayed, so disable
   // smart description.
   $element['#smart_description'] = FALSE;
@@ -34,7 +35,7 @@ function webform_bootstrap_webform_element_webform_terms_of_service_alter(array 
 /**
  * Implements hook_webform_element_ELEMENT_TYPE_alter().
  */
-function webform_bootstrap_webform_element_webform_likert_alter(array &$element, \Drupal\Core\Form\FormStateInterface $form_state, array $context) {
+function webform_bootstrap_webform_element_webform_likert_alter(array &$element, FormStateInterface $form_state, array $context) {
   $element['#pre_render'] = array_merge([[WebformBootstrapRenderCallbacks::class, 'webformLikertPreRender']], $element['#pre_render']);
 }
 
@@ -44,13 +45,6 @@ function webform_bootstrap_webform_element_webform_likert_alter(array &$element,
 function webform_bootstrap_webform_element_alter(array &$element, FormStateInterface $form_state, array $context) {
   if (!_webform_bootstrap_is_active_theme()) {
     return;
-  }
-
-  // Remove jQuery Tooltip and use Bootstrap Tooltip.
-  // @see \Drupal\webform\Plugin\WebformElementBase::prepare
-  if (isset($element['#attached']['library'][0]) && $element['#attached']['library'][0] === 'webform/webform.tooltip') {
-    unset($element['#attached']['library'][0]);
-    $element['#attached']['library'] = array_values($element['#attached']['library']);
   }
 
   // Convert #description are being changed smart descriptions which
@@ -98,28 +92,6 @@ function webform_bootstrap_webform_element_alter(array &$element, FormStateInter
         }
       }
     }
-  }
-}
-
-/**
- * Implements hook_js_alter().
- */
-function webform_bootstrap_js_alter(&$javascript, AttachedAssetsInterface $assets) {
-  if (!_webform_bootstrap_is_active_theme()) {
-    return;
-  }
-
-  // Make sure jQuery tooltip is never loaded and use
-  // bootstrap specific webform.element.help.js.
-  foreach ($javascript as $javascript_path => $javascript_item) {
-    if (strpos($javascript_path, 'tooltip-min') !== FALSE) {
-      unset($javascript[$javascript_path]);
-    }
-  }
-  $webform_help_path = drupal_get_path('module', 'webform') . '/js/webform.element.help.js';
-  $webform_bootstrap_help_path = drupal_get_path('module', 'webform_bootstrap') . '/js/webform.element.help.js';;
-  if (isset($javascript[$webform_help_path])) {
-    $javascript[$webform_help_path]['data'] = $webform_bootstrap_help_path;
   }
 }
 

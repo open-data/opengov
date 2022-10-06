@@ -36,7 +36,7 @@ trait WebformTermReferenceTrait {
     // This will prevent a fatal memory error when
     // previewing term related elements.
     /** @var \Drupal\taxonomy\TermStorageInterface $taxonomy_storage */
-    $taxonomy_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $taxonomy_storage = $this->entityTypeManager->getStorage('taxonomy_term');
     $tree = $taxonomy_storage->loadTree($vocabulary_id);
     if (count($tree) > 250) {
       $vocabulary_id = NULL;

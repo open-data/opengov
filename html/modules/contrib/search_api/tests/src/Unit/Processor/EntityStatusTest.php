@@ -37,7 +37,7 @@ class EntityStatusTest extends UnitTestCase {
   /**
    * The test index.
    *
-   * @var \Drupal\search_api\IndexInterface|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\search_api\IndexInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $index;
 
@@ -97,7 +97,7 @@ class EntityStatusTest extends UnitTestCase {
     $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $entity_type_manager->method('getDefinition')
       ->willReturnCallback(function ($entity_type_id) use ($self) {
-        $entity_type = $self->getMock(EntityTypeInterface::class);
+        $entity_type = $self->createMock(EntityTypeInterface::class);
         $publishable = in_array($entity_type_id, ['node', 'comment']);
         $entity_type->method('entityClassImplements')
           ->willReturnMap([

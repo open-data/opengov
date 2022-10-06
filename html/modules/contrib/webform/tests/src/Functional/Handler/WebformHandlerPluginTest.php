@@ -28,7 +28,7 @@ class WebformHandlerPluginTest extends WebformBrowserTestBase {
     $webform = Webform::load('contact');
 
     // Check initial dependencies.
-    $this->assertEqual($webform->getDependencies(), ['module' => ['webform']]);
+    $this->assertEquals($webform->getDependencies(), ['module' => ['webform']]);
 
     /** @var \Drupal\webform\Plugin\WebformHandlerManagerInterface $handler_manager */
     $handler_manager = $this->container->get('plugin.manager.webform.handler');
@@ -47,7 +47,7 @@ class WebformHandlerPluginTest extends WebformBrowserTestBase {
     $webform->save();
 
     // Check that handler has been added to the dependencies.
-    $this->assertEqual($webform->getDependencies(), ['module' => ['webform_test_handler', 'webform']]);
+    $this->assertEquals($webform->getDependencies(), ['module' => ['webform_test_handler', 'webform']]);
 
     // Uninstall the webform_test_handler.module which will also remove the
     // test handler.
@@ -55,8 +55,8 @@ class WebformHandlerPluginTest extends WebformBrowserTestBase {
     $webform = Webform::load('contact');
 
     // Check that handler was removed from the dependencies.
-    $this->assertNotEqual($webform->getDependencies(), ['module' => ['webform_test_handler', 'webform']]);
-    $this->assertEqual($webform->getDependencies(), ['module' => ['webform']]);
+    $this->assertNotEquals($webform->getDependencies(), ['module' => ['webform_test_handler', 'webform']]);
+    $this->assertEquals($webform->getDependencies(), ['module' => ['webform']]);
   }
 
 }

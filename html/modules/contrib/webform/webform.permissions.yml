@@ -1,6 +1,10 @@
 'access webform overview':
   title: 'Access the webform overview page'
   description: 'Get an overview of all webforms.'
+'access webform help':
+  title: 'Access the webform help page'
+  description: 'Allows users to view the Webform module''s help page.'
+
 'access webform submission user':
   title: 'Access the webform user submission page'
   description: 'Allows a user to view their submissions via ''Submissions'' tab on their profile page.'

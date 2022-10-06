@@ -8,6 +8,8 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\pathauto\PathautoState;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\pathauto\Functional\PathautoTestHelperTrait;
+use Drupal\Component\Render\FormattableMarkup;
+
 
 /**
  * Test pathauto functionality with localization and translation.
@@ -19,16 +21,21 @@ class PathautoLocaleTest extends WebDriverTestBase {
   use PathautoTestHelperTrait;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stable';
+
+  /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['node', 'pathauto', 'locale', 'content_translation'];
+  protected static $modules = ['node', 'pathauto', 'locale', 'content_translation'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create Article node type.
@@ -39,7 +46,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
    * Test that when an English node is updated, its old English alias is
    * updated and its newer French alias is left intact.
    */
-  function testLanguageAliases() {
+  public function testLanguageAliases() {
 
     $this->createPattern('node', '/content/[node:title]');
 
@@ -53,10 +60,10 @@ class PathautoLocaleTest extends WebDriverTestBase {
         'alias' => '/english-node',
         'pathauto' => FALSE,
       ]],
-     ];
+    ];
     $node = $this->drupalCreateNode($node);
-    $english_alias = \Drupal::service('path.alias_storage')->load(['alias' => '/english-node', 'langcode' => 'en']);
-    $this->assertTrue($english_alias, 'Alias created with proper language.');
+    $english_alias = $this->loadPathAliasByConditions(['alias' => '/english-node', 'langcode' => 'en']);
+    $this->assertNotEmpty($english_alias, 'Alias created with proper language.');
 
     // Also save a French alias that should not be left alone, even though
     // it is the newer alias.
@@ -64,7 +71,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
 
     // Add an alias with the soon-to-be generated alias, causing the upcoming
     // alias update to generate a unique alias with the '-0' suffix.
-    $this->saveAlias('/node/invalid', '/content/english-node', Language::LANGCODE_NOT_SPECIFIED);
+    $this->createPathAlias('/node/invalid', '/content/english-node', Language::LANGCODE_NOT_SPECIFIED);
 
     // Update the node, triggering a change in the English alias.
     $node->path->pathauto = PathautoState::CREATE;
@@ -73,7 +80,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
     // Check that the new English alias replaced the old one.
     $this->assertEntityAlias($node, '/content/english-node-0', 'en');
     $this->assertEntityAlias($node, '/french-node', 'fr');
-    $this->assertAliasExists(['pid' => $english_alias['pid'], 'alias' => '/content/english-node-0']);
+    $this->assertAliasExists(['id' => $english_alias->id(), 'alias' => '/content/english-node-0']);
 
     // Create a new node with the same title as before but without
     // specifying a language.
@@ -87,7 +94,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
   /**
    * Test that patterns work on multilingual content.
    */
-  function testLanguagePatterns() {
+  public function testLanguagePatterns() {
 
     // Allow other modules to add additional permissions for the admin user.
     $permissions = [
@@ -108,7 +115,8 @@ class PathautoLocaleTest extends WebDriverTestBase {
     $edit = [
       'predefined_langcode' => 'fr',
     ];
-    $this->drupalPostForm('admin/config/regional/language/add', $edit, t('Add language'));
+    $this->drupalGet('admin/config/regional/language/add');
+    $this->submitForm($edit, 'Add language');
 
     $this->enableArticleTranslation();
 
@@ -147,17 +155,19 @@ class PathautoLocaleTest extends WebDriverTestBase {
       'title[0][value]' => 'English node',
       'langcode[0][value]' => 'en',
     ];
-    $this->drupalPostForm('node/add/article', $edit, t('Save'));
+    $this->drupalGet('node/add/article');
+    $this->submitForm($edit, 'Save');
     $english_node = $this->drupalGetNodeByTitle('English node');
     return;
     $this->assertAlias('/node/' . $english_node->id(), '/the-articles/english-node', 'en');
 
     $this->drupalGet('node/' . $english_node->id() . '/translations');
-    $this->clickLink(t('Add'));
+    $this->clickLink('Add');
     $edit = [
       'title[0][value]' => 'French node',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save (this translation)'));
+    $this->drupalGet(NULL);
+    $this->submitForm($edit, 'Save (this translation)');
     $this->rebuildContainer();
     $english_node = $this->drupalGetNodeByTitle('English node');
     $french_node = $english_node->getTranslation('fr');
@@ -169,8 +179,9 @@ class PathautoLocaleTest extends WebDriverTestBase {
     $edit = [
       'update[canonical_entities:node]' => TRUE,
     ];
-    $this->drupalPostForm('admin/config/search/path/update_bulk', $edit, t('Update'));
-    $this->assertSession()->pageTextContains(t('Generated 2 URL aliases.'));
+    $this->drupalGet('admin/config/search/path/update_bulk');
+    $this->submitForm($edit, 'Update');
+    $this->assertSession()->pageTextContains('Generated 2 URL aliases.');
     $this->assertAlias('/node/' . $english_node->id(), '/the-articles/english-node', 'en');
     $this->assertAlias('/node/' . $french_node->id(), '/les-articles/french-node', 'fr');
   }
@@ -195,7 +206,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
 
     // Check that the alias works.
     $this->drupalGet('content/test-node');
-    $this->assertSession()->pageTextContains(t('Test node'));
+    $this->assertSession()->pageTextContains('Test node');
   }
 
   /**
@@ -209,7 +220,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
       'settings[node][article][translatable]' => TRUE,
       'settings[node][article][settings][language][language_alterable]' => TRUE,
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+    $this->submitForm($edit, 'Save configuration');
   }
 
 }

@@ -37,7 +37,7 @@ class ModalAnimation extends SettingBase {
       '#weight' => -1,
       '#attributes' => ['class' => ['alert', 'alert-info', 'alert-sm']],
       0 => [
-        '#markup' => t('<strong>Note:</strong> jQuery UI dialog options will be mapped to Bootstrap modal options whenever possible, however they always take precedent over any global Bootstrap modal options set here for compatibility reasons.'),
+        '#markup' => $this->t('<strong>Note:</strong> jQuery UI dialog options will be mapped to Bootstrap modal options whenever possible, however they always take precedent over any global Bootstrap modal options set here for compatibility reasons.'),
       ],
       '#states' => [
         'visible' => [
@@ -46,7 +46,7 @@ class ModalAnimation extends SettingBase {
         ],
       ],
     ];
-    $group->setProperty('description', t('These are global options. Each modal can independently override desired settings by appending the option name to <code>data-</code>. Example: <code>data-backdrop="false"</code>.'));
+    $group->setProperty('description', $this->t('These are global options. Each modal can independently override desired settings by appending the option name to <code>data-</code>. Example: <code>data-backdrop="false"</code>.'));
     $group->setProperty('states', [
       'visible' => [
         ':input[name="modal_enabled"]' => ['checked' => TRUE],

@@ -73,9 +73,9 @@ class WebformAccessRulesManager implements WebformAccessRulesManagerInterface {
     return WebformAccessResult::neutral($webform_submission, $cache_per_user);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Get access rules methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -125,9 +125,9 @@ class WebformAccessRulesManager implements WebformAccessRulesManagerInterface {
     return $webform->getAccessRules() + $this->getDefaultAccessRules();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Check access rules methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

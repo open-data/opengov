@@ -3,6 +3,7 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'email' element.
@@ -18,6 +19,22 @@ use Drupal\webform\WebformSubmissionInterface;
 class Email extends TextBase {
 
   /**
+   * The path validator service.
+   *
+   * @var \Drupal\Core\Path\PathValidatorInterface
+   */
+  protected $pathValidator;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->pathValidator = $container->get('path.validator');
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function defineDefaultProperties() {
@@ -27,7 +44,7 @@ class Email extends TextBase {
       + $this->defineDefaultMultipleProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -45,7 +62,7 @@ class Email extends TextBase {
         return [
           '#type' => 'link',
           '#title' => $value,
-          '#url' => \Drupal::pathValidator()->getUrlIfValid('mailto:' . $value),
+          '#url' => $this->pathValidator->getUrlIfValid('mailto:' . $value),
         ];
 
       default:

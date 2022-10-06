@@ -11,6 +11,13 @@ use Drupal\Tests\BrowserTestBase;
  */
 class PasswordManualResetTest extends BrowserTestBase {
 
+  /**
+   * Set default theme to stark.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
+
   public static $modules = ['password_policy', 'node'];
 
   /**
@@ -34,12 +41,14 @@ class PasswordManualResetTest extends BrowserTestBase {
     // Update user 1 by adding role.
     $edit = [];
     $edit['roles[' . $rid . ']'] = $rid;
-    $this->drupalPostForm('user/' . $user1->id() . '/edit', $edit, 'Save');
+    $this->drupalGet('user/' . $user1->id() . '/edit');
+    $this->submitForm($edit, 'Save');
 
     // Force reset users of new role.
     $edit = [];
     $edit['roles[' . $rid . ']'] = $rid;
-    $this->drupalPostForm('admin/config/security/password-policy/reset', $edit, 'Save');
+    $this->drupalGet('admin/config/security/password-policy/reset');
+    $this->submitForm($edit, 'Save');
 
     // Verify expiration.
     $user = \Drupal::entityTypeManager()->getStorage('user')->load($user1->id());
@@ -64,14 +73,16 @@ class PasswordManualResetTest extends BrowserTestBase {
     // Update user 1 by adding role.
     $edit = [];
     $edit['roles[' . $rid . ']'] = $rid;
-    $this->drupalPostForm('user/' . $user1->id() . '/edit', $edit, 'Save');
+    $this->drupalGet('user/' . $user1->id() . '/edit');
+    $this->submitForm($edit, 'Save');
 
     // Force reset users of new role with exclude.
     $edit = [
       'roles[' . $rid . ']' => $rid,
       'exclude_myself' => '1',
     ];
-    $this->drupalPostForm('admin/config/security/password-policy/reset', $edit, 'Save');
+    $this->drupalGet('admin/config/security/password-policy/reset');
+    $this->submitForm($edit, 'Save');
 
     // Verify page.
     $this->verbose($this->getUrl());
@@ -82,7 +93,8 @@ class PasswordManualResetTest extends BrowserTestBase {
       'roles[' . $rid . ']' => $rid,
       'exclude_myself' => '0',
     ];
-    $this->drupalPostForm('admin/config/security/password-policy/reset', $edit, 'Save');
+    $this->drupalGet('admin/config/security/password-policy/reset');
+    $this->submitForm($edit, 'Save');
 
     // Verify page.
     $this->verbose($this->getUrl());

@@ -12,6 +12,13 @@ use Drupal\Tests\BrowserTestBase;
 class PasswordConsecutiveCharactersOperationsTest extends BrowserTestBase {
 
   /**
+   * Set default theme to stark.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Modules to enable at the start of the test.
    *
    * @var array
@@ -43,12 +50,13 @@ class PasswordConsecutiveCharactersOperationsTest extends BrowserTestBase {
     $web_assert = $this->assertSession();
 
     // Create a policy and add a "consecutive" constraint.
-    $this->drupalPostForm('admin/config/security/password-policy/add', ['label' => 'Test policy', 'id' => 'test_policy'], 'Next');
+    $this->drupalGet('admin/config/security/password-policy/add');
+    $this->submitForm(['label' => 'Test policy', 'id' => 'test_policy'], 'Next');
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/consecutive');
     $web_assert->pageTextContains('Maximum consecutive identical characters');
 
     $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/consecutive');
-    $this->drupalPostForm(NULL, ['max_consecutive_characters' => 2], 'Save');
+    $this->submitForm(['max_consecutive_characters' => 2], 'Save');
     $web_assert->pageTextContains('Maximum consecutive identical characters: 2');
   }
 

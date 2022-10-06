@@ -30,7 +30,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'entity_test',
     'field',
     'file',
@@ -51,7 +51,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
    */
   protected $imageFactory;
 
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('entity_test');
@@ -93,7 +93,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
     // Create a style.
     $style = ImageStyle::create(['name' => 'test', 'label' => 'Test']);
     $style->save();
-    $url = file_url_transform_relative($style->buildUrl($original_uri));
+    $url = \Drupal::service('file_url_generator')->transformRelative($style->buildUrl($original_uri));
 
     // Create a test entity with the image field set.
     $entity = EntityTest::create();
@@ -116,7 +116,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
     $element = $base_element;
     $this->setRawContent($renderer->renderRoot($element));
     $elements = $this->xpath('//a[@href=:path]/img[@src=:url and @width=:width and @height=:height]', [':path' => base_path() . $path, ':url' => $url, ':width' => $image->getWidth(), ':height' => $image->getHeight()]);
-    $this->assertEqual(count($elements), 1, 'theme_image_formatter() correctly renders with a NULL value for the alt option.');
+    $this->assertCount(1, $elements, 'theme_image_formatter() correctly renders with a NULL value for the alt option.');
 
     // Test using theme_image_formatter() without an image title, alt text, or
     // link options.
@@ -124,7 +124,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
     $element['#item']->alt = '';
     $this->setRawContent($renderer->renderRoot($element));
     $elements = $this->xpath('//a[@href=:path]/img[@src=:url and @width=:width and @height=:height and @alt=""]', [':path' => base_path() . $path, ':url' => $url, ':width' => $image->getWidth(), ':height' => $image->getHeight()]);
-    $this->assertEqual(count($elements), 1, 'theme_image_formatter() correctly renders without title, alt, or path options.');
+    $this->assertCount(1, $elements, 'theme_image_formatter() correctly renders without title, alt, or path options.');
 
     // Link the image to a fragment on the page, and not a full URL.
     $fragment = $this->randomMachineName();
@@ -137,7 +137,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
       ':width' => $image->getWidth(),
       ':height' => $image->getHeight(),
     ]);
-    $this->assertEqual(count($elements), 1, 'theme_image_formatter() correctly renders a link fragment.');
+    $this->assertCount(1, $elements, 'theme_image_formatter() correctly renders a link fragment.');
   }
 
   /**
@@ -155,7 +155,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
     // Create a style.
     $style = ImageStyle::create(['name' => 'image_test', 'label' => 'Test']);
     $style->save();
-    $url = file_url_transform_relative($style->buildUrl($original_uri));
+    $url = \Drupal::service('file_url_generator')->transformRelative($style->buildUrl($original_uri));
 
     // Create the base element that we'll use in the tests below.
     $base_element = [
@@ -167,14 +167,14 @@ class ImageThemeFunctionTest extends KernelTestBase {
     $element = $base_element;
     $this->setRawContent($renderer->renderRoot($element));
     $elements = $this->xpath('//img[@src=:url and @alt=""]', [':url' => $url]);
-    $this->assertEqual(count($elements), 1, 'theme_image_style() renders an image correctly.');
+    $this->assertCount(1, $elements, 'theme_image_style() renders an image correctly.');
 
     // Test using theme_image_style() with a NULL value for the alt option.
     $element = $base_element;
     $element['#alt'] = NULL;
     $this->setRawContent($renderer->renderRoot($element));
     $elements = $this->xpath('//img[@src=:url]', [':url' => $url]);
-    $this->assertEqual(count($elements), 1, 'theme_image_style() renders an image correctly with a NULL value for the alt option.');
+    $this->assertCount(1, $elements, 'theme_image_style() renders an image correctly with a NULL value for the alt option.');
   }
 
   /**
@@ -197,7 +197,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
 
     $this->setRawContent($renderer->renderRoot($image_with_alt_property));
     $elements = $this->xpath('//img[contains(@class, class) and contains(@alt, :alt)]', [":class" => "image-with-regular-alt", ":alt" => "Regular alt"]);
-    $this->assertEqual(count($elements), 1, 'Regular alt displays correctly');
+    $this->assertCount(1, $elements, 'Regular alt displays correctly');
 
     // Test using alt attribute inside attributes.
     $image_with_alt_attribute_alt_attribute = [
@@ -215,7 +215,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
 
     $this->setRawContent($renderer->renderRoot($image_with_alt_attribute_alt_attribute));
     $elements = $this->xpath('//img[contains(@class, class) and contains(@alt, :alt)]', [":class" => "image-with-attribute-alt", ":alt" => "Attribute alt"]);
-    $this->assertEqual(count($elements), 1, 'Attribute alt displays correctly');
+    $this->assertCount(1, $elements, 'Attribute alt displays correctly');
 
     // Test using alt attribute as property and inside attributes.
     $image_with_alt_attribute_both = [
@@ -234,7 +234,7 @@ class ImageThemeFunctionTest extends KernelTestBase {
 
     $this->setRawContent($renderer->renderRoot($image_with_alt_attribute_both));
     $elements = $this->xpath('//img[contains(@class, class) and contains(@alt, :alt)]', [":class" => "image-with-attribute-alt", ":alt" => "Attribute alt"]);
-    $this->assertEqual(count($elements), 1, 'Attribute alt overrides alt property if both set.');
+    $this->assertCount(1, $elements, 'Attribute alt overrides alt property if both set.');
   }
 
 }

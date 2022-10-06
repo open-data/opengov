@@ -32,7 +32,7 @@ class WebformCheckboxesOther extends Checkboxes implements WebformElementOtherIn
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

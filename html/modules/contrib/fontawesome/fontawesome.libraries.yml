@@ -1,10 +1,10 @@
 fontawesome.svg:
-  remote: &fontawesome_remote https://use.fontawesome.com/releases/v5.12.0/fontawesome-free-5.12.0-web.zip
+  remote: &fontawesome_remote https://use.fontawesome.com/releases/v6.1.0/fontawesome-free-6.1.0-web.zip
   license: &fontawesome_svg_license
     name: CC BY 4.0
     url: https://fontawesome.com/license
     gpl-compatible: true
-  version: &fontawesome_version "5.12.0"
+  version: &fontawesome_version "6.1.0"
   header: true
   js:
     /libraries/fontawesome/js/all.min.js: { minified: true, attributes: { defer: true } }
@@ -15,8 +15,6 @@ fontawesome.svg.shim:
   header: true
   js:
     /libraries/fontawesome/js/v4-shims.min.js: { minified: true, attributes: { defer: true } }
-  dependencies:
-    - fontawesome/fontawesome.svg
 
 fontawesome.svg.base:
   version: *fontawesome_version
@@ -58,6 +56,24 @@ fontawesome.svg.brands:
   header: true
   js:
     /libraries/fontawesome/js/brands.min.js: { minified: true, attributes: { defer: true } }
+  dependencies:
+    - fontawesome/fontawesome.svg.base
+
+fontawesome.svg.duotone:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  header: true
+  js:
+    /libraries/fontawesome/js/duotone.min.js: { minified: true, attributes: { defer: true } }
+  dependencies:
+    - fontawesome/fontawesome.svg.base
+
+fontawesome.svg.thin:
+  version: *fontawesome_version
+  license: *fontawesome_svg_license
+  header: true
+  js:
+    /libraries/fontawesome/js/thin.min.js: { minified: true, attributes: { defer: true } }
   dependencies:
     - fontawesome/fontawesome.svg.base
 
@@ -115,11 +131,27 @@ fontawesome.webfonts.brands:
   dependencies:
     - fontawesome/fontawesome.webfonts.base
 
+fontawesome.webfonts.duotone:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/duotone.min.css: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.webfonts.base
+
+fontawesome.webfonts.thin:
+  version: *fontawesome_version
+  license: *fontawesome_webfonts_license
+  css:
+    theme:
+      /libraries/fontawesome/css/thin.min.css: { minified: true }
+  dependencies:
+    - fontawesome/fontawesome.webfonts.base
+
 fontawesome.webfonts.shim:
   version: *fontawesome_version
   license: *fontawesome_webfonts_license
   css:
     theme:
       /libraries/fontawesome/css/v4-shims.min.css: { minified: true }
-  dependencies:
-    - fontawesome/fontawesome.webfonts

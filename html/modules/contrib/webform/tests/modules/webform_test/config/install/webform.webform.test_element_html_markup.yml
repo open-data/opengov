@@ -57,6 +57,8 @@ elements: |
       '#type': captcha
       '#title': '<u>CAPTCHA</u>'
       '#captcha_admin_mode': true
+      '#captcha_info':
+        form_id: ''
       '#captcha_type': image_captcha/Image
     webform_codemirror:
       '#type': webform_codemirror
@@ -78,6 +80,13 @@ elements: |
     webform_email_multiple:
       '#type': webform_email_multiple
       '#title': '<u>Email multiple</u>'
+    webform_height:
+      '#type': webform_height
+      '#title': '<u>Height (feet/inches)</u>'
+    webform_height_multiple:
+      '#type': webform_height
+      '#title': '<u>Height (feet/inches) multiple</u>'
+      '#multiple': true
     number:
       '#type': number
       '#title': '<u>Number</u>'
@@ -107,6 +116,14 @@ elements: |
     webform_rating:
       '#type': webform_rating
       '#title': '<u>Rating</u>'
+    webform_same:
+      '#type': webform_same
+      '#title': '<u>Billing address is the same as the shipping address</u>'
+    webform_scale:
+      '#type': webform_scale
+      '#title': '<u>Scale</u>'
+      '#min': 1
+      '#max': 5
     search:
       '#type': search
       '#title': '<u>Search</u>'
@@ -165,11 +182,15 @@ elements: |
       '#message_type': warning
       '#message_message': 'This is a <strong>warning</strong> message.'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/77245">Issue #77245: A place for JavaScript status messages</a>'
+    webform_more:
+      '#type': webform_more
+      '#title': '<u>More</u>'
+      '#more': 'This is more content'
   file_attachment_elements:
     '#type': details
     '#title': '<u>File attachment elements</u>'
     '#open': true
-    'webform_entity_print_attachment:pdf':
+    webform_entity_print_attachment_pdf:
       '#type': webform_entity_print_attachment
       '#title': '<u>Attachment PDF</u>'
     webform_attachment_token:
@@ -225,20 +246,6 @@ elements: |
     '#type': details
     '#title': '<u>Options elements</u>'
     '#open': true
-    webform_buttons:
-      '#type': webform_buttons
-      '#title': '<u>Buttons</u>'
-      '#options':
-        one: One
-        two: Two
-        three: Three
-    webform_buttons_other:
-      '#type': webform_buttons_other
-      '#title': '<u>Buttons other</u>'
-      '#options':
-        one: One
-        two: Two
-        three: Three
     checkboxes:
       '#type': checkboxes
       '#title': '<u>Checkboxes</u>'
@@ -392,6 +399,24 @@ elements: |
     webform_section:
       '#type': webform_section
       '#title': '<u>Section</u>'
+    webform_table:
+      '#type': table
+      '#header':
+        - 'Header 1'
+        - 'Header 2'
+      '#rows':
+        -
+          - 'Row 1 - Col 1'
+          - 'Row 1 - Col 2'
+        -
+          - 'Row 2 - Col 1'
+          - 'Row 2 - Col 2'
+        -
+          - 'Row 3 - Col 1'
+          - 'Row 3 - Col 2'
+    webform_table_row:
+      '#type': webform_table_row
+      '#title': '<u>Table row</u>'
   date_time_elements:
     '#type': details
     '#title': '<u>Date/time elements</u>'
@@ -525,7 +550,7 @@ elements: |
     table:
       '#type': table
       '#title': '<u>Table</u>'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -546,7 +571,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -567,6 +592,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

@@ -1,4 +1,5 @@
 <?php
+
 namespace Drush\Commands\sql;
 
 use Consolidation\AnnotatedCommand\CommandData;
@@ -25,12 +26,11 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
      * @command sql:conf
      * @aliases sql-conf
      * @option all Show all database connections, instead of just one.
-     * @option show-passwords Show database password.
      * @optionset_sql
      * @bootstrap max configuration
      * @hidden
      */
-    public function conf($options = ['format' => 'yaml', 'all' => false, 'show-passwords' => false])
+    public function conf($options = ['format' => 'yaml', 'all' => false, 'show-passwords' => false]): ?array
     {
         if ($options['all']) {
             $return = Database::getAllConnectionInfo();
@@ -59,12 +59,12 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
      * @option extra Add custom options to the connect string (e.g. --extra=--skip-column-names)
      * @optionset_sql
      * @bootstrap max configuration
-     * @usage `drush sql-connect` < example.sql
+     * @usage $(drush sql-connect) < example.sql
      *   Bash: Import SQL statements from a file into the current database.
      * @usage eval (drush sql-connect) < example.sql
      *   Fish: Import SQL statements from a file into the current database.
      */
-    public function connect($options = ['extra' => self::REQ])
+    public function connect($options = ['extra' => self::REQ]): string
     {
         $sql = SqlBase::create($options);
         return $sql->connect(false);
@@ -86,22 +86,18 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
      *   Create the database as specified in the db-url option.
      * @bootstrap max configuration
      */
-    public function create($options = ['db-su' => self::REQ, 'db-su-pw' => self::REQ])
+    public function create($options = ['db-su' => self::REQ, 'db-su-pw' => self::REQ]): void
     {
         $sql = SqlBase::create($options);
         $db_spec = $sql->getDbSpec();
-        // Prompt for confirmation.
 
-        // @todo odd - maybe for sql-sync.
-        $txt_destination = (isset($db_spec['remote-host']) ? $db_spec['remote-host'] . '/' : '') . $db_spec['database'];
-        $this->output()->writeln(dt("Creating database !target. Any existing database will be dropped!", ['!target' => $txt_destination]));
-
+        $this->output()->writeln(dt("Creating database !target. Any existing database will be dropped!", ['!target' => $db_spec['database']]));
         if (!$this->getConfig()->simulate() && !$this->io()->confirm(dt('Do you really want to continue?'))) {
             throw new UserAbortException();
         }
 
         if (!$sql->createdb(true)) {
-            throw new \Exception('Unable to create database. Rerun with --debug to see any error message.');
+            throw new \Exception('Unable to create database. Rerun with --debug to see any error message.  ' . $sql->getProcess()->getErrorOutput());
         }
     }
 
@@ -114,16 +110,16 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
      * @bootstrap max configuration
      * @topics docs:policy
      */
-    public function drop($options = [])
+    public function drop($options = []): void
     {
         $sql = SqlBase::create($options);
         $db_spec = $sql->getDbSpec();
         if (!$this->io()->confirm(dt('Do you really want to drop all tables in the database !db?', ['!db' => $db_spec['database']]))) {
             throw new UserAbortException();
         }
-        $tables = $sql->listTables();
+        $tables = $sql->listTablesQuoted();
         if (!$sql->drop($tables)) {
-            throw new \Exception('Unable to drop database. Rerun with --debug to see any error message.');
+            throw new \Exception('Unable to drop all tables: ' . $sql->getProcess()->getErrorOutput());
         }
     }
 
@@ -143,7 +139,7 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
      * @remote-tty
      * @bootstrap max configuration
      */
-    public function cli(InputInterface $input, $options = ['extra' => self::REQ])
+    public function cli(InputInterface $input, $options = ['extra' => self::REQ]): void
     {
         $sql = SqlBase::create($options);
         $process = $this->processManager()->shell($sql->connect(), null, $sql->getEnv());
@@ -172,14 +168,18 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
      *   Browse user record. Table prefixes, if used, must be added to table names by hand.
      * @usage drush sql:query --db-prefix "SELECT * FROM {users}"
      *   Browse user record. Table prefixes are honored.  Caution: All curly-braces will be stripped.
-     * @usage `drush sql-connect` < example.sql
+     * @usage $(drush sql:connect) < example.sql
      *   Import sql statements from a file into the current database.
      * @usage drush sql:query --file=example.sql
      *   Alternate way to import sql statements from a file.
+     * @usage drush ev "return db_query('SELECT * FROM users')->fetchAll()" --format=json
+     *   Get data back in JSON format. See https://github.com/drush-ops/drush/issues/3071#issuecomment-347929777.
+     * @usage `drush sql:connect` -e "select * from users limit 5;"
+     *   Results are formatted in a pretty table with borders and column headers.
      * @bootstrap max configuration
      *
      */
-    public function query($query = '', $options = ['result-file' => null, 'file' => self::REQ, 'file-delete' => false, 'extra' => self::REQ, 'db-prefix' => false])
+    public function query($query = '', $options = ['result-file' => null, 'file' => self::REQ, 'file-delete' => false, 'extra' => self::REQ, 'db-prefix' => false]): bool
     {
         $filename = $options['file'];
         // Enable prefix processing when db-prefix option is used.
@@ -196,7 +196,7 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
             $sql = SqlBase::create($options);
             $result = $sql->query($query, $filename, $options['result-file']);
             if (!$result) {
-                throw new \Exception(dt('Query failed.'));
+                throw new \Exception('Query failed. Rerun with --debug to see any error message. ' . $sql->getProcess()->getErrorOutput());
             }
             $this->output()->writeln($sql->getProcess()->getOutput());
         }
@@ -214,26 +214,25 @@ class SqlCommands extends DrushCommands implements StdinAwareInterface
      * @option create-db Omit DROP TABLE statements. Used by Postgres and Oracle only.
      * @option data-only Dump data without statements to create any of the schema.
      * @option ordered-dump Order by primary key and add line breaks for efficient diffs. Slows down the dump. Mysql only.
-     * @option gzip Compress the dump using the gzip program which must be in your $PATH.
+     * @option gzip Compress the dump using the gzip program which must be in your <info>$PATH</info>.
      * @option extra Add custom arguments/options when connecting to database (used internally to list tables).
-     * @option extra-dump Add custom arguments/options to the dumping of the database (e.g. mysqldump command).
+     * @option extra-dump Add custom arguments/options to the dumping of the database (e.g. <info>mysqldump</info> command).
      * @usage drush sql:dump --result-file=../18.sql
      *   Save SQL dump to the directory above Drupal root.
      * @usage drush sql:dump --skip-tables-key=common
-     *   Skip standard tables. @see example.drush.yml
+     *   Skip standard tables. See [Drush configuration](../using-drush-configuration)
      * @usage drush sql:dump --extra-dump=--no-data
-     *   Pass extra option to mysqldump command.
+     *   Pass extra option to <info>mysqldump</info> command.
      * @hidden-options create-db
      * @bootstrap max configuration
      * @field-labels
      *   path: Path
      *
-     * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
      *
      * @notes
-     *   createdb is used by sql-sync, since including the DROP TABLE statements interfere with the import when the database is created.
+     *   --createdb is used by sql-sync, since including the DROP TABLE statements interferes with the import when the database is created.
      */
-    public function dump($options = ['result-file' => self::REQ, 'create-db' => false, 'data-only' => false, 'ordered-dump' => false, 'gzip' => false, 'extra' => self::REQ, 'extra-dump' => self::REQ, 'format' => 'null'])
+    public function dump($options = ['result-file' => self::REQ, 'create-db' => false, 'data-only' => false, 'ordered-dump' => false, 'gzip' => false, 'extra' => self::REQ, 'extra-dump' => self::REQ, 'format' => 'null']): PropertyList
     {
         $sql = SqlBase::create($options);
         $return = $sql->dump();

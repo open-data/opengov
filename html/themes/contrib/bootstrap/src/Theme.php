@@ -344,16 +344,19 @@ class Theme {
     }
 
     // Retrieve cache.
-    $files = $this->getCache('files');
+    $cache = $this->getCache('files');
 
     // Generate a unique hash for all parameters passed as a change in any of
     // them could potentially return different results.
     $hash = Crypt::generateBase64HashIdentifier($options, [$mask, $path]);
 
-    if (!$files->has($hash)) {
-      $files->set($hash, file_scan_directory($path, $mask, $options));
+    if (!$cache->has($hash)) {
+      if ($fileSystem = \Drupal::service('file_system')) {
+        $files = $fileSystem->scanDirectory($path, $mask, $options);
+      }
+      $cache->set($hash, $files);
     }
-    return $files->get($hash, []);
+    return $cache->get($hash, []);
   }
 
   /**
@@ -661,7 +664,7 @@ class Theme {
     if (!isset($includes[$include])) {
       $includes[$include] = !!@include_once $include;
       if (!$includes[$include]) {
-        Bootstrap::message(t('Could not include file: @include', ['@include' => $include]), 'error');
+        \Drupal::messenger()->addMessage(t('Could not include file: @include', ['@include' => $include]), 'error');
       }
     }
     return $includes[$include];
@@ -768,9 +771,7 @@ class Theme {
   }
 
   /****************************************************************************
-   *
-   * Deprecated methods
-   *
+   * Deprecated methods.
    ***************************************************************************/
 
   /**

@@ -129,7 +129,7 @@ class TokenBrowser extends CKEditorPluginBase implements ContainerFactoryPluginI
    *   The string representation of the path to the image.
    */
   protected function getImage() {
-    return $this->getModulePath() . '/js/plugins/tokenbrowser/tokenbrowser.png';
+    return $this->getModulePath('token_filter') . '/js/plugins/tokenbrowser/tokenbrowser.png';
   }
 
   /**
@@ -139,7 +139,7 @@ class TokenBrowser extends CKEditorPluginBase implements ContainerFactoryPluginI
    * CKEditor plugin you are implementing.
    */
   public function getFile() {
-    return $this->getModulePath() . '/js/plugins/tokenbrowser/plugin.js';
+    return $this->getModulePath('token_filter') . '/js/plugins/tokenbrowser/plugin.js';
   }
 
   /**
@@ -148,8 +148,8 @@ class TokenBrowser extends CKEditorPluginBase implements ContainerFactoryPluginI
    * @return string
    *   The string representation of the module's path.
    */
-  protected function getModulePath() {
-    return drupal_get_path('module', 'token_filter');
+  protected function getModulePath(string $module_name): string {
+    return drupal_get_path('module', $module_name);
   }
 
   /**

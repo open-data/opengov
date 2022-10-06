@@ -8,7 +8,7 @@ use Drupal\search_api\Event\MappingFieldTypesEvent;
 use Drupal\search_api\Event\SearchApiEvents;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Provides helper methods for dealing with Search API data types.
@@ -32,7 +32,7 @@ class DataTypeHelper implements DataTypeHelperInterface {
   /**
    * The event dispatcher.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
 
@@ -59,7 +59,7 @@ class DataTypeHelper implements DataTypeHelperInterface {
    *
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $eventDispatcher
    *   The event dispatcher.
    * @param \Drupal\search_api\DataType\DataTypePluginManager $dataTypeManager
    *   The data type plugin manager.
@@ -138,12 +138,12 @@ class DataTypeHelper implements DataTypeHelperInterface {
 
       // Allow other modules to intercept and define what default type they want
       // to use for their data type.
-      $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.mapping_field_types" event instead. See https://www.drupal.org/node/3059866';
+      $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.mapping_field_types" event instead. See https://www.drupal.org/node/3059866';
       $hook = 'search_api_field_type_mapping';
       $this->moduleHandler->alterDeprecated($description, $hook, $mapping);
       $eventName = SearchApiEvents::MAPPING_FIELD_TYPES;
       $event = new MappingFieldTypesEvent($mapping);
-      $this->eventDispatcher->dispatch($eventName, $event);
+      $this->eventDispatcher->dispatch($event, $eventName);
 
       $this->fieldTypeMapping = $mapping;
     }

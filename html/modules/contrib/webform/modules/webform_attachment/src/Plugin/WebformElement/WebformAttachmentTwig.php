@@ -27,7 +27,7 @@ class WebformAttachmentTwig extends WebformAttachmentBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

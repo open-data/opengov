@@ -41,21 +41,21 @@ webform_custom_composite:
   -
     first_name: George
     last_name: Lennon
-    gender: Female
+    sex: Female
     martial_status: Divorced
     employment_status: 'Full Time'
     age: 1
   -
     first_name: George
     last_name: McCartney
-    gender: Male
+    sex: Male
     martial_status: Married
     employment_status: Unemployed
     age: 1
   -
     first_name: Paul
     last_name: Starr
-    gender: Male
+    sex: Male
     martial_status: Single
     employment_status: Unemployed
     age: !!float 5

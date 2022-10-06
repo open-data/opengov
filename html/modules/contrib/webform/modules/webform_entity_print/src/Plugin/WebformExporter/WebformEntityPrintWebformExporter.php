@@ -2,20 +2,10 @@
 
 namespace Drupal\webform_entity_print\Plugin\WebformExporter;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\entity_print\Plugin\ExportTypeManagerInterface;
-use Drupal\entity_print\PrintBuilderInterface;
-use Drupal\entity_print\Plugin\EntityPrintPluginManagerInterface;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformExporter\DocumentBaseWebformExporter;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\WebformTokenManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Defines a Webform Entity Print PDF exporter.
@@ -65,37 +55,16 @@ class WebformEntityPrintWebformExporter extends DocumentBaseWebformExporter {
   protected $printBuilder;
 
   /**
-   * Constructs a WebformEntityPrintBaseWebformExporter object.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerInterface $logger, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, WebformElementManagerInterface $element_manager, WebformTokenManagerInterface $token_manager, RequestStack $request_stack, EntityPrintPluginManagerInterface $print_engine_manager, ExportTypeManagerInterface $export_type_manager, PrintBuilderInterface $print_builder, FileSystemInterface $file_system) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger, $config_factory, $entity_type_manager, $element_manager, $token_manager);
-    $this->request = $request_stack->getCurrentRequest();
-    $this->printEngineManager = $print_engine_manager;
-    $this->exportTypeManager = $export_type_manager;
-    $this->printBuilder = $print_builder;
-    $this->fileSystem = $file_system ?: \Drupal::service('file_system');
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('logger.factory')->get('webform'),
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('plugin.manager.webform.element'),
-      $container->get('webform.token_manager'),
-      $container->get('request_stack'),
-      $container->get('plugin.manager.entity_print.print_engine'),
-      $container->get('plugin.manager.entity_print.export_type'),
-      $container->get('entity_print.print_builder'),
-      $container->get('file_system')
-
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->request = $container->get('request_stack')->getCurrentRequest();
+    $instance->printEngineManager = $container->get('plugin.manager.entity_print.print_engine');
+    $instance->exportTypeManager = $container->get('plugin.manager.entity_print.export_type');
+    $instance->printBuilder = $container->get('entity_print.print_builder');
+    $instance->fileSystem = $container->get('file_system');
+    return $instance;
   }
 
   /**
@@ -166,9 +135,9 @@ class WebformEntityPrintWebformExporter extends DocumentBaseWebformExporter {
     return 10;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Export type methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get export type id.

@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Server\Api;
 
 use Solarium\Core\Client\Client;
@@ -7,7 +14,6 @@ use Solarium\Core\Client\Request;
 use Solarium\Core\Query\AbstractQuery;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
-use Solarium\Core\Query\Result\QueryType;
 
 /**
  * V2 API query.
@@ -22,7 +28,7 @@ class Query extends AbstractQuery
     protected $options = [
         'version' => Request::API_V1,
         'method' => Request::METHOD_GET,
-        'resultclass' => QueryType::class,
+        'resultclass' => Result::class,
     ];
 
     /**
@@ -45,6 +51,7 @@ class Query extends AbstractQuery
     public function setVersion(string $version): self
     {
         $this->setOption('version', $version);
+
         return $this;
     }
 
@@ -68,6 +75,7 @@ class Query extends AbstractQuery
     public function setMethod(string $method): self
     {
         $this->setOption('method', $method);
+
         return $this;
     }
 
@@ -91,6 +99,7 @@ class Query extends AbstractQuery
     public function setAccept(string $accept): self
     {
         $this->setOption('accept', $accept);
+
         return $this;
     }
 
@@ -105,26 +114,60 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Set contenttype option.
+     * Set request Content-Type.
      *
-     * @param string $contentType
+     * Use one of the Request::CONTENT_TYPE_* constants as value.
+     *
+     * Content-Type parameters can be passed in $params or set with {@see setContentTypeParams()}.
+     *
+     * @param string|null $contentType
+     * @param array|null  $params
      *
      * @return self Provides fluent interface
      */
-    public function setContentType(string $contentType): self
+    public function setContentType(?string $contentType, ?array $params = null): self
     {
         $this->setOption('contenttype', $contentType);
+
+        if (null !== $params) {
+            $this->setOption('contenttypeparams', $params);
+        }
+
         return $this;
     }
 
     /**
-     * Get contenttype option.
+     * Get request Content-Type.
      *
      * @return string|null
      */
     public function getContentType(): ?string
     {
         return $this->getOption('contenttype');
+    }
+
+    /**
+     * Set Content-Type parameters.
+     *
+     * @param array|null $params
+     *
+     * @return self Provides fluent interface
+     */
+    public function setContentTypeParams(?array $params): self
+    {
+        $this->setOption('contenttypeparams', $params);
+
+        return $this;
+    }
+
+    /**
+     * Get Content-Type parameters.
+     *
+     * @return array|null
+     */
+    public function getContentTypeParams(): ?array
+    {
+        return $this->getOption('contenttypeparams');
     }
 
     /**
@@ -137,6 +180,7 @@ class Query extends AbstractQuery
     public function setRawData(string $rawData): self
     {
         $this->setOption('rawdata', $rawData);
+
         return $this;
     }
 

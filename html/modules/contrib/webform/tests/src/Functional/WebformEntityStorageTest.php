@@ -22,7 +22,7 @@ class WebformEntityStorageTest extends WebformBrowserTestBase {
     $webform->cached = TRUE;
 
     // Check that load (single) has the custom 'cached' property.
-    $this->assertEqual($webform->cached, $storage->load('contact')->cached);
+    $this->assertEquals($webform->cached, $storage->load('contact')->cached);
 
     // Check that loadMultiple does not have the custom 'cached' property.
     // The below test will fail when and if

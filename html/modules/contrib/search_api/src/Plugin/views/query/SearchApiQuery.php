@@ -3,13 +3,15 @@
 namespace Drupal\search_api\Plugin\views\query;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Url;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\ParseMode\ParseModeInterface;
@@ -164,7 +166,7 @@ class SearchApiQuery extends QueryPluginBase {
   /**
    * Retrieves the contained entity from a Views result row.
    *
-   * @param \Drupal\views\ResultRow $row
+   * @param \Drupal\search_api\Plugin\views\ResultRow $row
    *   The Views result row.
    * @param string $relationship_id
    *   The ID of the view relationship to use.
@@ -260,7 +262,7 @@ class SearchApiQuery extends QueryPluginBase {
       if ($display_type === 'rest_export') {
         $display_type = 'rest';
       }
-      $this->query->setSearchId("views_$display_type:" . $view->id() . '__' . $view->current_display);
+      $this->query->setSearchId("views_$display_type:" . $view->id() . '__' . $display->display['id']);
       $this->query->setOption('search_api_view', $view);
     }
     catch (\Exception $e) {
@@ -280,10 +282,13 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @return $this
    *
-   * @deprecated in 8.x-1.11. Use ::addRetrievedFieldValue() instead.
+   * @deprecated in search_api:8.x-1.11 and is removed from search_api:2.0.0. Use
+   *   addRetrievedFieldValue() instead.
+   *
+   * @see https://www.drupal.org/node/3011060
    */
   public function addRetrievedProperty($combined_property_path) {
-    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::addRetrievedProperty() is deprecated in Search API 8.x-1.11. Use addRetrievedFieldValue() instead. See https://www.drupal.org/node/3009136', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::addRetrievedProperty() is deprecated in search_api:8.x-1.11 and is removed from search_api:2.0.0. Use addRetrievedFieldValue() instead. See https://www.drupal.org/node/3011060', E_USER_DEPRECATED);
     $this->addField(NULL, $combined_property_path);
     return $this;
   }
@@ -363,6 +368,9 @@ class SearchApiQuery extends QueryPluginBase {
       'preserve_facet_query_args' => [
         'default' => FALSE,
       ],
+      'query_tags' => [
+        'default' => [],
+      ],
     ];
   }
 
@@ -402,6 +410,29 @@ class SearchApiQuery extends QueryPluginBase {
         '#value' => FALSE,
       ];
     }
+
+    $form['query_tags'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Query Tags'),
+      '#description' => $this->t('If set, these tags will be appended to the query and can be used to identify the query in a module. This can be helpful for altering queries.'),
+      '#default_value' => implode(', ', $this->options['query_tags']),
+      '#element_validate' => ['views_element_validate_tags'],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitOptionsForm(&$form, FormStateInterface $form_state) {
+    $value = &$form_state->getValue(['query', 'options', 'query_tags']);
+    if (is_array($value)) {
+      // We already ran on this form state. This happens when the user toggles a
+      // display to override defaults or vice-versa – the submit handler gets
+      // invoked twice, and we don't want to bash the values  from the original
+      // call.
+      return;
+    }
+    $value = array_filter(array_map('trim', explode(',', $value)));
   }
 
   /**
@@ -415,11 +446,13 @@ class SearchApiQuery extends QueryPluginBase {
    *   containing entities to their entity types. Otherwise, TRUE if there is at
    *   least one such datasource.
    *
-   * @deprecated Will be removed in a future version of the module. Use
+   * @deprecated in search_api:8.x-1.5 and is removed from search_api:2.0.0. Use
    *   \Drupal\search_api\IndexInterface::getEntityTypes() instead.
+   *
+   * @see https://www.drupal.org/node/2899682
    */
   public function getEntityTypes($return_bool = FALSE) {
-    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::getEntityTypes() is deprecated in Search API 8.x-1.5. Use \Drupal\search_api\IndexInterface::getEntityTypes() instead. See https://www.drupal.org/node/2899678', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::getEntityTypes() is deprecated in Search API 8.x-1.5. Use \Drupal\search_api\IndexInterface::getEntityTypes() instead. See https://www.drupal.org/node/2899682', E_USER_DEPRECATED);
     $types = $this->index->getEntityTypes();
     return $return_bool ? (bool) $types : $types;
   }
@@ -508,10 +541,11 @@ class SearchApiQuery extends QueryPluginBase {
       $this->query->setOption('search_api_bypass_access', TRUE);
     }
 
-    // If the View and the Panel conspire to provide an overridden path then
-    // pass that through as the base path.
-    if (($path = $this->view->getPath()) && strpos(Url::fromRoute('<current>')->toString(), $path) !== 0) {
-      $this->query->setOption('search_api_base_path', $path);
+    // Add the query tags.
+    if (!empty($this->options['query_tags'])) {
+      foreach ($this->options['query_tags'] as $tag) {
+        $this->query->addTag($tag);
+      }
     }
 
     // Save query information for Views UI.
@@ -665,6 +699,9 @@ class SearchApiQuery extends QueryPluginBase {
         if ($object) {
           $values['_object'] = $object;
           $values['_relationship_objects'][NULL] = [$object];
+          if ($object instanceof EntityAdapter) {
+            $values['_entity'] = $object->getEntity();
+          }
         }
       }
       catch (SearchApiException $e) {
@@ -674,31 +711,72 @@ class SearchApiQuery extends QueryPluginBase {
 
       // Gather any properties from the search results.
       foreach ($result->getFields(FALSE) as $field_id => $field) {
-        if ($field->getValues()) {
-          $path = $field->getCombinedPropertyPath();
-          try {
-            $property = $field->getDataDefinition();
-            // For configurable processor-defined properties, our Views field
-            // handlers use a special property path to distinguish multiple
-            // fields with the same property path. Therefore, we here also set
-            // the values using that special property path so this will work
-            // correctly.
-            if ($property instanceof ConfigurablePropertyInterface) {
-              $path .= '|' . $field_id;
-            }
+        $path = $field->getCombinedPropertyPath();
+        try {
+          $property = $field->getDataDefinition();
+          // For configurable processor-defined properties, our Views field
+          // handlers use a special property path to distinguish multiple
+          // fields with the same property path. Therefore, we here also set
+          // the values using that special property path so this will work
+          // correctly.
+          if ($property instanceof ConfigurablePropertyInterface) {
+            $path .= '|' . $field_id;
           }
-          catch (SearchApiException $e) {
-            // If we're not able to retrieve the data definition at this point,
-            // it doesn't really matter.
-          }
-          $values[$path] = $field->getValues();
         }
+        catch (SearchApiException $e) {
+          // If we're not able to retrieve the data definition at this point,
+          // it doesn't really matter.
+        }
+        $values[$path] = $field->getValues();
       }
 
       $values['index'] = $count++;
 
       $view->result[] = new ResultRow($values);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    $query = $this->getSearchApiQuery();
+    if ($query instanceof CacheableDependencyInterface) {
+      return $query->getCacheContexts();
+    }
+
+    // We are not returning the cache contexts from the parent class since these
+    // are based on the default SQL storage from Views, while our results are
+    // coming from the search engine.
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    $tags = parent::getCacheTags();
+
+    $query = $this->getSearchApiQuery();
+    if ($query instanceof CacheableDependencyInterface) {
+      $tags = Cache::mergeTags($query->getCacheTags(), $tags);
+    }
+
+    return $tags;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    $max_age = parent::getCacheMaxAge();
+
+    $query = $this->getSearchApiQuery();
+    if ($query instanceof CacheableDependencyInterface) {
+      $max_age = Cache::mergeMaxAges($query->getCacheMaxAge(), $max_age);
+    }
+
+    return $max_age;
   }
 
   /**

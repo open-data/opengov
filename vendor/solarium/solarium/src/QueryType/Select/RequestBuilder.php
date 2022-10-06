@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Select;
 
 use Solarium\Core\Client\Request;
@@ -27,14 +34,17 @@ class RequestBuilder extends BaseRequestBuilder
         // add basic params to request
         $request->addParam(
             'q',
-            sprintf('%s%s', $query->getLocalParameters()->render(), $query->getQuery())
+            $this->renderLocalParams(
+                $query->getQuery(),
+                $query->getLocalParameters()->getParameters()
+            )
         );
         $request->addParam('start', $query->getStart());
         $request->addParam('rows', $query->getRows());
         $request->addParam('fl', implode(',', $query->getFields()));
         $request->addParam('q.op', $query->getQueryDefaultOperator());
         $request->addParam('df', $query->getQueryDefaultField());
-        $request->addParam('cursorMark', $query->getCursormark());
+        $request->addParam('cursorMark', $query->getCursorMark());
         $request->addParam('sow', $query->getSplitOnWhitespace());
 
         // add sort fields to request
@@ -50,7 +60,10 @@ class RequestBuilder extends BaseRequestBuilder
         $filterQueries = $query->getFilterQueries();
         if (0 !== \count($filterQueries)) {
             foreach ($filterQueries as $filterQuery) {
-                $fq = sprintf('%s%s', $filterQuery->getLocalParameters()->render(), $filterQuery->getQuery());
+                $fq = $this->renderLocalParams(
+                    $filterQuery->getQuery(),
+                    $filterQuery->getLocalParameters()->getParameters()
+                );
 
                 $request->addParam('fq', $fq);
             }

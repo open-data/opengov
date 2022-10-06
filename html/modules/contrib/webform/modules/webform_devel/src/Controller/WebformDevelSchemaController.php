@@ -2,11 +2,9 @@
 
 namespace Drupal\webform_devel\Controller;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\webform\WebformInterface;
-use Drupal\webform_devel\WebformDevelSchemaInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -30,26 +28,13 @@ class WebformDevelSchemaController extends ControllerBase implements ContainerIn
   protected $schema;
 
   /**
-   * Constructs a WebformDevelSchemaController object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\webform_devel\WebformDevelSchemaInterface $schema
-   *   The webform devel schema generator.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, WebformDevelSchemaInterface $schema) {
-    $this->configFactory = $config_factory;
-    $this->schema = $schema;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('webform_devel.schema')
-    );
+    $instance = parent::create($container);
+    $instance->configFactory = $container->get('config.factory');
+    $instance->schema = $container->get('webform_devel.schema');
+    return $instance;
   }
 
   /**
@@ -74,7 +59,8 @@ class WebformDevelSchemaController extends ControllerBase implements ContainerIn
       // Rows.
       $elements = $this->schema->getElements($webform);
       foreach ($elements as $element) {
-        $element['options'] = implode($multiple_delimiter, $element['options']);
+        $element['options_text'] = implode($multiple_delimiter, $element['options_text']);
+        $element['options_value'] = implode($multiple_delimiter, $element['options_value']);
         fputcsv($handle, $element);
       }
 

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\ckeditor_codemirror\Functional;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\editor\Entity\Editor;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\Tests\BrowserTestBase;
@@ -15,6 +16,8 @@ use Drupal\Tests\BrowserTestBase;
  */
 class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
 
+  use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
@@ -25,6 +28,11 @@ class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
     'ckeditor',
     'ckeditor_codemirror',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stable';
 
   /**
    * {@inheritdoc}
@@ -86,7 +94,7 @@ class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
     $library_path = _ckeditor_codemirror_get_library_path();
     if (file_exists(DRUPAL_ROOT . '/' . $library_path . '/codemirror/plugin.js')) {
       $this->assertSession()->responseContains(
-        t('CKEditor CodeMirror plugin version %version installed at %path.',
+        $this->t('CKEditor CodeMirror plugin version %version installed at %path.',
           [
             '%path' => base_path() . $library_path,
             '%version' => _ckeditor_codemirror_get_version(),
@@ -94,33 +102,23 @@ class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
       );
     }
     else {
-      $this->assertSession()->pageTextContains(
-        t('CKEditor CodeMirror plugin was not found.')
-      );
+      $this->assertSession()->pageTextContains('CKEditor CodeMirror plugin was not found.');
     }
   }
 
   /**
    * Enable CKEditor CodeMirror plugin.
    */
-  public function testEnableCkeditorCodeMirrorPlguin() {
+  public function testEnableCkeditorCodeMirrorPlugin() {
     $this->drupalLogin($this->privilegedUser);
     $this->drupalGet('admin/config/content/formats/manage/full_html');
-    $this->assertSession()->pageTextContains(
-      t('Enable CodeMirror source view syntax highlighting.')
-    );
-    $this->assertSession()->checkboxNotChecked(
-      'edit-editor-settings-plugins-codemirror-enable'
-    );
+    $this->assertSession()->pageTextContains('Enable CodeMirror source view syntax highlighting.');
+    $this->assertSession()->checkboxNotChecked('edit-editor-settings-plugins-codemirror-enable');
 
     // Enable the plugin.
-    $edit = [
-      'editor[settings][plugins][codemirror][enable]' => '1',
-    ];
-    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
-    $this->assertSession()->pageTextContains(
-      t('The text format Full HTML has been updated.')
-    );
+    $edit = ['editor[settings][plugins][codemirror][enable]' => '1'];
+    $this->submitForm($edit, 'Save configuration');
+    $this->assertSession()->pageTextContains('The text format Full HTML has been updated.');
 
     // Check for the plugin on node add page.
     $this->drupalGet('node/add/article');

@@ -18,7 +18,7 @@ trait MetatagHelperTrait {
    */
   protected function loginUser1() {
     // Load user 1.
-    /* @var \Drupal\user\Entity\User $account */
+    /** @var \Drupal\user\Entity\User $account */
     $account = User::load(1);
 
     // Reset the password.
@@ -115,7 +115,7 @@ trait MetatagHelperTrait {
       $this->assertSame($status, SAVED_NEW, (new FormattableMarkup('Created vocabulary %type.', ['%type' => $vocab->id()]))->__toString());
     }
     else {
-      $this->assertEqual($status, SAVED_NEW, (new FormattableMarkup('Created vocabulary %type.', ['%type' => $vocab->id()]))->__toString());
+      self::assertEquals($status, SAVED_NEW, (new FormattableMarkup('Created vocabulary %type.', ['%type' => $vocab->id()]))->__toString());
     }
 
     return $vocab;
@@ -148,7 +148,7 @@ trait MetatagHelperTrait {
       $this->assertSame($status, SAVED_NEW, (new FormattableMarkup('Created term %name.', ['%name' => $term->label()]))->__toString());
     }
     else {
-      $this->assertEqual($status, SAVED_NEW, (new FormattableMarkup('Created term %name.', ['%name' => $term->label()]))->__toString());
+      self::assertEquals($status, SAVED_NEW, (new FormattableMarkup('Created term %name.', ['%name' => $term->label()]))->__toString());
     }
 
     return $term;

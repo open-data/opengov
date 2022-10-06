@@ -29,13 +29,15 @@ class WebformVariantExcludedTest extends WebformBrowserTestBase {
    * Test variant element.
    */
   public function testVariantExcluded() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     // Check that the test variant plugin is available to 'test_variant_*'
     // webforms.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_multiple/element/add/webform_variant');
-    $this->assertRaw('<option value="override">Override</option>');
-    $this->assertRaw('<option value="test">Test</option>');
+    $assert_session->responseContains('<option value="override">Override</option>');
+    $assert_session->responseContains('<option value="test">Test</option>');
 
     // Exclude the test variant plugin.
     \Drupal::configFactory()
@@ -45,8 +47,8 @@ class WebformVariantExcludedTest extends WebformBrowserTestBase {
 
     // Check that the test variant plugin is now excluded.
     $this->drupalGet('/admin/structure/webform/manage/test_variant_multiple/element/add/webform_variant');
-    $this->assertRaw('<option value="override">Override</option>');
-    $this->assertNoRaw('<option value="test">Test</option>');
+    $assert_session->responseContains('<option value="override">Override</option>');
+    $assert_session->responseNotContains('<option value="test">Test</option>');
   }
 
 }

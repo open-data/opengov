@@ -27,7 +27,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Drupal\Core\Site\Settings;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\Routing\Route;
 
 // Change the directory to the Drupal root.
@@ -104,20 +104,14 @@ if ($is_allowed) {
   require_once __DIR__ . '/includes/form.inc';
   require_once __DIR__ . '/includes/batch.inc';
 
-  if (isset($_SESSION['authorize_page_title'])) {
-    $page_title = $_SESSION['authorize_page_title'];
-  }
-  else {
-    $page_title = t('Authorize file system changes');
-  }
+  $page_title = $request->getSession()->get('authorize_page_title', t('Authorize file system changes'));
 
   // See if we've run the operation and need to display a report.
-  if (isset($_SESSION['authorize_results']) && $results = $_SESSION['authorize_results']) {
+  if ($results = $request->getSession()->remove('authorize_results')) {
 
     // Clear the session out.
-    unset($_SESSION['authorize_results']);
-    unset($_SESSION['authorize_operation']);
-    unset($_SESSION['authorize_filetransfer_info']);
+    $request->getSession()->remove('authorize_operation');
+    $request->getSession()->remove('authorize_filetransfer_info');
 
     if (!empty($results['page_title'])) {
       $page_title = $results['page_title'];
@@ -175,7 +169,7 @@ if ($is_allowed) {
     }
   }
   else {
-    if (empty($_SESSION['authorize_operation']) || empty($_SESSION['authorize_filetransfer_info'])) {
+    if (!$request->getSession()->has('authorize_operation') || !$request->getSession()->has('authorize_filetransfer_info')) {
       $content = ['#markup' => t('It appears you have reached this page in error.')];
     }
     elseif (!$batch = batch_get()) {

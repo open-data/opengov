@@ -37,7 +37,7 @@ webform.admin_settings.third_party.webform_entity_print:
 
 webform.settings.third_party.webform_entity_print:
   type: mapping
-  label: 'Entity print settings settings'
+  label: 'Entity print settings'
   mapping:
     template:
       type: mapping

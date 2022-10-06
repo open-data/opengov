@@ -70,7 +70,7 @@ trait TestFileCreationTrait {
       }
 
       // Copy other test files from fixtures.
-      $original = \Drupal::service('app.root') . '/core/tests/fixtures/files';
+      $original = \Drupal::root() . '/core/tests/fixtures/files';
       $files = $file_system->scanDirectory($original, '/(html|image|javascript|php|sql)-.*/');
       foreach ($files as $file) {
         $file_system->copy($file->uri, PublicStream::basePath());
@@ -153,9 +153,11 @@ trait TestFileCreationTrait {
           case 'text':
             $text .= chr(rand(32, 126));
             break;
+
           case 'binary':
             $text .= chr(rand(0, 31));
             break;
+
           case 'binary-text':
           default:
             $text .= rand(0, 1);

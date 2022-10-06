@@ -4,11 +4,14 @@ namespace Drupal\metatag;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Provides a listing of Metatag defaults entities.
  */
 class MetatagDefaultsListBuilder extends ConfigEntityListBuilder {
+
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -79,7 +82,7 @@ class MetatagDefaultsListBuilder extends ConfigEntityListBuilder {
     if (in_array($entity->id(), MetatagManager::protectedDefaults())) {
       unset($operations['delete']);
       $operations['revert'] = [
-        'title' => t('Revert'),
+        'title' => $this->t('Revert'),
         'weight' => $operations['edit']['weight'] + 1,
         'url' => $entity->toUrl('revert-form'),
       ];
@@ -112,7 +115,7 @@ class MetatagDefaultsListBuilder extends ConfigEntityListBuilder {
     }
 
     if (!empty($inherits)) {
-      $output .= '<div><p>' . t('Inherits meta tags from: @inherits', [
+      $output .= '<div><p>' . $this->t('Inherits meta tags from: @inherits', [
         '@inherits' => $inherits,
       ]) . '</p></div>';
     }
@@ -121,12 +124,15 @@ class MetatagDefaultsListBuilder extends ConfigEntityListBuilder {
       $output .= '<table>
 <tbody>';
       foreach ($tags as $tag_id => $tag_value) {
+        if (is_array($tag_value)) {
+          $tag_value = implode(', ', array_filter($tag_value));
+        }
         $output .= '<tr><td>' . $tag_id . ':</td><td>' . $tag_value . '</td></tr>';
       }
       $output .= '</tbody></table>';
     }
 
-    $output .= '</div></div>';
+    $output .= '</div>';
 
     return [
       'data' => [
@@ -144,8 +150,9 @@ class MetatagDefaultsListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function render() {
-    drupal_set_message($this->t('Please note that while the site is in maintenance mode none of the usual meta tags will be output.'));
-
+    if (\Drupal::state()->get('system.maintenance_mode')) {
+      \Drupal::messenger()->addMessage($this->t('Please note that while the site is in maintenance mode none of the usual meta tags will be output.'));
+    }
     return parent::render();
   }
 

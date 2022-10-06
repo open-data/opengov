@@ -39,16 +39,16 @@ class DBLogResource extends ResourceBase {
    */
   public function get($id = NULL) {
     if ($id) {
-      $record = Database::getConnection()->query("SELECT * FROM {watchdog} WHERE wid = :wid", [':wid' => $id])
+      $record = Database::getConnection()->query("SELECT * FROM {watchdog} WHERE [wid] = :wid", [':wid' => $id])
         ->fetchAssoc();
       if (!empty($record)) {
         return new ResourceResponse($record);
       }
 
-      throw new NotFoundHttpException(t('Log entry with ID @id was not found', ['@id' => $id]));
+      throw new NotFoundHttpException("Log entry with ID '$id' was not found");
     }
 
-    throw new BadRequestHttpException(t('No log entry ID was provided'));
+    throw new BadRequestHttpException('No log entry ID was provided');
   }
 
 }

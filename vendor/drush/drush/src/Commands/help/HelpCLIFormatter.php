@@ -1,4 +1,5 @@
 <?php
+
 namespace Drush\Commands\help;
 
 use Consolidation\OutputFormatters\FormatterManager;
@@ -13,11 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class HelpCLIFormatter implements FormatterInterface
 {
-
     /**
      * @inheritdoc
      */
-    public function write(OutputInterface $output, $data, FormatterOptions $options)
+    public function write(OutputInterface $output, $data, FormatterOptions $options): void
     {
         $formatterManager = new FormatterManager();
 
@@ -43,10 +43,9 @@ class HelpCLIFormatter implements FormatterInterface
             foreach ($data['arguments'] as $argument) {
                 $formatted = $this->formatArgumentName($argument);
                 $description = $argument['description'];
-                // @todo No argument default in Helpdocument
-                //        if ($argument['default']) {
-        //          $description .= ' [default: ' . $argument->getDefault() . ']';
-        //        }
+                if (isset($argument['defaults'])) {
+                    $description .= ' [default: <info>' . implode(',', $argument['defaults']) . '</info>]';
+                }
                 $rows[] = [' ' . $formatted, $description];
             }
             $formatterManager->write($output, 'table', new RowsOfFields($rows), $options);
@@ -83,21 +82,17 @@ class HelpCLIFormatter implements FormatterInterface
         }
     }
 
-    /**
-     * @param array $option
-     * @return string
-     */
-    public static function formatOptionKeys($option)
+    public static function formatOptionKeys(iterable $option): string
     {
         // Remove leading dashes.
         $option['name'] = substr($option['name'], 2);
 
         $value = '';
         if ($option['accept_value']) {
-            $value = '='.strtoupper($option['name']);
+            $value = '=' . strtoupper($option['name']);
 
             if (!$option['is_value_required']) {
-                $value = '['.$value.']';
+                $value = '[' . $value . ']';
             }
         }
 
@@ -109,19 +104,27 @@ class HelpCLIFormatter implements FormatterInterface
         return $synopsis;
     }
 
-    public static function formatOptionDescription($option)
+    public static function formatOptionDescription($option): string
     {
-        $defaults = array_key_exists('defaults', $option) ? ' [default: "' . implode(' ', $option['defaults']) . '"]' : '';
+        $defaults = '';
+        if (array_key_exists('defaults', $option)) {
+            $defaults = implode(' ', $option['defaults']); //
+            // Avoid info tags for large strings https://github.com/drush-ops/drush/issues/4639.
+            if (strlen($defaults) <= 100) {
+                $defaults = "<info>$defaults</info>";
+            }
+            $defaults = ' [default: ' . $defaults . ']';
+        }
         return $option['description'] . $defaults;
     }
 
-    public function formatArgumentName($argument)
+    public static function formatArgumentName($argument)
     {
         $element = $argument['name'];
         if (!$argument['is_required']) {
-            $element = '['.$element.']';
+            $element = '[' . $element . ']';
         } elseif ($argument['is_array']) {
-            $element = $element.' ('.$element.')';
+            $element = $element . ' (' . $element . ')';
         }
 
         if ($argument['is_array']) {
@@ -131,14 +134,28 @@ class HelpCLIFormatter implements FormatterInterface
         return $element;
     }
 
-    protected function cleanOptions(&$data)
+    protected function cleanOptions(&$data): void
     {
+
         if (array_key_exists('options', $data)) {
             foreach ($data['options'] as $key => $option) {
-                if (substr($option['name'], 0, 8) == '--notify' || substr($option['name'], 0, 5) == '--xh-' || substr($option['name'], 0, 11) == '--druplicon') {
+                // Populate any missing description.
+                if (!array_key_exists('description', $option)) {
+                    $data['options'][$key]['description'] = '';
+                }
+
+                // Remove global options.
+                if (self::isGlobalOption($key)) {
                     unset($data['options'][$key]);
                 }
             }
         }
+    }
+
+    public static function isGlobalOption($name): bool
+    {
+        $application = Drush::getApplication();
+        $def = $application->getDefinition();
+        return array_key_exists($name, $def->getOptions()) || substr($name, 0, 6) == 'notify' || substr($name, 0, 3) == 'xh-' || substr($name, 0, 9) == 'druplicon';
     }
 }

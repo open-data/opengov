@@ -24,7 +24,7 @@ class TermTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['taxonomy', 'path'];
+  protected static $modules = ['taxonomy', 'path'];
 
   /**
    * {@inheritdoc}
@@ -40,6 +40,11 @@ class TermTest extends ResourceTestBase {
    * {@inheritdoc}
    */
   protected static $resourceTypeName = 'taxonomy_term--camelids';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static $resourceTypeIsVersionable = TRUE;
 
   /**
    * {@inheritdoc}
@@ -85,6 +90,14 @@ class TermTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
+  protected function setUpRevisionAuthorization($method) {
+    parent::setUpRevisionAuthorization($method);
+    $this->grantPermissionsToTestedRole(['administer taxonomy']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function createEntity() {
     $vocabulary = Vocabulary::load('camelids');
     if (!$vocabulary) {
@@ -111,7 +124,11 @@ class TermTest extends ResourceTestBase {
    * {@inheritdoc}
    */
   protected function getExpectedDocument() {
-    $self_url = Url::fromUri('base:/jsonapi/taxonomy_term/camelids/' . $this->entity->uuid())->setAbsolute()->toString(TRUE)->getGeneratedUrl();
+    $base_url = Url::fromUri('base:/jsonapi/taxonomy_term/camelids/' . $this->entity->uuid())->setAbsolute();
+    $self_url = clone $base_url;
+    $version_identifier = 'id:' . $this->entity->getRevisionId();
+    $self_url = $self_url->setOption('query', ['resourceVersion' => $version_identifier]);
+    $version_query_string = '?resourceVersion=' . urlencode($version_identifier);
 
     // We test with multiple parent terms, and combinations thereof.
     // @see ::createEntity()
@@ -144,8 +161,8 @@ class TermTest extends ResourceTestBase {
             ],
           ],
           'links' => [
-            'related' => ['href' => $self_url . '/parent'],
-            'self' => ['href' => $self_url . '/relationships/parent'],
+            'related' => ['href' => $base_url->toString() . '/parent' . $version_query_string],
+            'self' => ['href' => $base_url->toString() . '/relationships/parent' . $version_query_string],
           ],
         ];
         break;
@@ -155,12 +172,15 @@ class TermTest extends ResourceTestBase {
           'data' => [
             [
               'id' => Term::load(2)->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => 2,
+              ],
               'type' => 'taxonomy_term--camelids',
             ],
           ],
           'links' => [
-            'related' => ['href' => $self_url . '/parent'],
-            'self' => ['href' => $self_url . '/relationships/parent'],
+            'related' => ['href' => $base_url->toString() . '/parent' . $version_query_string],
+            'self' => ['href' => $base_url->toString() . '/relationships/parent' . $version_query_string],
           ],
         ];
         break;
@@ -184,12 +204,15 @@ class TermTest extends ResourceTestBase {
             ],
             [
               'id' => Term::load(2)->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => 2,
+              ],
               'type' => 'taxonomy_term--camelids',
             ],
           ],
           'links' => [
-            'related' => ['href' => $self_url . '/parent'],
-            'self' => ['href' => $self_url . '/relationships/parent'],
+            'related' => ['href' => $base_url->toString() . '/parent' . $version_query_string],
+            'self' => ['href' => $base_url->toString() . '/relationships/parent' . $version_query_string],
           ],
         ];
         break;
@@ -199,16 +222,22 @@ class TermTest extends ResourceTestBase {
           'data' => [
             [
               'id' => Term::load(3)->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => 3,
+              ],
               'type' => 'taxonomy_term--camelids',
             ],
             [
               'id' => Term::load(2)->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => 2,
+              ],
               'type' => 'taxonomy_term--camelids',
             ],
           ],
           'links' => [
-            'related' => ['href' => $self_url . '/parent'],
-            'self' => ['href' => $self_url . '/relationships/parent'],
+            'related' => ['href' => $base_url->toString() . '/parent' . $version_query_string],
+            'self' => ['href' => $base_url->toString() . '/relationships/parent' . $version_query_string],
           ],
         ];
         break;
@@ -224,13 +253,13 @@ class TermTest extends ResourceTestBase {
         'version' => '1.0',
       ],
       'links' => [
-        'self' => ['href' => $self_url],
+        'self' => ['href' => $base_url->toString()],
       ],
       'data' => [
         'id' => $this->entity->uuid(),
         'type' => 'taxonomy_term--camelids',
         'links' => [
-          'self' => ['href' => $self_url],
+          'self' => ['href' => $self_url->toString()],
         ],
         'attributes' => [
           'changed' => (new \DateTime())->setTimestamp($this->entity->getChangedTime())->setTimezone(new \DateTimeZone('UTC'))->format(\DateTime::RFC3339),
@@ -261,21 +290,24 @@ class TermTest extends ResourceTestBase {
           'vid' => [
             'data' => [
               'id' => Vocabulary::load('camelids')->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => 'camelids',
+              ],
               'type' => 'taxonomy_vocabulary--taxonomy_vocabulary',
             ],
             'links' => [
-              'related' => ['href' => $self_url . '/vid'],
-              'self' => ['href' => $self_url . '/relationships/vid'],
+              'related' => ['href' => $base_url->toString() . '/vid' . $version_query_string],
+              'self' => ['href' => $base_url->toString() . '/relationships/vid' . $version_query_string],
             ],
           ],
           'revision_user' => [
             'data' => NULL,
             'links' => [
               'related' => [
-                'href' => $self_url . '/revision_user',
+                'href' => $base_url->toString() . '/revision_user' . $version_query_string,
               ],
               'self' => [
-                'href' => $self_url . '/relationships/revision_user',
+                'href' => $base_url->toString() . '/relationships/revision_user' . $version_query_string,
               ],
             ],
           ],
@@ -372,7 +404,7 @@ class TermTest extends ResourceTestBase {
     $this->setUpAuthorization('PATCH');
     $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
 
-    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/jsonapi/issues/2878463.
+    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/drupal/issues/2878463.
     $url = Url::fromRoute(sprintf('jsonapi.%s.individual', static::$resourceTypeName), ['entity' => $this->entity->uuid()]);
     // $url = $this->entity->toUrl('jsonapi');
     $request_options = [];
@@ -438,7 +470,7 @@ class TermTest extends ResourceTestBase {
     // Modify the entity under test to use the provided parent terms.
     $this->entity->set('parent', $parent_term_ids)->save();
 
-    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/jsonapi/issues/2878463.
+    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/drupal/issues/2878463.
     $url = Url::fromRoute(sprintf('jsonapi.%s.individual', static::$resourceTypeName), ['entity' => $this->entity->uuid()]);
     // $url = $this->entity->toUrl('jsonapi');
     $request_options = [];
@@ -467,13 +499,6 @@ class TermTest extends ResourceTestBase {
         [3, 2],
       ],
     ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function testRelated() {
-    $this->markTestSkipped('Remove this in https://www.drupal.org/project/jsonapi/issues/2940339');
   }
 
   /**

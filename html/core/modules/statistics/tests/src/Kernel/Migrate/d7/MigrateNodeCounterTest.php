@@ -14,12 +14,10 @@ class MigrateNodeCounterTest extends MigrateDrupal7TestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'content_translation',
     'language',
     'menu_ui',
-    // Required for translation migrations.
-    'migrate_drupal_multilingual',
     'node',
     'statistics',
     'text',
@@ -28,7 +26,7 @@ class MigrateNodeCounterTest extends MigrateDrupal7TestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('node', ['node_access']);
@@ -70,8 +68,10 @@ class MigrateNodeCounterTest extends MigrateDrupal7TestBase {
    *   The expected day count.
    * @param int $timestamp
    *   The expected timestamp.
+   *
+   * @internal
    */
-  protected function assertNodeCounter($nid, $total_count, $day_count, $timestamp) {
+  protected function assertNodeCounter(int $nid, int $total_count, int $day_count, int $timestamp): void {
     /** @var \Drupal\statistics\StatisticsViewsResult $statistics */
     $statistics = $this->container->get('statistics.storage.node')->fetchView($nid);
     $this->assertSame($total_count, $statistics->getTotalCount());

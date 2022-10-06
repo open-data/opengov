@@ -3,9 +3,9 @@
  * Theme override for checkbox.
  */
 
-(Drupal => {
+((Drupal) => {
   /**
-   * Constucts a checkbox input element.
+   * Constructs a checkbox input element.
    *
    * @return {string}
    *   A string representing a DOM fragment.

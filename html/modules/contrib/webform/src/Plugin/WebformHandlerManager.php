@@ -32,7 +32,7 @@ class WebformHandlerManager extends DefaultPluginManager implements WebformHandl
   protected $configFactory;
 
   /**
-   * Constructs a WebformHandlerManager.
+   * Constructs a WebformHandlerManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -75,7 +75,7 @@ class WebformHandlerManager extends DefaultPluginManager implements WebformHandl
    * {@inheritdoc}
    */
   public function removeExcludeDefinitions(array $definitions) {
-    $definitions = isset($definitions) ? $definitions : $this->getDefinitions();
+    $definitions = $definitions ?? $this->getDefinitions();
 
     // Exclude 'broken' handler.
     unset($definitions['broken']);

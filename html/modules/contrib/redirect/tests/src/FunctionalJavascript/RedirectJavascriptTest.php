@@ -90,8 +90,8 @@ class RedirectJavascriptTest extends WebDriverTestBase {
 
     // Try to find the redirect we just created.
     $redirect = $this->repository->findMatchingRedirect('non-existing');
-    $this->assertEqual($redirect->getSourceUrl(), Url::fromUri('base:non-existing')->toString());
-    $this->assertEqual($redirect->getRedirectUrl()->toString(), Url::fromUri('base:node')->toString());
+    $this->assertEquals(Url::fromUri('base:non-existing')->toString(), $redirect->getSourceUrl());
+    $this->assertEquals(Url::fromUri('base:node')->toString(), $redirect->getRedirectUrl()->toString());
 
     // After adding the redirect we should end up in the list. Check if the
     // redirect is listed.
@@ -124,7 +124,7 @@ class RedirectJavascriptTest extends WebDriverTestBase {
     $this->storage->resetCache();
     $redirects = $this->repository->findBySourcePath('non-existing');
     $redirect = array_shift($redirects);
-    $this->assertEqual($redirect->getSourceUrl(), Url::fromUri('base:non-existing', ['query' => ['key' => 'value']])->toString());
+    $this->assertEquals(Url::fromUri('base:non-existing', ['query' => ['key' => 'value']])->toString(), $redirect->getSourceUrl());
 
     // Test the source url hints.
     // The hint about an existing base path.
@@ -147,7 +147,7 @@ class RedirectJavascriptTest extends WebDriverTestBase {
     $this->assertRaw(
       t(
         'The source path %path is likely a valid path. It is preferred to <a href="@url-alias">create URL aliases</a> for existing paths rather than redirects.',
-        ['%path' => 'node', '@url-alias' => Url::fromRoute('path.admin_add')->toString()]
+        ['%path' => 'node', '@url-alias' => Url::fromRoute('entity.path_alias.add_form')->toString()]
       )
     );
 

@@ -2,7 +2,6 @@
 
 namespace Drupal\views\EventSubscriber;
 
-use Drupal\Core\DependencyInjection\DeprecatedServicePropertyTrait;
 use Drupal\Core\Entity\EntityTypeEventSubscriberTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeListenerInterface;
@@ -19,12 +18,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ViewsEntitySchemaSubscriber implements EntityTypeListenerInterface, EventSubscriberInterface {
 
   use EntityTypeEventSubscriberTrait;
-  use DeprecatedServicePropertyTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $deprecatedProperties = ['entityManager' => 'entity.manager'];
 
   /**
    * Indicates that a base table got renamed.
@@ -98,12 +91,8 @@ class ViewsEntitySchemaSubscriber implements EntityTypeListenerInterface, EventS
    * @param \Psr\Log\LoggerInterface $logger
    *   A logger instance.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger = NULL) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger) {
     $this->entityTypeManager = $entity_type_manager;
-    if (!$logger) {
-      @trigger_error('Calling ViewsEntitySchemaSubscriber::__construct() with the $logger argument is supported in drupal:8.7.1 and will be required before drupal:9.0.0. See https://www.drupal.org/project/drupal/issues/3052492.', E_USER_DEPRECATED);
-      $logger = \Drupal::service('logger.channel.default');
-    }
     $this->logger = $logger;
   }
 
@@ -180,30 +169,39 @@ class ViewsEntitySchemaSubscriber implements EntityTypeListenerInterface, EventS
         case static::BASE_TABLE_RENAME:
           $this->baseTableRename($all_views, $entity_type->id(), $original->getBaseTable(), $entity_type->getBaseTable());
           break;
+
         case static::DATA_TABLE_RENAME:
           $this->dataTableRename($all_views, $entity_type->id(), $original->getDataTable(), $entity_type->getDataTable());
           break;
+
         case static::DATA_TABLE_ADDITION:
           $this->dataTableAddition($all_views, $entity_type, $entity_type->getDataTable(), $entity_type->getBaseTable());
           break;
+
         case static::DATA_TABLE_REMOVAL:
           $this->dataTableRemoval($all_views, $entity_type->id(), $original->getDataTable(), $entity_type->getBaseTable());
           break;
+
         case static::REVISION_TABLE_RENAME:
           $this->baseTableRename($all_views, $entity_type->id(), $original->getRevisionTable(), $entity_type->getRevisionTable());
           break;
+
         case static::REVISION_TABLE_ADDITION:
           // If we add revision support we don't have to do anything.
           break;
+
         case static::REVISION_TABLE_REMOVAL:
           $this->revisionRemoval($all_views, $original);
           break;
+
         case static::REVISION_DATA_TABLE_RENAME:
           $this->dataTableRename($all_views, $entity_type->id(), $original->getRevisionDataTable(), $entity_type->getRevisionDataTable());
           break;
+
         case static::REVISION_DATA_TABLE_ADDITION:
           $this->dataTableAddition($all_views, $entity_type, $entity_type->getRevisionDataTable(), $entity_type->getRevisionTable());
           break;
+
         case static::REVISION_DATA_TABLE_REMOVAL:
           $this->dataTableRemoval($all_views, $entity_type->id(), $original->getRevisionDataTable(), $entity_type->getRevisionTable());
           break;
@@ -248,7 +246,7 @@ class ViewsEntitySchemaSubscriber implements EntityTypeListenerInterface, EventS
 
     $all_views = $this->entityTypeManager->getStorage('view')->loadMultiple(NULL);
     /** @var \Drupal\views\Entity\View $view */
-    foreach ($all_views as $id => $view) {
+    foreach ($all_views as $view) {
 
       // First check just the base table.
       if (in_array($view->get('base_table'), $tables)) {
@@ -401,7 +399,7 @@ class ViewsEntitySchemaSubscriber implements EntityTypeListenerInterface, EventS
   }
 
   /**
-   * Updates views if revision support is removed
+   * Updates views if revision support is removed.
    *
    * @param \Drupal\views\Entity\View[] $all_views
    *   All views.

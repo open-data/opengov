@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Result\Facet;
 
 /**
@@ -19,13 +26,22 @@ class Buckets implements FacetResultInterface, \IteratorAggregate, \Countable
     protected $buckets;
 
     /**
+     * numBuckets.
+     *
+     * @var int|null
+     */
+    protected $numBuckets;
+
+    /**
      * Constructor.
      *
      * @param Bucket[] $buckets
+     * @param int|null $numBuckets
      */
-    public function __construct(array $buckets)
+    public function __construct(array $buckets, ?int $numBuckets = null)
     {
         $this->buckets = $buckets;
+        $this->numBuckets = $numBuckets;
     }
 
     /**
@@ -55,6 +71,17 @@ class Buckets implements FacetResultInterface, \IteratorAggregate, \Countable
      */
     public function count(): int
     {
-        return count($this->buckets);
+        return \count($this->buckets);
+    }
+
+    /**
+     * Get total bucket count for JSON facet
+     * requires 'numBuckets':true in request.
+     *
+     * @return int|null
+     */
+    public function getNumBuckets(): ?int
+    {
+        return $this->numBuckets;
     }
 }

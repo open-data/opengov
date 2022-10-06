@@ -65,7 +65,7 @@ class WebformLikert extends FormElement {
       }
       else {
         $answer_description_property_name = ($element['#answers_description_display'] === 'help') ? 'help' : 'description';
-        list($answer_title, $answer_description) = WebformOptionsHelper::splitOption($answer);
+        [$answer_title, $answer_description] = WebformOptionsHelper::splitOption($answer);
       }
       $answers[$answer_key] = [
         'description_property_name' => $answer_description_property_name,
@@ -123,10 +123,10 @@ class WebformLikert extends FormElement {
       }
       else {
         $question_description_property_name = ($element['#questions_description_display'] === 'help') ? '#help' : '#description';
-        list($question_title, $question_description) = WebformOptionsHelper::splitOption($question);
+        [$question_title, $question_description] = WebformOptionsHelper::splitOption($question);
       }
 
-      $value = (isset($element['#value'][$question_key])) ? $element['#value'][$question_key] : NULL;
+      $value = $element['#value'][$question_key] ?? NULL;
 
       // Get question id.
       // @see \Drupal\Core\Form\FormBuilder::doBuildForm
@@ -152,6 +152,15 @@ class WebformLikert extends FormElement {
       }
 
       foreach ($answers as $answer_key => $answer) {
+        $answer_attributes = ['aria-labelledby' => $question_id];
+
+        // Add required attributes to input without setting the <label>
+        // to required.
+        if ($element['#required']) {
+          $answer_attributes['required'] = 'required';
+          $answer_attributes['aria-required'] = 'true';
+        }
+
         $row[$answer_key] = [
           '#parents' => [$element['#name'], $question_key],
           '#type' => 'radio',
@@ -162,7 +171,7 @@ class WebformLikert extends FormElement {
           // value is NULL.
           // @see \Drupal\Core\Render\Element\Radio::preRenderRadio
           '#value' => ($value === NULL) ? FALSE : (string) $value,
-          '#attributes' => ['aria-labelledby' => $question_id],
+          '#attributes' => $answer_attributes,
         ];
 
         // Wrap title in span.webform-likert-label.visually-hidden
@@ -319,7 +328,7 @@ class WebformLikert extends FormElement {
     $value = $element['#value'];
     foreach ($element['#questions'] as $question_key => $question_title) {
       if (is_null($value[$question_key])) {
-        $question_element =& $element['table'][$question_key]['likert_question'];
+        $question_element = &$element['table'][$question_key]['likert_question'];
         $t_args = ['@name' => $question_title];
         if (!empty($element['#required_error'])) {
           $form_state->setError($question_element, new FormattableMarkup($element['#required_error'], $t_args));

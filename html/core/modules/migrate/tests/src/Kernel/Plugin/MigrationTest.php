@@ -17,7 +17,7 @@ class MigrationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['migrate'];
+  protected static $modules = ['migrate'];
 
   /**
    * Tests Migration::getProcessPlugins()
@@ -42,21 +42,62 @@ class MigrationTest extends KernelTestBase {
   }
 
   /**
-   * Tests Migration::getDestinationPlugin()
+   * Tests Migration::getProcessPlugins()
    *
-   * @covers ::getDestinationPlugin
+   * @param array $process
+   *   The migration process pipeline.
+   *
+   * @covers ::getProcessPlugins
+   *
+   * @dataProvider getProcessPluginsExceptionMessageProvider
    */
-  public function testGetProcessPluginsExceptionMessage() {
+  public function testGetProcessPluginsExceptionMessage(array $process) {
     // Test with an invalid process pipeline.
     $plugin_definition = [
-      'process' => [
-        'dest1' => 123,
+      'id' => 'foo',
+      'process' => $process,
+    ];
+
+    reset($process);
+    $destination = key(($process));
+
+    $migration = \Drupal::service('plugin.manager.migration')
+      ->createStubMigration($plugin_definition);
+    $this->expectException(MigrateException::class);
+    $this->expectExceptionMessage("Invalid process for destination '$destination' in migration 'foo'");
+    $migration->getProcessPlugins();
+  }
+
+  /**
+   * Provides data for testing invalid process pipeline.
+   */
+  public function getProcessPluginsExceptionMessageProvider() {
+    return [
+      [
+        'Null' =>
+          [
+            'dest' => NULL,
+          ],
+      ],
+      [
+        'boolean' =>
+          [
+            'dest' => TRUE,
+          ],
+      ],
+      [
+        'integer' =>
+          [
+            'dest' => 2370,
+          ],
+      ],
+      [
+        'float' =>
+          [
+            'dest' => 1.61,
+          ],
       ],
     ];
-    $migration = \Drupal::service('plugin.manager.migration')->createStubMigration($plugin_definition);
-    $this->expectException(MigrateException::class);
-    $this->expectExceptionMessage("Process configuration for 'dest1' must be an array");
-    $migration->getProcessPlugins();
   }
 
   /**
@@ -67,6 +108,8 @@ class MigrationTest extends KernelTestBase {
   public function testGetMigrationDependencies() {
     $plugin_manager = \Drupal::service('plugin.manager.migration');
     $plugin_definition = [
+      'id' => 'foo',
+      'deriver' => 'fooDeriver',
       'process' => [
         'f1' => 'bar',
         'f2' => [
@@ -103,6 +146,10 @@ class MigrationTest extends KernelTestBase {
               'migration' => 'm5',
             ],
           ],
+        ],
+        'f7' => [
+          'plugin' => 'migration_lookup',
+          'migration' => 'foo',
         ],
       ],
     ];

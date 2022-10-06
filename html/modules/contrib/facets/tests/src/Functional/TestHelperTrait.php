@@ -3,7 +3,6 @@
 namespace Drupal\Tests\facets\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Core\Url;
 
 /**
  * Adds helpers for test methods.
@@ -19,7 +18,7 @@ trait TestHelperTrait {
     $links = $this->findFacetLink($label);
 
     $message = ($message ? $message : strtr('Link with label %label found.', ['%label' => $label]));
-    return $this->assert(isset($links[$index]), $message, $group);
+    return $this->assertArrayHasKey($index, $links, $message, $group);
   }
 
   /**
@@ -36,7 +35,7 @@ trait TestHelperTrait {
    */
   protected function checkFacetIsActive($label) {
     $links = $this->findFacetLink($label);
-    return $this->assert(isset($links[0]));
+    return $this->assertArrayHasKey(0, $links);
   }
 
   /**
@@ -55,7 +54,7 @@ trait TestHelperTrait {
     $label = (string) $label;
     $label = strip_tags($label);
     $links = $this->xpath('//a/span[1][normalize-space(text())=:label]', [':label' => $label]);
-    return $this->assert(isset($links[0]));
+    return $this->assertArrayHasKey(0, $links);
   }
 
   /**
@@ -65,7 +64,7 @@ trait TestHelperTrait {
     foreach ($this->blocks as $block) {
       $xpath = $this->xpath('//div[@id = :id]/div[@class="facet-empty"]', [':id' => 'block-' . $block->id()]);
       if (!$xpath) {
-        $this->assertFalse($xpath);
+        $this->assertEmpty($xpath);
       }
       else {
         $this->assertTrue($this->xpath('//div[@id = :id]/div[@class="facet-empty"]', [':id' => 'block-' . $block->id()]));
@@ -102,17 +101,20 @@ trait TestHelperTrait {
     $x_position = strpos($this->getTextContent(), $x);
     $y_position = strpos($this->getTextContent(), $y);
 
-    $message = new FormattableMarkup('Assert that %x is before %y in the source', ['%x' => $x, '%y' => $y]);
+    $message = new FormattableMarkup(
+      'Assert that %x is before %y in the source',
+      [
+        '%x' => $x,
+        '%y' => $y,
+      ]
+    );
     $this->assertTrue($x_position < $y_position, $message);
   }
 
   /**
-   * Checks that the url after clicking a facet is as expected.
-   *
-   * @param \Drupal\Core\Url $url
-   *   The expected url we end on.
+   * Clicks the test facet.
    */
-  protected function checkClickedFacetUrl(Url $url) {
+  protected function clickFacet() {
     $this->drupalGet('search-api-test-fulltext');
     $this->assertSession()->statusCodeEquals(200);
     $this->assertFacetLabel('item');
@@ -123,7 +125,6 @@ trait TestHelperTrait {
     $this->assertSession()->statusCodeEquals(200);
     $this->checkFacetIsActive('item');
     $this->assertFacetLabel('article');
-    $this->assertSession()->addressEquals($url);
   }
 
   /**
@@ -155,7 +156,13 @@ trait TestHelperTrait {
     $matches = [];
 
     if (preg_match('/(.*)\s\((\d+)\)/', $label, $matches)) {
-      $links = $this->xpath('//a//span[normalize-space(text())=:label]/following-sibling::span[normalize-space(text())=:count]', [':label' => $matches[1], ':count' => '(' . $matches[2] . ')']);
+      $links = $this->xpath(
+        '//a//span[normalize-space(text())=:label]/following-sibling::span[normalize-space(text())=:count]',
+        [
+          ':label' => $matches[1],
+          ':count' => '(' . $matches[2] . ')',
+        ]
+      );
     }
     else {
       $links = $this->xpath('//a//span[normalize-space(text())=:label]', [':label' => $label]);

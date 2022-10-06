@@ -26,6 +26,8 @@ class WebformOptionsLimitEntityReferenceTest extends WebformBrowserTestBase {
    * Test options limit.
    */
   public function testOptionsLimit() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_handler_options_limit_ent');
 
     // Must login because webform and entity references are cached for
@@ -34,7 +36,7 @@ class WebformOptionsLimitEntityReferenceTest extends WebformBrowserTestBase {
 
     // Check the entity select is not available.
     $this->drupalGet('/webform/test_handler_options_limit_ent');
-    $this->assertRaw('options_limits_entity_select is not available');
+    $assert_session->responseContains('options_limits_entity_select is not available');
 
     // Create three page nodes.
     $this->createContentType(['type' => 'page']);
@@ -44,10 +46,10 @@ class WebformOptionsLimitEntityReferenceTest extends WebformBrowserTestBase {
 
     // Check the entity select options are now populated.
     $this->drupalGet('/webform/test_handler_options_limit_ent');
-    $this->assertNoRaw('options_limits_entity_select is not available');
-    $this->assertRaw('<option value="' . $node_1->id() . '">');
-    $this->assertRaw('<option value="' . $node_2->id() . '">');
-    $this->assertRaw('<option value="' . $node_3->id() . '">');
+    $assert_session->responseNotContains('options_limits_entity_select is not available');
+    $assert_session->responseContains('<option value="' . $node_1->id() . '">');
+    $assert_session->responseContains('<option value="' . $node_2->id() . '">');
+    $assert_session->responseContains('<option value="' . $node_3->id() . '">');
 
     // Select node 1 three times.
     $this->postSubmission($webform, ['options_limits_entity_select' => [$node_1->id()]]);
@@ -56,7 +58,7 @@ class WebformOptionsLimitEntityReferenceTest extends WebformBrowserTestBase {
 
     // Check the node is now disabled.
     $this->drupalGet('/webform/test_handler_options_limit_ent');
-    $this->assertRaw('data-webform-select-options-disabled="1"');
+    $assert_session->responseContains('data-webform-select-options-disabled="1"');
   }
 
 }

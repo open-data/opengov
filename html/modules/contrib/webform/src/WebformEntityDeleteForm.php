@@ -13,6 +13,7 @@ class WebformEntityDeleteForm extends WebformConfigEntityDeleteFormBase {
    * {@inheritdoc}
    */
   public function getDescription() {
+    // @see \Drupal\webform\Form\WebformEntityDeleteMultipleForm::getDescription
     return [
       'title' => [
         '#markup' => $this->t('This action will…'),

@@ -1,10 +1,17 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\RequestBuilder;
 
+use Solarium\Component\SpellcheckInterface;
 use Solarium\Core\Client\Request;
 use Solarium\Core\ConfigurableInterface;
-use Solarium\Component\SpellcheckInterface;
 
 /**
  * Add select component Spellcheck to the request.
@@ -30,6 +37,7 @@ class Spellcheck implements ComponentRequestBuilderInterface
         $request->addParam('spellcheck.dictionary', $component->getDictionary());
         $request->addParam('spellcheck.count', $component->getCount());
         $request->addParam('spellcheck.onlyMorePopular', $component->getOnlyMorePopular());
+        $request->addParam('spellcheck.alternativeTermCount', $component->getAlternativeTermCount());
         $request->addParam('spellcheck.extendedResults', $component->getExtendedResults());
         $request->addParam('spellcheck.collate', $component->getCollate());
         $request->addParam('spellcheck.maxCollations', $component->getMaxCollations());

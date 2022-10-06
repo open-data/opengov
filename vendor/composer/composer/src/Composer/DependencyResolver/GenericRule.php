@@ -12,25 +12,20 @@
 
 namespace Composer\DependencyResolver;
 
-use Composer\Package\PackageInterface;
-use Composer\Package\Link;
-
 /**
  * @author Nils Adermann <naderman@naderman.de>
  */
 class GenericRule extends Rule
 {
+    /** @var int[] */
     protected $literals;
 
     /**
-     * @param array                 $literals
-     * @param int                   $reason     A RULE_* constant describing the reason for generating this rule
-     * @param Link|PackageInterface $reasonData
-     * @param array                 $job        The job this rule was created from
+     * @param int[] $literals
      */
-    public function __construct(array $literals, $reason, $reasonData, $job = null)
+    public function __construct(array $literals, $reason, $reasonData)
     {
-        parent::__construct($reason, $reasonData, $job);
+        parent::__construct($reason, $reasonData);
 
         // sort all packages ascending by id
         sort($literals);
@@ -38,11 +33,17 @@ class GenericRule extends Rule
         $this->literals = $literals;
     }
 
+    /**
+     * @return int[]
+     */
     public function getLiterals()
     {
         return $this->literals;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getHash()
     {
         $data = unpack('ihash', md5(implode(',', $this->literals), true));
@@ -63,9 +64,12 @@ class GenericRule extends Rule
         return $this->literals === $rule->getLiterals();
     }
 
+    /**
+     * @return bool
+     */
     public function isAssertion()
     {
-        return 1 === count($this->literals);
+        return 1 === \count($this->literals);
     }
 
     /**

@@ -20,9 +20,12 @@ class WebformElementMultiplePropertyTest extends WebformElementBrowserTestBase {
    * Tests multiple element.
    */
   public function testMultipleProperty() {
+    $assert_session = $this->assertSession();
+
     // Check processing.
-    $this->drupalPostForm('/webform/test_element_multiple_property', [], 'Submit');
-    $this->assertRaw('webform_element_multiple: false
+    $this->drupalGet('/webform/test_element_multiple_property');
+    $this->submitForm([], 'Submit');
+    $assert_session->responseContains('webform_element_multiple: false
 webform_element_multiple_true: true
 webform_element_multiple_false: false
 webform_element_multiple_custom: 5

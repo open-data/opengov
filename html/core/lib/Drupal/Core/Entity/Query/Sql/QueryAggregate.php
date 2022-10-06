@@ -75,7 +75,8 @@ class QueryAggregate extends Query implements QueryAggregateInterface {
     if ($this->aggregate) {
       foreach ($this->aggregate as $aggregate) {
         $sql_field = $this->getSqlField($aggregate['field'], $aggregate['langcode']);
-        $this->sqlExpressions[$aggregate['alias']] = $aggregate['function'] . "($sql_field)";
+        $sql_field_escaped = '[' . str_replace('.', '].[', $sql_field) . ']';
+        $this->sqlExpressions[$aggregate['alias']] = $aggregate['function'] . "($sql_field_escaped)";
       }
     }
     return $this;
@@ -103,7 +104,7 @@ class QueryAggregate extends Query implements QueryAggregateInterface {
       $field = $group_by['field'];
       $sql_field = $this->getSqlField($field, $group_by['langcode']);
       $this->sqlGroupBy[$sql_field] = $sql_field;
-      list($table, $real_sql_field) = explode('.', $sql_field);
+      [$table, $real_sql_field] = explode('.', $sql_field);
       $this->sqlFields[$sql_field] = [$table, $real_sql_field, $this->createSqlAlias($field, $real_sql_field)];
     }
 
@@ -144,6 +145,7 @@ class QueryAggregate extends Query implements QueryAggregateInterface {
    *   The field as passed in by the caller.
    * @param string $sql_field
    *   The sql field as returned by getSqlField.
+   *
    * @return string
    *   The SQL alias expected in the return value. The dots in $sql_field are
    *   replaced with underscores and if a default fallback to .value happened,

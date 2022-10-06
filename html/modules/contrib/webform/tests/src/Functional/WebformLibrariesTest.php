@@ -27,6 +27,8 @@ class WebformLibrariesTest extends WebformBrowserTestBase {
    * Tests webform libraries.
    */
   public function testLibraries() {
+    $assert_session = $this->assertSession();
+
     $optional_properties = [
       'input_mask' => 'properties[input_mask][select]',
       'international_telephone' => 'properties[international]',
@@ -38,30 +40,32 @@ class WebformLibrariesTest extends WebformBrowserTestBase {
     $this->drupalLogin($this->rootUser);
 
     // Enable choices and jquery.chosen.
+    $this->drupalGet('/admin/structure/webform/config/libraries');
     $edit = [
       'excluded_libraries[choices]' => TRUE,
       'excluded_libraries[jquery.chosen]' => TRUE,
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/libraries', $edit, 'Save configuration');
+    $this->submitForm($edit, 'Save configuration');
 
     // Check optional libraries are included.
     $this->drupalGet('/webform/test_libraries_optional');
-    $this->assertRaw('/select2.min.js');
-    $this->assertRaw('/choices.min.js');
-    $this->assertRaw('/chosen.jquery.min.js');
-    $this->assertRaw('/textcounter.min.js');
-    $this->assertRaw('/intlTelInput.min.js');
-    $this->assertRaw('/jquery.inputmask.min.js');
-    $this->assertRaw('/codemirror.js');
-    $this->assertRaw('/jquery.timepicker.min.js');
+    $assert_session->responseContains('/select2.min.js');
+    $assert_session->responseContains('/choices.min.js');
+    $assert_session->responseContains('/chosen.jquery.min.js');
+    $assert_session->responseContains('/textcounter.min.js');
+    $assert_session->responseContains('/intlTelInput.min.js');
+    $assert_session->responseContains('/jquery.inputmask.min.js');
+    $assert_session->responseContains('/codemirror.js');
+    $assert_session->responseContains('/jquery.timepicker.min.js');
 
     // Check optional libraries are properties accessible (#access = TRUE).
     foreach ($optional_properties as $element_name => $input_name) {
       $this->drupalGet("/admin/structure/webform/manage/test_libraries_optional/element/$element_name/edit");
-      $this->assertFieldByName($input_name);
+      $assert_session->fieldExists($input_name);
     }
 
     // Exclude optional libraries.
+    $this->drupalGet('/admin/structure/webform/config/libraries');
     $edit = [
       'excluded_libraries[ckeditor.fakeobjects]' => FALSE,
       'excluded_libraries[ckeditor.image]' => FALSE,
@@ -75,97 +79,74 @@ class WebformLibrariesTest extends WebformBrowserTestBase {
       'excluded_libraries[jquery.timepicker]' => FALSE,
       'excluded_libraries[jquery.textcounter]' => FALSE,
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/libraries', $edit, 'Save configuration');
+    $this->submitForm($edit, 'Save configuration');
 
     // Check optional libraries are excluded.
     $this->drupalGet('/webform/test_libraries_optional');
-    $this->assertNoRaw('/select2.min.js');
-    $this->assertNoRaw('/choices.min.js');
-    $this->assertNoRaw('/chosen.jquery.min.js');
-    $this->assertNoRaw('/textcounter.min.js');
-    $this->assertNoRaw('/intlTelInput.min.js');
-    $this->assertNoRaw('/jquery.inputmask.min.js');
-    $this->assertNoRaw('/codemirror.js');
-    $this->assertNoRaw('/jquery.timepicker.min.js');
+    $assert_session->responseNotContains('/select2.min.js');
+    $assert_session->responseNotContains('/choices.min.js');
+    $assert_session->responseNotContains('/chosen.jquery.min.js');
+    $assert_session->responseNotContains('/textcounter.min.js');
+    $assert_session->responseNotContains('/intlTelInput.min.js');
+    $assert_session->responseNotContains('/jquery.inputmask.min.js');
+    $assert_session->responseNotContains('/codemirror.js');
+    $assert_session->responseNotContains('/jquery.timepicker.min.js');
 
     // Check optional libraries are properties hidden (#access = FALSE).
     foreach ($optional_properties as $element_name => $input_name) {
       $this->drupalGet("admin/structure/webform/manage/test_libraries_optional/element/$element_name/edit");
-      $this->assertNoFieldByName($input_name);
+      $assert_session->fieldNotExists($input_name);
     }
 
     // Check that status report excludes optional libraries.
     $this->drupalGet('/admin/reports/status');
-    $this->assertNoText('CKEditor: Fakeobjects library ');
-    $this->assertNoText('CKEditor: Image library ');
-    $this->assertNoText('CKEditor: Link library ');
-    $this->assertNoText('Code Mirror library ');
-    $this->assertNoText('jQuery: iCheck library ');
-    $this->assertNoText('jQuery: Input Mask library ');
-    $this->assertNoText('jQuery: Select2 library ');
-    $this->assertNoText('jQuery: Choices library ');
-    $this->assertNoText('jQuery: Chosen library ');
-    $this->assertNoText('jQuery: Timepicker library ');
-    $this->assertNoText('jQuery: Text Counter library ');
+    $assert_session->pageTextNotContains('CKEditor: Fakeobjects library ');
+    $assert_session->pageTextNotContains('CKEditor: Image library ');
+    $assert_session->pageTextNotContains('CKEditor: Link library ');
+    $assert_session->pageTextNotContains('Code Mirror library ');
+    $assert_session->pageTextNotContains('jQuery: iCheck library ');
+    $assert_session->pageTextNotContains('jQuery: Input Mask library ');
+    $assert_session->pageTextNotContains('jQuery: Select2 library ');
+    $assert_session->pageTextNotContains('jQuery: Choices library ');
+    $assert_session->pageTextNotContains('jQuery: Chosen library ');
+    $assert_session->pageTextNotContains('jQuery: Timepicker library ');
+    $assert_session->pageTextNotContains('jQuery: Text Counter library ');
 
-    // Issue #2934542: Fix broken Webform.Drupal\webform\Tests\WebformLibrariesTest
-    // @see https://www.drupal.org/project/webform/issues/2934542
-    /*
     // Exclude element types that require libraries.
     $edit = [
       'excluded_elements[webform_rating]' => FALSE,
       'excluded_elements[webform_signature]' => FALSE,
     ];
-    $this->drupalPostForm('/admin/structure/webform/config/elements', $edit, 'Save configuration');
+    $this->drupalGet('/admin/structure/webform/config/elements');
+    $this->submitForm($edit, 'Save configuration');
 
     // Check that status report excludes libraries required by element types.
     $this->drupalGet('/admin/reports/status');
-    $this->assertNoText('jQuery: Image Picker library');
-    $this->assertNoText('jQuery: RateIt library');
-    $this->assertNoText('Signature Pad library');
-    */
+    $assert_session->pageTextNotContains('jQuery: Image Picker library');
+    $assert_session->pageTextNotContains('jQuery: RateIt library');
+    $assert_session->pageTextNotContains('Signature Pad library');
 
-    if (floatval(\Drupal::VERSION) >= 9) {
-      // Issue #3110478: [Webform 8.x-6.x] Track the D9 readiness state of the
-      // Webform module's (optional) dependencies
-      // @see https://www.drupal.org/project/webform/issues/3110478
-      // Check that choices, chosen, and select2 using webform's CDN URLs.
-      $edit = [
-        'excluded_libraries[jquery.select2]' => TRUE,
-      ];
-      $this->drupalPostForm('/admin/structure/webform/config/libraries', $edit, 'Save configuration');
-      $this->drupalGet('/webform/test_libraries_optional');
-      $this->assertRaw('https://cdnjs.cloudflare.com/ajax/libs/select2');
+    // Check that choices, chosen, and select2 using webform's CDN URLs.
+    $this->drupalGet('/admin/structure/webform/config/libraries');
+    $edit = [
+      'excluded_libraries[jquery.select2]' => TRUE,
+      'excluded_libraries[jquery.chosen]' => TRUE,
+    ];
+    $this->submitForm($edit, 'Save configuration');
+    $this->drupalGet('/webform/test_libraries_optional');
+    $assert_session->responseContains('https://cdnjs.cloudflare.com/ajax/libs/chosen');
+    $assert_session->responseContains('https://cdnjs.cloudflare.com/ajax/libs/select2');
 
-      // Install chosen and select2 modules.
-      \Drupal::service('module_installer')->install(['select2']);
-      drupal_flush_all_caches();
+    // Install chosen and select2 modules.
+    \Drupal::service('module_installer')->install(['chosen', 'chosen_lib', 'select2']);
+    \Drupal::service('module_installer')->install(['select2']);
+    drupal_flush_all_caches();
 
-      // Check that chosen and select2 using module's path and not CDN.
-      $this->drupalGet('/webform/test_libraries_optional');
-      $this->assertNoRaw('https://cdnjs.cloudflare.com/ajax/libs/select2');
-    }
-    else {
-      // Check that choices, chosen, and select2 using webform's CDN URLs.
-      $edit = [
-        'excluded_libraries[jquery.select2]' => TRUE,
-        'excluded_libraries[jquery.chosen]' => TRUE,
-      ];
-      $this->drupalPostForm('/admin/structure/webform/config/libraries', $edit, 'Save configuration');
-      $this->drupalGet('/webform/test_libraries_optional');
-      $this->assertRaw('https://cdnjs.cloudflare.com/ajax/libs/chosen');
-      $this->assertRaw('https://cdnjs.cloudflare.com/ajax/libs/select2');
-
-      // Install chosen and select2 modules.
-      \Drupal::service('module_installer')->install(['chosen', 'chosen_lib', 'select2']);
-      drupal_flush_all_caches();
-
-      // Check that chosen and select2 using module's path and not CDN.
-      $this->drupalGet('/webform/test_libraries_optional');
-      $this->assertNoRaw('https://cdnjs.cloudflare.com/ajax/libs/chosen');
-      $this->assertNoRaw('https://cdnjs.cloudflare.com/ajax/libs/select2');
-      $this->assertRaw('/modules/contrib/chosen/css/chosen-drupal.css');
-    }
+    // Check that chosen and select2 using module's path and not CDN.
+    $this->drupalGet('/webform/test_libraries_optional');
+    $assert_session->responseNotContains('https://cdnjs.cloudflare.com/ajax/libs/chosen');
+    $assert_session->responseNotContains('https://cdnjs.cloudflare.com/ajax/libs/select2');
+    $assert_session->responseContains('/modules/contrib/chosen/css/chosen-drupal.css');
   }
 
 }

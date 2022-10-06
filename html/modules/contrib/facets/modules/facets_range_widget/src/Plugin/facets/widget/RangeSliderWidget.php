@@ -21,6 +21,10 @@ class RangeSliderWidget extends SliderWidget {
   public function build(FacetInterface $facet) {
     $build = parent::build($facet);
 
+    if (empty($facet->getResults())) {
+      return $build;
+    }
+
     $active = $facet->getActiveItems();
     $facet_settings = &$build['#attached']['drupalSettings']['facets']['sliders'][$facet->id()];
 
@@ -32,7 +36,10 @@ class RangeSliderWidget extends SliderWidget {
 
     $min = $facet_settings['min'];
     $max = $facet_settings['max'];
-    $facet_settings['values'] = [isset($active[0][0]) ? (float) $active[0][0] : $min, isset($active[0][1]) ? (float) $active[0][1] : $max];
+    $facet_settings['values'] = [
+      isset($active[0][0]) ? (float) $active[0][0] : $min,
+      isset($active[0][1]) ? (float) $active[0][1] : $max,
+    ];
 
     return $build;
   }

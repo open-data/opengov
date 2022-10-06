@@ -19,7 +19,7 @@ class MigrateExternalTranslatedTest extends MigrateTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'system',
     'user',
     'language',
@@ -31,7 +31,7 @@ class MigrateExternalTranslatedTest extends MigrateTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->installSchema('system', ['sequences']);
     $this->installSchema('node', ['node_access']);
@@ -51,17 +51,17 @@ class MigrateExternalTranslatedTest extends MigrateTestBase {
   }
 
   /**
-   * Test importing and rolling back our data.
+   * Tests importing and rolling back our data.
    */
   public function testMigrations() {
     /** @var \Drupal\Core\Entity\ContentEntityStorageInterface $storage */
     $storage = $this->container->get('entity_type.manager')->getStorage('node');
-    $this->assertEquals(0, count($storage->loadMultiple()));
+    $this->assertCount(0, $storage->loadMultiple());
 
     // Run the migrations.
     $migration_ids = ['external_translated_test_node', 'external_translated_test_node_translation'];
     $this->executeMigrations($migration_ids);
-    $this->assertEquals(3, count($storage->loadMultiple()));
+    $this->assertCount(3, $storage->loadMultiple());
 
     $node = $storage->load(1);
     $this->assertEquals('en', $node->language()->getId());
@@ -90,7 +90,7 @@ class MigrateExternalTranslatedTest extends MigrateTestBase {
       $executable->rollback();
     }
 
-    $this->assertEquals(0, count($storage->loadMultiple()));
+    $this->assertCount(0, $storage->loadMultiple());
   }
 
 }

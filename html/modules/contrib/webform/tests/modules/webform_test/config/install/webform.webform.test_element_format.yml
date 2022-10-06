@@ -30,21 +30,9 @@ elements: |
         '#format': value
       checkbox_raw:
         '#type': checkbox
-        '#title': 'Checkbox (Raw value)'
+        '#title': 'Checkbox (Raw/return value)'
         '#default_value': true
         '#format': raw
-    radios:
-      '#type': details
-      '#title': Radios
-      radios_description:
-        '#type': radios
-        '#title': 'Radios (Description)'
-        '#default_value': one
-        '#format': description
-        '#options':
-          one: 'One -- This is the <strong>first</strong> description'
-          two: 'Two -- This is the <strong>second</strong> description'
-          three: 'Three -- This is <strong>third</strong> description'
     password:
       '#type': details
       '#title': Password
@@ -201,6 +189,19 @@ elements: |
         '#title': 'Email multiple (Link)'
         '#default_value': 'example@example.com, test@test.com, random@random.com'
         '#format': link
+    webform_height:
+      '#type': details
+      '#title': 'Height (feet/inches)'
+      webform_height_value:
+        '#type': webform_height
+        '#title': 'Height (feet/inches) (Value)'
+        '#default_value': 48
+        '#format': value
+      webform_height_raw:
+        '#type': webform_height
+        '#title': 'Height (feet/inches) (Raw value)'
+        '#default_value': 48
+        '#format': raw
     number:
       '#type': details
       '#title': Number
@@ -274,6 +275,23 @@ elements: |
         '#type': webform_rating
         '#title': 'Rating (Star)'
         '#format': star
+    webform_scale:
+      '#type': details
+      '#title': Scale
+      webform_scale_value:
+        '#type': webform_scale
+        '#title': 'Scale (Value)'
+        '#min': 1
+        '#max': 5
+        '#default_value': 1
+        '#format': value
+      webform_scale_raw:
+        '#type': webform_scale
+        '#title': 'Scale (Raw value)'
+        '#min': 1
+        '#max': 5
+        '#default_value': 1
+        '#format': raw
     search:
       '#type': details
       '#title': Search
@@ -339,7 +357,7 @@ elements: |
         '#format': value
       webform_terms_of_service_raw:
         '#type': webform_terms_of_service
-        '#title': 'I agree to the {terms of service}. (Raw value)'
+        '#title': 'I agree to the {terms of service}. (Raw/return value)'
         '#required': true
         '#terms_type': slideout
         '#terms_content': '<em>These are the terms of service.</em>'
@@ -380,20 +398,20 @@ elements: |
     '#type': details
     '#title': 'File attachment elements'
     '#open': true
-    'webform_entity_print_attachment:pdf':
+    webform_entity_print_attachment_pdf:
       '#type': details
       '#title': 'Attachment PDF'
-      'webform_entity_print_attachment:pdf_link':
+      webform_entity_print_attachment_pdf_link:
         '#type': webform_entity_print_attachment
         '#title': 'Attachment PDF (File link)'
         '#default_value': Loremipsum
         '#format': link
-      'webform_entity_print_attachment:pdf_name':
+      webform_entity_print_attachment_pdf_name:
         '#type': webform_entity_print_attachment
         '#title': 'Attachment PDF (File name)'
         '#default_value': Loremipsum
         '#format': name
-      'webform_entity_print_attachment:pdf_url':
+      webform_entity_print_attachment_pdf_url:
         '#type': webform_entity_print_attachment
         '#title': 'Attachment PDF (File URL)'
         '#default_value': Loremipsum
@@ -443,191 +461,6 @@ elements: |
         '#type': webform_attachment_url
         '#title': 'Attachment URL (File URL)'
         '#format': url
-  options_elements:
-    '#type': details
-    '#title': 'Options elements'
-    '#open': true
-    webform_buttons:
-      '#type': details
-      '#title': Buttons
-      webform_buttons_value:
-        '#type': webform_buttons
-        '#title': 'Buttons (Value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': value
-      webform_buttons_raw:
-        '#type': webform_buttons
-        '#title': 'Buttons (Raw value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': raw
-    webform_buttons_other:
-      '#type': details
-      '#title': 'Buttons other'
-      webform_buttons_other_value:
-        '#type': webform_buttons_other
-        '#title': 'Buttons other (Value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': value
-      webform_buttons_other_raw:
-        '#type': webform_buttons_other
-        '#title': 'Buttons other (Raw value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': raw
-    webform_image_select:
-      '#type': details
-      '#title': 'Image select'
-      webform_image_select_value:
-        '#type': webform_image_select
-        '#title': 'Image select (Value)'
-        '#show_label': true
-        '#images':
-          dog_1:
-            text: 'Dog 1'
-            src: 'https://www.placedog.net/80/100'
-          dog_2:
-            text: 'Dog 2'
-            src: 'https://www.placedog.net/100/100'
-          dog_3:
-            text: 'Dog 3'
-            src: 'https://www.placedog.net/120/100'
-        '#default_value': Loremipsum
-        '#format': value
-      webform_image_select_raw:
-        '#type': webform_image_select
-        '#title': 'Image select (Raw value)'
-        '#show_label': true
-        '#images':
-          dog_1:
-            text: 'Dog 1'
-            src: 'https://www.placedog.net/80/100'
-          dog_2:
-            text: 'Dog 2'
-            src: 'https://www.placedog.net/100/100'
-          dog_3:
-            text: 'Dog 3'
-            src: 'https://www.placedog.net/120/100'
-        '#default_value': Loremipsum
-        '#format': raw
-      webform_image_select_image:
-        '#type': webform_image_select
-        '#title': 'Image select (Image)'
-        '#show_label': true
-        '#images':
-          dog_1:
-            text: 'Dog 1'
-            src: 'https://www.placedog.net/80/100'
-          dog_2:
-            text: 'Dog 2'
-            src: 'https://www.placedog.net/100/100'
-          dog_3:
-            text: 'Dog 3'
-            src: 'https://www.placedog.net/120/100'
-        '#default_value': Loremipsum
-        '#format': image
-    radios:
-      '#type': details
-      '#title': Radios
-      radios_value:
-        '#type': radios
-        '#title': 'Radios (Value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#options_display': side_by_side
-        '#default_value': one
-        '#format': value
-      radios_raw:
-        '#type': radios
-        '#title': 'Radios (Raw value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#options_display': side_by_side
-        '#default_value': one
-        '#format': raw
-    webform_radios_other:
-      '#type': details
-      '#title': 'Radios other'
-      webform_radios_other_value:
-        '#type': webform_radios_other
-        '#title': 'Radios other (Value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#options_display': side_by_side
-        '#default_value': one
-        '#format': value
-      webform_radios_other_raw:
-        '#type': webform_radios_other
-        '#title': 'Radios other (Raw value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#options_display': side_by_side
-        '#default_value': one
-        '#format': raw
-    select:
-      '#type': details
-      '#title': Select
-      select_value:
-        '#type': select
-        '#title': 'Select (Value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': value
-      select_raw:
-        '#type': select
-        '#title': 'Select (Raw value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': raw
-    webform_select_other:
-      '#type': details
-      '#title': 'Select other'
-      webform_select_other_value:
-        '#type': webform_select_other
-        '#title': 'Select other (Value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': value
-      webform_select_other_raw:
-        '#type': webform_select_other
-        '#title': 'Select other (Raw value)'
-        '#options':
-          one: One
-          two: Two
-          three: Three
-        '#default_value': one
-        '#format': raw
   computed_elements:
     '#type': details
     '#title': 'Computed Elements'
@@ -675,16 +508,21 @@ elements: |
         '#title': 'Date (Raw value)'
         '#default_value': '1942-06-18'
         '#format': raw
-      date_fallback:
-        '#type': date
-        '#title': 'Date (Fallback date format)'
-        '#default_value': '1942-06-18'
-        '#format': fallback
       date_html_date:
         '#type': date
         '#title': 'Date (HTML Date)'
         '#default_value': '1942-06-18'
         '#format': html_date
+      date_html_time:
+        '#type': date
+        '#title': 'Date (HTML Time)'
+        '#default_value': '1942-06-18'
+        '#format': html_time
+      date_fallback:
+        '#type': date
+        '#title': 'Date (Fallback date format)'
+        '#default_value': '1942-06-18'
+        '#format': fallback
       date_html_datetime:
         '#type': date
         '#title': 'Date (HTML Datetime)'
@@ -695,11 +533,6 @@ elements: |
         '#title': 'Date (HTML Month)'
         '#default_value': '1942-06-18'
         '#format': html_month
-      date_html_time:
-        '#type': date
-        '#title': 'Date (HTML Time)'
-        '#default_value': '1942-06-18'
-        '#format': html_time
       date_html_week:
         '#type': date
         '#title': 'Date (HTML Week)'
@@ -893,7 +726,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': value
       entity_autocomplete_raw:
         '#type': entity_autocomplete
@@ -902,7 +735,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': raw
       entity_autocomplete_link:
         '#type': entity_autocomplete
@@ -911,7 +744,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': link
       entity_autocomplete_id:
         '#type': entity_autocomplete
@@ -920,7 +753,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': id
       entity_autocomplete_label:
         '#type': entity_autocomplete
@@ -929,7 +762,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': label
       entity_autocomplete_text:
         '#type': entity_autocomplete
@@ -938,7 +771,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': text
       entity_autocomplete_teaser:
         '#type': entity_autocomplete
@@ -947,7 +780,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': teaser
       entity_autocomplete_default:
         '#type': entity_autocomplete
@@ -956,7 +789,7 @@ elements: |
         '#selection_handler': 'default:user'
         '#selection_settings':
           include_anonymous: true
-        '#default_value': 11
+        '#default_value': 1
         '#format': default
     webform_entity_radios:
       '#type': details
@@ -987,6 +820,19 @@ elements: |
           0: Anonymous
         '#default_value': 1
         '#format': raw
+      webform_entity_radios_description:
+        '#type': webform_entity_radios
+        '#title': 'Entity radios (Option description)'
+        '#options_display': side_by_side
+        '#target_type': user
+        '#selection_handler': 'default:user'
+        '#selection_settings':
+          include_anonymous: true
+        '#options':
+          1: Administrator
+          0: Anonymous
+        '#default_value': 1
+        '#format': description
       webform_entity_radios_link:
         '#type': webform_entity_radios
         '#title': 'Entity radios (Link)'
@@ -1092,6 +938,18 @@ elements: |
           0: Anonymous
         '#default_value': 1
         '#format': raw
+      webform_entity_select_description:
+        '#type': webform_entity_select
+        '#title': 'Entity select (Option description)'
+        '#target_type': user
+        '#selection_handler': 'default:user'
+        '#selection_settings':
+          include_anonymous: true
+        '#options':
+          1: Administrator
+          0: Anonymous
+        '#default_value': 1
+        '#format': description
       webform_entity_select_link:
         '#type': webform_entity_select
         '#title': 'Entity select (Link)'
@@ -1179,6 +1037,12 @@ elements: |
         '#vocabulary': tags
         '#default_value': Loremipsum
         '#format': raw
+      webform_term_select_description:
+        '#type': webform_term_select
+        '#title': 'Term select (Option description)'
+        '#vocabulary': tags
+        '#default_value': Loremipsum
+        '#format': description
       webform_term_select_link:
         '#type': webform_term_select
         '#title': 'Term select (Link)'
@@ -1273,21 +1137,218 @@ elements: |
         '#title': 'File (File mime type)'
         '#file_extensions': txt
         '#format': mime
-      managed_file_data:
-        '#type': managed_file
-        '#title': 'File (File content (Base64))'
-        '#file_extensions': txt
-        '#format': data
       managed_file_size:
         '#type': managed_file
         '#title': 'File (File size (Bytes))'
         '#file_extensions': txt
         '#format': size
+      managed_file_data:
+        '#type': managed_file
+        '#title': 'File (File content (Base64))'
+        '#file_extensions': txt
+        '#format': data
       managed_file_extension:
         '#type': managed_file
         '#title': 'File (File extension)'
         '#file_extensions': txt
         '#format': extension
+  options_elements:
+    '#type': details
+    '#title': 'Options elements'
+    '#open': true
+    webform_image_select:
+      '#type': details
+      '#title': 'Image select'
+      webform_image_select_value:
+        '#type': webform_image_select
+        '#title': 'Image select (Value)'
+        '#show_label': true
+        '#images':
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
+        '#default_value': Loremipsum
+        '#format': value
+      webform_image_select_raw:
+        '#type': webform_image_select
+        '#title': 'Image select (Raw value)'
+        '#show_label': true
+        '#images':
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
+        '#default_value': Loremipsum
+        '#format': raw
+      webform_image_select_description:
+        '#type': webform_image_select
+        '#title': 'Image select (Option description)'
+        '#show_label': true
+        '#images':
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
+        '#default_value': Loremipsum
+        '#format': description
+      webform_image_select_image:
+        '#type': webform_image_select
+        '#title': 'Image select (Image)'
+        '#show_label': true
+        '#images':
+          dog_1:
+            text: 'Dog 1'
+            src: 'https://www.placedog.net/80/100'
+          dog_2:
+            text: 'Dog 2'
+            src: 'https://www.placedog.net/100/100'
+          dog_3:
+            text: 'Dog 3'
+            src: 'https://www.placedog.net/120/100'
+        '#default_value': Loremipsum
+        '#format': image
+    radios:
+      '#type': details
+      '#title': Radios
+      radios_value:
+        '#type': radios
+        '#title': 'Radios (Value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#default_value': one
+        '#format': value
+      radios_raw:
+        '#type': radios
+        '#title': 'Radios (Raw value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#default_value': one
+        '#format': raw
+      radios_description:
+        '#type': radios
+        '#title': 'Radios (Option description)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#default_value': one
+        '#format': description
+    webform_radios_other:
+      '#type': details
+      '#title': 'Radios other'
+      webform_radios_other_value:
+        '#type': webform_radios_other
+        '#title': 'Radios other (Value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#default_value': one
+        '#format': value
+      webform_radios_other_raw:
+        '#type': webform_radios_other
+        '#title': 'Radios other (Raw value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#default_value': one
+        '#format': raw
+      webform_radios_other_description:
+        '#type': webform_radios_other
+        '#title': 'Radios other (Option description)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#options_display': side_by_side
+        '#default_value': one
+        '#format': description
+    select:
+      '#type': details
+      '#title': Select
+      select_value:
+        '#type': select
+        '#title': 'Select (Value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value': one
+        '#format': value
+      select_raw:
+        '#type': select
+        '#title': 'Select (Raw value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value': one
+        '#format': raw
+      select_description:
+        '#type': select
+        '#title': 'Select (Option description)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value': one
+        '#format': description
+    webform_select_other:
+      '#type': details
+      '#title': 'Select other'
+      webform_select_other_value:
+        '#type': webform_select_other
+        '#title': 'Select other (Value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value': one
+        '#format': value
+      webform_select_other_raw:
+        '#type': webform_select_other
+        '#title': 'Select other (Raw value)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value': one
+        '#format': raw
+      webform_select_other_description:
+        '#type': webform_select_other
+        '#title': 'Select other (Option description)'
+        '#options':
+          one: One
+          two: Two
+          three: Three
+        '#default_value': one
+        '#format': description
   other_elements:
     '#type': details
     '#title': 'Other elements'
@@ -1305,7 +1366,7 @@ elements: |
         '#title': 'Machine name (Raw value)'
         '#default_value': loremipsum
         '#format': raw
-
+  
 css: ''
 javascript: ''
 settings:
@@ -1326,7 +1387,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -1347,6 +1408,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

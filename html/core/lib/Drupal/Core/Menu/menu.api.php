@@ -329,7 +329,7 @@ function hook_menu_local_tasks_alter(&$data, $route_name, \Drupal\Core\Cache\Ref
       ],
   ];
   // The tab we're adding is dependent on a user's access to add content.
-  $cacheability->addCacheTags(['user.permissions']);
+  $cacheability->addCacheContexts(['user.permissions']);
 }
 
 /**
@@ -485,7 +485,9 @@ function hook_system_breadcrumb_alter(\Drupal\Core\Breadcrumb\Breadcrumb &$bread
  */
 function hook_link_alter(&$variables) {
   // Add a warning to the end of route links to the admin section.
-  if (isset($variables['route_name']) && strpos($variables['route_name'], 'admin') !== FALSE) {
+  /** @var \Drupal\Core\Url $url */
+  $url = $variables['url'];
+  if ($url->isRouted() && strpos($url->getRouteName(), 'admin') !== FALSE) {
     $variables['text'] = t('@text (Warning!)', ['@text' => $variables['text']]);
   }
 }

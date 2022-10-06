@@ -16,16 +16,16 @@ use Drupal\webform\WebformInterface;
 use Drupal\webform\Plugin\WebformHandler\EmailWebformHandler;
 use Drupal\webform\WebformSubmissionInterface;
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Schema definitions hook.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_config_schema_info_alter().
  */
 function webform_group_config_schema_info_alter(&$definitions) {
   // Append group roles to webform access schema.
-  $mapping =& $definitions['webform.webform.*']['mapping']['access']['sequence']['mapping'];
+  $mapping = &$definitions['webform.webform.*']['mapping']['access']['sequence']['mapping'];
   $mapping['group_roles'] = [
     'type' => 'sequence',
     'label' => 'Group roles',
@@ -36,9 +36,9 @@ function webform_group_config_schema_info_alter(&$definitions) {
   ];
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Form and element UI alter hooks.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_form_FORM_ID_alter() for webform handler form.
@@ -203,7 +203,7 @@ function webform_group_form_webform_settings_access_form_alter(&$form, FormState
  */
 function webform_group_form_webform_ui_element_form_alter(&$form, FormStateInterface $form_state) {
   $default_properties = $form_state->get('default_properties');
-  $custom_default_value =& $form['properties']['custom']['properties']['#default_value'];
+  $custom_default_value = &$form['properties']['custom']['properties']['#default_value'];
 
   $operations = ['create', 'update', 'view'];
   foreach ($operations as $operation) {
@@ -287,9 +287,9 @@ function _webform_group_form_webform_admin_config_handlers_form_submit(&$form, F
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Access controls.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Implements hook_ENTITY_TYPE_access() for webform entities.

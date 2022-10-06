@@ -22,6 +22,17 @@ interface WebformCardsManagerInterface {
   public function hasCards(WebformInterface $webform);
 
   /**
+   * Counts the number of cards used in a webform.
+   *
+   * @param \Drupal\webform\WebformInterface $webform
+   *   A webform.
+   *
+   * @return int
+   *   The number of cards for the webform.
+   */
+  public function getNumberOfCards(WebformInterface $webform);
+
+  /**
    * Build webform's cards based on the current operation.
    *
    * @param \Drupal\webform\WebformInterface $webform

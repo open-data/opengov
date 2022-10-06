@@ -2,9 +2,11 @@
 
 namespace Drupal\ctools\Plugin\Deriver;
 
-
 use Drupal\Core\TypedData\DataDefinitionInterface;
 
+/**
+ *
+ */
 class TypedDataLanguageRelationshipDeriver extends TypedDataRelationshipDeriver {
 
   /**

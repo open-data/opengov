@@ -4,14 +4,13 @@ namespace Drupal\webform_image_select;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Url;
+use Drupal\webform\EntityListBuilder\WebformEntityListBuilderSortLabelTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform_image_select\Entity\WebformImageSelectImages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Defines a class to build a listing of webform image select images entities.
@@ -19,6 +18,15 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @see \Drupal\webform_image_select\Entity\WebformImageSelectImages
  */
 class WebformImageSelectImagesListBuilder extends ConfigEntityListBuilder {
+
+  use WebformEntityListBuilderSortLabelTrait;
+
+  /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
 
   /**
    * Search keys.
@@ -35,32 +43,24 @@ class WebformImageSelectImagesListBuilder extends ConfigEntityListBuilder {
   protected $category;
 
   /**
-   * Constructs a new WebformImageSelectImagesListBuilder object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   The entity storage class.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The request stack.
-   */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, RequestStack $request_stack) {
-    parent::__construct($entity_type, $storage);
-    $this->request = $request_stack->getCurrentRequest();
-
-    $this->keys = $this->request->query->get('search');
-    $this->category = $this->request->query->get('category');
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    return new static(
-      $entity_type,
-      $container->get('entity.manager')->getStorage($entity_type->id()),
-      $container->get('request_stack')
-    );
+    /** @var \Drupal\webform_image_select\WebformImageSelectImagesListBuilder $instance */
+    $instance = parent::createInstance($container, $entity_type);
+
+    $instance->request = $container->get('request_stack')->getCurrentRequest();
+
+    $instance->initialize();
+    return $instance;
+  }
+
+  /**
+   * Initialize WebformImageSelectImagesListBuilder object.
+   */
+  protected function initialize() {
+    $this->keys = $this->request->query->get('search');
+    $this->category = $this->request->query->get('category');
   }
 
   /**
@@ -117,7 +117,7 @@ class WebformImageSelectImagesListBuilder extends ConfigEntityListBuilder {
     }
 
     return [
-      '#markup' => $this->formatPlural($total, '@total images', '@total images', ['@total' => $total]),
+      '#markup' => $this->formatPlural($total, '@count images', '@count images'),
       '#prefix' => '<div>',
       '#suffix' => '</div>',
     ];
@@ -160,7 +160,7 @@ class WebformImageSelectImagesListBuilder extends ConfigEntityListBuilder {
     if ($entity->access('duplicate')) {
       $operations['duplicate'] = [
         'title' => $this->t('Duplicate'),
-        'weight' => 23,
+        'weight' => 20,
         'url' => Url::fromRoute('entity.webform_image_select_images.duplicate_form', ['webform_image_select_images' => $entity->id()]),
       ];
     }

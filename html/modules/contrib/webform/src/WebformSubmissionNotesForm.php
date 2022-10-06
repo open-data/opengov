@@ -3,12 +3,9 @@
 namespace Drupal\webform;
 
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Form\WebformDialogFormTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 
 /**
  * Controller for webform submission notes.
@@ -25,43 +22,21 @@ class WebformSubmissionNotesForm extends ContentEntityForm {
   protected $requestHandler;
 
   /**
-   * Constructs a ContentEntityForm object.
-   *
-   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
-   *   The entity repository.
-   * @param \Drupal\webform\WebformRequestInterface $webform_request
-   *   The webform request handler.
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
-   *   The entity type bundle service.
-   * @param \Drupal\Component\Datetime\TimeInterface $time
-   *   The time service.
-   */
-  public function __construct(EntityRepositoryInterface $entity_repository, WebformRequestInterface $webform_request, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL) {
-    // Calling the parent constructor.
-    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
-
-    $this->requestHandler = $webform_request;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity.repository'),
-      $container->get('webform.request'),
-      $container->get('entity_type.bundle.info'),
-      $container->get('datetime.time')
-    );
+    $instance = parent::create($container);
+    $instance->requestHandler = $container->get('webform.request');
+    return $instance;
   }
 
   /**
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    // @var \Drupal\webform\WebformSubmissionInterface $webform_submission.
-    // @var \Drupal\Core\Entity\EntityInterface $source_entity.
-    list($webform_submission, $source_entity) = $this->requestHandler->getWebformSubmissionEntities();
+    /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+    /** @var \Drupal\Core\Entity\EntityInterface $source_entity */
+    [$webform_submission, $source_entity] = $this->requestHandler->getWebformSubmissionEntities();
 
     $form['navigation'] = [
       '#type' => 'webform_submission_navigation',

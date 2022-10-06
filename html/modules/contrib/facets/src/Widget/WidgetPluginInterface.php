@@ -2,14 +2,15 @@
 
 namespace Drupal\facets\Widget;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\FacetInterface;
 
 /**
  * Provides an interface describing the a facet widgets.
  */
-interface WidgetPluginInterface extends ConfigurablePluginInterface {
+interface WidgetPluginInterface extends ConfigurableInterface, DependentPluginInterface {
 
   /**
    * Builds the facet widget for rendering.

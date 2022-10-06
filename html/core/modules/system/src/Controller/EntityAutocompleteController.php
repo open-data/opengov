@@ -5,7 +5,7 @@ namespace Drupal\system\Controller;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Tags;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityAutocompleteMatcher;
+use Drupal\Core\Entity\EntityAutocompleteMatcherInterface;
 use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
 use Drupal\Core\Site\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -21,7 +21,7 @@ class EntityAutocompleteController extends ControllerBase {
   /**
    * The autocomplete matcher for entity references.
    *
-   * @var \Drupal\Core\Entity\EntityAutocompleteMatcher
+   * @var \Drupal\Core\Entity\EntityAutocompleteMatcherInterface
    */
   protected $matcher;
 
@@ -33,14 +33,14 @@ class EntityAutocompleteController extends ControllerBase {
   protected $keyValue;
 
   /**
-   * Constructs a EntityAutocompleteController object.
+   * Constructs an EntityAutocompleteController object.
    *
-   * @param \Drupal\Core\Entity\EntityAutocompleteMatcher $matcher
+   * @param \Drupal\Core\Entity\EntityAutocompleteMatcherInterface $matcher
    *   The autocomplete matcher for entity references.
    * @param \Drupal\Core\KeyValueStore\KeyValueStoreInterface $key_value
    *   The key value factory.
    */
-  public function __construct(EntityAutocompleteMatcher $matcher, KeyValueStoreInterface $key_value) {
+  public function __construct(EntityAutocompleteMatcherInterface $matcher, KeyValueStoreInterface $key_value) {
     $this->matcher = $matcher;
     $this->keyValue = $key_value;
   }
@@ -79,8 +79,8 @@ class EntityAutocompleteController extends ControllerBase {
     $matches = [];
     // Get the typed string from the URL, if it exists.
     if ($input = $request->query->get('q')) {
-      $typed_string = Tags::explode($input);
-      $typed_string = mb_strtolower(array_pop($typed_string));
+      $tag_list = Tags::explode($input);
+      $typed_string = !empty($tag_list) ? mb_strtolower(array_pop($tag_list)) : '';
 
       // Selection settings are passed in as a hashed key of a serialized array
       // stored in the key/value store.

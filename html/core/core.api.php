@@ -64,10 +64,9 @@
  *
  * @section more_info Further information
  *
- * - @link https://api.drupal.org/api/drupal/groups/8 All topics @endlink
  * - @link https://www.drupal.org/project/examples Examples project (sample modules) @endlink
  * - @link https://www.drupal.org/list-changes API change notices @endlink
- * - @link https://www.drupal.org/developing/api/8 Drupal 8 API longer references @endlink
+ * - @link https://www.drupal.org/docs/drupal-apis Drupal API longer references @endlink
  */
 
 /**
@@ -76,8 +75,8 @@
  * Integrating third-party applications using REST and related operations.
  *
  * @section sec_overview Overview of web services
- * Web services make it possible for applications and web sites to read and
- * update information from other web sites. There are several standard
+ * Web services make it possible for applications and websites to read and
+ * update information from other websites. There are several standard
  * techniques for providing web services, including:
  * - SOAP: http://wikipedia.org/wiki/SOAP
  * - XML-RPC: http://wikipedia.org/wiki/XML-RPC
@@ -115,7 +114,7 @@
  *   and HAL.
  * - Node entity support is configured by default. If you would like to support
  *   other types of entities, you can copy
- *   core/modules/rest/config/install/rest.settings.yml to your sync
+ *   core/modules/hal/config/optional/rest.resource.entity.node.yml to your sync
  *   configuration directory, appropriately modified for other entity types,
  *   and import it. Support for GET on the log from the Database Logging module
  *   can also be enabled in this way; in this case, the 'entity:node' line
@@ -152,7 +151,7 @@
  * @ref sec_rest above.
  *
  * @section sec_integrate Integrating data from other sites into Drupal
- * If you want to integrate data from other web sites into Drupal, here are
+ * If you want to integrate data from other websites into Drupal, here are
  * some notes:
  * - There are contributed modules available for integrating many third-party
  *   sites into Drupal. Search on https://www.drupal.org/project/project_module
@@ -192,7 +191,7 @@
  * // Find out when cron was last run; the key is 'system.cron_last'.
  * $time = $state->get('system.cron_last');
  * // Set the cron run time to the current request time.
- * $state->set('system.cron_last', REQUEST_TIME);
+ * $state->set('system.cron_last', \Drupal::time()->getRequestTime());
  * @endcode
  *
  * For more on the State API, see https://www.drupal.org/developing/api/8/state
@@ -208,7 +207,7 @@
  * information. See the @link info_types Information types topic @endlink for
  * an overview of the different types of information. The sections below have
  * more information about the configuration API; see
- * https://www.drupal.org/developing/api/8/configuration for more details.
+ * https://www.drupal.org/docs/drupal-apis/configuration-api for more details.
  *
  * @section sec_storage Configuration storage
  * In Drupal, there is a concept of the "active" configuration, which is the
@@ -382,10 +381,10 @@
  *   be an admin path). Here's an example using the configurable_language config
  *   entity:
  *   @code
- *   mymodule.myroute:
- *     path: '/admin/mypath/{configurable_language}'
+ *   my_module.my_route:
+ *     path: '/admin/my-path/{configurable_language}'
  *     defaults:
- *       _controller: '\Drupal\mymodule\MyController::myMethod'
+ *       _controller: '\Drupal\my_module\MyController::myMethod'
  *     options:
  *       parameters:
  *         configurable_language:
@@ -477,7 +476,7 @@
  *   class: Drupal\Core\Cache\CacheBackendInterface
  *   tags:
  *     - { name: cache.bin }
- *   factory: cache_factory:get
+ *   factory: ['@cache_factory', 'get']
  *   arguments: [nameofbin]
  * @endcode
  * See the @link container Services topic @endlink for more on defining
@@ -576,9 +575,9 @@
  *
  * Cache contexts are services tagged with 'cache.context', whose classes
  * implement \Drupal\Core\Cache\Context\CacheContextInterface. See
- * https://www.drupal.org/developing/api/8/cache/contexts for more information
- * on cache contexts, including a list of the contexts that exist in Drupal
- * core, and information on how to define your own contexts. See the
+ * https://www.drupal.org/docs/drupal-apis/cache-api/cache-contexts for more
+ * information on cache contexts, including a list of the contexts that exist in
+ * Drupal core, and information on how to define your own contexts. See the
  * @link container Services and the Dependency Injection Container @endlink
  * topic for more information about services.
  *
@@ -588,9 +587,10 @@
  *
  * @section configuration Configuration
  *
- * By default cached data is stored in the database. This can be configured
- * though so that all cached data, or that of an individual cache bin, uses a
- * different cache backend, such as APCu or Memcache, for storage.
+ * By default, cached data is stored in the database. However, Drupal can be
+ * configured to use a different backend (specified in their service
+ * definition), e.g. APCu or Memcache. This configuration can nominate a
+ * different backend for all cached data or for specific cache bins.
  *
  * In a settings.php file, you can override the service used for a particular
  * cache bin. For example, if your service implementation of
@@ -735,18 +735,19 @@
  *
  * @section sec_overview Overview of container, injection, and services
  * The Services and Dependency Injection Container concepts have been adopted by
- * Drupal from the @link http://symfony.com/ Symfony framework. @endlink A
- * "service" (such as accessing the database, sending email, or translating user
- * interface text) is defined (given a name and an interface or at least a
- * class that defines the methods that may be called), and a default class is
- * designated to provide the service. These two steps must be done together, and
- * can be done by Drupal Core or a module. Other modules can then define
- * alternative classes to provide the same services, overriding the default
- * classes. Classes and functions that need to use the service should always
- * instantiate the class via the dependency injection container (also known
- * simply as the "container"), rather than instantiating a particular service
- * provider class directly, so that they get the correct class (default or
- * overridden).
+ * Drupal from the
+ * @link http://symfony.com/doc/current/components/dependency_injection.html
+ * Symfony DependencyInjection component. @endlink A "service" (such as
+ * accessing the database, sending email, or translating user interface text) is
+ * defined (given a name and an interface or at least a class that defines the
+ * methods that may be called), and a default class is designated to provide the
+ * service. These two steps must be done together, and can be done by Drupal
+ * Core or a module. Other modules can then define alternative classes to
+ * provide the same services, overriding the default classes. Classes and
+ * functions that need to use the service should always instantiate the class
+ * via the dependency injection container (also known simply as the
+ * "container"), rather than instantiating a particular service provider class
+ * directly, so that they get the correct class (default or overridden).
  *
  * See https://www.drupal.org/node/2133171 for more detailed information on
  * services and the dependency injection container.
@@ -772,7 +773,7 @@
  *     class: Drupal\Core\Cache\CacheBackendInterface
  *     tags:
  *       - { name: cache.bin }
- *     factory: cache_factory:get
+ *     factory: ['@cache_factory', 'get']
  *     arguments: [entity]
  * @endcode
  *
@@ -809,7 +810,7 @@
  *   arguments, but they all include an argument $container of type
  *   \Symfony\Component\DependencyInjection\ContainerInterface.
  *   If you are defining one of these classes, in the create() or
- *   createInstance() method, call $container->get('myservice.name') to
+ *   createInstance() method, call $container->get('my_service.name') to
  *   instantiate a service. The results of these calls are generally passed to
  *   the class constructor and saved as member variables in the class.
  * - For functions and class methods that do not have access to either of
@@ -818,8 +819,8 @@
  *   special methods for accessing commonly-used services, or you can call a
  *   generic method to access any service. Examples:
  *   @code
- *   // Retrieve the entity.manager service object (special method exists).
- *   $manager = \Drupal::entityManager();
+ *   // Retrieve the entity_type.manager service object (special method exists).
+ *   $entity_type_manager = \Drupal::entityTypeManager();
  *   // Retrieve the service object for machine name 'foo.bar'.
  *   $foobar = \Drupal::service('foo.bar');
  *   @endcode
@@ -837,7 +838,7 @@
  * @section sec_define Defining a service
  * If your module needs to define a new service, here are the steps:
  * - Choose a unique machine name for your service. Typically, this should
- *   start with your module name. Example: mymodule.myservice.
+ *   start with your module name. Example: my_module.my_service.
  * - Create a PHP interface to define what your service does.
  * - Create a default class implementing your interface that provides your
  *   service. If your class needs to use existing services (such as database
@@ -852,6 +853,12 @@
  *
  * Services can also be defined dynamically, as in the
  * \Drupal\Core\CoreServiceProvider class, but this is less common for modules.
+ *
+ * @section sec_define Service autowiring
+ * Instead of specifying arguments explicitly, the container can also autowire
+ * a service's arguments from the constructor's type-hints. See
+ * @link https://symfony.com/doc/current/service_container/autowiring.html the Symfony documentation on defining services dependencies automatically @endlink
+ * for details.
  *
  * @section sec_tags Service tags
  * Some services have tags, which are defined in the service definition. See
@@ -1119,6 +1126,17 @@
  *     subdirectory)
  *   - Directory location: yourmodule/tests/src/FunctionalJavascript (or a
  *     subdirectory)
+ * - Build tests:
+ *   - Purpose: Test building processes and their outcomes, such as whether a
+ *     live update process actually works, or whether a Composer project
+ *     template actually builds a working site. Provides a temporary build
+ *     workspace and a PHP-native HTTP server to send requests to the site
+ *     you've built.
+ *   - Base class: \Drupal\BuildTests\Framework\BuildTestBase
+ *   - Namespace: \Drupal\Tests\yourmodule\Build (or a
+ *     subdirectory)
+ *   - Directory location: yourmodule/tests/src/Build (or a
+ *     subdirectory)
  *
  * Some notes about writing PHP test classes:
  * - The class needs a phpDoc comment block with a description and
@@ -1231,10 +1249,10 @@
  *   site; CSS files, which alter the styling applied to the HTML; and
  *   JavaScript, Flash, images, and other files. For more information, see the
  *   @link theme_render Theme system and render API topic @endlink and
- *   https://www.drupal.org/docs/8/theming
+ *   https://www.drupal.org/docs/theming-drupal
  * - Modules: Modules add to or alter the behavior and functionality of Drupal,
  *   by using one or more of the methods listed below. For more information
- *   about creating modules, see https://www.drupal.org/developing/modules/8
+ *   about creating modules, see https://www.drupal.org/docs/creating-custom-modules
  * - Installation profiles: Installation profiles can be used to
  *   create distributions, which are complete specific-purpose packages of
  *   Drupal including additional modules, themes, and data. For more
@@ -1906,10 +1924,11 @@ function hook_cron() {
   // Short-running operation example, not using a queue:
   // Delete all expired records since the last cron run.
   $expires = \Drupal::state()->get('mymodule.last_check', 0);
+  $request_time = \Drupal::time()->getRequestTime();
   \Drupal::database()->delete('mymodule_table')
     ->condition('expires', $expires, '>=')
     ->execute();
-  \Drupal::state()->set('mymodule.last_check', REQUEST_TIME);
+  \Drupal::state()->set('mymodule.last_check', $request_time);
 
   // Long-running operation example, leveraging a queue:
   // Queue news feeds for updates once their refresh interval has elapsed.
@@ -1918,12 +1937,13 @@ function hook_cron() {
   foreach (Feed::loadMultiple($ids) as $feed) {
     if ($queue->createItem($feed)) {
       // Add timestamp to avoid queueing item more than once.
-      $feed->setQueuedTime(REQUEST_TIME);
+      $feed->setQueuedTime($request_time);
       $feed->save();
     }
   }
   $ids = \Drupal::entityQuery('aggregator_feed')
-    ->condition('queued', REQUEST_TIME - (3600 * 6), '<')
+    ->accessCheck(FALSE)
+    ->condition('queued', $request_time - (3600 * 6), '<')
     ->execute();
   if ($ids) {
     $feeds = Feed::loadMultiple($ids);
@@ -2025,7 +2045,7 @@ function hook_mail_alter(&$message) {
 }
 
 /**
- * Prepares a message based on parameters;
+ * Prepares a message based on parameters.
  *
  * This hook is called from MailManagerInterface->mail(). Note that hook_mail(),
  * unlike hook_mail_alter(), is only called on the $module argument to
@@ -2265,7 +2285,7 @@ function hook_config_schema_info_alter(&$definitions) {
  * @see \Drupal\Core\Validation\Annotation\Constraint
  */
 function hook_validation_constraint_alter(array &$definitions) {
-  $definitions['Null']['class'] = '\Drupal\mymodule\Validator\Constraints\MyClass';
+  $definitions['Null']['class'] = '\Drupal\mymodule\Plugin\Validation\Constraints\MyClass';
 }
 
 /**
@@ -2402,8 +2422,8 @@ function hook_validation_constraint_alter(array &$definitions) {
  * @code
  * array('#type' => 'status_messages')
  * @endcode
- * to a render array, use drupal_render() to render it, and add a command to
- * place the messages in an appropriate location.
+ * to a render array, use \Drupal::service('renderer')->render() to render it,
+ * and add a command to place the messages in an appropriate location.
  *
  * @section sec_other Other methods for triggering Ajax
  * Here are some additional methods you can use to trigger Ajax responses in
@@ -2479,26 +2499,25 @@ function hook_validation_constraint_alter(array &$definitions) {
  * Overview of event dispatch and subscribing
  *
  * @section sec_intro Introduction and terminology
- * Events are part of the Symfony framework: they allow for different components
- * of the system to interact and communicate with each other. Each event has a
- * unique string name. One system component dispatches the event at an
- * appropriate time; many events are dispatched by Drupal core and the Symfony
- * framework in every request. Other system components can register as event
- * subscribers; when an event is dispatched, a method is called on each
- * registered subscriber, allowing each one to react. For more on the general
- * concept of events, see
+ * Events allow different components of the system to interact and communicate
+ * with each other. One system component dispatches the event at an appropriate
+ * time; many events are dispatched by Drupal core and the Symfony event system
+ * in every request. Other system components can register as event subscribers;
+ * when an event is dispatched, a method is called on each registered
+ * subscriber, allowing each one to react. For more on the general concept of
+ * events, see
  * http://symfony.com/doc/current/components/event_dispatcher/introduction.html
  *
  * @section sec_dispatch Dispatching events
  * To dispatch an event, call the
- * \Symfony\Component\EventDispatcher\EventDispatcherInterface::dispatch()
+ * \Symfony\Contracts\EventDispatcher\EventDispatcherInterface::dispatch()
  * method on the 'event_dispatcher' service (see the
  * @link container Services topic @endlink for more information about how to
  * interact with services). The first argument is the unique event name, which
  * you should normally define as a constant in a separate static class (see
  * \Symfony\Component\HttpKernel\KernelEvents and
  * \Drupal\Core\Config\ConfigEvents for examples). The second argument is a
- * \Symfony\Component\EventDispatcher\Event object; normally you will need to
+ * \Drupal\Component\EventDispatcher\Event object; normally you will need to
  * extend this class, so that your event class can provide data to the event
  * subscribers.
  *
@@ -2594,5 +2613,29 @@ function hook_validation_constraint_alter(array &$definitions) {
  * within contributed and custom code. Reserved attributes include:
  * - uid: The user ID for an authenticated user. The value of this attribute
  *   cannot be modified.
+ *
+ * @section sec_custom_session_bags Custom session bags
+ * Modules can register custom session bags in order to provide type safe
+ * interfaces on module specific session data. A session bag must implement
+ * \Symfony\Component\HttpFoundation\Session\SessionBagInterface. Custom session
+ * bags are registered using a service entry tagged with the session_bag service
+ * tag. Custom session bags can be accessed through the session retrieved from
+ * the request object.
+ *
+ * Example service definition:
+ * @code
+ * session_test.session_bag:
+ *   class: Drupal\session_test\Session\TestSessionBag
+ *   tags:
+ *     - { name: session_bag }
+ * @endcode
+ *
+ * Example of accessing a custom session bag:
+ * @code
+ * $bag = $request->getSession()->getBag(TestSessionBag::BAG_NAME);
+ * $bag->setFlag();
+ * @endcode
+ * Session data must be deleted from custom session bags as soon as it is no
+ * longer needed (see @ref sec_intro above).
  * @}
  */

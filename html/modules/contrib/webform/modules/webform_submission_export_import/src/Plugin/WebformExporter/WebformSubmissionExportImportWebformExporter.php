@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformExporter\FileHandleTraitWebformExporter;
 use Drupal\webform\Plugin\WebformExporterBase;
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a machine readable CSV export that can be imported back into the current webform.
@@ -22,6 +23,22 @@ use Drupal\webform\WebformSubmissionInterface;
 class WebformSubmissionExportImportWebformExporter extends WebformExporterBase {
 
   use FileHandleTraitWebformExporter;
+
+  /**
+   * Webform submission export importer service.
+   *
+   * @var \Drupal\webform_submission_export_import\WebformSubmissionExportImportImporterInterface
+   */
+  protected $importer;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->importer = $container->get('webform_submission_export_import.importer');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -82,10 +99,8 @@ class WebformSubmissionExportImportWebformExporter extends WebformExporterBase {
    *   The submission importer.
    */
   protected function getImporter() {
-    /** @var \Drupal\webform_submission_export_import\WebformSubmissionExportImportImporterInterface $importer */
-    $importer = \Drupal::service('webform_submission_export_import.importer');
-    $importer->setWebform($this->getWebform());
-    return $importer;
+    $this->importer->setWebform($this->getWebform());
+    return $this->importer;
   }
 
 }

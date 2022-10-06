@@ -3,6 +3,7 @@
 namespace Drupal\Tests\layout_builder\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\Tests\system\Traits\OffCanvasTestTrait;
 
 /**
  * Ajax blocks tests.
@@ -11,16 +12,19 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  */
 class AjaxBlockTest extends WebDriverTestBase {
 
+  use OffCanvasTestTrait;
+
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'block',
     'node',
     'datetime',
     'layout_builder',
     'user',
     'layout_builder_test',
+    'off_canvas_test',
   ];
 
   /**
@@ -31,7 +35,7 @@ class AjaxBlockTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $user = $this->drupalCreateUser([
       'configure any layout',
@@ -65,7 +69,8 @@ class AjaxBlockTest extends WebDriverTestBase {
     $field_ui_prefix = 'admin/structure/types/manage/bundle_with_section_field';
 
     // From the manage display page, go to manage the layout.
-    $this->drupalPostForm("$field_ui_prefix/display/default", ['layout[enabled]' => TRUE], 'Save');
+    $this->drupalGet("{$field_ui_prefix}/display/default");
+    $this->submitForm(['layout[enabled]' => TRUE], 'Save');
     $assert_session->linkExists('Manage layout');
     $this->clickLink('Manage layout');
     $assert_session->addressEquals("$field_ui_prefix/display/default/layout");
@@ -75,14 +80,16 @@ class AjaxBlockTest extends WebDriverTestBase {
     // Add a new block.
     $assert_session->linkExists('Add block');
     $this->clickLink('Add block');
+    $this->waitForOffCanvasArea();
     $assert_session->assertWaitOnAjaxRequest();
     $assert_session->linkExists('TestAjax');
     $this->clickLink('TestAjax');
+    $this->waitForOffCanvasArea();
     $assert_session->assertWaitOnAjaxRequest();
     // Find the radio buttons.
     $name = 'settings[ajax_test]';
     /** @var \Behat\Mink\Element\NodeElement[] $radios */
-    $radios = $this->cssSelect('input[name="' . $name . '"]');
+    $radios = $this->assertSession()->fieldExists($name);
     // Click them both a couple of times.
     foreach ([1, 2] as $rounds) {
       foreach ($radios as $radio) {
@@ -91,11 +98,12 @@ class AjaxBlockTest extends WebDriverTestBase {
       }
     }
     // Then add the block.
-    $page->pressButton('Add block');
+    $assert_session->waitForElementVisible('named', ['button', 'Add block'])->press();
     $assert_session->assertWaitOnAjaxRequest();
+    $assert_session->waitForElementVisible('css', '.block-layout-builder-test-testajax');
     $block_elements = $this->cssSelect('.block-layout-builder-test-testajax');
     // Should be exactly one of these in there.
-    $this->assertEquals(1, count($block_elements));
+    $this->assertCount(1, $block_elements);
     $assert_session->pageTextContains('Every word is like an unnecessary stain on silence and nothingness.');
   }
 

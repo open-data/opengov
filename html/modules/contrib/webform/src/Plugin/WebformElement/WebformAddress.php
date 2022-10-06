@@ -23,7 +23,7 @@ class WebformAddress extends WebformCompositeBase {
    * {@inheritdoc}
    */
   public function getPluginLabel() {
-    return \Drupal::moduleHandler()->moduleExists('address') ? $this->t('Basic address') : parent::getPluginLabel();
+    return $this->moduleHandler->moduleExists('address') ? $this->t('Basic address') : parent::getPluginLabel();
   }
 
   /**

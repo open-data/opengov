@@ -21,12 +21,12 @@ class TypedConfigTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['config_test'];
+  protected static $modules = ['config_test'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installConfig('config_test');
@@ -66,7 +66,7 @@ class TypedConfigTest extends KernelTestBase {
     $this->assertInstanceOf(StringInterface::class, $sequence->get('hum1'));
     $this->assertEquals('hum1', $sequence->get('hum1')->getValue());
     $this->assertEquals('hum2', $sequence->get('hum2')->getValue());
-    $this->assertEquals(2, count($sequence->getIterator()));
+    $this->assertCount(2, $sequence->getIterator());
     // Verify the item metadata is available.
     $this->assertInstanceOf(SequenceDataDefinition::class, $sequence->getDataDefinition());
 
@@ -75,7 +75,7 @@ class TypedConfigTest extends KernelTestBase {
     $typed_config_manager = \Drupal::service('config.typed');
     $typed_config = $typed_config_manager->createFromNameAndData('config_test.validation', \Drupal::configFactory()->get('config_test.validation')->get());
     $this->assertInstanceOf(TypedConfigInterface::class, $typed_config);
-    $this->assertEquals(['llama', 'cat', 'giraffe', 'uuid', '_core'], array_keys($typed_config->getElements()));
+    $this->assertEquals(['_core', 'llama', 'cat', 'giraffe', 'uuid'], array_keys($typed_config->getElements()));
 
     $config_test_entity = \Drupal::entityTypeManager()->getStorage('config_test')->create([
       'id' => 'asterix',

@@ -35,6 +35,34 @@ elements: |
     '#title_tag': h5
     '#title_attributes':
       style: 'color: red'
+  webform_section_description_display_default:
+    '#type': webform_section
+    '#title': webform_section_description_display_default
+    '#description': 'Display default description.'
+    webform_section_description_display_default_textfield:
+      '#type': textfield
+      '#title': webform_section_description_display_default_textfield
+  webform_section_description_display_before:
+    '#type': webform_section
+    '#title': webform_section_description_display_before
+    '#description': 'Display before description.'
+    '#description_display': before
+    webform_section_description_display_before_textfield:
+      '#type': textfield
+      '#title': webform_section_description_display_before_textfield
+  webform_section_description_display_after:
+    '#type': webform_section
+    '#title': webform_section_description_display_after
+    '#description': 'Display after description.'
+    '#description_display': after
+    webform_section_description_display_after_textfield:
+      '#type': textfield
+      '#title': webform_section_description_display_after_textfield
+  webform_section_description_display_invisible:
+    '#type': webform_section
+    '#title': webform_section_description_display_invisible
+    '#description': 'Display invisible description.'
+    '#description_display': invisible
   
 css: ''
 javascript: ''
@@ -56,7 +84,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -77,6 +105,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

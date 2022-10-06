@@ -4,6 +4,8 @@ namespace Drupal\KernelTests\Core\Database;
 
 use Drupal\Core\Database\InvalidQueryException;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Database\DatabaseExceptionWrapper;
+use Drupal\Core\Database\Query\SelectExtender;
 
 /**
  * Tests the Select query builder.
@@ -21,7 +23,7 @@ class SelectTest extends DatabaseTestBase {
     $query->addField('test', 'age', 'age');
     $num_records = $query->countQuery()->execute()->fetchField();
 
-    $this->assertEqual($num_records, 4, 'Returned the correct number of rows.');
+    $this->assertEquals(4, $num_records, 'Returned the correct number of rows.');
   }
 
   /**
@@ -38,8 +40,8 @@ class SelectTest extends DatabaseTestBase {
     $query = (string) $query;
     $expected = "/* Testing query comments */";
 
-    $this->assertEqual(count($records), 4, 'Returned the correct number of rows.');
-    $this->assertNotIdentical(FALSE, strpos($query, $expected), 'The flattened query contains the comment string.');
+    $this->assertCount(4, $records, 'Returned the correct number of rows.');
+    $this->assertStringContainsString($expected, $query, 'The flattened query contains the comment string.');
   }
 
   /**
@@ -58,12 +60,12 @@ class SelectTest extends DatabaseTestBase {
 
     // Check the returned number of rows.
     $this->assertCount(4, $records);
-    // Check that the flattened query contains the sanitised comment string.
-    $this->assertContains($expected, $query);
+    // Check that the flattened query contains the sanitized comment string.
+    $this->assertStringContainsString($expected, $query);
 
     $connection = Database::getConnection();
     foreach ($this->makeCommentsProvider() as $test_set) {
-      list($expected, $comments) = $test_set;
+      [$expected, $comments] = $test_set;
       $this->assertEquals($expected, $connection->makeComment($comments));
     }
   }
@@ -110,13 +112,13 @@ class SelectTest extends DatabaseTestBase {
     $result = $query->execute();
 
     // Check that the aliases are being created the way we want.
-    $this->assertEqual($name_field, 'name', 'Name field alias is correct.');
-    $this->assertEqual($age_field, 'age', 'Age field alias is correct.');
+    $this->assertEquals('name', $name_field, 'Name field alias is correct.');
+    $this->assertEquals('age', $age_field, 'Age field alias is correct.');
 
     // Ensure that we got the right record.
     $record = $result->fetch();
-    $this->assertEqual($record->$name_field, 'George', 'Fetched name is correct.');
-    $this->assertEqual($record->$age_field, 27, 'Fetched age is correct.');
+    $this->assertEquals('George', $record->{$name_field}, 'Fetched name is correct.');
+    $this->assertEquals(27, $record->{$age_field}, 'Fetched age is correct.');
   }
 
   /**
@@ -125,18 +127,18 @@ class SelectTest extends DatabaseTestBase {
   public function testSimpleSelectExpression() {
     $query = $this->connection->select('test');
     $name_field = $query->addField('test', 'name');
-    $age_field = $query->addExpression("age*2", 'double_age');
+    $age_field = $query->addExpression("[age]*2", 'double_age');
     $query->condition('age', 27);
     $result = $query->execute();
 
     // Check that the aliases are being created the way we want.
-    $this->assertEqual($name_field, 'name', 'Name field alias is correct.');
-    $this->assertEqual($age_field, 'double_age', 'Age field alias is correct.');
+    $this->assertEquals('name', $name_field, 'Name field alias is correct.');
+    $this->assertEquals('double_age', $age_field, 'Age field alias is correct.');
 
     // Ensure that we got the right record.
     $record = $result->fetch();
-    $this->assertEqual($record->$name_field, 'George', 'Fetched name is correct.');
-    $this->assertEqual($record->$age_field, 27 * 2, 'Fetched age expression is correct.');
+    $this->assertEquals('George', $record->{$name_field}, 'Fetched name is correct.');
+    $this->assertEquals(27 * 2, $record->{$age_field}, 'Fetched age expression is correct.');
   }
 
   /**
@@ -145,20 +147,20 @@ class SelectTest extends DatabaseTestBase {
   public function testSimpleSelectExpressionMultiple() {
     $query = $this->connection->select('test');
     $name_field = $query->addField('test', 'name');
-    $age_double_field = $query->addExpression("age*2");
-    $age_triple_field = $query->addExpression("age*3");
+    $age_double_field = $query->addExpression("[age]*2");
+    $age_triple_field = $query->addExpression("[age]*3");
     $query->condition('age', 27);
     $result = $query->execute();
 
     // Check that the aliases are being created the way we want.
-    $this->assertEqual($age_double_field, 'expression', 'Double age field alias is correct.');
-    $this->assertEqual($age_triple_field, 'expression_2', 'Triple age field alias is correct.');
+    $this->assertEquals('expression', $age_double_field, 'Double age field alias is correct.');
+    $this->assertEquals('expression_2', $age_triple_field, 'Triple age field alias is correct.');
 
     // Ensure that we got the right record.
     $record = $result->fetch();
-    $this->assertEqual($record->$name_field, 'George', 'Fetched name is correct.');
-    $this->assertEqual($record->$age_double_field, 27 * 2, 'Fetched double age expression is correct.');
-    $this->assertEqual($record->$age_triple_field, 27 * 3, 'Fetched triple age expression is correct.');
+    $this->assertEquals('George', $record->{$name_field}, 'Fetched name is correct.');
+    $this->assertEquals(27 * 2, $record->{$age_double_field}, 'Fetched double age expression is correct.');
+    $this->assertEquals(27 * 3, $record->{$age_triple_field}, 'Fetched triple age expression is correct.');
   }
 
   /**
@@ -178,10 +180,10 @@ class SelectTest extends DatabaseTestBase {
 
     // Ensure that we got the right record.
     // Check that all fields we asked for are present.
-    $this->assertEqual($record->id, 2, 'ID field has the correct value.');
-    $this->assertEqual($record->name, 'George', 'Name field has the correct value.');
-    $this->assertEqual($record->age, 27, 'Age field has the correct value.');
-    $this->assertEqual($record->job, 'Singer', 'Job field has the correct value.');
+    $this->assertEquals(2, $record->id, 'ID field has the correct value.');
+    $this->assertEquals('George', $record->name, 'Name field has the correct value.');
+    $this->assertEquals(27, $record->age, 'Age field has the correct value.');
+    $this->assertEquals('Singer', $record->job, 'Job field has the correct value.');
   }
 
   /**
@@ -201,10 +203,10 @@ class SelectTest extends DatabaseTestBase {
 
     // Ensure that we got the right record.
     // Check that all fields we asked for are present.
-    $this->assertEqual($record->id, 2, 'ID field has the correct value.');
-    $this->assertEqual($record->name, 'George', 'Name field has the correct value.');
-    $this->assertEqual($record->age, 27, 'Age field has the correct value.');
-    $this->assertEqual($record->job, 'Singer', 'Job field has the correct value.');
+    $this->assertEquals(2, $record->id, 'ID field has the correct value.');
+    $this->assertEquals('George', $record->name, 'Name field has the correct value.');
+    $this->assertEquals(27, $record->age, 'Age field has the correct value.');
+    $this->assertEquals('Singer', $record->job, 'Job field has the correct value.');
   }
 
   /**
@@ -218,7 +220,7 @@ class SelectTest extends DatabaseTestBase {
       ->condition('age', NULL)
       ->execute()->fetchCol();
 
-    $this->assertEqual(count($names), 0, 'No records found when comparing to NULL.');
+    $this->assertCount(0, $names, 'No records found when comparing to NULL.');
   }
 
   /**
@@ -232,8 +234,8 @@ class SelectTest extends DatabaseTestBase {
       ->isNull('age')
       ->execute()->fetchCol();
 
-    $this->assertEqual(count($names), 1, 'Correct number of records found with NULL age.');
-    $this->assertEqual($names[0], 'Fozzie', 'Correct record returned for NULL age.');
+    $this->assertCount(1, $names, 'Correct number of records found with NULL age.');
+    $this->assertEquals('Fozzie', $names[0], 'Correct record returned for NULL age.');
   }
 
   /**
@@ -248,9 +250,9 @@ class SelectTest extends DatabaseTestBase {
       ->orderBy('name')
       ->execute()->fetchCol();
 
-    $this->assertEqual(count($names), 2, 'Correct number of records found withNOT NULL age.');
-    $this->assertEqual($names[0], 'Gonzo', 'Correct record returned for NOT NULL age.');
-    $this->assertEqual($names[1], 'Kermit', 'Correct record returned for NOT NULL age.');
+    $this->assertCount(2, $names, 'Correct number of records found withNOT NULL age.');
+    $this->assertEquals('Gonzo', $names[0], 'Correct record returned for NOT NULL age.');
+    $this->assertEquals('Kermit', $names[1], 'Correct record returned for NOT NULL age.');
   }
 
   /**
@@ -279,7 +281,7 @@ class SelectTest extends DatabaseTestBase {
    */
   public function testExtenderAlwaysFalseCondition() {
     $names = $this->connection->select('test', 'test')
-      ->extend('Drupal\Core\Database\Query\SelectExtender')
+      ->extend(SelectExtender::class)
       ->fields('test', ['name'])
       ->condition('age', 27)
       ->execute()->fetchCol();
@@ -288,7 +290,7 @@ class SelectTest extends DatabaseTestBase {
     $this->assertSame($names[0], 'George');
 
     $names = $this->connection->select('test', 'test')
-      ->extend('Drupal\Core\Database\Query\SelectExtender')
+      ->extend(SelectExtender::class)
       ->fields('test', ['name'])
       ->condition('age', 27)
       ->alwaysFalse()
@@ -317,9 +319,9 @@ class SelectTest extends DatabaseTestBase {
     $names = $query_1->execute()->fetchCol();
 
     // Ensure we only get 2 records.
-    $this->assertEqual(count($names), 2, 'UNION correctly discarded duplicates.');
-    sort($names);
-    $this->assertEquals(['George', 'Ringo'], $names);
+    $this->assertCount(2, $names, 'UNION correctly discarded duplicates.');
+
+    $this->assertEqualsCanonicalizing(['George', 'Ringo'], $names);
   }
 
   /**
@@ -339,11 +341,11 @@ class SelectTest extends DatabaseTestBase {
     $names = $query_1->execute()->fetchCol();
 
     // Ensure we get all 3 records.
-    $this->assertEqual(count($names), 3, 'UNION ALL correctly preserved duplicates.');
+    $this->assertCount(3, $names, 'UNION ALL correctly preserved duplicates.');
 
-    $this->assertEqual($names[0], 'George', 'First query returned correct first name.');
-    $this->assertEqual($names[1], 'Ringo', 'Second query returned correct second name.');
-    $this->assertEqual($names[2], 'Ringo', 'Third query returned correct name.');
+    $this->assertEquals('George', $names[0], 'First query returned correct first name.');
+    $this->assertEquals('Ringo', $names[1], 'Second query returned correct second name.');
+    $this->assertEquals('Ringo', $names[2], 'Third query returned correct name.');
   }
 
   /**
@@ -360,12 +362,10 @@ class SelectTest extends DatabaseTestBase {
 
     $query_1->union($query_2, 'ALL');
     $names = $query_1->execute()->fetchCol();
-
-    $query_3 = $query_1->countQuery();
-    $count = $query_3->execute()->fetchField();
+    $count = (int) $query_1->countQuery()->execute()->fetchField();
 
     // Ensure the counts match.
-    $this->assertEqual(count($names), $count, "The count query's result matched the number of rows in the UNION query.");
+    $this->assertSame(count($names), $count, "The count query's result matched the number of rows in the UNION query.");
   }
 
   /**
@@ -388,13 +388,13 @@ class SelectTest extends DatabaseTestBase {
     $names = $query_1->execute()->fetchCol();
 
     // Ensure we get all 3 records.
-    $this->assertEqual(count($names), 3, 'UNION returned rows from both queries.');
+    $this->assertCount(3, $names, 'UNION returned rows from both queries.');
 
     // Ensure that the names are in the correct reverse alphabetical order,
     // regardless of which query they came from.
-    $this->assertEqual($names[0], 'Ringo', 'First query returned correct name.');
-    $this->assertEqual($names[1], 'Paul', 'Second query returned correct name.');
-    $this->assertEqual($names[2], 'George', 'Third query returned correct name.');
+    $this->assertEquals('Ringo', $names[0], 'First query returned correct name.');
+    $this->assertEquals('Paul', $names[1], 'Second query returned correct name.');
+    $this->assertEquals('George', $names[2], 'Third query returned correct name.');
   }
 
   /**
@@ -418,12 +418,12 @@ class SelectTest extends DatabaseTestBase {
     $names = $query_1->execute()->fetchCol();
 
     // Ensure we get all only 2 of the 3 records.
-    $this->assertEqual(count($names), 2, 'UNION with a limit returned rows from both queries.');
+    $this->assertCount(2, $names, 'UNION with a limit returned rows from both queries.');
 
     // Ensure that the names are in the correct reverse alphabetical order,
     // regardless of which query they came from.
-    $this->assertEqual($names[0], 'Ringo', 'First query returned correct name.');
-    $this->assertEqual($names[1], 'Paul', 'Second query returned correct name.');
+    $this->assertEquals('Ringo', $names[0], 'First query returned correct name.');
+    $this->assertEquals('Paul', $names[1], 'Second query returned correct name.');
   }
 
   /**
@@ -446,7 +446,7 @@ class SelectTest extends DatabaseTestBase {
     // same as the chance that a deck of cards will come out in the same order
     // after shuffling it (in other words, nearly impossible).
     $number_of_items = 52;
-    while ($this->connection->query("SELECT MAX(id) FROM {test}")->fetchField() < $number_of_items) {
+    while ($this->connection->query("SELECT MAX([id]) FROM {test}")->fetchField() < $number_of_items) {
       $this->connection->insert('test')->fields(['name' => $this->randomMachineName()])->execute();
     }
 
@@ -458,7 +458,7 @@ class SelectTest extends DatabaseTestBase {
       ->orderBy('id')
       ->execute()
       ->fetchCol();
-    $this->assertEqual($ordered_ids, $expected_ids, 'A query without random ordering returns IDs in the correct order.');
+    $this->assertEquals($expected_ids, $ordered_ids, 'A query without random ordering returns IDs in the correct order.');
 
     // Now perform the same query, but instead choose a random ordering. We
     // expect this to contain a differently ordered version of the original
@@ -469,10 +469,10 @@ class SelectTest extends DatabaseTestBase {
       ->orderRandom()
       ->execute()
       ->fetchCol();
-    $this->assertNotEqual($randomized_ids, $ordered_ids, 'A query with random ordering returns an unordered set of IDs.');
+    $this->assertNotEquals($ordered_ids, $randomized_ids, 'A query with random ordering returns an unordered set of IDs.');
     $sorted_ids = $randomized_ids;
     sort($sorted_ids);
-    $this->assertEqual($sorted_ids, $ordered_ids, 'After sorting the random list, the result matches the original query.');
+    $this->assertEquals($ordered_ids, $sorted_ids, 'After sorting the random list, the result matches the original query.');
 
     // Now perform the exact same query again, and make sure the order is
     // different.
@@ -482,10 +482,10 @@ class SelectTest extends DatabaseTestBase {
       ->orderRandom()
       ->execute()
       ->fetchCol();
-    $this->assertNotEqual($randomized_ids_second_set, $randomized_ids, 'Performing the query with random ordering a second time returns IDs in a different order.');
+    $this->assertNotEquals($randomized_ids, $randomized_ids_second_set, 'Performing the query with random ordering a second time returns IDs in a different order.');
     $sorted_ids_second_set = $randomized_ids_second_set;
     sort($sorted_ids_second_set);
-    $this->assertEqual($sorted_ids_second_set, $sorted_ids, 'After sorting the second random list, the result matches the sorted version of the first random list.');
+    $this->assertEquals($sorted_ids, $sorted_ids_second_set, 'After sorting the second random list, the result matches the sorted version of the first random list.');
   }
 
   /**
@@ -547,42 +547,34 @@ class SelectTest extends DatabaseTestBase {
     $query = $this->connection->select('test', 't');
     $alias1 = $query->addField('t', 'name', 'the_alias');
     $alias2 = $query->addField('t', 'age', 'the_alias');
-    $this->assertNotIdentical($alias1, $alias2, 'Duplicate aliases are renamed.');
+    $this->assertNotSame($alias1, $alias2, 'Duplicate aliases are renamed.');
   }
 
   /**
-   * Tests that an invalid merge query throws an exception.
+   * Tests deprecation of the 'throw_exception' option.
+   *
+   * @group legacy
+   */
+  public function testLegacyThrowExceptionOption(): void {
+    $this->expectDeprecation("Passing a 'throw_exception' option to %AExceptionHandler::handleExecutionException is deprecated in drupal:9.2.0 and is removed in drupal:10.0.0. Always catch exceptions. See https://www.drupal.org/node/3201187");
+    // This query will fail because the table does not exist.
+    $this->assertNull($this->connection->select('some_table_that_does_not_exist', 't', ['throw_exception' => FALSE])
+      ->fields('t')
+      ->countQuery()
+      ->execute()
+    );
+  }
+
+  /**
+   * Tests that an invalid count query throws an exception.
    */
   public function testInvalidSelectCount() {
-    try {
-      // This query will fail because the table does not exist.
-      // Normally it would throw an exception but we are suppressing
-      // it with the throw_exception option.
-      $options['throw_exception'] = FALSE;
-      $this->connection->select('some_table_that_doesnt_exist', 't', $options)
-        ->fields('t')
-        ->countQuery()
-        ->execute();
-
-      $this->pass('$options[\'throw_exception\'] is FALSE, no Exception thrown.');
-    }
-    catch (\Exception $e) {
-      $this->fail('$options[\'throw_exception\'] is FALSE, but Exception thrown for invalid query.');
-      return;
-    }
-
-    try {
-      // This query will fail because the table does not exist.
-      $this->connection->select('some_table_that_doesnt_exist', 't')
-        ->fields('t')
-        ->countQuery()
-        ->execute();
-    }
-    catch (\Exception $e) {
-      $this->pass('Exception thrown for invalid query.');
-      return;
-    }
-    $this->fail('No Exception thrown.');
+    $this->expectException(DatabaseExceptionWrapper::class);
+    // This query will fail because the table does not exist.
+    $this->connection->select('some_table_that_does_not_exist', 't')
+      ->fields('t')
+      ->countQuery()
+      ->execute();
   }
 
   /**
@@ -598,7 +590,7 @@ class SelectTest extends DatabaseTestBase {
       $this->fail('Expected exception not thrown');
     }
     catch (InvalidQueryException $e) {
-      $this->assertEqual("Query condition 'age IN ()' cannot be empty.", $e->getMessage());
+      $this->assertEquals("Query condition 'age IN ()' cannot be empty.", $e->getMessage());
     }
 
     try {
@@ -610,7 +602,7 @@ class SelectTest extends DatabaseTestBase {
       $this->fail('Expected exception not thrown');
     }
     catch (InvalidQueryException $e) {
-      $this->assertEqual("Query condition 'age NOT IN ()' cannot be empty.", $e->getMessage());
+      $this->assertEquals("Query condition 'age NOT IN ()' cannot be empty.", $e->getMessage());
     }
   }
 

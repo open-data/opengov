@@ -1462,6 +1462,116 @@ echo $string?->append('foo')
 			?->outputUsing();
 // phpcs:set Generic.WhiteSpace.ScopeIndent exact false
 
+if (true) {
+	?><?php echo addslashes(
+		''
+	)?><?php
+}
+
+class Foo
+{
+	public function __construct(
+		public int $intArg,
+	) {
+	}
+}
+
+$value = match ($value) {
+	'' => null,
+	false => false,
+	1, 2, 3 => true,
+	default => $value,
+};
+
+$value = match ($value) {
+	'' => null,
+false => false,
+  1, 2, 3 => true,
+	default => $value,
+};
+
+$value = match (
+  $value
+  ) {
+	'' => null,
+	false
+	  => false,
+	1,
+  2,
+	  3 => true,
+	default =>
+$value,
+};
+
+function toString(): string
+{
+	return sprintf(
+		'%s',
+		match ($type) {
+			'foo' => 'bar',
+		},
+	);
+}
+
+$list = [
+	'fn' => function ($a) {
+				if ($a === true) {
+					echo 'hi';
+				}
+	},
+		'fn' => function ($a) {
+			if ($a === true) {
+				echo 'hi';
+				$list2 = [
+						'fn' => function ($a) {
+									if ($a === true) {
+										echo 'hi';
+									}
+								}
+							];
+			}
+		}
+];
+
+$foo = match ($type) {
+	'a' => [
+		'aa' => 'DESC',
+		'ab' => 'DESC',
+	],
+	'b' => [
+		'ba' => 'DESC',
+		'bb' => 'DESC',
+	],
+	default => [
+		'da' => 'DESC',
+	],
+};
+
+$a = [
+	'a' => [
+		'a' => fn () => foo()
+	],
+	'a' => [
+		'a' => 'a',
+	]
+];
+
+switch ($foo) {
+	case 'a':
+		$foo = match ($foo) {
+			'bar' => 'custom_1',
+			default => 'a'
+		};
+		return $foo;
+	case 'b':
+		return match ($foo) {
+			'bar' => 'custom_1',
+			default => 'b'
+		};
+	default:
+		return 'default';
+}
+
 /* ADD NEW TESTS ABOVE THIS LINE AND MAKE SURE THAT THE 1 (space-based) AND 2 (tab-based) FILES ARE IN SYNC! */
 ?>
 
@@ -1470,7 +1580,7 @@ echo $string?->append('foo')
 	 <?php endif ?>
 
 <?php
-	if (true) {
+	if (true) { // first error after line above is here
 	}
 	else if (true) {
 	}

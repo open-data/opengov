@@ -4,17 +4,94 @@ namespace Drupal\metatag\Form;
 
 use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\metatag\MetatagDefaultsInterface;
 use Drupal\metatag\MetatagManager;
+use Drupal\metatag\MetatagManagerInterface;
+use Drupal\metatag\MetatagTagPluginManager;
+use Drupal\metatag\MetatagToken;
 use Drupal\page_manager\Entity\PageVariant;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class MetatagDefaultsForm.
+ * Form handler for the Metatag Defaults entity type.
  *
  * @package Drupal\metatag\Form
  */
 class MetatagDefaultsForm extends EntityForm {
+
+  /**
+   * The entity type bundle info service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
+   */
+  protected $entityTypeBundleInfo;
+
+  /**
+   * The Metatag manager service.
+   *
+   * @var \Drupal\metatag\MetatagManagerInterface
+   */
+  protected $metatagManager;
+
+  /**
+   * The Metatag token service.
+   *
+   * @var \Drupal\metatag\MetatagToken
+   */
+  protected $metatagToken;
+
+  /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * The Metatag tag plugin manager service.
+   *
+   * @var \Drupal\metatag\MetatagTagPluginManager
+   */
+  protected $metatagPluginManager;
+
+  /**
+   * Constructs a new MetatagDefaultsForm.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+   *   The entity type bundle service.
+   * @param \Drupal\metatag\MetatagManagerInterface $metatag_manager
+   *   The Metatag manager service.
+   * @param \Drupal\metatag\MetatagToken $metatag_token
+   *   The Metatag token service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler service.
+   * @param \Drupal\metatag\MetatagTagPluginManager $metatag_plugin_manager
+   *   The Metatag tag plugin manager service.
+   */
+  public function __construct(EntityTypeBundleInfoInterface $entity_type_bundle_info, MetatagManagerInterface $metatag_manager, MetatagToken $metatag_token, ModuleHandlerInterface $module_handler, MetatagTagPluginManager $metatag_plugin_manager) {
+    $this->entityTypeBundleInfo = $entity_type_bundle_info;
+    $this->metatagManager = $metatag_manager;
+    $this->metatagToken = $metatag_token;
+    $this->moduleHandler = $module_handler;
+    $this->metatagPluginManager = $metatag_plugin_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.bundle.info'),
+      $container->get('metatag.manager'),
+      $container->get('metatag.token'),
+      $container->get('module_handler'),
+      $container->get('plugin.manager.metatag.tag')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -22,7 +99,6 @@ class MetatagDefaultsForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     $metatag_defaults = $this->entity;
-    $metatag_manager = \Drupal::service('metatag.manager');
 
     $form['#ajax_wrapper_id'] = 'metatag-defaults-form-ajax-wrapper';
     $ajax = [
@@ -43,7 +119,7 @@ class MetatagDefaultsForm extends EntityForm {
     $token_types = empty($default_type) ? [] : [explode('__', $default_type)[0]];
 
     // Add the token browser at the top.
-    $form += \Drupal::service('metatag.token')->tokenBrowser($token_types);
+    $form += $this->metatagToken->tokenBrowser($token_types);
 
     // If this is a new Metatag defaults, then list available bundles.
     if ($metatag_defaults->isNew()) {
@@ -81,20 +157,19 @@ class MetatagDefaultsForm extends EntityForm {
     $entity_type_groups = $settings->get('entity_type_groups');
 
     // Find the current entity type and bundle.
-    $metatag_defaults_id = $metatag_defaults->id();
-    $type_parts = explode('__', $metatag_defaults_id);
-    $entity_type = $type_parts[0];
-    $entity_bundle = isset($type_parts[1]) ? $type_parts[1] : NULL;
+    if ($metatag_defaults_id = $metatag_defaults->id()) {
+      $type_parts = explode('__', $metatag_defaults_id);
+      $entity_type = $type_parts[0];
+      $entity_bundle = $type_parts[1] ?? NULL;
+    }
 
     // See if there are requested groups for this entity type and bundle.
-    $groups = !empty($entity_type_groups[$entity_type]) && !empty($entity_type_groups[$entity_type][$entity_bundle]) ? $entity_type_groups[$entity_type][$entity_bundle] : [];
-    // Limit the form to requested groups, if any.
-    if (!empty($groups)) {
-      $form = $metatag_manager->form($values, $form, [$entity_type], $groups);
+    if (isset($entity_type) && !empty($entity_type_groups[$entity_type]) && !empty($entity_type_groups[$entity_type][$entity_bundle])) {
+      $form = $this->metatagManager->form($values, $form, [$entity_type], $entity_type_groups[$entity_type][$entity_bundle], NULL, TRUE);
     }
     // Otherwise, display all groups.
     else {
-      $form = $metatag_manager->form($values, $form);
+      $form = $this->metatagManager->form($values, $form, [], NULL, NULL, TRUE);
     }
 
     $form['status'] = [
@@ -164,22 +239,19 @@ class MetatagDefaultsForm extends EntityForm {
 
       $type_parts = explode('__', $metatag_defaults_id);
       $entity_type = $type_parts[0];
-      $entity_bundle = isset($type_parts[1]) ? $type_parts[1] : NULL;
+      $entity_bundle = $type_parts[1] ?? NULL;
 
       // Get the entity label.
-      $entity_manager = \Drupal::service('entity_type.manager');
-      $entity_info = $entity_manager->getDefinitions();
+      $entity_info = $this->entityTypeManager->getDefinitions();
       $entity_label = (string) $entity_info[$entity_type]->get('label');
 
       if (!is_null($entity_bundle)) {
         // Get the bundle label.
-        $bundle_manager = \Drupal::service('entity_type.bundle.info');
-        $bundle_info = $bundle_manager->getBundleInfo($entity_type);
+        $bundle_info = $this->entityTypeBundleInfo->getBundleInfo($entity_type);
         if ($entity_type === 'page_variant') {
           // Check if page manager is enabled and try to load the page variant
           // so the label of the variant can be used.
-          $moduleHandler = \Drupal::service('module_handler');
-          if ($moduleHandler->moduleExists('metatag_page_manager')) {
+          if ($this->moduleHandler->moduleExists('metatag_page_manager')) {
             $page_variant = PageVariant::load($entity_bundle);
             $page = $page_variant->getPage();
             if ($page_variant) {
@@ -197,20 +269,23 @@ class MetatagDefaultsForm extends EntityForm {
     }
 
     // Set tags within the Metatag entity.
-    $tag_manager = \Drupal::service('plugin.manager.metatag.tag');
-    $tags = $tag_manager->getDefinitions();
+    $tags = $this->metatagPluginManager->getDefinitions();
     $tag_values = [];
     foreach ($tags as $tag_id => $tag_definition) {
       if ($form_state->hasValue($tag_id)) {
         // Some plugins need to process form input before storing it. Hence, we
         // set it and then get it.
-        $tag = $tag_manager->createInstance($tag_id);
+        $tag = $this->metatagPluginManager->createInstance($tag_id);
         $tag->setValue($form_state->getValue($tag_id));
         if (!empty($tag->value())) {
           $tag_values[$tag_id] = $tag->value();
         }
       }
     }
+
+    // Sort the values prior to saving. so that they are easier to manage.
+    ksort($tag_values);
+
     $metatag_defaults->set('tags', $tag_values);
     $status = $metatag_defaults->save();
 
@@ -239,17 +314,13 @@ class MetatagDefaultsForm extends EntityForm {
   protected function getAvailableBundles() {
     $options = [];
     $entity_types = static::getSupportedEntityTypes();
-    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager */
-    $entity_manager = \Drupal::service('entity_type.manager');
-    /** @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info */
-    $bundle_info = \Drupal::service('entity_type.bundle.info');
-    $metatags_defaults_manager = $entity_manager->getStorage('metatag_defaults');
+    $metatags_defaults_manager = $this->entityTypeManager->getStorage('metatag_defaults');
     foreach ($entity_types as $entity_type => $entity_label) {
       if (empty($metatags_defaults_manager->load($entity_type))) {
         $options[$entity_label][$entity_type] = "$entity_label (Default)";
       }
 
-      $bundles = $bundle_info->getBundleInfo($entity_type);
+      $bundles = $this->entityTypeBundleInfo->getBundleInfo($entity_type);
       foreach ($bundles as $bundle_id => $bundle_metadata) {
         $metatag_defaults_id = $entity_type . '__' . $bundle_id;
 
@@ -270,8 +341,8 @@ class MetatagDefaultsForm extends EntityForm {
   public static function getSupportedEntityTypes() {
     $entity_types = [];
 
-    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager */
-    $entity_manager = \Drupal::service('entity_type.manager');
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+    $entity_type_manager = \Drupal::service('entity_type.manager');
 
     // A list of entity types that are not supported.
     $unsupported_types = [
@@ -289,7 +360,7 @@ class MetatagDefaultsForm extends EntityForm {
     ];
 
     // Make a list of supported content types.
-    foreach ($entity_manager->getDefinitions() as $entity_name => $definition) {
+    foreach ($entity_type_manager->getDefinitions() as $entity_name => $definition) {
       // Skip some entity types that we don't want to support.
       if (in_array($entity_name, $unsupported_types)) {
         continue;
@@ -327,6 +398,21 @@ class MetatagDefaultsForm extends EntityForm {
     }
 
     return $label;
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param \Drupal\metatag\MetatagDefaultsInterface|null $metatag_defaults
+   *   Metatags default entity.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   Translated route title.
+   */
+  public function getTitle(MetatagDefaultsInterface $metatag_defaults) {
+    return $this->t('Edit default meta tags for @path', [
+      '@path' => $metatag_defaults->label(),
+    ]);
   }
 
 }

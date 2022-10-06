@@ -26,7 +26,7 @@ class WebformCardsStatesJavaScriptTest extends WebformWebDriverTestBase {
     $page = $session->getPage();
     $assert_session = $this->assertSession();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check that all progress steps are visible.
     $this->drupalGet('/webform/test_cards_states');

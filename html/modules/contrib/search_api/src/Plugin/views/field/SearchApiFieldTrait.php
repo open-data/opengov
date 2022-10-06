@@ -416,7 +416,7 @@ trait SearchApiFieldTrait {
   }
 
   /**
-   * Gets the value that's supposed to be rendered.
+   * Retrieves the value that's supposed to be rendered.
    *
    * This API exists so that other modules can easily set the values of the
    * field without having the need to change the render method as well.
@@ -429,14 +429,13 @@ trait SearchApiFieldTrait {
    * @param string $field
    *   Optional name of the field where the value is stored.
    *
+   * @return mixed
+   *   The field value to use.
+   *
    * @see \Drupal\views\Plugin\views\field\FieldHandlerInterface::getValue()
    */
   public function getValue(ResultRow $values, $field = NULL) {
-    if (isset($this->overriddenValues[$field])) {
-      return $this->overriddenValues[$field];
-    }
-
-    return parent::getValue($values, $field);
+    return $this->overriddenValues[$field] ?? parent::getValue($values, $field);
   }
 
   /**
@@ -507,8 +506,7 @@ trait SearchApiFieldTrait {
         // In case the property is configurable, create a new, unique combined
         // property path for this field so adding multiple fields based on the
         // same property works correctly.
-        if (isset($index_properties[$property_path])
-            && $index_properties[$property_path] instanceof ConfigurablePropertyInterface
+        if (($index_properties[$property_path] ?? NULL) instanceof ConfigurablePropertyInterface
             && !empty($this->definition['search_api field'])) {
           $new_path = $combined_property_path . '|' . $this->definition['search_api field'];
           $this->propertyReplacements[$combined_property_path] = $new_path;
@@ -717,7 +715,9 @@ trait SearchApiFieldTrait {
                   ->getDefinition($entity_type_id);
                 if ($entity_type->isStaticallyCacheable()) {
                   $entity_id = $typed_data->getTargetIdentifier();
-                  $entities_to_load[$entity_type_id][$entity_id] = $entity_id;
+                  if ($entity_id) {
+                    $entities_to_load[$entity_type_id][$entity_id] = $entity_id;
+                  }
                 }
               }
             }
@@ -732,7 +732,8 @@ trait SearchApiFieldTrait {
       }
     }
 
-    // Multi-load all entities we encountered before.
+    // Multi-load all entities we encountered before (to get them into the
+    // static cache).
     foreach ($entities_to_load as $entity_type_id => $ids) {
       $this->getEntityTypeManager()
         ->getStorage($entity_type_id)
@@ -1259,7 +1260,7 @@ trait SearchApiFieldTrait {
    *   (optional) The type of sanitization needed. If not provided,
    *   \Drupal\Component\Utility\Html::escape() is used.
    *
-   * @return \Drupal\views\Render\ViewsRenderPipelineMarkup
+   * @return \Drupal\Component\Render\MarkupInterface
    *   Returns the safe value.
    *
    * @see \Drupal\views\Plugin\views\HandlerBase::sanitizeValue()
@@ -1287,13 +1288,19 @@ trait SearchApiFieldTrait {
   protected function getItemUrl(ResultRow $row, $i) {
     $this->valueIndex = $i;
     if ($entity = $this->getEntity($row)) {
-      return $entity->toUrl('canonical');
+      if ($entity->hasLinkTemplate('canonical')) {
+        return $entity->toUrl('canonical');
+      }
     }
 
     if (!empty($row->_relationship_objects[NULL][0])) {
-      return $this->getIndex()
-        ->getDatasource($row->search_api_datasource)
-        ->getItemUrl($row->_relationship_objects[NULL][0]);
+      try {
+        return $this->getIndex()
+          ->getDatasource($row->search_api_datasource)
+          ->getItemUrl($row->_relationship_objects[NULL][0]);
+      }
+      catch (SearchApiException $e) {
+      }
     }
 
     return NULL;

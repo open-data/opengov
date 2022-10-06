@@ -22,63 +22,67 @@ class WebformWizardAccessTest extends WebformWizardTestBase {
    * Test webform custom wizard.
    */
   public function testConditionalWizard() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_form_wizard_access');
 
     // Check anonymous user can access 'All' and 'Anonymous' form pages.
     $this->drupalGet('/webform/test_form_wizard_access');
-    $this->assertRaw('<b>All</b>');
-    $this->assertRaw('<b>Anonymous</b>');
-    $this->assertNoRaw('<b>Authenticated</b>');
-    $this->assertNoRaw('<b>Private</b>');
+    $assert_session->responseContains('<b>All</b>');
+    $assert_session->responseContains('<b>Anonymous</b>');
+    $assert_session->responseNotContains('<b>Authenticated</b>');
+    $assert_session->responseNotContains('<b>Private</b>');
 
     // Generate an anonymous submission.
-    $this->drupalPostForm('/webform/test_form_wizard_access', [], 'Next >');
-    $this->drupalPostForm(NULL, [], 'Submit');
+    $this->drupalGet('/webform/test_form_wizard_access');
+    $this->submitForm([], 'Next >');
+    $this->submitForm([], 'Submit');
     $sid = $this->getLastSubmissionId($webform);
 
     // Check anonymous user can only view 'All' and 'Anonymous' submission data.
     $this->drupalGet("webform/test_form_wizard_access/submissions/$sid");
-    $this->assertRaw('test_form_wizard_access--page_all');
-    $this->assertRaw('test_form_wizard_access--page_anonymous');
-    $this->assertNoRaw('test_form_wizard_access--page_authenticated');
-    $this->assertNoRaw('test_form_wizard_access--page_private');
+    $assert_session->responseContains('test_form_wizard_access--page_all');
+    $assert_session->responseContains('test_form_wizard_access--page_anonymous');
+    $assert_session->responseNotContains('test_form_wizard_access--page_authenticated');
+    $assert_session->responseNotContains('test_form_wizard_access--page_private');
 
     // Check anonymous user can only update 'All' and 'Anonymous' submission data.
     $this->drupalGet("webform/test_form_wizard_access/submissions/$sid/edit");
-    $this->assertRaw('<b>All</b>');
-    $this->assertRaw('<b>Anonymous</b>');
-    $this->assertNoRaw('<b>Authenticated</b>');
-    $this->assertNoRaw('<b>Private</b>');
+    $assert_session->responseContains('<b>All</b>');
+    $assert_session->responseContains('<b>Anonymous</b>');
+    $assert_session->responseNotContains('<b>Authenticated</b>');
+    $assert_session->responseNotContains('<b>Private</b>');
 
     // Login authenticated user.
     $this->drupalLogin($this->rootUser);
 
     // Check authenticated user can access 'All', 'Authenticated', and 'Private' form pages.
     $this->drupalGet('/webform/test_form_wizard_access');
-    $this->assertRaw('<b>All</b>');
-    $this->assertNoRaw('<b>Anonymous</b>');
-    $this->assertRaw('<b>Authenticated</b>');
-    $this->assertRaw('<b>Private</b>');
+    $assert_session->responseContains('<b>All</b>');
+    $assert_session->responseNotContains('<b>Anonymous</b>');
+    $assert_session->responseContains('<b>Authenticated</b>');
+    $assert_session->responseContains('<b>Private</b>');
 
     // Generate an authenticated submission.
-    $this->drupalPostForm('/webform/test_form_wizard_access', [], 'Next >');
-    $this->drupalPostForm(NULL, [], 'Next >');
-    $this->drupalPostForm(NULL, [], 'Submit');
+    $this->drupalGet('/webform/test_form_wizard_access');
+    $this->submitForm([], 'Next >');
+    $this->submitForm([], 'Next >');
+    $this->submitForm([], 'Submit');
     $sid = $this->getLastSubmissionId($webform);
 
     // Check authenticated user can view 'All', 'Authenticated', and 'Private' form pages.
     $this->drupalGet("webform/test_form_wizard_access/submissions/$sid");
-    $this->assertRaw('test_form_wizard_access--page_all');
-    $this->assertNoRaw('test_form_wizard_access--page_anonymous');
-    $this->assertRaw('test_form_wizard_access--page_authenticated');
-    $this->assertRaw('test_form_wizard_access--page_private');
+    $assert_session->responseContains('test_form_wizard_access--page_all');
+    $assert_session->responseNotContains('test_form_wizard_access--page_anonymous');
+    $assert_session->responseContains('test_form_wizard_access--page_authenticated');
+    $assert_session->responseContains('test_form_wizard_access--page_private');
 
     // Check anonymous user can only update 'All' and 'Anonymous' submission data.
     $this->drupalGet("webform/test_form_wizard_access/submissions/$sid/edit");
-    $this->assertRaw('<b>All</b>');
-    $this->assertNoRaw('<b>Anonymous</b>');
-    $this->assertRaw('<b>Authenticated</b>');
-    $this->assertRaw('<b>Private</b>');
+    $assert_session->responseContains('<b>All</b>');
+    $assert_session->responseNotContains('<b>Anonymous</b>');
+    $assert_session->responseContains('<b>Authenticated</b>');
+    $assert_session->responseContains('<b>Private</b>');
   }
 
 }

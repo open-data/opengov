@@ -2,7 +2,7 @@
   "name": "drupal/ctools",
   "description": "Provides a number of utility and helper APIs for Drupal developers and site builders.",
   "type": "drupal-module",
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "minimum-stability": "dev",
   "homepage": "https://www.drupal.org/project/ctools",
   "authors": [
@@ -36,7 +36,9 @@
     "issues": "https://www.drupal.org/project/issues/ctools",
     "source": "https://git.drupalcode.org/project/ctools"
   },
-  "require": {
-    "drupal/core": "^8.7.7 || ^9"
+  "extra": {
+    "branch-alias": {
+      "dev-8.x-3.x": "3.x-dev"
+    }
   }
 }

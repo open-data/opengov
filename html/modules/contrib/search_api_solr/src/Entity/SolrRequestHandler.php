@@ -42,7 +42,7 @@ use Drupal\search_api_solr\SolrRequestHandlerInterface;
 class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandlerInterface {
 
   /**
-   * Solr custom request_handler definition.
+   * Solr custom request handler definition.
    *
    * @var array
    */
@@ -67,9 +67,12 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
    */
   public function getName(): string {
     $nested_name = $this->request_handler['lst'][0]['name'] ?? 'default';
-    return  $this->request_handler['name'] . '_' . $nested_name;
+    return $this->request_handler['name'] . '_' . $nested_name;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getPurposeId(): string {
     return $this->request_handler['name'];
   }

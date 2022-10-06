@@ -6,12 +6,13 @@ use Drupal\Component\Bridge\ZfExtensionManagerSfContainer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Zend\Feed\Reader\Extension\Atom\Entry;
-use Zend\Feed\Reader\StandaloneExtensionManager;
+use Laminas\Feed\Reader\Extension\Atom\Entry;
+use Laminas\Feed\Reader\StandaloneExtensionManager;
 
 /**
  * @coversDefaultClass \Drupal\Component\Bridge\ZfExtensionManagerSfContainer
  * @group Bridge
+ * @group legacy
  */
 class ZfExtensionManagerSfContainerTest extends TestCase {
 
@@ -22,7 +23,7 @@ class ZfExtensionManagerSfContainerTest extends TestCase {
    */
   public function testGet() {
     $service = new \stdClass();
-    $service->value = 'myvalue';
+    $service->value = 'my_value';
     $container = new ContainerBuilder();
     $container->set('foo', $service);
     $bridge = new ZfExtensionManagerSfContainer();
@@ -30,9 +31,9 @@ class ZfExtensionManagerSfContainerTest extends TestCase {
     $this->assertEquals($service, $bridge->get('foo'));
     $bridge->setStandalone(StandaloneExtensionManager::class);
     $this->assertInstanceOf(Entry::class, $bridge->get('Atom\Entry'));
-    // Ensure that the container is checked first.
+    // Ensure that the standalone service is checked before the container.
     $container->set('atomentry', $service);
-    $this->assertEquals($service, $bridge->get('Atom\Entry'));
+    $this->assertInstanceOf(Entry::class, $bridge->get('Atom\Entry'));
   }
 
   /**
@@ -42,7 +43,7 @@ class ZfExtensionManagerSfContainerTest extends TestCase {
    */
   public function testHas() {
     $service = new \stdClass();
-    $service->value = 'myvalue';
+    $service->value = 'my_value';
     $container = new ContainerBuilder();
     $container->set('foo', $service);
     $bridge = new ZfExtensionManagerSfContainer();
@@ -59,7 +60,7 @@ class ZfExtensionManagerSfContainerTest extends TestCase {
    */
   public function testSetStandaloneException() {
     $this->expectException(\RuntimeException::class);
-    $this->expectExceptionMessage('Drupal\Tests\Component\Bridge\ZfExtensionManagerSfContainerTest must implement Zend\Feed\Reader\ExtensionManagerInterface or Zend\Feed\Writer\ExtensionManagerInterface');
+    $this->expectExceptionMessage('Drupal\Tests\Component\Bridge\ZfExtensionManagerSfContainerTest must implement Laminas\Feed\Reader\ExtensionManagerInterface or Laminas\Feed\Writer\ExtensionManagerInterface');
     $bridge = new ZfExtensionManagerSfContainer();
     $bridge->setStandalone(static::class);
   }
@@ -84,7 +85,7 @@ class ZfExtensionManagerSfContainerTest extends TestCase {
    */
   public function testPrefix() {
     $service = new \stdClass();
-    $service->value = 'myvalue';
+    $service->value = 'my_value';
     $container = new ContainerBuilder();
     $container->set('foo.bar', $service);
     $bridge = new ZfExtensionManagerSfContainer('foo.');
@@ -100,7 +101,7 @@ class ZfExtensionManagerSfContainerTest extends TestCase {
    */
   public function testCanonicalizeName($name, $canonical_name) {
     $service = new \stdClass();
-    $service->value = 'myvalue';
+    $service->value = 'my_value';
     $container = new ContainerBuilder();
     $container->set($canonical_name, $service);
     $bridge = new ZfExtensionManagerSfContainer();

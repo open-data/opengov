@@ -14,16 +14,14 @@ use Drupal\Core\Url;
 class NodeTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  public static $modules = ['node', 'field', 'text'];
+  protected static $modules = ['node', 'field', 'text'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');
@@ -68,6 +66,7 @@ class NodeTest extends KernelTestBase {
       'type' => 'page',
       'type-name' => 'Basic page',
       'url:alias' => '/content/source-node',
+      'language:name' => 'English'
     ];
     $this->assertTokens('node', ['node' => $page], $tokens);
 
@@ -93,6 +92,7 @@ class NodeTest extends KernelTestBase {
       'type' => 'article',
       'type-name' => 'Article',
       'url:alias' => "/node/{$article->id()}",
+      'language:name' => 'English'
     ];
     $this->assertTokens('node', ['node' => $article], $tokens);
   }

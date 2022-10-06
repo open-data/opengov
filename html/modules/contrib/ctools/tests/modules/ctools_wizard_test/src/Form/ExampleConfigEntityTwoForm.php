@@ -22,14 +22,14 @@ class ExampleConfigEntityTwoForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $cached_values = $form_state->getTemporaryValue('wizard');
-    /** @var $page \Drupal\ctools_wizard_test\Entity\ExampleConfigEntity */
+    /** @var \Drupal\ctools_wizard_test\Entity\ExampleConfigEntity $page */
     $config_entity = $cached_values['ctools_wizard_test_config_entity'];
 
-    $form['two'] = array(
+    $form['two'] = [
       '#title' => $this->t('Two'),
       '#type' => 'textfield',
       '#default_value' => $config_entity->getTwo() ?: '',
-    );
+    ];
     return $form;
   }
 
@@ -38,7 +38,7 @@ class ExampleConfigEntityTwoForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $cached_values = $form_state->getTemporaryValue('wizard');
-    /** @var $page \Drupal\ctools_wizard_test\Entity\ExampleConfigEntity */
+    /** @var \Drupal\ctools_wizard_test\Entity\ExampleConfigEntity $page */
     $config_entity = $cached_values['ctools_wizard_test_config_entity'];
 
     $config_entity->set('two', $form_state->getValue('two'));

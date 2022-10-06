@@ -20,7 +20,7 @@ class SummaryEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'facets',
     'facets_summary',
   ];
@@ -28,7 +28,7 @@ class SummaryEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('facets_facet');
     $this->installEntitySchema('facets_summary');

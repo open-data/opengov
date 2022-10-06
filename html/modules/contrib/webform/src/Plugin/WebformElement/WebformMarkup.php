@@ -31,7 +31,7 @@ class WebformMarkup extends WebformMarkupBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

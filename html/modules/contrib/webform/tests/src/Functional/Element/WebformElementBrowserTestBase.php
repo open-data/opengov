@@ -18,7 +18,7 @@ abstract class WebformElementBrowserTestBase extends WebformBrowserTestBase {
    *   The element's value.
    */
   protected function assertElementPreview($label, $value) {
-    $this->assertPattern('/<label>' . preg_quote($label, '/') . '<\/label>\s+' . preg_quote($value, '/') . '/');
+    $this->assertSession()->responseMatches('/<label>' . preg_quote($label, '/') . '<\/label>\s+' . preg_quote($value, '/') . '/');
   }
 
 }

@@ -28,22 +28,6 @@ elements: |
     '#type': webform_autocomplete
     '#title': Autocomplete
     '#disabled': true
-  webform_buttons:
-    '#type': webform_buttons
-    '#title': Buttons
-    '#options':
-      one: One
-      two: Two
-      three: Three
-    '#disabled': true
-  webform_buttons_other:
-    '#type': webform_buttons_other
-    '#title': 'Buttons other'
-    '#options':
-      one: One
-      two: Two
-      three: Three
-    '#disabled': true
   checkbox:
     '#type': checkbox
     '#title': Checkbox
@@ -88,9 +72,9 @@ elements: |
         '#type': textfield
         '#title': Name
         '#title_display': invisible
-      gender:
+      sex:
         '#type': select
-        '#title': Gender
+        '#title': Sex
         '#title_display': invisible
         '#options':
           Male: Male
@@ -173,6 +157,10 @@ elements: |
     '#type': managed_file
     '#title': File
     '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/2705471">Issue #2705471: Webform states managed file fields</a><br /><a href="https://www.drupal.org/node/2113931">Issue #2113931: File Field design update</a><br /><a href="https://www.drupal.org/node/2346893">Issue #2346893: Duplicate Ajax wrapper around a file field</a><br /><a href="https://www.drupal.org/node/2482783">Issue #2482783: File upload errors not set or shown correctly</a>'
+    '#disabled': true
+  webform_height:
+    '#type': webform_height
+    '#title': 'Height (feet/inches)'
     '#disabled': true
   webform_image_file:
     '#type': webform_image_file
@@ -271,6 +259,16 @@ elements: |
     '#type': webform_rating
     '#title': Rating
     '#disabled': true
+  webform_same:
+    '#type': webform_same
+    '#title': 'Billing address is the same as the shipping address'
+    '#disabled': true
+  webform_scale:
+    '#type': webform_scale
+    '#title': Scale
+    '#min': 1
+    '#max': 5
+    '#disabled': true
   search:
     '#type': search
     '#title': Search
@@ -291,6 +289,10 @@ elements: |
       one: One
       two: Two
       three: Three
+    '#disabled': true
+  webform_signature:
+    '#type': webform_signature
+    '#title': Signature
     '#disabled': true
   tableselect:
     '#type': tableselect
@@ -385,7 +387,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -406,6 +408,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

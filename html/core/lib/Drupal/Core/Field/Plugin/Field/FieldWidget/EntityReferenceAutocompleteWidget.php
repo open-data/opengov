@@ -112,12 +112,12 @@ class EntityReferenceAutocompleteWidget extends WidgetBase {
       // the 'ValidReference' constraint.
       '#validate_reference' => FALSE,
       '#maxlength' => 1024,
-      '#default_value' => isset($referenced_entities[$delta]) ? $referenced_entities[$delta] : NULL,
+      '#default_value' => $referenced_entities[$delta] ?? NULL,
       '#size' => $this->getSetting('size'),
       '#placeholder' => $this->getSetting('placeholder'),
     ];
 
-    if ($this->getSelectionHandlerSetting('auto_create') && ($bundle = $this->getAutocreateBundle())) {
+    if ($bundle = $this->getAutocreateBundle()) {
       $element['#autocreate'] = [
         'bundle' => $bundle,
         'uid' => ($entity instanceof EntityOwnerInterface) ? $entity->getOwnerId() : \Drupal::currentUser()->id(),
@@ -154,16 +154,23 @@ class EntityReferenceAutocompleteWidget extends WidgetBase {
    * Returns the name of the bundle which will be used for autocreated entities.
    *
    * @return string
-   *   The bundle name.
+   *   The bundle name. If autocreate is not active, NULL will be returned.
    */
   protected function getAutocreateBundle() {
     $bundle = NULL;
-    if ($this->getSelectionHandlerSetting('auto_create') && $target_bundles = $this->getSelectionHandlerSetting('target_bundles')) {
+    if ($this->getSelectionHandlerSetting('auto_create')) {
+      $target_bundles = $this->getSelectionHandlerSetting('target_bundles');
+      // If there's no target bundle at all, use the target_type. It's the
+      // default for bundleless entity types.
+      if (empty($target_bundles)) {
+        $bundle = $this->getFieldSetting('target_type');
+      }
       // If there's only one target bundle, use it.
-      if (count($target_bundles) == 1) {
+      elseif (count($target_bundles) == 1) {
         $bundle = reset($target_bundles);
       }
-      // Otherwise use the target bundle stored in selection handler settings.
+      // If there's more than one target bundle, use the autocreate bundle
+      // stored in selection handler settings.
       elseif (!$bundle = $this->getSelectionHandlerSetting('auto_create_bundle')) {
         // If no bundle has been set as auto create target means that there is
         // an inconsistency in entity reference field settings.
@@ -189,7 +196,7 @@ class EntityReferenceAutocompleteWidget extends WidgetBase {
    */
   protected function getSelectionHandlerSetting($setting_name) {
     $settings = $this->getFieldSetting('handler_settings');
-    return isset($settings[$setting_name]) ? $settings[$setting_name] : NULL;
+    return $settings[$setting_name] ?? NULL;
   }
 
   /**

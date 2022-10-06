@@ -30,7 +30,7 @@ class CollectRoutesTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $container = new ContainerBuilder();
@@ -39,20 +39,20 @@ class CollectRoutesTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->view = $this->getMockBuilder('\Drupal\views\Entity\View')
-      ->setMethods(['initHandlers'])
+    $view = $this->getMockBuilder('\Drupal\views\Entity\View')
+      ->addMethods(['initHandlers'])
       ->setConstructorArgs([['id' => 'test_view'], 'view'])
       ->getMock();
 
     $view_executable = $this->getMockBuilder('\Drupal\views\ViewExecutable')
-      ->setMethods(['initHandlers', 'getTitle'])
+      ->onlyMethods(['initHandlers', 'getTitle'])
       ->disableOriginalConstructor()
       ->getMock();
     $view_executable->expects($this->any())
       ->method('getTitle')
       ->willReturn('View title');
 
-    $view_executable->storage = $this->view;
+    $view_executable->storage = $view;
     $view_executable->argument = [];
 
     $display_manager = $this->getMockBuilder('\Drupal\views\Plugin\ViewsPluginManager')
@@ -116,7 +116,7 @@ class CollectRoutesTest extends UnitTestCase {
       ->will($this->returnValue($none));
 
     $style_plugin = $this->getMockBuilder('\Drupal\rest\Plugin\views\style\Serializer')
-      ->setMethods(['getFormats', 'init'])
+      ->onlyMethods(['getFormats', 'init'])
       ->disableOriginalConstructor()
       ->getMock();
 
@@ -137,7 +137,7 @@ class CollectRoutesTest extends UnitTestCase {
     $this->routes->add('test_1', new Route('/test/1'));
     $this->routes->add('view.test_view.page_1', new Route('/test/2'));
 
-    $this->view->addDisplay('page', NULL, 'page_1');
+    $view->addDisplay('page', NULL, 'page_1');
   }
 
   /**
@@ -149,13 +149,13 @@ class CollectRoutesTest extends UnitTestCase {
     $requirements_1 = $this->routes->get('test_1')->getRequirements();
     $requirements_2 = $this->routes->get('view.test_view.page_1')->getRequirements();
 
-    $this->assertEquals(0, count($requirements_1), 'First route has no requirement.');
-    $this->assertEquals(1, count($requirements_2), 'Views route with rest export had the format requirement added.');
+    $this->assertCount(0, $requirements_1, 'First route has no requirement.');
+    $this->assertCount(1, $requirements_2, 'Views route with rest export had the format requirement added.');
 
     // Check auth options.
     $auth = $this->routes->get('view.test_view.page_1')->getOption('_auth');
-    $this->assertEquals(count($auth), 1, 'View route with rest export has an auth option added');
-    $this->assertEquals($auth[0], 'basic_auth', 'View route with rest export has the correct auth option added');
+    $this->assertCount(1, $auth, 'View route with rest export has an auth option added');
+    $this->assertEquals('basic_auth', $auth[0], 'View route with rest export has the correct auth option added');
   }
 
 }

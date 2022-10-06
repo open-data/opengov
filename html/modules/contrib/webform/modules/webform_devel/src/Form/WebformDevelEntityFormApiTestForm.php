@@ -87,9 +87,9 @@ class WebformDevelEntityFormApiTestForm extends WebformDevelEntityFormApiBaseFor
     $this->messenger()->addWarning($this->renderer->renderPlain($build));
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Set webform elements default values using test data.

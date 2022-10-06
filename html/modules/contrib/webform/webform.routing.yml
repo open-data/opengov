@@ -76,15 +76,13 @@ webform.addons:
 
 # Help
 
-# webform.help is dynamically added.
-# @see \Drupal\webform\Routing\WebformRouteSubscriber
 webform.help:
   path: '/admin/structure/webform/help'
   defaults:
     _controller: '\Drupal\webform\Controller\WebformHelpController::index'
     _title: 'Webforms: Help'
   requirements:
-    _permission: 'access content'
+    _permission: 'access webform help'
 
 webform.help.video:
   path: '/admin/help/webform/video/{id}'
@@ -277,6 +275,14 @@ entity.webform.delete_form:
   requirements:
     _entity_access: 'webform.delete'
 
+entity.webform.multiple_delete_confirm:
+  path: '/admin/structure/webform/delete'
+  defaults:
+    _form: '\Drupal\webform\Form\WebformEntityDeleteMultipleForm'
+    entity_type_id: webform
+  requirements:
+    _entity_delete_multiple_access: 'webform'
+
 # Webform settings.
 
 entity.webform.settings:
@@ -425,7 +431,7 @@ entity.webform.results_clear:
 # Webform options
 
 entity.webform_options.collection:
-  path: '/admin/structure/webform/config/options/manage'
+  path: '/admin/structure/webform/options/manage'
   defaults:
     _entity_list: 'webform_options'
     _title: 'Webforms: Options'
@@ -433,14 +439,14 @@ entity.webform_options.collection:
     _permission: 'administer webform'
 
 entity.webform_options.autocomplete:
-  path: '/admin/structure/webform/config/options/autocomplete'
+  path: '/admin/structure/webform/options/autocomplete'
   defaults:
     _controller: '\Drupal\webform\Controller\WebformOptionsController::autocomplete'
   requirements:
     _permission: 'administer webform'
 
 entity.webform_options.add_form:
-  path: '/admin/structure/webform/config/options/manage/add'
+  path: '/admin/structure/webform/options/manage/add'
   defaults:
     _entity_form: 'webform_options.add'
     _title: 'Add webform options'
@@ -448,7 +454,7 @@ entity.webform_options.add_form:
     _entity_create_access: 'webform_options'
 
 entity.webform_options.edit_form:
-  path: '/admin/structure/webform/config/options/manage/{webform_options}/edit'
+  path: '/admin/structure/webform/options/manage/{webform_options}/edit'
   defaults:
     _entity_form: 'webform_options.edit'
     _title: 'Edit webform options'
@@ -456,7 +462,7 @@ entity.webform_options.edit_form:
     _entity_access: 'webform_options.update'
 
 entity.webform_options.duplicate_form:
-  path: '/admin/structure/webform/config/options/{webform_options}/duplicate'
+  path: '/admin/structure/webform/options/{webform_options}/duplicate'
   defaults:
     _entity_form: 'webform_options.duplicate'
     _title: 'Duplicate webform options'
@@ -464,7 +470,7 @@ entity.webform_options.duplicate_form:
     _entity_access: 'webform_options.duplicate'
 
 entity.webform_options.delete_form:
-  path: '/admin/structure/webform/config/options/{webform_options}/delete'
+  path: '/admin/structure/webform/options/{webform_options}/delete'
   defaults:
     _entity_form: 'webform_options.delete'
     _title: 'Delete webform options'
@@ -623,9 +629,10 @@ entity.webform_submission.sticky_toggle:
 webform_submission.multiple_delete_confirm:
   path: '/admin/structure/webform/results/delete'
   defaults:
-    _form: '\Drupal\webform\Form\WebformSubmissionDeleteMultiple'
+    _form: '\Drupal\webform\Form\WebformSubmissionDeleteMultipleForm'
+    entity_type_id: webform_submission
   requirements:
-    _permission: 'administer webform submission+delete any webform submission+delete own webform submission'
+    _entity_delete_multiple_access: 'webform_submission'
 
 # Handlers.
 

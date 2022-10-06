@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\webform\Entity\Webform;
 
 // Webform install helper functions.
 include_once __DIR__ . '/../../includes/webform.install.inc';
@@ -97,4 +98,35 @@ function webform_scheduled_email_update_8002() {
  */
 function webform_scheduled_email_update_8003() {
   _webform_update_webform_handler_settings();
+}
+
+/**
+ * Issue #3259195: Removes scheduled_email tasks from deleted handlers.
+ */
+function webform_scheduled_email_update_8004() {
+  // Getting all scheduled emails.
+  $result = \Drupal::database()->select('webform_scheduled_email', 'w')
+    ->fields('w', ['eid', 'webform_id', 'handler_id'])
+    ->execute();
+
+  while ($record = $result->fetchAssoc()) {
+    $webform = Webform::load($record['webform_id']);
+    // If the webform does not exist, remove the webform's scheduled emails.
+    if (!$webform) {
+      \Drupal::database()->delete('webform_scheduled_email')
+        ->condition('webform_id', $record['webform_id'])
+        ->execute();
+      return;
+    }
+
+    // If the webform handler does not exist, remove the webform
+    // handler's scheduled emails.
+    $handlers = $webform->getHandlers();
+    if (!$handlers->has($record['handler_id'])) {
+      \Drupal::database()->delete('webform_scheduled_email')
+        ->condition('webform_id', $record['webform_id'])
+        ->condition('handler_id', $record['handler_id'])
+        ->execute();
+    }
+  }
 }

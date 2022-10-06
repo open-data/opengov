@@ -14,7 +14,20 @@ class MetatagManagerTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['system', 'field', 'text', 'user', 'metatag', 'metatag_open_graph'];
+  protected static $modules = [
+    // Core modules.
+    'system',
+    'field',
+    'text',
+    'user',
+
+    // Contrib modules.
+    'token',
+
+    // This module.
+    'metatag',
+    'metatag_open_graph',
+  ];
 
   /**
    * The entity type manager.
@@ -33,13 +46,20 @@ class MetatagManagerTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->entityTypeManager = $this->container->get('entity_type.manager');
     $this->metatagManager = $this->container->get('metatag.manager');
 
-    $this->installConfig(['system', 'field', 'text', 'user', 'metatag', 'metatag_open_graph']);
+    $this->installConfig([
+      'system',
+      'field',
+      'text',
+      'user',
+      'metatag',
+      'metatag_open_graph',
+    ]);
     $this->installEntitySchema('user');
     $this->installSchema('user', ['users_data']);
   }
@@ -68,7 +88,7 @@ class MetatagManagerTest extends KernelTestBase {
     $tags = $this->metatagManager->generateElements([
       'og_image_width' => 100,
       'og_image_height' => 100,
-      'og_image_url' => 'http://www.example.com/example/foo.png',
+      'og_image_url' => 'https://www.example.com/example/foo.png',
     ]);
 
     $expected = [
@@ -79,7 +99,7 @@ class MetatagManagerTest extends KernelTestBase {
               '#tag' => 'meta',
               '#attributes' => [
                 'property' => 'og:image:url',
-                'content' => 'http://www.example.com/example/foo.png',
+                'content' => 'https://www.example.com/example/foo.png',
               ],
             ],
             'og_image_url_0',
@@ -117,7 +137,7 @@ class MetatagManagerTest extends KernelTestBase {
     $tags = $this->metatagManager->generateElements([
       'og_image_width' => 100,
       'og_image_height' => 100,
-      'og_image_url' => 'http://www.example.com/example/foo.png, http://www.example.com/example/foo2.png',
+      'og_image_url' => 'https://www.example.com/example/foo.png, https://www.example.com/example/foo2.png',
     ]);
 
     $expected = [
@@ -128,7 +148,7 @@ class MetatagManagerTest extends KernelTestBase {
               '#tag' => 'meta',
               '#attributes' => [
                 'property' => 'og:image:url',
-                'content' => 'http://www.example.com/example/foo.png',
+                'content' => 'https://www.example.com/example/foo.png',
               ],
             ],
             'og_image_url_0',
@@ -138,7 +158,7 @@ class MetatagManagerTest extends KernelTestBase {
               '#tag' => 'meta',
               '#attributes' => [
                 'property' => 'og:image:url',
-                'content' => 'http://www.example.com/example/foo2.png',
+                'content' => 'https://www.example.com/example/foo2.png',
               ],
             ],
             'og_image_url_1',

@@ -20,6 +20,10 @@ elements: |
     '#type': webform_variant
     '#title': Variant
     '#variant': override
+  processed_text:
+    '#type': processed_text
+    '#text': '<p><strong>Some text</strong></p>'
+    '#format': basic_html
   textfield:
     '#type': textfield
     '#title': 'Text field'
@@ -35,6 +39,19 @@ elements: |
       5: Five
       6: Six
     '#other__option_label': 'Custom number…'
+  webform_image_select:
+    '#type': webform_image_select
+    '#title': 'Image select'
+    '#images':
+      kitten_1:
+        text: 'Cute Kitten 1'
+        src: 'http://placekitten.com/220/200'
+      kitten_2:
+        text: 'Cute Kitten 2'
+        src: 'http://placekitten.com/180/200'
+      kitten_3:
+        text: 'Cute Kitten 3'
+        src: 'http://placekitten.com/130/200'
   details:
     '#type': details
     '#title': Details
@@ -59,15 +76,28 @@ elements: |
   address:
     '#type': webform_address
     '#title': Address
-  token:
+  computed_token:
     '#type': webform_computed_token
     '#title': 'Computed (token)'
     '#value': 'Site name: [site:name]'
+  autocomplete_options:
+    '#type': autocomplete
+    '#title': 'Autocomplete (options)'
+    '#format_items': comma
+    '#autocomplete_items': test_translation
+  autocomplete_custom:
+    '#type': autocomplete
+    '#title': 'Autocomplete (custom)'
+    '#format_items': comma
+    '#autocomplete_items':
+      - Seven
+      - Eight
+      - Nine
   actions:
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': 'Send message'
-
+  
 css: ''
 javascript: ''
 settings:
@@ -88,7 +118,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -109,6 +139,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -299,6 +332,6 @@ variants:
         textfield:
           '#title': 'Text field - Variant'
           '#type': textarea
-
+        
       handlers: {  }
       debug: false

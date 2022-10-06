@@ -4,7 +4,7 @@ dependencies:
   module:
     - webform
 id: webform_submission_make_sticky_action
-label: 'Star/Flag submission'
+label: 'Star/flag submission'
 type: webform_submission
 plugin: webform_submission_make_sticky_action
 configuration: {  }

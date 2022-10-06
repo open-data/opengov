@@ -254,7 +254,7 @@ class PoHeader {
     $lines = array_map('trim', explode("\n", $header));
     foreach ($lines as $line) {
       if ($line) {
-        list($tag, $contents) = explode(":", $line, 2);
+        [$tag, $contents] = explode(":", $line, 2);
         $header_parsed[trim($tag)] = trim($contents);
       }
     }
@@ -400,6 +400,7 @@ class PoHeader {
               $tokens[] = $formula[$i];
             }
             break;
+
           case 5:
             if ($next == '&') {
               $tokens[] = '&&';
@@ -409,6 +410,7 @@ class PoHeader {
               $tokens[] = $formula[$i];
             }
             break;
+
           case 6:
             if ($next == '|') {
               $tokens[] = '||';
@@ -473,6 +475,7 @@ class PoHeader {
    *   Number of the plural string to be used for the given plural value.
    *
    * @see parseArithmetic()
+   *
    * @throws \Exception
    */
   protected function evaluatePlural($element_stack, $n) {
@@ -502,42 +505,55 @@ class PoHeader {
           case '==':
             $f = $element_stack[$i - 2] == $element_stack[$i - 1];
             break;
+
           case '!=':
             $f = $element_stack[$i - 2] != $element_stack[$i - 1];
             break;
+
           case '<=':
             $f = $element_stack[$i - 2] <= $element_stack[$i - 1];
             break;
+
           case '>=':
             $f = $element_stack[$i - 2] >= $element_stack[$i - 1];
             break;
+
           case '<':
             $f = $element_stack[$i - 2] < $element_stack[$i - 1];
             break;
+
           case '>':
             $f = $element_stack[$i - 2] > $element_stack[$i - 1];
             break;
+
           case '+':
             $f = $element_stack[$i - 2] + $element_stack[$i - 1];
             break;
+
           case '-':
             $f = $element_stack[$i - 2] - $element_stack[$i - 1];
             break;
+
           case '*':
             $f = $element_stack[$i - 2] * $element_stack[$i - 1];
             break;
+
           case '/':
             $f = $element_stack[$i - 2] / $element_stack[$i - 1];
             break;
+
           case '%':
             $f = $element_stack[$i - 2] % $element_stack[$i - 1];
             break;
+
           case '&&':
             $f = $element_stack[$i - 2] && $element_stack[$i - 1];
             break;
+
           case '||':
             $f = $element_stack[$i - 2] || $element_stack[$i - 1];
             break;
+
           case ':':
             $f = $element_stack[$i - 3] ? $element_stack[$i - 2] : $element_stack[$i - 1];
             // This operator has 3 preceding elements, instead of the default 2.

@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Client\Adapter;
 
 use Solarium\Core\Client\Endpoint;
@@ -16,9 +23,9 @@ class AdapterHelper
      * @param Request  $request
      * @param Endpoint $endpoint
      *
-     * @return string
-     *
      * @throws HttpException
+     *
+     * @return string
      */
     public static function buildUri(Request $request, Endpoint $endpoint): string
     {
@@ -30,6 +37,7 @@ class AdapterHelper
             } else {
                 $baseUri = $endpoint->getBaseUri();
             }
+
             return $baseUri.$request->getUri();
         } catch (UnexpectedValueException $e) {
             // Backward compatibility: getBaseUri() now throws an UnexpectedValueException and we don't send a request.
@@ -50,7 +58,7 @@ class AdapterHelper
         $baseName = basename($request->getFileUpload());
         $body = "--{$request->getHash()}\r\n";
         $body .= 'Content-Disposition: form-data; name="file"; filename="'.$baseName.'"';
-        $body .= "\r\nContent-Type: application/octet-stream\r\n\r\n";
+        $body .= "\r\nContent-Type: ".Request::CONTENT_TYPE_APPLICATION_OCTET_STREAM."\r\n\r\n";
         $body .= file_get_contents($request->getFileUpload(), 'r');
         $body .= "\r\n--{$request->getHash()}--\r\n";
 

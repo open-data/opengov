@@ -41,7 +41,6 @@ class ViewsBootstrap {
     $hooks['views_bootstrap_grid'] = [
       'preprocess functions' => [
         'template_preprocess_views_bootstrap_grid',
-        'template_preprocess_views_view_grid',
       ],
       'file' => 'views_bootstrap.theme.inc',
     ];
@@ -75,6 +74,21 @@ class ViewsBootstrap {
     ];
 
     return $hooks;
+  }
+
+
+  /**
+   * Return an array of breakpoint names.
+   */
+  public static function getBreakpoints() {
+    return ['xs', 'sm', 'md', 'lg', 'xl'];
+  }
+
+  /**
+   * Get column class prefix for the breakpoint.
+   */
+  public static function getColumnPrefix($breakpoint) {
+    return 'col' . ($breakpoint != 'xs' ? '-' . $breakpoint : '');
   }
 
   /**

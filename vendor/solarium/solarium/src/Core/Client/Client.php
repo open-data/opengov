@@ -1,11 +1,17 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Client;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Solarium\Core\Client\Adapter\AdapterInterface;
-use Solarium\Core\Client\Adapter\Curl;
 use Solarium\Core\Configurable;
-use Solarium\Core\Event\Events;
 use Solarium\Core\Event\PostCreateQuery as PostCreateQueryEvent;
 use Solarium\Core\Event\PostCreateRequest as PostCreateRequestEvent;
 use Solarium\Core\Event\PostCreateResult as PostCreateResultEvent;
@@ -24,10 +30,14 @@ use Solarium\Exception\InvalidArgumentException;
 use Solarium\Exception\OutOfBoundsException;
 use Solarium\Exception\UnexpectedValueException;
 use Solarium\Plugin\BufferedAdd\BufferedAdd;
+use Solarium\Plugin\BufferedAdd\BufferedAddLite;
+use Solarium\Plugin\BufferedDelete\BufferedDelete;
+use Solarium\Plugin\BufferedDelete\BufferedDeleteLite;
 use Solarium\Plugin\CustomizeRequest\CustomizeRequest;
 use Solarium\Plugin\Loadbalancer\Loadbalancer;
 use Solarium\Plugin\MinimumScoreFilter\MinimumScoreFilter;
 use Solarium\Plugin\ParallelExecution\ParallelExecution;
+use Solarium\Plugin\PostBigExtractRequest;
 use Solarium\Plugin\PostBigRequest;
 use Solarium\Plugin\PrefetchIterator;
 use Solarium\QueryType\Analysis\Query\Document as AnalysisQueryDocument;
@@ -35,9 +45,9 @@ use Solarium\QueryType\Analysis\Query\Field as AnalysisQueryField;
 use Solarium\QueryType\Extract\Query as ExtractQuery;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Graph\Query as GraphQuery;
-use Solarium\QueryType\ManagedResources\Query\Resources;
-use Solarium\QueryType\ManagedResources\Query\Stopwords;
-use Solarium\QueryType\ManagedResources\Query\Synonyms;
+use Solarium\QueryType\ManagedResources\Query\Resources as ManagedResourcesQuery;
+use Solarium\QueryType\ManagedResources\Query\Stopwords as ManagedStopwordsQuery;
+use Solarium\QueryType\ManagedResources\Query\Synonyms as ManagedSynonymsQuery;
 use Solarium\QueryType\MoreLikeThis\Query as MoreLikeThisQuery;
 use Solarium\QueryType\MoreLikeThis\Result as MoreLikeThisResult;
 use Solarium\QueryType\Ping\Query as PingQuery;
@@ -48,6 +58,7 @@ use Solarium\QueryType\Select\Query\Query as SelectQuery;
 use Solarium\QueryType\Select\Result\Result as SelectResult;
 use Solarium\QueryType\Server\Api\Query as ApiQuery;
 use Solarium\QueryType\Server\Collections\Query\Query as CollectionsQuery;
+use Solarium\QueryType\Server\Configsets\Query\Query as ConfigsetsQuery;
 use Solarium\QueryType\Server\CoreAdmin\Query\Query as CoreAdminQuery;
 use Solarium\QueryType\Server\CoreAdmin\Result\Result as CoreAdminResult;
 use Solarium\QueryType\Spellcheck\Query as SpellcheckQuery;
@@ -59,9 +70,6 @@ use Solarium\QueryType\Terms\Query as TermsQuery;
 use Solarium\QueryType\Terms\Result as TermsResult;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Update\Result as UpdateResult;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 
 /**
  * Main interface for interaction with Solr.
@@ -69,11 +77,12 @@ use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
  * The client is the main interface for usage of the Solarium library.
  * You can use it to get query instances and to execute them.
  * It also allows to register plugins and query types to customize Solarium.
+ * It gives access to the event dispatcher so that you can add listeners.
  * Finally, it also gives access to the adapter, which holds the Solr connection settings.
  *
  * Example usage with default settings:
  * <code>
- * $client = new Solarium\Client;
+ * $client = new Solarium\Client($adapter, $eventDispatcher);
  * $query = $client->createSelect();
  * $result = $client->select($query);
  * </code>
@@ -156,6 +165,11 @@ class Client extends Configurable implements ClientInterface
     const QUERY_COLLECTIONS = 'collections';
 
     /**
+     * Querytype configsets.
+     */
+    const QUERY_CONFIGSETS = 'configsets';
+
+    /**
      * Querytype API.
      */
     const QUERY_API = 'api';
@@ -181,7 +195,6 @@ class Client extends Configurable implements ClientInterface
      * @var array
      */
     protected $options = [
-        'adapter' => Curl::class,
         'endpoint' => [
             'localhost' => [],
         ],
@@ -208,10 +221,11 @@ class Client extends Configurable implements ClientInterface
         self::QUERY_REALTIME_GET => RealtimeGetQuery::class,
         self::QUERY_CORE_ADMIN => CoreAdminQuery::class,
         self::QUERY_COLLECTIONS => CollectionsQuery::class,
+        self::QUERY_CONFIGSETS => ConfigsetsQuery::class,
         self::QUERY_API => ApiQuery::class,
-        self::QUERY_MANAGED_RESOURCES => Resources::class,
-        self::QUERY_MANAGED_STOPWORDS => Stopwords::class,
-        self::QUERY_MANAGED_SYNONYMS => Synonyms::class,
+        self::QUERY_MANAGED_RESOURCES => ManagedResourcesQuery::class,
+        self::QUERY_MANAGED_STOPWORDS => ManagedStopwordsQuery::class,
+        self::QUERY_MANAGED_SYNONYMS => ManagedSynonymsQuery::class,
     ];
 
     /**
@@ -222,16 +236,18 @@ class Client extends Configurable implements ClientInterface
     protected $pluginTypes = [
         'loadbalancer' => Loadbalancer::class,
         'postbigrequest' => PostBigRequest::class,
+        'postbigextractrequest' => PostBigExtractRequest::class,
         'customizerequest' => CustomizeRequest::class,
         'parallelexecution' => ParallelExecution::class,
         'bufferedadd' => BufferedAdd::class,
+        'bufferedaddlite' => BufferedAddLite::class,
+        'buffereddelete' => BufferedDelete::class,
+        'buffereddeletelite' => BufferedDeleteLite::class,
         'prefetchiterator' => PrefetchIterator::class,
         'minimumscorefilter' => MinimumScoreFilter::class,
     ];
 
     /**
-     * EventDispatcher.
-     *
      * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
@@ -260,13 +276,6 @@ class Client extends Configurable implements ClientInterface
     /**
      * Adapter instance.
      *
-     * If an adapter instance is set using {@link setAdapter()} this var will
-     * contain a reference to that instance.
-     *
-     * In all other cases the adapter is lazy-loading, it will be instantiated
-     * on first use by {@link getAdapter()} based on the 'adapter' entry in
-     * {@link $options}. This option can be set using {@link setAdapter()}
-     *
      * @var AdapterInterface
      */
     protected $adapter;
@@ -277,14 +286,14 @@ class Client extends Configurable implements ClientInterface
      * If options are passed they will be merged with {@link $options} using
      * the {@link setOptions()} method.
      *
-     * If an EventDispatcher instance is provided this will be used instead of creating a new instance
-     *
-     * @param array                    $options
+     * @param AdapterInterface         $adapter
      * @param EventDispatcherInterface $eventDispatcher
+     * @param array|null               $options
      */
-    public function __construct(array $options = null, EventDispatcherInterface $eventDispatcher = null)
+    public function __construct(AdapterInterface $adapter, EventDispatcherInterface $eventDispatcher, array $options = null)
     {
-        $this->eventDispatcher = LegacyEventDispatcherProxy::decorate($eventDispatcher);
+        $this->adapter = $adapter;
+        $this->eventDispatcher = $eventDispatcher;
 
         parent::__construct($options);
     }
@@ -343,11 +352,11 @@ class Client extends Configurable implements ClientInterface
 
         $key = $endpoint->getKey();
 
-        if (0 === \strlen($key)) {
+        if (null === $key || 0 === \strlen($key)) {
             throw new InvalidArgumentException('An endpoint must have a key value');
         }
 
-        //double add calls for the same endpoint are ignored, but non-unique keys cause an exception
+        // double add calls for the same endpoint are ignored, but non-unique keys cause an exception
         if (\array_key_exists($key, $this->endpoints) && $this->endpoints[$key] !== $endpoint) {
             throw new InvalidArgumentException('An endpoint must have a unique key');
         }
@@ -399,7 +408,7 @@ class Client extends Configurable implements ClientInterface
         }
 
         if (!isset($this->endpoints[$key])) {
-            throw new OutOfBoundsException('Endpoint '.$key.' not available');
+            throw new OutOfBoundsException(sprintf('Endpoint %s not available', $key));
         }
 
         return $this->endpoints[$key];
@@ -418,7 +427,7 @@ class Client extends Configurable implements ClientInterface
     /**
      * Remove a single endpoint.
      *
-     * You can remove a endpoint by passing it's key, or by passing the endpoint instance
+     * You can remove a endpoint by passing its key, or by passing the endpoint instance
      *
      * @param string|Endpoint $endpoint
      *
@@ -485,7 +494,7 @@ class Client extends Configurable implements ClientInterface
         }
 
         if (!isset($this->endpoints[$endpoint])) {
-            throw new OutOfBoundsException('Unknown endpoint '.$endpoint.' cannot be set as default');
+            throw new OutOfBoundsException(sprintf('Unknown endpoint %s cannot be set as default', $endpoint));
         }
 
         $this->defaultEndpoint = $endpoint;
@@ -496,37 +505,13 @@ class Client extends Configurable implements ClientInterface
     /**
      * Set the adapter.
      *
-     * The adapter has to be a class that implements the AdapterInterface
-     *
-     * If a string is passed it is assumed to be the classname and it will be
-     * instantiated on first use. This requires the availability of the class
-     * through autoloading or a manual require before calling this method.
-     * Any existing adapter instance will be removed by this method, this way an
-     * instance of the new adapter type will be created upon the next usage of
-     * the adapter (lazy-loading)
-     *
-     * If an adapter instance is passed it will replace the current adapter
-     * immediately, bypassing the lazy loading.
-     *
-     * @param string|Adapter\AdapterInterface $adapter
-     *
-     * @throws InvalidArgumentException
+     * @param AdapterInterface $adapter
      *
      * @return self Provides fluent interface
      */
-    public function setAdapter($adapter): ClientInterface
+    public function setAdapter(AdapterInterface $adapter): ClientInterface
     {
-        if (\is_string($adapter)) {
-            $this->adapter = null;
-            $this->setOption('adapter', $adapter);
-        } elseif ($adapter instanceof AdapterInterface) {
-            // forward options
-            $adapter->setOptions($this->getOption('adapteroptions'));
-            // overwrite existing adapter
-            $this->adapter = $adapter;
-        } else {
-            throw new InvalidArgumentException('Invalid adapter input for setAdapter');
-        }
+        $this->adapter = $adapter;
 
         return $this;
     }
@@ -534,19 +519,10 @@ class Client extends Configurable implements ClientInterface
     /**
      * Get the adapter instance.
      *
-     * If {@see $adapter} doesn't hold an instance a new one will be created by
-     * calling {@see createAdapter()}
-     *
-     * @param bool $autoload
-     *
      * @return AdapterInterface
      */
-    public function getAdapter(bool $autoload = true): AdapterInterface
+    public function getAdapter(): AdapterInterface
     {
-        if (null === $this->adapter && $autoload) {
-            $this->createAdapter();
-        }
-
         return $this->adapter;
     }
 
@@ -622,7 +598,7 @@ class Client extends Configurable implements ClientInterface
      */
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): ClientInterface
     {
-        $this->eventDispatcher = LegacyEventDispatcherProxy::decorate($eventDispatcher);
+        $this->eventDispatcher = $eventDispatcher;
 
         return $this;
     }
@@ -717,7 +693,7 @@ class Client extends Configurable implements ClientInterface
                 return $this->pluginInstances[$key];
             }
 
-            throw new OutOfBoundsException('Cannot autoload plugin of unknown type: '.$key);
+            throw new OutOfBoundsException(sprintf('Cannot autoload plugin of unknown type: %s', $key));
         }
 
         return null;
@@ -737,12 +713,14 @@ class Client extends Configurable implements ClientInterface
         if (\is_object($plugin)) {
             foreach ($this->pluginInstances as $key => $instance) {
                 if ($instance === $plugin) {
+                    $plugin->deinitPlugin();
                     unset($this->pluginInstances[$key]);
                     break;
                 }
             }
         } else {
             if (isset($this->pluginInstances[$plugin])) {
+                $this->pluginInstances[$plugin]->deinitPlugin();
                 unset($this->pluginInstances[$plugin]);
             }
         }
@@ -762,20 +740,20 @@ class Client extends Configurable implements ClientInterface
     public function createRequest(QueryInterface $query): Request
     {
         $event = new PreCreateRequestEvent($query);
-        $this->eventDispatcher->dispatch($event, Events::PRE_CREATE_REQUEST);
+        $this->eventDispatcher->dispatch($event);
         if (null !== $event->getRequest()) {
             return $event->getRequest();
         }
 
         $requestBuilder = $query->getRequestBuilder();
         if (!$requestBuilder || !($requestBuilder instanceof RequestBuilderInterface)) {
-            throw new UnexpectedValueException('No requestbuilder returned by query type: '.$query->getType());
+            throw new UnexpectedValueException(sprintf('No requestbuilder returned by query type: %s', $query->getType()));
         }
 
         $request = $requestBuilder->build($query);
 
         $event = new PostCreateRequestEvent($query, $request);
-        $this->eventDispatcher->dispatch($event, Events::POST_CREATE_REQUEST);
+        $this->eventDispatcher->dispatch($event);
 
         return $request;
     }
@@ -793,7 +771,7 @@ class Client extends Configurable implements ClientInterface
     public function createResult(QueryInterface $query, $response): ResultInterface
     {
         $event = new PreCreateResultEvent($query, $response);
-        $this->eventDispatcher->dispatch($event, Events::PRE_CREATE_RESULT);
+        $this->eventDispatcher->dispatch($event);
         if (null !== $event->getResult()) {
             return $event->getResult();
         }
@@ -806,7 +784,7 @@ class Client extends Configurable implements ClientInterface
         }
 
         $event = new PostCreateResultEvent($query, $response, $result);
-        $this->eventDispatcher->dispatch($event, Events::POST_CREATE_RESULT);
+        $this->eventDispatcher->dispatch($event);
 
         return $result;
     }
@@ -822,7 +800,7 @@ class Client extends Configurable implements ClientInterface
     public function execute(QueryInterface $query, $endpoint = null): ResultInterface
     {
         $event = new PreExecuteEvent($query);
-        $this->eventDispatcher->dispatch($event, Events::PRE_EXECUTE);
+        $this->eventDispatcher->dispatch($event);
         if (null !== $event->getResult()) {
             return $event->getResult();
         }
@@ -832,7 +810,7 @@ class Client extends Configurable implements ClientInterface
         $result = $this->createResult($query, $response);
 
         $event = new PostExecuteEvent($query, $result);
-        $this->eventDispatcher->dispatch($event, Events::POST_EXECUTE);
+        $this->eventDispatcher->dispatch($event);
 
         return $result;
     }
@@ -853,15 +831,15 @@ class Client extends Configurable implements ClientInterface
         }
 
         $event = new PreExecuteRequestEvent($request, $endpoint);
-        $this->eventDispatcher->dispatch($event, Events::PRE_EXECUTE_REQUEST);
+        $this->eventDispatcher->dispatch($event);
         if (null !== $event->getResponse()) {
-            $response = $event->getResponse(); //a plugin result overrules the standard execution result
+            $response = $event->getResponse(); // a plugin result overrules the standard execution result
         } else {
             $response = $this->getAdapter()->execute($request, $endpoint);
         }
 
         $event = new PostExecuteRequestEvent($request, $endpoint, $response);
-        $this->eventDispatcher->dispatch($event, Events::POST_EXECUTE_REQUEST);
+        $this->eventDispatcher->dispatch($event);
 
         return $response;
     }
@@ -1088,6 +1066,22 @@ class Client extends Configurable implements ClientInterface
     }
 
     /**
+     * Execute a Configsets API query.
+     *
+     * @internal this is a convenience method that forwards the query to the
+     *  execute method, thus allowing for an easy to use and clean API
+     *
+     * @param QueryInterface|\Solarium\QueryType\Server\Configsets\Query\Query $query
+     * @param Endpoint|string|null                                             $endpoint
+     *
+     * @return ResultInterface|\Solarium\QueryType\Server\Configsets\Result\ListConfigsetsResult
+     */
+    public function configsets(QueryInterface $query, $endpoint = null): ResultInterface
+    {
+        return $this->execute($query, $endpoint);
+    }
+
+    /**
      * Create a query instance.
      *
      * @param string $type
@@ -1102,13 +1096,13 @@ class Client extends Configurable implements ClientInterface
         $type = strtolower($type);
 
         $event = new PreCreateQueryEvent($type, $options);
-        $this->eventDispatcher->dispatch($event, Events::PRE_CREATE_QUERY);
+        $this->eventDispatcher->dispatch($event);
         if (null !== $event->getQuery()) {
             return $event->getQuery();
         }
 
         if (!isset($this->queryTypes[$type])) {
-            throw new InvalidArgumentException('Unknown query type: '.$type);
+            throw new InvalidArgumentException(sprintf('Unknown query type: %s', $type));
         }
 
         $class = $this->queryTypes[$type];
@@ -1119,7 +1113,7 @@ class Client extends Configurable implements ClientInterface
         }
 
         $event = new PostCreateQueryEvent($type, $options, $query);
-        $this->eventDispatcher->dispatch($event, Events::POST_CREATE_QUERY);
+        $this->eventDispatcher->dispatch($event);
 
         return $query;
     }
@@ -1251,7 +1245,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\Stream\Query
      */
-    public function createStream(array $options = null)
+    public function createStream(array $options = null): StreamQuery
     {
         // Streaming expressions tend to be very long. Therfore we use the 'postbigrequest' plugin. The plugin needs to
         // be loaded before the request is created.
@@ -1267,7 +1261,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\Graph\Query
      */
-    public function createGraph(array $options = null)
+    public function createGraph(array $options = null): GraphQuery
     {
         // Streaming expressions tend to be very long. Therfore we use the 'postbigrequest' plugin. The plugin needs to
         // be loaded before the request is created.
@@ -1301,42 +1295,6 @@ class Client extends Configurable implements ClientInterface
     }
 
     /**
-     * Create a managed resources query instance.
-     *
-     * @param mixed $options
-     *
-     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Resources
-     */
-    public function createManagedResources(array $options = null)
-    {
-        return $this->createQuery(self::QUERY_MANAGED_RESOURCES, $options);
-    }
-
-    /**
-     * Create a managed resources query instance.
-     *
-     * @param mixed $options
-     *
-     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Stopwords
-     */
-    public function createManagedStopwords(array $options = null)
-    {
-        return $this->createQuery(self::QUERY_MANAGED_STOPWORDS, $options);
-    }
-
-    /**
-     * Create a managed resources query instance.
-     *
-     * @param mixed $options
-     *
-     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Synonyms
-     */
-    public function createManagedSynonyms(array $options = null)
-    {
-        return $this->createQuery(self::QUERY_MANAGED_SYNONYMS, $options);
-    }
-
-    /**
      * Create a Collections API query instance.
      *
      * @param mixed $options
@@ -1346,6 +1304,18 @@ class Client extends Configurable implements ClientInterface
     public function createCollections(array $options = null): CollectionsQuery
     {
         return $this->createQuery(self::QUERY_COLLECTIONS, $options);
+    }
+
+    /**
+     * Create a Configsets API query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\Server\Configsets\Query\Query
+     */
+    public function createConfigsets(array $options = null): ConfigsetsQuery
+    {
+        return $this->createQuery(self::QUERY_CONFIGSETS, $options);
     }
 
     /**
@@ -1361,14 +1331,46 @@ class Client extends Configurable implements ClientInterface
     }
 
     /**
+     * Create a managed resources query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Resources
+     */
+    public function createManagedResources(array $options = null): ManagedResourcesQuery
+    {
+        return $this->createQuery(self::QUERY_MANAGED_RESOURCES, $options);
+    }
+
+    /**
+     * Create a managed stopwords query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Stopwords
+     */
+    public function createManagedStopwords(array $options = null): ManagedStopwordsQuery
+    {
+        return $this->createQuery(self::QUERY_MANAGED_STOPWORDS, $options);
+    }
+
+    /**
+     * Create a managed synonyms query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Synonyms
+     */
+    public function createManagedSynonyms(array $options = null): ManagedSynonymsQuery
+    {
+        return $this->createQuery(self::QUERY_MANAGED_SYNONYMS, $options);
+    }
+
+    /**
      * Initialization hook.
      */
     protected function init()
     {
-        if (null === $this->eventDispatcher) {
-            $this->eventDispatcher = new EventDispatcher();
-        }
-
         foreach ($this->options as $name => $value) {
             switch ($name) {
                 case 'endpoint':
@@ -1382,32 +1384,5 @@ class Client extends Configurable implements ClientInterface
                     break;
             }
         }
-    }
-
-    /**
-     * Create an adapter instance.
-     *
-     * The 'adapter' entry in {@link $options} will be used to create an
-     * adapter instance. This entry can be the default value of
-     * {@link $options}, a value passed to the constructor or a value set by
-     * using {@link setAdapter()}
-     *
-     * This method is used for lazy-loading the adapter upon first use in
-     * {@link getAdapter()}
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function createAdapter()
-    {
-        $adapterClass = $this->getOption('adapter');
-        $adapter = new $adapterClass();
-
-        // check interface
-        if (!($adapter instanceof AdapterInterface)) {
-            throw new InvalidArgumentException('An adapter must implement the AdapterInterface');
-        }
-
-        $adapter->setOptions($this->getOption('adapteroptions'));
-        $this->adapter = $adapter;
     }
 }

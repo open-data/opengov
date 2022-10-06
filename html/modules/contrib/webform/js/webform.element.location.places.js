@@ -120,4 +120,3 @@
   };
 
 })(jQuery, Drupal, drupalSettings);
-

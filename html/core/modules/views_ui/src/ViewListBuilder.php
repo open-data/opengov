@@ -29,11 +29,6 @@ class ViewListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected $limit;
-
-  /**
-   * {@inheritdoc}
-   */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
@@ -161,6 +156,8 @@ class ViewListBuilder extends ConfigEntityListBuilder {
    */
   public function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
+    // Remove destination redirect for Edit operation.
+    $operations['edit']['url'] = $entity->toUrl('edit-form');
 
     if ($entity->hasLinkTemplate('duplicate-form')) {
       $operations['duplicate'] = [

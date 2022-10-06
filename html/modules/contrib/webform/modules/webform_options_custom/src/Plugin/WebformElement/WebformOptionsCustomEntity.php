@@ -26,7 +26,7 @@ class WebformOptionsCustomEntity extends WebformOptionsCustom implements Webform
    * {@inheritdoc}
    */
   protected function setOptions(array &$element, array $settings = []) {
-    list($type, $options_custom) = explode(':', $this->getPluginId());
+    [$type, $options_custom] = explode(':', $this->getPluginId());
     $element['#type'] = $type;
     $element['#options_custom'] = $options_custom;
 

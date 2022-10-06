@@ -8,8 +8,8 @@
  */
 html.js .js-webform-visually-hidden,
 html.js .js-webform-visually-hidden[style*="display: none"] {
-  display: inline !important;
   position: absolute !important;
+  display: inline !important;
   overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
   width: 1px;

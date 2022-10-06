@@ -33,7 +33,7 @@ class WebformAddress extends WebformCompositeBase {
       '#type' => 'textfield',
       '#title' => t('City/Town'),
     ];
-    // Any webform options prefixed with 'states_province' will automatically
+    // Any webform options prefixed with 'state_province' will automatically
     // be included within the Composite Element UI.
     // @see \Drupal\webform\Plugin\WebformElement\WebformCompositeBase::getCompositeElementOptions
     $elements['state_province'] = [

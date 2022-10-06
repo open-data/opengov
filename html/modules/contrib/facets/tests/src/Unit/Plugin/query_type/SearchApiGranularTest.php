@@ -26,7 +26,7 @@ class SearchApiGranularTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $processor_id = 'granularity_item';
@@ -100,7 +100,7 @@ class SearchApiGranularTest extends UnitTestCase {
     $this->assertInstanceOf(FacetInterface::class, $built_facet);
 
     $results = $built_facet->getResults();
-    $this->assertInternalType('array', $results);
+    $this->assertSame('array', gettype($results));
 
     foreach ($grouped_results as $k => $result) {
       $this->assertInstanceOf(ResultInterface::class, $results[$k]);
@@ -129,7 +129,7 @@ class SearchApiGranularTest extends UnitTestCase {
     $this->assertInstanceOf(FacetInterface::class, $built_facet);
 
     $results = $built_facet->getResults();
-    $this->assertInternalType('array', $results);
+    $this->assertSame('array', gettype($results));
     $this->assertEmpty($results);
   }
 

@@ -2,6 +2,7 @@
 
 namespace Drupal\views_ui\Controller;
 
+use Drupal\Component\Utility\Tags;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -120,7 +121,7 @@ class ViewsUIController extends ControllerBase {
     foreach ($rows as &$row) {
       $views = [];
       // Link each view name to the view itself.
-      foreach ($row['views'] as $row_name => $view) {
+      foreach ($row['views'] as $view) {
         $views[] = Link::fromTextAndUrl($view, new Url('entity.view.edit_form', ['view' => $view]))->toString();
       }
       unset($row['views']);
@@ -188,13 +189,15 @@ class ViewsUIController extends ControllerBase {
     // Keep track of previously processed tags so they can be skipped.
     $tags = [];
     foreach ($views as $view) {
-      $tag = $view->get('tag');
-      if ($tag && !in_array($tag, $tags)) {
-        $tags[] = $tag;
-        if (strpos($tag, $string) === 0) {
-          $matches[] = ['value' => $tag, 'label' => Html::escape($tag)];
-          if (count($matches) >= 10) {
-            break;
+      $view_tag = $view->get('tag');
+      foreach (Tags::explode($view_tag) as $tag) {
+        if ($tag && !in_array($tag, $tags, TRUE)) {
+          $tags[] = $tag;
+          if (mb_stripos($tag, $string) !== FALSE) {
+            $matches[] = ['value' => $tag, 'label' => Html::escape($tag)];
+            if (count($matches) >= 10) {
+              break 2;
+            }
           }
         }
       }

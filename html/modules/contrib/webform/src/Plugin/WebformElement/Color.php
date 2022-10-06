@@ -36,7 +36,7 @@ class Color extends WebformElementBase {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -45,7 +45,7 @@ class Color extends WebformElementBase {
     parent::prepare($element, $webform_submission);
 
     // Set the color swatches size.
-    $color_size = (isset($element['#color_size'])) ? $element['#color_size'] : 'medium';
+    $color_size = $element['#color_size'] ?? 'medium';
     $element['#attributes']['class'][] = 'form-color-' . $color_size;
 
     // Add helpful attributes to better support older browsers.

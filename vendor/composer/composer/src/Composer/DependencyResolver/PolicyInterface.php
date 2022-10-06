@@ -13,15 +13,25 @@
 namespace Composer\DependencyResolver;
 
 use Composer\Package\PackageInterface;
+use Composer\Semver\Constraint\Constraint;
 
 /**
  * @author Nils Adermann <naderman@naderman.de>
  */
 interface PolicyInterface
 {
+    /**
+     * @param  string $operator
+     * @return bool
+     *
+     * @phpstan-param Constraint::STR_OP_* $operator
+     */
     public function versionCompare(PackageInterface $a, PackageInterface $b, $operator);
 
-    public function findUpdatePackages(Pool $pool, array $installedMap, PackageInterface $package);
-
-    public function selectPreferredPackages(Pool $pool, array $installedMap, array $literals, $requiredPackage = null);
+    /**
+     * @param  int[]   $literals
+     * @param  ?string $requiredPackage
+     * @return int[]
+     */
+    public function selectPreferredPackages(Pool $pool, array $literals, $requiredPackage = null);
 }

@@ -2,10 +2,12 @@
 
 namespace Drupal\Tests\ctools\Kernel;
 
-
 use Drupal\ctools\Testing\EntityCreationTrait;
 use Drupal\KernelTests\KernelTestBase;
 
+/**
+ *
+ */
 abstract class RelationshipsTestBase extends KernelTestBase {
   use EntityCreationTrait;
 
@@ -24,20 +26,20 @@ abstract class RelationshipsTestBase extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'system',
     'node',
     'field',
     'text',
     'filter',
-    'ctools'
+    'ctools',
   ];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('system', ['sequences']);
@@ -47,17 +49,17 @@ abstract class RelationshipsTestBase extends KernelTestBase {
     $this->installConfig('node');
     $page = $this->createEntity('node_type', [
       'type' => 'page',
-      'name' => 'Page'
+      'name' => 'Page',
     ]);
     node_add_body_field($page);
     $article = $this->createEntity('node_type', [
       'type' => 'article',
-      'name' => 'Article'
+      'name' => 'Article',
     ]);
     // Not adding the body field the articles so that we can perform a test.
     $foo = $this->createEntity('node_type', [
       'type' => 'foo',
-      'name' => 'Foo'
+      'name' => 'Foo',
     ]);
     node_add_body_field($foo);
     $this->relationshipManager = $this->container->get('plugin.manager.ctools.relationship');
@@ -77,19 +79,24 @@ abstract class RelationshipsTestBase extends KernelTestBase {
     $node2 = $this->createEntity('node', [
       'title' => 'Node 2',
       'type' => 'article',
-      'uid' => $user->id()
+      'uid' => $user->id(),
     ]);
     $node3 = $this->createEntity('node', [
       'title' => 'Node 3',
       'type' => 'foo',
-      'uid' => $user->id()
+      'uid' => $user->id(),
     ]);
+    $node4 = $this->createEntity('node', [
+      'title' => 'Node 4',
+      'type' => 'foo',
+    ])->set('uid', NULL);
 
     $this->entities = [
       'user' => $user,
       'node1' => $node1,
       'node2' => $node2,
       'node3' => $node3,
+      'node4' => $node4,
     ];
   }
 

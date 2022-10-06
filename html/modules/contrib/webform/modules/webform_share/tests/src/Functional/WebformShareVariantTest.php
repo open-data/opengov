@@ -34,6 +34,8 @@ class WebformShareVariantTest extends WebformBrowserTestBase {
    * Test variant.
    */
   public function testVariant() {
+    $assert_session = $this->assertSession();
+
     $library = WebformShareIframe::LIBRARY;
     $version = WebformShareIframe::VERSION;
 
@@ -41,31 +43,31 @@ class WebformShareVariantTest extends WebformBrowserTestBase {
     $config = \Drupal::configFactory()->getEditable('webform.settings');
     $config->set('settings.default_share', TRUE)->save();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check default letter and number.
     $this->drupalGet("/webform/test_variant_multiple/share/$library/$version");
-    $this->assertRaw('{X}');
-    $this->assertRaw('{0}');
+    $assert_session->responseContains('{X}');
+    $assert_session->responseContains('{0}');
 
     // Check variant letter [A] and number [1].
     $this->drupalGet("/webform/test_variant_multiple/share/$library/$version", ['query' => ['_webform_variant' => ['letter' => 'a', 'number' => 1]]]);
-    $this->assertNoRaw('{X}');
-    $this->assertNoRaw('{0}');
-    $this->assertRaw('[A]');
-    $this->assertRaw('[1]');
+    $assert_session->responseNotContains('{X}');
+    $assert_session->responseNotContains('{0}');
+    $assert_session->responseContains('[A]');
+    $assert_session->responseContains('[1]');
 
     // Check variant letter [A] and number [1].
     $this->drupalGet("/webform/test_variant_multiple/share/$library/$version", ['query' => ['letter' => 'a', 'number' => 1]]);
-    $this->assertNoRaw('{X}');
-    $this->assertNoRaw('{0}');
-    $this->assertRaw('[A]');
-    $this->assertRaw('[1]');
+    $assert_session->responseNotContains('{X}');
+    $assert_session->responseNotContains('{0}');
+    $assert_session->responseContains('[A]');
+    $assert_session->responseContains('[1]');
 
     // Check variant randomize script is attached to shared page.
     // @see _webform_page_attachments()
     $this->drupalGet("/webform/test_variant_randomize/share/$library/$version");
-    $this->assertRaw('var variants = {"letter":["a","b"]};');
+    $assert_session->responseContains('var variants = {"letter":["a","b"]};');
   }
 
 }

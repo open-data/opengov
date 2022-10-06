@@ -11,7 +11,7 @@ use Drupal\Core\Entity\RevisionableInterface;
  * @internal JSON:API maintains no PHP API since its API is the HTTP API. This
  *   class may change at any time and this will break any dependencies on it.
  *
- * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see https://www.drupal.org/project/drupal/issues/3032787
  * @see jsonapi.api.php
  */
 class VersionByRel extends NegotiatorBase {
@@ -48,7 +48,7 @@ class VersionByRel extends NegotiatorBase {
     assert($entity instanceof RevisionableInterface);
     switch ($version_argument) {
       case static::WORKING_COPY:
-        /* @var \Drupal\Core\Entity\RevisionableStorageInterface $entity_storage */
+        /** @var \Drupal\Core\Entity\RevisionableStorageInterface $entity_storage */
         $entity_storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
         return static::ensureVersionExists($entity_storage->getLatestRevisionId($entity->id()));
 

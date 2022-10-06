@@ -64,7 +64,7 @@ class WebformVariant extends WebformElementBase implements WebformElementDisplay
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -255,6 +255,13 @@ class WebformVariant extends WebformElementBase implements WebformElementDisplay
     // is not editable.
     unset($form['default']['actions']);
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preview() {
+    return [];
   }
 
   /**

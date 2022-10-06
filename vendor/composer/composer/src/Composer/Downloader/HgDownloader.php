@@ -22,29 +22,43 @@ use Composer\Util\Hg as HgUtils;
 class HgDownloader extends VcsDownloader
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function doDownload(PackageInterface $package, $path, $url)
+    protected function doDownload(PackageInterface $package, $path, $url, PackageInterface $prevPackage = null)
+    {
+        if (null === HgUtils::getVersion($this->process)) {
+            throw new \RuntimeException('hg was not found in your PATH, skipping source download');
+        }
+
+        return \React\Promise\resolve();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function doInstall(PackageInterface $package, $path, $url)
     {
         $hgUtils = new HgUtils($this->io, $this->config, $this->process);
 
         $cloneCommand = function ($url) use ($path) {
-            return sprintf('hg clone %s %s', ProcessExecutor::escape($url), ProcessExecutor::escape($path));
+            return sprintf('hg clone -- %s %s', ProcessExecutor::escape($url), ProcessExecutor::escape($path));
         };
 
         $hgUtils->runCommand($cloneCommand, $url, $path);
 
         $ref = ProcessExecutor::escape($package->getSourceReference());
-        $command = sprintf('hg up %s', $ref);
+        $command = sprintf('hg up -- %s', $ref);
         if (0 !== $this->process->execute($command, $ignoredOutput, realpath($path))) {
             throw new \RuntimeException('Failed to execute ' . $command . "\n\n" . $this->process->getErrorOutput());
         }
+
+        return \React\Promise\resolve();
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function doUpdate(PackageInterface $initial, PackageInterface $target, $path, $url)
+    protected function doUpdate(PackageInterface $initial, PackageInterface $target, $path, $url)
     {
         $hgUtils = new HgUtils($this->io, $this->config, $this->process);
 
@@ -56,14 +70,16 @@ class HgDownloader extends VcsDownloader
         }
 
         $command = function ($url) use ($ref) {
-            return sprintf('hg pull %s && hg up %s', ProcessExecutor::escape($url), ProcessExecutor::escape($ref));
+            return sprintf('hg pull -- %s && hg up -- %s', ProcessExecutor::escape($url), ProcessExecutor::escape($ref));
         };
 
         $hgUtils->runCommand($command, $url, $path);
+
+        return \React\Promise\resolve();
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getLocalChanges(PackageInterface $package, $path)
     {
@@ -77,7 +93,7 @@ class HgDownloader extends VcsDownloader
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function getCommitLogs($fromReference, $toReference, $path)
     {
@@ -91,7 +107,7 @@ class HgDownloader extends VcsDownloader
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function hasMetadataRepository($path)
     {

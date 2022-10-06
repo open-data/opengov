@@ -25,7 +25,7 @@ interface FacetInterface extends ConfigEntityInterface {
    *
    * @return array
    *   An associative array with the following structure:
-   *   - id: The widget plugin id as a string.
+   *   - type: The widget plugin id as a string.
    *   - config: The widget configuration as an array.
    */
   public function getWidget();
@@ -54,10 +54,18 @@ interface FacetInterface extends ConfigEntityInterface {
    *
    * @return array
    *   An associative array with the following structure:
-   *   - id: The hierarchy plugin id as a string.
+   *   - type: The hierarchy plugin id as a string.
    *   - config: The widget configuration as an array.
    */
   public function getHierarchy();
+
+  /**
+   * Returns an array of hierarchies with their configuration.
+   *
+   * @return \Drupal\facets\Hierarchy\HierarchyInterface[]
+   *   An array of hierarchies.
+   */
+  public function getHierarchies();
 
   /**
    * Returns the facet hierarchy instance.
@@ -175,6 +183,18 @@ interface FacetInterface extends ConfigEntityInterface {
   public function getResults();
 
   /**
+   * Returns the flat result for the facet keyed by their raw values.
+   *
+   * @param \Drupal\facets\Result\ResultInterface[]|null $results
+   *   The results to be converted into a flat keyed by raw value array. If
+   *   not provided the entire current result set of the facet will be used.
+   *
+   * @return \Drupal\facets\Result\ResultInterface[]
+   *   The results of the facet.
+   */
+  public function getResultsKeyedByRawValue($results = NULL);
+
+  /**
    * Sets the results for the facet.
    *
    * @param \Drupal\facets\Result\ResultInterface[] $results
@@ -241,6 +261,27 @@ interface FacetInterface extends ConfigEntityInterface {
    *   A boolean flag indicating if results should be rendered using hierarchy.
    */
   public function setUseHierarchy($use_hierarchy);
+
+  /**
+   * Returns the value of the keep_hierarchy_parents_active boolean.
+   *
+   * This will return true when the parent results of a hierarchical facet
+   * should be kept active when a child becomes active.
+   *
+   * @return bool
+   *   A boolean flag indicating if the parent results of a hierarchical facet
+   *   should be kept active when a child becomes active.
+   */
+  public function getKeepHierarchyParentsActive();
+
+  /**
+   * Sets the keep_hierarchy_parents_active.
+   *
+   * @param bool $keep_hierarchy_parents_active
+   *   A boolean flag indicating if the parent results of a hierarchical facet
+   *   should be kept active when a child becomes active.
+   */
+  public function setKeepHierarchyParentsActive($keep_hierarchy_parents_active);
 
   /**
    * Returns the value of the expand_hierarchy boolean.
@@ -462,5 +503,37 @@ interface FacetInterface extends ConfigEntityInterface {
    *   Minimum count.
    */
   public function getMinCount();
+
+  /**
+   * Sets the missing parameter.
+   *
+   * @param bool $missing
+   *   Whether to show a missing item or not.
+   */
+  public function setMissing(bool $missing);
+
+  /**
+   * Returns the missing parameter.
+   *
+   * @return bool
+   *   Minimum count.
+   */
+  public function isMissing(): bool;
+
+  /**
+   * Sets the missing parameter label.
+   *
+   * @param string $label
+   *   The label.
+   */
+  public function setMissingLabel(string $label);
+
+  /**
+   * Returns the missing parameter label.
+   *
+   * @return string
+   *   The label.
+   */
+  public function getMissingLabel(): string;
 
 }

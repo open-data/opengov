@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Reference;
  * @internal JSON:API maintains no PHP API. The API is the HTTP API. This class
  *   may change at any time and could break any dependencies on it.
  *
- * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see https://www.drupal.org/project/drupal/issues/3032787
  * @see jsonapi.api.php
  */
 class RegisterSerializationClassesCompilerPass extends DrupalRegisterSerializationClassesCompilerPass {
@@ -70,14 +70,14 @@ class RegisterSerializationClassesCompilerPass extends DrupalRegisterSerializati
       // Normalizers are not an API: mark private.
       $container->getDefinition($id)->setPublic(FALSE);
 
-      $priority = isset($attributes[0]['priority']) ? $attributes[0]['priority'] : 0;
+      $priority = $attributes[0]['priority'] ?? 0;
       $normalizers[$priority][] = new Reference($id);
     }
     foreach ($container->findTaggedServiceIds(static::OVERRIDDEN_SERVICE_ENCODER_TAG) as $id => $attributes) {
       // Encoders are not an API: mark private.
       $container->getDefinition($id)->setPublic(FALSE);
 
-      $priority = isset($attributes[0]['priority']) ? $attributes[0]['priority'] : 0;
+      $priority = $attributes[0]['priority'] ?? 0;
       $encoders[$priority][] = new Reference($id);
     }
 

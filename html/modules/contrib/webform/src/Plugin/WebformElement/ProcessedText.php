@@ -5,6 +5,7 @@ namespace Drupal\webform\Plugin\WebformElement;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'processed_text' element.
@@ -21,6 +22,22 @@ use Drupal\webform\WebformSubmissionInterface;
 class ProcessedText extends WebformMarkupBase {
 
   /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->renderer = $container->get('renderer');
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function defineDefaultProperties() {
@@ -28,7 +45,7 @@ class ProcessedText extends WebformMarkupBase {
       // Works around filter_default_format() throwing fatal error when
       // user is not allowed to use any filter formats.
       // @see filter_default_format.
-      $formats = filter_formats(\Drupal::currentUser());
+      $formats = filter_formats($this->currentUser);
       $format = reset($formats);
       $default_format = $format ? $format->id() : filter_fallback_format();
     }
@@ -52,7 +69,7 @@ class ProcessedText extends WebformMarkupBase {
     return array_merge(parent::defineTranslatableProperties(), ['text']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -61,7 +78,7 @@ class ProcessedText extends WebformMarkupBase {
     // Copy to element so that we can render it without altering the actual
     // $element.
     $render_element = $element;
-    $html = (string) \Drupal::service('renderer')->renderPlain($render_element);
+    $html = (string) $this->renderer->renderPlain($render_element);
     $element['#markup'] = MailFormatHelper::htmlToText($html);
 
     // Must remove #type, #text, and #format.
@@ -74,7 +91,7 @@ class ProcessedText extends WebformMarkupBase {
    * {@inheritdoc}
    */
   public function preview() {
-    return (\Drupal::moduleHandler()->moduleExists('filter')) ? parent::preview() : [];
+    return ($this->moduleHandler->moduleExists('filter')) ? parent::preview() : [];
   }
 
   /**
@@ -85,7 +102,7 @@ class ProcessedText extends WebformMarkupBase {
     // modal, then clicking the image button opens another modal,
     // which closes the original modal.
     // @todo Remove the below workaround once this issue is resolved.
-    if (!$form_state->getUserInput() && \Drupal::currentUser()->hasPermission('administer webform')) {
+    if (!$form_state->getUserInput() && $this->currentUser->hasPermission('administer webform')) {
       $this->messenger()->addWarning($this->t('Processed text element can not be opened within a modal. Please see <a href="https://www.drupal.org/node/2741877">Issue #2741877: Nested modals don\'t work</a>.'));
     }
     $form = parent::form($form, $form_state);

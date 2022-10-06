@@ -59,6 +59,21 @@ class PhpTransliteration implements TransliterationInterface {
   protected $genericMap = [];
 
   /**
+   * Special characters for ::removeDiacritics().
+   *
+   * Characters which have accented variants but their base character
+   * transliterates to more than one ASCII character require special
+   * treatment: we want to remove their accent and use the un-
+   * transliterated base character.
+   */
+  protected $fixTransliterateForRemoveDiacritics = [
+    'AE' => 'Æ',
+    'ae' => 'æ',
+    'ZH' => 'Ʒ',
+    'zh' => 'ʒ',
+  ];
+
+  /**
    * Constructs a transliteration object.
    *
    * @param string $data_directory
@@ -92,6 +107,9 @@ class PhpTransliteration implements TransliterationInterface {
         $to_add = $this->lookupReplacement($code, 'xyz');
         if (strlen($to_add) === 1) {
           $replacement = $to_add;
+        }
+        elseif (isset($this->fixTransliterateForRemoveDiacritics[$to_add])) {
+          $replacement = $this->fixTransliterateForRemoveDiacritics[$to_add];
         }
       }
 
@@ -242,7 +260,7 @@ class PhpTransliteration implements TransliterationInterface {
       $this->readGenericData($bank);
     }
     $code = $code & 0xff;
-    return isset($this->genericMap[$bank][$code]) ? $this->genericMap[$bank][$code] : $unknown_character;
+    return $this->genericMap[$bank][$code] ?? $unknown_character;
   }
 
   /**

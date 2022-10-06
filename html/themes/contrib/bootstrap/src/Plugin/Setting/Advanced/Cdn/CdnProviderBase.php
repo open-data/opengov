@@ -68,7 +68,7 @@ abstract class CdnProviderBase extends SettingBase {
   protected static function checkCdnExceptions(ProviderInterface $provider, $reset = TRUE) {
     $exceptions = $provider->getCdnExceptions($reset);
     if ($exceptions) {
-      Bootstrap::message(t('Unable to parse @provider data. <a href=":logs">Check the logs for more details.</a> If your issues are network related, consider using the "custom" CDN Provider instead to statically set the URLs that should be used.', [
+      \Drupal::messenger()->addMessage(t('Unable to parse @provider data. <a href=":logs">Check the logs for more details.</a> If your issues are network related, consider using the "custom" CDN Provider instead to statically set the URLs that should be used.', [
         ':logs' => Url::fromRoute('dblog.overview')->toString(),
         '@provider' => $provider->getLabel(),
       ]), 'error');

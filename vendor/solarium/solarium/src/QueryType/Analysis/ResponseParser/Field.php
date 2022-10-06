@@ -1,9 +1,16 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Analysis\ResponseParser;
 
 use Solarium\Core\Query\AbstractResponseParser as ResponseParserAbstract;
-use Solarium\Core\Query\ResponseParserInterface as ResponseParserInterface;
+use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\Core\Query\Result\ResultInterface;
 use Solarium\QueryType\Analysis\Result as AnalysisResult;
 use Solarium\QueryType\Analysis\Result\Item;
@@ -70,9 +77,9 @@ class Field extends ResponseParserAbstract implements ResponseParserInterface
         foreach ($data as $fieldKey => $fieldData) {
             $types = [];
             foreach ($fieldData as $typeKey => $typeData) {
-                if ($query->getResponseWriter() == $query::WT_JSON) {
+                if ($query->getResponseWriter() === $query::WT_JSON) {
                     // fix for extra level for key fields
-                    if (1 == count($typeData)) {
+                    if (1 === \count($typeData)) {
                         $typeData = current($typeData);
                     }
                     $typeData = $this->convertToKeyValueArray($typeData);
@@ -80,7 +87,7 @@ class Field extends ResponseParserAbstract implements ResponseParserInterface
 
                 $classes = [];
                 foreach ($typeData as $class => $analysis) {
-                    if (is_string($analysis)) {
+                    if (\is_string($analysis)) {
                         $item = new Item(
                             [
                                 'text' => $analysis,

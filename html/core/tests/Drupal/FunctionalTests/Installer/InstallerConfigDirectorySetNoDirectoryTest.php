@@ -39,9 +39,9 @@ class InstallerConfigDirectorySetNoDirectoryTest extends InstallerTestBase {
    * Verifies that installation succeeded.
    */
   public function testInstaller() {
-    $this->assertUrl('user/1');
-    $this->assertResponse(200);
-    $this->assertTrue(file_exists($this->syncDirectory) && is_dir($this->syncDirectory), "The directory {$this->syncDirectory} exists.");
+    $this->assertSession()->addressEquals('user/1');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertDirectoryExists($this->syncDirectory);
   }
 
 }

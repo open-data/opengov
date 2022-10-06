@@ -77,9 +77,9 @@ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
     $this->translatableProperties = $translatable_properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper functions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Cleanup webform elements.
@@ -195,7 +195,7 @@ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
   protected function isPropertyTranslatable($property) {
     $property = str_replace('#', '', $property);
     if (strpos($property, '__') !== FALSE) {
-      list(, $child_property) = explode('__', $property);
+      [, $child_property] = explode('__', $property);
       return isset($this->translatableProperties[$child_property]);
     }
     else {

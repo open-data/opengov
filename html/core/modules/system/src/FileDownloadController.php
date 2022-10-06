@@ -28,11 +28,7 @@ class FileDownloadController extends ControllerBase {
    * @param \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $streamWrapperManager
    *   The stream wrapper manager.
    */
-  public function __construct(StreamWrapperManagerInterface $streamWrapperManager = NULL) {
-    if (!$streamWrapperManager) {
-      @trigger_error('Calling FileDownloadController::__construct() without the $streamWrapperManager argument is deprecated in drupal:8.8.0. The $streamWrapperManager argument will be required in drupal:9.0.0. See https://www.drupal.org/node/3035273', E_USER_DEPRECATED);
-      $streamWrapperManager = \Drupal::service('stream_wrapper_manager');
-    }
+  public function __construct(StreamWrapperManagerInterface $streamWrapperManager) {
     $this->streamWrapperManager = $streamWrapperManager;
   }
 
@@ -75,7 +71,7 @@ class FileDownloadController extends ControllerBase {
     // Merge remaining path arguments into relative file path.
     $uri = $scheme . '://' . $target;
 
-    if ($this->streamWrapperManager->isValidScheme($scheme) && file_exists($uri)) {
+    if ($this->streamWrapperManager->isValidScheme($scheme) && is_file($uri)) {
       // Let other modules provide headers and controls access to the file.
       $headers = $this->moduleHandler()->invokeAll('file_download', [$uri]);
 

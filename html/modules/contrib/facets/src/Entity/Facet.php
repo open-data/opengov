@@ -4,6 +4,9 @@ namespace Drupal\facets\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\facets\Event\GetFacetCacheContexts;
+use Drupal\facets\Event\GetFacetCacheMaxAge;
+use Drupal\facets\Event\GetFacetCacheTags;
 use Drupal\facets\Exception\Exception;
 use Drupal\facets\Exception\InvalidProcessorException;
 use Drupal\facets\Exception\InvalidQueryTypeException;
@@ -41,12 +44,16 @@ use Drupal\facets\FacetInterface;
  *     "url_alias",
  *     "weight",
  *     "min_count",
+ *     "missing",
+ *     "missing_label",
  *     "show_only_one_result",
  *     "field_identifier",
  *     "facet_source_id",
  *     "widget",
  *     "query_operator",
  *     "use_hierarchy",
+ *     "keep_hierarchy_parents_active",
+ *     "hierarchy",
  *     "expand_hierarchy",
  *     "enable_parent_when_child_gets_disabled",
  *     "hard_limit",
@@ -54,7 +61,7 @@ use Drupal\facets\FacetInterface;
  *     "only_visible_when_facet_source_is_visible",
  *     "processor_configs",
  *     "empty_behavior",
- *     "show_title"
+ *     "show_title",
  *   },
  *   links = {
  *     "collection" = "/admin/config/search/facets",
@@ -146,6 +153,16 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   protected $use_hierarchy = FALSE;
 
   /**
+   * A boolean flag indicating if the parent results should be kept active.
+   *
+   * A boolean flag indicating if the parent results of a hierarchical facet
+   * should be kept active when a child becomes active.
+   *
+   * @var bool
+   */
+  protected $keep_hierarchy_parents_active = FALSE;
+
+  /**
    * A boolean indicating if hierarchical items should always be expanded.
    *
    * @var bool
@@ -164,7 +181,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    *
    * @var bool
    */
-  protected $exclude;
+  protected $exclude = FALSE;
 
   /**
    * The field identifier.
@@ -273,6 +290,15 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   protected $hierarchy_manager;
 
   /**
+   * Cached information about the hierarchies available for this facet.
+   *
+   * @var \Drupal\facets\Hierarchy\HierarchyInterface[]
+   *
+   * @see getHierarchies()
+   */
+  protected $hierarchies;
+
+  /**
    * The facet source config object.
    *
    * @var \Drupal\Facets\FacetSourceInterface
@@ -295,6 +321,24 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    *   The minimum amount of results.
    */
   protected $min_count = 1;
+
+  protected $cache_dependencies_calculated = FALSE;
+
+  /**
+   * The missing parameter.
+   *
+   * @var bool
+   *   The missing parameter.
+   */
+  protected $missing = FALSE;
+
+  /**
+   * The missing parameter label.
+   *
+   * @var string
+   *   The missing parameter label.
+   */
+  protected $missing_label = 'others';
 
   /**
    * Returns the widget plugin manager.
@@ -380,9 +424,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    * {@inheritdoc}
    */
   public function getHierarchy() {
-    // TODO: do not hardcode on taxonomy, make this configurable (or better,
-    // autoselected depending field type).
-    return ['type' => 'taxonomy', 'config' => []];
+    return $this->hierarchy;
   }
 
   /**
@@ -404,11 +446,11 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    *   The loaded processors, keyed by processor ID.
    */
   protected function loadProcessors() {
-    if (is_array($this->processors)) {
+    if (isset($this->processors) && is_array($this->processors)) {
       return $this->processors;
     }
 
-    /* @var $processor_plugin_manager \Drupal\facets\Processor\ProcessorPluginManager */
+    /** @var \Drupal\facets\Processor\ProcessorPluginManager $processor_plugin_manager */
     $processor_plugin_manager = \Drupal::service('plugin.manager.facets.processor');
     $processor_settings = $this->getProcessorConfigs();
 
@@ -418,7 +460,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
         $settings = empty($processor_settings[$name]['settings']) ? [] : $processor_settings[$name]['settings'];
         $settings['facet'] = $this;
 
-        /* @var $processor \Drupal\facets\Processor\ProcessorInterface */
+        /** @var \Drupal\facets\Processor\ProcessorInterface $processor */
         $processor = $processor_plugin_manager->createInstance($name, $settings);
         $this->processors[$name] = $processor;
       }
@@ -538,6 +580,20 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    */
   public function getUseHierarchy() {
     return $this->use_hierarchy;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setKeepHierarchyParentsActive($keep_hierarchy_parents_active) {
+    return $this->keep_hierarchy_parents_active = $keep_hierarchy_parents_active;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getKeepHierarchyParentsActive() {
+    return $this->keep_hierarchy_parents_active;
   }
 
   /**
@@ -688,8 +744,8 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    * {@inheritdoc}
    */
   public function getFacetSource() {
-    if (is_null($this->facet_source_instance) && $this->facet_source_id) {
-      /* @var $facet_source_plugin_manager \Drupal\facets\FacetSource\FacetSourcePluginManager */
+    if (!isset($this->facet_source_instance) && $this->facet_source_id) {
+      /** @var \Drupal\facets\FacetSource\FacetSourcePluginManager $facet_source_plugin_manager */
       $facet_source_plugin_manager = \Drupal::service('plugin.manager.facets.facet_source');
       if (!$facet_source_plugin_manager->hasDefinition($this->facet_source_id)) {
         return NULL;
@@ -725,13 +781,13 @@ class Facet extends ConfigEntityBase implements FacetInterface {
     }
 
     $storage = \Drupal::entityTypeManager()->getStorage('facets_facet_source');
-    $source_id = str_replace(':', '__', $this->facet_source_id);
-
-    // Load and return the facet source config object from the storage.
-    $facet_source = $storage->load($source_id);
-    if ($facet_source instanceof FacetSource) {
-      $this->facetSourceConfig = $facet_source;
-      return $this->facetSourceConfig;
+    if ($source_id = str_replace(':', '__', $this->facet_source_id ?? '')) {
+        // Load and return the facet source config object from the storage.
+        $facet_source = $storage->load($source_id);
+        if ($facet_source instanceof FacetSource) {
+            $this->facetSourceConfig = $facet_source;
+            return $this->facetSourceConfig;
+        }
     }
 
     // We didn't have a facet source config entity yet for this facet source
@@ -759,6 +815,26 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   /**
    * {@inheritdoc}
    */
+  public function getResultsKeyedByRawValue($results = NULL) {
+    if ($results === NULL) {
+      $results = $this->results;
+    }
+
+    $keyed_results = [];
+
+    foreach ($results as $result) {
+      $keyed_results[$result->getRawValue()] = $result;
+      if ($children = $result->getChildren()) {
+        $keyed_results = $keyed_results + $this->getResultsKeyedByRawValue($children);
+      }
+    }
+
+    return $keyed_results;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setResults(array $results) {
     $this->results = $results;
     // If there are active values,
@@ -767,6 +843,14 @@ class Facet extends ConfigEntityBase implements FacetInterface {
       foreach ($this->results as $result) {
         if (in_array($result->getRawValue(), $this->active_values)) {
           $result->setActiveState(TRUE);
+        }
+        elseif ($result->isMissing()) {
+          foreach ($this->active_values as $active_value) {
+            if (str_starts_with($active_value, '!(')) {
+              $result->setActiveState(TRUE);
+              break;
+            }
+          }
         }
       }
     }
@@ -790,15 +874,15 @@ class Facet extends ConfigEntityBase implements FacetInterface {
     if (!isset($this->facetSourcePlugins)) {
       $this->facetSourcePlugins = [];
 
-      /* @var $facet_source_plugin_manager \Drupal\facets\FacetSource\FacetSourcePluginManager */
+      /** @var \Drupal\facets\FacetSource\FacetSourcePluginManager $facet_source_plugin_manager */
       $facet_source_plugin_manager = \Drupal::service('plugin.manager.facets.facet_source');
 
       foreach ($facet_source_plugin_manager->getDefinitions() as $name => $facet_source_definition) {
         if (class_exists($facet_source_definition['class']) && empty($this->facetSourcePlugins[$name])) {
           // Create our settings for this facet source..
-          $config = isset($this->facetSourcePlugins[$name]) ? $this->facetSourcePlugins[$name] : [];
+          $config = $this->facetSourcePlugins[$name] ?? [];
 
-          /* @var $facet_source \Drupal\facets\FacetSource\FacetSourcePluginInterface */
+          /** @var \Drupal\facets\FacetSource\FacetSourcePluginInterface $facet_source */
           $facet_source = $facet_source_plugin_manager->createInstance($name, $config);
           $this->facetSourcePlugins[$name] = $facet_source;
         }
@@ -828,7 +912,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
 
     // Filter processors by status if required. Enabled processors are those
     // which have settings in the processor_configs.
-    if ($only_enabled) {
+    if ($processors && $only_enabled) {
       $processors_settings = $this->getProcessorConfigs();
       $processors = array_intersect_key($processors, $processors_settings);
     }
@@ -869,6 +953,37 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   /**
    * {@inheritdoc}
    */
+  public function getHierarchies() {
+    if (is_array($this->hierarchies)) {
+      return $this->hierarchies;
+    }
+
+    $this->hierarchies = [];
+
+    $hierarchy_plugin_manager = $this->getHierarchyManager();
+
+    foreach ($hierarchy_plugin_manager->getDefinitions() as $name => $hierarchy_definition) {
+      if (class_exists($hierarchy_definition['class']) && empty($this->hierarchies[$name])) {
+
+        /** @var \Drupal\facets\Hierarchy\HierarchyInterface $hierarchy */
+        $hierarchy = $hierarchy_plugin_manager->createInstance($name);
+        $this->hierarchies[$name] = $hierarchy;
+      }
+      elseif (!class_exists($hierarchy_definition['class'])) {
+        \Drupal::logger('facets')
+          ->warning('Hierarchy @id specifies a non-existing @class.', [
+            '@id' => $name,
+            '@class' => $hierarchy_definition['class'],
+          ]);
+      }
+    }
+
+    return $this->hierarchies;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setOnlyVisibleWhenFacetSourceIsVisible($only_visible_when_facet_source_is_visible) {
     $this->only_visible_when_facet_source_is_visible = $only_visible_when_facet_source_is_visible;
   }
@@ -889,8 +1004,10 @@ class Facet extends ConfigEntityBase implements FacetInterface {
       'weights' => $processor['weights'],
       'settings' => $processor['settings'],
     ];
-    // Sort the processors so we won't have unnecessary changes.
+    // Sort the processors, so we won't have unnecessary changes.
     ksort($this->processor_configs);
+
+    $this->cache_dependencies_calculated = FALSE;
   }
 
   /**
@@ -899,6 +1016,8 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   public function removeProcessor($processor_id) {
     unset($this->processor_configs[$processor_id]);
     unset($this->processors[$processor_id]);
+
+    $this->cache_dependencies_calculated = FALSE;
   }
 
   /**
@@ -946,6 +1065,34 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   /**
    * {@inheritdoc}
    */
+  public function setMissing(bool $missing) {
+    $this->missing = $missing;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isMissing(): bool {
+    return $this->missing;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setMissingLabel(string $label) {
+    $this->missing_label = $label;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMissingLabel(): string {
+    return $this->missing_label;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function calculateDependencies() {
     parent::calculateDependencies();
     $source = $this->getFacetSource();
@@ -964,10 +1111,24 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   /**
    * {@inheritdoc}
    */
+  public function preSave(EntityStorageInterface $storage) {
+    if (!$this->getHierarchy()) {
+      $this->setHierarchy('taxonomy');
+    }
+    parent::preSave($storage);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
     if (!$update) {
       self::clearBlockCache();
+      // Register newly created facet within its source, for the caching.
+      if (($source = $this->getFacetSource()) && $source->getCacheMaxAge() !== 0) {
+        $source->registerFacet($this);
+      }
     }
   }
 
@@ -995,6 +1156,72 @@ class Facet extends ConfigEntityBase implements FacetInterface {
 
     // Now rebuild the cache to force a fresh set of data.
     $container->get('plugin.manager.block')->clearCachedDefinitions();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    $this->calculateCacheDependencies();
+
+    $eventDispatcher = \Drupal::service('event_dispatcher');
+    $event = new GetFacetCacheTags(parent::getCacheTags(), $this);
+    $eventDispatcher->dispatch($event);
+    $this->cacheTags = $event->getCacheTags() ?? $this->cacheTags;
+
+    return array_values($this->cacheTags);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    $this->calculateCacheDependencies();
+
+    $eventDispatcher = \Drupal::service('event_dispatcher');
+    $event = new GetFacetCacheContexts(parent::getCacheContexts(), $this);
+    $eventDispatcher->dispatch($event);
+    $this->cacheContexts = $event->getCacheContexts() ?? $this->cacheContexts;
+
+    return array_values($this->cacheContexts);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    $this->calculateCacheDependencies();
+
+    $eventDispatcher = \Drupal::service('event_dispatcher');
+    $event = new GetFacetCacheMaxAge(parent::getCacheMaxAge(), $this);
+    $eventDispatcher->dispatch($event);
+    $this->cacheMaxAge = $event->getCacheMaxAge() ?? $this->cacheMaxAge;
+
+    return $this->cacheMaxAge;
+  }
+
+  protected function calculateCacheDependencies(): void {
+    if (!$this->cache_dependencies_calculated) {
+      if ($facet_source = $this->getFacetSource()) {
+        $this->addCacheableDependency($facet_source);
+      }
+
+      foreach ($this->getProcessors() ?? [] as $processor) {
+        $this->addCacheableDependency($processor);
+      }
+
+      $this->cache_dependencies_calculated = TRUE;
+    }
+  }
+
+  /**
+   * Remove the facet lazy built data when the facet is serialized.
+   */
+  public function __sleep() {
+    unset($this->facet_source_instance);
+    unset($this->processors);
+
+    return parent::__sleep();
   }
 
 }

@@ -1,14 +1,15 @@
 <?php
+
 namespace Drush\Commands\core;
 
-use Consolidation\Log\ConsoleLogLevel;
+use Drush\Log\SuccessInterface;
+use Drush\Drupal\DrupalUtil;
 use DrushBatchContext;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\OutputFormatters\StructuredData\UnstructuredListData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Drupal\Core\Utility\Error;
-use Drupal\Core\Entity\EntityStorageException;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
@@ -27,23 +28,18 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      *
      * @command updatedb
      * @option cache-clear Clear caches upon completion.
-     * @option entity-updates Run automatic entity schema updates at the end of any update hooks. Not supported in Drupal >= 8.7.0.
      * @option post-updates Run post updates after hook_update_n and entity updates.
      * @bootstrap full
+     * @topics docs:deploy
      * @kernel update
      * @aliases updb
      */
-    public function updatedb($options = ['cache-clear' => true, 'entity-updates' => false, 'post-updates' => true])
+    public function updatedb($options = ['cache-clear' => true, 'post-updates' => true]): int
     {
         $this->cache_clear = $options['cache-clear'];
         require_once DRUPAL_ROOT . '/core/includes/install.inc';
         require_once DRUPAL_ROOT . '/core/includes/update.inc';
         drupal_load_updates();
-
-        if ($options['entity-updates'] && version_compare(drush_drupal_version(), '8.7.0', '>=')) {
-            $this->logger()->warning(dt('Drupal removed its automatic entity-updates API in 8.7. See https://www.drupal.org/node/3034742.'));
-            $options['entity-updates'] = false;
-        }
 
         // Disables extensions that have a lower Drupal core major version, or too high of a PHP requirement.
         // Those are rare, and this function does a full rebuild. So commenting it out for now.
@@ -57,10 +53,11 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
         }
 
         $status_options = [
-            // @see https://github.com/drush-ops/drush/pull/3855.
-            'no-entity-updates' => !$options['entity-updates'],
             'no-post-updates' => !$options['post-updates'],
+            'strict' => 0,
         ];
+        $status_options = array_merge(Drush::redispatchOptions(), $status_options);
+
         $process = $this->processManager()->drush($this->siteAliasManager()->getSelf(), 'updatedb:status', [], $status_options);
         $process->mustRun();
         if ($output = $process->getOutput()) {
@@ -76,7 +73,7 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
                 // Caches were just cleared in updateFinished callback.
             }
 
-            $level = $success ? ConsoleLogLevel::SUCCESS : LogLevel::ERROR;
+            $level = $success ? SuccessInterface::SUCCESS : LogLevel::ERROR;
             $this->logger()->log($level, dt('Finished performing updates.'));
         } else {
             $this->logger()->success(dt('No pending updates.'));
@@ -87,44 +84,9 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
     }
 
     /**
-     * Apply pending entity schema updates.
-     *
-     * @command entity:updates
-     * @option cache-clear Set to 0 to suppress normal cache clearing; the caller should then clear if needed.
-     * @bootstrap full
-     * @kernel update
-     * @aliases entup,entity-updates
-     * @usage drush updatedb:status --entity-updates | grep entity-update
-     *   Use updatedb:status to detect pending updates.
-     *
-     */
-    public function entityUpdates($options = ['cache-clear' => true])
-    {
-        if ($this->getConfig()->simulate()) {
-            throw new \Exception(dt('entity-updates command does not support --simulate option.'));
-        }
-
-        // @todo - Do same check for updatedb as well.
-        if (version_compare(drush_drupal_version(), '8.7.0', '>=')) {
-            throw new \Exception(dt('Drupal removed its automatic entity-updates API in 8.7. See https://www.drupal.org/node/3034742.'));
-        }
-
-        if ($this->entityUpdatesMain() === false) {
-            throw new \Exception('Entity updates not run.');
-        }
-
-        if ($options['cache-clear']) {
-            drush_drupal_cache_clear_all();
-        }
-
-        $this->logger()->success(dt('Finished performing updates.'));
-    }
-
-    /**
      * List any pending database updates.
      *
      * @command updatedb:status
-     * @option entity-updates Show entity schema updates.
      * @option post-updates Show post updates.
      * @bootstrap full
      * @kernel update
@@ -136,9 +98,9 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      *   type: Type
      * @default-fields module,update_id,type,description
      * @filter-default-field type
-     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     * @return RowsOfFields
      */
-    public function updatedbStatus($options = ['format'=> 'table', 'entity-updates' => true, 'post-updates' => true])
+    public function updatedbStatus($options = ['format' => 'table', 'post-updates' => true])
     {
         require_once DRUSH_DRUPAL_CORE . '/includes/install.inc';
         drupal_load_updates();
@@ -158,10 +120,8 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      * @bootstrap full
      * @kernel update
      * @hidden
-     *
-     * @return \Consolidation\OutputFormatters\StructuredData\UnstructuredListData
      */
-    public function process($batch_id, $options = ['format' => 'json'])
+    public function process(string $batch_id, $options = ['format' => 'json']): UnstructuredListData
     {
         $result = drush_batch_command($batch_id);
         return new UnstructuredListData($result);
@@ -189,7 +149,7 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      * @param DrushBatchContext $context
      *   The batch context object.
      */
-    public static function updateDoOne($module, $number, array $dependency_map, DrushBatchContext $context)
+    public static function updateDoOne(string $module, int $number, array $dependency_map, DrushBatchContext $context): void
     {
         $function = $module . '_update_' . $number;
 
@@ -237,7 +197,10 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
             }
         } else {
             $ret['#abort'] = ['success' => false];
-            Drush::logger()->warning(dt('Update function @function not found', ['@function' => $function]));
+            Drush::logger()->warning(dt('Update function @function not found in file @filename', [
+                '@function' => $function,
+                '@filename' => "$module.install",
+            ]));
         }
 
         if (isset($context['sandbox']['#finished'])) {
@@ -267,8 +230,13 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
         }
 
         // Record the schema update if it was completed successfully.
-        if ($context['finished'] == 1 && empty($ret['#abort'])) {
-            drupal_set_installed_schema_version($module, $number);
+        if ($context['finished'] >= 1 && empty($ret['#abort'])) {
+            // TODO: setInstalledVersion in update.update_hook_registry introduced in Drupal 9.3.0
+            if (!function_exists('drupal_set_installed_schema_version')) {
+                \Drupal::service("update.update_hook_registry")->setInstalledVersion($module, $number);
+            } else {
+                drupal_set_installed_schema_version($module, $number);
+            }
             // Setting this value will output a success message.
             // @see \DrushBatchContext::offsetSet()
             $context['message'] = "Update completed: $function";
@@ -280,10 +248,9 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      *
      * @param string $function
      *   The post-update function to execute.
-     * @param DrushBatchContext $context
      *   The batch context object.
      */
-    public static function updateDoOnePostUpdate($function, DrushBatchContext $context)
+    public static function updateDoOnePostUpdate(string $function, DrushBatchContext $context): void
     {
         $ret = [];
 
@@ -298,10 +265,18 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
             return;
         }
 
-        list($module, $name) = explode('_post_update_', $function, 2);
-        module_load_include('php', $module, $module . '.post_update');
+        list($extension, $name) = explode('_post_update_', $function, 2);
+        $update_registry = \Drupal::service('update.post_update_registry');
+        // https://www.drupal.org/project/drupal/issues/3259188 Support theme's
+        // having post update functions when it is supported in Drupal core.
+        if (method_exists($update_registry, 'getUpdateFunctions')) {
+            \Drupal::service('update.post_update_registry')->getUpdateFunctions($extension);
+        } else {
+            \Drupal::service('update.post_update_registry')->getModuleUpdateFunctions($extension);
+        }
+
         if (function_exists($function)) {
-            if (empty($context['results'][$module][$name]['type'])) {
+            if (empty($context['results'][$extension][$name]['type'])) {
                 Drush::logger()->notice("Update started: $function");
             }
             try {
@@ -326,16 +301,22 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
                     'query' => t('%type: @message in %function (line %line of %file).', $variables),
                 ];
             }
+        } else {
+            $ret['#abort'] = ['success' => false];
+            Drush::logger()->warning(dt('Post update function @function not found in file @filename', [
+                '@function' => $function,
+                '@filename' => "$filename.php",
+            ]));
         }
 
         if (isset($context['sandbox']['#finished'])) {
             $context['finished'] = $context['sandbox']['#finished'];
             unset($context['sandbox']['#finished']);
         }
-        if (!isset($context['results'][$module][$name])) {
-            $context['results'][$module][$name] = [];
+        if (!isset($context['results'][$extension][$name])) {
+            $context['results'][$extension][$name] = [];
         }
-        $context['results'][$module][$name] = array_merge($context['results'][$module][$name], $ret);
+        $context['results'][$extension][$name] = array_merge($context['results'][$extension][$name], $ret);
 
         // Log the message that was returned.
         if (!empty($ret['results']['query'])) {
@@ -359,22 +340,23 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      * Batch finished callback.
      *
      * @param boolean $success Whether the batch ended without a fatal error.
-     * @param array $results
-     * @param array $operations
      */
-    public static function updateFinished($success, $results, $operations)
+    public function updateFinished(bool $success, array $results, array $operations): void
     {
-        // No code needed but the batch result bookkeeping fails without a finished callback.
-        $noop = 1;
+        if ($this->cache_clear) {
+            // Flush all caches at the end of the batch operation. When Drupal
+            // core performs database updates it also clears the cache at the
+            // end. This ensures that we are compatible with updates that rely
+            // on this behavior.
+            drupal_flush_all_caches();
+        }
     }
-
 
     /**
      * Start the database update batch process.
      * @param $options
-     * @return bool
      */
-    public function updateBatch($options)
+    public function updateBatch($options): bool
     {
         $start = $this->getUpdateList();
         // Resolve any update dependencies to determine the actual updates that will
@@ -398,23 +380,18 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
                 // correct place. (The updates are already sorted, so we can simply base
                 // this on the first one we come across in the above foreach loop.)
                 if (isset($start[$update['module']])) {
-                    drupal_set_installed_schema_version($update['module'], $update['number'] - 1);
+                    // TODO: setInstalledVersion in update.update_hook_registry introduced in Drupal 9.3.0
+                    if (!function_exists('drupal_set_installed_schema_version')) {
+                        \Drupal::service("update.update_hook_registry")->setInstalledVersion($update['module'], $update['number'] - 1);
+                    } else {
+                        drupal_set_installed_schema_version($update['module'], $update['number'] - 1);
+                    }
                     unset($start[$update['module']]);
                 }
                 // Add this update function to the batch.
                 $function = $update['module'] . '_update_' . $update['number'];
                 $operations[] = ['\Drush\Commands\core\UpdateDBCommands::updateDoOne', [$update['module'], $update['number'], $dependency_map[$function]]];
             }
-        }
-
-        // Perform entity definition updates, which will update storage
-        // schema if needed. If module update functions need to work with specific
-        // entity schema they should call the entity update service for the specific
-        // update themselves.
-        // @see \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface::applyEntityUpdate()
-        // @see \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface::applyFieldUpdate()
-        if ($options['entity-updates'] && \Drupal::entityDefinitionUpdateManager()->needsUpdates()) {
-            $operations[] = [[$this, 'updateEntityDefinitions'], []];
         }
 
         // Lastly, apply post update hooks if specified.
@@ -442,7 +419,7 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
             'title' => 'Updating',
             'init_message' => 'Starting updates',
             'error_message' => 'An unrecoverable error has occurred. You can find the error message below. It is advised to copy it to the clipboard for reference.',
-            'finished' => '\Drush\Commands\core\UpdateDBCommands::updateFinished',
+            'finished' => [$this, 'updateFinished'],
             'file' => 'core/includes/update.inc',
         ];
         batch_set($batch);
@@ -465,33 +442,13 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
         return $success;
     }
 
-    public static function restoreMaintMode($status)
+    public static function restoreMaintMode($status): void
     {
         \Drupal::service('state')->set('system.maintenance_mode', $status);
     }
 
-    /**
-     * Apply entity schema updates.
-     */
-    public function updateEntityDefinitions(&$context)
-    {
-        try {
-            \Drupal::entityDefinitionUpdateManager()->applyupdates();
-        } catch (EntityStorageException $e) {
-            watchdog_exception('update', $e);
-            $variables = Error::decodeException($e);
-            unset($variables['backtrace']);
-            // The exception message is run through
-            // \Drupal\Component\Utility\SafeMarkup::checkPlain() by
-            // \Drupal\Core\Utility\Error::decodeException().
-            $ret['#abort'] = ['success' => false, 'query' => t('%type: !message in %function (line %line of %file).', $variables)];
-            $context['results']['core']['update_entity_definitions'] = $ret;
-            $context['results']['#abort'][] = 'update_entity_definitions';
-        }
-    }
-
     // Copy of protected \Drupal\system\Controller\DbUpdateController::getModuleUpdates.
-    public function getUpdateList()
+    public function getUpdateList(): array
     {
         $return = [];
         $updates = update_get_update_list();
@@ -513,10 +470,9 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      * explicitly rebuilding the container as the container is rebuilt on the next
      * HTTP request of the batch.
      *
-     * @see drush_drupal_cache_clear_all()
      * @see \Drupal\system\Controller\DbUpdateController::triggerBatch()
      */
-    public static function cacheRebuild()
+    public static function cacheRebuild(): void
     {
         drupal_flush_all_caches();
         \Drupal::service('kernel')->rebuildContainer();
@@ -532,7 +488,7 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
      *  - an array where each item is a 4 item associative array describing a pending update.
      *  - an array listing the first update to run, keyed by module.
      */
-    public function getUpdatedbStatus(array $options)
+    public function getUpdatedbStatus(array $options): array
     {
         require_once DRUPAL_ROOT . '/core/includes/update.inc';
         $pending = \update_get_update_list();
@@ -550,26 +506,11 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
                         'module' => $module,
                         'update_id' => $update_id,
                         'description' => $description,
-                        'type'=> 'hook_update_n'
+                        'type' => 'hook_update_n'
                     ];
                 }
                 if (isset($updates['start'])) {
                     $start[$module] = $updates['start'];
-                }
-            }
-        }
-
-        // Append row(s) for pending entity definition updates.
-        if ($options['entity-updates']) {
-            foreach (\Drupal::entityDefinitionUpdateManager()
-                         ->getChangeSummary() as $entity_type_id => $changes) {
-                foreach ($changes as $change) {
-                    $return[] = [
-                        'module' => dt('@type entity type', ['@type' => $entity_type_id]),
-                        'update_id' => '',
-                        'description' => strip_tags($change),
-                        'type' => 'entity-update'
-                    ];
                 }
             }
         }
@@ -584,7 +525,7 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
                             $return[$module . '-post-' . $id] = [
                                 'module' => $module,
                                 'update_id' => $id,
-                                'description' => $item,
+                                'description' => trim($item),
                                 'type' => 'post-update'
                             ];
                         }
@@ -597,51 +538,9 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
     }
 
     /**
-     * Apply pending entity schema updates.
-     */
-    public function entityUpdatesMain()
-    {
-        $change_summary = \Drupal::entityDefinitionUpdateManager()->getChangeSummary();
-        if (!empty($change_summary)) {
-            $this->output()->writeln(dt('The following updates are pending:'));
-            $this->io()->newLine();
-
-            foreach ($change_summary as $entity_type_id => $changes) {
-                $this->output()->writeln($entity_type_id . ' entity type : ');
-                foreach ($changes as $change) {
-                    $this->output()->writeln(strip_tags($change), 2);
-                }
-            }
-
-            if (!$this->io()->confirm(dt('Do you wish to run all pending updates?'))) {
-                throw new UserAbortException();
-            }
-
-            $operations[] = [[$this, 'updateEntityDefinitions'], []];
-
-
-            $batch['operations'] = $operations;
-            $batch += [
-                'title' => 'Updating',
-                'init_message' => 'Starting updates',
-                'error_message' => 'An unrecoverable error has occurred. You can find the error message below. It is advised to copy it to the clipboard for reference.',
-                'finished' => [$this, 'updateFinished'],
-            ];
-            batch_set($batch);
-
-            // See updateFinished() for the restore of maint mode.
-            $this->maintenanceModeOriginalState = \Drupal::service('state')->get('system.maintenance_mode');
-            \Drupal::service('state')->set('system.maintenance_mode', true);
-            drush_backend_batch_process();
-        } else {
-            $this->logger()->success(dt("No entity schema updates required"));
-        }
-    }
-
-    /**
      * Log messages for any requirements warnings/errors.
      */
-    public function updateCheckRequirements()
+    public function updateCheckRequirements(): bool
     {
         $return = true;
 
@@ -656,9 +555,9 @@ class UpdateDBCommands extends DrushCommands implements SiteAliasManagerAwareInt
             }
             foreach ($requirements as $requirement) {
                 if (isset($requirement['severity']) && $requirement['severity'] != REQUIREMENT_OK) {
-                    $message = isset($requirement['description']) ? $requirement['description'] : '';
+                    $message = isset($requirement['description']) ? DrupalUtil::drushRender($requirement['description']) : '';
                     if (isset($requirement['value']) && $requirement['value']) {
-                        $message .= ' (Currently using '. $requirement['title'] .' '. $requirement['value'] .')';
+                        $message .= ' (Currently using ' . $requirement['title'] . ' ' . DrupalUtil::drushRender($requirement['value']) . ')';
                     }
                     $log_level = $requirement['severity'] === REQUIREMENT_ERROR ? LogLevel::ERROR : LogLevel::WARNING;
                     $this->logger()->log($log_level, $message);

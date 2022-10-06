@@ -126,14 +126,14 @@ class MenuForm extends EntityForm {
     ];
     $form['description'] = [
       '#type' => 'textfield',
-      '#title' => t('Administrative summary'),
+      '#title' => $this->t('Administrative summary'),
       '#maxlength' => 512,
       '#default_value' => $menu->getDescription(),
     ];
 
     $form['langcode'] = [
       '#type' => 'language_select',
-      '#title' => t('Menu language'),
+      '#title' => $this->t('Menu language'),
       '#languages' => LanguageInterface::STATE_ALL,
       '#default_value' => $menu->language()->getId(),
     ];
@@ -271,7 +271,7 @@ class MenuForm extends EntityForm {
           'subgroup' => 'menu-parent',
           'source' => 'menu-id',
           'hidden' => TRUE,
-          'limit' => \Drupal::menuTree()->maxDepth() - 1,
+          'limit' => $this->menuTree->maxDepth() - 1,
         ],
         [
           'action' => 'order',

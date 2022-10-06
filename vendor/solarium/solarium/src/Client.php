@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium;
 
+use Composer\InstalledVersions;
 use Solarium\Core\Client\Client as CoreClient;
 
 /**
@@ -33,8 +41,26 @@ class Client extends CoreClient
      * @see checkMinimal()
      *
      * @var string
+     *
+     * @deprecated This class constant will be removed in Solarium 6.3.0. Use Client::getVersion() instead.
      */
-    const VERSION = '5.1.4';
+    const VERSION = '6.2.7-deprecated';
+
+    /**
+     * Returns the version string.
+     *
+     * @return string
+     */
+    public static function getVersion(): string
+    {
+        static $version;
+
+        if (!$version) {
+            $version = InstalledVersions::getPrettyVersion('solarium/solarium');
+        }
+
+        return $version;
+    }
 
     /**
      * Check for an exact version.
@@ -66,7 +92,7 @@ class Client extends CoreClient
      */
     public static function checkExact(string $version): bool
     {
-        return substr(self::VERSION, 0, strlen($version)) == $version;
+        return 0 === strpos(self::getVersion(), $version);
     }
 
     /**
@@ -94,6 +120,6 @@ class Client extends CoreClient
      */
     public static function checkMinimal(string $version): bool
     {
-        return version_compare(self::VERSION, $version, '>=');
+        return version_compare(self::getVersion(), $version, '>=');
     }
 }

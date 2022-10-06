@@ -9,7 +9,7 @@ for you.
 Composer is **not** a package manager in the same sense as Yum or Apt are. Yes,
 it deals with "packages" or libraries, but it manages them on a per-project
 basis, installing them in a directory (e.g. `vendor`) inside your project. By
-default it does not install anything globally. Thus, it is a dependency
+default, it does not install anything globally. Thus, it is a dependency
 manager. It does however support a "global" project for convenience via the
 [global](03-cli.md#global) command.
 
@@ -49,11 +49,11 @@ Linux and macOS.
 
 Composer offers a convenient installer that you can execute directly from the
 command line. Feel free to [download this file](https://getcomposer.org/installer)
-or review it on [GitHub](https://github.com/composer/getcomposer.org/blob/master/web/installer)
+or review it on [GitHub](https://github.com/composer/getcomposer.org/blob/main/web/installer)
 if you wish to know more about the inner workings of the installer. The source
 is plain PHP.
 
-There are in short, two ways to install Composer. Locally as part of your
+There are, in short, two ways to install Composer. Locally as part of your
 project, or globally as a system wide executable.
 
 #### Locally
@@ -99,7 +99,7 @@ you can use `~/.local/bin` instead which is available by default on some
 Linux distributions.
 
 > **Note:** If the above fails due to permissions, you may need to run it again
-> with sudo.
+> with `sudo`.
 
 > **Note:** On some versions of macOS the `/usr` directory does not exist by
 > default. If you receive the error "/usr/local/bin/composer: No such file or
@@ -155,7 +155,7 @@ Close your current terminal. Test usage with a new terminal:
 
 ```sh
 C:\Users\username>composer -V
-Composer version 1.0.0 2016-01-10 20:34:53
+Composer version 2.0.12 2021-04-01 10:14:59
 ```
 
 ## Using Composer

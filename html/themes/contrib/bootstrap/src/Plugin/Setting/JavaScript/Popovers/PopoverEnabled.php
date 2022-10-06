@@ -33,7 +33,7 @@ class PopoverEnabled extends SettingBase {
     parent::alterFormElement($form, $form_state, $form_id);
 
     $group = $this->getGroupElement($form, $form_state);
-    $group->setProperty('description', t('Add small overlays of content, like those on the iPad, to any element for housing secondary information.'));
+    $group->setProperty('description', $this->t('Add small overlays of content, like those on the iPad, to any element for housing secondary information.'));
   }
 
   /**

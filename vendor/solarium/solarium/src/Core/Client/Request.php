@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Client;
 
 use Solarium\Component\RequestBuilder\RequestParamsInterface;
@@ -38,6 +45,36 @@ class Request extends Configurable implements RequestParamsInterface
      * Request PUT method.
      */
     const METHOD_PUT = 'PUT';
+
+    /**
+     * Content-Type for JSON payloads.
+     */
+    const CONTENT_TYPE_APPLICATION_JSON = 'application/json';
+
+    /**
+     * Content-Type for arbitrary binary data.
+     */
+    const CONTENT_TYPE_APPLICATION_OCTET_STREAM = 'application/octet-stream';
+
+    /**
+     * Content-Type for percent-encoded name-value pairs.
+     */
+    const CONTENT_TYPE_APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
+
+    /**
+     * Content-Type for XML payloads.
+     */
+    const CONTENT_TYPE_APPLICATION_XML = 'application/xml';
+
+    /**
+     * Content-Type for multipart data streams.
+     */
+    const CONTENT_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
+
+    /**
+     * Content-Type for plaintext payloads.
+     */
+    const CONTENT_TYPE_TEXT_PLAIN = 'text/plain';
 
     /**
      * V1 API.
@@ -81,7 +118,16 @@ class Request extends Configurable implements RequestParamsInterface
      */
     public function __toString()
     {
-        $output = __CLASS__.'::__toString'."\n".'method: '.$this->getMethod()."\n".'header: '.print_r($this->getHeaders(), 1).'authentication: '.print_r($this->getAuthentication(), 1).'resource: '.$this->getUri()."\n".'resource urldecoded: '.urldecode($this->getUri())."\n".'raw data: '.$this->getRawData()."\n".'file upload: '.$this->getFileUpload()."\n";
+        $output =
+            __CLASS__.'::__toString'."\n"
+            .'method: '.$this->getMethod()."\n"
+            .'header: '.print_r($this->getHeaders(), true)
+            .'authentication: '.print_r($this->getAuthentication(), true)
+            .'resource: '.$this->getUri()."\n"
+            .'resource urldecoded: '.urldecode($this->getUri())."\n"
+            .'raw data: '.$this->getRawData()."\n"
+            .'file upload: '.$this->getFileUpload()."\n"
+        ;
 
         return $output;
     }
@@ -113,7 +159,7 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set request method.
      *
-     * Use one of the constants as value
+     * Use one of the METHOD_* constants as value.
      *
      * @param string $method
      *
@@ -134,6 +180,63 @@ class Request extends Configurable implements RequestParamsInterface
     public function getMethod(): ?string
     {
         return $this->getOption('method');
+    }
+
+    /**
+     * Set request Content-Type.
+     *
+     * Use one of the CONTENT_TYPE_* constants as value.
+     *
+     * Content-Type parameters can be passed in $params or set with {@see setContentTypeParams()}.
+     *
+     * @param string|null $contentType
+     * @param array|null  $params
+     *
+     * @return self Provides fluent interface
+     */
+    public function setContentType(?string $contentType, ?array $params = null): self
+    {
+        $this->setOption('contenttype', $contentType);
+
+        if (null !== $params) {
+            $this->setOption('contenttypeparams', $params);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get request Content-Type.
+     *
+     * @return string|null
+     */
+    public function getContentType(): ?string
+    {
+        return $this->getOption('contenttype');
+    }
+
+    /**
+     * Set Content-Type parameters.
+     *
+     * @param array|null $params
+     *
+     * @return self Provides fluent interface
+     */
+    public function setContentTypeParams(?array $params): self
+    {
+        $this->setOption('contenttypeparams', $params);
+
+        return $this;
+    }
+
+    /**
+     * Get Content-Type parameters.
+     *
+     * @return array|null
+     */
+    public function getContentTypeParams(): ?array
+    {
+        return $this->getOption('contenttypeparams');
     }
 
     /**
@@ -175,7 +278,6 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set the file to upload via "multipart/form-data" POST request.
      *
-     *
      * @param string $filename Name of file to upload
      *
      * @throws RuntimeException
@@ -185,7 +287,7 @@ class Request extends Configurable implements RequestParamsInterface
     public function setFileUpload($filename): self
     {
         if (!is_file($filename) || !is_readable($filename)) {
-            throw new RuntimeException("Unable to read file '{$filename}' for upload");
+            throw new RuntimeException(sprintf("Unable to read file '%s' for upload", $filename));
         }
 
         $this->setOption('file', $filename);
@@ -200,7 +302,45 @@ class Request extends Configurable implements RequestParamsInterface
      */
     public function getHeaders(): array
     {
-        return $this->headers;
+        $headers = array_unique($this->headers);
+
+        if (
+            null === $this->getHeader('Content-Type')
+            && (null !== $contentType = $this->getContentType())
+        ) {
+            $contentTypeHeader = sprintf('Content-Type: %s', $contentType);
+
+            if (null !== $contentTypeParams = $this->getContentTypeParams()) {
+                foreach ($contentTypeParams as $param => $value) {
+                    $contentTypeHeader .= sprintf('; %s=%s', $param, $value);
+                }
+            } else {
+                $charset = $this->getParam('ie') ?? 'utf-8';
+                $contentTypeHeader .= sprintf('; charset=%s', $charset);
+            }
+
+            $headers[] = $contentTypeHeader;
+        }
+
+        return $headers;
+    }
+
+    /**
+     * @param string $headerName
+     *
+     * @return string|null
+     */
+    public function getHeader(string $headerName): ?string
+    {
+        foreach ($this->headers as $header) {
+            list($name) = explode(':', $header);
+
+            if ($name === $headerName) {
+                return $header;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -228,6 +368,28 @@ class Request extends Configurable implements RequestParamsInterface
     public function addHeader($value): self
     {
         $this->headers[] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Replace header if previously set else add it.
+     *
+     * @param string $header
+     *
+     * @return $this
+     */
+    public function replaceOrAddHeader(string $header): self
+    {
+        list($name) = explode(':', $header);
+
+        if ((null !== $current = $this->getHeader($name)) &&
+            false !== $key = array_search($current, $this->headers, true)
+        ) {
+            $this->headers[$key] = $header;
+        } else {
+            $this->headers[] = $header;
+        }
 
         return $this;
     }
@@ -302,7 +464,7 @@ class Request extends Configurable implements RequestParamsInterface
     }
 
     /**
-     * Execute a request outside of the core context in the global solr context.
+     * Execute a request outside of the core context in the global Solr context.
      *
      * @param bool $isServerRequest
      *
@@ -329,6 +491,8 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set Solr API version.
      *
+     * Use one of the API_* constants as value.
+     *
      * @param string $api
      *
      * @return self Provides fluent interface
@@ -348,6 +512,14 @@ class Request extends Configurable implements RequestParamsInterface
     public function getApi(): ?string
     {
         return $this->getOption('api');
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash(): string
+    {
+        return spl_object_hash($this);
     }
 
     /**
@@ -373,15 +545,8 @@ class Request extends Configurable implements RequestParamsInterface
                     if (isset($value['username'], $value['password'])) {
                         $this->setAuthentication($value['username'], $value['password']);
                     }
+                    break;
             }
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getHash(): string
-    {
-        return spl_object_hash($this);
     }
 }

@@ -93,7 +93,7 @@
     width: 100%;
   }
 
-  /**
+  /*
    * Show visually hidden radio title and description
    * when Likert is displayed inline on mobile.
    * @see \Drupal\webform\Element\WebformLikert::processWebformLikert

@@ -18,15 +18,25 @@ use Composer\Package\Version\VersionParser;
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-class AliasPackage extends BasePackage implements CompletePackageInterface
+class AliasPackage extends BasePackage
 {
+    /** @var string */
     protected $version;
+    /** @var string */
     protected $prettyVersion;
+    /** @var bool */
     protected $dev;
+    /** @var bool */
     protected $rootPackageAlias = false;
+    /**
+     * @var string
+     * @phpstan-var 'stable'|'RC'|'beta'|'alpha'|'dev'
+     */
     protected $stability;
+    /** @var bool */
+    protected $hasSelfVersionRequires = false;
 
-    /** @var PackageInterface */
+    /** @var BasePackage */
     protected $aliasOf;
     /** @var Link[] */
     protected $requires;
@@ -42,11 +52,11 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     /**
      * All descendants' constructors should call this parent constructor
      *
-     * @param PackageInterface $aliasOf       The package this package is an alias of
-     * @param string           $version       The version the alias must report
-     * @param string           $prettyVersion The alias's non-normalized version
+     * @param BasePackage $aliasOf       The package this package is an alias of
+     * @param string      $version       The version the alias must report
+     * @param string      $prettyVersion The alias's non-normalized version
      */
-    public function __construct(PackageInterface $aliasOf, $version, $prettyVersion)
+    public function __construct(BasePackage $aliasOf, $version, $prettyVersion)
     {
         parent::__construct($aliasOf->getName());
 
@@ -56,14 +66,14 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
         $this->stability = VersionParser::parseStability($version);
         $this->dev = $this->stability === 'dev';
 
-        foreach (array('requires', 'devRequires', 'conflicts', 'provides', 'replaces') as $type) {
+        foreach (Link::$TYPES as $type) {
             $links = $aliasOf->{'get' . ucfirst($type)}();
             $this->$type = $this->replaceSelfVersionDependencies($links, $type);
         }
     }
 
     /**
-     * @return PackageInterface
+     * @return BasePackage
      */
     public function getAliasOf()
     {
@@ -71,7 +81,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getVersion()
     {
@@ -79,7 +89,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getStability()
     {
@@ -87,7 +97,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getPrettyVersion()
     {
@@ -95,7 +105,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isDev()
     {
@@ -103,7 +113,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getRequires()
     {
@@ -111,7 +121,8 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
+     * @return array<string|int, Link>
      */
     public function getConflicts()
     {
@@ -119,7 +130,8 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
+     * @return array<string|int, Link>
      */
     public function getProvides()
     {
@@ -127,7 +139,8 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
+     * @return array<string|int, Link>
      */
     public function getReplaces()
     {
@@ -135,7 +148,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getDevRequires()
     {
@@ -166,31 +179,55 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     }
 
     /**
-     * @param Link[] $links
-     * @param string $linkType
+     * @param Link[]       $links
+     * @param Link::TYPE_* $linkType
      *
      * @return Link[]
      */
     protected function replaceSelfVersionDependencies(array $links, $linkType)
     {
-        if (in_array($linkType, array('conflicts', 'provides', 'replaces'), true)) {
+        // for self.version requirements, we use the original package's branch name instead, to avoid leaking the magic dev-master-alias to users
+        $prettyVersion = $this->prettyVersion;
+        if ($prettyVersion === VersionParser::DEFAULT_BRANCH_ALIAS) {
+            $prettyVersion = $this->aliasOf->getPrettyVersion();
+        }
+
+        if (\in_array($linkType, array(Link::TYPE_CONFLICT, Link::TYPE_PROVIDE, Link::TYPE_REPLACE), true)) {
             $newLinks = array();
             foreach ($links as $link) {
                 // link is self.version, but must be replacing also the replaced version
                 if ('self.version' === $link->getPrettyConstraint()) {
-                    $newLinks[] = new Link($link->getSource(), $link->getTarget(), new Constraint('=', $this->version), $linkType, $this->prettyVersion);
+                    $newLinks[] = new Link($link->getSource(), $link->getTarget(), $constraint = new Constraint('=', $this->version), $linkType, $prettyVersion);
+                    $constraint->setPrettyString($prettyVersion);
                 }
             }
             $links = array_merge($links, $newLinks);
         } else {
             foreach ($links as $index => $link) {
                 if ('self.version' === $link->getPrettyConstraint()) {
-                    $links[$index] = new Link($link->getSource(), $link->getTarget(), new Constraint('=', $this->version), $linkType, $this->prettyVersion);
+                    if ($linkType === Link::TYPE_REQUIRE) {
+                        $this->hasSelfVersionRequires = true;
+                    }
+                    $links[$index] = new Link($link->getSource(), $link->getTarget(), $constraint = new Constraint('=', $this->version), $linkType, $prettyVersion);
+                    $constraint->setPrettyString($prettyVersion);
                 }
             }
         }
 
         return $links;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSelfVersionRequires()
+    {
+        return $this->hasSelfVersionRequires;
+    }
+
+    public function __toString()
+    {
+        return parent::__toString().' ('.($this->rootPackageAlias ? 'root ' : ''). 'alias of '.$this->aliasOf->getVersion().')';
     }
 
     /***************************************
@@ -244,12 +281,12 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
 
     public function setSourceReference($reference)
     {
-        return $this->aliasOf->setSourceReference($reference);
+        $this->aliasOf->setSourceReference($reference);
     }
 
     public function setSourceMirrors($mirrors)
     {
-        return $this->aliasOf->setSourceMirrors($mirrors);
+        $this->aliasOf->setSourceMirrors($mirrors);
     }
 
     public function getSourceMirrors()
@@ -279,7 +316,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
 
     public function setDistReference($reference)
     {
-        return $this->aliasOf->setDistReference($reference);
+        $this->aliasOf->setDistReference($reference);
     }
 
     public function getDistSha1Checksum()
@@ -289,7 +326,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
 
     public function setTransportOptions(array $options)
     {
-        return $this->aliasOf->setTransportOptions($options);
+        $this->aliasOf->setTransportOptions($options);
     }
 
     public function getTransportOptions()
@@ -299,22 +336,12 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
 
     public function setDistMirrors($mirrors)
     {
-        return $this->aliasOf->setDistMirrors($mirrors);
+        $this->aliasOf->setDistMirrors($mirrors);
     }
 
     public function getDistMirrors()
     {
         return $this->aliasOf->getDistMirrors();
-    }
-
-    public function getScripts()
-    {
-        return $this->aliasOf->getScripts();
-    }
-
-    public function getLicense()
-    {
-        return $this->aliasOf->getLicense();
     }
 
     public function getAutoload()
@@ -332,11 +359,6 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
         return $this->aliasOf->getIncludePaths();
     }
 
-    public function getRepositories()
-    {
-        return $this->aliasOf->getRepositories();
-    }
-
     public function getReleaseDate()
     {
         return $this->aliasOf->getReleaseDate();
@@ -347,39 +369,9 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
         return $this->aliasOf->getBinaries();
     }
 
-    public function getKeywords()
-    {
-        return $this->aliasOf->getKeywords();
-    }
-
-    public function getDescription()
-    {
-        return $this->aliasOf->getDescription();
-    }
-
-    public function getHomepage()
-    {
-        return $this->aliasOf->getHomepage();
-    }
-
     public function getSuggests()
     {
         return $this->aliasOf->getSuggests();
-    }
-
-    public function getAuthors()
-    {
-        return $this->aliasOf->getAuthors();
-    }
-
-    public function getSupport()
-    {
-        return $this->aliasOf->getSupport();
-    }
-
-    public function getFunding()
-    {
-        return $this->aliasOf->getFunding();
     }
 
     public function getNotificationUrl()
@@ -387,33 +379,23 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
         return $this->aliasOf->getNotificationUrl();
     }
 
-    public function getArchiveExcludes()
+    public function isDefaultBranch()
     {
-        return $this->aliasOf->getArchiveExcludes();
-    }
-
-    public function isAbandoned()
-    {
-        return $this->aliasOf->isAbandoned();
-    }
-
-    public function getReplacementPackage()
-    {
-        return $this->aliasOf->getReplacementPackage();
-    }
-
-    public function __toString()
-    {
-        return parent::__toString().' (alias of '.$this->aliasOf->getVersion().')';
+        return $this->aliasOf->isDefaultBranch();
     }
 
     public function setDistUrl($url)
     {
-        return $this->aliasOf->setDistUrl($url);
+        $this->aliasOf->setDistUrl($url);
     }
 
     public function setDistType($type)
     {
-        return $this->aliasOf->setDistType($type);
+        $this->aliasOf->setDistType($type);
+    }
+
+    public function setSourceDistReferences($reference)
+    {
+        $this->aliasOf->setSourceDistReferences($reference);
     }
 }

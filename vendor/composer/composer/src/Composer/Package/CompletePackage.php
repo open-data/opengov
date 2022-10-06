@@ -19,19 +19,33 @@ namespace Composer\Package;
  */
 class CompletePackage extends Package implements CompletePackageInterface
 {
-    protected $repositories;
+    /** @var mixed[] */
+    protected $repositories = array();
+    /** @var string[] */
     protected $license = array();
-    protected $keywords;
-    protected $authors;
-    protected $description;
-    protected $homepage;
+    /** @var string[] */
+    protected $keywords = array();
+    /** @var array<array{name?: string, homepage?: string, email?: string, role?: string}> */
+    protected $authors = array();
+    /** @var ?string */
+    protected $description = null;
+    /** @var ?string */
+    protected $homepage = null;
+    /** @var array<string, string[]> Map of script name to array of handlers */
     protected $scripts = array();
+    /** @var array{issues?: string, forum?: string, wiki?: string, source?: string, email?: string, irc?: string, docs?: string, rss?: string, chat?: string} */
     protected $support = array();
+    /** @var array<array{url?: string, type?: string}> */
     protected $funding = array();
+    /** @var bool|string */
     protected $abandoned = false;
+    /** @var ?string */
+    protected $archiveName = null;
+    /** @var string[] */
+    protected $archiveExcludes = array();
 
     /**
-     * @param array $scripts
+     * @inheritDoc
      */
     public function setScripts(array $scripts)
     {
@@ -39,7 +53,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getScripts()
     {
@@ -47,17 +61,15 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the repositories
-     *
-     * @param array $repositories
+     * @inheritDoc
      */
-    public function setRepositories($repositories)
+    public function setRepositories(array $repositories)
     {
         $this->repositories = $repositories;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getRepositories()
     {
@@ -65,9 +77,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the license
-     *
-     * @param array $license
+     * @inheritDoc
      */
     public function setLicense(array $license)
     {
@@ -75,7 +85,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getLicense()
     {
@@ -83,9 +93,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the keywords
-     *
-     * @param array $keywords
+     * @inheritDoc
      */
     public function setKeywords(array $keywords)
     {
@@ -93,7 +101,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getKeywords()
     {
@@ -101,9 +109,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the authors
-     *
-     * @param array $authors
+     * @inheritDoc
      */
     public function setAuthors(array $authors)
     {
@@ -111,7 +117,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getAuthors()
     {
@@ -119,9 +125,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the description
-     *
-     * @param string $description
+     * @inheritDoc
      */
     public function setDescription($description)
     {
@@ -129,7 +133,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getDescription()
     {
@@ -137,9 +141,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the homepage
-     *
-     * @param string $homepage
+     * @inheritDoc
      */
     public function setHomepage($homepage)
     {
@@ -147,7 +149,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getHomepage()
     {
@@ -155,9 +157,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the support information
-     *
-     * @param array $support
+     * @inheritDoc
      */
     public function setSupport(array $support)
     {
@@ -165,7 +165,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getSupport()
     {
@@ -173,9 +173,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * Set the funding
-     *
-     * @param array $funding
+     * @inheritDoc
      */
     public function setFunding(array $funding)
     {
@@ -183,7 +181,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getFunding()
     {
@@ -191,7 +189,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isAbandoned()
     {
@@ -199,7 +197,7 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * @param bool|string $abandoned
+     * @inheritDoc
      */
     public function setAbandoned($abandoned)
     {
@@ -207,12 +205,42 @@ class CompletePackage extends Package implements CompletePackageInterface
     }
 
     /**
-     * If the package is abandoned and has a suggested replacement, this method returns it
-     *
-     * @return string|null
+     * @inheritDoc
      */
     public function getReplacementPackage()
     {
-        return is_string($this->abandoned) ? $this->abandoned : null;
+        return \is_string($this->abandoned) ? $this->abandoned : null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setArchiveName($name)
+    {
+        $this->archiveName = $name;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getArchiveName()
+    {
+        return $this->archiveName;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setArchiveExcludes(array $excludes)
+    {
+        $this->archiveExcludes = $excludes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getArchiveExcludes()
+    {
+        return $this->archiveExcludes;
     }
 }

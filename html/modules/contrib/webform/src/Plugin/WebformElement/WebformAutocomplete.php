@@ -4,6 +4,7 @@ namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'autocomplete' element.
@@ -16,6 +17,22 @@ use Drupal\webform\WebformSubmissionInterface;
  * )
  */
 class WebformAutocomplete extends TextField {
+
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->database = $container->get('database');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -36,7 +53,7 @@ class WebformAutocomplete extends TextField {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -47,7 +64,7 @@ class WebformAutocomplete extends TextField {
     $has_items = !empty($element['#autocomplete_items']);
     // Query webform submission for existing items.
     if (!$has_items && !empty($element['#autocomplete_existing'])) {
-      $has_items = \Drupal::database()->select('webform_submission_data')
+      $has_items = $this->database->select('webform_submission_data')
         ->fields('webform_submission_data', ['value'])
         ->condition('webform_id', $webform_submission->getWebform()->id())
         ->condition('name', $element['#webform_key'])

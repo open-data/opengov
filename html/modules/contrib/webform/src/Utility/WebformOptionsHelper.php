@@ -130,7 +130,7 @@ class WebformOptionsHelper {
       }
       elseif ($value !== NULL && (string) $value === (string) $option_value) {
         if ($options_description && strpos($option_text, static::DESCRIPTION_DELIMITER) !== FALSE) {
-          list($option_text) = static::splitOption($option_text);
+          [$option_text] = static::splitOption($option_text);
           return $option_text;
         }
         else {
@@ -163,7 +163,7 @@ class WebformOptionsHelper {
       }
       elseif ($value !== NULL && (string) $value === (string) $option_value) {
         if ($options_description && strpos($option_text, static::DESCRIPTION_DELIMITER) !== FALSE) {
-          list($option_text, $option_description) = static::splitOption($option_text);
+          [$option_text, $option_description] = static::splitOption($option_text);
           return $option_description;
         }
         else {

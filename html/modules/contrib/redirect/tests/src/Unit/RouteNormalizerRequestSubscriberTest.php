@@ -98,7 +98,8 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
     return [
       ['https://example.com/route-to-normalize', [], 'https://example.com/route-to-normalize', FALSE],
       ['https://example.com/route-to-normalize', ['key' => 'value'], 'https://example.com/route-to-normalize?key=value', FALSE],
-      ['https://example.com/index.php/', ['q' => 'node/1'], 'https://example.com/?q=node/1', TRUE],
+      ['https://example.com/index.php/', ['q' => 'node/1'], 'https://example.com/?q=node%2F1', TRUE],
+      ['https://example.com/index.php/', ['q' => 'node/1', 'p' => 'a+b'], 'https://example.com/?q=node%2F1&p=a%2Bb', TRUE],
     ];
   }
 
@@ -136,7 +137,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
    * @param bool $call_expected
    *   If true, we expect generateFromRoute() to be called once.
    *
-   * @return \Drupal\Core\Routing\UrlGeneratorInterface|PHPUnit_Framework_MockObject_MockObject
+   * @return \Drupal\Core\Routing\UrlGeneratorInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected function getUrlGeneratorStub($request_uri, $call_expected = TRUE) {
     $url_generator = $this->getMockBuilder('\Drupal\Core\Routing\UrlGeneratorInterface')
@@ -159,7 +160,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
    * @param bool $call_expected
    *   If true, we expect isFrontPage() to be called once.
    *
-   * @return \Drupal\Core\Path\PathMatcherInterface|PHPUnit_Framework_MockObject_MockObject
+   * @return \Drupal\Core\Path\PathMatcherInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected function getPathMatcherStub($call_expected = TRUE) {
     $path_matcher = $this->getMockBuilder('\Drupal\Core\Path\PathMatcherInterface')
@@ -180,7 +181,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
    * @param bool $call_expected
    *   If true, we expect canRedirect() to be called once.
    *
-   * @return \Drupal\redirect\RedirectChecker|PHPUnit_Framework_MockObject_MockObject
+   * @return \Drupal\redirect\RedirectChecker|\PHPUnit\Framework\MockObject\MockObject
    */
   protected function getRedirectCheckerStub($call_expected = TRUE) {
     $redirect_checker = $this->getMockBuilder('\Drupal\redirect\RedirectChecker')

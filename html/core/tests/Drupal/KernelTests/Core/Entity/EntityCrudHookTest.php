@@ -5,7 +5,6 @@ namespace Drupal\KernelTests\Core\Entity;
 use Drupal\comment\Entity\Comment;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\comment\Tests\CommentTestTrait;
-use Drupal\Core\Database\Database;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\block\Entity\Block;
 use Drupal\entity_test\Entity\EntityTest;
@@ -41,7 +40,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'block',
     'block_test',
     'entity_crud_hook_test',
@@ -53,7 +52,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
 
   protected $ids = [];
 
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('user', ['users_data']);
@@ -69,23 +68,24 @@ class EntityCrudHookTest extends EntityKernelTestBase {
    * Module entity_crud_hook_test implements all core entity CRUD hooks and
    * stores a message for each in $GLOBALS['entity_crud_hook_test'].
    *
-   * @param $messages
+   * @param array $messages
    *   An array of plain-text messages in the order they should appear.
+   *
+   * @internal
    */
-  protected function assertHookMessageOrder($messages) {
+  protected function assertHookMessageOrder(array $messages): void {
     $positions = [];
     foreach ($messages as $message) {
       // Verify that each message is found and record its position.
       $position = array_search($message, $GLOBALS['entity_crud_hook_test']);
-      if ($this->assertTrue($position !== FALSE, $message)) {
-        $positions[] = $position;
-      }
+      $this->assertNotFalse($position, $message);
+      $positions[] = $position;
     }
 
     // Sort the positions and ensure they remain in the same order.
     $sorted = $positions;
     sort($sorted);
-    $this->assertTrue($sorted == $positions, 'The hook messages appear in the correct order.');
+    $this->assertSame($positions, $sorted, 'The hook messages appear in the correct order.');
   }
 
   /**
@@ -552,19 +552,15 @@ class EntityCrudHookTest extends EntityKernelTestBase {
       $this->fail('Expected exception has not been thrown.');
     }
     catch (\Exception $e) {
-      $this->pass('Expected exception has been thrown.');
+      // Expected exception; just continue testing.
     }
 
-    if (Database::getConnection()->supportsTransactions()) {
-      // Check that the block does not exist in the database.
-      $ids = \Drupal::entityQuery('entity_test')->condition('name', 'fail_insert')->execute();
-      $this->assertTrue(empty($ids), 'Transactions supported, and entity not found in database.');
-    }
-    else {
-      // Check that the block exists in the database.
-      $ids = \Drupal::entityQuery('entity_test')->condition('name', 'fail_insert')->execute();
-      $this->assertFalse(empty($ids), 'Transactions not supported, and entity found in database.');
-    }
+    // Check that the block does not exist in the database.
+    $ids = \Drupal::entityQuery('entity_test')
+      ->accessCheck(FALSE)
+      ->condition('name', 'fail_insert')
+      ->execute();
+    $this->assertEmpty($ids);
   }
 
 }

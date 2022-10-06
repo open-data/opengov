@@ -3,7 +3,7 @@
 /*
  * This file is part of Psy Shell.
  *
- * (c) 2012-2020 Justin Hileman
+ * (c) 2012-2022 Justin Hileman
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,7 +38,6 @@ use Psy\CodeCleaner\ReturnTypePass;
 use Psy\CodeCleaner\StrictTypesPass;
 use Psy\CodeCleaner\UseStatementPass;
 use Psy\CodeCleaner\ValidClassNamePass;
-use Psy\CodeCleaner\ValidConstantPass;
 use Psy\CodeCleaner\ValidConstructorPass;
 use Psy\CodeCleaner\ValidFunctionNamePass;
 use Psy\Exception\ParseErrorException;
@@ -49,6 +48,7 @@ use Psy\Exception\ParseErrorException;
  */
 class CodeCleaner
 {
+    private $yolo = false;
     private $parser;
     private $printer;
     private $traverser;
@@ -60,9 +60,12 @@ class CodeCleaner
      * @param Parser|null        $parser    A PhpParser Parser instance. One will be created if not explicitly supplied
      * @param Printer|null       $printer   A PhpParser Printer instance. One will be created if not explicitly supplied
      * @param NodeTraverser|null $traverser A PhpParser NodeTraverser instance. One will be created if not explicitly supplied
+     * @param bool               $yolo      run without input validation
      */
-    public function __construct(Parser $parser = null, Printer $printer = null, NodeTraverser $traverser = null)
+    public function __construct(Parser $parser = null, Printer $printer = null, NodeTraverser $traverser = null, bool $yolo = false)
     {
+        $this->yolo = $yolo;
+
         if ($parser === null) {
             $parserFactory = new ParserFactory();
             $parser = $parserFactory->createParser();
@@ -78,12 +81,26 @@ class CodeCleaner
     }
 
     /**
+     * Check whether this CodeCleaner is in YOLO mode.
+     *
+     * @return bool
+     */
+    public function yolo(): bool
+    {
+        return $this->yolo;
+    }
+
+    /**
      * Get default CodeCleaner passes.
      *
      * @return array
      */
-    private function getDefaultPasses()
+    private function getDefaultPasses(): array
     {
+        if ($this->yolo) {
+            return $this->getYoloPasses();
+        }
+
         $useStatementPass = new UseStatementPass();
         $namespacePass = new NamespacePass($this);
 
@@ -122,8 +139,37 @@ class CodeCleaner
 
             // Namespace-aware validation (which depends on aforementioned shenanigans)
             new ValidClassNamePass(),
-            new ValidConstantPass(),
             new ValidFunctionNamePass(),
+        ];
+    }
+
+    /**
+     * A set of code cleaner passes that don't try to do any validation, and
+     * only do minimal rewriting to make things work inside the REPL.
+     *
+     * This list should stay in sync with the "rewriting shenanigans" in
+     * getDefaultPasses above.
+     *
+     * @return array
+     */
+    private function getYoloPasses(): array
+    {
+        $useStatementPass = new UseStatementPass();
+        $namespacePass = new NamespacePass($this);
+
+        // Try to add implicit `use` statements and an implicit namespace,
+        // based on the file in which the `debug` call was made.
+        $this->addImplicitDebugContext([$useStatementPass, $namespacePass]);
+
+        return [
+            new LeavePsyshAlonePass(),
+            $useStatementPass,        // must run before the namespace pass
+            new ExitPass(),
+            new ImplicitReturnPass(),
+            new MagicConstantsPass(),
+            $namespacePass,           // must run after the implicit return pass
+            new RequirePass(),
+            new StrictTypesPass(),
         ];
     }
 
@@ -163,8 +209,6 @@ class CodeCleaner
             $traverser->traverse($stmts);
         } catch (\Throwable $e) {
             // Don't care.
-        } catch (\Exception $e) {
-            // Still don't care.
         }
     }
 
@@ -199,7 +243,7 @@ class CodeCleaner
      *
      * @return bool
      */
-    private static function isDebugCall(array $stackFrame)
+    private static function isDebugCall(array $stackFrame): bool
     {
         $class = isset($stackFrame['class']) ? $stackFrame['class'] : null;
         $function = isset($stackFrame['function']) ? $stackFrame['function'] : null;
@@ -218,7 +262,7 @@ class CodeCleaner
      *
      * @return string|false Cleaned PHP code, False if the input is incomplete
      */
-    public function clean(array $codeLines, $requireSemicolons = false)
+    public function clean(array $codeLines, bool $requireSemicolons = false)
     {
         $stmts = $this->parse('<?php '.\implode(\PHP_EOL, $codeLines).\PHP_EOL, $requireSemicolons);
         if ($stmts === false) {
@@ -275,7 +319,7 @@ class CodeCleaner
      *
      * @return array|false A set of statements, or false if incomplete
      */
-    protected function parse($code, $requireSemicolons = false)
+    protected function parse(string $code, bool $requireSemicolons = false)
     {
         try {
             return $this->parser->parse($code);
@@ -309,7 +353,7 @@ class CodeCleaner
         }
     }
 
-    private function parseErrorIsEOF(\PhpParser\Error $e)
+    private function parseErrorIsEOF(\PhpParser\Error $e): bool
     {
         $msg = $e->getRawMessage();
 
@@ -328,7 +372,7 @@ class CodeCleaner
      *
      * @return bool
      */
-    private function parseErrorIsUnclosedString(\PhpParser\Error $e, $code)
+    private function parseErrorIsUnclosedString(\PhpParser\Error $e, string $code): bool
     {
         if ($e->getRawMessage() !== 'Syntax error, unexpected T_ENCAPSED_AND_WHITESPACE') {
             return false;
@@ -336,19 +380,19 @@ class CodeCleaner
 
         try {
             $this->parser->parse($code."';");
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
 
         return true;
     }
 
-    private function parseErrorIsUnterminatedComment(\PhpParser\Error $e, $code)
+    private function parseErrorIsUnterminatedComment(\PhpParser\Error $e, $code): bool
     {
         return $e->getRawMessage() === 'Unterminated comment';
     }
 
-    private function parseErrorIsTrailingComma(\PhpParser\Error $e, $code)
+    private function parseErrorIsTrailingComma(\PhpParser\Error $e, $code): bool
     {
         return ($e->getRawMessage() === 'A trailing comma is not allowed here') && (\substr(\rtrim($code), -1) === ',');
     }

@@ -58,13 +58,18 @@ INSTALLATION
          (http://fontawesome.com) and place inside
          "/libraries/fontawesome" directory. The JS file should
          be at /libraries/fontawesome/js/all.js
-         Direct link for downloading latest version (current is v5.12.0) is:
-         https://use.fontawesome.com/releases/v5.12.0/fontawesome-free-5.12.0-web.zip
+         Direct link for downloading latest version is:
+         https://fontawesome.com/download
     b. Enable the module at Administer >> Site building >> Modules.
 
+PERMISSIONS
+-----------
+Access to the Font Awesome additional settings can be granted or removed under
+the permissions settings. Removing these permissions will allow the users to
+select only the icon and not additional configuration.
 
 USAGE
-_____
+-----
 Font Awesome can be used in many ways - you can manually insert Font Awesome
 tags wherever you see fit after enabling the module, but there are other ways
 as well. See
@@ -93,12 +98,15 @@ tags can be found here:
   or
   https://developer.mozilla.org/en-US/docs/Web/SVG/Element
 
+TROUBLESHOOTING
+---------------
+If the Font Awesome module is installed but icons are not showing, try the
+following steps:
+1. Flush the Drupal cache
+2. Check the status report for issues on the libary being loaded.
+3. If you have chosen to load the library manually ("Load Font Awesome libary?"
+  is disabled), confirm that your manual library is loaded properly.
 
 CREDITS
 -------
-* Rob Loach (RobLoach) http://robloach.net
-* Inder Singh (inders) http://indersingh.com | https://www.drupal.org/u/inders
-* Mark Carver https://www.drupal.org/u/mark-carver
-* Brian Gilbert https://drupal.org/u/realityloop
 * Daniel Moberly https://drupal.org/u/danielmoberly
-* Truls S. Yggeseth https://drupal.org/u/truls1502

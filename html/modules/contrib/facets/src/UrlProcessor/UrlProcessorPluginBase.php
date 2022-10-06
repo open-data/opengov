@@ -2,6 +2,8 @@
 
 namespace Drupal\facets\UrlProcessor;
 
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Cache\UncacheableDependencyTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\facets\Exception\InvalidProcessorException;
@@ -12,8 +14,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * A base class for plugins that implements most of the boilerplate.
+ *
+ * By default all plugins that will extend this class will disable facets
+ * caching mechanism. It is strongly recommended to turn it on by implementing
+ * own methods for the CacheableDependencyInterface interface.
  */
-abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements UrlProcessorInterface, ContainerFactoryPluginInterface {
+abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements UrlProcessorInterface, ContainerFactoryPluginInterface, CacheableDependencyInterface {
+
+  use UncacheableDependencyTrait;
 
   /**
    * The query string variable.
@@ -27,9 +35,17 @@ abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements Url
    * The url separator variable.
    *
    * @var string
-   *   The sepatator to use between field and value.
+   *   The separator to use between field and value.
    */
   protected $separator;
+
+  /**
+   * The delimiter for multiple values.
+   *
+   * @var string
+   *   The delimiter to use between multiple values.
+   */
+  protected $delimiter = '|';
 
   /**
    * The clone of the current request object.
@@ -41,7 +57,7 @@ abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements Url
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -66,6 +82,13 @@ abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements Url
    */
   public function getSeparator() {
     return $this->separator;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDelimiter(): string {
+    return $this->delimiter;
   }
 
   /**
@@ -113,11 +136,13 @@ abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements Url
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $request_stack = $container->get('request_stack');
+
     return new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('request_stack')->getMasterRequest(),
+      $request_stack->getMainRequest(),
       $container->get('entity_type.manager')
     );
   }
@@ -146,6 +171,13 @@ abstract class UrlProcessorPluginBase extends ProcessorPluginBase implements Url
         $facet->setActiveItem(trim($value, '"'));
       }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRequest(): Request {
+    return $this->request;
   }
 
 }

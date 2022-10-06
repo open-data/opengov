@@ -14,7 +14,13 @@ class MetatagSettingsTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['metatag'];
+  protected static $modules = [
+    // Contrib modules.
+    'token',
+
+    // This module.
+    'metatag',
+  ];
 
   /**
    * The metatag manager.
@@ -33,7 +39,7 @@ class MetatagSettingsTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->metatagManager = $this->container->get('metatag.manager');

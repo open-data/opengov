@@ -37,6 +37,7 @@
             case 'wysiwyg':
               startupMode = 'WYSIWYG';
               break;
+
             case 'source':
               startupMode = 'Source';
               break;
@@ -50,9 +51,11 @@
             case 'htmlmixed':
               mode_name = 'HTML';
               break;
+
             case 'application/x-httpd-php':
               mode_name = 'PHP';
               break;
+
             case 'text/javascript':
               mode_name = 'Javascript';
               break;

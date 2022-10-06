@@ -56,7 +56,7 @@ abstract class WebformLocationBase extends WebformCompositeBase {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -117,8 +117,8 @@ abstract class WebformLocationBase extends WebformCompositeBase {
     $rows = [];
     $composite_elements = $this->getCompositeElements();
     foreach ($composite_elements as $composite_key => $composite_element) {
-      $title = (isset($composite_element['#title'])) ? $composite_element['#title'] : $composite_key;
-      $type = isset($composite_element['#type']) ? $composite_element['#type'] : NULL;
+      $title = $composite_element['#title'] ?? $composite_key;
+      $type = $composite_element['#type'] ?? NULL;
       $t_args = ['@title' => $title];
       $attributes = ['style' => 'width: 100%; margin-bottom: 5px'];
 

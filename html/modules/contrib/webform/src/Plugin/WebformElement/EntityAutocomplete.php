@@ -36,7 +36,7 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
       + $this->defineDefaultMultipleProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -170,6 +170,15 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
     else {
       return $item;
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExportDefaultOptions() {
+    return [
+      'entity_reference_items' => ['id', 'title', 'url'],
+    ];
   }
 
 }

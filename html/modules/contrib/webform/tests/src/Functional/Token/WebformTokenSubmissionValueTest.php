@@ -40,6 +40,8 @@ class WebformTokenSubmissionValueTest extends WebformBrowserTestBase {
    * Test webform token submission value.
    */
   public function testWebformTokenSubmissionValue() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_token_submission_value');
 
     // Check anonymous token handling.
@@ -159,15 +161,15 @@ last_name: Smith
       'webform_submission:values:url:urlencode' => 'http%3A%2F%2Fexample.com%3Fquery%3Dparam',
     ];
     foreach ($tokens as $token => $value) {
-      $this->assertRaw("<tr><th width=\"50%\">$token</th><td width=\"50%\">$value</td></tr>");
+      $assert_session->responseContains("<tr><th width=\"50%\">$token</th><td width=\"50%\">$value</td></tr>");
     }
 
     // Check containers.
-    $this->assertRaw('<tr><th width="50%">webform_submission:values:fieldset</th><td width="50%"><pre>fieldset');
-    $this->assertRaw('<tr><th width="50%">webform_submission:values:fieldset:html</th><td width="50%"><fieldset class="webform-container webform-container-type-fieldset js-form-item form-item js-form-wrapper form-wrapper" id="test_token_submission_value--fieldset">');
-    $this->assertRaw('<tr><th width="50%">webform_submission:values:fieldset:header:html</th><td width="50%"><section class="js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_token_submission_value--fieldset">');
-    $this->assertRaw('<tr><th width="50%">webform_submission:values:fieldset:details:html</th><td width="50%"><details class="webform-container webform-container-type-details js-form-wrapper form-wrapper" data-webform-element-id="test_token_submission_value--fieldset" id="test_token_submission_value--fieldset" open="open">');
-    $this->assertRaw('<tr><th width="50%">webform_submission:values:fieldset:fieldset:html</th><td width="50%"><fieldset class="webform-container webform-container-type-fieldset js-form-item form-item js-form-wrapper form-wrapper" id="test_token_submission_value--fieldset">');
+    $assert_session->responseContains('<tr><th width="50%">webform_submission:values:fieldset</th><td width="50%"><pre>fieldset');
+    $assert_session->responseContains('<tr><th width="50%">webform_submission:values:fieldset:html</th><td width="50%"><fieldset class="webform-container webform-container-type-fieldset js-form-item form-item js-form-wrapper form-wrapper" id="test_token_submission_value--fieldset">');
+    $assert_session->responseContains('<tr><th width="50%">webform_submission:values:fieldset:header:html</th><td width="50%"><section class="js-form-item form-item js-form-wrapper form-wrapper webform-section" id="test_token_submission_value--fieldset">');
+    $assert_session->responseContains('<tr><th width="50%">webform_submission:values:fieldset:details:html</th><td width="50%"><details class="webform-container webform-container-type-details js-form-wrapper form-wrapper" data-webform-element-id="test_token_submission_value--fieldset" id="test_token_submission_value--fieldset" open="open">');
+    $assert_session->responseContains('<tr><th width="50%">webform_submission:values:fieldset:fieldset:html</th><td width="50%"><fieldset class="webform-container webform-container-type-fieldset js-form-item form-item js-form-wrapper form-wrapper" id="test_token_submission_value--fieldset">');
 
     // Check authenticated token handling.
     $this->drupalLogin($this->rootUser);
@@ -178,7 +180,7 @@ last_name: Smith
       'current-user:missing' => '',
     ];
     foreach ($tokens as $token => $value) {
-      $this->assertRaw("<tr><th width=\"50%\">$token</th><td width=\"50%\">$value</td></tr>");
+      $assert_session->responseContains("<tr><th width=\"50%\">$token</th><td width=\"50%\">$value</td></tr>");
     }
   }
 

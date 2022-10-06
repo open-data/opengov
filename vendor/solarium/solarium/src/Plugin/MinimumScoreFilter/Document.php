@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Plugin\MinimumScoreFilter;
 
 use Solarium\Core\Query\DocumentInterface;
@@ -11,7 +18,7 @@ use Solarium\QueryType\Select\Result\Document as SelectDocument;
  *
  * Decorates the original document with a filter indicator
  */
-class Document implements DocumentInterface, \IteratorAggregate, \Countable, \ArrayAccess
+class Document implements DocumentInterface, \IteratorAggregate, \Countable, \ArrayAccess, \JsonSerializable
 {
     /**
      * Original document.
@@ -53,7 +60,7 @@ class Document implements DocumentInterface, \IteratorAggregate, \Countable, \Ar
     }
 
     /**
-     * Forward all other calls to the original document.
+     * Forward get call to the original document.
      *
      * @param string $name
      *
@@ -85,11 +92,9 @@ class Document implements DocumentInterface, \IteratorAggregate, \Countable, \Ar
      * @param string $name
      * @param string $value
      *
-     * @return self
-     *
      * @throws RuntimeException
      */
-    public function __set($name, $value): self
+    public function __set($name, $value): void
     {
         throw new RuntimeException('A readonly document cannot be altered');
     }
@@ -141,17 +146,18 @@ class Document implements DocumentInterface, \IteratorAggregate, \Countable, \Ar
      *
      * @param mixed $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->document->offsetUnset($offset);
     }
 
+    #[\ReturnTypeWillChange]
     /**
      * ArrayAccess implementation.
      *
      * @param mixed $offset
      *
-     * @return mixed|null
+     * @return mixed
      */
     public function offsetGet($offset)
     {
@@ -164,7 +170,7 @@ class Document implements DocumentInterface, \IteratorAggregate, \Countable, \Ar
      * @param mixed $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->__set($offset, $value);
     }
@@ -177,5 +183,14 @@ class Document implements DocumentInterface, \IteratorAggregate, \Countable, \Ar
     public function getFields(): array
     {
         return $this->document->getFields();
+    }
+
+    #[\ReturnTypeWillChange]
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return $this->document;
     }
 }

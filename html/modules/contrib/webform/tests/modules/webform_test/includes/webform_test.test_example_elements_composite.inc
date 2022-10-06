@@ -38,8 +38,10 @@ function webform_test_test_example_elements_composite() {
       '#open' => TRUE,
     ];
 
+    $element_key = str_replace(':', '_', $element_type);
+
     // Single value composite.
-    $data[$element_type . '_example'][$element_type] = $element;
+    $data[$element_key . '_example'][$element_key] = $element;
 
     // Multiple value composite.
     if ($webform_element->supportsMultipleValues()) {
@@ -48,7 +50,7 @@ function webform_test_test_example_elements_composite() {
       if ((!in_array($element_type, ['webform_contact']) && $webform_element->hasProperty('multiple__header'))) {
         $element['#multiple__header'] = TRUE;
       }
-      $data[$element_type . '_example'][$element_type . '_multiple'] = $element;
+      $data[$element_key . '_example'][$element_key . '_multiple'] = $element;
     }
   }
   return $data;

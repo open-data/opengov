@@ -12,7 +12,7 @@ class MetatagFieldNodeTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     // Needed for token handling.
     'token',
 
@@ -79,11 +79,6 @@ class MetatagFieldNodeTest extends MetatagFieldTestBase {
    */
   protected function setUpEntityType() {
     $this->createContentType(['type' => 'page']);
-
-    // 8.3 has the label 'Save and publish'.
-    if ((floatval(\Drupal::VERSION) <= 8.3)) {
-      $this->entitySaveButtonLabel = 'Save and publish';
-    }
   }
 
 }

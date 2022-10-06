@@ -97,7 +97,7 @@ class WebformElementController extends ControllerBase {
     // Sort matches by label and enforce the limit.
     if ($matches) {
       uasort($matches, function (array $a, array $b) {
-        return $a['label'] > $b['label'];
+        return $a['label'] <=> $b['label'];
       });
       $matches = array_values($matches);
       $matches = array_slice($matches, 0, $element['#autocomplete_limit']);

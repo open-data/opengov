@@ -19,6 +19,7 @@ use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\Plugin\WebformElementBase;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a base for composite elements.
@@ -32,9 +33,41 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
    */
   protected $elementsManagedFiles = [];
 
-  /****************************************************************************/
+  /**
+   * The file system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * The webform submission generation service.
+   *
+   * @var \Drupal\webform\WebformSubmissionGenerateInterface
+   */
+  protected $generate;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->fileSystem = $container->get('file_system');
+    $instance->renderer = $container->get('renderer');
+    $instance->generate = $container->get('webform_submission.generate');
+    return $instance;
+  }
+
+  /* ************************************************************************ */
   // Property definitions.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -91,9 +124,16 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     ] + parent::defineDefaultMultipleProperties();
   }
 
-  /****************************************************************************/
+  /**
+   * {@inheritdoc}
+   */
+  protected function defineTranslatableProperties() {
+    return array_merge(parent::defineTranslatableProperties(), ['default_value']);
+  }
+
+  /* ************************************************************************ */
   // Property methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -102,9 +142,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     return ($this->getManagedFiles($element)) ? TRUE : FALSE;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element relationship methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -113,9 +153,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     return [];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element rendering methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -180,9 +220,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Table methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -240,9 +280,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // #states API methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -289,9 +329,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     return $source_values;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Display submission value methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -404,7 +444,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
 
       $composite_element = $composite_elements[$composite_key];
       $header[$composite_key] = [
-        'data' => (isset($composite_element['#title'])) ? $composite_element['#title'] : $composite_key,
+        'data' => $composite_element['#title'] ?? $composite_key,
         'bgcolor' => '#eee',
       ];
     }
@@ -534,7 +574,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
 
       $composite_value = $this->formatCompositeText($element, $webform_submission, ['composite_key' => $composite_key] + $options);
       if (is_array($composite_value)) {
-        $composite_value = \Drupal::service('renderer')->renderPlain($composite_value);
+        $composite_value = $this->renderer->renderPlain($composite_value);
       }
 
       if ($composite_value !== '') {
@@ -647,8 +687,8 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
    */
   public function getItemFormats() {
     return parent::getItemFormats() + [
-        'list' => $this->t('List'),
-      ];
+      'list' => $this->t('List'),
+    ];
   }
 
   /**
@@ -670,9 +710,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     ];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Export methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -760,15 +800,15 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
         $record[] = WebformOptionsHelper::getOptionText($value[$composite_key], $composite_element['#options']);
       }
       else {
-        $record[] = (isset($value[$composite_key])) ? $value[$composite_key] : NULL;
+        $record[] = $value[$composite_key] ?? NULL;
       }
     }
     return $record;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Test methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -777,9 +817,6 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     if (empty($element['#webform_composite_elements'])) {
       $this->initialize($element);
     }
-
-    /** @var \Drupal\webform\WebformSubmissionGenerateInterface $generate */
-    $generate = \Drupal::service('webform_submission.generate');
 
     $composite_elements = $this->getInitializedCompositeElement($element);
     $composite_elements = WebformElementHelper::getFlattened($composite_elements);
@@ -793,16 +830,16 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
 
       $value = [];
       foreach (RenderElement::children($composite_elements) as $composite_key) {
-        $value[$composite_key] = $generate->getTestValue($webform, $composite_key, $composite_elements[$composite_key], $options);
+        $value[$composite_key] = $this->generate->getTestValue($webform, $composite_key, $composite_elements[$composite_key], $options);
       }
       $values[] = $value;
     }
     return $values;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element configuration methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -980,8 +1017,8 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     $rows = [];
     $composite_elements = $this->getCompositeElements();
     foreach ($composite_elements as $composite_key => $composite_element) {
-      $title = (isset($composite_element['#title'])) ? $composite_element['#title'] : $composite_key;
-      $type = isset($composite_element['#type']) ? $composite_element['#type'] : NULL;
+      $title = $composite_element['#title'] ?? $composite_key;
+      $type = $composite_element['#type'] ?? NULL;
       $t_args = ['@title' => $title];
       $state_disabled = [
         'disabled' => [
@@ -1061,7 +1098,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
                 'inline' => $this->t('Inline'),
                 'invisible' => $this->t('Invisible'),
               ],
-              '#empty_option' => $this->t('Select title display… '),
+              '#empty_option' => $this->t('Select title display…'),
               '#states' => $state_disabled,
             ],
           ],
@@ -1146,7 +1183,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
         /** @var \Drupal\webform_ui\Form\WebformUiElementEditForm $form_object */
         $form_object = $form_state->getFormObject();
         $element = $form_object->getElement();
-        $composite_options_default_value = (isset($element['#' . $composite_key . '__options'])) ? $element['#' . $composite_key . '__options'] : NULL;
+        $composite_options_default_value = $element['#' . $composite_key . '__options'] ?? NULL;
         if ($composite_options_default_value && (is_array($composite_options_default_value) || !isset($composite_options[$composite_options_default_value]))) {
           $webform = $form_object->getWebform();
           if ($this->currentUser->hasPermission('edit webform source')
@@ -1173,12 +1210,12 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
             '#required' => TRUE,
             '#attributes' => ['style' => 'width: 100%;'],
             '#states' => $state_disabled + [
-                'invisible' => [
-                  ':input[name="properties[' . $composite_key . '__type]"]' => [
-                    'value' => 'textfield',
-                  ],
+              'invisible' => [
+                ':input[name="properties[' . $composite_key . '__type]"]' => [
+                  'value' => 'textfield',
                 ],
               ],
+            ],
           ];
         }
         else {
@@ -1222,9 +1259,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Composite element methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Initialize and cache #webform_composite_elements.
@@ -1294,7 +1331,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
   public function getInitializedCompositeElement(array $element, $composite_key = NULL) {
     $composite_elements = $element['#webform_composite_elements'];
     if (isset($composite_key)) {
-      return (isset($composite_elements[$composite_key])) ? $composite_elements[$composite_key] : NULL;
+      return $composite_elements[$composite_key] ?? NULL;
     }
     else {
       return $composite_elements;
@@ -1322,9 +1359,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     return $options;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Composite managed file methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -1427,9 +1464,9 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     return $this->elementsManagedFiles[$id];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Composite helper methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Determine if element type is supported by custom composite elements.
@@ -1475,7 +1512,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
   /**
    * {@inheritdoc}
    */
-  public function getAttachments(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+  public function getEmailAttachments(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $data = $webform_submission->getData();
 
     // Get file ids.
@@ -1499,13 +1536,35 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
         'filemime' => $file->getMimeType(),
         // File URIs that are not supported return FALSE, when this happens
         // still use the file's URI as the file's path.
-        'filepath' => \Drupal::service('file_system')->realpath($file->getFileUri()) ?: $file->getFileUri(),
+        'filepath' => $this->fileSystem->realpath($file->getFileUri()) ?: $file->getFileUri(),
         // URI is used when debugging or resending messages.
         // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::buildAttachments
         '_fileurl' => file_create_url($file->getFileUri()),
       ];
     }
     return $attachments;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExportAttachments(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    // Managed files are bulk copied during an export.
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasExportAttachments() {
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExportAttachmentsBatchLimit() {
+    return NULL;
   }
 
 }

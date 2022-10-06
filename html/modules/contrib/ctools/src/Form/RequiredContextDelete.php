@@ -15,22 +15,32 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class RequiredContextDelete extends ConfirmFormBase {
 
   /**
+   * Creates a shared temporary storage for a collection.
+   *
    * @var \Drupal\Core\TempStore\SharedTempStoreFactory
    */
   protected $tempstore;
 
   /**
+   * The temporary id storage.
+   *
    * @var string
    */
+  // @codingStandardsIgnoreLine
   protected $tempstore_id;
 
   /**
-   * @var string;
+   * The machine name.
+   *
+   * @var string
    */
+  // @codingStandardsIgnoreLine
   protected $machine_name;
 
   /**
-   * @var int;
+   * The id.
+   *
+   * @var int
    */
   protected $id;
 
@@ -42,9 +52,12 @@ abstract class RequiredContextDelete extends ConfirmFormBase {
   }
 
   /**
+   * The constructor.
+   *
    * @param \Drupal\Core\TempStore\SharedTempStoreFactory $tempstore
+   *   The shared temporary storage.
    */
-  function __construct(SharedTempStoreFactory $tempstore) {
+  public function __construct(SharedTempStoreFactory $tempstore) {
     $this->tempstore = $tempstore;
   }
 
@@ -64,17 +77,17 @@ abstract class RequiredContextDelete extends ConfirmFormBase {
     $this->id = $id;
 
     $cached_values = $this->tempstore->get($this->tempstore_id)->get($this->machine_name);
-    $form ['#title'] = $this->getQuestion($id, $cached_values);
+    $form['#title'] = $this->getQuestion($id, $cached_values);
 
-    $form ['#attributes']['class'][] = 'confirmation';
-    $form ['description'] = array('#markup' => $this->getDescription());
-    $form [$this->getFormName()] = array('#type' => 'hidden', '#value' => 1);
+    $form['#attributes']['class'][] = 'confirmation';
+    $form['description'] = ['#markup' => $this->getDescription()];
+    $form[$this->getFormName()] = ['#type' => 'hidden', '#value' => 1];
 
     // By default, render the form using theme_confirm_form().
-    if (!isset($form ['#theme'])) {
-      $form ['#theme'] = 'confirm_form';
+    if (!isset($form['#theme'])) {
+      $form['#theme'] = 'confirm_form';
     }
-    $form['actions'] = array('#type' => 'actions');
+    $form['actions'] = ['#type' => 'actions'];
     $form['actions'] += $this->actions($form, $form_state);
     return $form;
   }
@@ -88,7 +101,7 @@ abstract class RequiredContextDelete extends ConfirmFormBase {
     unset($contexts[$this->id]);
     $cached_values = $this->setContexts($cached_values, $contexts);
     $this->tempstore->get($this->tempstore_id)->set($this->machine_name, $cached_values);
-    list($route_name, $route_parameters) = $this->getParentRouteInfo($cached_values);
+    [$route_name, $route_parameters] = $this->getParentRouteInfo($cached_values);
     $form_state->setRedirect($route_name, $route_parameters);
   }
 
@@ -97,9 +110,9 @@ abstract class RequiredContextDelete extends ConfirmFormBase {
    */
   public function getQuestion($id = NULL, $cached_values = NULL) {
     $context = $this->getContexts($cached_values)[$id];
-    return $this->t('Are you sure you want to delete the @label context?', array(
+    return $this->t('Are you sure you want to delete the @label context?', [
       '@label' => $context['label'],
-    ));
+    ]);
   }
 
   /**
@@ -120,19 +133,19 @@ abstract class RequiredContextDelete extends ConfirmFormBase {
    * Provides the action buttons for submitting this form.
    */
   protected function actions(array $form, FormStateInterface $form_state) {
-    return array(
-      'submit' => array(
+    return [
+      'submit' => [
         '#type' => 'submit',
         '#value' => $this->getConfirmText(),
-        '#validate' => array(
-          array($this, 'validate'),
-        ),
-        '#submit' => array(
-          array($this, 'submitForm'),
-        ),
-      ),
+        '#validate' => [
+          [$this, 'validate'],
+        ],
+        '#submit' => [
+          [$this, 'submitForm'],
+        ],
+      ],
       'cancel' => ConfirmFormHelper::buildCancelLink($this, $this->getRequest()),
-    );
+    ];
   }
 
   /**
@@ -140,7 +153,7 @@ abstract class RequiredContextDelete extends ConfirmFormBase {
    */
   public function getCancelUrl() {
     $cached_values = $this->tempstore->get($this->tempstore_id)->get($this->machine_name);
-    list($route_name, $route_parameters) = $this->getParentRouteInfo($cached_values);
+    [$route_name, $route_parameters] = $this->getParentRouteInfo($cached_values);
     return new Url($route_name, $route_parameters);
   }
 
@@ -161,29 +174,35 @@ abstract class RequiredContextDelete extends ConfirmFormBase {
   /**
    * Document the route name and parameters for redirect after submission.
    *
-   * @param $cached_values
+   * @param mixed $cached_values
+   *   The cached values.
    *
    * @return array
    *   In the format of
-   *   return ['route.name', ['machine_name' => $this->machine_name, 'step' => 'step_name]];
+   *   return [
+   *     'route.name',
+   *     ['machine_name' => $this->machine_name,'step' => 'step_name],
+   *   ];
    */
   abstract protected function getParentRouteInfo($cached_values);
 
   /**
    * Custom logic for retrieving the contexts array from cached_values.
    *
-   * @param $cached_values
+   * @param mixed $cached_values
+   *   The cache values.
    *
    * @return array
+   *   Return an array.
    */
   abstract protected function getContexts($cached_values);
 
   /**
    * Custom logic for setting the contexts array in cached_values.
    *
-   * @param $cached_values
-   *
-   * @param $contexts
+   * @param mixed $cached_values
+   *   The cache values.
+   * @param mixed $contexts
    *   The contexts to set within the cached values.
    *
    * @return mixed

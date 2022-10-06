@@ -115,6 +115,7 @@ class WebformSubmissionStorageTest extends KernelTestBase {
    * @see testPurge()
    */
   public function providerPurge() {
+    // phpcs:disable Drupal.Commenting.InlineComment.SpacingBefore
     // The structure of each test case data is the following:
     // 0: (string) The webform 'purge' setting
     // 1: (array) Array of webform submissions to create in the webforms. It
@@ -124,6 +125,7 @@ class WebformSubmissionStorageTest extends KernelTestBase {
     //       that it becomes eligible for purging based on its creation time
     // 2: (array) Array of webform submission sequence IDs that should be purged
     //    in the test.
+    // phpcs:enable Drupal.Commenting.InlineComment.SpacingBefore
     $tests = [];
 
     // Test that only drafts are purged.

@@ -2,12 +2,14 @@
 
 namespace Drupal\facets\Plugin\facets\hierarchy;
 
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\facets\Hierarchy\HierarchyPluginBase;
-use Drupal\taxonomy\TermStorageInterface;
+use Drupal\taxonomy\TermInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Taxonomy hierarchy.
+ * Provides the Taxonomy hierarchy class.
  *
  * @FacetsHierarchy(
  *   id = "taxonomy",
@@ -39,6 +41,13 @@ class Taxonomy extends HierarchyPluginBase {
   protected $termStorage;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs a Drupal\Component\Plugin\PluginBase object.
    *
    * @param array $configuration
@@ -47,12 +56,12 @@ class Taxonomy extends HierarchyPluginBase {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\taxonomy\TermStorageInterface $termStorage
-   *   The term storage.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, TermStorageInterface $termStorage) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->termStorage = $termStorage;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -63,8 +72,21 @@ class Taxonomy extends HierarchyPluginBase {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')->getStorage('taxonomy_term')
+      $container->get('entity_type.manager')
     );
+  }
+
+  /**
+   * Returns the term storage.
+   *
+   * @return \Drupal\taxonomy\TermStorageInterface
+   *   The term storage.
+   */
+  public function getTermStorage() {
+    if (!isset($this->termStorage)) {
+      $this->termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
+    }
+    return $this->termStorage;
   }
 
   /**
@@ -76,7 +98,7 @@ class Taxonomy extends HierarchyPluginBase {
       $current_tid = $parent;
       $parents[$id][] = $parent;
     }
-    return isset($parents[$id]) ? $parents[$id] : [];
+    return $parents[$id] ?? [];
   }
 
   /**
@@ -87,7 +109,7 @@ class Taxonomy extends HierarchyPluginBase {
       return $this->nestedChildren[$id];
     }
 
-    $children = $this->termStorage->loadChildren($id);
+    $children = $this->getTermStorage()->loadChildren($id);
     $children = array_filter(array_values(array_map(function ($it) {
       return $it->id();
     }, $children)));
@@ -105,13 +127,66 @@ class Taxonomy extends HierarchyPluginBase {
   public function getChildIds(array $ids) {
     $parents = [];
     foreach ($ids as $id) {
-      $terms = $this->termStorage->loadChildren($id);
+      $terms = $this->getTermStorage()->loadChildren($id);
       $parents[$id] = array_filter(array_values(array_map(function ($it) {
         return $it->id();
       }, $terms)));
     }
     $parents = array_filter($parents);
     return $parents;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSiblingIds(array $ids, array $activeIds = [], bool $parentSiblings = TRUE) {
+    if (empty($ids)) {
+      return [];
+    }
+
+    $parentIds = [];
+    $topLevelTerms = [];
+
+    foreach ($ids as $id) {
+      if (!$activeIds || in_array($id, $activeIds)) {
+        $currentParentIds = $this->getParentIds($id);
+        if (!$currentParentIds) {
+          if (!$topLevelTerms) {
+            /** @var \Drupal\taxonomy\Entity\Term $term */
+            $term = $this->getTermStorage()->load($id);
+
+            // Issue #3260603:
+            // Due to a bug in core
+            // https://www.drupal.org/project/drupal/issues/2723323
+            // it may happen that a taxonomy term is still referenced in a field,
+            // even though the term has been deleted.
+            // Not checking the term is empty produces a fatal error.
+            if (!$term instanceof TermInterface) {
+              continue;
+            }
+
+            $topLevelTerms = array_map(function ($term) {
+              return $term->tid;
+            }, $this->getTermStorage()->loadTree($term->bundle(), 0, 1));
+          }
+        }
+        else {
+          $parentIds[] = $currentParentIds;
+        }
+      }
+    }
+
+    $parentIds = array_unique(array_merge([], ...$parentIds));
+    $childIds = array_merge([], ...$this->getChildIds($parentIds));
+
+    return array_diff(
+      array_merge(
+        $childIds,
+        $topLevelTerms,
+        (!$topLevelTerms && $parentSiblings) ? $this->getSiblingIds($ids, $parentIds) : []
+      ),
+      $ids
+    );
   }
 
   /**
@@ -128,11 +203,18 @@ class Taxonomy extends HierarchyPluginBase {
       return $this->termParents[$tid];
     }
 
-    $parents = $this->termStorage->loadParents($tid);
+    $parents = $this->getTermStorage()->loadParents($tid);
     if (empty($parents)) {
       return FALSE;
     }
     return $this->termParents[$tid] = reset($parents)->id();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    return Cache::mergeTags(parent::getCacheTags(), ['taxonomy_term:list']);
   }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Drupal\facets\Plugin\facets\processor;
 
+use Drupal\Core\Cache\UnchangingCacheableDependencyTrait;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Processor\BuildProcessorInterface;
@@ -21,6 +22,8 @@ use Drupal\facets\Processor\ProcessorPluginBase;
  */
 class ExcludeSpecifiedItemsProcessor extends ProcessorPluginBase implements BuildProcessorInterface {
 
+  use UnchangingCacheableDependencyTrait;
+
   /**
    * {@inheritdoc}
    */
@@ -30,10 +33,11 @@ class ExcludeSpecifiedItemsProcessor extends ProcessorPluginBase implements Buil
     /** @var \Drupal\facets\Result\ResultInterface $result */
     $exclude_item = $config['exclude'];
     foreach ($results as $id => $result) {
+      $is_excluded = FALSE;
       if ($config['regex']) {
         $matcher = '/' . trim(str_replace('/', '\\/', $exclude_item)) . '/';
         if (preg_match($matcher, $result->getRawValue()) || preg_match($matcher, $result->getDisplayValue())) {
-          unset($results[$id]);
+          $is_excluded = TRUE;
         }
       }
       else {
@@ -41,9 +45,19 @@ class ExcludeSpecifiedItemsProcessor extends ProcessorPluginBase implements Buil
         foreach ($exclude_items as $item) {
           $item = trim($item);
           if ($result->getRawValue() == $item || $result->getDisplayValue() == $item) {
-            unset($results[$id]);
+            $is_excluded = TRUE;
           }
         }
+      }
+
+      // Invert the is_excluded result when the invert setting is active.
+      if ($config['invert']) {
+        $is_excluded = !$is_excluded;
+      }
+
+      // Filter by the excluded results.
+      if ($is_excluded) {
+        unset($results[$id]);
       }
     }
 
@@ -68,6 +82,12 @@ class ExcludeSpecifiedItemsProcessor extends ProcessorPluginBase implements Buil
       '#default_value' => $config['regex'],
       '#description' => $this->t('Interpret each exclude list item as a regular expression pattern.<br /><small>(Slashes are escaped automatically, patterns using a comma can be wrapped in "double quotes", and if such a pattern uses double quotes itself, just make them double-double-quotes (""))</small>.'),
     ];
+    $build['invert'] = [
+      '#title' => $this->t('Invert - only list matched items'),
+      '#type' => 'checkbox',
+      '#default_value' => $config['invert'],
+      '#description' => $this->t('Instead of excluding items based on the pattern specified above, only matching items will be displayed.'),
+    ];
 
     return $build;
   }
@@ -79,6 +99,7 @@ class ExcludeSpecifiedItemsProcessor extends ProcessorPluginBase implements Buil
     return [
       'exclude' => '',
       'regex' => 0,
+      'invert' => 0,
     ];
   }
 

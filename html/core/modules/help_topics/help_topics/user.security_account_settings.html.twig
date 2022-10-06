@@ -2,6 +2,7 @@
 label: 'Configuring how user accounts are created and deleted'
 related:
   - core.security
+  - user.overview
 ---
 {% set account_settings_url = render_var(url('entity.user.admin_form')) %}
 <h2>{% trans %}Goal{% endtrans %}</h2>
@@ -15,17 +16,17 @@ related:
 <h2>{% trans %}What are variables in email message text?{% endtrans %}</h2>
 <p>{% trans %}<em>Variables</em> are short text strings, enclosed in square brackets [], that you can insert into configured email message text. When an individual message is generated, data from your site is substituted for the variables. Some commonly-used variables are:{% endtrans %}</p>
 <ul>
-  <li>{% trans %}[site:name]: The name of your web site.{% endtrans %}</li>
-  <li>{% trans %}[site:url]: The URL of your web site.{% endtrans %}</li>
+  <li>{% trans %}[site:name]: The name of your website.{% endtrans %}</li>
+  <li>{% trans %}[site:url]: The URL of your website.{% endtrans %}</li>
   <li>{% trans %}[site:login-url]: The URL where users can log in to your site.{% endtrans %}</li>
   <li>{% trans %}[user:display-name]: The user's displayed name.{% endtrans %}</li>
-  <li>{% trans %}[user:account-name]: The users's account name.{% endtrans %}</li>
+  <li>{% trans %}[user:account-name]: The user's account name.{% endtrans %}</li>
   <li>{% trans %}[user:mail]: The user's email alias.{% endtrans %}</li>
   <li>{% trans %}[user:one-time-login-url]: An expiring URL that a user can use to log in once, if they need to reset their password.{% endtrans %}</li>
 </ul>
 <h2>{% trans %}Steps{% endtrans %}</h2>
 <ol>
-  <li>{% trans %}In the <em>Manage</em> administrative menu, navigate to <em>Configuration</em> &gt; <em>People</em> &gt; <em><a href="{{ account_settings_url}}">Account settings</a></em>.{% endtrans %}</li>
+  <li>{% trans %}In the <em>Manage</em> administrative menu, navigate to <em>Configuration</em> &gt; <em>People</em> &gt; <a href="{{ account_settings_url}}"><em>Account settings</em></a>.{% endtrans %}</li>
   <li>{% trans %}Select the method you want to use for creating user accounts, and check or uncheck the box that requires email verification, to match the settings you want for your site.{% endtrans %}</li>
   <li>{% trans %}Select the desired option for what happens to content that a user created if their account is canceled.{% endtrans %}</li>
   <li>{% trans %}Optionally, edit the text of email messages related to user accounts.{% endtrans %}</li>

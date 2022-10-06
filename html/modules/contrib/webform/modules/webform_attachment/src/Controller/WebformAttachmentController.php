@@ -5,8 +5,6 @@ namespace Drupal\webform_attachment\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\ElementInfoManagerInterface;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform_attachment\Plugin\WebformElement\WebformAttachmentBase;
@@ -35,26 +33,13 @@ class WebformAttachmentController extends ControllerBase implements ContainerInj
   protected $elementManager;
 
   /**
-   * Constructs a WebformAttachmentController object.
-   *
-   * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
-   *   The element info manager.
-   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
-   *   A webform element plugin manager.
-   */
-  public function __construct(ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager) {
-    $this->elementInfo = $element_info;
-    $this->elementManager = $element_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('plugin.manager.element_info'),
-      $container->get('plugin.manager.webform.element')
-    );
+    $instance = parent::create($container);
+    $instance->elementInfo = $container->get('plugin.manager.element_info');
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    return $instance;
   }
 
   /**
@@ -102,7 +87,7 @@ class WebformAttachmentController extends ControllerBase implements ContainerInj
     /** @var \Drupal\webform_attachment\Element\WebformAttachmentInterface $element_info */
     // Get base form element for webform element derivatives.
     // @see \Drupal\webform_entity_print\Plugin\Derivative\WebformEntityPrintWebformElementDeriver
-    list($type) = explode(':', $element['#type']);
+    [$type] = explode(':', $element['#type']);
     $element_info = $this->elementInfo->createInstance($type);
 
     // Get attachment information.

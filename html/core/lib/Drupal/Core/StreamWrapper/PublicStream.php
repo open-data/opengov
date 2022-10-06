@@ -86,7 +86,7 @@ class PublicStream extends LocalStream {
    *
    * The site path is injectable from the site.path service:
    * @code
-   * $base_path = PublicStream::basePath(\Drupal::service('site.path'));
+   * $base_path = PublicStream::basePath(\Drupal::getContainer()->getParameter('site.path'));
    * @endcode
    *
    * @param string $site_path
@@ -104,7 +104,7 @@ class PublicStream extends LocalStream {
       // Find the site path. Kernel service is not always available at this
       // point, but is preferred, when available.
       if (\Drupal::hasService('kernel')) {
-        $site_path = \Drupal::service('site.path');
+        $site_path = \Drupal::getContainer()->getParameter('site.path');
       }
       else {
         // If there is no kernel available yet, we call the static
@@ -113,6 +113,30 @@ class PublicStream extends LocalStream {
       }
     }
     return Settings::get('file_public_path', $site_path . '/files');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getLocalPath($uri = NULL) {
+    $path = parent::getLocalPath($uri);
+    if (!$path || (strpos($path, 'vfs://') === 0)) {
+      return $path;
+    }
+
+    if (Settings::get('sa_core_2022_012_override') === TRUE) {
+      return $path;
+    }
+
+    $private_path = Settings::get('file_private_path');
+    if ($private_path) {
+      $private_path = realpath($private_path);
+      if ($private_path && strpos($path, $private_path) === 0) {
+        return FALSE;
+      }
+    }
+
+    return $path;
   }
 
 }

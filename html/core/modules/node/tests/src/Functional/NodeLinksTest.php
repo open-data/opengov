@@ -16,7 +16,7 @@ class NodeLinksTest extends NodeTestBase {
    *
    * @var array
    */
-  public static $modules = ['views'];
+  protected static $modules = ['views'];
 
   /**
    * {@inheritdoc}
@@ -34,8 +34,8 @@ class NodeLinksTest extends NodeTestBase {
 
     // Links are displayed by default.
     $this->drupalGet('node');
-    $this->assertText($node->getTitle());
-    $this->assertLink('Read more');
+    $this->assertSession()->pageTextContains($node->getTitle());
+    $this->assertSession()->linkExists('Read more');
 
     // Hide links.
     \Drupal::service('entity_display.repository')
@@ -44,8 +44,8 @@ class NodeLinksTest extends NodeTestBase {
       ->save();
 
     $this->drupalGet('node');
-    $this->assertText($node->getTitle());
-    $this->assertNoLink('Read more');
+    $this->assertSession()->pageTextContains($node->getTitle());
+    $this->assertSession()->linkNotExists('Read more');
   }
 
 }

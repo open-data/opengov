@@ -2,11 +2,14 @@
 
 namespace Drupal\facets\FacetManager;
 
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\facets\Event\PostBuildFacet;
 use Drupal\facets\Exception\InvalidProcessorException;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
+use Drupal\facets\Plugin\facets\facet_source\SearchApiDisplay;
 use Drupal\facets\Processor\BuildProcessorInterface;
 use Drupal\facets\Processor\PostQueryProcessorInterface;
 use Drupal\facets\Processor\PreQueryProcessorInterface;
@@ -58,13 +61,6 @@ class DefaultFacetManager {
   protected $facets = [];
 
   /**
-   * An array of all entity ids in the active resultset which are a child.
-   *
-   * @var string[]
-   */
-  protected $childIds = [];
-
-  /**
    * The entity storage for facets.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface|object
@@ -76,7 +72,14 @@ class DefaultFacetManager {
    *
    * @var \Drupal\facets\FacetInterface[]
    */
-  protected $processedFacets;
+  protected $processedFacets = [];
+
+  /**
+   * A static cache of already built facets.
+   *
+   * @var \Drupal\facets\FacetInterface[]
+   */
+  protected $builtFacets = [];
 
   /**
    * Constructs a new instance of the DefaultFacetManager.
@@ -109,11 +112,75 @@ class DefaultFacetManager {
    *   The facet source ID to process.
    */
   public function alterQuery(&$query, $facetsource_id) {
+    $query_is_cacheable = $query instanceof RefinableCacheableDependencyInterface;
     /** @var \Drupal\facets\FacetInterface[] $facets */
-    foreach ($this->getFacetsByFacetSourceId($facetsource_id) as $facet) {
+    $facets = $this->getFacetsByFacetSourceId($facetsource_id);
+
+    foreach ($facets as $facet) {
+      $processors = $facet->getProcessors();
+
+      if (isset($processors['dependent_processor'])) {
+        $conditions = $processors['dependent_processor']->getConfiguration();
+
+        $enabled_conditions = [];
+        foreach ($conditions as $facet_id => $condition) {
+          if (empty($condition['enable'])) {
+            continue;
+          }
+          $enabled_conditions[$facet_id] = $condition;
+        }
+
+        foreach ($enabled_conditions as $facet_id => $condition_settings) {
+          if (!isset($facets[$facet_id]) || !$processors['dependent_processor']->isConditionMet($condition_settings, $facets[$facet_id])) {
+            // The conditions are not met anymore, remove the active items.
+            $facet->setActiveItems([]);
+
+            // Remove the query parameter from other facets.
+            foreach ($facets as $other_facet) {
+              /** @var \Drupal\facets\UrlProcessor\UrlProcessorInterface $urlProcessor */
+              $urlProcessor = $other_facet->getProcessors()['url_processor_handler']->getProcessor();
+              $active_filters = $urlProcessor->getActiveFilters();
+              unset($active_filters[$facet->id()]);
+              $urlProcessor->setActiveFilters($active_filters);
+            }
+            // Add "dependend facet" cacheabillity to make sure that whenever
+            // its preferences will change, for instance to "negate", query
+            // results cache will take it to consideration.
+            if ($query_is_cacheable) {
+              $query->addCacheableDependency($facet);
+            }
+            // Don't convert this facet's active items into query conditions.
+            // Continue with the next facet.
+            continue(2);
+          }
+        }
+      }
+
       /** @var \Drupal\facets\QueryType\QueryTypeInterface $query_type_plugin */
-      $query_type_plugin = $this->queryTypePluginManager->createInstance($facet->getQueryType(), ['query' => $query, 'facet' => $facet]);
+      $query_type_plugin = $this->queryTypePluginManager->createInstance(
+        $facet->getQueryType(),
+        [
+          'query' => $query,
+          'facet' => $facet,
+        ]
+      );
       $query_type_plugin->execute();
+      // Merge cache metadata that gathered from facet and its processors.
+      if ($query_is_cacheable) {
+        if ($query->hasTag('alter_cache_metadata')) {
+          $facet_source = $facet->getFacetSource();
+          if ($facet_source instanceof SearchApiDisplay) {
+            // Avoid a loop when saving a view. The Search API cache plugin for
+            // views "preExecutes" a query to collect cache metadata from
+            // modules that alter this query. Our SearchApiDisplay must not ask
+            // the view for its cache metadata at this point which is in a
+            // random state.
+            $facet_source->setDisplayEditInProgress(TRUE);
+          }
+        }
+
+        $query->addCacheableDependency($facet);
+      }
     }
   }
 
@@ -142,7 +209,7 @@ class DefaultFacetManager {
     $facets = [];
     foreach ($this->facets as $facet) {
       if ($facet->getFacetSourceId() === $facetsource_id) {
-        $facets[] = $facet;
+        $facets[$facet->id()] = $facet;
       }
     }
     return $facets;
@@ -152,7 +219,7 @@ class DefaultFacetManager {
    * Initializes facet builds, sets the breadcrumb trail.
    *
    * Facets are built via FacetsFacetProcessor objects. Facets only need to be
-   * processed, or built, once The FacetsFacetManager::processed semaphore is
+   * processed, or built, once the FacetsFacetManager::processed semaphore is
    * set when this method is called ensuring that facets are built only once
    * regardless of how many times this method is called.
    *
@@ -171,8 +238,7 @@ class DefaultFacetManager {
     }
 
     $unprocessedFacets = array_filter($this->facets, function ($item) use ($facetsource_id) {
-      /* @var \Drupal\facets\FacetInterface $item */
-      return !isset($this->processedFacets[$facetsource_id][$item->id()]);
+      return $item->getFacetSourceId() === $facetsource_id && !isset($this->processedFacets[$facetsource_id][$item->id()]);
     });
 
     // All facets were already processed on a previous run, so no need to do so
@@ -184,14 +250,18 @@ class DefaultFacetManager {
     $this->updateResults($facetsource_id);
 
     foreach ($unprocessedFacets as $facet) {
+      $processor_configs = $facet->getProcessorConfigs();
       foreach ($facet->getProcessorsByStage(ProcessorInterface::STAGE_POST_QUERY) as $processor) {
+        $processor_config = $processor_configs[$processor->getPluginDefinition()['id']]['settings'];
+        $processor_config['facet'] = $facet;
         /** @var \Drupal\facets\processor\PostQueryProcessorInterface $post_query_processor */
-        $post_query_processor = $this->processorPluginManager->createInstance($processor->getPluginDefinition()['id'], ['facet' => $facet]);
+        $post_query_processor = $this->processorPluginManager->createInstance($processor->getPluginDefinition()['id'], $processor_config);
         if (!$post_query_processor instanceof PostQueryProcessorInterface) {
           throw new InvalidProcessorException("The processor {$processor->getPluginDefinition()['id']} has a post_query definition but doesn't implement the required PostQueryProcessor interface");
         }
         $post_query_processor->postQuery($facet);
       }
+
       $this->processedFacets[$facetsource_id][$facet->id()] = $facet;
     }
   }
@@ -224,12 +294,82 @@ class DefaultFacetManager {
   }
 
   /**
+   * Builds a facet.
+   *
+   * This method delegates to the relevant plugins in Build stage, the
+   * processors that implement the  BuildProcessorInterface enabled on this
+   * facet will run.
+   *
+   * @param \Drupal\facets\FacetInterface $facet
+   *   The facet we should build.
+   *
+   * @return \Drupal\facets\FacetInterface
+   *   The built Facet.
+   *
+   * @throws \Drupal\facets\Exception\InvalidProcessorException
+   *   Throws an exception when an invalid processor is linked to the facet.
+   */
+  protected function processBuild(FacetInterface $facet) {
+    if (!isset($this->builtFacets[$facet->getFacetSourceId()][$facet->id()])) {
+      // Immediately initialize the facets if they are not initiated yet.
+      $this->initFacets();
+
+      // It might be that the facet received here, is not the same as the
+      // already loaded facets in the FacetManager.
+      // For that reason, get the facet from the already loaded facets in the
+      // static cache.
+      $facet = $this->facets[$facet->id()];
+
+      // For clarity, process facets is called each build.
+      // The first facet therefor will trigger the processing. Note that
+      // processing is done only once, so repeatedly calling this method will
+      // not trigger the processing more than once.
+      $this->processFacets($facet->getFacetSourceId());
+
+      // Get the current results from the facets and let all processors that
+      // trigger on the build step do their build processing.
+      // @see \Drupal\facets\Processor\BuildProcessorInterface.
+      // @see \Drupal\facets\Processor\SortProcessorInterface.
+      $results = $facet->getResults();
+
+      foreach ($facet->getProcessorsByStage(ProcessorInterface::STAGE_BUILD) as $processor) {
+        if (!$processor instanceof BuildProcessorInterface) {
+          throw new InvalidProcessorException("The processor {$processor->getPluginDefinition()['id']} has a build definition but doesn't implement the required BuildProcessorInterface interface");
+        }
+        $results = $processor->build($facet, $results);
+      }
+
+      // Trigger sort stage.
+      $active_sort_processors = [];
+      foreach ($facet->getProcessorsByStage(ProcessorInterface::STAGE_SORT) as $processor) {
+        $active_sort_processors[] = $processor;
+      }
+
+      // Sort the actual results if we have enabled sort processors.
+      if (!empty($active_sort_processors)) {
+        $results = $this->sortFacetResults($active_sort_processors, $results);
+      }
+
+      $facet->setResults($results);
+
+      $eventDispatcher = \Drupal::service('event_dispatcher');
+      $event = new PostBuildFacet($facet);
+      $eventDispatcher->dispatch($event);
+
+      $this->builtFacets[$facet->getFacetSourceId()][$facet->id()] = $event->getFacet();
+    }
+
+    return $this->builtFacets[$facet->getFacetSourceId()][$facet->id()];
+  }
+
+  /**
    * Builds a facet and returns it as a renderable array.
    *
    * This method delegates to the relevant plugins to render a facet, it calls
    * out to a widget plugin to do the actual rendering when results are found.
    * When no results are found it calls out to the correct empty result plugin
-   * to build a render array.
+   * to build a render array. Renderable array will include all facet plugins
+   * cache metadata that were used to build this facet.
    *
    * Before doing any rendering, the processors that implement the
    * BuildProcessorInterface enabled on this facet will run.
@@ -244,91 +384,37 @@ class DefaultFacetManager {
    *   Throws an exception when an invalid processor is linked to the facet.
    */
   public function build(FacetInterface $facet) {
-    // Immediately initialize the facets if they are not initiated yet.
-    $this->initFacets();
+    $built_facet = $this->processBuild($facet);
+    // The build process might have returned a previously built and statically
+    // cached instance of the facet object. So we need to ensure that the cache
+    // metadata is updated on the outer object, too.
+    $facet->addCacheableDependency($built_facet);
 
-    // It might be that the facet received here, is not the same as the already
-    // loaded facets in the FacetManager.
-    // For that reason, get the facet from the already loaded facets in the
-    // static cache.
-    $facet = $this->facets[$facet->id()];
-
-    if ($facet->getOnlyVisibleWhenFacetSourceIsVisible()) {
+    if ($built_facet->getOnlyVisibleWhenFacetSourceIsVisible()) {
       // Block rendering and processing should be stopped when the facet source
       // is not available on the page. Returning an empty array here is enough
       // to halt all further processing.
-      $facet_source = $facet->getFacetSource();
+      $facet_source = $built_facet->getFacetSource();
       if (is_null($facet_source) || !$facet_source->isRenderedInCurrentRequest()) {
         return [];
       }
     }
 
-    // For clarity, process facets is called each build.
-    // The first facet therefor will trigger the processing. Note that
-    // processing is done only once, so repeatedly calling this method will not
-    // trigger the processing more than once.
-    $this->processFacets($facet->getFacetSourceId());
-
-    // Get the current results from the facets and let all processors that
-    // trigger on the build step do their build processing.
-    // @see \Drupal\facets\Processor\BuildProcessorInterface.
-    // @see \Drupal\facets\Processor\SortProcessorInterface.
-    $results = $facet->getResults();
-
-    foreach ($facet->getProcessorsByStage(ProcessorInterface::STAGE_BUILD) as $processor) {
-      if (!$processor instanceof BuildProcessorInterface) {
-        throw new InvalidProcessorException("The processor {$processor->getPluginDefinition()['id']} has a build definition but doesn't implement the required BuildProcessorInterface interface");
-      }
-      $results = $processor->build($facet, $results);
-    }
-
-    // Handle hierarchy.
-    if ($results && $facet->getUseHierarchy()) {
-      $keyed_results = [];
-      foreach ($results as $result) {
-        $keyed_results[$result->getRawValue()] = $result;
-      }
-
-      $parent_groups = $facet->getHierarchyInstance()->getChildIds(array_keys($keyed_results));
-      $keyed_results = $this->buildHierarchicalTree($keyed_results, $parent_groups);
-
-      // Remove children from primary level.
-      foreach (array_unique($this->childIds) as $child_id) {
-        unset($keyed_results[$child_id]);
-      }
-
-      $results = array_values($keyed_results);
-    }
-
-    // Trigger sort stage.
-    $active_sort_processors = [];
-    foreach ($facet->getProcessorsByStage(ProcessorInterface::STAGE_SORT) as $processor) {
-      $active_sort_processors[] = $processor;
-    }
-
-    // Sort the actual results if we have enabled sort processors.
-    if (!empty($active_sort_processors)) {
-      $results = $this->sortFacetResults($active_sort_processors, $results);
-    }
-
-    $facet->setResults($results);
-
     // We include this build even if empty, it may contain attached libraries.
     /** @var \Drupal\facets\Widget\WidgetPluginInterface $widget */
-    $widget = $facet->getWidgetInstance();
-    $build = $widget->build($facet);
-
+    $widget = $built_facet->getWidgetInstance();
+    $build = $widget->build($built_facet);
     // No results behavior handling. Return a custom text or false depending on
     // settings.
-    if (empty($facet->getResults())) {
-      $empty_behavior = $facet->getEmptyBehavior();
-      if ($empty_behavior['behavior'] == 'text') {
+    if (empty($built_facet->getResults())) {
+      $empty_behavior = $built_facet->getEmptyBehavior();
+      if ($empty_behavior && $empty_behavior['behavior'] === 'text') {
         return [
           [
-            $build,
+            0 => $build,
             '#type' => 'container',
             '#attributes' => [
-              'data-drupal-facet-id' => $facet->id(),
+              'data-drupal-facet-id' => $built_facet->id(),
               'class' => ['facet-empty'],
             ],
             'empty_text' => [
@@ -346,11 +432,11 @@ class DefaultFacetManager {
         // content.
         return [
           [
-            $build,
+            0 => $build,
             '#type' => 'container',
             '#attributes' => [
-              'data-drupal-facet-id' => $facet->id(),
-              'class' => ['facet-empty'],
+              'data-drupal-facet-id' => $built_facet->id(),
+              'class' => ['facet-empty', 'facet-hidden'],
             ],
           ],
         ];
@@ -361,7 +447,7 @@ class DefaultFacetManager {
   }
 
   /**
-   * Updates all facets of a given facet source with the results.
+   * Updates all facets of a given facet source with the raw results.
    *
    * @param string $facetsource_id
    *   The facet source ID of the currently processed facet.
@@ -369,6 +455,10 @@ class DefaultFacetManager {
   public function updateResults($facetsource_id) {
     $facets = $this->getFacetsByFacetSourceId($facetsource_id);
     if ($facets) {
+      // Clear the caches of processed results.
+      unset($this->processedFacets[$facetsource_id]);
+      unset($this->builtFacets[$facetsource_id]);
+
       /** @var \drupal\facets\FacetSource\FacetSourcePluginInterface $facet_source_plugin */
       $facet_source_plugin = $this->facetSourcePluginManager->createInstance($facetsource_id);
       $facet_source_plugin->fillFacetsWithResults($facets);
@@ -380,11 +470,10 @@ class DefaultFacetManager {
    *
    * Returns one of the processed facets, this is a facet with filled results.
    * Keep in mind that if you want to have the facet's build processor executed,
-   * there needs to be an extra call to the FacetManager::build with the facet
-   * returned here as argument.
+   * call returnBuiltFacet() instead.
    *
    * @param \Drupal\facets\FacetInterface $facet
-   *   The facet to process.
+   *   The facet to process with a collected plugins cache metadata.
    *
    * @return \Drupal\facets\FacetInterface|null
    *   The updated facet if it exists, NULL otherwise.
@@ -395,44 +484,16 @@ class DefaultFacetManager {
   }
 
   /**
-   * Builds an hierarchical structure for results.
+   * Returns one of the built facets.
    *
-   * When given an array of results and an array which defines the hierarchical
-   * structure, this will build the results structure and set all childs.
+   * @param \Drupal\facets\FacetInterface $facet
+   *   The facet to process.
    *
-   * @param \Drupal\facets\Result\ResultInterface[] $keyed_results
-   *   An array of results keyed by id.
-   * @param array $parent_groups
-   *   An array of 'child id arrays' keyed by their parent id.
-   *
-   * @return \Drupal\facets\Result\ResultInterface[]
-   *   An array of results structured hierarchically.
+   * @return \Drupal\facets\FacetInterface
+   *   The built Facet object with a collected plugins cache metadata.
    */
-  protected function buildHierarchicalTree(array $keyed_results, array $parent_groups) {
-    foreach ($keyed_results as &$result) {
-      $current_id = $result->getRawValue();
-      if (isset($parent_groups[$current_id]) && $parent_groups[$current_id]) {
-        $child_ids = $parent_groups[$current_id];
-        $child_keyed_results = [];
-        foreach ($child_ids as $child_id) {
-          if (isset($keyed_results[$child_id])) {
-            $child_keyed_results[$child_id] = $keyed_results[$child_id];
-          }
-          else {
-            // Children could already be built by Facets Summary manager, if
-            // they are, just loading them will suffice.
-            $children = $keyed_results[$current_id]->getChildren();
-            if (!empty($children[$child_id])) {
-              $child_keyed_results[$child_id] = $children[$child_id];
-            }
-          }
-        }
-        $result->setChildren($child_keyed_results);
-        $this->childIds = array_merge($this->childIds, $child_ids);
-      }
-    }
-
-    return $keyed_results;
+  public function returnBuiltFacet(FacetInterface $facet) {
+    return $this->processBuild($facet);
   }
 
   /**

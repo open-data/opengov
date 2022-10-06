@@ -8,6 +8,9 @@ fontawesome.settings:
     method:
       type: string
       label: 'Method used for delivering Font Awesome'
+    load_assets:
+      type: boolean
+      label: 'Let module handle loading FontAwesome assets'
     use_cdn:
       type: boolean
       label: 'Use CDN to serve Font Awesome'
@@ -32,9 +35,26 @@ fontawesome.settings:
     use_light_file:
       type: boolean
       label: 'Use the Font Awesome light icons file'
-    use_brands_File:
+    use_brands_file:
       type: boolean
       label: 'Use the Font Awesome brands icons file'
+    use_duotone_file:
+      type: boolean
+      label: 'Use the Font Awesome duotone icons file'
+    use_thin_file:
+      type: boolean
+      label: 'Use the Font Awesome thin icons file'
     external_svg_integrity:
       type: string
       label: 'Integrity value of the external CDN for Font Awesome'
+    bypass_validation:
+      type: boolean
+      label: 'Bypass Font Awesome validation'
+
+field.formatter.settings.fontawesome_icon_formatter:
+  type: mapping
+  label: 'Font Awesome Icon formatter settings'
+  mapping:
+    layers:
+      type: boolean
+      label: 'Display multi-value fields as layers?'

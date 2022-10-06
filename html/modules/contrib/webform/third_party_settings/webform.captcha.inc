@@ -67,7 +67,7 @@ function captcha_webform_submission_form_alter(&$form, FormStateInterface $form_
 
   // If the webform already has a CAPTCHA point is already configured, do not
   // do anything.
-  /* @var \Drupal\captcha\CaptchaPointInterface $captcha_point */
+  /** @var \Drupal\captcha\CaptchaPointInterface $captcha_point */
   $captcha_point = \Drupal::entityTypeManager()
     ->getStorage('captcha_point')
     ->load($form_id);
@@ -100,7 +100,7 @@ function _captcha_webform_submission_form_after_build(array $form, FormStateInte
 
   // If the webform has a CAPTCHA element, display a link to edit the element.
   $elements = $webform->getElementsInitializedAndFlattened();
-  foreach ($elements as $key => $element) {
+  foreach ($elements as $key => &$element) {
     if (WebformElementHelper::isType($element, 'captcha')) {
       // Update the details element's title.
       $form['captcha']['#title'] = t('CAPTCHA: challenge enabled');
@@ -117,6 +117,7 @@ function _captcha_webform_submission_form_after_build(array $form, FormStateInte
           '#url' => Url::fromRoute($route_name, $route_parameters, $route_options),
           '#prefix' => '<em>',
           '#suffix' => '</em>',
+          '#parents' => [],
         ];
       }
       else {
@@ -140,6 +141,7 @@ function _captcha_webform_submission_form_after_build(array $form, FormStateInte
       '#type' => 'link',
       '#title' => t('Add CAPTCHA element to this webform for untrusted users.'),
       '#url' => Url::fromRoute($route_name, $route_parameters, $route_options),
+      '#parents' => [],
     ];
   }
   else {

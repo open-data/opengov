@@ -15,7 +15,7 @@ class ScanDirectoryTest extends FileTestBase {
    *
    * @var array
    */
-  public static $modules = ['file_test'];
+  protected static $modules = ['file_test'];
 
   /**
    * @var string
@@ -32,11 +32,12 @@ class ScanDirectoryTest extends FileTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // Hardcode the location of the fixtures files as it is already known
     // and shouldn't change, and we don't yet have a way to retrieve their
-    // location from drupal_get_filename() in a cached way.
+    // location from \Drupal\Core\Extension\ExtensionList::getPathname() in a
+    // cached way.
     // @todo Remove as part of https://www.drupal.org/node/2186491
     $this->path = 'core/tests/fixtures/files';
     $this->fileSystem = $this->container->get('file_system');
@@ -52,21 +53,21 @@ class ScanDirectoryTest extends FileTestBase {
     // passed to the callback.
     $all_files = $this->fileSystem->scanDirectory($this->path, '/^javascript-/');
     ksort($all_files);
-    $this->assertEqual(2, count($all_files), 'Found two, expected javascript files.');
+    $this->assertCount(2, $all_files, 'Found two, expected javascript files.');
 
     // Check the first file.
     $file = reset($all_files);
-    $this->assertEqual(key($all_files), $file->uri, 'Correct array key was used for the first returned file.');
-    $this->assertEqual($file->uri, $this->path . '/javascript-1.txt', 'First file name was set correctly.');
-    $this->assertEqual($file->filename, 'javascript-1.txt', 'First basename was set correctly');
-    $this->assertEqual($file->name, 'javascript-1', 'First name was set correctly.');
+    $this->assertEquals(key($all_files), $file->uri, 'Correct array key was used for the first returned file.');
+    $this->assertEquals($this->path . '/javascript-1.txt', $file->uri, 'First file name was set correctly.');
+    $this->assertEquals('javascript-1.txt', $file->filename, 'First basename was set correctly');
+    $this->assertEquals('javascript-1', $file->name, 'First name was set correctly.');
 
     // Check the second file.
     $file = next($all_files);
-    $this->assertEqual(key($all_files), $file->uri, 'Correct array key was used for the second returned file.');
-    $this->assertEqual($file->uri, $this->path . '/javascript-2.script', 'Second file name was set correctly.');
-    $this->assertEqual($file->filename, 'javascript-2.script', 'Second basename was set correctly');
-    $this->assertEqual($file->name, 'javascript-2', 'Second name was set correctly.');
+    $this->assertEquals(key($all_files), $file->uri, 'Correct array key was used for the second returned file.');
+    $this->assertEquals($this->path . '/javascript-2.script', $file->uri, 'Second file name was set correctly.');
+    $this->assertEquals('javascript-2.script', $file->filename, 'Second basename was set correctly');
+    $this->assertEquals('javascript-2', $file->name, 'Second name was set correctly.');
   }
 
   /**
@@ -78,18 +79,18 @@ class ScanDirectoryTest extends FileTestBase {
 
     // When nothing is matched nothing should be passed to the callback.
     $all_files = $this->fileSystem->scanDirectory($this->path, '/^NONEXISTINGFILENAME/', ['callback' => 'file_test_file_scan_callback']);
-    $this->assertEqual(0, count($all_files), 'No files were found.');
+    $this->assertCount(0, $all_files, 'No files were found.');
     $results = file_test_file_scan_callback();
     file_test_file_scan_callback_reset();
-    $this->assertEqual(0, count($results), 'No files were passed to the callback.');
+    $this->assertCount(0, $results, 'No files were passed to the callback.');
 
     // Grab a listing of all the JavaScript files and check that they're
     // passed to the callback.
     $all_files = $this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['callback' => 'file_test_file_scan_callback']);
-    $this->assertEqual(2, count($all_files), 'Found two, expected javascript files.');
+    $this->assertCount(2, $all_files, 'Found two, expected javascript files.');
     $results = file_test_file_scan_callback();
     file_test_file_scan_callback_reset();
-    $this->assertEqual(2, count($results), 'Files were passed to the callback.');
+    $this->assertCount(2, $results, 'Files were passed to the callback.');
   }
 
   /**
@@ -100,11 +101,11 @@ class ScanDirectoryTest extends FileTestBase {
   public function testOptionNoMask() {
     // Grab a listing of all the JavaScript files.
     $all_files = $this->fileSystem->scanDirectory($this->path, '/^javascript-/');
-    $this->assertEqual(2, count($all_files), 'Found two, expected javascript files.');
+    $this->assertCount(2, $all_files, 'Found two, expected javascript files.');
 
     // Now use the nomask parameter to filter out the .script file.
     $filtered_files = $this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['nomask' => '/.script$/']);
-    $this->assertEqual(1, count($filtered_files), 'Filtered correctly.');
+    $this->assertCount(1, $filtered_files, 'Filtered correctly.');
   }
 
   /**
@@ -117,25 +118,25 @@ class ScanDirectoryTest extends FileTestBase {
     $expected = [$this->path . '/javascript-1.txt', $this->path . '/javascript-2.script'];
     $actual = array_keys($this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['key' => 'filepath']));
     sort($actual);
-    $this->assertEqual($expected, $actual, 'Returned the correct values for the filename key.');
+    $this->assertEquals($expected, $actual, 'Returned the correct values for the filename key.');
 
     // "basename", for the basename of the file.
     $expected = ['javascript-1.txt', 'javascript-2.script'];
     $actual = array_keys($this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['key' => 'filename']));
     sort($actual);
-    $this->assertEqual($expected, $actual, 'Returned the correct values for the basename key.');
+    $this->assertEquals($expected, $actual, 'Returned the correct values for the basename key.');
 
     // "name" for the name of the file without an extension.
     $expected = ['javascript-1', 'javascript-2'];
     $actual = array_keys($this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['key' => 'name']));
     sort($actual);
-    $this->assertEqual($expected, $actual, 'Returned the correct values for the name key.');
+    $this->assertEquals($expected, $actual, 'Returned the correct values for the name key.');
 
     // Invalid option that should default back to "filename".
     $expected = [$this->path . '/javascript-1.txt', $this->path . '/javascript-2.script'];
     $actual = array_keys($this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['key' => 'INVALID']));
     sort($actual);
-    $this->assertEqual($expected, $actual, 'An invalid key defaulted back to the default.');
+    $this->assertEquals($expected, $actual, 'An invalid key defaulted back to the default.');
   }
 
   /**
@@ -145,10 +146,10 @@ class ScanDirectoryTest extends FileTestBase {
    */
   public function testOptionRecurse() {
     $files = $this->fileSystem->scanDirectory($this->path . '/..', '/^javascript-/', ['recurse' => FALSE]);
-    $this->assertTrue(empty($files), "Without recursion couldn't find javascript files.");
+    $this->assertEmpty($files, "Without recursion couldn't find javascript files.");
 
     $files = $this->fileSystem->scanDirectory($this->path . '/..', '/^javascript-/', ['recurse' => TRUE]);
-    $this->assertEqual(2, count($files), 'With recursion we found the expected javascript files.');
+    $this->assertCount(2, $files, 'With recursion we found the expected javascript files.');
   }
 
   /**
@@ -159,10 +160,10 @@ class ScanDirectoryTest extends FileTestBase {
    */
   public function testOptionMinDepth() {
     $files = $this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['min_depth' => 0]);
-    $this->assertEqual(2, count($files), 'No minimum-depth gets files in current directory.');
+    $this->assertCount(2, $files, 'No minimum-depth gets files in current directory.');
 
     $files = $this->fileSystem->scanDirectory($this->path, '/^javascript-/', ['min_depth' => 1]);
-    $this->assertTrue(empty($files), 'Minimum-depth of 1 successfully excludes files from current directory.');
+    $this->assertEmpty($files, 'Minimum-depth of 1 successfully excludes files from current directory.');
   }
 
   /**

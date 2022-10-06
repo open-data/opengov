@@ -268,7 +268,7 @@ class ZipStream
      * Add an open stream to the archive.
      *
      * @param String $name - path of file in archive (including directory).
-     * @param Resource $stream - contents of file as a stream resource
+     * @param resource $stream - contents of file as a stream resource
      * @param FileOptions $options
      *
      * File Options:
@@ -312,12 +312,9 @@ class ZipStream
      *
      * Examples:
      *
-     *   // create a temporary file stream and write text to it
-     *   $fp = tmpfile();
-     *   fwrite($fp, 'The quick brown fox jumped over the lazy dog.');
-     *
+     *   $stream = $response->getBody();
      *   // add a file named 'streamfile.txt' from the content of the stream
-     *   $x->addFileFromPsr7Stream('streamfile.txt', $fp);
+     *   $x->addFileFromPsr7Stream('streamfile.txt', $stream);
      *
      * @return void
      */
@@ -459,11 +456,23 @@ class ZipStream
         }
         $this->need_headers = false;
 
-        fwrite($this->opt->getOutputStream(), $str);
+        $outputStream = $this->opt->getOutputStream();
+
+        if ($outputStream instanceof StreamInterface) {
+            $outputStream->write($str);
+        } else {
+            fwrite($outputStream, $str);
+        }
 
         if ($this->opt->isFlushOutput()) {
+            // flush output buffer if it is on and flushable
+            $status = ob_get_status();
+            if (isset($status['flags']) && ($status['flags'] & PHP_OUTPUT_HANDLER_FLUSHABLE)) {
+                ob_flush();
+            }
+
+            // Flush system buffers after flushing userspace output buffer
             flush();
-            ob_flush();
         }
     }
 

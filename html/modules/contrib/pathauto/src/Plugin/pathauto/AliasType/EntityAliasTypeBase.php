@@ -234,7 +234,7 @@ class EntityAliasTypeBase extends ContextAwarePluginBase implements AliasTypeInt
 
     PathautoState::bulkDelete($this->getEntityTypeId(), $pids_by_id);
     $context['sandbox']['count'] += count($pids_by_id);
-    $context['sandbox']['current'] = max($pids_by_id);
+    $context['sandbox']['current'] = !empty($pids_by_id) ? max($pids_by_id) : 0;
     $context['results']['deletions'][] = $this->getLabel();
 
     if ($context['sandbox']['count'] != $context['sandbox']['total']) {
@@ -280,8 +280,7 @@ class EntityAliasTypeBase extends ContextAwarePluginBase implements AliasTypeInt
     }
 
     if (!empty($options['message'])) {
-      $this->messenger->addMessage($this->translationManager
-        ->formatPlural(count($ids), 'Updated 1 %label URL alias.', 'Updated @count %label URL aliases.'), [
+      $this->messenger->addMessage($this->formatPlural(count($ids), 'Updated 1 %label URL alias.', 'Updated @count %label URL aliases.'), [
           '%label' => $this->getLabel(),
         ]);
     }

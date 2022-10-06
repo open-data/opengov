@@ -22,22 +22,28 @@ class WebformHandlerInvokeAlterHookTest extends WebformBrowserTestBase {
    * Tests webform handler invoke alter hook.
    */
   public function testWebformHandlerInvokeAlterHook() {
+    $assert_session = $this->assertSession();
+
     // Check invoke alter hooks.
     $this->drupalGet('/webform/contact');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::pre_create"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_pre_create_alter() for "contact:email_confirmation"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::pre_create"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_pre_create_alter() for "contact:email_notification"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::alter_elements"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::alter_elements"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::alter_elements"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::alter_elements"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::post_create"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::post_create"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::override_settings"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::override_settings"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::alter_form"');
-    $this->assertRaw('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::alter_form"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::pre_create"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_pre_create_alter() for "contact:email_confirmation"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::pre_create"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_pre_create_alter() for "contact:email_notification"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::alter_elements"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::alter_elements"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::post_create"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::post_create"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::override_settings"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::override_settings"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::prepare_form"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::prepare_form"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::access_element"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::access_element"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::alter_element"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::alter_element"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_confirmation::alter_form"');
+    $assert_session->responseContains('Invoking hook_webform_handler_invoke_alter() for "contact:email_notification::alter_form"');
   }
 
 }

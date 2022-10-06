@@ -6,7 +6,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\Event\SearchApiEvents;
 use Drupal\search_api\SearchApiPluginManager;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Manages display plugins.
@@ -16,7 +16,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @see \Drupal\search_api\Display\DisplayPluginBase
  * @see plugin_api
  */
-class DisplayPluginManager extends SearchApiPluginManager {
+class DisplayPluginManager extends SearchApiPluginManager implements DisplayPluginManagerInterface {
 
   /**
    * Static cache for the display plugins.
@@ -37,7 +37,7 @@ class DisplayPluginManager extends SearchApiPluginManager {
    *   Cache backend instance to use.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $eventDispatcher
    *   The event dispatcher.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EventDispatcherInterface $eventDispatcher) {

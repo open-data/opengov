@@ -18,11 +18,18 @@ class CommentCSSTest extends CommentTestBase {
   use GeneratePermutationsTrait;
 
   /**
-   * {@inheritdoc}
+   * The theme to install as the default for testing.
+   *
+   * @var string
+   *
+   * @todo This test's reliance on classes makes Stark a bad fit as a base
+   *   theme. Change the default theme to Starterkit once it is stable.
+   *
+   * @see https://www.drupal.org/project/drupal/issues/3267890
    */
   protected $defaultTheme = 'classy';
 
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Allow anonymous users to see comments.
@@ -88,7 +95,7 @@ class CommentCSSTest extends CommentTestBase {
 
       // Verify the data-history-node-id attribute, which is necessary for the
       // by-viewer class and the "new" indicator, see below.
-      $this->assertIdentical(1, count($this->xpath('//*[@data-history-node-id="' . $node->id() . '"]')), 'data-history-node-id attribute is set on node.');
+      $this->assertCount(1, $this->xpath('//*[@data-history-node-id="' . $node->id() . '"]'), 'data-history-node-id attribute is set on node.');
 
       // Verify classes if the comment is visible for the current user.
       if ($case['comment_status'] == CommentInterface::PUBLISHED || $case['user'] == 'admin') {
@@ -114,8 +121,8 @@ class CommentCSSTest extends CommentTestBase {
         // drupal.comment-by-viewer library to add a by-viewer when the current
         // user (the viewer) was the author of the comment. We do this in Java-
         // Script to prevent breaking the render cache.
-        $this->assertIdentical(1, count($this->xpath('//*[contains(@class, "comment") and @data-comment-user-id="' . $case['comment_uid'] . '"]')), 'data-comment-user-id attribute is set on comment.');
-        $this->assertRaw(drupal_get_path('module', 'comment') . '/js/comment-by-viewer.js', 'drupal.comment-by-viewer library is present.');
+        $this->assertCount(1, $this->xpath('//*[contains(@class, "comment") and @data-comment-user-id="' . $case['comment_uid'] . '"]'), 'data-comment-user-id attribute is set on comment.');
+        $this->assertSession()->responseContains($this->getModulePath('comment') . '/js/comment-by-viewer.js');
       }
 
       // Verify the unpublished class.
@@ -132,9 +139,9 @@ class CommentCSSTest extends CommentTestBase {
       // comment that was created or changed after the last time the current
       // user read the corresponding node.
       if ($case['comment_status'] == CommentInterface::PUBLISHED || $case['user'] == 'admin') {
-        $this->assertIdentical(1, count($this->xpath('//*[contains(@class, "comment")]/*[@data-comment-timestamp="' . $comment->getChangedTime() . '"]')), 'data-comment-timestamp attribute is set on comment');
+        $this->assertCount(1, $this->xpath('//*[contains(@class, "comment")]/*[@data-comment-timestamp="' . $comment->getChangedTime() . '"]'), 'data-comment-timestamp attribute is set on comment');
         $expectedJS = ($case['user'] !== 'anonymous');
-        $this->assertIdentical($expectedJS, isset($settings['ajaxPageState']['libraries']) && in_array('comment/drupal.comment-new-indicator', explode(',', $settings['ajaxPageState']['libraries'])), 'drupal.comment-new-indicator library is present.');
+        $this->assertSame($expectedJS, isset($settings['ajaxPageState']['libraries']) && in_array('comment/drupal.comment-new-indicator', explode(',', $settings['ajaxPageState']['libraries'])), 'drupal.comment-new-indicator library is present.');
       }
     }
   }
