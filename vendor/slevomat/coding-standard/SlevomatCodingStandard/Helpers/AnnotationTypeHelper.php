@@ -724,22 +724,40 @@ class AnnotationTypeHelper
 	/**
 	 * @param CallableTypeNode|GenericTypeNode|IdentifierTypeNode|ThisTypeNode|ArrayTypeNode|ArrayShapeNode|ConstTypeNode $typeNode
 	 */
-	public static function getTypeHintFromOneType(TypeNode $typeNode, bool $enableUnionTypeHint = false): string
+	public static function getTypeHintFromOneType(
+		TypeNode $typeNode,
+		bool $enableUnionTypeHint = false,
+		bool $enableStandaloneNullTrueFalseTypeHints = false
+	): string
 	{
 		if ($typeNode instanceof GenericTypeNode) {
-			return $typeNode->type->name;
+			$genericName = $typeNode->type->name;
+
+			if (strtolower($genericName) === 'non-empty-array') {
+				return 'array';
+			}
+
+			return $genericName;
 		}
 
 		if ($typeNode instanceof IdentifierTypeNode) {
 			if (strtolower($typeNode->name) === 'true') {
-				return 'bool';
+				return $enableStandaloneNullTrueFalseTypeHints ? 'true' : 'bool';
 			}
 
 			if (strtolower($typeNode->name) === 'false') {
-				return $enableUnionTypeHint ? 'false' : 'bool';
+				return $enableUnionTypeHint || $enableStandaloneNullTrueFalseTypeHints ? 'false' : 'bool';
 			}
 
-			if (in_array(strtolower($typeNode->name), ['class-string', 'trait-string', 'callable-string', 'numeric-string'], true)) {
+			if (in_array(strtolower($typeNode->name), ['positive-int', 'negative-int'], true)) {
+				return 'int';
+			}
+
+			if (in_array(
+				strtolower($typeNode->name),
+				['class-string', 'trait-string', 'callable-string', 'numeric-string', 'non-empty-string', 'literal-string'],
+				true
+			)) {
 				return 'string';
 			}
 

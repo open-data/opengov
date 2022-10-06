@@ -46,6 +46,7 @@ class Lexer
 	public const TOKEN_OPEN_CURLY_BRACKET = 31;
 	public const TOKEN_CLOSE_CURLY_BRACKET = 32;
 	public const TOKEN_NEGATED = 33;
+	public const TOKEN_ARROW = 34;
 
 	public const TOKEN_LABELS = [
 		self::TOKEN_REFERENCE => '\'&\'',
@@ -66,6 +67,7 @@ class Lexer
 		self::TOKEN_VARIADIC => '\'...\'',
 		self::TOKEN_DOUBLE_COLON => '\'::\'',
 		self::TOKEN_DOUBLE_ARROW => '\'=>\'',
+		self::TOKEN_ARROW => '\'->\'',
 		self::TOKEN_EQUAL => '\'=\'',
 		self::TOKEN_OPEN_PHPDOC => '\'/**\'',
 		self::TOKEN_CLOSE_PHPDOC => '\'*/\'',
@@ -138,12 +140,13 @@ class Lexer
 			self::TOKEN_VARIADIC => '\\.\\.\\.',
 			self::TOKEN_DOUBLE_COLON => '::',
 			self::TOKEN_DOUBLE_ARROW => '=>',
+			self::TOKEN_ARROW => '->',
 			self::TOKEN_EQUAL => '=',
 			self::TOKEN_COLON => ':',
 
 			self::TOKEN_OPEN_PHPDOC => '/\\*\\*(?=\\s)\\x20?+',
 			self::TOKEN_CLOSE_PHPDOC => '\\*/',
-			self::TOKEN_PHPDOC_TAG => '@[a-z][a-z0-9-]*+',
+			self::TOKEN_PHPDOC_TAG => '@[a-z][a-z0-9-\\\\]*+',
 			self::TOKEN_PHPDOC_EOL => '\\r?+\\n[\\x09\\x20]*+(?:\\*(?!/)\\x20?+)?',
 
 			self::TOKEN_FLOAT => '(?:-?[0-9]++\\.[0-9]*+(?:e-?[0-9]++)?)|(?:-?[0-9]*+\\.[0-9]++(?:e-?[0-9]++)?)|(?:-?[0-9]++e-?[0-9]++)',

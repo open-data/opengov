@@ -20,6 +20,7 @@ use const T_DOC_COMMENT_STAR;
 use const T_DOC_COMMENT_STRING;
 use const T_DOC_COMMENT_TAG;
 use const T_DOC_COMMENT_WHITESPACE;
+use const T_ENUM;
 use const T_EXIT;
 use const T_FALSE;
 use const T_FN;
@@ -36,12 +37,20 @@ use const T_PHPCS_ENABLE;
 use const T_PHPCS_IGNORE;
 use const T_PHPCS_IGNORE_FILE;
 use const T_PHPCS_SET;
+use const T_PRIVATE;
+use const T_PROTECTED;
+use const T_PUBLIC;
+use const T_READONLY;
 use const T_RETURN;
 use const T_SELF;
+use const T_STATIC;
 use const T_STRING;
 use const T_THROW;
 use const T_TRAIT;
+use const T_TRUE;
+use const T_TYPE_INTERSECTION;
 use const T_TYPE_UNION;
+use const T_VAR;
 use const T_WHITESPACE;
 
 /**
@@ -50,14 +59,15 @@ use const T_WHITESPACE;
 class TokenHelper
 {
 
-	/** @var (int|string)[] */
+	/** @var array<int, (int|string)> */
 	public static $typeKeywordTokenCodes = [
 		T_CLASS,
 		T_TRAIT,
 		T_INTERFACE,
+		T_ENUM,
 	];
 
-	/** @var (int|string)[] */
+	/** @var array<int, (int|string)> */
 	public static $ineffectiveTokenCodes = [
 		T_WHITESPACE,
 		T_COMMENT,
@@ -75,7 +85,7 @@ class TokenHelper
 		T_PHPCS_SET,
 	];
 
-	/** @var (int|string)[] */
+	/** @var array<int, (int|string)> */
 	public static $inlineCommentTokenCodes = [
 		T_COMMENT,
 		T_PHPCS_DISABLE,
@@ -85,7 +95,7 @@ class TokenHelper
 		T_PHPCS_SET,
 	];
 
-	/** @var (int|string)[] */
+	/** @var array<int, (int|string)> */
 	public static $earlyExitTokenCodes = [
 		T_RETURN,
 		T_CONTINUE,
@@ -94,15 +104,25 @@ class TokenHelper
 		T_EXIT,
 	];
 
-	/** @var (int|string)[] */
+	/** @var array<int, (int|string)> */
 	public static $functionTokenCodes = [
 		T_FUNCTION,
 		T_CLOSURE,
 		T_FN,
 	];
 
+	/** @var array<int, (int|string)> */
+	public static $propertyModifiersTokenCodes = [
+		T_VAR,
+		T_PUBLIC,
+		T_PROTECTED,
+		T_PRIVATE,
+		T_READONLY,
+		T_STATIC,
+	];
+
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 */
 	public static function findNext(File $phpcsFile, $types, int $startPointer, ?int $endPointer = null): ?int
 	{
@@ -112,7 +132,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 * @return int[]
 	 */
 	public static function findNextAll(File $phpcsFile, $types, int $startPointer, ?int $endPointer = null): array
@@ -134,7 +154,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 */
 	public static function findNextContent(File $phpcsFile, $types, string $content, int $startPointer, ?int $endPointer = null): ?int
 	{
@@ -153,7 +173,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 * @param int $startPointer Search starts at this token, inclusive
 	 * @param int|null $endPointer Search ends at this token, exclusive
 	 */
@@ -165,7 +185,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 */
 	public static function findNextLocal(File $phpcsFile, $types, int $startPointer, ?int $endPointer = null): ?int
 	{
@@ -184,7 +204,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 * @param int $startPointer Search starts at this token, inclusive
 	 * @param int|null $endPointer Search ends at this token, exclusive
 	 */
@@ -196,7 +216,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 */
 	public static function findPreviousContent(File $phpcsFile, $types, string $content, int $startPointer, ?int $endPointer = null): ?int
 	{
@@ -215,7 +235,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 * @param int $startPointer Search starts at this token, inclusive
 	 * @param int|null $endPointer Search ends at this token, exclusive
 	 */
@@ -227,7 +247,7 @@ class TokenHelper
 	}
 
 	/**
-	 * @param (int|string)|(int|string)[] $types
+	 * @param int|string|array<int|string, int|string> $types
 	 */
 	public static function findPreviousLocal(File $phpcsFile, $types, int $startPointer, ?int $endPointer = null): ?int
 	{
@@ -309,7 +329,7 @@ class TokenHelper
 
 		do {
 			$pointer--;
-		} while ($tokens[$pointer]['line'] === $line);
+		} while ($pointer >= 0 && $tokens[$pointer]['line'] === $line);
 
 		return self::findNextExcluding($phpcsFile, [T_WHITESPACE, T_DOC_COMMENT_WHITESPACE], $pointer + 1);
 	}
@@ -425,6 +445,7 @@ class TokenHelper
 					T_ARRAY_HINT,
 					T_CALLABLE,
 					T_FALSE,
+					T_TRUE,
 					T_NULL,
 				]
 			);
@@ -443,7 +464,7 @@ class TokenHelper
 		if ($typeHintTokenCodes === null) {
 			$typeHintTokenCodes = array_merge(
 				self::getOnlyTypeHintTokenCodes(),
-				[T_TYPE_UNION]
+				[T_TYPE_UNION, T_TYPE_INTERSECTION]
 			);
 		}
 

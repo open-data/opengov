@@ -14,6 +14,7 @@ use PHPStan\PhpDocParser\Ast\Type\ConditionalTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ConstTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IntersectionTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ThisTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
@@ -89,7 +90,7 @@ class AnnotationHelper
 			}
 		} elseif ($annotation instanceof TypeImportAnnotation) {
 			$annotationTypes[] = $annotation->getImportedFrom();
-		} else {
+		} elseif ($annotation->getType() !== null) {
 			$annotationTypes[] = $annotation->getType();
 		}
 
@@ -383,7 +384,9 @@ class AnnotationHelper
 		?TypeHint $typeHint,
 		Annotation $annotation,
 		array $traversableTypeHints,
-		bool $enableUnionTypeHint = false
+		bool $enableUnionTypeHint = false,
+		bool $enableIntersectionTypeHint = false,
+		bool $enableStandaloneNullTrueFalseTypeHints = false
 	): bool
 	{
 		if ($annotation->isInvalid()) {
@@ -396,6 +399,10 @@ class AnnotationHelper
 
 		if ($annotation->hasDescription()) {
 			return false;
+		}
+
+		if ($annotation->getType() === null) {
+			return true;
 		}
 
 		if (TypeHintHelper::isTraversableType(
@@ -420,6 +427,10 @@ class AnnotationHelper
 						&& TypeHintHelper::isUnofficialUnionTypeHint($annotation->getType()->name)
 					)
 				)
+			)
+			|| (
+				$enableIntersectionTypeHint
+				&& $annotation->getType() instanceof IntersectionTypeNode
 			)
 		) {
 			$annotationTypeHint = AnnotationTypeHelper::export($annotation->getType());
@@ -454,15 +465,22 @@ class AnnotationHelper
 		/** @var GenericTypeNode|IdentifierTypeNode|ThisTypeNode $annotationTypeNode */
 		$annotationTypeNode = $annotation->getType();
 
-		if (
-			$annotationTypeNode instanceof IdentifierTypeNode
-			&& in_array(
+		if ($annotationTypeNode instanceof IdentifierTypeNode) {
+			if (in_array(
 				strtolower($annotationTypeNode->name),
-				['true', 'false', 'class-string', 'trait-string', 'callable-string', 'numeric-string'],
+				['true', 'false', 'null'],
 				true
-			)
-		) {
-			return false;
+			)) {
+				return $enableStandaloneNullTrueFalseTypeHints;
+			}
+
+			if (in_array(
+				strtolower($annotationTypeNode->name),
+				['class-string', 'trait-string', 'callable-string', 'numeric-string', 'non-empty-string', 'literal-string', 'positive-int', 'negative-int'],
+				true
+			)) {
+				return false;
+			}
 		}
 
 		$annotationTypeHint = AnnotationTypeHelper::getTypeHintFromOneType($annotationTypeNode);

@@ -9,13 +9,19 @@ use SlevomatCodingStandard\Helpers\ClassHelper;
 use SlevomatCodingStandard\Helpers\PropertyHelper;
 use SlevomatCodingStandard\Helpers\StringHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
-use const T_PUBLIC;
+use function array_merge;
+use const T_PRIVATE;
+use const T_PROTECTED;
+use const T_VAR;
 use const T_VARIABLE;
 
 final class ForbiddenPublicPropertySniff implements Sniff
 {
 
 	public const CODE_FORBIDDEN_PUBLIC_PROPERTY = 'ForbiddenPublicProperty';
+
+	/** @var bool */
+	public $checkPromoted = false;
 
 	/**
 	 * @return array<int, (int|string)>
@@ -31,7 +37,7 @@ final class ForbiddenPublicPropertySniff implements Sniff
 	 */
 	public function process(File $file, $variablePointer): void
 	{
-		if (!PropertyHelper::isProperty($file, $variablePointer)) {
+		if (!PropertyHelper::isProperty($file, $variablePointer, $this->checkPromoted)) {
 			return;
 		}
 
@@ -41,7 +47,7 @@ final class ForbiddenPublicPropertySniff implements Sniff
 		}
 
 		$scopeModifierToken = $this->getPropertyScopeModifier($file, $variablePointer);
-		if ($scopeModifierToken['code'] !== T_PUBLIC) {
+		if ($scopeModifierToken['code'] === T_PROTECTED || $scopeModifierToken['code'] === T_PRIVATE) {
 			return;
 		}
 
@@ -63,7 +69,7 @@ final class ForbiddenPublicPropertySniff implements Sniff
 	 */
 	private function getPropertyScopeModifier(File $file, int $position): array
 	{
-		$scopeModifierPosition = TokenHelper::findPrevious($file, Tokens::$scopeModifiers, $position - 1);
+		$scopeModifierPosition = TokenHelper::findPrevious($file, array_merge([T_VAR], Tokens::$scopeModifiers), $position - 1);
 
 		return $file->getTokens()[$scopeModifierPosition];
 	}

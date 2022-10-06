@@ -4,6 +4,7 @@ namespace VariableAnalysis\Lib;
 
 use PHP_CodeSniffer\Files\File;
 use VariableAnalysis\Lib\ScopeInfo;
+use VariableAnalysis\Lib\ForLoopInfo;
 use VariableAnalysis\Lib\ScopeType;
 use VariableAnalysis\Lib\VariableInfo;
 use PHP_CodeSniffer\Util\Tokens;
@@ -43,7 +44,7 @@ class Helpers
 	public static function findContainingOpeningSquareBracket(File $phpcsFile, $stackPtr)
 	{
 		$previousStatementPtr = self::getPreviousStatementPtr($phpcsFile, $stackPtr);
-		return self::getIntOrNull($phpcsFile->findPrevious([T_OPEN_SHORT_ARRAY], $stackPtr - 1, $previousStatementPtr));
+		return self::getIntOrNull($phpcsFile->findPrevious([T_OPEN_SHORT_ARRAY, T_OPEN_SQUARE_BRACKET], $stackPtr - 1, $previousStatementPtr));
 	}
 
 	/**
@@ -90,14 +91,15 @@ class Helpers
 	}
 
 	/**
+	 * Return true if the token conditions are within a function before they are
+	 * within a class.
+	 *
 	 * @param (int|string)[] $conditions
 	 *
 	 * @return bool
 	 */
 	public static function areConditionsWithinFunctionBeforeClass(array $conditions)
 	{
-		// Return true if the token conditions are within a function before
-		// they are within a class.
 		$classTypes = [T_CLASS, T_ANON_CLASS, T_TRAIT];
 		foreach (array_reverse($conditions, true) as $scopeCode) {
 			if (in_array($scopeCode, $classTypes)) {
@@ -111,14 +113,15 @@ class Helpers
 	}
 
 	/**
+	 * Return true if the token conditions are within an if block before they are
+	 * within a class or function.
+	 *
 	 * @param (int|string)[] $conditions
 	 *
 	 * @return int|string|null
 	 */
 	public static function getClosestIfPositionIfBeforeOtherConditions(array $conditions)
 	{
-		// Return true if the token conditions are within an if block before
-		// they are within a class or function.
 		$conditionsInsideOut = array_reverse($conditions, true);
 		if (empty($conditions)) {
 			return null;
@@ -136,28 +139,35 @@ class Helpers
 	 *
 	 * @return bool
 	 */
-	public static function isTokenInsideFunctionDefinitionArgumentList(File $phpcsFile, $stackPtr)
+	public static function isTokenFunctionParameter(File $phpcsFile, $stackPtr)
 	{
-		return is_int(self::getFunctionIndexForFunctionArgument($phpcsFile, $stackPtr));
+		return is_int(self::getFunctionIndexForFunctionParameter($phpcsFile, $stackPtr));
 	}
 
 	/**
+	 * Return true if the token is inside the arguments of a function call.
+	 *
+	 * For example, the variable `$foo` in `doSomething($foo)` is inside the
+	 * arguments to the call to `doSomething()`.
+	 *
 	 * @param File $phpcsFile
 	 * @param int  $stackPtr
 	 *
 	 * @return bool
 	 */
-	public static function isTokenInsideFunctionCall(File $phpcsFile, $stackPtr)
+	public static function isTokenInsideFunctionCallArgument(File $phpcsFile, $stackPtr)
 	{
 		return is_int(self::getFunctionIndexForFunctionCallArgument($phpcsFile, $stackPtr));
 	}
 
 	/**
-	 * Find the index of the function keyword for a token in a function definition's arguments
+	 * Find the index of the function keyword for a token in a function
+	 * definition's parameters.
 	 *
 	 * Does not work for tokens inside the "use".
 	 *
-	 * Will also work for the parenthesis that make up the function definition's arguments list.
+	 * Will also work for the parenthesis that make up the function definition's
+	 * parameters list.
 	 *
 	 * For arguments inside a function call, rather than a definition, use
 	 * `getFunctionIndexForFunctionCallArgument`.
@@ -167,7 +177,7 @@ class Helpers
 	 *
 	 * @return ?int
 	 */
-	public static function getFunctionIndexForFunctionArgument(File $phpcsFile, $stackPtr)
+	public static function getFunctionIndexForFunctionParameter(File $phpcsFile, $stackPtr)
 	{
 		$tokens = $phpcsFile->getTokens();
 		$token = $tokens[$stackPtr];
@@ -250,6 +260,10 @@ class Helpers
 	}
 
 	/**
+	 * Return the index of a function's name token from inside the function.
+	 *
+	 * $stackPtr must be inside the function body or parameters for this to work.
+	 *
 	 * @param File $phpcsFile
 	 * @param int  $stackPtr
 	 *
@@ -437,8 +451,8 @@ class Helpers
 		}
 
 		// If there is no "conditions" array, this is a function definition argument.
-		if (self::isTokenInsideFunctionDefinitionArgumentList($phpcsFile, $stackPtr)) {
-			$functionPtr = self::getFunctionIndexForFunctionArgument($phpcsFile, $stackPtr);
+		if (self::isTokenFunctionParameter($phpcsFile, $stackPtr)) {
+			$functionPtr = self::getFunctionIndexForFunctionParameter($phpcsFile, $stackPtr);
 			if (! is_int($functionPtr)) {
 				throw new \Exception("Function index not found for function argument index {$stackPtr}");
 			}
@@ -631,7 +645,7 @@ class Helpers
 			T_CLOSE_CURLY_BRACKET,
 			T_CLOSE_SHORT_ARRAY,
 		];
-		$scopeCloserIndex = $phpcsFile->findNext($endScopeTokens, $fatArrowIndex  + 1);
+		$scopeCloserIndex = $phpcsFile->findNext($endScopeTokens, $fatArrowIndex	+ 1);
 		if (! is_int($scopeCloserIndex)) {
 			return null;
 		}
@@ -642,7 +656,70 @@ class Helpers
 	}
 
 	/**
-	 * Return a list of indices for variables assigned within a list assignment
+	 * Determine if a token is a list opener for list assignment/destructuring.
+	 *
+	 * The index provided can be either the opening square brace of a short list
+	 * assignment like the first character of `[$a] = $b;` or the `list` token of
+	 * an expression like `list($a) = $b;` or the opening parenthesis of that
+	 * expression.
+	 *
+	 * @param File $phpcsFile
+	 * @param int  $listOpenerIndex
+	 *
+	 * @return bool
+	 */
+	private static function isListAssignment(File $phpcsFile, $listOpenerIndex)
+	{
+		$tokens = $phpcsFile->getTokens();
+		// Match `[$a] = $b;` except for when the previous token is a parenthesis.
+		if ($tokens[$listOpenerIndex]['code'] === T_OPEN_SHORT_ARRAY) {
+			return true;
+		}
+		// Match `list($a) = $b;`
+		if ($tokens[$listOpenerIndex]['code'] === T_LIST) {
+			return true;
+		}
+
+		// If $listOpenerIndex is the open parenthesis of `list($a) = $b;`, then
+		// match that too.
+		if ($tokens[$listOpenerIndex]['code'] === T_OPEN_PARENTHESIS) {
+			$previousTokenPtr = $phpcsFile->findPrevious(Tokens::$emptyTokens, $listOpenerIndex - 1, null, true);
+			if (
+				isset($tokens[$previousTokenPtr])
+				&& $tokens[$previousTokenPtr]['code'] === T_LIST
+			) {
+				return true;
+			}
+			return true;
+		}
+
+		// If the list opener token is a square bracket that is preceeded by a
+		// close parenthesis that has an owner which is a scope opener, then this
+		// is a list assignment and not an array access.
+		//
+		// Match `if (true) [$a] = $b;`
+		if ($tokens[$listOpenerIndex]['code'] === T_OPEN_SQUARE_BRACKET) {
+			$previousTokenPtr = $phpcsFile->findPrevious(Tokens::$emptyTokens, $listOpenerIndex - 1, null, true);
+			if (
+				isset($tokens[$previousTokenPtr])
+				&& $tokens[$previousTokenPtr]['code'] === T_CLOSE_PARENTHESIS
+				&& isset($tokens[$previousTokenPtr]['parenthesis_owner'])
+				&& isset(Tokens::$scopeOpeners[$tokens[$tokens[$previousTokenPtr]['parenthesis_owner']]['code']])
+			) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Return a list of indices for variables assigned within a list assignment.
+	 *
+	 * The index provided can be either the opening square brace of a short list
+	 * assignment like the first character of `[$a] = $b;` or the `list` token of
+	 * an expression like `list($a) = $b;` or the opening parenthesis of that
+	 * expression.
 	 *
 	 * @param File $phpcsFile
 	 * @param int  $listOpenerIndex
@@ -705,6 +782,10 @@ class Helpers
 				$variablePtrs[] = $variablePtr;
 			}
 			++$currentPtr;
+		}
+
+		if (! self::isListAssignment($phpcsFile, $listOpenerIndex)) {
+			return null;
 		}
 
 		return $variablePtrs;
@@ -894,7 +975,7 @@ class Helpers
 	public static function getScopeCloseForScopeOpen(File $phpcsFile, $scopeStartIndex)
 	{
 		$tokens = $phpcsFile->getTokens();
-		$scopeCloserIndex = isset($tokens[$scopeStartIndex]['scope_closer']) ? $tokens[$scopeStartIndex]['scope_closer'] : null;
+		$scopeCloserIndex = isset($tokens[$scopeStartIndex]['scope_closer']) ? $tokens[$scopeStartIndex]['scope_closer'] : 0;
 
 		if (self::isArrowFunction($phpcsFile, $scopeStartIndex)) {
 			$arrowFunctionInfo = self::getArrowFunctionOpenClose($phpcsFile, $scopeStartIndex);
@@ -985,6 +1066,9 @@ class Helpers
 	/**
 	 * Find the index of the function keyword for a token in a function call's arguments
 	 *
+	 * For the variable `$foo` in the expression `doSomething($foo)`, this will
+	 * return the index of the `doSomething` token.
+	 *
 	 * @param File $phpcsFile
 	 * @param int  $stackPtr
 	 *
@@ -1008,9 +1092,32 @@ class Helpers
 		if (! is_int($functionPtr) || ! isset($tokens[$functionPtr]['code'])) {
 			return null;
 		}
-		if ($tokens[$functionPtr]['code'] === 'function' || ($tokens[$functionPtr]['content'] === 'fn' && self::isArrowFunction($phpcsFile, $functionPtr))) {
+		if (
+			$tokens[$functionPtr]['content'] === 'function'
+			|| ($tokens[$functionPtr]['content'] === 'fn' && self::isArrowFunction($phpcsFile, $functionPtr))
+		) {
+			// If there is a function/fn keyword before the beginning of the parens,
+			// this is a function definition and not a function call.
 			return null;
 		}
+		if (! empty($tokens[$functionPtr]['scope_opener'])) {
+			// If the alleged function name has a scope, this is not a function call.
+			return null;
+		}
+
+		$functionNameType = $tokens[$functionPtr]['code'];
+		if (! in_array($functionNameType, Tokens::$functionNameTokens, true)) {
+			// If the alleged function name is not a variable or a string, this is
+			// not a function call.
+			return null;
+		}
+
+		if ($tokens[$functionPtr]['level'] !== $tokens[$stackPtr]['level']) {
+			// If the variable is inside a different scope than the function name,
+			// the function call doesn't apply to the variable.
+			return null;
+		}
+
 		return $functionPtr;
 	}
 
@@ -1167,5 +1274,199 @@ class Helpers
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @param File $phpcsFile
+	 * @param int  $stackPtr
+	 *
+	 * @return ForLoopInfo
+	 */
+	public static function makeForLoopInfo(File $phpcsFile, $stackPtr)
+	{
+		$tokens = $phpcsFile->getTokens();
+		$token = $tokens[$stackPtr];
+		$forIndex = $stackPtr;
+		$blockStart = $token['parenthesis_closer'];
+		if (isset($token['scope_opener'])) {
+			$blockStart = $token['scope_opener'];
+			$blockEnd = $token['scope_closer'];
+		} else {
+			// Some for loop blocks will not have scope positions because it they are
+			// inline (no curly braces) so we have to find the end of their scope by
+			// looking for the end of the next statement.
+			$nextSemicolonIndex = $phpcsFile->findNext([T_SEMICOLON], $token['parenthesis_closer']);
+			if (! is_int($nextSemicolonIndex)) {
+				$nextSemicolonIndex = $token['parenthesis_closer'] + 1;
+			}
+			$blockEnd = $nextSemicolonIndex;
+		}
+		$initStart = intval($token['parenthesis_opener']) + 1;
+		$initEnd = null;
+		$conditionStart = null;
+		$conditionEnd = null;
+		$incrementStart = null;
+		$incrementEnd = $token['parenthesis_closer'] - 1;
+
+		$semicolonCount = 0;
+		$forLoopLevel = $tokens[$forIndex]['level'];
+		$forLoopNestedParensCount = 1;
+
+		if (isset($tokens[$forIndex]['nested_parenthesis'])) {
+			$forLoopNestedParensCount = count($tokens[$forIndex]['nested_parenthesis']) + 1;
+		}
+
+		for ($i = $initStart; ($i <= $incrementEnd && $semicolonCount < 2); $i++) {
+			if ($tokens[$i]['code'] !== T_SEMICOLON) {
+				continue;
+			}
+
+			if ($tokens[$i]['level'] !== $forLoopLevel) {
+				continue;
+			}
+
+			if (count($tokens[$i]['nested_parenthesis']) !== $forLoopNestedParensCount) {
+				continue;
+			}
+
+			switch ($semicolonCount) {
+				case 0:
+					$initEnd = $i;
+					$conditionStart = $initEnd + 1;
+					break;
+				case 1:
+					$conditionEnd = $i;
+					$incrementStart = $conditionEnd + 1;
+					break;
+			}
+			$semicolonCount += 1;
+		}
+
+		if ($initEnd === null || $conditionStart === null || $conditionEnd === null || $incrementStart === null) {
+			throw new \Exception("Cannot parse for loop at position {$forIndex}");
+		}
+
+		return new ForLoopInfo(
+			$forIndex,
+			$blockStart,
+			$blockEnd,
+			$initStart,
+			$initEnd,
+			$conditionStart,
+			$conditionEnd,
+			$incrementStart,
+			$incrementEnd
+		);
+	}
+
+	/**
+	 * @param int                     $stackPtr
+	 * @param array<int, ForLoopInfo> $forLoops
+	 * @return ForLoopInfo|null
+	 */
+	public static function getForLoopForIncrementVariable($stackPtr, $forLoops)
+	{
+		foreach ($forLoops as $forLoop) {
+			if ($stackPtr > $forLoop->incrementStart && $stackPtr < $forLoop->incrementEnd) {
+				return $forLoop;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return true if the token looks like constructor promotion.
+	 *
+	 * Call on a parameter variable token only.
+	 *
+	 * @param File $phpcsFile
+	 * @param int  $stackPtr
+	 *
+	 * @return bool
+	 */
+	public static function isConstructorPromotion(File $phpcsFile, $stackPtr)
+	{
+		$functionIndex = self::getFunctionIndexForFunctionParameter($phpcsFile, $stackPtr);
+		if (! $functionIndex) {
+			return false;
+		}
+
+		$tokens = $phpcsFile->getTokens();
+
+		// If the previous token is a visibility keyword, this is constructor
+		// promotion. eg: `public $foobar`.
+		$prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), $functionIndex, true);
+		if (! is_int($prev)) {
+			return false;
+		}
+		$prevToken = $tokens[$prev];
+		if (in_array($prevToken['code'], Tokens::$scopeModifiers, true)) {
+			return true;
+		}
+
+		// If the previous token is not a visibility keyword, but the one before it
+		// is, the previous token was probably a typehint and this is constructor
+		// promotion. eg: `public boolean $foobar`.
+		$prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($prev - 1), $functionIndex, true);
+		if (! is_int($prev)) {
+			return false;
+		}
+		$prevToken = $tokens[$prev];
+		if (in_array($prevToken['code'], Tokens::$scopeModifiers, true)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Return true if the token is inside an abstract class.
+	 *
+	 * @param File $phpcsFile
+	 * @param int  $stackPtr
+	 *
+	 * @return bool
+	 */
+	public static function isInAbstractClass(File $phpcsFile, $stackPtr)
+	{
+		$classIndex = $phpcsFile->getCondition($stackPtr, T_CLASS);
+		if (! is_int($classIndex)) {
+			return false;
+		}
+		$classProperties = $phpcsFile->getClassProperties($classIndex);
+		return $classProperties['is_abstract'];
+	}
+
+	/**
+	 * Return true if the function body is empty or contains only `return;`
+	 *
+	 * @param File $phpcsFile
+	 * @param int  $stackPtr  The index of the function keyword.
+	 *
+	 * @return bool
+	 */
+	public static function isFunctionBodyEmpty(File $phpcsFile, $stackPtr)
+	{
+		$tokens = $phpcsFile->getTokens();
+		if ($tokens[$stackPtr]['code'] !== T_FUNCTION) {
+			return false;
+		}
+		$functionScopeStart = $tokens[$stackPtr]['scope_opener'];
+		$functionScopeEnd = $tokens[$stackPtr]['scope_closer'];
+		$tokensToIgnore = array_merge(
+			Tokens::$emptyTokens,
+			[
+				T_RETURN,
+				T_SEMICOLON,
+				T_OPEN_CURLY_BRACKET,
+				T_CLOSE_CURLY_BRACKET,
+			]
+		);
+		for ($i = $functionScopeStart; $i < $functionScopeEnd; $i++) {
+			if (! in_array($tokens[$i]['code'], $tokensToIgnore, true)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
