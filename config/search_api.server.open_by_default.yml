@@ -1,4 +1,4 @@
-uuid: e57dd79b-18c3-4190-b3c7-d475575e3cd8
+uuid: ca999b89-e07a-4de7-8987-ba0abb8164d3
 langcode: en
 status: true
 dependencies:
@@ -28,9 +28,9 @@ dependencies:
     - search_api_solr.solr_request_handler.request_handler_tvrh_default_7_0_0
   module:
     - search_api_solr
-id: pd_core_reclassification
-name: 'Proactive Disclosure: Reclassification'
-description: 'Connector for Solr core_reclassification'
+id: open_by_default
+name: 'CKAN: Open by Default'
+description: 'Connector for Solr ckan_obd'
 backend: search_api_solr
 backend_config:
   connector: standard
@@ -39,7 +39,7 @@ backend_config:
     host: tbs-solrdb03.t1.tbs-sct.gc.ca
     port: 8983
     path: /
-    core: drupal_reclassification
+    core: ckan_obd
     timeout: 5
     index_timeout: 5
     optimize_timeout: 10
@@ -58,11 +58,11 @@ backend_config:
   disabled_request_dispatchers:
     - request_dispatcher_httpcaching_default_7_0_0
   rows: 10
-  retrieve_data: true
+  retrieve_data: false
   highlight_data: false
-  skip_schema_check: true
+  skip_schema_check: false
   server_prefix: ''
   domain: generic
   environment: default
   optimize: false
-  site_hash: true
+  site_hash: false

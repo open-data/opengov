@@ -8,6 +8,8 @@ dependencies:
 third_party_settings:
   honeypot:
     honeypot: true
+_core:
+  default_config_hash: XMXyI2hAGIOAFbxkyKuNuVPqPlXX_LzNOmyXJ7IWfco
 open: null
 close: null
 weight: 0
@@ -178,11 +180,13 @@ access:
     roles:
       - administrator
       - comment_moderator
+      - sd_moderator
     users: {  }
     permissions: {  }
   update_any:
     roles:
       - administrator
+      - sd_moderator
     users: {  }
     permissions: {  }
   delete_any:
@@ -313,5 +317,3 @@ handlers:
     weight: 0
     settings: {  }
 variants: {  }
-_core:
-  default_config_hash: XMXyI2hAGIOAFbxkyKuNuVPqPlXX_LzNOmyXJ7IWfco

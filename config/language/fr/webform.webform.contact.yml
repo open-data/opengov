@@ -1,12 +1,5 @@
-title: Contact
 description: 'Contact webform'
 elements: "subject:\n  '#title': Sujet\ncomments_and_feedback:\n  '#title': 'Commentaires et Rétroaction'\nfirst_name:\n  '#title': Prénom\nlast_name:\n  '#title': 'Nom de famille'\ntitle:\n  '#title': Titre\norganization:\n  '#title': Organisation\ne_mail_address:\n  '#title': 'Votre Email'\ntelephone:\n  '#title': Téléphone\nconsent:\n  '#description': '<strong>Je consens au partage de mes renseignements personnels entre les ministères du gouvernement du Canada afin de répondre à ma demande de renseignements.</strong>'\n"
 settings:
   confirmation_message: 'Votre message a été envoyé.'
-handlers:
-  email_confirmation:
-    label: 'Email confirmation'
-    settings:
-      from_name: _default
-  email_notification:
-    label: 'Email notification'
+  limit_user_message: 'Plus de soumissions ne sont pas autorisées'

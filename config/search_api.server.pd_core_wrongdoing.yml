@@ -36,10 +36,10 @@ backend_config:
   connector: standard
   connector_config:
     scheme: http
-    host: tbs-solrdb01.t1.tbs-sct.gc.ca
+    host: tbs-solrdb03.t1.tbs-sct.gc.ca
     port: 8983
     path: /
-    core: core_wrongdoing
+    core: drupal_wrongdoing
     timeout: 5
     index_timeout: 5
     optimize_timeout: 10

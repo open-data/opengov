@@ -10,6 +10,7 @@ permissions:
   - 'access content overview'
   - 'access webform overview'
   - 'access webform submission user'
+  - 'administer book outlines'
   - 'administer webform submission'
   - 'comment_spam admin_settings'
   - 'comment_spam set spam'
