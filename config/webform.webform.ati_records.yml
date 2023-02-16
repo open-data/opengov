@@ -70,7 +70,11 @@ settings:
   share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
-  submission_views: {  }
+  submission_views:
+    custom_view:
+      view: 'webform_submissions:embed_1'
+      title: 'Submissions with More Filters'
+      webform_routes: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
   submission_user_duplicate: false

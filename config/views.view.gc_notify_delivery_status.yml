@@ -4,6 +4,8 @@ status: true
 dependencies:
   config:
     - system.menu.admin
+    - user.role.administrator
+    - user.role.business_owner
   module:
     - gcnotify
     - user
@@ -25,9 +27,11 @@ display:
     position: 0
     display_options:
       access:
-        type: perm
+        type: role
         options:
-          perm: 'access webform overview'
+          role:
+            administrator: administrator
+            business_owner: business_owner
       cache:
         type: none
         options: {  }
@@ -82,28 +86,29 @@ display:
           summary: ''
           description: ''
           columns:
+            api_response: api_response
             id: id
-            webform_sid: webform_sid
             callback_received: callback_received
             environment: environment
             to: to
-            reference: reference
             status: status
+            webform_sid: webform_sid
+            reference: reference
             provider_response: provider_response
           info:
+            api_response:
+              sortable: 0
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: 0
+              responsive: ''
             id:
               sortable: 1
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: 0
-              responsive: ''
-            webform_sid:
-              sortable: 1
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: 1
               responsive: ''
             callback_received:
               sortable: 1
@@ -126,14 +131,21 @@ display:
               separator: ''
               empty_column: 0
               responsive: ''
-            reference:
+            status:
               sortable: 1
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: 0
               responsive: ''
-            status:
+            webform_sid:
+              sortable: 1
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: 1
+              responsive: ''
+            reference:
               sortable: 1
               default_sort_order: asc
               align: ''
@@ -151,10 +163,10 @@ display:
           empty_table: 0
           responsive: 1
           bootstrap_styles:
-            bordered: bordered
             hover: hover
-            condensed: condensed
             striped: 0
+            bordered: 0
+            condensed: 0
       row:
         type: fields
         options:
@@ -843,7 +855,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user.permissions
+        - user.roles
       tags: {  }
   page_1:
     display_plugin: page
@@ -924,7 +936,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "{{ id }}\r\n{% if api_response %}\r\n  <a href=\"/admin/gcnotify/status/notification/{{ id }}\" \r\n       class=\"use-ajax\" \r\n       data-dialog-options=\"{&quot;width&quot;:750, &quot;height&quot;:400}\" \r\n       data-dialog-type=\"modal\" >Details</a>\r\n{% endif %}"
+            text: "{% if api_response %}\r\n  <a href=\"/admin/gcnotify/status/notification/{{ id }}\" \r\n       class=\"use-ajax\" \r\n       data-dialog-options=\"{&quot;width&quot;:750, &quot;height&quot;:400}\" \r\n       data-dialog-type=\"modal\" >{{ id }}</a>\r\n{% else %}\r\n  {{ id }}\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -1124,8 +1136,8 @@ display:
           label: Status
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: "{% if status != \"delivered\" %}\r\n  <div class=\"admin-missing\"><strong>\r\n{% endif %}\r\n  {{ status }}\r\n{% if status != \"delivered\" %}\r\n  </strong></div>\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -1322,6 +1334,7 @@ display:
         fields: false
         filters: false
         filter_groups: false
+        css_class: false
       filters:
         id:
           id: id
@@ -1594,13 +1607,14 @@ display:
         operator: AND
         groups:
           1: AND
+      css_class: ''
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user.permissions
+        - user.roles
       tags: {  }
   page_2:
     display_plugin: page
@@ -1843,5 +1857,5 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
-        - user.permissions
+        - user.roles
       tags: {  }

@@ -595,6 +595,23 @@ display:
         - url.query_args
         - user
       tags: {  }
+  embed_1:
+    display_plugin: embed
+    id: embed_1
+    display_title: 'Embed: ATI Request By Year'
+    position: 5
+    display_options:
+      display_extenders: {  }
+      display_description: ''
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - user
+      tags: {  }
   embed_administer:
     display_plugin: embed
     id: embed_administer
