@@ -1,4 +1,4 @@
-uuid: d5980f29-5c1f-4cac-9ec4-ee79813ca41f
+uuid: faf1fb0b-5f58-4fb8-8b21-e6a4c0c0a0fc
 langcode: en
 status: true
 dependencies:
@@ -16,8 +16,8 @@ dependencies:
     - user
 _core:
   default_config_hash: cCq1vjj1qmyd39oBIUyOe8YPDsobJ5fZRhp2Xy5O7lA
-id: comment
-label: Comments
+id: filtered_comments
+label: 'Filtered comments'
 module: comment
 description: 'Find and manage comments.'
 tag: default
@@ -1826,7 +1826,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          operator: contains
+          operator: '='
           value: ''
           group: 1
           exposed: true

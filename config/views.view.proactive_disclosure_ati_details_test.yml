@@ -1,16 +1,19 @@
-uuid: 503b1b46-5c40-48c8-a3b4-84f2a35a3faf
+uuid: 484869fb-c582-477a-a26b-e7e2e7a892b2
 langcode: en
 status: true
 dependencies:
   config:
     - search_api.index.pd_core_ati
-    - webform.webform.ati_records
+    - user.role.administrator
+    - user.role.business_owner
+    - webform.webform.ati_records_test
   content:
     - 'block_content:basic:54ed5b8f-aa43-4de2-8b44-96d07d012a56'
   module:
     - search_api
-id: pd_core_ati_details
-label: 'Proactive Disclosure: ATI Details'
+    - user
+id: proactive_disclosure_ati_details_test
+label: 'For Testing only: Proactive Disclosure: ATI Details'
 module: views
 description: 'Details page for Solr core_ati'
 tag: ''
@@ -24,8 +27,11 @@ display:
     position: 0
     display_options:
       access:
-        type: none
-        options: {  }
+        type: role
+        options:
+          role:
+            administrator: administrator
+            business_owner: business_owner
       cache:
         type: tag
         options: {  }
@@ -862,7 +868,7 @@ display:
           admin_label: ''
           empty: false
           tokenize: true
-          target: ati_records
+          target: ati_records_test
           view_mode: default
           bypass_access: false
           plugin_id: entity
@@ -914,12 +920,13 @@ display:
           plugin_id: search_api
       display_extenders:
         metatag_display_extender: {  }
-      title: 'Informal Request for ATI Records Previously Released'
+      title: 'TEST: Informal Request for ATI Records Previously Released'
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_interface'
         - url
+        - user.roles
       tags: {  }
   details:
     display_plugin: page
@@ -929,11 +936,12 @@ display:
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      path: search/ati/reference/%
+      path: test/search/ati/reference/%
       display_description: ''
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_interface'
         - url
+        - user.roles
       tags: {  }

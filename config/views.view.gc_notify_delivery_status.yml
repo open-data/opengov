@@ -11,7 +11,7 @@ dependencies:
     - user
     - views_bootstrap
 _core:
-  default_config_hash: WRk4K3pYZI0R9whUEXpzHtmk2DlK-iSeDmB0FnxpY4E
+  default_config_hash: M8lGSoSdDkaIyVAlpo_bVgNuX9WkT7mV87rfgaNaKKU
 id: gc_notify_delivery_status
 label: 'GC Notify Delivery Status'
 module: views

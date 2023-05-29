@@ -53,6 +53,7 @@ module:
   metatag: 0
   metatag_dc: 0
   node: 0
+  obd: 0
   og: 0
   og_ext_cron: 0
   og_ext_webform: 0
