@@ -1,0 +1,8 @@
+uuid: 4618bbf0-4dfc-47ee-808b-f0bf00552bd4
+langcode: en
+status: true
+dependencies: {  }
+id: feature
+label: Feature
+revision: 1
+description: 'Block type for Features.'

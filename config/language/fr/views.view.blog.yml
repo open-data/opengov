@@ -28,8 +28,6 @@ display:
         combine:
           expose:
             label: Recherche
-          group_info:
-            description: ''
         field_blog_author_name_target_id:
           expose:
             label: Auteur

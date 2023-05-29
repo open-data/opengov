@@ -17,8 +17,8 @@ required: false
 translatable: true
 default_value:
   -
-    summary: ''
     value: "<p>1-2 sentences that describe the topics and top tasks that can be accessed on this page.</p>\r\n"
+    summary: ''
     format: rich_text
 default_value_callback: ''
 settings:

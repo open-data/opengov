@@ -1,0 +1,12 @@
+favicon:
+  mimetype: image/vnd.microsoft.icon
+  path: libraries/theme-gcweb/assets/favicon.ico
+  use_default: false
+features:
+  comment_user_picture: true
+  comment_user_verification: true
+  favicon: true
+  node_user_picture: true
+logo:
+  path: libraries/theme-gcweb/assets/sig-blk-en.svg
+  use_default: false

@@ -61,15 +61,11 @@ settings:
             - Maximize
             - DrupalFontAwesome
   plugins:
-    language:
-      language_list: un
-    stylescombo:
-      styles: 'h2 .h4|Look like Heading 4'
     codemirror:
       enable: true
-      startupMode: wysiwyg
       mode: htmlmixed
       theme: monokai
+      startupMode: wysiwyg
       options:
         lineNumbers: true
         lineWrapping: true
@@ -82,8 +78,6 @@ settings:
         autoFormatOnStart: true
         autoFormatOnModeChange: true
         autoFormatOnUncomment: true
-    tokenbrowser:
-      token_types: {  }
 image_upload:
   status: true
   scheme: public

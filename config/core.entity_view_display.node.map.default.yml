@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - core.entity_view_display.comment.comment.default
     - field.field.node.map.body
     - field.field.node.map.comment
     - field.field.node.map.field_dataset_used
@@ -13,7 +12,6 @@ dependencies:
     - field.field.node.map.field_meta_tags
     - node.type.map
   module:
-    - comment
     - link
     - metatag
     - text
@@ -24,30 +22,19 @@ bundle: map
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 0
+    label: hidden
     settings: {  }
     third_party_settings: {  }
-    region: content
-  comment:
-    weight: 5
-    label: above
-    settings:
-      view_mode: default
-      pager_id: 0
-    third_party_settings: {  }
-    type: comment_default
+    weight: 0
     region: content
   content_moderation_control:
-    weight: 6
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 5
+    region: content
   field_dataset_used:
     type: link
-    weight: 4
-    region: content
     label: above
     settings:
       trim_length: 250
@@ -56,30 +43,33 @@ content:
       rel: '0'
       target: '0'
     third_party_settings: {  }
+    weight: 4
+    region: content
   field_developed_by:
-    weight: 3
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 3
     region: content
   field_map_key:
-    weight: 2
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
   field_meta_tags:
     type: metatag_empty_formatter
-    weight: 1
-    region: content
     label: above
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
 hidden:
+  comment: true
   field_media: true
   langcode: true
   links: true

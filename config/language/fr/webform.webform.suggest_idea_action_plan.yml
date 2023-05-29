@@ -4,4 +4,11 @@ handlers:
     settings:
       from_name: _default
       subject: 'Suggest a new idea for the Action Plan on Open Government'
-      body: "&lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />\n&lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />\n&lt;p&gt;Submitted values are:&lt;/p&gt;<br />\n[webform_submission:values]<br />\n<br />\nThe results of this submission may be viewed at:<br />\n[webform_submission:url]"
+      body: |-
+        &lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted values are:&lt;/p&gt;<br />
+        [webform_submission:values]<br />
+        <br />
+        The results of this submission may be viewed at:<br />
+        [webform_submission:url]

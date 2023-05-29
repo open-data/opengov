@@ -9,55 +9,6 @@ dependencies:
     - search_api
 id: ati_summary
 name: 'PD ATI - Current Search'
-facets:
-  ati_organization_en:
-    checked: true
-    label: Organization
-    separator: ', '
-    weight: 0
-    show_count: false
-  ati_organization_fr:
-    checked: true
-    label: Organisation
-    separator: ', '
-    weight: 0
-    show_count: false
-  ati_year_en:
-    checked: true
-    label: Year
-    separator: ', '
-    weight: 0
-    show_count: false
-  ati_year_fr:
-    checked: true
-    label: Année
-    separator: ', '
-    weight: 0
-    show_count: false
-  ati_month_en:
-    checked: true
-    label: Month
-    separator: ', '
-    weight: 0
-    show_count: false
-  ati_month_fr:
-    checked: true
-    label: Mois
-    separator: ', '
-    weight: 0
-    show_count: false
-  ati_nil_en:
-    checked: true
-    label: 'Nothing to report'
-    separator: ', '
-    weight: 0
-    show_count: false
-  ati_nil_fr:
-    checked: true
-    label: 'Rien à signaler'
-    separator: ', '
-    weight: 0
-    show_count: false
 facet_source_id: 'search_api:views_block__pd_core_ati__block_1'
 processor_configs:
   reset_facets:
@@ -66,6 +17,7 @@ processor_configs:
       build: '30'
     settings:
       link_text: 'Clear all filters'
+      position: before
   show_text_when_empty:
     processor_id: show_text_when_empty
     weights:
@@ -74,3 +26,52 @@ processor_configs:
       text:
         value: 'There is no current search in progress.'
         format: plain_text
+facets:
+  ati_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    show_count: false
+    weight: 0
+  ati_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    show_count: false
+    weight: 0
+  ati_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    show_count: false
+    weight: 0
+  ati_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    show_count: false
+    weight: 0
+  ati_month_en:
+    checked: true
+    label: Month
+    separator: ', '
+    show_count: false
+    weight: 0
+  ati_month_fr:
+    checked: true
+    label: Mois
+    separator: ', '
+    show_count: false
+    weight: 0
+  ati_nil_en:
+    checked: true
+    label: 'Nothing to report'
+    separator: ', '
+    show_count: false
+    weight: 0
+  ati_nil_fr:
+    checked: true
+    label: 'Rien à signaler'
+    separator: ', '
+    show_count: false
+    weight: 0

@@ -1,13 +1,13 @@
-third_party_settings: {  }
+favicon:
+  mimetype: image/vnd.microsoft.icon
+  path: 'public://favicon.ico'
+  use_default: false
 features:
-  node_user_picture: true
   comment_user_picture: true
   comment_user_verification: true
   favicon: true
+  node_user_picture: true
 logo:
-  use_default: false
   path: libraries/theme-gcweb/assets/sig-blk-en.svg
-favicon:
   use_default: false
-  path: 'public://favicon.ico'
-  mimetype: image/vnd.microsoft.icon
+third_party_settings: {  }

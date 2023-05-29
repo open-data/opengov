@@ -11,21 +11,21 @@ type: 'canonical_entities:node'
 pattern: 'map/[node:title]'
 selection_criteria:
   2e32fe25-e883-4a5b-b58a-6fbc16996594:
-    id: node_type
-    bundles:
-      map: map
+    id: 'entity_bundle:node'
     negate: false
+    uuid: 2e32fe25-e883-4a5b-b58a-6fbc16996594
     context_mapping:
       node: node
-    uuid: 2e32fe25-e883-4a5b-b58a-6fbc16996594
+    bundles:
+      map: map
   fc3f306c-4844-43b6-9ab4-dbeae7f431ee:
     id: language
-    langcodes:
-      en: en
     negate: false
+    uuid: fc3f306c-4844-43b6-9ab4-dbeae7f431ee
     context_mapping:
       language: 'node:langcode:language'
-    uuid: fc3f306c-4844-43b6-9ab4-dbeae7f431ee
+    langcodes:
+      en: en
 selection_logic: and
 weight: 3
 relationships:

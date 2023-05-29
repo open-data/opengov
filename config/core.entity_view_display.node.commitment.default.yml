@@ -32,12 +32,14 @@ dependencies:
     - user
 third_party_settings:
   layout_builder:
-    allow_custom: true
     enabled: true
+    allow_custom: true
     sections:
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -64,78 +66,82 @@ third_party_settings:
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
               label: 'Pillars - social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           fd821434-91e8-49e1-89bf-eff6d6a24bb4:
             uuid: fd821434-91e8-49e1-89bf-eff6d6a24bb4
             region: left
             configuration:
+              id: 'extra_field_block:node:commitment:content_moderation_control'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:commitment:content_moderation_control'
-            additional: {  }
             weight: 0
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: layout_onecol
-        layout_settings: {  }
+        layout_settings:
+          label: ''
+          context_mapping: {  }
         components:
           994417e9-dcf6-479e-9297-771726051541:
             uuid: 994417e9-dcf6-479e-9297-771726051541
             region: content
             configuration:
+              id: 'field_block:node:commitment:body'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:commitment:body'
               formatter:
-                label: hidden
                 type: text_default
+                label: hidden
                 settings: {  }
                 third_party_settings: {  }
-            additional: {  }
             weight: -10
+            additional: {  }
           4aa3bd21-eeef-40d0-83ae-e21b6edddb83:
             uuid: 4aa3bd21-eeef-40d0-83ae-e21b6edddb83
             region: content
             configuration:
+              id: 'field_block:node:commitment:field_commitment_ambition'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:commitment:field_commitment_ambition'
               formatter:
+                type: text_default
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: text_default
-            additional: {  }
             weight: -8
+            additional: {  }
           4f508ff3-6adc-4308-955c-1825f03f0082:
             uuid: 4f508ff3-6adc-4308-955c-1825f03f0082
             region: content
             configuration:
+              id: 'field_block:node:commitment:field_commitment_relevance'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:commitment:field_commitment_relevance'
               formatter:
+                type: text_default
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: text_default
-            additional: {  }
             weight: -9
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_1col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -149,26 +155,7 @@ third_party_settings:
                 col-sm-12: col-sm-12
               add_region_classes: 1
               attributes: ''
-        components:
-          36b5d558-f566-4d6e-8f49-d1836dc471cb:
-            uuid: 36b5d558-f566-4d6e-8f49-d1836dc471cb
-            region: main
-            configuration:
-              id: 'field_block:node:commitment:comment'
-              label: Comments
-              provider: layout_builder
-              label_display: '0'
-              formatter:
-                label: above
-                type: comment_default
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
-            weight: 0
+        components: {  }
         third_party_settings: {  }
 id: node.commitment.default
 targetEntityType: node
@@ -176,98 +163,98 @@ bundle: commitment
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 2
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 2
     region: content
   comment:
-    weight: 4
+    type: comment_default
     label: above
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 4
     region: content
   content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
   field_commitment_ambition:
-    weight: 3
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 3
     region: content
   field_commitment_end_date:
-    weight: 10
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 10
     region: content
   field_commitment_pillars:
-    weight: 8
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 8
     region: content
   field_commitment_relevance:
-    weight: 9
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 9
     region: content
   field_commitment_status:
-    weight: 11
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 11
     region: content
   field_commitment_tags:
-    weight: 12
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 12
     region: content
   field_department:
-    weight: 6
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 6
     region: content
   field_meta_tags:
-    weight: 7
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 7
     region: content
   field_reference_landing:
-    weight: 5
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 5
     region: content
   links:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
 hidden:
   field_previousnodeid: true
   langcode: true

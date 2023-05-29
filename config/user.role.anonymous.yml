@@ -1,7 +1,11 @@
 uuid: 41892a93-b38c-4d10-8875-ee51e2db15ab
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - comment
+    - media
+    - system
 _core:
   default_config_hash: j5zLMOdJBqC0bMvSdth5UebkprJB8g_2FXHqhfpJzow
 id: anonymous
@@ -11,9 +15,5 @@ is_admin: false
 permissions:
   - 'access comments'
   - 'access content'
-  - 'access site-wide contact form'
   - 'post comments'
-  - 'search content'
-  - 'use search_api_autocomplete for pd_core_ati'
-  - 'use text format restricted_html'
   - 'view media'

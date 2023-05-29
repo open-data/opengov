@@ -11,21 +11,21 @@ dependencies:
     - gcweb
 id: technicalnotice
 theme: gcweb
-region: breadcrumb
-weight: 0
+region: header
+weight: -5
 provider: null
 plugin: 'block_content:ba7be731-2b4a-4460-96d0-c554eff3ad57'
 settings:
   id: 'block_content:ba7be731-2b4a-4460-96d0-c554eff3ad57'
   label: 'Technical notice'
-  provider: block_content
   label_display: '0'
+  provider: block_content
   status: true
   info: ''
   view_mode: full
 visibility:
   request_path:
     id: request_path
-    pages: /node/4554
     negate: true
     context_mapping: {  }
+    pages: /node/4554

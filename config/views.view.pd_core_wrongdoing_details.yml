@@ -15,46 +15,12 @@ base_table: search_api_index_pd_core_wrongdoing
 base_field: search_api_id
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: none
-        options: {  }
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: true
+      title: 'Acts of Founded Wrongdoing'
       fields:
         id:
           id: id
@@ -63,6 +29,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -108,7 +75,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         ref_number:
           id: ref_number
           table: search_api_index_pd_core_wrongdoing
@@ -116,6 +82,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Reference Number'
           exclude: false
           alter:
@@ -161,7 +128,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_en:
           id: org_name_en
           table: search_api_index_pd_core_wrongdoing
@@ -169,6 +135,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organization
           exclude: false
           alter:
@@ -214,7 +181,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_fr:
           id: org_name_fr
           table: search_api_index_pd_core_wrongdoing
@@ -222,6 +188,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organisation
           exclude: false
           alter:
@@ -267,7 +234,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         file_id_number:
           id: file_id_number
           table: search_api_index_pd_core_wrongdoing
@@ -275,6 +241,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'File Identification Number'
           exclude: false
           alter:
@@ -320,7 +287,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         date_clean:
           id: date_clean
           table: search_api_index_pd_core_wrongdoing
@@ -328,6 +294,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'File Identification Date'
           exclude: false
           alter:
@@ -373,7 +340,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         findings_conclusions_en:
           id: findings_conclusions_en
           table: search_api_index_pd_core_wrongdoing
@@ -381,6 +347,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Findings and Conclusions'
           exclude: false
           alter:
@@ -426,7 +393,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         findings_conclusions_fr:
           id: findings_conclusions_fr
           table: search_api_index_pd_core_wrongdoing
@@ -434,6 +400,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Constatations et Conclusions'
           exclude: false
           alter:
@@ -479,7 +446,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         case_description_en:
           id: case_description_en
           table: search_api_index_pd_core_wrongdoing
@@ -487,6 +453,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Case Description'
           exclude: false
           alter:
@@ -532,7 +499,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         case_description_fr:
           id: case_description_fr
           table: search_api_index_pd_core_wrongdoing
@@ -540,6 +506,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Description du cas'
           exclude: false
           alter:
@@ -585,7 +552,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recommendations_corrective_measures_en:
           id: recommendations_corrective_measures_en
           table: search_api_index_pd_core_wrongdoing
@@ -593,6 +559,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Recommendations and Corrective Measures'
           exclude: false
           alter:
@@ -638,7 +605,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recommendations_corrective_measures_fr:
           id: recommendations_corrective_measures_fr
           table: search_api_index_pd_core_wrongdoing
@@ -646,6 +612,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Recommandations et mesures correctives'
           exclude: false
           alter:
@@ -691,25 +658,28 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
-      filters: {  }
-      sorts: {  }
-      title: 'Acts of Founded Wrongdoing'
-      header: {  }
-      footer:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: "<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/search/wrongdoing\">Back to Search&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n"
-          plugin_id: text_custom
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: none
+        options: {  }
       empty: {  }
-      relationships: {  }
+      sorts: {  }
       arguments:
         id:
           id: id
@@ -718,6 +688,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           default_action: default
           exception:
             value: all
@@ -742,7 +713,36 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          plugin_id: search_api
+      filters: {  }
+      style:
+        type: default
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: false
+      relationships: {  }
+      header: {  }
+      footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: "<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/search/wrongdoing\">Back to Search&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n"
+          tokenize: false
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -751,15 +751,15 @@ display:
         - url
       tags: {  }
   details:
-    display_plugin: page
     id: details
     display_title: 'Proactive Disclosure: Wrongdoing Details'
+    display_plugin: page
     position: 1
     display_options:
+      display_description: ''
       display_extenders:
         metatag_display_extender: {  }
       path: search/wrongdoing/reference/%
-      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:

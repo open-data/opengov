@@ -24,12 +24,14 @@ dependencies:
     - user
 third_party_settings:
   layout_builder:
-    allow_custom: true
     enabled: true
+    allow_custom: true
     sections:
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -54,45 +56,47 @@ third_party_settings:
             uuid: 3170ef5b-4897-45dd-96cb-901cabb36e64
             region: left
             configuration:
+              id: 'field_block:node:landing_page:body'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:landing_page:body'
               formatter:
-                label: hidden
                 type: text_default
+                label: hidden
                 settings: {  }
                 third_party_settings: {  }
-            additional: {  }
             weight: -8
+            additional: {  }
           ed97a5ff-bf04-41af-9776-3a3730d45ad3:
             uuid: ed97a5ff-bf04-41af-9776-3a3730d45ad3
             region: right
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
               label: 'Pillars - social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           86c29c0a-490f-42d0-92ae-b3c498bedb17:
             uuid: 86c29c0a-490f-42d0-92ae-b3c498bedb17
             region: left
             configuration:
+              id: 'extra_field_block:node:landing_page:content_moderation_control'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:landing_page:content_moderation_control'
-            additional: {  }
             weight: -10
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: layout_onecol
-        layout_settings: {  }
+        layout_settings:
+          label: ''
+          context_mapping: {  }
         components:
           42288578-b648-4a10-a0fa-a09bb49e51a4:
             uuid: 42288578-b648-4a10-a0fa-a09bb49e51a4
@@ -100,18 +104,20 @@ third_party_settings:
             configuration:
               id: 'block_content:326bf2f7-5bd0-403a-b436-f7dc82ad30f2'
               label: 'What''s new in open government?'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_3col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -144,42 +150,42 @@ third_party_settings:
             configuration:
               id: 'block_content:58229e51-b70a-4730-9891-0d6ceabdf862'
               label: 'Canada’s 2018-2020 National Action Plan on Open Government'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           a0a5d755-b38e-469b-99ca-2702725de7bb:
             uuid: a0a5d755-b38e-469b-99ca-2702725de7bb
             region: middle
             configuration:
               id: 'block_content:a1556b0c-a2d6-40e4-858a-2fa2060e55da'
               label: 'ATIP Online Request Service'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           276569e6-4e8d-409b-b78c-340a7a8383b8:
             uuid: 276569e6-4e8d-409b-b78c-340a7a8383b8
             region: right
             configuration:
               id: 'block_content:2abef6f5-8f76-402e-91cd-3aaa9be5f649'
               label: 'Open government across Canada'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
         third_party_settings: {  }
 id: node.landing_page.default
 targetEntityType: node
@@ -187,29 +193,29 @@ bundle: landing_page
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
     region: content
   content_moderation_control:
-    weight: -20
     settings: {  }
     third_party_settings: {  }
+    weight: -20
     region: content
   field_meta_tags:
-    weight: 2
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 2
     region: content
   links:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   field_previousnodeid: true
   langcode: true

@@ -11,21 +11,21 @@ type: 'canonical_entities:node'
 pattern: 'formulaires/[node:title]'
 selection_criteria:
   732c40dc-9def-4a26-aa12-bfe3a7bd82e0:
-    id: node_type
-    bundles:
-      webform: webform
+    id: 'entity_bundle:node'
     negate: false
+    uuid: 732c40dc-9def-4a26-aa12-bfe3a7bd82e0
     context_mapping:
       node: node
-    uuid: 732c40dc-9def-4a26-aa12-bfe3a7bd82e0
+    bundles:
+      webform: webform
   13c1b8a0-d2bd-480e-9055-86ef497cb1e3:
     id: language
-    langcodes:
-      fr: fr
     negate: false
+    uuid: 13c1b8a0-d2bd-480e-9055-86ef497cb1e3
     context_mapping:
       language: 'node:langcode:language'
-    uuid: 13c1b8a0-d2bd-480e-9055-86ef497cb1e3
+    langcodes:
+      fr: fr
 selection_logic: and
 weight: -5
 relationships:

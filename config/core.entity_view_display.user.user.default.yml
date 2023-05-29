@@ -4,12 +4,9 @@ status: true
 dependencies:
   config:
     - field.field.user.user.field_firstname
-    - field.field.user.user.field_last_password_reset
     - field.field.user.user.field_lastname
-    - field.field.user.user.field_password_expiration
     - field.field.user.user.user_picture
   module:
-    - datetime
     - user
 _core:
   default_config_hash: V51QPCKkgNREKtSmB9Iu2wmAMEpktVpnzklWaZV8UYo
@@ -19,45 +16,26 @@ bundle: user
 mode: default
 content:
   field_firstname:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
     weight: 0
-    label: inline
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-    type: string
     region: content
-  field_last_password_reset:
-    type: datetime_default
-    weight: 2
-    region: content
-    label: inline
-    settings:
-      format_type: medium
-      timezone_override: ''
-    third_party_settings: {  }
   field_lastname:
-    weight: 1
+    type: string
     label: inline
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 1
     region: content
-  field_password_expiration:
-    type: boolean
-    weight: 3
-    region: content
-    label: inline
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
   member_for:
-    weight: 4
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 4
+    region: content
 hidden:
   langcode: true
   search_api_excerpt: true

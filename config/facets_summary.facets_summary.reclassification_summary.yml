@@ -9,31 +9,6 @@ dependencies:
     - search_api
 id: reclassification_summary
 name: 'PD reclassification - Current Search'
-facets:
-  reclassification_organization_en:
-    checked: true
-    label: Organization
-    separator: ', '
-    weight: 0
-    show_count: false
-  reclassification_organization_fr:
-    checked: true
-    label: Organisation
-    separator: ', '
-    weight: 0
-    show_count: false
-  reclassification_year_en:
-    checked: true
-    label: Year
-    separator: ', '
-    weight: 0
-    show_count: false
-  reclassification_year_fr:
-    checked: true
-    label: Année
-    separator: ', '
-    weight: 0
-    show_count: false
 facet_source_id: 'search_api:views_block__pd_core_reclassification__block_1'
 processor_configs:
   reset_facets:
@@ -42,6 +17,7 @@ processor_configs:
       build: '30'
     settings:
       link_text: 'Clear all filters'
+      position: before
   show_text_when_empty:
     processor_id: show_text_when_empty
     weights:
@@ -50,3 +26,28 @@ processor_configs:
       text:
         value: 'There is no current search in progress.'
         format: plain_text
+facets:
+  reclassification_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    show_count: false
+    weight: 0
+  reclassification_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    show_count: false
+    weight: 0
+  reclassification_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    show_count: false
+    weight: 0
+  reclassification_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    show_count: false
+    weight: 0

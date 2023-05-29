@@ -23,11 +23,11 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_icon:
+    type: fontawesome_icon_widget
     weight: 31
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: fontawesome_icon_widget
-    region: content
   langcode:
     type: language_select
     weight: 2

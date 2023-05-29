@@ -17,8 +17,8 @@ required: false
 translatable: true
 default_value:
   -
-    summary: ''
     value: "<p>No new titles found.</p>\r\n"
+    summary: ''
     format: rich_text
 default_value_callback: ''
 settings:

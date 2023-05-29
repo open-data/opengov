@@ -23,12 +23,14 @@ dependencies:
     - views
 third_party_settings:
   layout_builder:
-    allow_custom: true
     enabled: true
+    allow_custom: true
     sections:
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -55,28 +57,30 @@ third_party_settings:
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
               label: 'Pillars - social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           56a19ae8-8ee7-4e45-9cd1-c63b6adf8893:
             uuid: 56a19ae8-8ee7-4e45-9cd1-c63b6adf8893
             region: left
             configuration:
+              id: 'extra_field_block:node:consultation:content_moderation_control'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:consultation:content_moderation_control'
-            additional: {  }
             weight: 0
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -103,30 +107,30 @@ third_party_settings:
             configuration:
               id: 'field_block:node:consultation:body'
               label: Body
-              provider: layout_builder
               label_display: '0'
-              formatter:
-                label: hidden
-                type: text_default
-                settings: {  }
-                third_party_settings: {  }
+              provider: layout_builder
               context_mapping:
                 entity: layout_builder.entity
-            additional: {  }
+              formatter:
+                type: text_default
+                label: hidden
+                settings: {  }
+                third_party_settings: {  }
             weight: 0
+            additional: {  }
           2cb545fc-b08d-408e-b68d-17b896d3c5f8:
             uuid: 2cb545fc-b08d-408e-b68d-17b896d3c5f8
             region: right
             configuration:
               id: 'views_block:suggested_ideas-block_1'
               label: ''
-              provider: views
               label_display: visible
+              provider: views
+              context_mapping: {  }
               views_label: ''
               items_per_page: none
-              context_mapping: {  }
-            additional: {  }
             weight: 3
+            additional: {  }
         third_party_settings: {  }
 id: node.consultation.default
 targetEntityType: node
@@ -134,22 +138,22 @@ bundle: consultation
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 2
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 2
     region: content
   content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
+  links:
     settings: {  }
     third_party_settings: {  }
-  links:
     weight: 1
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   field_consultation_status: true
   field_date: true

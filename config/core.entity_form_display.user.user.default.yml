@@ -4,9 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.user.user.field_firstname
-    - field.field.user.user.field_last_password_reset
     - field.field.user.user.field_lastname
-    - field.field.user.user.field_password_expiration
     - field.field.user.user.user_picture
   module:
     - user
@@ -23,30 +21,28 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_firstname:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_lastname:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   google_analytics:
     weight: 3
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   contact: true
-  field_last_password_reset: true
-  field_password_expiration: true
   langcode: true
   language: true
   path: true

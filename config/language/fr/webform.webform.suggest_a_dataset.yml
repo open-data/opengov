@@ -1,5 +1,48 @@
 title: 'Proposez un jeu de données'
-elements: "page_1:\n  '#title': Proposition\ntitle_of_dataset:\n  '#title': 'Titre du jeu de données'\n  '#description': '<p class=\"text-info\">Ce champ indique le titre en anglais du jeu de données proposé. Exemplar : Comportement du vent au Canada 2016 - 2019</p>'\ndepartment:\n  '#title': 'L’institution gouvernementale qui publie un jeu de données'\n  '#description': '<p class=\"text-info\">Ce champ décrit l’institution gouvernementale qui publie le jeu de données proposé. Si vous souhaitez obtenir des données provinciales, veuillez vous adresser à la <a href=\"[site:url]/cartes/donnees-ouvertes-au-canada#toc1\">province ou au territoire</a> concerné. Exemplar : Environnement et Changement climatique Canada</p>'\ndescription_dataset:\n  '#title': 'Description du jeu de données que vous aimeriez qui soit rendu disponible'\n  '#description': '<p class=\"text-info\">Ce champ contient une description du jeu de données proposé. Exemplar : Ce jeu de données devrait contenir des données ayant été recueillies au fil des années 2016-2019, et ayant trait aux configurations des vents canadiens, d’un océan à l’autre.</p>'\nadditional_comments_and_feedback:\n  '#title': 'Rétroaction et commentaires supplémentaires'\n  '#description': '<p class=\"text-info\">Exemplar : Ces données étaient disponible pour les années 2010-2015 mais n’ont pas été publiées depuis.</p>'\ndataset_subject:\n  '#title': 'Proposez des domaines pour ce jeu de données'\n  '#description': '<p class=\"text-info\">Pour sélectionner plusieurs éléments, cliquez sur chacun d’eux tout en maintenant la touche Ctrl enfoncée. Exemplar : Nature et environnement, Sciences et technologie</p>'\ndataset_keywords:\n  '#title': 'Catégorisez votre jeu de données par des mots descriptifs séparés par des virgules'\n  '#description': '<p class=\"text-info\">Exemplar : La météo, l’environnement et le Changement climatique Canada, la configuration des vents</p>'\nreason:\n  '#title': 'Raison de la demande d’un jeu de données'\n  '#description': '<p class=\"text-info\">Exemplar : Pédagogique</p>'\npersonal_information_optional_:\n  '#title': 'Renseignements sur les personnes-ressources'\n  '#prev_button_label': '< Précédent'\nfirst_name:\n  '#title': Prénom\nlast_name:\n  '#title': 'Nom de famille'\ntitle:\n  '#title': Titre\norganization:\n  '#title': Organisation\ne_mail_address:\n  '#title': 'Adresse électronique'\n  '#description': '<p class=\"text-info\">Exemplar : user@email.com</p>'\ntelephone:\n  '#title': Téléphone\nuser_consent:\n  '#title': 'Je consens à ce que mes renseignements personnels soient transmis d’un ministère du gouvernement du Canada à l’autre dans le but de répondre à ma demande.'\nactions:\n  '#title': 'Bouton(s) de soumission'\n"
+elements: |
+  page_1:
+    '#title': Proposition
+  title_of_dataset:
+    '#title': 'Titre du jeu de données'
+    '#description': '<p class="text-info">Ce champ indique le titre en anglais du jeu de données proposé. Exemplar : Comportement du vent au Canada 2016 - 2019</p>'
+  department:
+    '#title': 'L’institution gouvernementale qui publie un jeu de données'
+    '#description': '<p class="text-info">Ce champ décrit l’institution gouvernementale qui publie le jeu de données proposé. Si vous souhaitez obtenir des données provinciales, veuillez vous adresser à la <a href="[site:url]/cartes/donnees-ouvertes-au-canada#toc1">province ou au territoire</a> concerné. Exemplar : Environnement et Changement climatique Canada</p>'
+  description_dataset:
+    '#title': 'Description du jeu de données que vous aimeriez qui soit rendu disponible'
+    '#description': '<p class="text-info">Ce champ contient une description du jeu de données proposé. Exemplar : Ce jeu de données devrait contenir des données ayant été recueillies au fil des années 2016-2019, et ayant trait aux configurations des vents canadiens, d’un océan à l’autre.</p>'
+  additional_comments_and_feedback:
+    '#title': 'Rétroaction et commentaires supplémentaires'
+    '#description': '<p class="text-info">Exemplar : Ces données étaient disponible pour les années 2010-2015 mais n’ont pas été publiées depuis.</p>'
+  dataset_subject:
+    '#title': 'Proposez des domaines pour ce jeu de données'
+    '#description': '<p class="text-info">Pour sélectionner plusieurs éléments, cliquez sur chacun d’eux tout en maintenant la touche Ctrl enfoncée. Exemplar : Nature et environnement, Sciences et technologie</p>'
+  dataset_keywords:
+    '#title': 'Catégorisez votre jeu de données par des mots descriptifs séparés par des virgules'
+    '#description': '<p class="text-info">Exemplar : La météo, l’environnement et le Changement climatique Canada, la configuration des vents</p>'
+  reason:
+    '#title': 'Raison de la demande d’un jeu de données'
+    '#description': '<p class="text-info">Exemplar : Pédagogique</p>'
+  personal_information_optional_:
+    '#title': 'Renseignements sur les personnes-ressources'
+    '#prev_button_label': '< Précédent'
+  first_name:
+    '#title': Prénom
+  last_name:
+    '#title': 'Nom de famille'
+  title:
+    '#title': Titre
+  organization:
+    '#title': Organisation
+  e_mail_address:
+    '#title': 'Adresse électronique'
+    '#description': '<p class="text-info">Exemplar : user@email.com</p>'
+  telephone:
+    '#title': Téléphone
+  user_consent:
+    '#title': 'Je consens à ce que mes renseignements personnels soient transmis d’un ministère du gouvernement du Canada à l’autre dans le but de répondre à ma demande.'
+  actions:
+    '#title': 'Bouton(s) de soumission'
 settings:
   confirmation_message: 'Merci pour votre soumission. Votre demande sera traitée et ajoutée à la page « Proposez un jeu de données » dès que possible.'
 handlers:

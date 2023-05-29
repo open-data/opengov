@@ -12,6 +12,10 @@ pattern: 'taxonomy/term/[term:name]'
 selection_criteria:
   2bfc75d4-ff78-40a0-9ffb-08be1ed66340:
     id: 'entity_bundle:taxonomy_term'
+    negate: false
+    uuid: 2bfc75d4-ff78-40a0-9ffb-08be1ed66340
+    context_mapping:
+      taxonomy_term: taxonomy_term
     bundles:
       app_categories: app_categories
       app_freetags: app_freetags
@@ -24,10 +28,6 @@ selection_criteria:
       idea_status: idea_status
       site_structure: site_structure
       subscriptions: subscriptions
-    negate: false
-    context_mapping:
-      taxonomy_term: taxonomy_term
-    uuid: 2bfc75d4-ff78-40a0-9ffb-08be1ed66340
 selection_logic: and
 weight: 6
 relationships: {  }

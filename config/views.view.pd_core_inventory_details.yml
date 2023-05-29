@@ -16,46 +16,12 @@ base_table: search_api_index_pd_core_inventory
 base_field: search_api_id
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: none
-        options: {  }
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: true
+      title: ''
       fields:
         id:
           id: id
@@ -64,6 +30,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -109,7 +76,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         title_en:
           id: title_en
           table: search_api_index_pd_core_inventory
@@ -117,6 +83,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: false
           alter:
@@ -162,7 +129,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         title_fr:
           id: title_fr
           table: search_api_index_pd_core_inventory
@@ -170,6 +136,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: false
           alter:
@@ -215,7 +182,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_en:
           id: description_en
           table: search_api_index_pd_core_inventory
@@ -223,6 +189,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Description
           exclude: true
           alter:
@@ -268,7 +235,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_fr:
           id: description_fr
           table: search_api_index_pd_core_inventory
@@ -276,6 +242,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Description
           exclude: true
           alter:
@@ -321,7 +288,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         language_en:
           id: language_en
           table: search_api_index_pd_core_inventory
@@ -329,6 +295,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Language
           exclude: true
           alter:
@@ -374,7 +341,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         language_fr:
           id: language_fr
           table: search_api_index_pd_core_inventory
@@ -382,6 +348,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Langue
           exclude: true
           alter:
@@ -427,7 +394,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_en:
           id: org_name_en
           table: search_api_index_pd_core_inventory
@@ -435,6 +401,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Organization Name'
           exclude: true
           alter:
@@ -480,7 +447,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_fr:
           id: org_name_fr
           table: search_api_index_pd_core_inventory
@@ -488,6 +454,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Nom de l''organisation'
           exclude: true
           alter:
@@ -533,7 +500,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         program_alignment_architecture_en:
           id: program_alignment_architecture_en
           table: search_api_index_pd_core_inventory
@@ -541,6 +507,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Program Alignment Architecture'
           exclude: true
           alter:
@@ -586,7 +553,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         program_alignment_architecture_fr:
           id: program_alignment_architecture_fr
           table: search_api_index_pd_core_inventory
@@ -594,6 +560,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Architecture des activités de programme'
           exclude: true
           alter:
@@ -639,7 +606,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         portal_url_en:
           id: portal_url_en
           table: search_api_index_pd_core_inventory
@@ -647,6 +613,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Open Government Portal Url'
           exclude: true
           alter:
@@ -692,7 +659,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         portal_url_fr:
           id: portal_url_fr
           table: search_api_index_pd_core_inventory
@@ -700,6 +666,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Enregistrement du Portail du gouvernement ouvert'
           exclude: true
           alter:
@@ -745,7 +712,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         date_published:
           id: date_published
           table: search_api_index_pd_core_inventory
@@ -753,6 +719,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Date Published'
           exclude: true
           alter:
@@ -798,7 +765,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         date_released:
           id: date_released
           table: search_api_index_pd_core_inventory
@@ -806,6 +772,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Date Released'
           exclude: true
           alter:
@@ -851,7 +818,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         nothing:
           id: nothing
           table: views
@@ -859,6 +825,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: custom
           label: ''
           exclude: false
           alter:
@@ -900,38 +867,28 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: custom
-      filters: {  }
-      sorts: {  }
-      title: ''
-      header: {  }
-      footer:
-        entity_webform:
-          id: entity_webform
-          table: views
-          field: entity_webform
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: true
-          target: vote_up_down_external
-          view_mode: default
-          bypass_access: false
-          plugin_id: entity
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/inventory">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
-          plugin_id: text_custom
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: none
+        options: {  }
       empty: {  }
-      relationships: {  }
+      sorts: {  }
       arguments:
         id:
           id: id
@@ -940,6 +897,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           default_action: default
           exception:
             value: all
@@ -964,7 +922,49 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          plugin_id: search_api
+      filters: {  }
+      style:
+        type: default
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: false
+      relationships: {  }
+      header: {  }
+      footer:
+        entity_webform:
+          id: entity_webform
+          table: views
+          field: entity_webform
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: entity
+          empty: false
+          target: vote_up_down_external
+          view_mode: default
+          tokenize: true
+          bypass_access: false
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/inventory">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
+          tokenize: false
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -973,15 +973,15 @@ display:
         - url
       tags: {  }
   details:
-    display_plugin: page
     id: details
     display_title: 'Proactive Disclosure: Inventory Details'
+    display_plugin: page
     position: 1
     display_options:
+      display_description: ''
       display_extenders:
         metatag_display_extender: {  }
       path: search/inventory/%
-      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:

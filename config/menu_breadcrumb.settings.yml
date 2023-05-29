@@ -1,90 +1,90 @@
+_core:
+  default_config_hash: MWtaH6iqiztF4V37kZZSpw-NZBbZijdlO_xMPIUCibY
 determine_menu: true
 disable_admin_page: true
 append_current_page: false
 current_page_as_link: false
+stop_on_first_match: false
 append_member_page: false
 member_page_as_link: false
 remove_home: false
 add_home: false
+front_title: 1
 exclude_empty_url: false
+derived_active_trail: false
 menu_breadcrumb_menus:
   main:
     enabled: 1
-    langhandle: 1
     weight: -10
     taxattach: 0
+    langhandle: 1
   admin:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   brand:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   canada-s-4th-plan-on-open-g:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   canada-s-action-plan-on-ope:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   consultations:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   content-menu:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   plan-2016-2018:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   end-term-self-assessment-20:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   footer:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   mid-term-self-assessment-20:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   plans:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   plans-menu:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   tools:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
   account:
-    weight: 0
     enabled: 0
+    weight: 0
     taxattach: 0
     langhandle: 0
-_core:
-  default_config_hash: MWtaH6iqiztF4V37kZZSpw-NZBbZijdlO_xMPIUCibY
-stop_on_first_match: false
-derived_active_trail: false
-front_title: 1

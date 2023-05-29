@@ -1,7 +1,20 @@
 uuid: a397f1f9-d231-4db0-8aed-edf2f148ca59
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.rich_text
+    - node.type.article
+    - node.type.page
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - content_translation
+    - contextual
+    - filter
+    - node
+    - system
+    - toolbar
 id: reviewer
 label: Reviewer
 weight: 5

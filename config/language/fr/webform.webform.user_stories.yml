@@ -1,5 +1,77 @@
 title: 'Histoires des utilisateurs de données ouvertes'
-elements: "add_you_story:\n  '#title': 'Ajoutez votre histoire'\ntitle:\n  '#description': '<p class=\"text-info\">Le nom sous lequel l’actif est connu. Exemple: Oubliez les hivers enneigés de votre enfance</p>'\nlanguage:\n  '#title': Langue\n  '#description': '<p class=\"text-info\">La langue de ressource.</p>'\n  '#options':\n    English: Anglais\n    French: Français\n    Bilingual: Bilingue\nwebsite:\n  '#title': 'Site web'\n  '#description': '<p class=\"text-info\">Site Web que vous souhaitez partager.</p>'\ntell_us_about_your_product:\n  '#title': 'Faites-nous part de votre produit:'\n  '#description': '<p class=\"text-info\">Le résumé et la description du produit. Exemple: Dans les pays où les hivers sont rigoureux, comme le Canada, il est parfois difficile pour la population de constater les effets du réchauffement de la Terre...</p>'\nwhy_did_you_develop_this_product_:\n  '#title': 'Pourquoi avez-vous mis au point ce produit?'\n  '#description': '<p class=\"text-info\">Pourquoi le collaborateur a mis au point le produit. Exemple:&nbsp;C’est pourquoi M. Shiab, un journaliste de données de CBC/Radio-Canada, a rédigé un article sur le réchauffement de la saison la plus froide.</p>'\nurls_of_datasets_used:\n  '#title': 'Addresses URL des jeux de données utilisés:'\n  '#description': '<p class=\"text-info\">Une liste des jeux de données utilisés pour mettre au point le produit.</p>'\nhow_did_you_use_open_data_to_create_your_product_methodology_:\n  '#title': 'Comment avez-vous utilisé les données ouvertes pour créer votre produit? (méthodologie)'\n  '#description': '<p class=\"text-info\">La méthodologie de l’utilisation des données dans la création du produit. Exemple: Grâce à la visualisation des données, M. Shiab permet aux autres de voir facilement les tendances hivernales dans les grandes villes…</p>'\nwhat_is_the_impact_of_your_product_:\n  '#title': 'Quel est l’effet de votre produit?'\n  '#description': '<p class=\"text-info\">L’effet prévu du produit. Exemple: M. Shiab a utilisé les données ouvertes pour informer les Canadiens et les Canadiennes au sujet du réchauffement hivernal et les sensibiliser à ses répercussions sociales, économiques et environnementales.</p>'\ntestimonials:\n  '#title': Témoignages\n  '#description': '<p class=\"text-info\">Les témoignages que le propriétaire du produit aimerait transmettre. Exemple: Pourquoi @townfolio est-il incroyable? Pour commencer, l’entreprise a été choisie en 2018 pour l’accélérateur TechStars (seulement 1 % des jeunes entreprises technologiques y participent). - Venbridge</p>'\nthemes:\n  '#title': 'Proposez des domaines pour ce jeu de données'\n  '#description': '<p class=\"text-info\">Une liste de sujets pour aider à catégoriser la soumission.&nbsp;Ctrl+Click pour selectionner plusieurs options.</p>'\n  '#options':\n    'Nature and Environment': 'Nature et environnement'\n    'History and Archeology': 'Histoire et archéologie'\n    'Information and Communication': 'Information et communication'\n    'Science and Technology': 'Sciences and technologie'\n    Law: Droit\n    'Arts, Music, and Literature': 'Arts, musique, littérature'\n    'Economics and Industry': 'Économie et industrie'\n    'Education and Training': 'Éducation et formation'\n    'Government and Politics': 'Governement et vie politique'\n    'Health and Safety': 'Santé et sécurité'\n    Labour: Personnes\n    'Language and Linguistics': 'Langue et linguistique'\n    Military: 'Histoire et science militaire'\n    'Society and Culture': 'Societé et culture'\n    Other: Autre\nare_you_:\n  '#title': 'Veuillez indiquer le secteur auquel vous appartenez :'\n  '#options':\n    Government: Gouvernement\n    'Member of the Public': 'Membre du Publique'\n    Other: Autre\ncontact_information:\n  '#title': Coordonnées\nfirst_name:\n  '#title': Prénom\nlast_name:\n  '#title': 'Nom de famille'\norganization_name:\n  '#title': 'Nom de l''organisation'\n  '#description': '<p class=''text-info''>L''organisation à laquelle vous appartenez, si disponible. Exemple: Secrétariat du Conseil du Trésor du Canada</p>'\ne_mail_address:\n  '#title': 'Adresse électronique'\ntelephone_number:\n  '#title': Téléphone\nif_other_please_specify_:\n  '#title': 'Veuillez préciser:'\n"
+elements: |
+  add_you_story:
+    '#title': 'Ajoutez votre histoire'
+  title:
+    '#description': '<p class="text-info">Le nom sous lequel l’actif est connu. Exemple: Oubliez les hivers enneigés de votre enfance</p>'
+  language:
+    '#title': Langue
+    '#description': '<p class="text-info">La langue de ressource.</p>'
+    '#options':
+      English: Anglais
+      French: Français
+      Bilingual: Bilingue
+  website:
+    '#title': 'Site web'
+    '#description': '<p class="text-info">Site Web que vous souhaitez partager.</p>'
+  tell_us_about_your_product:
+    '#title': 'Faites-nous part de votre produit:'
+    '#description': '<p class="text-info">Le résumé et la description du produit. Exemple: Dans les pays où les hivers sont rigoureux, comme le Canada, il est parfois difficile pour la population de constater les effets du réchauffement de la Terre...</p>'
+  why_did_you_develop_this_product_:
+    '#title': 'Pourquoi avez-vous mis au point ce produit?'
+    '#description': '<p class="text-info">Pourquoi le collaborateur a mis au point le produit. Exemple:&nbsp;C’est pourquoi M. Shiab, un journaliste de données de CBC/Radio-Canada, a rédigé un article sur le réchauffement de la saison la plus froide.</p>'
+  urls_of_datasets_used:
+    '#title': 'Addresses URL des jeux de données utilisés:'
+    '#description': '<p class="text-info">Une liste des jeux de données utilisés pour mettre au point le produit.</p>'
+  how_did_you_use_open_data_to_create_your_product_methodology_:
+    '#title': 'Comment avez-vous utilisé les données ouvertes pour créer votre produit? (méthodologie)'
+    '#description': '<p class="text-info">La méthodologie de l’utilisation des données dans la création du produit. Exemple: Grâce à la visualisation des données, M. Shiab permet aux autres de voir facilement les tendances hivernales dans les grandes villes…</p>'
+  what_is_the_impact_of_your_product_:
+    '#title': 'Quel est l’effet de votre produit?'
+    '#description': '<p class="text-info">L’effet prévu du produit. Exemple: M. Shiab a utilisé les données ouvertes pour informer les Canadiens et les Canadiennes au sujet du réchauffement hivernal et les sensibiliser à ses répercussions sociales, économiques et environnementales.</p>'
+  testimonials:
+    '#title': Témoignages
+    '#description': '<p class="text-info">Les témoignages que le propriétaire du produit aimerait transmettre. Exemple: Pourquoi @townfolio est-il incroyable? Pour commencer, l’entreprise a été choisie en 2018 pour l’accélérateur TechStars (seulement 1 % des jeunes entreprises technologiques y participent). - Venbridge</p>'
+  themes:
+    '#title': 'Proposez des domaines pour ce jeu de données'
+    '#description': '<p class="text-info">Une liste de sujets pour aider à catégoriser la soumission.&nbsp;Ctrl+Click pour selectionner plusieurs options.</p>'
+    '#options':
+      'Nature and Environment': 'Nature et environnement'
+      'History and Archeology': 'Histoire et archéologie'
+      'Information and Communication': 'Information et communication'
+      'Science and Technology': 'Sciences and technologie'
+      Law: Droit
+      'Arts, Music, and Literature': 'Arts, musique, littérature'
+      'Economics and Industry': 'Économie et industrie'
+      'Education and Training': 'Éducation et formation'
+      'Government and Politics': 'Governement et vie politique'
+      'Health and Safety': 'Santé et sécurité'
+      Labour: Personnes
+      'Language and Linguistics': 'Langue et linguistique'
+      Military: 'Histoire et science militaire'
+      'Society and Culture': 'Societé et culture'
+      Other: Autre
+  are_you_:
+    '#title': 'Veuillez indiquer le secteur auquel vous appartenez :'
+    '#options':
+      Government: Gouvernement
+      'Member of the Public': 'Membre du Publique'
+      Other: Autre
+  contact_information:
+    '#title': Coordonnées
+  first_name:
+    '#title': Prénom
+  last_name:
+    '#title': 'Nom de famille'
+  organization_name:
+    '#title': 'Nom de l''organisation'
+    '#description': '<p class=''text-info''>L''organisation à laquelle vous appartenez, si disponible. Exemple: Secrétariat du Conseil du Trésor du Canada</p>'
+  e_mail_address:
+    '#title': 'Adresse électronique'
+  telephone_number:
+    '#title': Téléphone
+  if_other_please_specify_:
+    '#title': 'Veuillez préciser:'
 handlers:
   email:
     label: 'Courriel de notification'

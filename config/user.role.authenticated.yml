@@ -1,7 +1,13 @@
 uuid: ff9133d8-4285-4e03-a4b0-2923a518905b
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - comment
+    - fontawesome
+    - google_analytics
+    - media
+    - system
 _core:
   default_config_hash: dJ0L2DNSj5q6XVZAGsuVDpJTh5UeYkIPwKrUOOpr8YI
 id: authenticated
@@ -11,9 +17,7 @@ is_admin: false
 permissions:
   - 'access comments'
   - 'access content'
-  - 'access shortcuts'
-  - 'access site-wide contact form'
+  - 'access fontawesome additional settings'
+  - 'opt-in or out of google analytics tracking'
   - 'post comments'
-  - 'search content'
-  - 'use text format basic_html'
   - 'view media'

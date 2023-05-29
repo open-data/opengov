@@ -8,9 +8,11 @@ third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
+_core:
+  default_config_hash: CNnU7U0MxhjBRJkCsweSMZQjhw1pCQyXgEeQ_SeN-qc
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
@@ -18,7 +20,32 @@ id: app_ideas
 title: 'App Ideas'
 description: '&quot;App Ideas&quot; webform.'
 category: ''
-elements: "name_of_application:\n  '#title': 'Name of suggested app'\n  '#type': textfield\npossible_supporting_datasets_if_applicable:\n  '#type': textfield\n  '#title': 'Possible supporting datasets, if applicable'\ndescription_of_app:\n  '#type': textarea\n  '#title': 'Description of app'\nsharing_consent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#required': true\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    invisible:\n      ':input[name=\"sharing_consent\"]':\n        '!value': 'Yes'\n"
+elements: |
+  name_of_application:
+    '#title': 'Name of suggested app'
+    '#type': textfield
+  possible_supporting_datasets_if_applicable:
+    '#type': textfield
+    '#title': 'Possible supporting datasets, if applicable'
+  description_of_app:
+    '#type': textarea
+    '#title': 'Description of app'
+  sharing_consent:
+    '#type': select
+    '#title': Consent
+    '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'
+    '#title_display': invisible
+    '#description_display': before
+    '#options': yes_no
+    '#required': true
+    '#smart_description': false
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#states':
+      invisible:
+        ':input[name="sharing_consent"]':
+          '!value': 'Yes'
 css: ''
 javascript: ''
 settings:
@@ -33,40 +60,48 @@ settings:
   page_theme_name: ''
   form_title: both
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_attributes: {  }
+  form_method: ''
+  form_action: ''
   share: false
   share_node: false
   share_theme_name: ''
   share_title: true
   share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -75,11 +110,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -90,13 +120,13 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
   wizard_prev_button_label: ''
   wizard_next_button_label: ''
@@ -119,9 +149,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: page
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: 'Merci, votre soumission a &eacute;t&eacute; re&ccedil;ue.'
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -209,9 +239,9 @@ access:
 handlers:
   email:
     id: email
+    handler_id: email
     label: Email
     notes: ''
-    handler_id: email
     status: true
     conditions: {  }
     weight: 0
@@ -220,15 +250,26 @@ handlers:
         - completed
       to_mail: open-ouvert@tbs-sct.gc.ca
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: _default
       from_options: {  }
       from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: 'App Ideas Form'
-      body: "&lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />\n&lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />\n&lt;p&gt;Submitted values are:&lt;/p&gt;<br />\n[webform_submission:values]<br />\n<br />\nThe results of this submission may be viewed at:<br />\n[webform_submission:url]"
+      body: |-
+        &lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted values are:&lt;/p&gt;<br />
+        [webform_submission:values]<br />
+        <br />
+        The results of this submission may be viewed at:<br />
+        [webform_submission:url]
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
@@ -237,13 +278,7 @@ handlers:
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
+      debug: false
 variants: {  }
-_core:
-  default_config_hash: CNnU7U0MxhjBRJkCsweSMZQjhw1pCQyXgEeQ_SeN-qc

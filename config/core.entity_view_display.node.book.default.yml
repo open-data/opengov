@@ -1,0 +1,143 @@
+uuid: 45f0dc17-1e40-4211-aa1a-aed80aa12ed8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.book.body
+    - node.type.book
+    - views.view.guidebook
+  module:
+    - book
+    - bootstrap_layouts
+    - layout_builder
+    - text
+    - user
+    - views
+third_party_settings:
+  layout_builder:
+    enabled: true
+    allow_custom: false
+    sections:
+      -
+        layout_id: bs_1col
+        layout_settings:
+          label: ''
+          context_mapping: {  }
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            main:
+              wrapper: div
+              classes:
+                col-sm-12: col-sm-12
+              add_region_classes: 1
+              attributes: ''
+        components:
+          c7a164a7-1459-4a0d-ae6c-6065d311ce66:
+            uuid: c7a164a7-1459-4a0d-ae6c-6065d311ce66
+            region: main
+            configuration:
+              id: 'extra_field_block:node:book:links'
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+            weight: 1
+            additional: {  }
+        third_party_settings: {  }
+      -
+        layout_id: bs_2col
+        layout_settings:
+          label: ''
+          context_mapping: {  }
+          layout:
+            wrapper: div
+            classes:
+              row: row
+            add_layout_class: 1
+            attributes: ''
+          regions:
+            left:
+              wrapper: div
+              classes:
+                col-sm-4: col-sm-4
+              add_region_classes: 1
+              attributes: ''
+            right:
+              wrapper: div
+              classes:
+                col-sm-8: col-sm-8
+              add_region_classes: 1
+              attributes: class|mrgn-tp-lg
+        components:
+          485a95e1-6bfe-4d54-a732-25f5b6a635ef:
+            uuid: 485a95e1-6bfe-4d54-a732-25f5b6a635ef
+            region: right
+            configuration:
+              id: 'field_block:node:book:body'
+              label_display: '0'
+              context_mapping:
+                entity: layout_builder.entity
+              formatter:
+                type: text_default
+                label: hidden
+                settings: {  }
+                third_party_settings: {  }
+            weight: 2
+            additional: {  }
+          12aa5136-0b66-479f-aa1f-60b777df0702:
+            uuid: 12aa5136-0b66-479f-aa1f-60b777df0702
+            region: left
+            configuration:
+              id: book_navigation
+              label: 'Book navigation'
+              label_display: '0'
+              provider: book
+              context_mapping: {  }
+              block_mode: 'all pages'
+            weight: 2
+            additional: {  }
+          4e9d02db-6861-4cbd-bc59-23a1c2cd3162:
+            uuid: 4e9d02db-6861-4cbd-bc59-23a1c2cd3162
+            region: left
+            configuration:
+              id: 'views_block:guidebook-block_1'
+              label: ''
+              label_display: '0'
+              provider: views
+              context_mapping: {  }
+              views_label: ''
+              items_per_page: none
+            weight: 0
+            additional: {  }
+        third_party_settings: {  }
+_core:
+  default_config_hash: W620wooZmJ02Ua5mnXNKBCOpI0abjSOOSKEkSQhuWNA
+id: node.book.default
+targetEntityType: node
+bundle: book
+mode: default
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+  content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
+    weight: -20
+    region: main
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 101
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true

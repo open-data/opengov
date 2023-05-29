@@ -1,12 +1,12 @@
 uuid: c3c87eb7-1197-46c5-8867-6f9379c6d40f
 langcode: en
-status: false
+status: true
 dependencies:
+  config:
+    - search_api.server.pd_core_hospitalityq
   module:
     - search_api_solr
     - search_api
-  config:
-    - search_api.server.pd_core_hospitalityq
 third_party_settings:
   search_api_solr:
     finalize: false
@@ -15,13 +15,13 @@ third_party_settings:
     highlighter:
       maxAnalyzedChars: 51200
       fragmenter: gap
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
       regex:
         slop: 0.5
         pattern: blank
         maxAnalyzedChars: 10000
-      usePhraseHighlighter: true
-      highlightMultiTerm: true
-      preserveMulti: false
       highlight:
         mergeContiguous: false
         requireFieldMatch: false
@@ -213,6 +213,8 @@ datasource_settings:
 processor_settings:
   add_url: {  }
   aggregated_field: {  }
+  auto_aggregated_fulltext_field: {  }
+  entity_type: {  }
   language_with_fallback: {  }
   rendered_item: {  }
   solr_date_range: {  }
@@ -220,6 +222,7 @@ tracker_settings:
   default:
     indexing_order: fifo
 options:
-  index_directly: false
   cron_limit: 50
+  index_directly: false
+  track_changes_in_references: true
 server: pd_core_hospitalityq

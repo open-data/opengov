@@ -1,0 +1,23 @@
+uuid: 0ef9e167-6c75-425d-8a97-64832c4f7f4d
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.feature
+    - field.storage.block_content.field_spotlight_link
+  module:
+    - link
+id: block_content.feature.field_spotlight_link
+field_name: field_spotlight_link
+entity_type: block_content
+bundle: feature
+label: 'Link & Heading'
+description: 'Hyperlink for the block to link out to. "Link Text" is the Heading that will display in the block.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 2
+  link_type: 17
+field_type: link

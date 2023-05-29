@@ -1,0 +1,31 @@
+uuid: fa75e2bc-7b48-4da1-b8ef-4ea6a357289e
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:feature:fa677b09-efdd-4f32-a7fd-ab7f35069b1a'
+  module:
+    - block_content
+    - system
+  theme:
+    - gcweb
+id: featuremsfnew
+theme: gcweb
+region: content
+weight: 0
+provider: null
+plugin: 'block_content:fa677b09-efdd-4f32-a7fd-ab7f35069b1a'
+settings:
+  id: 'block_content:fa677b09-efdd-4f32-a7fd-ab7f35069b1a'
+  label: 'Feature MSF NEW'
+  label_display: '0'
+  provider: block_content
+  status: true
+  info: ''
+  view_mode: full
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: /feature-block-example

@@ -10,13 +10,13 @@ type: 'canonical_entities:node'
 pattern: 'idea/[node:title]'
 selection_criteria:
   6c2348d8-0d11-4907-9d66-d468feeef56b:
-    id: node_type
-    bundles:
-      idea: idea
+    id: 'entity_bundle:node'
     negate: false
+    uuid: 6c2348d8-0d11-4907-9d66-d468feeef56b
     context_mapping:
       node: node
-    uuid: 6c2348d8-0d11-4907-9d66-d468feeef56b
+    bundles:
+      idea: idea
 selection_logic: and
 weight: 1
 relationships: {  }

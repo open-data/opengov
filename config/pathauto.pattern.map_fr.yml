@@ -11,21 +11,21 @@ type: 'canonical_entities:node'
 pattern: 'carte/[node:title]'
 selection_criteria:
   4b2b6f59-0434-4919-b118-b5097fe7b083:
-    id: node_type
-    bundles:
-      map: map
+    id: 'entity_bundle:node'
     negate: false
+    uuid: 4b2b6f59-0434-4919-b118-b5097fe7b083
     context_mapping:
       node: node
-    uuid: 4b2b6f59-0434-4919-b118-b5097fe7b083
+    bundles:
+      map: map
   dc428943-be95-4e17-98e9-0415d67f5660:
     id: language
-    langcodes:
-      fr: fr
     negate: false
+    uuid: dc428943-be95-4e17-98e9-0415d67f5660
     context_mapping:
       language: 'node:langcode:language'
-    uuid: dc428943-be95-4e17-98e9-0415d67f5660
+    langcodes:
+      fr: fr
 selection_logic: and
 weight: 4
 relationships:

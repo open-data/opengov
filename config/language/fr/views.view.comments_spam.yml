@@ -1,12 +1,18 @@
 display:
   default:
-    display_title: Maître
     display_options:
+      header:
+        area:
+          content:
+            value: "<div data-drupal-messages=\"\">\r\n    <div role=\"contentinfo\" aria-label=\"Status message\" class=\"messages messages--warning\">\r\n                  Les commentaires dans le dossier Spam seront automatiquement supprimés après 30 jours.\r\n    </div>\r\n</div>"
+            format: full_html
       exposed_form:
         options:
           submit_button: Appliquer
           reset_button_label: Réinitialiser
           exposed_sorts_label: 'Trier par'
+          sort_asc_label: Asc
+          sort_desc_label: Desc
       pager:
         options:
           expose:
@@ -16,19 +22,28 @@ display:
       fields:
         comment_bulk_form:
           label: 'Formulaire d''opérations en masse de commentaire'
-        subject: {  }
+          action_title: Action
+        subject:
+          label: Title
+          separator: ', '
         comment_body:
           label: Commentaire
+          separator: ', '
         name:
           label: Auteur
-        entity_id: {  }
+          separator: ', '
+        entity_id:
+          label: 'Posted in'
+          separator: ', '
         changed:
           label: 'Mis à jour'
+          separator: ', '
         operations:
           label: 'Liens d''actions'
       filters:
         subject:
-          expose: {  }
+          expose:
+            label: Title
         combine:
           expose:
             label: 'Nom de l''auteur'
@@ -38,8 +53,4 @@ display:
       empty:
         area_text_custom:
           content: 'Aucun commentaire disponible.'
-      header:
-        area:
-          content:
-            value: "<div data-drupal-messages=\"\">\r\n    <div role=\"contentinfo\" aria-label=\"Status message\" class=\"messages messages--warning\">\r\n                  Les commentaires dans le dossier Spam seront automatiquement supprimés après 30 jours.\r\n    </div>\r\n</div>"
-            format: full_html
+    display_title: Maître

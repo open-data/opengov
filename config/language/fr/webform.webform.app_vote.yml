@@ -1,4 +1,8 @@
-elements: "rating:\n  '#title': 'Avez-vous trouvé cet applis utile?'\nactions:\n  '#submit__label': Coter\n"
+elements: |
+  rating:
+    '#title': 'Avez-vous trouvé cet applis utile?'
+  actions:
+    '#submit__label': Coter
 settings:
   previous_submission_message: 'Vous avez déjà voté sur cet applis'
   previous_submissions_message: 'Vous avez déjà voté sur cet applis'

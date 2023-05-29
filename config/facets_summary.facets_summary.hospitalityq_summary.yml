@@ -9,55 +9,6 @@ dependencies:
     - search_api
 id: hospitalityq_summary
 name: 'PD Hospitality (Q) - Current Search'
-facets:
-  hospitalityq_organization_en:
-    checked: true
-    label: Organization
-    separator: ', '
-    weight: 0
-    show_count: false
-  hospitalityq_organization_fr:
-    checked: true
-    label: Organisation
-    separator: ', '
-    weight: 0
-    show_count: false
-  hospitalityq_year_en:
-    checked: true
-    label: Year
-    separator: ', '
-    weight: 0
-    show_count: false
-  hospitalityq_year_fr:
-    checked: true
-    label: Année
-    separator: ', '
-    weight: 0
-    show_count: false
-  hospitalityq_total_en:
-    checked: true
-    label: Total
-    separator: ', '
-    weight: 0
-    show_count: false
-  hospitalityq_total_fr:
-    checked: true
-    label: Total
-    separator: ', '
-    weight: 0
-    show_count: false
-  hospitalityq_nil_en:
-    checked: true
-    label: 'Nothing to report'
-    separator: ', '
-    weight: 0
-    show_count: false
-  hospitalityq_nil_fr:
-    checked: true
-    label: 'Rien à signaler'
-    separator: ', '
-    weight: 0
-    show_count: false
 facet_source_id: 'search_api:views_block__pd_core_hospitalityq__block_1'
 processor_configs:
   reset_facets:
@@ -74,3 +25,52 @@ processor_configs:
       text:
         value: 'There is no current search in progress.'
         format: plain_text
+facets:
+  hospitalityq_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    show_count: false
+    weight: 0
+  hospitalityq_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    show_count: false
+    weight: 0
+  hospitalityq_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    show_count: false
+    weight: 0
+  hospitalityq_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    show_count: false
+    weight: 0
+  hospitalityq_total_en:
+    checked: true
+    label: Total
+    separator: ', '
+    show_count: false
+    weight: 0
+  hospitalityq_total_fr:
+    checked: true
+    label: Total
+    separator: ', '
+    show_count: false
+    weight: 0
+  hospitalityq_nil_en:
+    checked: true
+    label: 'Nothing to report'
+    separator: ', '
+    show_count: false
+    weight: 0
+  hospitalityq_nil_fr:
+    checked: true
+    label: 'Rien à signaler'
+    separator: ', '
+    show_count: false
+    weight: 0

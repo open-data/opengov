@@ -1,0 +1,14 @@
+title: 'FMI: Appel de candidatures'
+elements: |
+  cv:
+    '#title': 'un curriculum vitae (maximum de 4 pages);'
+  cover_letter:
+    '#title': 'une lettre de présentation expliquant votre intérêt, vos idées, vos compétences et votre expérience.  '
+  process:
+    '#text': "<p>Il se peut que des références soient demandées ultérieurement.</p>\r\n\r\n<p>Un comité de sélection a été établi par le FMI actuel. Il examinera les candidatures, présélectionnera les candidats à rencontrer en entrevue et sélectionnera les nouveaux membres.</p>\r\n\r\n<p>La date limite pour ce recrutement de nouveaux membres est le <strong>16 février, 2023</strong>. Nous prévoyons que les entrevues virtuelles auront lieu en février. Les nouveaux membres devraient entrer en fonction en mars 2023.</p>\r\n"
+  consent:
+    '#title': 'Je comprends que les informations que j''ai fournies sont communiquées à une tierce partie, à savoir le comité de sélection, pour examen.'
+  actions:
+    '#submit__label': 'Présentez votre candidature '
+settings:
+  confirmation_message: 'Merci pour votre candidature.'

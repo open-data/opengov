@@ -5,6 +5,7 @@ dependencies:
   config:
     - node.type.app
     - node.type.article
+    - node.type.book
     - node.type.commitment
     - node.type.consultation
     - node.type.external
@@ -14,6 +15,7 @@ dependencies:
     - node.type.map
     - node.type.page
     - node.type.suggested_dataset
+    - node.type.theme_and_topic_page
     - node.type.webform
   module:
     - content_moderation
@@ -31,19 +33,19 @@ type_settings:
       default_revision: true
     draft:
       label: Draft
+      weight: -3
       published: false
       default_revision: false
-      weight: -2
     in_review:
+      label: 'In review'
+      weight: -2
       published: false
       default_revision: false
-      label: 'In review'
-      weight: -1
     published:
       label: Published
+      weight: -1
       published: true
       default_revision: true
-      weight: 0
   transitions:
     archive:
       label: Archive
@@ -66,31 +68,32 @@ type_settings:
       weight: 2
     create_new_draft:
       label: 'Create New Draft'
-      to: draft
-      weight: -3
       from:
         - draft
         - in_review
         - published
+      to: draft
+      weight: -4
     publish:
       label: Publish
-      to: published
-      weight: -1
       from:
         - draft
         - in_review
         - published
+      to: published
+      weight: -2
     review:
       label: Review
       from:
         - draft
         - in_review
       to: in_review
-      weight: -2
+      weight: -3
   entity_types:
     node:
       - app
       - article
+      - book
       - commitment
       - consultation
       - external
@@ -100,5 +103,6 @@ type_settings:
       - map
       - page
       - suggested_dataset
+      - theme_and_topic_page
       - webform
   default_moderation_state: draft

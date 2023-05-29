@@ -1,7 +1,53 @@
 uuid: 13a0a50e-dd90-4b18-8a79-6cb54d6bb8d0
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.full_html
+    - filter.format.rich_text
+    - media.type.file
+    - media.type.image
+    - media.type.slideshow
+    - node.type.app
+    - node.type.article
+    - node.type.book
+    - node.type.commitment
+    - node.type.consultation
+    - node.type.idea
+    - node.type.impact_story
+    - node.type.landing_page
+    - node.type.page
+    - node.type.suggested_dataset
+    - node.type.webform
+    - taxonomy.vocabulary.app_categories
+    - taxonomy.vocabulary.app_freetags
+    - taxonomy.vocabulary.app_ribbon
+    - taxonomy.vocabulary.blog_author
+    - taxonomy.vocabulary.commitment_freetags
+    - taxonomy.vocabulary.consultation_status
+    - taxonomy.vocabulary.departments
+    - taxonomy.vocabulary.device_formats
+    - taxonomy.vocabulary.idea_freetags
+    - taxonomy.vocabulary.idea_status
+    - taxonomy.vocabulary.site_structure
+    - taxonomy.vocabulary.subscriptions
+    - workflows.workflow.editorial
+  module:
+    - block
+    - block_content
+    - content_moderation
+    - content_translation
+    - contextual
+    - file
+    - filter
+    - media
+    - menu_link_content
+    - node
+    - path
+    - quickedit
+    - system
+    - taxonomy
+    - toolbar
 id: editor
 label: Editor
 weight: 3
@@ -14,18 +60,14 @@ permissions:
   - 'access files overview'
   - 'access in-place editing'
   - 'access media overview'
-  - 'access shortcuts'
-  - 'access site-wide contact form'
   - 'access taxonomy overview'
   - 'access toolbar'
-  - 'access tour'
-  - 'access user contact forms'
   - 'administer blocks'
   - 'administer menu'
-  - 'administer shortcuts'
   - 'administer taxonomy'
   - 'create app content'
   - 'create article content'
+  - 'create book content'
   - 'create commitment content'
   - 'create consultation content'
   - 'create content translations'
@@ -51,9 +93,9 @@ permissions:
   - 'create terms in subscriptions'
   - 'create url aliases'
   - 'create webform content'
-  - 'customize shortcut links'
   - 'delete any app content'
   - 'delete any article content'
+  - 'delete any book content'
   - 'delete any commitment content'
   - 'delete any consultation content'
   - 'delete any idea content'
@@ -64,6 +106,7 @@ permissions:
   - 'delete any webform content'
   - 'delete app revisions'
   - 'delete article revisions'
+  - 'delete book revisions'
   - 'delete commitment revisions'
   - 'delete consultation revisions'
   - 'delete content translations'
@@ -72,6 +115,7 @@ permissions:
   - 'delete landing_page revisions'
   - 'delete own app content'
   - 'delete own article content'
+  - 'delete own book content'
   - 'delete own commitment content'
   - 'delete own consultation content'
   - 'delete own file media'
@@ -88,6 +132,7 @@ permissions:
   - 'delete webform revisions'
   - 'edit any app content'
   - 'edit any article content'
+  - 'edit any book content'
   - 'edit any commitment content'
   - 'edit any consultation content'
   - 'edit any file media'
@@ -101,6 +146,7 @@ permissions:
   - 'edit any webform content'
   - 'edit own app content'
   - 'edit own article content'
+  - 'edit own book content'
   - 'edit own commitment content'
   - 'edit own consultation content'
   - 'edit own file media'
@@ -123,9 +169,8 @@ permissions:
   - 'edit terms in idea_status'
   - 'edit terms in site_structure'
   - 'edit terms in subscriptions'
+  - 'revert book revisions'
   - 'revert impact_story revisions'
-  - 'search content'
-  - 'switch shortcut sets'
   - 'translate any entity'
   - 'translate app node'
   - 'translate app_categories taxonomy_term'
@@ -134,6 +179,7 @@ permissions:
   - 'translate article node'
   - 'translate block_content'
   - 'translate blog_author taxonomy_term'
+  - 'translate book node'
   - 'translate commitment node'
   - 'translate consultation node'
   - 'translate consultation_status taxonomy_term'
@@ -151,12 +197,10 @@ permissions:
   - 'translate slideshow media'
   - 'translate subscriptions taxonomy_term'
   - 'translate suggested_dataset node'
-  - 'translate tags taxonomy_term'
   - 'translate webform node'
   - 'update any media'
   - 'update content translations'
   - 'update media'
-  - 'use advanced search'
   - 'use editorial transition archive'
   - 'use editorial transition create_new_draft'
   - 'use editorial transition publish'
@@ -166,6 +210,7 @@ permissions:
   - 'view any unpublished content'
   - 'view app revisions'
   - 'view article revisions'
+  - 'view book revisions'
   - 'view commitment revisions'
   - 'view consultation revisions'
   - 'view idea revisions'

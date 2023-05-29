@@ -18,50 +18,12 @@ base_table: search_api_index_pd_core_ati
 base_field: search_api_id
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: none
-        options: {  }
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-        options:
-          grouping: {  }
-          row_class: mrgn-bttm-xl
-          default_row_class: true
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: true
+      title: 'Informal Request for ATI Records Previously Released'
       fields:
         id:
           id: id
@@ -70,6 +32,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -115,7 +78,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_en:
           id: org_name_en
           table: search_api_index_pd_core_ati
@@ -123,6 +85,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organization
           exclude: false
           alter:
@@ -168,7 +131,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_fr:
           id: org_name_fr
           table: search_api_index_pd_core_ati
@@ -176,6 +138,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organisation
           exclude: false
           alter:
@@ -221,7 +184,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         year:
           id: year
           table: search_api_index_pd_core_ati
@@ -229,6 +191,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Year
           exclude: false
           alter:
@@ -270,6 +233,10 @@ display:
           hide_empty: true
           empty_zero: false
           hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
           set_precision: false
           precision: 0
           decimal: .
@@ -278,12 +245,7 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
           format_plural_values: {  }
-          plugin_id: search_api
         month_name_en:
           id: month_name_en
           table: search_api_index_pd_core_ati
@@ -291,6 +253,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Month
           exclude: false
           alter:
@@ -336,7 +299,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         month_name_fr:
           id: month_name_fr
           table: search_api_index_pd_core_ati
@@ -344,6 +306,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Mois
           exclude: false
           alter:
@@ -389,7 +352,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         request_number:
           id: request_number
           table: search_api_index_pd_core_ati
@@ -397,6 +359,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Request Number'
           exclude: false
           alter:
@@ -442,7 +405,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         summary_en:
           id: summary_en
           table: search_api_index_pd_core_ati
@@ -450,6 +412,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Request Summary'
           exclude: false
           alter:
@@ -495,7 +458,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         summary_fr:
           id: summary_fr
           table: search_api_index_pd_core_ati
@@ -503,6 +465,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Résumé de la demande'
           exclude: false
           alter:
@@ -548,7 +511,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         disposition_en:
           id: disposition_en
           table: search_api_index_pd_core_ati
@@ -556,6 +518,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Disposition
           exclude: false
           alter:
@@ -601,7 +564,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         disposition_fr:
           id: disposition_fr
           table: search_api_index_pd_core_ati
@@ -609,6 +571,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Disposition
           exclude: false
           alter:
@@ -654,7 +617,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         pages:
           id: pages
           table: search_api_index_pd_core_ati
@@ -662,6 +624,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Number of pages'
           exclude: false
           alter:
@@ -707,7 +670,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         comments_en:
           id: comments_en
           table: search_api_index_pd_core_ati
@@ -715,6 +677,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Comments
           exclude: false
           alter:
@@ -760,7 +723,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         comments_fr:
           id: comments_fr
           table: search_api_index_pd_core_ati
@@ -768,6 +730,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Commentaires
           exclude: false
           alter:
@@ -813,48 +776,26 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
-      filters: {  }
-      sorts: {  }
-      header: {  }
-      footer:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/en/search/ati">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
-          plugin_id: text_custom
-        entity_block_content:
-          id: entity_block_content
-          table: views
-          field: entity_block_content
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: true
-          target: 54ed5b8f-aa43-4de2-8b44-96d07d012a56
-          view_mode: default
-          bypass_access: false
-          plugin_id: entity
-        entity_webform:
-          id: entity_webform
-          table: views
-          field: entity_webform
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: true
-          target: ati_records
-          view_mode: default
-          bypass_access: false
-          plugin_id: entity
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: none
+        options: {  }
       empty:
         area_text_custom:
           id: area_text_custom
@@ -863,11 +804,11 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          empty: true
-          tokenize: false
-          content: "<br/><br/>\r\n<p><strong>No results found.</strong></p>\r\n<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/search/ati\">Back to Search&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n<br/><br/>"
           plugin_id: text_custom
-      relationships: {  }
+          empty: true
+          content: "<br/><br/>\r\n<p><strong>No results found.</strong></p>\r\n<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/search/ati\">Back to Search&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n<br/><br/>"
+          tokenize: false
+      sorts: {  }
       arguments:
         id:
           id: id
@@ -876,6 +817,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           default_action: default
           exception:
             value: all
@@ -900,29 +842,153 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          plugin_id: search_api
+      filters: {  }
+      style:
+        type: default
+        options:
+          grouping: {  }
+          row_class: mrgn-bttm-xl
+          default_row_class: true
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: false
+      relationships: {  }
+      header: {  }
+      footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/en/search/ati">Back to search&nbsp;<span class="fa fa-undo"></span></a></p>'
+          tokenize: false
+        area_text_custom_1:
+          id: area_text_custom_1
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: "<h2>Request a copy of records</h2>\r\n<p>Availability of records are subject to retention timelines as established by institutions. Requests made through this form are considered informal requests and are not subject to the same requirements as requests under the Access to Information Act.  For additional information, please see the “<a href=\"[site:url]/content/about-access-information-requests\" target=\"_blank\">About Access to Information Requests</a>” webpage.</p>\r\n"
+          tokenize: false
+        entity_block_content:
+          id: entity_block_content
+          table: views
+          field: entity_block_content
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: entity
+          empty: false
+          target: 54ed5b8f-aa43-4de2-8b44-96d07d012a56
+          view_mode: default
+          tokenize: true
+          bypass_access: false
+        entity_webform:
+          id: entity_webform
+          table: views
+          field: entity_webform
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: entity
+          empty: false
+          target: ati_records
+          view_mode: default
+          tokenize: true
+          bypass_access: false
       display_extenders:
         metatag_display_extender: {  }
-      title: 'Informal Request for ATI Records Previously Released'
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_interface'
         - url
-      tags: {  }
+      tags:
+        - 'config:search_api.index.pd_core_ati'
   details:
-    display_plugin: page
     id: details
     display_title: 'Informal Request for ATI Records Previously Released'
+    display_plugin: page
     position: 1
     display_options:
+      title: 'Informal request for ATI records previously released pages'
+      defaults:
+        title: false
+        footer: false
+      display_description: ''
+      footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/en/search/ati">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
+          tokenize: false
+        area_text_custom_1:
+          id: area_text_custom_1
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: "<h2>Request a copy of records</h2>\r\n<p>Availability of records are subject to retention timelines as established by institutions. Requests made through this form are considered informal requests and are not subject to the same requirements as requests under the Access to Information Act.  For additional information, please see the “<a href=\"[site:url]/content/about-access-information-requests\" target=\"_blank\">About Access to Information Requests</a>” webpage.</p>"
+          tokenize: false
+        entity_block_content:
+          id: entity_block_content
+          table: views
+          field: entity_block_content
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: entity
+          empty: false
+          target: 54ed5b8f-aa43-4de2-8b44-96d07d012a56
+          view_mode: default
+          tokenize: true
+          bypass_access: false
+        entity_webform:
+          id: entity_webform
+          table: views
+          field: entity_webform
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: entity
+          empty: false
+          target: ati_records
+          view_mode: default
+          tokenize: true
+          bypass_access: false
       display_extenders:
         metatag_display_extender: {  }
       path: search/ati/reference/%
-      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_interface'
         - url
-      tags: {  }
+      tags:
+        - 'config:search_api.index.pd_core_ati'

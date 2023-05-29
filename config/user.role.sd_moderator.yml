@@ -1,0 +1,9 @@
+uuid: d3b9721a-1a73-4988-896f-78962edf2423
+langcode: en
+status: true
+dependencies: {  }
+id: sd_moderator
+label: 'SD Moderator'
+weight: 7
+is_admin: null
+permissions: {  }

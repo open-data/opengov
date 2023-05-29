@@ -33,140 +33,143 @@ dependencies:
     - webform
 third_party_settings:
   layout_builder:
-    allow_custom: false
     enabled: true
+    allow_custom: false
     sections:
       -
         layout_id: layout_onecol
-        layout_settings: {  }
+        layout_settings:
+          label: ''
+          context_mapping: {  }
         components:
           2944426d-88ec-41a8-bd7d-3933a335c41b:
             uuid: 2944426d-88ec-41a8-bd7d-3933a335c41b
             region: content
             configuration:
+              id: 'extra_field_block:node:impact_story:content_moderation_control'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:impact_story:content_moderation_control'
-            additional: {  }
             weight: -10
+            additional: {  }
           29901378-f0e8-434d-bedd-54089b4420ed:
             uuid: 29901378-f0e8-434d-bedd-54089b4420ed
             region: content
             configuration:
+              id: 'field_block:node:impact_story:field_media'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:field_media'
               formatter:
+                type: entity_reference_entity_view
                 label: hidden
                 settings:
                   view_mode: full
                   link: false
                 third_party_settings: {  }
-                type: entity_reference_entity_view
-            additional: {  }
             weight: -8
+            additional: {  }
           0513f6c5-33c8-4975-8e79-91ca12cd8acc:
             uuid: 0513f6c5-33c8-4975-8e79-91ca12cd8acc
             region: content
             configuration:
+              id: 'field_block:node:impact_story:field_submitter_name'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:field_submitter_name'
               formatter:
+                type: string
                 label: above
                 settings:
                   link_to_entity: false
                 third_party_settings: {  }
-                type: string
-            additional: {  }
             weight: -7
+            additional: {  }
           8e2d0a1f-dee4-4720-89ed-97375a62793c:
             uuid: 8e2d0a1f-dee4-4720-89ed-97375a62793c
             region: content
             configuration:
+              id: 'field_block:node:impact_story:field_subject'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:field_subject'
               formatter:
+                type: entity_reference_label
                 label: above
                 settings:
                   link: true
                 third_party_settings: {  }
-                type: entity_reference_label
-            additional: {  }
             weight: -5
+            additional: {  }
           749c0ee9-b04d-48c3-9a7f-b808c59302a6:
             uuid: 749c0ee9-b04d-48c3-9a7f-b808c59302a6
             region: content
             configuration:
+              id: 'field_block:node:impact_story:body'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:body'
               formatter:
-                label: above
                 type: text_default
+                label: above
                 settings: {  }
                 third_party_settings: {  }
-            additional: {  }
             weight: -4
+            additional: {  }
           150bdea4-ccae-4eb1-82af-73fa1d593818:
             uuid: 150bdea4-ccae-4eb1-82af-73fa1d593818
             region: content
             configuration:
+              id: 'field_block:node:impact_story:field_story_impact'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:field_story_impact'
               formatter:
+                type: text_default
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: text_default
-            additional: {  }
             weight: -3
+            additional: {  }
           3fb70768-2bbf-490a-a41b-9e74ba5ee98c:
             uuid: 3fb70768-2bbf-490a-a41b-9e74ba5ee98c
             region: content
             configuration:
+              id: 'field_block:node:impact_story:field_story_testimonial'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:field_story_testimonial'
               formatter:
+                type: text_default
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: text_default
-            additional: {  }
             weight: -2
+            additional: {  }
           42b84380-4672-47b1-bc01-1ae1f8485f49:
             uuid: 42b84380-4672-47b1-bc01-1ae1f8485f49
             region: content
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
               label: 'Pillars - social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: -9
+            additional: {  }
           102fd45a-2926-46af-8335-31e445aa73ed:
             uuid: 102fd45a-2926-46af-8335-31e445aa73ed
             region: content
             configuration:
+              id: 'field_block:node:impact_story:field_dataset_used'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:field_dataset_used'
               formatter:
+                type: link
                 label: above
                 settings:
                   trim_length: 80
@@ -175,48 +178,31 @@ third_party_settings:
                   rel: ''
                   target: ''
                 third_party_settings: {  }
-                type: link
-            additional: {  }
             weight: -1
-          3f1f9ba3-e0f4-42bb-8f01-b2a146906de3:
-            uuid: 3f1f9ba3-e0f4-42bb-8f01-b2a146906de3
-            region: content
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:impact_story:comment'
-              formatter:
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-                type: comment_default
             additional: {  }
-            weight: 2
           1aeb1916-57b9-4ae2-acd4-2a9f17420c56:
             uuid: 1aeb1916-57b9-4ae2-acd4-2a9f17420c56
             region: content
             configuration:
               id: 'views_block:user_impact_stories-recent'
               label: ''
-              provider: views
               label_display: visible
+              provider: views
+              context_mapping: {  }
               views_label: ''
               items_per_page: none
-              context_mapping: {  }
-            additional: {  }
             weight: 1
+            additional: {  }
           24f9b593-ae1a-4238-b3b3-00c09f2c5718:
             uuid: 24f9b593-ae1a-4238-b3b3-00c09f2c5718
             region: content
             configuration:
+              id: 'field_block:node:impact_story:field_url'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:impact_story:field_url'
               formatter:
+                type: link
                 label: above
                 settings:
                   trim_length: 80
@@ -225,23 +211,22 @@ third_party_settings:
                   rel: ''
                   target: ''
                 third_party_settings: {  }
-                type: link
-            additional: {  }
             weight: -6
+            additional: {  }
           ac9e4270-67f9-487c-85cb-83b56265a5a5:
             uuid: ac9e4270-67f9-487c-85cb-83b56265a5a5
             region: content
             configuration:
               id: webform_block
               label: Webform
-              provider: webform
               label_display: '0'
+              provider: webform
+              context_mapping: {  }
               webform_id: vote_up_down
               default_data: ''
               redirect: false
-              context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
         third_party_settings: {  }
 id: node.impact_story.default
 targetEntityType: node
@@ -249,28 +234,28 @@ bundle: impact_story
 mode: default
 content:
   body:
-    label: above
     type: text_default
-    weight: 4
+    label: above
     settings: {  }
     third_party_settings: {  }
+    weight: 4
     region: content
   comment:
-    weight: 8
+    type: comment_default
     label: above
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 8
     region: content
   content_moderation_control:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
   field_dataset_used:
-    weight: 7
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -279,66 +264,66 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 7
     region: content
   field_media:
-    weight: 1
+    type: entity_reference_entity_view
     label: hidden
     settings:
       view_mode: full
       link: false
     third_party_settings: {  }
-    type: entity_reference_entity_view
+    weight: 1
     region: content
   field_ribbon:
-    weight: 9
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 9
     region: content
   field_story_impact:
-    weight: 5
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 5
     region: content
   field_story_testimonial:
-    weight: 6
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 6
     region: content
   field_subject:
-    weight: 3
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 3
     region: content
   field_submitter_name:
-    weight: 2
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
   field_thumbnail:
     type: entity_reference_entity_view
-    weight: 12
     label: above
     settings:
       view_mode: default
       link: false
     third_party_settings: {  }
+    weight: 12
     region: content
   field_url:
-    weight: 11
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -347,16 +332,16 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 11
     region: content
   field_vote_up_down:
-    weight: 10
+    type: number_integer
     label: above
     settings:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    type: number_integer
+    weight: 10
     region: content
 hidden:
   langcode: true
