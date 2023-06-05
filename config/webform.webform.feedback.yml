@@ -99,7 +99,7 @@ elements: |-
     '#readonly': true
     '#prepopulate': true
     '#required': true
-    '#default_value': 'https://staging.open.canada.ca/data/[language:langcode]/dataset/[current-page:query:uuid]'
+    '#default_value': 'https://open.canada.ca/data/[webform_submission:langcode]/dataset/[current-page:query:uuid]'
     '#private': true
     '#access_create_roles':
       - administrator
