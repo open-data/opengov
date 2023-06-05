@@ -20,29 +20,6 @@ title: Feedback
 description: 'Feedback form to be integrated with external systems'
 category: ''
 elements: |-
-  dataset_uuid:
-    '#type': hidden
-    '#title': 'Dataset webpage'
-    '#default_value': '[current-page:query:uuid]'
-    '#prepopulate': true
-    '#access_create_roles':
-      - administrator
-    '#access_update_roles':
-      - administrator
-    '#access_view_roles':
-      - administrator
-  ati_email:
-    '#type': hidden
-    '#title': 'Helpdesk Email address'
-    '#default_value': open-ouvert@tbs-sct.gc.ca
-    '#prepopulate': true
-    '#private': true
-    '#access_create_roles':
-      - administrator
-    '#access_update_roles':
-      - administrator
-    '#access_view_roles':
-      - administrator
   intro:
     '#type': processed_text
     '#text': |
@@ -101,8 +78,8 @@ elements: |-
     '#title': Status
     '#options':
       outstanding: Outstanding
+      helpdesk: 'Forward to Helpdesk'
       complete: Complete
-      helpdesk: 'Forwarded to Helpdesk'
     '#required': true
     '#default_value': outstanding
     '#private': true
@@ -115,6 +92,37 @@ elements: |-
     '#access_view_roles':
       - administrator
       - business_owner
+  feedback_webpage:
+    '#type': url
+    '#title': 'Posted on'
+    '#disabled': true
+    '#readonly': true
+    '#prepopulate': true
+    '#required': true
+    '#default_value': 'https://staging.open.canada.ca/data/[language:langcode]/dataset/[current-page:query:uuid]'
+    '#private': true
+    '#access_create_roles':
+      - administrator
+    '#access_update_roles':
+      - administrator
+    '#access_view_roles':
+      - administrator
+      - business_owner
+  ati_email:
+    '#type': email
+    '#title': 'Helpdesk Email address'
+    '#disabled': true
+    '#readonly': true
+    '#required': true
+    '#default_value': open-ouvert@tbs-sct.gc.ca
+    '#private': true
+    '#access_create_roles':
+      - administrator
+    '#access_update_roles':
+      - administrator
+    '#access_view_roles':
+      - administrator
+    '#access': false
   actions:
     '#type': webform_actions
     '#title': 'Submit button(s)'
@@ -175,7 +183,8 @@ settings:
   submission_exception_message: ''
   submission_locked_message: ''
   submission_log: false
-  submission_excluded_elements: {  }
+  submission_excluded_elements:
+    ati_email: ati_email
   submission_exclude_empty: false
   submission_exclude_empty_checkbox: false
   submission_views: {  }
@@ -225,7 +234,7 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: url_message
-  confirmation_url: '/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]#feedback'
+  confirmation_url: '[webform_submission:values:feedback_webpage]#feedback'
   confirmation_title: ''
   confirmation_message: 'Your message has been submitted.'
   confirmation_attributes: {  }
@@ -309,8 +318,11 @@ handlers:
     handler_id: gc_notify_email_handler
     label: 'GC Notify Email Handler'
     notes: ''
-    status: false
-    conditions: {  }
+    status: true
+    conditions:
+      enabled:
+        ':input[name="status"]':
+          value: helpdesk
     weight: 0
     settings: {  }
   notifications:
@@ -323,8 +335,8 @@ handlers:
     weight: 0
     settings:
       states:
-        - completed
-      to_mail: rabiasajjad.dev@gmail.com
+        - updated
+      to_mail: '[webform_submission:values:ati_email:raw]'
       to_options: {  }
       bcc_mail: ''
       bcc_options: {  }
@@ -334,15 +346,14 @@ handlers:
       from_options: {  }
       from_name: _default
       reply_to: ''
-      return_path: ''
+      return_path: '[webform_submission:values:ati_email:raw]'
       sender_mail: ''
       sender_name: ''
-      subject: 'New feedback #[webform_submission:serial] received from portal visitor '
-      body: "<p>The following feedback has been received on the Open Government Portal.</p>\r\n\r\n<p><strong>Submitted on: </strong><a href=\"/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]\">https://staging.open.canada.ca/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]</a></p>\r\n\r\n<p><strong>Submission date: </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
+      subject: 'New feedback #[webform_submission:sid] received from portal visitor '
+      body: "<p>The following feedback has been received on the Open Government Portal.</p>\r\n\r\n<p><strong>Submitted on: </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
       excluded_elements:
-        dataset_uuid: dataset_uuid
-        ati_email: ati_email
         intro: intro
+        ati_email: ati_email
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false

@@ -1,6 +1,4 @@
 elements: |
-  ati_email:
-    '#title': 'Adresse électronique du service d''assistance'
   intro:
     '#text': "<h2>Indiquez vos commentaires sur ce jeu de données</h2>\r\n\r\n<details><summary class=\"bg-primary mrgn-bttm-md\">Énoncé de confidentialité </summary>\r\n\r\n<p>La collecte et l'utilisation de vos renseignements personnels sont autorisées par la <em>Loi sur la gestion des finances publiques</em>. La collecte et l'utilisation de vos renseignements personnels pour ce site se feront conformément à la <a href=\"http://laws-lois.justice.gc.ca/fra/lois/P-21/index.html\"> <em>Loi sur la protection des renseignements personnels</em></a>, une loi fédérale. Vos renseignements personnels sont utilisés pour valider votre utilisation des jeux de données, réunir de l'information en vue de l'élaboration des initiatives sur les données ouvertes et possiblement aussi évaluer l'efficacité du programme quand vient le temps de répondre aux besoins des clients. Dans des circonstances exceptionnelles (p. ex., enquête sur les intrusions dans les réseaux ou sur les personnes qui font des menaces ou des remarques inopportunes, etc.), des renseignements personnels peuvent être communiqués sans votre consentement aux termes du paragraphe 8(2) de la <em>Loi sur la protection des renseignements personnels</em>.</p>\r\n\r\n<p>Tous les renseignements personnels qui peuvent être recueillis sont décrits dans les fichiers de renseignements personnels ordinaires intitulés <a href=\"http://www.infosource.gc.ca/emp/emp03-fra.asp#pou914\"> Communications publiques (POU&nbsp;914)</a> et <a href=\"http://www.infosource.gc.ca/emp/emp03-fra.asp#pou938\"> Activités de sensibilisation</a> (POU&nbsp;938) qui se trouve dans la publication <a href=\"http://www.infosource.gc.ca/index-fra.asp\"> <em>Info Source</em></a> du Secrétariat du Conseil du Trésor du Canada (SCT).</p>\r\n\r\n<p>En vertu de la <em>Loi sur la protection des renseignements personnels</em>, vous avez le droit de demander l'accès à vos renseignements personnels et de les modifier si vous en avez fourni. Veuillez toutefois prendre note que, pour exercer l'un ou l'autre de ces droits, vous devez présenter une demande d'accès à vos renseignements personnels. Pour obtenir de plus amples renseignements sur votre droit d'accès, veuillez lire <a href=\"http://www.infosource.gc.ca/emp/emp01-fra.asp\">À propos du programme d'accès à l'information</a>.</p>\r\n\r\n<p>Les questions, commentaires, préoccupations et plaintes concernant la présente déclaration, vos droits en matière de protection des renseignements personnels et la <a href=\"http://laws-lois.justice.gc.ca/fra/lois/P-21/index.html\"> <em>Loi sur la protection des renseignements personnels</em></a> peuvent être adressés au coordonnateur de l'accès à l'information et de la protection des renseignements personnels du SCT par courriel, à <a href=\"mailto:atip.aiprp@tbs-sct.gc.ca\"> atip.aiprp@tbs-sct.gc.ca</a> ou par téléphone, au 613-946-6260 ou au 1-866-312-1511. Si vous n'êtes pas satisfait de la réponse du SCT, vous pouvez vous adresser au Commissariat à la protection de la vie privée du Canada par courriel, à <a href=\"mailto:info@priv.gc.ca\">info@priv.gc.ca</a> ou par téléphone, au 1-800-282-1376. Vous avez le droit de déposer une plainte au Commissariat à la protection de la vie privée relativement au traitement de vos renseignements personnels par le SCT.</p>\r\n</details>\r\n"
   user_name:
@@ -33,14 +31,20 @@ elements: |
     '#title': Statut
     '#options':
       outstanding: 'En suspens'
-      complete: Complet
       helpdesk: 'Transféré au service d''assistance'
+      complete: Complet
+  feedback_webpage:
+    '#title': 'Posté sur'
+    '#default_value': 'https://stadification.ouvert.canada.ca/data/[language:langcode]/dataset/[current-page:query:uuid]'
+  ati_email:
+    '#title': 'Adresse e-mail du service d''assistance'
   actions:
     '#submit__label': Soumettre
 settings:
   confirmation_message: 'Vos commentaires ont &eacute;t&eacute; soumis.'
+  form_exception_message: 'Une erreur s&#39;est produite. Veuillez r&eacute;essayer.'
 handlers:
   notifications:
     settings:
       subject: 'Nouvelle rétroaction # [webform_submission:serial] reçue de la part d’un visiteur du Portail'
-      body: "<p>La r&eacute;troaction suivante a &eacute;t&eacute; re&ccedil;ue sur le Portail du gouvernement ouvert.</p>\r\n\r\n<p><strong>Soumis le : </strong><a href=\"/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]\">https://staging.open.canada.ca/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]</a></p>\r\n\r\n<p><strong>Date de soumission : </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
+      body: "<p>La r&eacute;troaction suivante a &eacute;t&eacute; re&ccedil;ue sur le Portail du gouvernement ouvert.</p>\r\n\r\n<p><strong>Soumis le : </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
