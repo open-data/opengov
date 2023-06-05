@@ -35,7 +35,7 @@ elements: |
       complete: Complet
   feedback_webpage:
     '#title': 'Posté sur'
-    '#default_value': 'https://stadification.ouvert.canada.ca/data/[language:langcode]/dataset/[current-page:query:uuid]'
+    '#default_value': 'https://ouvert.canada.ca/data/[webform_submission:langcode]/dataset/[current-page:query:uuid]'
   ati_email:
     '#title': 'Adresse e-mail du service d''assistance'
   actions:
