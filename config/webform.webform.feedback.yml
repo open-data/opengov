@@ -16,7 +16,7 @@ uid: 283
 template: false
 archive: false
 id: feedback
-title: 'Feedback (external)'
+title: Feedback
 description: 'Feedback form to be integrated with external systems'
 category: ''
 elements: |-
@@ -78,6 +78,7 @@ elements: |-
       other: Other
     '#empty_option': '- Select -'
     '#other__option_label': ''
+    '#required': true
   reason:
     '#type': select
     '#title': 'Reason for feedback'
@@ -89,11 +90,31 @@ elements: |-
       other: Other
     '#empty_option': '- Select -'
     '#other__option_label': ''
+    '#required': true
   feedback:
     '#type': textarea
     '#title': Feedback
     '#field_suffix': (required)
     '#required': true
+  status:
+    '#type': select
+    '#title': Status
+    '#options':
+      outstanding: Outstanding
+      complete: Complete
+      helpdesk: 'Forwarded to Helpdesk'
+    '#required': true
+    '#default_value': outstanding
+    '#private': true
+    '#access_create_roles':
+      - administrator
+      - business_owner
+    '#access_update_roles':
+      - administrator
+      - business_owner
+    '#access_view_roles':
+      - administrator
+      - business_owner
   actions:
     '#type': webform_actions
     '#title': 'Submit button(s)'
@@ -206,7 +227,7 @@ settings:
   confirmation_type: url_message
   confirmation_url: '/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]#feedback'
   confirmation_title: ''
-  confirmation_message: 'Thank you for your feedback.&nbsp;'
+  confirmation_message: 'Your message has been submitted.'
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -215,11 +236,11 @@ settings:
   confirmation_exclude_token: true
   confirmation_update: false
   limit_total: null
-  limit_total_interval: null
+  limit_total_interval: 600
   limit_total_message: ''
   limit_total_unique: false
-  limit_user: null
-  limit_user_interval: null
+  limit_user: 5
+  limit_user_interval: 1800
   limit_user_message: ''
   limit_user_unique: false
   entity_limit_total: null
@@ -288,7 +309,7 @@ handlers:
     handler_id: gc_notify_email_handler
     label: 'GC Notify Email Handler'
     notes: ''
-    status: true
+    status: false
     conditions: {  }
     weight: 0
     settings: {  }
@@ -303,7 +324,7 @@ handlers:
     settings:
       states:
         - completed
-      to_mail: open-ouvert@tbs-sct.gc.ca
+      to_mail: rabiasajjad.dev@gmail.com
       to_options: {  }
       bcc_mail: ''
       bcc_options: {  }
@@ -312,56 +333,18 @@ handlers:
       from_mail: _default
       from_options: {  }
       from_name: _default
-      reply_to: '[webform_submission:values:your_e_mail_address:raw]'
+      reply_to: ''
       return_path: ''
       sender_mail: ''
       sender_name: ''
-      subject: 'Dataset Feedback #[webform_submission:sid]'
-      body: "Submitted on [webform_submission:created]<br />\r\n<br />\r\nSubmitted values are:<br />\r\n[webform_submission:values]<br />\r\n&nbsp;"
+      subject: 'New feedback #[webform_submission:serial] received from portal visitor '
+      body: "<p>The following feedback has been received on the Open Government Portal.</p>\r\n\r\n<p><strong>Submitted on: </strong><a href=\"/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]\">https://staging.open.canada.ca/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]</a></p>\r\n\r\n<p><strong>Submission date: </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
       excluded_elements:
+        dataset_uuid: dataset_uuid
         ati_email: ati_email
         intro: intro
       ignore_access: false
-      exclude_empty: false
-      exclude_empty_checkbox: false
-      exclude_attachments: false
-      html: true
-      attachments: false
-      twig: false
-      theme_name: ''
-      parameters: {  }
-      debug: false
-  confirmation:
-    id: email
-    handler_id: confirmation
-    label: Confirmation
-    notes: ''
-    status: false
-    conditions: {  }
-    weight: 2
-    settings:
-      states:
-        - completed
-      to_mail: '[webform_submission:values:your_e_mail_address:raw]'
-      to_options: {  }
-      bcc_mail: ''
-      bcc_options: {  }
-      cc_mail: ''
-      cc_options: {  }
-      from_mail: _default
-      from_options: {  }
-      from_name: _default
-      reply_to: open-ouvert@tbs-sct.gc.ca
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
-      subject: 'Dataset Feedback #[webform_submission:sid]'
-      body: "Submitted on [webform_submission:created]<br />\r\n<br />\r\nSubmitted values are:<br />\r\n[webform_submission:values]<br />\r\n&nbsp;"
-      excluded_elements:
-        ati_email: ati_email
-        intro: intro
-      ignore_access: false
-      exclude_empty: false
+      exclude_empty: true
       exclude_empty_checkbox: false
       exclude_attachments: false
       html: true

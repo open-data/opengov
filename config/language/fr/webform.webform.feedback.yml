@@ -32,13 +32,9 @@ elements: |
   actions:
     '#submit__label': Soumettre
 settings:
-  confirmation_message: 'Merci pour vos commentaires'
+  confirmation_message: 'Vos commentaires ont &eacute;t&eacute; soumis.'
 handlers:
   notifications:
     settings:
-      subject: 'Commentaires sur jeu de données # [webform_submission:sid]'
-      body: "Soumis le :&nbsp;[webform_submission:created]<br />\r\n<br />\r\n[webform_submission:values]<br />\r\n&nbsp;"
-  confirmation:
-    settings:
-      subject: 'Commentaires sur jeu de données # [webform_submission:sid]'
-      body: "Soumis le :&nbsp;[webform_submission:created]<br />\r\n<br />\r\n[webform_submission:values]<br />\r\n&nbsp;"
+      subject: 'Nouvelle rétroaction # [webform_submission:serial] reçue de la part d’un visiteur du Portail'
+      body: "<p>La r&eacute;troaction suivante a &eacute;t&eacute; re&ccedil;ue sur le Portail du gouvernement ouvert.</p>\r\n\r\n<p><strong>Soumis le : </strong><a href=\"/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]\">https://staging.open.canada.ca/data/[language:langcode]/dataset/[webform_submission:values:dataset_uuid]</a></p>\r\n\r\n<p><strong>Date de soumission : </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
