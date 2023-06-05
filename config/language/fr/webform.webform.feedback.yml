@@ -29,6 +29,12 @@ elements: |
   feedback:
     '#title': Commentaires
     '#field_suffix': (requis)
+  status:
+    '#title': Statut
+    '#options':
+      outstanding: 'En suspens'
+      complete: Complet
+      helpdesk: 'Transféré au service d''assistance'
   actions:
     '#submit__label': Soumettre
 settings:
