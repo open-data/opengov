@@ -79,13 +79,10 @@ elements: |-
     '#options':
       outstanding: Outstanding
       helpdesk: 'Forward to Helpdesk'
-      complete: Complete
     '#required': true
     '#default_value': outstanding
     '#private': true
-    '#access_create_roles':
-      - administrator
-      - business_owner
+    '#access_create_roles': {  }
     '#access_update_roles':
       - administrator
       - business_owner
@@ -101,10 +98,8 @@ elements: |-
     '#required': true
     '#default_value': 'https://staging.open.canada.ca/data/[language:langcode]/dataset/[current-page:query:uuid]'
     '#private': true
-    '#access_create_roles':
-      - administrator
-    '#access_update_roles':
-      - administrator
+    '#access_create_roles': {  }
+    '#access_update_roles': {  }
     '#access_view_roles':
       - administrator
       - business_owner

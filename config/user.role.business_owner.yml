@@ -25,6 +25,7 @@ weight: 6
 is_admin: null
 permissions:
   - 'access webform overview'
+  - 'access webform submission user'
   - 'administer webform submission'
   - 'comment_spam admin_settings'
   - 'comment_spam set spam'
