@@ -1,0 +1,362 @@
+uuid: 578be260-762d-4a2b-915d-2c599de479b5
+langcode: en
+status: open
+dependencies:
+  module:
+    - gcnotify
+    - honeypot
+third_party_settings:
+  honeypot:
+    honeypot: true
+    time_restriction: true
+weight: 0
+open: null
+close: null
+uid: 283
+template: false
+archive: false
+id: feedback
+title: Feedback
+description: 'Feedback form to be integrated with external systems'
+category: ''
+elements: |-
+  intro:
+    '#type': processed_text
+    '#text': |
+      <h2>
+        Provide feedback on this dataset
+      </h2>
+      <details><summary class="bg-primary mrgn-bttm-md">Privacy Statement</summary>
+
+      <p>The collection and use of your personal information is authorized by the <em>Financial Administration Act</em>. Collection and use of your personal information for this site is in accordance with the federal <a href="http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html"> <em>Privacy Act</em></a>. Your personal information is used to validate your use of GC datasets and for information on the development of the GC open data initiative, and may also be used to evaluate the effectiveness of the program in responding to client needs. In exceptional circumstances (e.g. network intrusion, or of individuals who make inappropriate remarks or threats, etc.), personal information may be disclosed without your consent pursuant to subsection 8(2) of the <em> Privacy Act</em>.</p>
+
+      <p>Any personal information that may be collected is described in the Standard Personal Information Banks entitled <a href="http://www.infosource.gc.ca/emp/emp03-eng.asp#psu914"> Public Communications, PSU 914</a>, and <a href="http://www.infosource.gc.ca/emp/emp03-eng.asp#psu938"> Outreach Activities, PSU 938</a>, which can be found in the Treasury Board of Canada Secretariat (TBS) publication: <a href="http://www.infosource.gc.ca/index-eng.asp"><em> InfoSource</em></a>.</p>
+
+      <p>Under the <em>Privacy Act</em>, you have the right of access to, and correction of, your personal information, if you have provided any. Note however, that to exercise either of these rights; you must make a request for access to your personal information. For more information about your right of access, please read about the <a href="http://www.infosource.gc.ca/emp/emp01-eng.asp">Access to Information Program</a>.</p>
+
+      <p>Any questions, comments, concerns or complaints you may have regarding this Statement, your privacy rights and the <a href="http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html"> <em>Privacy Act</em></a> may be directed to the TBS Access to Information and Privacy Coordinator by email at <a href="mailto:atip.aiprp@tbs-sct.gc.ca"> atip.aiprp@tbs-sct.gc.ca</a> or by calling 613-946-6260 or 1-866-312-1511. If you are not satisfied with TBS' response to your privacy concern, you may wish to contact the Office of the Privacy Commissioner by email at <a href="mailto:info@priv.gc.ca">info@priv.gc.ca</a> or by telephone at 1-800-282-1376. You have the right to complain to the Office of the Privacy Commissioner about TBS' handling of your personal information.</p>
+      </details>
+    '#format': rich_text
+  user_name:
+    '#type': textfield
+    '#title': Name
+  your_e_mail_address:
+    '#type': email
+    '#title': 'Email address'
+  user:
+    '#type': select
+    '#title': 'I am a'
+    '#options':
+      student: Student
+      researcher: Researcher
+      teacher: 'Teacher / Professor'
+      journalist: 'Journalist / Media'
+      public: 'Member of public'
+      other: Other
+    '#empty_option': '- Select -'
+    '#other__option_label': ''
+    '#required': true
+  reason:
+    '#type': select
+    '#title': 'Reason for feedback'
+    '#options':
+      broken_link: 'Broken link'
+      missing_data: 'Missing / incorrect data'
+      suggestion: 'Suggestion for improvement'
+      share_use: 'Share how this dataset was used'
+      other: Other
+    '#empty_option': '- Select -'
+    '#other__option_label': ''
+    '#required': true
+  feedback:
+    '#type': textarea
+    '#title': Feedback
+    '#field_suffix': (required)
+    '#required': true
+  status:
+    '#type': select
+    '#title': Status
+    '#options':
+      outstanding: Outstanding
+      helpdesk: 'Forward to Helpdesk'
+    '#required': true
+    '#default_value': outstanding
+    '#private': true
+    '#access_create_roles': {  }
+    '#access_update_roles':
+      - administrator
+      - business_owner
+    '#access_view_roles':
+      - administrator
+      - business_owner
+  feedback_webpage:
+    '#type': url
+    '#title': 'Posted on'
+    '#disabled': true
+    '#readonly': true
+    '#prepopulate': true
+    '#required': true
+    '#default_value': 'https://open.canada.ca/data/[webform_submission:langcode]/dataset/[current-page:query:uuid]'
+    '#private': true
+    '#access_create_roles': {  }
+    '#access_update_roles': {  }
+    '#access_view_roles':
+      - administrator
+      - business_owner
+  ati_email:
+    '#type': email
+    '#title': 'Helpdesk Email address'
+    '#disabled': true
+    '#readonly': true
+    '#required': true
+    '#default_value': open-ouvert@tbs-sct.gc.ca
+    '#private': true
+    '#access_create_roles':
+      - administrator
+    '#access_update_roles':
+      - administrator
+    '#access_view_roles':
+      - administrator
+    '#access': false
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#submit__label': Submit
+    '#submit__attributes':
+      class:
+        - btn-success
+css: ''
+javascript: ''
+settings:
+  ajax: false
+  ajax_scroll_top: form
+  ajax_progress_type: ''
+  ajax_effect: ''
+  ajax_speed: null
+  page: true
+  page_submit_path: /feedback
+  page_confirm_path: ''
+  page_theme_name: ''
+  form_title: source_entity_webform
+  form_submit_once: false
+  form_open_message: ''
+  form_close_message: ''
+  form_exception_message: 'Something went wrong, please try again.'
+  form_previous_submissions: false
+  form_confidential: false
+  form_confidential_message: ''
+  form_disable_remote_addr: false
+  form_convert_anonymous: false
+  form_prepopulate: false
+  form_prepopulate_source_entity: false
+  form_prepopulate_source_entity_required: false
+  form_prepopulate_source_entity_type: ''
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
+  form_disable_autocomplete: false
+  form_novalidate: false
+  form_disable_inline_errors: false
+  form_required: false
+  form_autofocus: false
+  form_details_toggle: false
+  form_reset: false
+  form_access_denied: default
+  form_access_denied_title: ''
+  form_access_denied_message: ''
+  form_access_denied_attributes: {  }
+  form_file_limit: ''
+  form_attributes: {  }
+  form_method: ''
+  form_action: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
+  submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
+  submission_log: false
+  submission_excluded_elements:
+    ati_email: ati_email
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
+  submission_views: {  }
+  submission_views_replace: {  }
+  submission_user_columns: {  }
+  submission_user_duplicate: false
+  submission_access_denied: default
+  submission_access_denied_title: ''
+  submission_access_denied_message: ''
+  submission_access_denied_attributes: {  }
+  previous_submission_message: ''
+  previous_submissions_message: ''
+  autofill: false
+  autofill_message: ''
+  autofill_excluded_elements: {  }
+  wizard_progress_bar: false
+  wizard_progress_pages: false
+  wizard_progress_percentage: false
+  wizard_progress_link: false
+  wizard_progress_states: false
+  wizard_start_label: ''
+  wizard_preview_link: false
+  wizard_confirmation: true
+  wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
+  wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: true
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
+  preview: 0
+  preview_label: ''
+  preview_title: ''
+  preview_message: ''
+  preview_attributes: {  }
+  preview_excluded_elements: {  }
+  preview_exclude_empty: true
+  preview_exclude_empty_checkbox: false
+  draft: none
+  draft_multiple: false
+  draft_auto_save: false
+  draft_saved_message: ''
+  draft_loaded_message: ''
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
+  confirmation_type: url_message
+  confirmation_url: '[webform_submission:values:feedback_webpage]#feedback'
+  confirmation_title: ''
+  confirmation_message: 'Your message has been submitted.'
+  confirmation_attributes: {  }
+  confirmation_back: true
+  confirmation_back_label: ''
+  confirmation_back_attributes: {  }
+  confirmation_exclude_query: true
+  confirmation_exclude_token: true
+  confirmation_update: false
+  limit_total: null
+  limit_total_interval: 600
+  limit_total_message: ''
+  limit_total_unique: false
+  limit_user: 5
+  limit_user_interval: 1800
+  limit_user_message: ''
+  limit_user_unique: false
+  entity_limit_total: null
+  entity_limit_total_interval: null
+  entity_limit_user: null
+  entity_limit_user_interval: null
+  purge: none
+  purge_days: null
+  results_disabled: false
+  results_disabled_ignore: false
+  results_customize: false
+  token_view: false
+  token_update: false
+  token_delete: false
+  serial_disabled: false
+access:
+  create:
+    roles:
+      - anonymous
+      - authenticated
+    users: {  }
+    permissions: {  }
+  view_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  purge_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  view_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  administer:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  test:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  configuration:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+handlers:
+  gc_notify_email_handler:
+    id: gc_notify_email_handler
+    handler_id: gc_notify_email_handler
+    label: 'GC Notify Email Handler'
+    notes: ''
+    status: true
+    conditions:
+      enabled:
+        ':input[name="status"]':
+          value: helpdesk
+    weight: 0
+    settings: {  }
+  notifications:
+    id: email
+    handler_id: notifications
+    label: Notifications
+    notes: ''
+    status: false
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - updated
+      to_mail: '[webform_submission:values:ati_email:raw]'
+      to_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      reply_to: ''
+      return_path: '[webform_submission:values:ati_email:raw]'
+      sender_mail: ''
+      sender_name: ''
+      subject: 'New feedback #[webform_submission:sid] received from portal visitor '
+      body: "<p>The following feedback has been received on the Open Government Portal.</p>\r\n\r\n<p><strong>Submitted on: </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
+      excluded_elements:
+        intro: intro
+        ati_email: ati_email
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: false
+      theme_name: ''
+      parameters: {  }
+      debug: false
+variants: {  }
