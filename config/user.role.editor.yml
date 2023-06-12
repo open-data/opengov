@@ -40,6 +40,7 @@ dependencies:
     - contextual
     - file
     - filter
+    - honeypot
     - media
     - menu_link_content
     - node
@@ -65,6 +66,7 @@ permissions:
   - 'administer blocks'
   - 'administer menu'
   - 'administer taxonomy'
+  - 'bypass honeypot protection'
   - 'create app content'
   - 'create article content'
   - 'create book content'

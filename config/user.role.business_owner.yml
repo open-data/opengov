@@ -16,6 +16,7 @@ dependencies:
     - content_moderation
     - content_translation
     - filter
+    - honeypot
     - layout_builder
     - node
     - webform
@@ -27,6 +28,7 @@ permissions:
   - 'access webform overview'
   - 'access webform submission user'
   - 'administer webform submission'
+  - 'bypass honeypot protection'
   - 'comment_spam admin_settings'
   - 'comment_spam set spam'
   - 'configure all commitment node layout overrides'

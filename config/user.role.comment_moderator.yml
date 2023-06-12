@@ -13,6 +13,7 @@ dependencies:
     - content_translation
     - contextual
     - filter
+    - honeypot
     - node
     - system
     - toolbar
@@ -28,6 +29,7 @@ permissions:
   - 'access toolbar'
   - 'access webform overview'
   - 'administer comments'
+  - 'bypass honeypot protection'
   - 'comment_spam admin_settings'
   - 'comment_spam set spam'
   - 'create content translations'
