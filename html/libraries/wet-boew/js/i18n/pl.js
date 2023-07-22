@@ -94,6 +94,8 @@ wb.i18nDict = {
 	},
 	pos: "Aktualna pozycja:",
 	dur: "Czas całkowity:",
+	msgYoutubeNotLoad: "Video encountered loading issues",
+	msgYoutubeVdLoad: "Loading youtube video",
 
 	/* Share widget */
 	"shr-txt": "Prześlij",
@@ -238,7 +240,7 @@ wb.i18nDict = {
 
 	/* Filter */
 	"fltr-lbl": "Filter<span class=\"wb-inv\"> content: results appear below as you type.</span>",
-	"fltr-info": "Showing _NBITEM_ filtered from _TOTAL_ total entries"
+	"fltr-info": "Showing <span data-nbitem></span> filtered from <span data-total></span> total entries"
 };
 
 } )( wb );
@@ -271,7 +273,7 @@ $.extend( $.validator.messages, {
 	equalTo: "Proszę o podanie tej samej wartości ponownie.",
 	extension: "Proszę o podanie wartości z prawidłowym rozszerzeniem.",
 	nipPL: "Proszę o podanie prawidłowego numeru NIP.",
-	phonePL: "Proszę o podanie prawidłowego numeru telefonu",
+	phonePL: "Proszę o podanie prawidłowego numeru telefonu.",
 	maxlength: $.validator.format( "Proszę o podanie nie więcej niż {0} znaków." ),
 	minlength: $.validator.format( "Proszę o podanie przynajmniej {0} znaków." ),
 	rangelength: $.validator.format( "Proszę o podanie wartości o długości od {0} do {1} znaków." ),
