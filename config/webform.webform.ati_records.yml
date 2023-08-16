@@ -3,6 +3,7 @@ langcode: en
 status: open
 dependencies:
   module:
+    - gcnotify
     - honeypot
     - og_ext_webform
 third_party_settings:
@@ -70,7 +71,11 @@ settings:
   share_page_body_attributes: {  }
   submission_label: ''
   submission_log: false
-  submission_views: {  }
+  submission_views:
+    custom_view:
+      view: 'webform_submissions:embed_1'
+      title: 'Submissions with More Filters'
+      webform_routes: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
   submission_user_duplicate: false
@@ -223,7 +228,7 @@ handlers:
     label: Confirmation
     notes: ''
     handler_id: confirmation
-    status: true
+    status: false
     conditions: {  }
     weight: -49
     settings:
@@ -266,7 +271,7 @@ handlers:
     label: Notifications
     notes: ''
     handler_id: notifications
-    status: true
+    status: false
     conditions: {  }
     weight: -50
     settings:
@@ -308,6 +313,15 @@ handlers:
     label: 'Solr Data Copy Handler'
     notes: ''
     handler_id: solr_data_copy_handler
+    status: true
+    conditions: {  }
+    weight: 0
+    settings: {  }
+  gc_notify_email_handler:
+    id: gc_notify_email_handler
+    label: 'GC Notify Email Handler'
+    notes: ''
+    handler_id: gc_notify_email_handler
     status: true
     conditions: {  }
     weight: 0

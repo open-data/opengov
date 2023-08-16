@@ -829,6 +829,17 @@ display:
           tokenize: false
           content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/en/search/ati">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
           plugin_id: text_custom
+        area_text_custom_1:
+          id: area_text_custom_1
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          tokenize: false
+          content: "<h2>Request a copy of records</h2>\r\n<p>Availability of records are subject to retention timelines as established by institutions. Requests made through this form are considered informal requests and are not subject to the same requirements as requests under the Access to Information Act.  For additional information, please see the “<a href=\"[site:url]/content/about-access-information-requests\" target=\"_blank\">About Access to Information Requests</a>” webpage.</p>\r\n"
+          plugin_id: text_custom
         entity_block_content:
           id: entity_block_content
           table: views

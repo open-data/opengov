@@ -1,0 +1,34 @@
+uuid: e6ce854e-5654-4b1a-aad1-6da7d8347f1d
+langcode: en
+status: true
+dependencies:
+  module:
+    - language
+    - node
+id: guidebook
+label: Guidebook
+type: 'canonical_entities:node'
+pattern: 'guide/[node:title]'
+selection_criteria:
+  6b4a16ec-fafb-4f4f-8ed1-0d1b648d0f78:
+    id: node_type
+    bundles:
+      book: book
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 6b4a16ec-fafb-4f4f-8ed1-0d1b648d0f78
+  9f134bae-c676-4d29-80e8-997713a601da:
+    id: language
+    langcodes:
+      en: en
+      fr: fr
+    negate: false
+    context_mapping:
+      language: 'node:langcode:language'
+    uuid: 9f134bae-c676-4d29-80e8-997713a601da
+selection_logic: and
+weight: -10
+relationships:
+  'node:langcode:language':
+    label: Language

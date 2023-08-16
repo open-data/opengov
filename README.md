@@ -41,3 +41,6 @@ If you want to know all packages that will be updated by the composer update com
 use the `--dry-run` option first.
 
 For more detailed information on updating Drupal, please review [Drupal Documentation](https://www.drupal.org/docs/8/update).
+
+## Architecture
+![architecture](https://raw.githubusercontent.com/open-data/opengov/master/docs/architecture.svg)

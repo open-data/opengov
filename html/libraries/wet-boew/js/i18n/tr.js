@@ -94,6 +94,8 @@ wb.i18nDict = {
 	},
 	pos: "Geçerli pozisyon:",
 	dur: "Toplam zaman:",
+	msgYoutubeNotLoad: "Video encountered loading issues",
+	msgYoutubeVdLoad: "Loading youtube video",
 
 	/* Share widget */
 	"shr-txt": "Paylaş",
@@ -238,7 +240,7 @@ wb.i18nDict = {
 
 	/* Filter */
 	"fltr-lbl": "Filter<span class=\"wb-inv\"> content: results appear below as you type.</span>",
-	"fltr-info": "Showing _NBITEM_ filtered from _TOTAL_ total entries"
+	"fltr-info": "Showing <span data-nbitem></span> filtered from <span data-total></span> total entries"
 };
 
 } )( wb );
@@ -264,7 +266,7 @@ $.extend( $.validator.messages, {
 	email: "Lütfen geçerli bir e-posta adresi giriniz.",
 	url: "Lütfen geçerli bir web adresi (URL) giriniz.",
 	date: "Lütfen geçerli bir tarih giriniz.",
-	dateISO: "Lütfen geçerli bir tarih giriniz(ISO formatında)",
+	dateISO: "Lütfen geçerli bir tarih giriniz(ISO formatında).",
 	number: "Lütfen geçerli bir sayı giriniz.",
 	digits: "Lütfen sadece sayısal karakterler giriniz.",
 	creditcard: "Lütfen geçerli bir kredi kartı giriniz.",

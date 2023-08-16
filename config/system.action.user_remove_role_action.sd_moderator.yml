@@ -1,0 +1,14 @@
+uuid: 67004c4b-363a-4797-a6e7-58a46051516e
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.sd_moderator
+  module:
+    - user
+id: user_remove_role_action.sd_moderator
+label: 'Remove the SD Moderator role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: sd_moderator

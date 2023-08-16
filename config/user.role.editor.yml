@@ -21,6 +21,7 @@ permissions:
   - 'access tour'
   - 'access user contact forms'
   - 'administer blocks'
+  - 'administer book outlines'
   - 'administer menu'
   - 'administer shortcuts'
   - 'administer taxonomy'

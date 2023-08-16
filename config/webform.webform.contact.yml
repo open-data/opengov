@@ -7,11 +7,14 @@ dependencies:
       - webform
       - webform
   module:
+    - comment_spam
     - honeypot
 third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
+_core:
+  default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU
 open: null
 close: null
 weight: 0
@@ -93,9 +96,7 @@ settings:
         - entity.webform.results_submissions
         - entity.webform.user.drafts
         - entity.webform.user.submissions
-  submission_views_replace:
-    webform_routes: {  }
-    node_routes: {  }
+  submission_views_replace: {  }
   submission_user_columns: {  }
   submission_user_duplicate: false
   submission_access_denied: default
@@ -127,7 +128,7 @@ settings:
   wizard_track: ''
   wizard_prev_button_label: ''
   wizard_next_button_label: ''
-  wizard_toggle: false
+  wizard_toggle: true
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
   preview: 0
@@ -160,9 +161,9 @@ settings:
   limit_total_interval: null
   limit_total_message: ''
   limit_total_unique: false
-  limit_user: null
-  limit_user_interval: null
-  limit_user_message: ''
+  limit_user: 5
+  limit_user_interval: 86400
+  limit_user_message: 'No more submissions are permitted.'
   limit_user_unique: false
   entity_limit_total: null
   entity_limit_total_interval: null
@@ -324,6 +325,13 @@ handlers:
       sender_name: ''
       theme_name: ''
       parameters: {  }
+  detect_spam_validation:
+    id: detect_spam_validator
+    label: 'Detect spam validation'
+    notes: ''
+    handler_id: detect_spam_validation
+    status: true
+    conditions: {  }
+    weight: 2
+    settings: {  }
 variants: {  }
-_core:
-  default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU

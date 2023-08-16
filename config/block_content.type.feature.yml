@@ -5,4 +5,4 @@ dependencies: {  }
 id: feature
 label: Feature
 revision: 1
-description: 'Block type for Features.'
+description: "A feature block contains content, image and link.\r\nPreviously called Spotlight block. "

@@ -47,10 +47,13 @@ display:
       pager:
         type: mini
         options:
-          items_per_page: 10
+          items_per_page: 50
           offset: 0
           id: 0
           total_pages: null
+          tags:
+            previous: ‹‹
+            next: ››
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -59,9 +62,6 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
-          tags:
-            previous: ‹‹
-            next: ››
       style:
         type: table
       row:
@@ -357,6 +357,19 @@ display:
     position: 2
     display_options:
       display_extenders: {  }
+      header:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          content: 'Displaying @start - @end of @total'
+          plugin_id: result
+      defaults:
+        header: false
     cache_metadata:
       max-age: -1
       contexts:
@@ -373,6 +386,19 @@ display:
     display_options:
       display_extenders: {  }
       path: webform-validated
+      header:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          content: 'Displaying @start - @end of @total'
+          plugin_id: result
+      defaults:
+        header: false
     cache_metadata:
       max-age: -1
       contexts:

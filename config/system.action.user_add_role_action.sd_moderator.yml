@@ -1,0 +1,14 @@
+uuid: e537684a-68b1-4c84-b2b9-6cc5a69ea5f6
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.sd_moderator
+  module:
+    - user
+id: user_add_role_action.sd_moderator
+label: 'Add the SD Moderator role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: sd_moderator
