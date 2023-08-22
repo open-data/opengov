@@ -1,70 +1,12 @@
-elements: |
-  org_name:
-    '#title': Organisation
-  year:
-    '#title': Année
-  month:
-    '#title': Mois
-  request_number:
-    '#title': 'Numéro de la demande'
-  summary:
-    '#title': 'Résumé de la demande'
-  number_of_pages:
-    '#title': 'Nombre de pages'
-  pages:
-    '#title': 'Nombre de pages'
-  e_mail_ati_recipient:
-    '#title': Courriel
-  ati_email:
-    '#title': Courriel
-  requestor_category:
-    '#title': 'Catégorie de demandeur'
-    '#description': 'Sélectionnez la catégorie qui vous décrit le mieux.'
-    '#options':
-      1: 'Secteur universitaire'
-      2: 'Secteur commercial (secteur privé)'
-      3: Médias
-      5: 'Membre du public'
-      6: 'Je refuse de identifier'
-  delivery_method:
-    '#title': 'Mode de livraison'
-    '#description': '<strong>S''il vous plaît noter</strong> L''institution devra retourner, dans la mesure du possible, les documents demandés dans le format choisi. Toutefois, il sera parfois impossible de le faire dû aux contraintes de la taille des documents électroniques.'
-    '#options':
-      1: 'copie électronique'
-      2: 'examen en personne'
-      3: 'copier papier'
-  given_name:
-    '#title': Prénom
-  family_name:
-    '#title': 'Nom de famille'
-  your_e_mail_address:
-    '#title': 'Votre adresse de courriel'
-  your_telephone_number:
-    '#title': 'Votre numéro de téléphone'
-  additional_comments:
-    '#title': 'Commentaires supplémentaires'
-    '#description': 'Expliquez la nature de votre requête ou la raison pour laquellle contactez cette organisation.'
-  address_fieldset:
-    '#title': Addresse
-  preferred_language_of_correspondence:
-    '#title': 'Langue de préférence pour communiquer avec vous'
-  please_note:
-    '#markup': '<strong>S''il vous plaît noter:</strong>&nbsp;Institutions travailleront pour répondre à votre demande pour ce paquet précédemment publiée dès que possible.'
-  consent:
-    '#title': 'Je déclare avoir lu et compris l''énoncé de confidentialité ci-dessus et je l''accepte.'
-  actions:
-    '#title': 'Bouton(s) de soumission'
+elements: "entity_id:\n  '#title': 'Indentificateur unique'\norganization:\n  '#title': Organisation\norg_name:\n  '#title': Organisation\nyear:\n  '#title': Année\nmonth:\n  '#title': Mois\nrequest_number:\n  '#title': 'Numéro de la demande'\nsummary:\n  '#title': 'Résumé de la demande'\nnumber_of_pages:\n  '#title': 'Nombre de pages'\npages:\n  '#title': 'Nombre de pages'\ne_mail_ati_recipient:\n  '#title': Courriel\nati_email:\n  '#title': Courriel\nrequestor_category:\n  '#title': 'Catégorie de demandeur'\n  '#description': 'Sélectionnez la catégorie qui vous décrit le mieux.'\n  '#options':\n    1: 'Secteur universitaire'\n    2: 'Secteur commercial (secteur privé)'\n    3: Médias\n    4: Organisation\n    5: 'Membre du public'\n    6: 'Je refuse de m''identifier'\ndelivery_method:\n  '#title': 'Mode de livraison'\n  '#description': '<strong>S''il vous plaît noter</strong> L''institution devra retourner, dans la mesure du possible, les documents demandés dans le format choisi. Toutefois, il sera parfois impossible de le faire dû aux contraintes de la taille des documents électroniques.'\n  '#options':\n    1: 'copie électronique'\n    2: 'examen en personne'\n    3: 'copier papier'\ngiven_name:\n  '#title': Prénom\nfamily_name:\n  '#title': 'Nom de famille'\nyour_e_mail_address:\n  '#title': 'Votre adresse de courriel'\nyour_telephone_number:\n  '#title': 'Votre numéro de téléphone'\nadditional_comments:\n  '#title': 'Commentaires supplémentaires'\n  '#description': 'Expliquez la nature de votre requête ou la raison pour laquellle contactez cette organisation.'\naddress_fieldset:\n  '#title': Addresse\npreferred_language_of_correspondence:\n  '#title': 'Langue de préférence pour communiquer avec vous'\nplease_note:\n  '#markup': '<strong>S''il vous plaît noter:</strong>&nbsp;Institutions travailleront pour répondre à votre demande pour ce paquet précédemment publiée dès que possible.'\nconsent:\n  '#title': 'Je déclare avoir lu et compris l''énoncé de confidentialité ci-dessus et je l''accepte.'\nactions:\n  '#title': 'Bouton(s) de soumission'\n"
 title: 'Demande informelle d''enregistrements ATI précédemment publiés'
 settings:
-  confirmation_title: 'Demande informelle d''enregistrements ATI précédemment publiés'
-  confirmation_message: 'Votre demande informelle d''enregistrements ATI précédemment publiés a été soumise.'
+  confirmation_title: 'Demande informelle d''enregistrements AI précédemment publiés'
+  confirmation_message: 'Votre demande informelle d''enregistrements AI précédemment publiés a été soumise.'
 handlers:
   confirmation:
-    label: Confirmation
     settings:
-      from_name: _default
       body: "<p>Ceci est un courriel automatisé. Vous le recevez parce que vous avez communiqué avec une organisation au sujet d’une demande d’accès à l’information. Voici les valeurs que vous avez soumises :</p>\r\n\r\n<p><strong>Soumis le :</strong> [webform_submission:created]</p>\r\n<p><strong>Proposé par :</strong> [webform_submission:user]</p>\r\n<p>Les valeurs soumises sont : </p>\r\n[webform_submission:values]\r\n"
   notifications:
     settings:
-      from_name: _default
       body: "Ceci est un courriel automatisé. Vous le recevez parce que vous avez communiqué avec une organisation au sujet d’une demande d’accès à l’information. Voici les valeurs que vous avez soumises :\r\n\r\nSoumis le : [webform_submission:created]\r\nProposé par : [webform_submission:user]\r\nLes valeurs soumises sont :\r\n[webform_submission:values]\r\n"

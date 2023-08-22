@@ -16,7 +16,7 @@ display:
             label: Recherche
       header:
         result:
-          content: '<p><strong>Trouvé @total record(s) </strong></p>'
+          content: '<p><strong>Trouvé @total dossier(s)</strong></p>'
       pager:
         options:
           tags:
@@ -24,6 +24,10 @@ display:
             next: 'suivant ›'
             first: '‹‹ première'
             last: 'dernière ››'
+      sorts:
+        year:
+          expose:
+            label: Année
   default:
     display_options:
       exposed_form:
@@ -46,7 +50,7 @@ display:
   block_2:
     display_title: 'Demandes d’accès à l’information récentes'
     display_options:
-      title: 'Documents les plus récents'
+      title: 'Demandes d’accès à l’information récentes'
       footer:
         area_text_custom:
           content: '<a href="/fr/search/ati">Voir tout</a>'
