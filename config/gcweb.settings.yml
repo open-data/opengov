@@ -4,7 +4,7 @@ schemas:
 favicon:
   mimetype: image/vnd.microsoft.icon
   path: 'public://favicon.ico'
-  url: 'https://staging.open.canada.ca/sites/default/files/favicon.ico'
+  url: /sites/default/files/favicon.ico
   use_default: 0
 features:
   comment_user_picture: 0
@@ -16,23 +16,27 @@ logo:
   url: ''
   use_default: 0
 region_wells:
-  branding: ''
-  breadcrumb: ''
-  language_toggle: ''
-  banner: ''
   navigation: ''
   navigation_collapsible: ''
   header: ''
   highlighted: ''
+  help: ''
   content: ''
+  sidebar_first: ''
+  sidebar_second: well
   footer: ''
+  branding: ''
+  breadcrumb: ''
+  language_toggle: ''
+  banner: ''
 breadcrumb_home: 1
 breadcrumb_title: 0
-gcweb_footer: 1
 cdn_theme: bootstrap
 cdn_cache_ttl_versions: '604800'
 cdn_cache_ttl_themes: '604800'
 cdn_cache_ttl_assets: '0'
 cdn_cache_ttl_library: '0'
 reset_http_request_cache: ''
+apply: Apply
+gcweb_footer: 0
 table: ''
