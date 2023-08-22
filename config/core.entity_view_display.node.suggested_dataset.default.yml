@@ -242,8 +242,8 @@ third_party_settings:
                 type: basic_string
             additional: {  }
             weight: 1
-          1d26f708-02b1-4195-91b3-53f851fc0b0d:
-            uuid: 1d26f708-02b1-4195-91b3-53f851fc0b0d
+          91e9d935-49ae-4bbb-8c23-9826595afb14:
+            uuid: 91e9d935-49ae-4bbb-8c23-9826595afb14
             region: left
             configuration:
               id: webform_block
@@ -256,42 +256,6 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: -2
-        third_party_settings: {  }
-      -
-        layout_id: bs_1col
-        layout_settings:
-          layout:
-            wrapper: div
-            classes:
-              row: row
-            add_layout_class: 1
-            attributes: ''
-          regions:
-            main:
-              wrapper: div
-              classes:
-                col-sm-12: col-sm-12
-              add_region_classes: 1
-              attributes: ''
-          label: ''
-        components:
-          c35ebc98-dcb5-4f3d-8344-445118624ab1:
-            uuid: c35ebc98-dcb5-4f3d-8344-445118624ab1
-            region: main
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:comment'
-              formatter:
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-                type: comment_default
-            additional: {  }
-            weight: 7
         third_party_settings: {  }
 id: node.suggested_dataset.default
 targetEntityType: node

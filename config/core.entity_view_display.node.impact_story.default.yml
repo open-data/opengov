@@ -38,7 +38,8 @@ third_party_settings:
     sections:
       -
         layout_id: layout_onecol
-        layout_settings: {  }
+        layout_settings:
+          label: ''
         components:
           2944426d-88ec-41a8-bd7d-3933a335c41b:
             uuid: 2944426d-88ec-41a8-bd7d-3933a335c41b
@@ -178,23 +179,6 @@ third_party_settings:
                 type: link
             additional: {  }
             weight: -1
-          3f1f9ba3-e0f4-42bb-8f01-b2a146906de3:
-            uuid: 3f1f9ba3-e0f4-42bb-8f01-b2a146906de3
-            region: content
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:impact_story:comment'
-              formatter:
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-                type: comment_default
-            additional: {  }
-            weight: 2
           1aeb1916-57b9-4ae2-acd4-2a9f17420c56:
             uuid: 1aeb1916-57b9-4ae2-acd4-2a9f17420c56
             region: content
@@ -207,7 +191,7 @@ third_party_settings:
               items_per_page: none
               context_mapping: {  }
             additional: {  }
-            weight: 1
+            weight: 2
           24f9b593-ae1a-4238-b3b3-00c09f2c5718:
             uuid: 24f9b593-ae1a-4238-b3b3-00c09f2c5718
             region: content
@@ -228,8 +212,8 @@ third_party_settings:
                 type: link
             additional: {  }
             weight: -6
-          ac9e4270-67f9-487c-85cb-83b56265a5a5:
-            uuid: ac9e4270-67f9-487c-85cb-83b56265a5a5
+          eebc85ca-65fa-4b47-8785-8ed42d38eb10:
+            uuid: eebc85ca-65fa-4b47-8785-8ed42d38eb10
             region: content
             configuration:
               id: webform_block
@@ -241,7 +225,7 @@ third_party_settings:
               redirect: false
               context_mapping: {  }
             additional: {  }
-            weight: 0
+            weight: 1
         third_party_settings: {  }
 id: node.impact_story.default
 targetEntityType: node

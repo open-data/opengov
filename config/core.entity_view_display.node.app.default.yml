@@ -64,6 +64,7 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           be5d2eb7-38d7-433a-9d03-4e4c54d535a9:
             uuid: be5d2eb7-38d7-433a-9d03-4e4c54d535a9
@@ -106,6 +107,7 @@ third_party_settings:
                 col-sm-12: col-sm-12
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           5d243cd1-8370-4a81-a7c9-cf2fe816814b:
             uuid: 5d243cd1-8370-4a81-a7c9-cf2fe816814b
@@ -169,6 +171,7 @@ third_party_settings:
                 col-md-8: col-md-8
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           a8c2280d-53de-4dc0-8476-a528e8ca7d09:
             uuid: a8c2280d-53de-4dc0-8476-a528e8ca7d09
@@ -290,8 +293,8 @@ third_party_settings:
                 entity: layout_builder.entity
             additional: {  }
             weight: -8
-          3372bc16-e19a-4514-92de-fe6a9d1a8b59:
-            uuid: 3372bc16-e19a-4514-92de-fe6a9d1a8b59
+          dc551838-7944-43ee-b974-447953033d67:
+            uuid: dc551838-7944-43ee-b974-447953033d67
             region: left
             configuration:
               id: webform_block
@@ -304,41 +307,6 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: -5
-        third_party_settings: {  }
-      -
-        layout_id: bs_1col
-        layout_settings:
-          layout:
-            wrapper: div
-            classes:
-              row: row
-            add_layout_class: 1
-            attributes: ''
-          regions:
-            main:
-              wrapper: div
-              classes:
-                col-sm-12: col-sm-12
-              add_region_classes: 1
-              attributes: ''
-        components:
-          538f8390-c5eb-49de-890f-7473f8bd6479:
-            uuid: 538f8390-c5eb-49de-890f-7473f8bd6479
-            region: main
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:app:comment'
-              formatter:
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-                type: comment_default
-            additional: {  }
-            weight: 12
         third_party_settings: {  }
 id: node.app.default
 targetEntityType: node

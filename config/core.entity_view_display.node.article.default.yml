@@ -150,23 +150,6 @@ third_party_settings:
                 entity: layout_builder.entity
             additional: {  }
             weight: 0
-          472ea4a9-e3e1-4992-866d-b8ffe7c47e8b:
-            uuid: 472ea4a9-e3e1-4992-866d-b8ffe7c47e8b
-            region: left
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:article:comment'
-              formatter:
-                type: comment_default
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-            additional: {  }
-            weight: 5
           f21c8364-5705-4785-b35e-4ca6317b5463:
             uuid: f21c8364-5705-4785-b35e-4ca6317b5463
             region: right

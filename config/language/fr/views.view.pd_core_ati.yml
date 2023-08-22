@@ -16,7 +16,7 @@ display:
             label: Recherche
       header:
         result:
-          content: '<p><strong>Trouvé @total record(s) </strong></p>'
+          content: '<p><strong>Trouvé @total dossier(s)</strong></p>'
       pager:
         options:
           tags:

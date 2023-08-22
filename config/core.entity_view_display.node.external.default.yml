@@ -3,35 +3,25 @@ langcode: en
 status: true
 dependencies:
   config:
-    - core.entity_view_display.comment.comment.default
     - field.field.node.external.comment
     - field.field.node.external.field_type
     - field.field.node.external.field_url
     - field.field.node.external.field_uuid
     - node.type.external
   module:
-    - comment
     - user
 id: node.external.default
 targetEntityType: node
 bundle: external
 mode: default
 content:
-  comment:
-    weight: 1
-    label: above
-    settings:
-      view_mode: default
-      pager_id: 0
-    third_party_settings: {  }
-    type: comment_default
-    region: content
   content_moderation_control:
     weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
+  comment: true
   field_type: true
   field_url: true
   field_uuid: true

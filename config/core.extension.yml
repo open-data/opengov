@@ -36,7 +36,6 @@ module:
   filter: 0
   fontawesome: 0
   gcnotify: 0
-  google_analytics: 0
   honeypot: 0
   image: 0
   invitation_manager: 0
