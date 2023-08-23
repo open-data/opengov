@@ -52,6 +52,7 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           57bde159-69e1-458c-83b5-0ef38e24382e:
             uuid: 57bde159-69e1-458c-83b5-0ef38e24382e
@@ -100,6 +101,7 @@ third_party_settings:
                 col-sm-9: col-sm-9
               add_region_classes: 1
               attributes: class|well
+          label: ''
         components:
           a116fbe4-d942-4a3e-8551-fea4cfdcfed2:
             uuid: a116fbe4-d942-4a3e-8551-fea4cfdcfed2
@@ -152,8 +154,8 @@ third_party_settings:
                 type: string
             additional: {  }
             weight: -10
-          cfa8ceab-aa2e-4d3f-a024-45c4cd95d86d:
-            uuid: cfa8ceab-aa2e-4d3f-a024-45c4cd95d86d
+          7cd42380-5e1c-499e-892e-89e1e3e87d35:
+            uuid: 7cd42380-5e1c-499e-892e-89e1e3e87d35
             region: left
             configuration:
               id: webform_block
@@ -166,41 +168,6 @@ third_party_settings:
               context_mapping: {  }
             additional: {  }
             weight: -8
-        third_party_settings: {  }
-      -
-        layout_id: bs_1col
-        layout_settings:
-          layout:
-            wrapper: div
-            classes:
-              row: row
-            add_layout_class: 1
-            attributes: ''
-          regions:
-            main:
-              wrapper: div
-              classes:
-                col-sm-12: col-sm-12
-              add_region_classes: 1
-              attributes: ''
-        components:
-          c04b74d2-5572-4646-be51-87df4964e6fc:
-            uuid: c04b74d2-5572-4646-be51-87df4964e6fc
-            region: main
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:idea:comment'
-              formatter:
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-                type: comment_default
-            additional: {  }
-            weight: 4
         third_party_settings: {  }
 id: node.idea.default
 targetEntityType: node

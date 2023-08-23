@@ -48,6 +48,7 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
+          label: ''
         components:
           aea63d77-60bf-408e-8694-654978632575:
             uuid: aea63d77-60bf-408e-8694-654978632575
@@ -76,7 +77,8 @@ third_party_settings:
         third_party_settings: {  }
       -
         layout_id: layout_onecol
-        layout_settings: {  }
+        layout_settings:
+          label: ''
         components:
           099b8e08-2a3c-4f2a-8491-9da999f3715f:
             uuid: 099b8e08-2a3c-4f2a-8491-9da999f3715f
@@ -93,23 +95,6 @@ third_party_settings:
                 third_party_settings: {  }
             additional: {  }
             weight: -8
-          bc7bd5e3-b1f7-41bf-851f-7ac98937291b:
-            uuid: bc7bd5e3-b1f7-41bf-851f-7ac98937291b
-            region: content
-            configuration:
-              label_display: '0'
-              context_mapping:
-                entity: layout_builder.entity
-              id: 'field_block:node:page:comment'
-              formatter:
-                label: above
-                settings:
-                  view_mode: default
-                  pager_id: 0
-                third_party_settings: {  }
-                type: comment_default
-            additional: {  }
-            weight: -7
         third_party_settings: {  }
 _core:
   default_config_hash: g1S3_GLaxq4l3I9RIca5Mlz02MxI2KmOquZpHw59akM

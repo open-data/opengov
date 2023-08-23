@@ -6,6 +6,7 @@ dependencies:
     - system.menu.admin
     - user.role.administrator
     - user.role.business_owner
+    - user.role.comment_moderator
   module:
     - gcnotify
     - user
@@ -31,6 +32,7 @@ display:
         options:
           role:
             administrator: administrator
+            comment_moderator: comment_moderator
             business_owner: business_owner
       cache:
         type: none
@@ -1243,7 +1245,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "{% if webform_sid %}\r\n  <a href=\"{{ reference }}\" target=\"_blank\"><i class=\"fas fa-link\"></i> ATI Request summary</a> \r\n  <br/> \r\n  <a href=\"/en/admin/structure/webform/manage/ati_records/submission/{{ webform_sid }}/table\" class=\"use-ajax\" data-dialog-type=\"modal\" data-dialog-options=\"{&quot;width&quot;:800}\"><i class=\"fas fa-info-circle\"></i> Submission Details</a> \r\n  <br/> \r\n  <a href=\"/en/admin/structure/webform/manage/ati_records/submission/{{ webform_sid }}/notes\" class=\"use-ajax\" data-dialog-type=\"modal\" data-dialog-options=\"{&quot;width&quot;:800}\"><i class=\"fas fa-clipboard\"></i> Notes</a>\r\n{% else %}\r\n  {{ reference }}\r\n{% endif %}"
+            text: "{% if webform_sid %}\r\n  <a href=\"{{ reference }}\" target=\"_blank\"><i class=\"fas fa-link\"></i> Posted on</a> \r\n  <br/> \r\n  <a href=\"/en/admin/structure/webform/manage/ati_records/submission/{{ webform_sid }}/table\" class=\"use-ajax\" data-dialog-type=\"modal\" data-dialog-options=\"{&quot;width&quot;:800}\"><i class=\"fas fa-info-circle\"></i> Submission Details</a> \r\n  <br/> \r\n  <a href=\"/en/admin/structure/webform/manage/ati_records/submission/{{ webform_sid }}/notes\" class=\"use-ajax\" data-dialog-type=\"modal\" data-dialog-options=\"{&quot;width&quot;:800}\"><i class=\"fas fa-clipboard\"></i> Notes</a>\r\n{% else %}\r\n  {{ reference }}\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -1640,6 +1642,7 @@ display:
         header: false
         pager: false
         arguments: false
+        access: false
       row:
         type: fields
         options:
@@ -1852,6 +1855,12 @@ display:
           transform_dash: false
           break_phrase: false
           plugin_id: string
+      access:
+        type: role
+        options:
+          role:
+            administrator: administrator
+            business_owner: business_owner
     cache_metadata:
       max-age: -1
       contexts:
