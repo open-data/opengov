@@ -3,14 +3,11 @@
 Creating a new Drush command or porting a legacy command is easy. Follow the steps below.
 
 1. Run `drush generate drush-command-file`.
-2. Drush will prompt for the machine name of the module that should "own" the file.
-    1. (optional) Drush will also prompt for the path to a legacy command file to port. See [tips on porting commands to Drush 11](https://weitzman.github.io/blog/port-to-drush9)
-    1. The module selected must already exist and be enabled. Use `drush generate module-standard` to create a new module.
-3. Drush will then report that it created a commandfile, a drush.services.yml file and a composer.json file. Edit those files as needed.
-4. Use the classes for the core Drush commands at [/src/Drupal/Commands](https://github.com/drush-ops/drush/tree/11.x/src/Drupal/Commands) as inspiration and documentation.
-5. See the [dependency injection docs](dependency-injection.md) for interfaces you can implement to gain access to Drush config, Drupal site aliases, etc.
-6. Write PHPUnit tests based on [Drush Test Traits](https://github.com/drush-ops/drush/blob/11.x/docs/contribute/unish.md#drush-test-traits).
-7. Once your drush.services.yml files is ready, run `drush cr` to get your command recognized by the Drupal container.
+2. Drush will prompt for the machine name of the module that should "own" the file. The module selected must already exist and be enabled. Use `drush generate module-standard` to create a new module.
+3. Drush will then report that it created a commandfile. Edit as needed.
+4. Use the classes for the core Drush commands at [/src/Commands](https://github.com/drush-ops/drush/tree/12.x/src/Commands) as inspiration and documentation.
+5. See the [dependency injection docs](dependency-injection.md) for interfaces you can implement to gain access to Drush config, Drupal site aliases, etc. Also note the [create() method](dependency-injection.md#create-method) for injecting Drupal or Drush dependencies.
+6. Write PHPUnit tests based on [Drush Test Traits](https://github.com/drush-ops/drush/blob/12.x/docs/contribute/unish.md#drush-test-traits).
 
 ## Attributes or Annotations
 The following are both valid ways to declare a command:
@@ -21,8 +18,8 @@ The following are both valid ways to declare a command:
     use Drush\Attributes as CLI;
 
     #[CLI\Command(name: 'xkcd:fetch-attributes', aliases: ['xkcd-attributes'])]
-    #[CLI\Argument(name: 'search', description: 'Optional argument to retrieve the cartoons matching an index, keyword keyword, or "random".')]
-    #[CLI\Option(name: 'image-viewer', description: 'Command to use to view images (e.g. xv, firefox).')]
+    #[CLI\Argument(name: 'search', description: 'Optional argument to retrieve the cartoons matching an index, keyword, or "random".')]
+    #[CLI\Option(name: 'image-viewer', description: 'Command to use to view images (e.g. xv, firefox).', suggestedValues: ['open', 'xv', 'firefox'])]
     #[CLI\Option(name: 'google-custom-search-api-key', description: 'Google Custom Search API Key')]
     #[CLI\Help(description: 'Retrieve and display xkcd cartoons (attribute variant).')]
     #[CLI\Usage(name: 'drush xkcd', description: 'Retrieve and display the latest cartoon')]
@@ -52,7 +49,7 @@ The following are both valid ways to declare a command:
     ```
 
 - A commandfile that will only be used on PHP8+ should [use PHP Attributes](https://github.com/drush-ops/drush/pull/4821) instead of Annotations.
-- [See all Attributes provided by Drush core](https://www.drush.org/latest/api/Drush/Attributes.html).
+- [See all Attributes provided by Drush core](https://www.drush.org/api/Drush/Attributes.html).
 
 ## Specifying the Services File
 
@@ -80,6 +77,8 @@ If for some reason you need to load different services for different versions of
 In this example, the file `drush-11-99.services.yml` loads commandfile classes that require features only available in Drush 11.99 and later, and drush.services.yml loads an older commandfile implementation for earlier versions of Drush.
 
 It is also possible to use [version ranges](https://getcomposer.org/doc/articles/versions.md#version-range) to exactly specify which version of Drush the services file should be used with (e.g. `"drush.services.yml": ">=11 <11.99"`).
+
+In cases where a Composer package contains one or more sub-modules with their own `drush.services.yml` files (such as Drupal distributions or suites of modules), a minimal `composer.json` file can be added to the sub-module's directory, containing only the `extra.drush.services`section as described above.
 
 ## Altering Drush Command Info
 Drush command info (annotations/attributes) can be altered from other modules. This is done by creating and registering 'command info alterers'. Alterers are class services that are able to intercept and manipulate an existing command annotation.

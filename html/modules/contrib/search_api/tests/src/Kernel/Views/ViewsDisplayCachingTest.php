@@ -71,7 +71,7 @@ class ViewsDisplayCachingTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('search_api', ['search_api_item']);
@@ -322,6 +322,9 @@ class ViewsDisplayCachingTest extends KernelTestBase {
         [
           'config:search_api.index.database_search_index',
           'config:views.view.search_api_test_cache',
+          // Caches should also be invalidated if any items on the index are
+          // indexed or deleted.
+          'search_api_list:database_search_index',
         ],
         // No specific cache contexts are expected to be present.
         [],

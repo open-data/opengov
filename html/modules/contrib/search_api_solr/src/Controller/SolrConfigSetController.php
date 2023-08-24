@@ -4,6 +4,7 @@ namespace Drupal\search_api_solr\Controller;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent;
 use Drupal\search_api_solr\Event\PostConfigSetGenerationEvent;
@@ -12,9 +13,10 @@ use Drupal\search_api_solr\SearchApiSolrConflictingEntitiesException;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
+use Drupal\search_api_solr\Utility\ZipStreamFactory;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
 
 defined('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') || define('SEARCH_API_SOLR_JUMP_START_CONFIG_SET', getenv('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') ?: 0);
@@ -33,6 +35,32 @@ class SolrConfigSetController extends ControllerBase {
    * @var \Psr\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
+
+  /**
+   * The module extension list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   */
+  protected $moduleExtensionList;
+
+  /**
+   * Search API SOLR Subscriber class constructor.
+   *
+   * @param \Drupal\Core\Extension\ModuleExtensionList $module_extension_list
+   *   The module extension list.
+   */
+  public function __construct(ModuleExtensionList $module_extension_list) {
+    $this->moduleExtensionList = $module_extension_list;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('extension.list.module')
+    );
+  }
 
   /**
    * Provides an XML snippet containing all extra Solr field types.
@@ -262,6 +290,9 @@ class SolrConfigSetController extends ControllerBase {
   public function getConfigFiles(): array {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
+    if (!$backend) {
+      throw new SearchApiSolrException('Backend not set on SolrConfigSetController.');
+    }
     $connector = $backend->getSolrConnector();
     $solr_major_version = $connector->getSolrMajorVersion($this->assumedMinimumVersion);
     if (!$solr_major_version) {
@@ -269,7 +300,7 @@ class SolrConfigSetController extends ControllerBase {
     }
     $solr_branch = $real_solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
 
-    $template_path = drupal_get_path('module', 'search_api_solr') . '/solr-conf-templates/';
+    $template_path = $this->moduleExtensionList->getPath('search_api_solr') . '/solr-conf-templates/';
     $solr_configset_template_mapping = [
       '6.x' => $template_path . '6.x',
       '7.x' => $template_path . '7.x',
@@ -381,7 +412,7 @@ class SolrConfigSetController extends ControllerBase {
   /**
    * Returns a ZipStream of all configuration files.
    *
-   * @param \ZipStream\Option\Archive $archive_options
+   * @param \ZipStream\Option\Archive|ressource|NUll $archive_options_or_ressource
    *   Archive options.
    *
    * @return \ZipStream\ZipStream
@@ -391,17 +422,16 @@ class SolrConfigSetController extends ControllerBase {
    * @throws \ZipStream\Exception\FileNotFoundException
    * @throws \ZipStream\Exception\FileNotReadableException
    */
-  public function getConfigZip(Archive $archive_options): ZipStream {
+  public function getConfigZip($archive_options_or_ressource = NULL): ZipStream {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
     $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
-    $zip = new ZipStream('solr_' . $solr_branch . '_config.zip', $archive_options);
+    $zip = ZipStreamFactory::createInstance('solr_' . $solr_branch . '_config.zip', $archive_options_or_ressource);
 
     $files = $this->getConfigFiles();
-
     foreach ($files as $name => $content) {
       $zip->addFile($name, $content);
     }
@@ -429,9 +459,12 @@ class SolrConfigSetController extends ControllerBase {
     $this->setServer($search_api_server);
 
     try {
-      $archive_options = new Archive();
-      $archive_options->setSendHttpHeaders(TRUE);
-
+      $archive_options = NULL;
+      if (class_exists('\ZipStream\Option\Archive')) {
+        // Version 2.x. Version 3.x uses named parameters instead of options.
+        $archive_options = new \ZipStream\Option\Archive();
+        $archive_options->setSendHttpHeaders(TRUE);
+      }
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
@@ -468,16 +501,20 @@ class SolrConfigSetController extends ControllerBase {
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $search_api_server->getBackend();
 
-      $archive_options = new Archive();
-      $archive_options->setSendHttpHeaders(TRUE);
+      if (class_exists('\ZipStream\Option\Archive')) {
+        $archive_options_or_ressource = new \ZipStream\Option\Archive();
+        $archive_options_or_ressource->setSendHttpHeaders(TRUE);
+      }
+      else {
+        $archive_options_or_ressource = NULL;
+      }
 
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
       // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
       header('X-Accel-Buffering: no');
-
-      $zip = new ZipStream('solr_current_config.zip', $archive_options);
+      $zip = ZipStreamFactory::createInstance('solr_current_config.zip', $archive_options_or_ressource);
 
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $search_api_server->getBackend();

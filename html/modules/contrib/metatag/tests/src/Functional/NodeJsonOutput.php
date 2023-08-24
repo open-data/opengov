@@ -41,7 +41,7 @@ class NodeJsonOutput extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'bartik';
+  protected $defaultTheme = 'claro';
 
   /**
    * Create an entity, view its JSON output, confirm Metatag data exists.
@@ -49,8 +49,10 @@ class NodeJsonOutput extends BrowserTestBase {
   public function testNode() {
     $this->provisionResource();
 
+    $title = 'Test JSON output';
+    $body = 'Testing JSON output for a content type';
     /** @var \Drupal\node\NodeInterface $node */
-    $node = $this->createContentTypeNode('Test JSON output', 'Testing JSON output for a content type');
+    $node = $this->createContentTypeNode($title, $body);
     $url = $node->toUrl();
 
     // Load the node's page.
@@ -66,7 +68,6 @@ class NodeJsonOutput extends BrowserTestBase {
     $response = $this->getSession()->getPage()->getContent();
     $this->assertNotEmpty($response);
     $json = json_decode($response);
-    $this->verbose($json, 'JSON output');
     $this->assertNotEmpty($json);
 
     // Confirm the JSON object's values.
@@ -76,8 +77,28 @@ class NodeJsonOutput extends BrowserTestBase {
     }
     $this->assertTrue(isset($json->metatag));
     if (isset($json->metatag)) {
-      $this->assertTrue($json->metatag->value->title == $node->label() . ' | Drupal');
-      // @todo Test other meta tags.
+      // It is not clear what order the meta tags will be in, so loop over them
+      // and check each item.
+      $meta_tags_found = FALSE;
+      foreach ($json->metatag as $tag) {
+        // Title.
+        if (isset($tag->tag, $tag->attributes->name) && $tag->attributes->name == 'title') {
+          $this->assertEquals($tag->attributes->content, $title . ' | Drupal');
+          $this->assertEquals($tag->attributes->content, $node->label() . ' | Drupal');
+          $meta_tags_found = TRUE;
+        }
+        // Canonical URL tag.
+        if (isset($tag->tag, $tag->attributes->rel) && $tag->attributes->rel == 'canonical') {
+          $this->assertEquals($tag->attributes->href, $node->toUrl('canonical', ['absolute' => TRUE])->toString());
+          $meta_tags_found = TRUE;
+        }
+        // Description.
+        if (isset($tag->tag, $tag->attributes->name) && $tag->attributes->name == 'description') {
+          $this->assertEquals($tag->attributes->content, $body);
+          $meta_tags_found = TRUE;
+        }
+      }
+      $this->assertEquals($meta_tags_found, TRUE);
     }
   }
 
@@ -92,8 +113,9 @@ class NodeJsonOutput extends BrowserTestBase {
    *   The allowed authentication providers for this resource; defaults to
    *   ['basic_auth'].
    */
-  protected function provisionResource($entity_type = 'node', array $formats = [], array $authentication = []) {
-    $this->resourceConfigStorage = $this->container
+  protected function provisionResource($entity_type = 'node', array $formats = [], array $authentication = []): void {
+    /** @var \Drupal\Core\Entity\EntityStorageInterface */
+    $esource_config_storage = $this->container
       ->get('entity_type.manager')
       ->getStorage('rest_resource_config');
 
@@ -105,7 +127,7 @@ class NodeJsonOutput extends BrowserTestBase {
       $authentication[] = 'basic_auth';
     }
 
-    $this->resourceConfigStorage->create([
+    $esource_config_storage->create([
       'id' => 'entity.' . $entity_type,
       'granularity' => RestResourceConfigInterface::RESOURCE_GRANULARITY,
       'configuration' => [

@@ -5,6 +5,7 @@
  * Update scripts for the Metatag Open Graph module.
  */
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\metatag\Entity\MetatagDefaults;
 
@@ -52,6 +53,7 @@ function metatag_open_graph_update_8102(&$sandbox) {
           // We found a metatag field, so query for all the entities of this
           // type that have "article_tags" in the serialized array.
           $q = \Drupal::entityQuery($entity_type);
+          $q->accessCheck(FALSE);
           $q->condition($field_name, "article_tags", "CONTAINS");
           $count = $q->count()->execute();
 
@@ -81,6 +83,7 @@ function metatag_open_graph_update_8102(&$sandbox) {
 
     foreach ($fields as $field_name => $last) {
       $q = \Drupal::entityQuery($entity_type);
+      $q->accessCheck(FALSE);
       $q->condition($field_name, "article_tags", "CONTAINS");
       $q->condition($id_col, $last, ">");
       $q->sort($id_col);
@@ -98,7 +101,7 @@ function metatag_open_graph_update_8102(&$sandbox) {
         /** @var \Drupal\Core\Entity\ContentEntityBase $entity */
         if ($entity instanceof ContentEntityBase) {
           if ($entity->hasField($field_name)) {
-            /** @var LanguageInterface $langcode */
+            /** @var \Drupal\Core\Language\LanguageInterface $langcode */
             foreach ($entity->getTranslationLanguages() as $langcode) {
               // For each translation of this entity (including the source)...
               $trans = $entity->getTranslation($langcode->getId());
@@ -109,7 +112,7 @@ function metatag_open_graph_update_8102(&$sandbox) {
                 if (array_key_exists("article_tags", $tags)) {
                   $tags['article_tag'] = $tags['article_tags'];
                   unset($tags['article_tags']);
-                  $trans->set($field_name, serialize($tags));
+                  $trans->set($field_name, Json::encode($tags));
                   $trans->save();
                 }
               }

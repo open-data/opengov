@@ -44,7 +44,7 @@ class WebformOptionsCustom extends FormElement implements WebformOptionsCustomIn
     // NOTE:
     // Choices is not supported by custom options because of <option> being
     // removed inside the <select>.
-    // @see https://github.com/jshjohnson/Choices/issues/601
+    // @see https://github.com/Choices-js/Choices/issues/601
     '#placeholder',
     '#help_display',
     '#size',
@@ -155,7 +155,7 @@ class WebformOptionsCustom extends FormElement implements WebformOptionsCustomIn
         '#template' => $element['#template'],
         '#context' => $template_context,
         '#prefix' => '<div class="webform-options-custom-template">',
-        '#suffic' => '</div>',
+        '#suffix' => '</div>',
       ];
     }
     else {
@@ -163,7 +163,7 @@ class WebformOptionsCustom extends FormElement implements WebformOptionsCustomIn
       $element['template'] = [
         '#markup' => Markup::create($element['#template']),
         '#prefix' => '<div class="webform-options-custom-template">',
-        '#suffic' => '</div>',
+        '#suffix' => '</div>',
       ];
     }
 

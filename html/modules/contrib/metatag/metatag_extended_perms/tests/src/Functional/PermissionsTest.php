@@ -3,6 +3,8 @@
 namespace Drupal\Tests\metatag_extended_perms\Functional;
 
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\metatag\Functional\MetatagHelperTrait;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Verify the new permissions are added.
@@ -12,7 +14,7 @@ use Drupal\Tests\BrowserTestBase;
 class PermissionsTest extends BrowserTestBase {
 
   // Contains helper methods.
-  use \Drupal\Tests\metatag\Functional\MetatagHelperTrait;
+  use MetatagHelperTrait;
 
   /**
    * {@inheritdoc}
@@ -22,7 +24,7 @@ class PermissionsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     // Modules for core functionality.
     'node',
 
@@ -50,7 +52,6 @@ class PermissionsTest extends BrowserTestBase {
     'advanced' => [
       'cache_control' => 'Cache control',
       'canonical_url' => 'Canonical URL',
-      'content_language' => 'Content Language',
       'expires' => 'Expires',
       'generator' => 'Generator',
       'geo_placename' => 'Geographical place name',
@@ -59,7 +60,6 @@ class PermissionsTest extends BrowserTestBase {
       'google' => 'Google',
       'icbm' => 'ICBM',
       'image_src' => 'Image',
-      'news_keywords' => 'News Keywords',
       'next' => 'Next page URL',
       'original_source' => 'Original source',
       'pragma' => 'Pragma',
@@ -75,7 +75,6 @@ class PermissionsTest extends BrowserTestBase {
       // @endcode
       'set_cookie' => 'Set cookie',
       'shortlink' => 'Shortlink URL',
-      'standout' => 'Standout',
     ],
   ];
 
@@ -90,7 +89,6 @@ class PermissionsTest extends BrowserTestBase {
 
     // Create a content type with a Metatag field.
     $this->createContentType();
-    $this->drupalGet('admin/people/permissions');
   }
 
   /**
@@ -166,8 +164,6 @@ class PermissionsTest extends BrowserTestBase {
       $perms_yes[] = "access metatag {$group_yes}__{$tag_name}";
     }
 
-    $this->verbose($perms_yes);
-
     // Create a user account with the above permissions.
     $user = $this->createUser($perms_yes);
     $this->drupalLogin($user);
@@ -195,8 +191,8 @@ class PermissionsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function createContentType(array $values = []) {
-    parent::createContentType(['type' => 'page']);
+  protected function createContentType(array $values = []): NodeType {
+    $type = parent::createContentType(['type' => 'page']);
 
     // Load a node form.
     $this->drupalGet('node/add/page');
@@ -214,6 +210,8 @@ class PermissionsTest extends BrowserTestBase {
 
     // Clear all settings.
     $this->container->get('entity_field.manager')->clearCachedFieldDefinitions();
+
+    return $type;
   }
 
 }

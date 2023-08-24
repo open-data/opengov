@@ -23,7 +23,7 @@ class MetatagTrimmerTest extends UnitTestCase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp() : void {
+  protected function setUp(): void {
     parent::setUp();
     $this->metatagTrimmer = new MetatagTrimmer();
   }

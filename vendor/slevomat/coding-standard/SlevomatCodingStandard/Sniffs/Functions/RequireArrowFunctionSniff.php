@@ -4,6 +4,7 @@ namespace SlevomatCodingStandard\Sniffs\Functions;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SlevomatCodingStandard\Helpers\FixerHelper;
 use SlevomatCodingStandard\Helpers\ScopeHelper;
 use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
@@ -87,7 +88,7 @@ class RequireArrowFunctionSniff implements Sniff
 			return;
 		}
 
-		$pointerAfterReturn = TokenHelper::findNextExcluding($phpcsFile, T_WHITESPACE, $returnPointer + 1);
+		$pointerAfterReturn = TokenHelper::findNextNonWhitespace($phpcsFile, $returnPointer + 1);
 		$semicolonAfterReturn = $this->findSemicolon($phpcsFile, $returnPointer);
 		$usePointer = TokenHelper::findNext(
 			$phpcsFile,
@@ -101,10 +102,10 @@ class RequireArrowFunctionSniff implements Sniff
 			$tokens[$closurePointer]['scope_opener'] - 1
 		);
 
-		$nonWhitespacePointerAfterUseParanthesisCloser = null;
+		$nonWhitespacePointerAfterUseParenthesisCloser = null;
 		if ($usePointer !== null) {
 			$useParenthesiCloserPointer = TokenHelper::findNext($phpcsFile, T_CLOSE_PARENTHESIS, $usePointer + 1);
-			$nonWhitespacePointerAfterUseParanthesisCloser = TokenHelper::findNextExcluding(
+			$nonWhitespacePointerAfterUseParenthesisCloser = TokenHelper::findNextExcluding(
 				$phpcsFile,
 				T_WHITESPACE,
 				$useParenthesiCloserPointer + 1
@@ -114,21 +115,19 @@ class RequireArrowFunctionSniff implements Sniff
 		$phpcsFile->fixer->beginChangeset();
 		$phpcsFile->fixer->replaceToken($closurePointer, 'fn');
 
-		if ($nonWhitespacePointerAfterUseParanthesisCloser !== null) {
-			for ($i = $tokens[$closurePointer]['parenthesis_closer'] + 1; $i < $nonWhitespacePointerAfterUseParanthesisCloser; $i++) {
-				$phpcsFile->fixer->replaceToken($i, '');
-			}
+		if ($nonWhitespacePointerAfterUseParenthesisCloser !== null) {
+			FixerHelper::removeBetween(
+				$phpcsFile,
+				$tokens[$closurePointer]['parenthesis_closer'],
+				$nonWhitespacePointerAfterUseParenthesisCloser
+			);
 		}
 
-		for ($i = $nonWhitespacePointerBeforeScopeOpener + 1; $i < $pointerAfterReturn; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetween($phpcsFile, $nonWhitespacePointerBeforeScopeOpener, $pointerAfterReturn);
 
 		$phpcsFile->fixer->addContent($nonWhitespacePointerBeforeScopeOpener, ' => ');
 
-		for ($i = $semicolonAfterReturn; $i <= $tokens[$closurePointer]['scope_closer']; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetweenIncluding($phpcsFile, $semicolonAfterReturn, $tokens[$closurePointer]['scope_closer']);
 
 		$phpcsFile->fixer->endChangeset();
 	}

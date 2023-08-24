@@ -54,10 +54,10 @@ class MetatagToken {
    *   (optional) An object to which static::generate() and the hooks and
    *   functions that it invokes will add their required bubbleable metadata.
    *
-   * @return mixed|string
+   * @return string
    *   The processed string.
    */
-  public function replace($string, array $data = [], array $options = [], BubbleableMetadata $bubbleable_metadata = NULL) {
+  public function replace($string, array $data = [], array $options = [], BubbleableMetadata $bubbleable_metadata = NULL): string {
     // Set default requirements for metatag unless options specify otherwise.
     $options = $options + [
       'clear' => TRUE,
@@ -85,7 +85,7 @@ class MetatagToken {
    *   If token module is installed, a popup browser plus a help text. If not
    *   only the help text.
    */
-  public function tokenBrowser(array $token_types = [], $image_help = FALSE) {
+  public function tokenBrowser(array $token_types = [], $image_help = FALSE): array {
     $form = [];
 
     $form['intro_text'] = [

@@ -19,7 +19,7 @@ class GoogleAnalyticsUserFieldsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['google_analytics', 'field_ui'];
+  protected static $modules = ['google_analytics', 'field_ui'];
 
   /**
    * Default theme.
@@ -38,7 +38,7 @@ class GoogleAnalyticsUserFieldsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $permissions = [
@@ -61,28 +61,28 @@ class GoogleAnalyticsUserFieldsTest extends BrowserTestBase {
 
     // Check if the pseudo field is shown on account forms.
     $this->drupalGet('admin/config/people/accounts/form-display');
-    $this->assertResponse(200);
-    $this->assertRaw($this->t('Google Analytics settings'));
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->responseContains($this->t('Google Analytics settings'));
 
     // No customization allowed.
     $this->config('google_analytics.settings')->set('visibility.user_account_mode', 0)->save();
     $this->drupalGet('user/' . $this->adminUser->id() . '/edit');
-    $this->assertResponse(200);
-    $this->assertNoRaw($this->t('Google Analytics settings'));
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->responseNotContains($this->t('Google Analytics settings'));
 
     // Tracking on by default, users with opt-in or out of tracking permission
     // can opt out.
     $this->config('google_analytics.settings')->set('visibility.user_account_mode', 1)->save();
     $this->drupalGet('user/' . $this->adminUser->id() . '/edit');
-    $this->assertResponse(200);
-    $this->assertRaw($this->t('Users are tracked by default, but you are able to opt out.'));
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->responseContains($this->t('Users are tracked by default, but you are able to opt out.'));
 
     // Tracking off by default, users with opt-in or out of tracking permission
     // can opt in.
     $this->config('google_analytics.settings')->set('visibility.user_account_mode', 2)->save();
     $this->drupalGet('user/' . $this->adminUser->id() . '/edit');
-    $this->assertResponse(200);
-    $this->assertRaw($this->t('Users are <em>not</em> tracked by default, but you are able to opt in.'));
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->responseContains($this->t('Users are <em>not</em> tracked by default, but you are able to opt in.'));
   }
 
 }

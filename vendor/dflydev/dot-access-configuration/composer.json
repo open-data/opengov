@@ -18,12 +18,14 @@
         }
     ],
     "require": {
-        "php": ">=5.3.2",
-        "dflydev/dot-access-data": "1.*",
+        "php": ">=7.4",
+        "dflydev/dot-access-data": "^3",
         "dflydev/placeholder-resolver": "1.*"
     },
     "require-dev": {
-        "symfony/yaml": "~2.1"
+        "symfony/yaml": "^5.4 || ^6.0",
+        "phpunit/phpunit": "^9.3",
+        "squizlabs/php_codesniffer": "^3.5"        
     },
     "suggest": {
         "symfony/yaml": "Required for using the YAML Configuration Builders"
@@ -32,6 +34,11 @@
         "psr-0": {
             "Dflydev\\DotAccessConfiguration": "src"
         }
+    },
+    "scripts": {
+        "style:fix": "@php ./vendor/bin/phpcsf",
+        "style:check": "@php ./vendor/bin/phpcs",
+        "test" : "@php ./vendor/bin/phpunit"
     },
     "extra": {
         "branch-alias": {

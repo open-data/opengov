@@ -24,7 +24,7 @@
     <ul{{ attributes.addClass(menu_level == 0 ? classes : dropdown_classes) }}>
     {% for item in items %}
       {%
-        set item_classes = item.url.getOption('container_attributes').class | split(" ")
+        set item_classes = item.url.getOption('container_attributes').class
       %}
       {%
         set item_classes = [

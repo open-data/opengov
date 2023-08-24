@@ -22,8 +22,12 @@ class CKEditorUpdateOmitDisabledPluginSettings extends UpdatePathTestBase {
    * {@inheritdoc}
    */
   protected function setDatabaseDumpFiles() {
+    // @see https://www.drupal.org/node/3306545
+    [$version] = explode('.', \Drupal::VERSION, 2);
     $this->databaseDumpFiles = [
-      DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-9.4.0.bare.standard.php.gz',
+      $version == 9
+        ? DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-9.3.0.bare.standard.php.gz'
+        : DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-9.4.0.bare.standard.php.gz',
     ];
   }
 

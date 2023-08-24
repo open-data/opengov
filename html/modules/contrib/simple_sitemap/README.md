@@ -131,10 +131,16 @@ can be submitted to specific search engines, the time interval is configurable.
 
 The module also supports the IndexNow service provided by Bing and Yandex. The
 two search engines are preconfigured and new engines can be added
-programmatically via simple_sitemap_engine entities. For the submission to work,
-a key needs to be generated under
-admin/config/search/simplesitemap/engines/settings and entities need to be
-included under admin/config/search/simplesitemap/entities.
+programmatically via simple_sitemap_engine entities.
+
+For the submission to work, a key needs to be generated under
+admin/config/search/simplesitemap/engines/settings. This key will be saved to
+Drupal's state, but it is recommended to store it in the `settings.php` or
+`settings.local.php` file by adding the line
+`$settings['simple_sitemap_engines.index_now.key'] = xxx;`
+
+Do not forget to include entities under
+admin/config/search/simplesitemap/entities.
 
 ### PERFORMANCE ###
 
@@ -229,42 +235,51 @@ programmatic sitemap generation. These include:
 These service methods can be used/chained like so:
 
 ```php
-// Create a new sitemap of the default_hreflang sitemap type.
+// Create a new sitemap 'test' of the default_hreflang sitemap type.
 \Drupal\simple_sitemap\Entity\SimpleSitemap::create(['id' => 'test', 'type' => 'default_hreflang', 'label' => 'Test'])->save();
 
 /** @var \Drupal\simple_sitemap\Manager\Generator $generator */
 $generator = \Drupal::service('simple_sitemap.generator');
 
-// Set some random settings.
+// Set some random settings (global, not sitemap variant specific).
 if ($generator->getSetting('cron_generate')) {
   $generator
     ->saveSetting('generate_duration', 20000)
     ->saveSetting('base_url', 'https://test');
 }
 
-// Set an entity type to be indexed.
+// Set an entity bundle to be indexed in the 'default' and 'test' sitemaps.
 $generator
   ->entityManager()
   ->enableEntityType('node')
-  ->setVariants(['default', 'test']) // All following operations will concern these variants.
+  ->setVariants(['default', 'test']) // All following operations will concern these sitemap variants.
   ->setBundleSettings('node', 'page', ['index' => TRUE, 'priority' => 0.5]);
 
-// Set a custom link to be indexed.
+// Remove all custom links from the 'default' and 'test' sitemaps and Set a
+// custom link to be indexed in the 'test' sitemap.
 $generator
   ->customLinkManager()
   ->remove() // Remove all custom links from all variants.
   ->setVariants(['test']) // All following operations will concern these variants.
   ->add('/some/view/page', ['priority' => 0.5]);
 
-// Generate the sitemap, but rebuild the queue first in case an old generation is in
-// progress.
+// Queues the 'test' sitemap for generation and generates it.
 $generator
   ->rebuildQueue()
   ->generate();
 ```
 
-For querying specific info about sitemaps, use the various methods of the
-`\Drupal\simple_sitemap\Entity\SimpleSitemap` (simple_sitemap) entity.
+To query data of and manipulate a specific sitemap, load it and use its
+various methods. Some arbitrary example:
+
+```php
+$sitemap = \Drupal\simple_sitemap\Entity\SimpleSitemap::load('default');
+// Be aware, that $sitemap->status() only returns TRUE if the sitemap is enabled
+// and published. To check if it is enabled only, use $sitemap->isEnabled().
+if ($sitemap->status() && !$sitemap->isDefault() && $sitemap->getCreated() < $some_timestamp) {
+  $sitemap->disable();
+}
+```
 
 See https://gbyte.dev/projects/simple-xml-sitemap and code documentation for
 further details.

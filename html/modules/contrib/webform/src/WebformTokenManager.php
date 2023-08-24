@@ -65,6 +65,9 @@ class WebformTokenManager implements WebformTokenManagerInterface {
    * @see webform_token_info_alter()
    */
   protected static $suffixes = [
+    // Base64 encode the token's value.
+    // @see https://www.php.net/manual/en/function.base64-encode.php
+    'base64encode',
     // Removes the token when not replaced.
     'clear',
     // Decodes HTML entities.
@@ -101,8 +104,6 @@ class WebformTokenManager implements WebformTokenManagerInterface {
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
     $this->token = $token;
-
-    $this->config = $this->configFactory->get('webform.settings');
   }
 
   /**
@@ -254,7 +255,8 @@ class WebformTokenManager implements WebformTokenManagerInterface {
     ];
 
     if ($description) {
-      if ($this->config->get('ui.description_help')) {
+      $config = $this->configFactory->get('webform.settings');
+      if ($config->get('ui.description_help')) {
         return [
           '#type' => 'container',
           'token_tree_link' => $build,
@@ -461,6 +463,9 @@ class WebformTokenManager implements WebformTokenManagerInterface {
           // Encode xml.
           if (isset($suffixes['xmlencode'])) {
             $replace = htmlspecialchars($replace, ENT_XML1);
+          }
+          if (isset($suffixes['base64encode'])) {
+            $replace = base64_encode($replace);
           }
         }
 

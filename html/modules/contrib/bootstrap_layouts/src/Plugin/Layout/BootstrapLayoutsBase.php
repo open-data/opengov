@@ -137,7 +137,7 @@ class BootstrapLayoutsBase extends LayoutDefault implements PluginFormInterface 
     $form['layout']['attributes'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Additional attributes'),
-      '#description' => 'E.g. id|custom-id,role|navigation,data-something|some value',
+      '#description' => 'E.g. id|custom-id,role|navigation,data-bs-something|some value',
       '#default_value' => $complete_form_state->getValue(['layout', 'attributes'], $configuration['layout']['attributes']),
     ];
 
@@ -186,7 +186,7 @@ class BootstrapLayoutsBase extends LayoutDefault implements PluginFormInterface 
       $form[$region]['attributes'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Additional attributes'),
-        '#description' => 'E.g. id|custom-id,role|navigation,data-something|some value',
+        '#description' => 'E.g. id|custom-id,role|navigation,data-bs-something|some value',
         '#default_value' => $default_values['attributes'],
       ];
 

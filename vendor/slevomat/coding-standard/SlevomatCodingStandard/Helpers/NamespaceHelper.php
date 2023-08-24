@@ -6,6 +6,7 @@ use PHP_CodeSniffer\Files\File;
 use function array_reverse;
 use function array_slice;
 use function count;
+use function defined;
 use function explode;
 use function implode;
 use function in_array;
@@ -30,7 +31,7 @@ class NamespaceHelper
 	public const NAMESPACE_SEPARATOR = '\\';
 
 	/**
-	 * @return int[]
+	 * @return list<int>
 	 */
 	public static function getAllNamespacesPointers(File $phpcsFile): array
 	{
@@ -68,7 +69,7 @@ class NamespaceHelper
 	}
 
 	/**
-	 * @return string[]
+	 * @return list<string>
 	 */
 	public static function getNameParts(string $name): array
 	{
@@ -173,6 +174,11 @@ class NamespaceHelper
 		}
 
 		$name = sprintf('%s%s', self::NAMESPACE_SEPARATOR, $nameAsReferencedInFile);
+
+		if ($type === ReferencedName::TYPE_CONSTANT && defined($name)) {
+			return $name;
+		}
+
 		$namespaceName = self::findCurrentNamespaceName($phpcsFile, $currentPointer);
 		if ($namespaceName !== null) {
 			$name = sprintf('%s%s%s', self::NAMESPACE_SEPARATOR, $namespaceName, $name);

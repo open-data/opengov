@@ -77,7 +77,7 @@ class MetatagFieldNodeTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpEntityType() {
+  protected function setUpEntityType(): void {
     $this->createContentType(['type' => 'page']);
   }
 

@@ -20,5 +20,40 @@ use Drupal\metatag\Plugin\metatag\Tag\LinkRelBase;
  * )
  */
 class AndroidAppLinkAlternative extends LinkRelBase {
-  // Nothing here yet. Just a placeholder class for a plugin.
+
+  /**
+   * {@inheritdoc}
+   */
+  public function output(): array {
+    $element = parent::output();
+
+    // Add the "android-app://" prefix on the href value.
+    if (isset($element['#attributes']['href']) && $element['#attributes']['href'] != '') {
+      // Don't add the prefix if it's already present.
+      if (strpos($element['#attributes']['href'], 'android-app://') === FALSE) {
+        $element['#attributes']['href'] = 'android-app://' . (string) $element['#attributes']['href'];
+      }
+    }
+
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTestOutputExistsXpath(): array {
+    return ["//link[@rel='alternate' and starts-with(@href, 'android-app:')]"];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTestOutputValuesXpath(array $values): array {
+    $xpath_strings = [];
+    foreach ($values as $value) {
+      $xpath_strings[] = "//link[@rel='alternate' and @href='android-app://{$value}']";
+    }
+    return $xpath_strings;
+  }
+
 }

@@ -12,6 +12,7 @@ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\TypedData\EntityDataDefinitionInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -19,19 +20,25 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Plugin\PluginDependencyTrait;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\ListDataDefinitionInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\search_api\Item\Field;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValue;
+use Drupal\search_api\Plugin\search_api\processor\Property\AggregatedFieldProperty;
 use Drupal\search_api\Processor\ProcessorInterface;
+use Drupal\search_api\Processor\ProcessorProperty;
 use Drupal\search_api\Query\ConditionGroup;
 use Drupal\search_api\Query\ConditionInterface;
 use Drupal\search_api\Query\ResultSetInterface;
@@ -54,6 +61,7 @@ use Drupal\search_api_solr\Event\PostExtractResultsEvent;
 use Drupal\search_api_solr\Event\PostFieldMappingEvent;
 use Drupal\search_api_solr\Event\PostIndexFinalizationEvent;
 use Drupal\search_api_solr\Event\PostSetFacetsEvent;
+use Drupal\search_api_solr\Event\PreAddLanguageFallbackFieldEvent;
 use Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent;
 use Drupal\search_api_solr\Event\PreCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
@@ -103,7 +111,7 @@ use Laminas\Stdlib\ArrayUtils;
 class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInterface, PluginFormInterface {
 
   use PluginFormTrait {
-    submitConfigurationForm as traitSubmitConfigurationForm;
+    PluginFormTrait::submitConfigurationForm as traitSubmitConfigurationForm;
   }
 
   use PluginDependencyTrait;
@@ -187,9 +195,44 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected $eventDispatcher;
 
   /**
+   * The time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $time;
+
+  /**
+   * The state storage service.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
+   * The messenger.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * The locking layer instance.
+   *
+   * @var \Drupal\Core\Lock\LockBackendInterface
+   */
+  protected $lock;
+
+  /**
+   * The module extension list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   */
+  protected $moduleExtensionList;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager, ContainerAwareEventDispatcher $eventDispatcher) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager, ContainerAwareEventDispatcher $eventDispatcher, TimeInterface $time, StateInterface $state, MessengerInterface $messenger, LockBackendInterface $lock, ModuleExtensionList $module_extension_list) {
     $this->moduleHandler = $module_handler;
     $this->searchApiSolrSettings = $search_api_solr_settings;
     $this->languageManager = $language_manager;
@@ -199,6 +242,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $this->queryHelper = $query_helper;
     $this->entityTypeManager = $entityTypeManager;
     $this->eventDispatcher = $eventDispatcher;
+    $this->time = $time;
+    $this->state = $state;
+    $this->messenger = $messenger;
+    $this->lock = $lock;
+    $this->moduleExtensionList = $module_extension_list;
 
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
@@ -219,7 +267,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $container->get('search_api.data_type_helper'),
       $container->get('solarium.query_helper'),
       $container->get('entity_type.manager'),
-      $container->get('event_dispatcher')
+      $container->get('event_dispatcher'),
+      $container->get('datetime.time'),
+      $container->get('state'),
+      $container->get('messenger'),
+      $container->get('lock'),
+      $container->get('extension.list.module')
     );
   }
 
@@ -400,7 +453,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#options' => array_combine($domains, $domains),
       '#title' => $this->t('Targeted content domain'),
       '#description' => $this->t('For example "UltraBot3000" would be indexed as "Ultra" "Bot" "3000" in a generic domain, "CYP2D6" has to stay like it is in a scientific domain.'),
-      '#default_value' => isset($this->configuration['domain']) ? $this->configuration['domain'] : 'generic',
+      '#default_value' => $this->configuration['domain'] ?? 'generic',
     ];
 
     $environments = Utility::getAvailableEnvironments();
@@ -409,7 +462,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#options' => array_combine($environments, $environments),
       '#title' => $this->t('Targeted environment'),
       '#description' => $this->t('For example "dev", "stage" or "prod".'),
-      '#default_value' => isset($this->configuration['environment']) ? $this->configuration['environment'] : 'default',
+      '#default_value' => $this->configuration['environment'] ?? 'default',
     ];
 
     $form['advanced']['i_know_what_i_do'] = [
@@ -498,7 +551,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       if ($connector instanceof PluginFormInterface) {
         $form_state->set('connector', $connector_id);
         if ($form_state->isRebuilding()) {
-          \Drupal::messenger()->addWarning($this->t('Please configure the selected Solr connector.'));
+          $this->messenger->addWarning($this->t('Please configure the selected Solr connector.'));
         }
         // Attach the Solr connector plugin configuration form.
         $connector_form_state = SubformState::createForSubform($form['connector_config'], $form, $form_state);
@@ -604,7 +657,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $this->traitSubmitConfigurationForm($form, $form_state);
 
     // Delete cached endpoint data.
-    \Drupal::state()->delete('search_api_solr.endpoint.data');
+    $this->state->delete('search_api_solr.endpoint.data');
   }
 
   /**
@@ -634,7 +687,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $server_available = $connector->pingServer() !== FALSE;
       $core_available = $connector->pingCore() !== FALSE;
       if ($server_available && !$core_available) {
-        \Drupal::messenger()
+        $this->messenger
           ->addWarning($this->t('Server %server is reachable but the configured %core is not available.', [
             '%server' => $this->getServer()->label(),
             '%core' => $connector->isCloud() ? 'collection' : 'core',
@@ -776,7 +829,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
       else {
         $msg = $this->t('The Solr server could not be reached or is protected by your service provider.');
-        \Drupal::messenger()->addWarning($msg);
+        $this->messenger->addWarning($msg);
       }
       $info[] = [
         'label' => $this->t('Server Connection'),
@@ -838,7 +891,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               if ($cloud && 0 === $index_id) {
                 $info[] = [
                   'label' => $this->t('Default Collection'),
-                  'info' => $this->t("Default collection isn't set. Ensure that the collections are properly set on the indexes in their advanced section od the Solr specific index options."),
+                  'info' => $this->t("Default collection isn't set. Ensure that the collections are properly set on the indexes in their advanced section of the Solr specific index options."),
                   'status' => 'error',
                 ];
               }
@@ -865,41 +918,45 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 // Collect the stats.
                 $stats_summary = $connector->getStatsSummary();
 
-                $pending_msg = $stats_summary['@pending_docs'] ? $this->t('(@pending_docs sent but not yet processed)', $stats_summary) : '';
-                $index_msg = $stats_summary['@index_size'] ? $this->t('(@index_size on disk)', $stats_summary) : '';
-                $indexed_message = $this->t('@num items @pending @index_msg', [
-                  '@num' => $data['index']['numDocs'],
-                  '@pending' => $pending_msg,
-                  '@index_msg' => $index_msg,
-                ]);
-                $info[] = [
-                  'label' => $this->t('%key: Indexed', ['%key' => $key]),
-                  'info' => $indexed_message,
-                ];
-
-                if (!empty($stats_summary['@deletes_total'])) {
+                if ($data['index']['numDocs'] !== -1) {
+                  $pending_msg = $stats_summary['@pending_docs'] ? $this->t('(@pending_docs sent but not yet processed)', $stats_summary) : '';
+                  $index_msg = $stats_summary['@index_size'] ? $this->t('(@index_size on disk)', $stats_summary) : '';
+                  $indexed_message = $this->t('@num items @pending @index_msg', [
+                    '@num' => $data['index']['numDocs'],
+                    '@pending' => $pending_msg,
+                    '@index_msg' => $index_msg,
+                  ]);
                   $info[] = [
-                    'label' => $this->t('%key: Pending Deletions', ['%key' => $key]),
-                    'info' => $stats_summary['@deletes_total'],
+                    'label' => $this->t('%key: Indexed', ['%key' => $key]),
+                    'info' => $indexed_message,
                   ];
+
+                  if (!empty($stats_summary['@deletes_total'])) {
+                    $info[] = [
+                      'label' => $this->t('%key: Pending Deletions', ['%key' => $key]),
+                      'info' => $stats_summary['@deletes_total'],
+                    ];
+                  }
+
+                  if (!empty($stats_summary['@autocommit_time'])) {
+                    $info[] = [
+                      'label' => $this->t('%key: Delay', ['%key' => $key]),
+                      'info' => $this->t('@autocommit_time before updates are processed.', $stats_summary),
+                    ];
+                  }
                 }
-
-                $info[] = [
-                  'label' => $this->t('%key: Delay', ['%key' => $key]),
-                  'info' => $this->t('@autocommit_time before updates are processed.', $stats_summary),
-                ];
-
                 $status = 'ok';
                 if (!$this->isNonDrupalOrOutdatedConfigSetAllowed()) {
-                  $variables[':url'] = Url::fromUri('internal:/' . drupal_get_path('module', 'search_api_solr') . '/README.md')->toString();
+                  $variables[':url'] = Url::fromUri('internal:/' . $this->moduleExtensionList->getPath('search_api_solr') . '/README.md')->toString();
+                  $variables[':min_version'] = SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
                   if (preg_match('/^drupal-(.*?)-solr/', $stats_summary['@schema_version'], $matches)) {
                     if (Comparator::lessThan($matches[1], SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION)) {
-                      \Drupal::messenger()->addError($this->t('You are using outdated Solr configuration set. Please follow the instructions described in the <a href=":url">README.md</a> file for setting up Solr.', $variables));
+                      $this->messenger->addError($this->t('Solr is using an outdated <a href="https://solr.apache.org/guide/solr/latest/configuration-guide/config-sets.html">configset</a>, created with a version of Search API Solr older than :min_version. Please follow the instructions in the <a href=":url">README.md</a> file, to create and deploy a fresh set of Solr configuration files, based on the currently installed version of Search API Solr.', $variables));
                       $status = 'error';
                     }
                   }
                   else {
-                    \Drupal::messenger()->addError($this->t('You are using an incompatible Solr schema. Please follow the instructions described in the <a href=":url">README.md</a> file for setting up Solr.', $variables));
+                    $this->messenger->addError($this->t('You are using an incompatible Solr schema. Please follow the instructions described in the <a href=":url">README.md</a> file for setting up Solr.', $variables));
                     $status = 'error';
                   }
                 }
@@ -976,7 +1033,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     ];
 
     if (!empty($this->configuration['disabled_field_types'])) {
-      \Drupal::messenger()
+      $this->messenger
         ->addWarning($this->t('You disabled some Solr Field Types for this server.'));
 
       $info[] = [
@@ -991,7 +1048,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     ];
 
     if (!empty($this->configuration['disabled_caches'])) {
-      \Drupal::messenger()
+      $this->messenger
         ->addWarning($this->t('You disabled some Solr Caches for this server.'));
 
       $info[] = [
@@ -1114,7 +1171,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       if ($ret) {
-        \Drupal::state()->set('search_api_solr.' . $index->id() . '.last_update', \Drupal::time()->getCurrentTime());
+        $this->state->set('search_api_solr.' . $index->id() . '.last_update', $this->time->getCurrentTime());
       }
     }
     return $ret;
@@ -1136,11 +1193,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function getDocuments(IndexInterface $index, array $items, UpdateQuery $update_query = NULL) {
+    $index_third_party_settings = $index->getThirdPartySettings('search_api_solr') + search_api_solr_default_index_third_party_settings();
     $documents = [];
     $index_id = $this->getTargetedIndexId($index);
     $site_hash = $this->getTargetedSiteHash($index);
     $languages = $this->languageManager->getLanguages();
-    $request_time = $this->formatDate(\Drupal::time()->getRequestTime());
+    $specific_languages = array_keys(array_filter($index_third_party_settings['multilingual']['specific_languages'] ?? []));
+    $use_language_undefined_as_fallback_language = $index_third_party_settings['multilingual']['use_language_undefined_as_fallback_language'] ?? FALSE;
+    $use_universal_collation = $index_third_party_settings['multilingual']['use_universal_collation'] ?? FALSE;
+    $fulltext_fields = $index->getFulltextFields();
+    $request_time = $this->formatDate($this->time->getRequestTime());
     $base_urls = [];
 
     if (!$update_query) {
@@ -1151,9 +1213,30 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     /** @var \Drupal\search_api\Item\ItemInterface[] $items */
     foreach ($items as $id => $item) {
       $language_id = $item->getLanguage();
-      if ($language_id === LanguageInterface::LANGCODE_NOT_APPLICABLE) {
+      if (
+        $language_id === LanguageInterface::LANGCODE_NOT_APPLICABLE ||
+        (!empty($specific_languages) && !in_array($language_id, $specific_languages))
+      ) {
         $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED;
         $item->setLanguage($language_id);
+      }
+
+      /* @see \Drupal\search_api\Plugin\search_api\processor\LanguageWithFallback */
+      $fallback_languages = [];
+      $fallback_field_names = [];
+      $language_with_fallback_field = $item->getField('language_with_fallback', FALSE);
+      if ($language_with_fallback_field) {
+        $fallback_languages = array_diff($language_with_fallback_field->getValues(), [
+          $language_id,
+          LanguageInterface::LANGCODE_NOT_SPECIFIED,
+        ]);
+        if (!empty($specific_languages)) {
+          $fallback_languages = array_intersect($fallback_languages, $specific_languages);
+        }
+      }
+
+      foreach ($fallback_languages as $fallback_language) {
+        $fallback_field_names[$fallback_language] = $this->getLanguageSpecificSolrFieldNames($use_language_undefined_as_fallback_language ? LanguageInterface::LANGCODE_NOT_SPECIFIED : $fallback_language, $index);
       }
       $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       $boost_terms = [];
@@ -1209,21 +1292,59 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           break;
         }
 
-        if ($field->getPropertyPath() === 'auto_aggregated_fulltext_field') {
-          $type = $field->getType();
-          if (!array_key_exists($type, $auto_aggregate_values)) {
-            foreach ($item_fields as $tmp_field) {
-              if ($tmp_field->getType() === $type && $tmp_field->getPropertyPath() !== 'auto_aggregated_fulltext_field') {
-                $auto_aggregate_values[$type][] = $tmp_field->getValues();
+        $type = $field->getType();
+        $field_identifier = $field->getFieldIdentifier();
+        switch ($field->getPropertyPath()) {
+          case 'auto_aggregated_fulltext_field':
+            if (!array_key_exists($type, $auto_aggregate_values)) {
+              foreach ($item_fields as $tmp_field) {
+                if ($tmp_field->getType() === $type && $tmp_field->getPropertyPath() !== 'auto_aggregated_fulltext_field') {
+                  $auto_aggregate_values[$type][] = $tmp_field->getValues();
+                }
+              }
+              $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
+            }
+
+            $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $type, $boost_terms);
+            $fallback_values = [];
+            foreach ($fallback_languages as $fallback_language) {
+              if (!isset($fallback_values[$fallback_language])) {
+                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type, $item);
+                $this->eventDispatcher->dispatch($event);
+                $value = $event->getValue();
+                if ($value) {
+                  $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $value, $type, $boost_terms);
+                }
+                $fallback_values[$fallback_language] = $value;
               }
             }
-            $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
-          }
+            break;
 
-          $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $field->getType(), $boost_terms);
-        }
-        else {
-          $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $field->getType(), $boost_terms);
+          case 'language_with_fallback':
+            $values = $field->getValues();
+            if (!empty($specific_languages)) {
+              $values = array_intersect($values, $specific_languages);
+            }
+            $first_value = $this->addIndexField($doc, $field_names[$name], $values, $type, $boost_terms);
+            break;
+
+          default:
+            $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $type, $boost_terms);
+            if (in_array($field_identifier, $fulltext_fields)) {
+              $fallback_values = [];
+              foreach ($fallback_languages as $fallback_language) {
+                if (!isset($fallback_values[$fallback_language])) {
+                  $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type, $item);
+                  $this->eventDispatcher->dispatch($event);
+                  $value = $event->getValue();
+                  if ($value) {
+                    $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $value, $type, $boost_terms);
+                  }
+                  $fallback_values[$fallback_language] = $value;
+                }
+              }
+            }
+            break;
         }
 
         // Enable sorts in some special cases.
@@ -1249,12 +1370,17 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 $first_value = Unicode::truncate($first_value, 128);
               }
 
-              // Always copy fulltext and string fields to a dedicated sort
-              // fields for faster sorts and language specific collations. To
-              // allow sorted multilingual searches we need to fill *all*
-              // language-specific sort fields!
-              $sort_languages = array_keys(\Drupal::languageManager()
-                ->getLanguages());
+              if (!$use_universal_collation) {
+                // Copy fulltext and string fields to a dedicated sort fields
+                // for faster sorts and language specific collations. To
+                // allow sorted multilingual searches we need to fill *all*
+                // language-specific sort fields!
+                $sort_languages = array_keys($this->languageManager
+                  ->getLanguages());
+                if (!empty($specific_languages)) {
+                  $sort_languages = array_intersect($sort_languages, $specific_languages);
+                }
+              }
               $sort_languages[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
               foreach ($sort_languages as $sort_language_id) {
                 $key = Utility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $sort_language_id . '_' . $name);
@@ -1316,10 +1442,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // _root_ field which assures children (nested) documents will be removed
       // too. The field _root_ is assigned to the ID of the top-level document
       // across an entire block of parent + children.
-      $update_query->addDeleteQuery('_root_:("' . implode('" OR "', $solr_ids) . '")');
-      $update_query->addDeleteByIds($solr_ids);
+      foreach (array_chunk($solr_ids, 30) as $solr_ids_chunk) {
+        $update_query->addDeleteQuery('{!terms f=_root_}("' . implode('","', $solr_ids_chunk) . '")');
+        $update_query->addDeleteByIds($solr_ids_chunk);
+      }
       $connector->update($update_query, $this->getCollectionEndpoint($index));
-      \Drupal::state()->set('search_api_solr.' . $index->id() . '.last_update', \Drupal::time()->getCurrentTime());
+      $this->state->set('search_api_solr.' . $index->id() . '.last_update', $this->time->getCurrentTime());
     }
     catch (ExceptionInterface $e) {
       throw new SearchApiSolrException($e->getMessage(), $e->getCode(), $e);
@@ -1353,7 +1481,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $connector->deleteCheckpoints($index_id, $site_hash);
     }
 
-    \Drupal::state()->set('search_api_solr.' . $index->id() . '.last_update', \Drupal::time()->getCurrentTime());
+    $this->state->set('search_api_solr.' . $index->id() . '.last_update', $this->time->getCurrentTime());
   }
 
   /**
@@ -1410,12 +1538,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       if (
         // Not empty reflects the default FALSE for outdated index configs, too.
         !empty($settings['finalize']) &&
-        \Drupal::state()->get('search_api_solr.' . $index->id() . '.last_update', 0) >= \Drupal::state()->get('search_api_solr.' . $index->id() . '.last_finalization', 0)
+        $this->state->get('search_api_solr.' . $index->id() . '.last_update', 0) >= $this->state->get('search_api_solr.' . $index->id() . '.last_finalization', 0)
       ) {
-        $lock = \Drupal::lock();
-
         $lock_name = 'search_api_solr.' . $index->id() . '.finalization_lock';
-        if ($lock->acquire($lock_name)) {
+        if ($this->lock->acquire($lock_name)) {
           if ($settings['debug_finalize']) {
             $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
             $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock acquired.', $vars);
@@ -1436,10 +1562,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               $this->ensureCommit($index);
             }
 
-            \Drupal::state()
+            $this->state
               ->set('search_api_solr.' . $index->id() . '.last_finalization',
-                \Drupal::time()->getRequestTime());
-            $lock->release($lock_name);
+                $this->time->getRequestTime());
+            $this->lock->release($lock_name);
             if ($settings['debug_finalize']) {
               $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
               $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock released.', $vars);
@@ -1449,7 +1575,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
           catch (\Exception $e) {
             unset($finalization_in_progress[$index->id()]);
-            $lock->release('search_api_solr.' . $index->id() . '.finalization_lock');
+            $this->lock->release('search_api_solr.' . $index->id() . '.finalization_lock');
             if ($e instanceof StreamException) {
               throw new SearchApiSolrException($e->getMessage() . "\n" . ExpressionBuilder::indent($e->getExpression()), $e->getCode(), $e);
             }
@@ -1463,7 +1589,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           return TRUE;
         }
 
-        if ($lock->wait($lock_name)) {
+        if ($this->lock->wait($lock_name)) {
           // wait() returns TRUE if the lock isn't released within the given
           // timeout (default 30s).
           if ($settings['debug_finalize']) {
@@ -1606,12 +1732,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
 
-        $unspecific_field_names = $this->getSolrFieldNames($index);
-        // For solr_document datasource, search_api_language might not be mapped.
-        if (!empty($unspecific_field_names['search_api_language'])) {
-          $solarium_query->createFilterQuery('language_filter')->setQuery(
-            $this->createFilterQuery($unspecific_field_names['search_api_language'], $language_ids, 'IN', new Field($index, 'search_api_language'), $options)
-          );
+        $search_api_language_ids = $query->getLanguages() ?? [];
+        if (!empty($search_api_language_ids)) {
+          $unspecific_field_names = $this->getSolrFieldNames($index);
+          // For solr_document datasource, search_api_language might not be
+          // mapped.
+          if (!empty($unspecific_field_names['search_api_language'])) {
+            $solarium_query->createFilterQuery('language_filter')->setQuery(
+              $this->createFilterQuery($unspecific_field_names['search_api_language'], $language_ids, 'IN', new Field($index, 'search_api_language'), $options)
+            );
+          }
         }
 
         $search_api_retrieved_field_values = array_flip($query->getOption('search_api_retrieved_field_values', []));
@@ -1734,9 +1864,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               if ($boosts = $query->getOption('solr_document_boost_factors', [])) {
                 $sum[] = 'boost_document';
                 foreach ($boosts as $field_id => $boost) {
-                  // Ensure a single value field for the boost function.
-                  $solr_field_name = Utility::getSortableSolrField($field_id, $field_names, $query);
-                  $sum[] = str_replace(self::FIELD_PLACEHOLDER, $solr_field_name, $boost);
+                  $boostable_solr_field_name = Utility::getBoostableSolrField($field_id, $field_names, $query);
+                  $sum[] = str_replace(self::FIELD_PLACEHOLDER, $boostable_solr_field_name, $boost);
                 }
                 $flatten_query[] = '{!boost b=sum(' . implode(',', $sum) . ')}';
               }
@@ -1783,7 +1912,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $solarium_result = $connector->createSearchResult($solarium_query, $search_api_response);
 
         // Extract results.
-        $search_api_result_set = $this->extractResults($query, $solarium_result);
+        $search_api_result_set = $this->extractResults($query, $solarium_result, $language_ids);
 
         if ($solarium_result instanceof Result) {
           // Extract facets.
@@ -1822,9 +1951,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // @see https://www.drupal.org/project/search_api_solr/issues/3133997
         $query->mergeCacheMaxAge(0);
       }
-      throw $e;
+
+      // Don't expose Solr error message details to the user. The search_api
+      // views integration forwards the exception message to the end user. Just
+      // log the datails.
+      $this->getLogger()->error('@exception', ['@exception' => $e->getMessage()]);
+
+      throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode());
     }
-}
+  }
 
   /**
    * Ensures the given Search API query has a language condition applied.
@@ -1898,14 +2033,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function getRequiredFields(QueryInterface $query) {
     $index = $query->getIndex();
     $field_names = $this->getSolrFieldNames($index);
-    // The list of fields Solr must return to built a Search API result.
+    // The list of fields Solr must return to build a Search API result.
     $required_fields = [
       $field_names['search_api_id'],
       $field_names['search_api_language'],
       $field_names['search_api_relevance'],
     ];
+
     if (!$this->configuration['site_hash']) {
       $required_fields[] = 'hash';
+    }
+
+    try {
+      $index->getProcessor('language_with_fallback');
+      if ($query->getIndex()->getField('language_with_fallback')) {
+        $required_fields[] = $field_names['language_with_fallback'];
+      }
+    }
+    catch (SearchApiException $exception) {
+      // Processor not active.
     }
 
     if (Utility::hasIndexJustSolrDocumentDatasource($index)) {
@@ -2162,7 +2308,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @return bool
    *   TRUE if the index only contains "solr_*" datasources, FALSE otherwise.
    *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
+   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDatasources() is
+   *   deprecated in search_api_solr:4.2.0 and is removed from
    *   search_api_solr:4.3.0. Use
    *   Utility::hasIndexJustSolrDatasources() instead.
    *
@@ -2170,7 +2317,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDatasources()
    */
   protected function hasIndexJustSolrDatasources(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0. Use Utility::hasIndexJustSolrDatasources() instead.', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDatasources($index);
   }
 
@@ -2184,7 +2331,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   TRUE if the index only contains "solr_document" datasources, FALSE
    *   otherwise.
    *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
+   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is
+   *   deprecated in search_api_solr:4.2.0 and is removed from
    *   search_api_solr:4.3.0. Use
    *   Utility::hasIndexJustSolrDocumentDatasource() instead.
    *
@@ -2192,7 +2340,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDocumentDatasource()
    */
   protected function hasIndexJustSolrDocumentDatasource(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDocumentDatasource($index);
   }
 
@@ -2292,6 +2440,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               else {
                 if ($field->getDataDefinition()->isList() || $this->isHierarchicalField($field)) {
                   $pref .= 'm';
+                }
+                elseif ($field->getDataDefinition() instanceof AggregatedFieldProperty) {
+                  $pref .= $field->getDataDefinition()->isList() ? 'm' : 's';
                 }
                 else {
                   try {
@@ -2599,6 +2750,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               foreach ($tokens as $token) {
                 $value = $token->getText();
 
+                if (is_object($value)) {
+                  // It might happen that we get TranslatableMarkup here.
+                  $value = (string) $value;
+                }
+
                 if (!$value && $this->configuration['index_empty_text_fields']) {
                   // Index a dummy value to keep the number of total documents
                   // containing a field consistent for IDF based similarity
@@ -2650,6 +2806,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             }
 
             $value = $value->getText();
+            if (is_object($value)) {
+              // It might happen that we get TranslatableMarkup here.
+              $value = (string) $value;
+            }
 
             if (!$value && $this->configuration['index_empty_text_fields']) {
               // Index a dummy value to keep the number of total documents
@@ -2665,6 +2825,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             if (!$value && $value !== '0') {
               continue 2;
             }
+
+            if (is_object($value)) {
+              // It might happen that we get TranslatableMarkup here.
+              $value = (string) $value;
+            }
+
         }
 
         $doc->addField($key, $value);
@@ -2703,13 +2869,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The Search API query object.
    * @param \Solarium\Core\Query\Result\ResultInterface $result
    *   A Solarium select response object.
+   * @param $languages
    *
    * @return \Drupal\search_api\Query\ResultSetInterface
    *   A result set object.
    *
    * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  protected function extractResults(QueryInterface $query, ResultInterface $result) {
+  protected function extractResults(QueryInterface $query, ResultInterface $result, $languages = []) {
     $index = $query->getIndex();
     $fields = $index->getFields(TRUE);
     $site_hash = $this->getTargetedSiteHash($index);
@@ -2720,6 +2888,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $id_field = $language_unspecific_field_names['search_api_id'];
     $score_field = $language_unspecific_field_names['search_api_relevance'];
     $language_field = $language_unspecific_field_names['search_api_language'];
+    $fallback_language_field = $language_unspecific_field_names['language_with_fallback'] ?? NULL;
     $backend_defined_fields = [];
 
     /** @var \Solarium\Component\Result\Debug\DocumentSet $explain */
@@ -2796,6 +2965,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       $item_id = $doc_fields[$id_field];
+      // For an unknown reason we sometimes get an array here. See
+      // https://www.drupal.org/project/search_api_solr/issues/3281703
+      if (is_array($item_id)) {
+        $item_id = current($item_id);
+      }
       // For items coming from a different site, we need to adapt the item ID.
       if (isset($doc_fields['hash']) && !$this->configuration['site_hash'] && $doc_fields['hash'] != $site_hash) {
         $item_id = $doc_fields['hash'] . '--' . $item_id;
@@ -2822,8 +2996,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $result_item = $this->fieldsHelper->createItem($index, $item_id);
       }
 
-      if ($language_field && isset($doc_fields[$language_field])) {
+      $language_id = '';
+
+      if ($fallback_language_field && !empty($languages)) {
+        $fallback_languages = $doc_fields[$fallback_language_field];
+        $language_id = array_intersect($languages, $fallback_languages);
+      }
+
+      if (!$language_id && $language_field && isset($doc_fields[$language_field])) {
         $language_id = $doc_fields[$language_field];
+      }
+
+      // For an unknown reason we sometimes get an array here. See
+      // https://www.drupal.org/project/search_api_solr/issues/3281703
+      // Fallback languages are arrays as well.
+      if (is_array($language_id)) {
+        $language_id = reset($language_id);
+      }
+
+      if ($language_id) {
         $result_item->setLanguage($language_id);
         $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       }
@@ -3107,14 +3298,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $index_fulltext_fields[$index_id] = $index->getFulltextFields();
     }
 
-    // If there's a language condition take this one anfd keep it for nested
+    // If there's a language condition take this one and keep it for nested
     // conditions until we get a new language condition.
     $conditions = $condition_group->getConditions();
     foreach ($conditions as $condition) {
       if ($condition instanceof ConditionInterface) {
-        if ('search_api_language' === $condition->getField()) {
+        $field = $condition->getField();
+        $use_condition_languages = ('search_api_language' === $field);
+        if (!$use_condition_languages) {
+          if ($field_instance = $query->getIndex()->getField($field)) {
+            $dataDefinition = $field_instance->getDataDefinition();
+            if ($dataDefinition instanceof ProcessorProperty && $dataDefinition->getProcessorId() === 'language_with_fallback') {
+              $use_condition_languages = TRUE;
+            }
+          }
+        }
+
+        if ($use_condition_languages) {
           $language_ids = $condition->getValue();
-          if (!is_array($language_ids)) {
+          if ($language_ids && !is_array($language_ids)) {
             $language_ids = [$language_ids];
           }
         }
@@ -3566,9 +3768,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             //   considered. And the results have to be combined across
             //   languages. One way to implement it might be facet queries.
             //   For now, log an error and throw an exception.
-            $msg = sprintf('Facets for fulltext fields are not yet supported. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
-            $this->getLogger()->error($msg);
-            throw new SearchApiSolrException($msg);
+            $msg = 'Facets for fulltext fields are not yet supported. Consider converting the following field to a string or indexing it one more time as string:';
+            $this->getLogger()->error($msg . ' @field', ['@field' => $info['field']]);
+            throw new SearchApiSolrException(sprintf($msg . ' %s', $info['field']));
           }
           else {
             // Create the Solarium facet field object.
@@ -3610,9 +3812,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             // Trie based field types were deprecated in Solr 6 and with Solr 7
             // we switched to the point based equivalents. But lucene doesn't
             // support a mincount of "0" for these field types.
-            $msg = sprintf('Facets having a mincount of "0" is not yet supported by Solr for point based field types. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
-            $this->getLogger()->error($msg);
-            throw new SearchApiSolrException($msg);
+            $msg = 'Facets having a mincount of "0" are not yet supported by Solr for point based field types. Consider converting the following field to a string or indexing it one more time as string:';
+            $this->getLogger()->error($msg . ' @field', ['@field' => $info['field']]);
+            throw new SearchApiSolrException(sprintf($msg . ' %s', $info['field']));
           }
         }
 
@@ -3869,9 +4071,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $connector = $this->getSolrConnector();
     $this->calculatePluginDependencies($connector);
 
-    $entity_type_manager = \Drupal::entityTypeManager();
     /** @var \Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder $list_builder */
-    $field_type_list_builder = $entity_type_manager->getListBuilder('solr_field_type');
+    $field_type_list_builder = $this->entityTypeManager->getListBuilder('solr_field_type');
     $field_type_list_builder->setBackend($this);
     $solr_field_types = $field_type_list_builder->getEnabledEntities();
     /** @var \Drupal\search_api_solr\Entity\SolrFieldType $solr_field_type */
@@ -3880,7 +4081,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     /** @var \Drupal\search_api_solr\Controller\SolrCacheListBuilder $cache_list_builder */
-    $cache_list_builder = $entity_type_manager->getListBuilder('solr_cache');
+    $cache_list_builder = $this->entityTypeManager->getListBuilder('solr_cache');
     $cache_list_builder->setBackend($this);
     $solr_caches = $cache_list_builder->load();
     foreach ($solr_caches as $solr_cache) {
@@ -3890,7 +4091,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     /** @var \Drupal\search_api_solr\Controller\SolrCacheListBuilder $request_handler_list_builder */
-    $request_handler_list_builder = $entity_type_manager->getListBuilder('solr_request_handler');
+    $request_handler_list_builder = $this->entityTypeManager->getListBuilder('solr_request_handler');
     $request_handler_list_builder->setBackend($this);
     $solr_request_handlers = $request_handler_list_builder->load();
     foreach ($solr_request_handlers as $request_handler) {
@@ -3900,7 +4101,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     /** @var \Drupal\search_api_solr\Controller\SolrCacheListBuilder $request_dispatcher_list_builder */
-    $request_dispatcher_list_builder = $entity_type_manager->getListBuilder('solr_request_dispatcher');
+    $request_dispatcher_list_builder = $this->entityTypeManager->getListBuilder('solr_request_dispatcher');
     $request_dispatcher_list_builder->setBackend($this);
     $solr_request_dispatchers = $request_dispatcher_list_builder->load();
     foreach ($solr_request_dispatchers as $request_dispatcher) {
@@ -4028,7 +4229,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @param \Drupal\search_api\Query\QueryInterface $query
    *   The Search API query to build the mlt query from.
    *
-   * @return \Solarium\QueryType\MorelikeThis\Query
+   * @return \Solarium\QueryType\MoreLikeThis\Query
    *   The Solarium MorelikeThis query.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
@@ -4045,7 +4246,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $ids = [];
     foreach ($query->getIndex()->getDatasources() as $datasource) {
       if ($entity_type_id = $datasource->getEntityTypeId()) {
-        $entity = \Drupal::entityTypeManager()
+        $entity = $this->entityTypeManager
           ->getStorage($entity_type_id)
           ->load($mlt_options['id']);
 
@@ -4094,33 +4295,35 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $mlt_fl = [];
     foreach ($mlt_options['fields'] as $mlt_field) {
-      $first_field = reset($field_names[$mlt_field]);
-      if (
-        strpos($first_field, 'd') === 0 ||
-        (
-          version_compare($solr_version, '7.0', '>=') &&
-          preg_match('/^[ifph]/', $first_field, $matches)
-        )
-      ) {
-        // Trie based field types were deprecated in Solr 6 and with Solr 7 we
-        // switched to the point based equivalents. But lucene doesn't support
-        // mlt based on these field types. Date fields don't seem to be
-        // supported at all in MLT queries.
-        $msg = sprintf('More like this (MLT) is not yet supported by Solr for point based field types. Consider converting the following field to a string or index it twice as string: %s.', $mlt_field);
-        $this->getLogger()->error($msg);
-        throw new SearchApiSolrException($msg);
+      if ($mlt_field && isset($field_names[$mlt_field])) {
+        $first_field = reset($field_names[$mlt_field]);
+        if (
+          strpos($first_field, 'd') === 0 ||
+          (
+            version_compare($solr_version, '7.0', '>=') &&
+            preg_match('/^[ifph]/', $first_field, $matches)
+          )
+        ) {
+          // Trie based field types were deprecated in Solr 6 and with Solr 7 we
+          // switched to the point based equivalents. But lucene doesn't support
+          // mlt based on these field types. Date fields don't seem to be
+          // supported at all in MLT queries.
+          $msg = 'More like this (MLT) is not yet supported by Solr for point based field types. Consider converting the following field to a string or indexing it one more time as string:';
+          $this->getLogger()->error($msg . ' @field', ['@field' => $mlt_field]);
+          throw new SearchApiSolrException(sprintf($msg . ' %s', $mlt_field));
+        }
+        if (strpos($first_field, 't') !== 0) {
+          // Non-text fields are not language-specific.
+          $mlt_fl[] = [$first_field];
+        }
+        else {
+          // Add all language-specific field names. This should work for
+          // non Drupal Solr Documents as well which contain only a single
+          // name.
+          $mlt_fl[] = array_values($field_names[$mlt_field]);
+        }
       }
 
-      if (strpos($first_field, 't') !== 0) {
-        // Non-text fields are not language-specific.
-        $mlt_fl[] = [$first_field];
-      }
-      else {
-        // Add all language-specific field names. This should work for
-        // non Drupal Solr Documents as well which contain only a single
-        // name.
-        $mlt_fl[] = array_values($field_names[$mlt_field]);
-      }
     }
 
     $settings = Utility::getIndexSolrSettings($query->getIndex());
@@ -4174,7 +4377,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $solr_distance_field = $field_names[$distance_field];
     $spatial['lat'] = (float) $spatial['lat'];
     $spatial['lon'] = (float) $spatial['lon'];
-    $spatial['radius'] = isset($spatial['radius']) ? (float) $spatial['radius'] : 0.0;
+    $spatial['radius'] = isset($spatial['radius']) ? (int) $spatial['radius'] : 0;
     $spatial['min_radius'] = isset($spatial['min_radius']) ? (float) $spatial['min_radius'] : 0.0;
 
     if (!isset($spatial['filter_query_conditions'])) {
@@ -4193,7 +4396,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $spatial_query->setDistance($spatial['radius']);
     $spatial_query->setField($solr_field);
     $spatial_query->setPoint($spatial['lat'] . ',' . $spatial['lon']);
-    // Add the conditions of the spatial query. This might adust the values of
+    // Add the conditions of the spatial query. This might adjust the values of
     // 'radius' and 'min_radius' required later for facets.
     $solarium_query->createFilterQuery($solr_field)
       ->setQuery($this->createLocationFilterQuery($spatial));
@@ -4270,7 +4473,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $field_names = $this->getSolrFieldNames($query->getIndex());
     $rpt = reset($rpt_options);
     $solr_field = $field_names[$rpt['field']];
-    $rpt['geom'] = isset($rpt['geom']) ? $rpt['geom'] : '["-180 -90" TO "180 90"]';
+    $rpt['geom'] = $rpt['geom'] ?? '["-180 -90" TO "180 90"]';
 
     // Add location filter.
     $solarium_query->createFilterQuery($solr_field)->setQuery($solr_field . ':' . $rpt['geom']);
@@ -4350,6 +4553,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
         if (!empty($grouping_options['group_limit']) && ($grouping_options['group_limit'] != 1)) {
           $grouping_component->setLimit($grouping_options['group_limit']);
+        }
+
+        // Set group offset.
+        if (isset($grouping_options['group_offset'])) {
+          $grouping_component->setOffset($grouping_options['group_offset']);
         }
 
         if (!empty($grouping_options['group_sort'])) {
@@ -4498,7 +4706,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function isOptimizeEnabled() {
-    return isset($this->configuration['optimize']) ? $this->configuration['optimize'] : FALSE;
+    return $this->configuration['optimize'] ?? FALSE;
   }
 
   /**
@@ -4520,20 +4728,27 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function getSchemaLanguageStatistics(?Endpoint $endpoint = NULL) {
-    $available = $this->getSolrConnector()->pingServer();
-
     $stats = [];
-    foreach (\Drupal::languageManager()->getLanguages() as $language) {
-      $language_id = $language->getId();
+    $language_ids = array_keys($this->languageManager->getLanguages());
+    $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+    foreach ($language_ids as $language_id) {
       // Convert zk-hans to zk_hans.
       $converted_language_id = str_replace('-', '_', $language_id);
-      $stats[$language_id] = $available ? ($this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE) : FALSE;
-      if (!$stats[$language_id]) {
-        // Try language fallback.
-        $converted_language_id = preg_replace('/-.+$/', '', $language_id);
-        $stats[$language_id] = $available ? ($this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE) : FALSE;
+
+      $stats[$language_id] = FALSE;
+      try {
+        $stats[$language_id] = $this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE;
+        if (!$stats[$language_id]) {
+          // Try language fallback.
+          $converted_language_id = preg_replace('/-.+$/', '', $language_id);
+          $stats[$language_id] = $this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE;
+        }
+      }
+      catch (SearchApiSolrException $e) {
+        $stats[$language_id] = FALSE;
       }
     }
+
     return $stats;
   }
 
@@ -4559,7 +4774,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $endpoint_key = $endpoint ? $endpoint->getKey() : $this->getServer()->id();
 
-    $state = \Drupal::state();
+    $state = $this->state;
     // This state is resetted once a day via cron.
     $schema_parts = $state->get('search_api_solr.endpoint.schema_parts');
 

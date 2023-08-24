@@ -2,6 +2,7 @@
 
 namespace Drupal\metatag\Plugin\migrate\process\d7;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Unicode;
 use Drupal\migrate\MigrateException;
 use Drupal\migrate\MigrateExecutableInterface;
@@ -28,12 +29,7 @@ class MetatagEntities extends ProcessPluginBase {
     }
 
     // Re-shape D7 entries into for D8 entries.
-    $old_tags = unserialize($value, ['allowed_classes' => FALSE]);
-
-    // This is expected to be an array, if it isn't then something went wrong.
-    if (!is_array($old_tags)) {
-      throw new MigrateException('Data from Metatag-D7 was not a serialized array.');
-    }
+    $old_tags = $this->decodeValue($value);
 
     $tags_map = $this->tagsMap();
 
@@ -78,7 +74,7 @@ class MetatagEntities extends ProcessPluginBase {
     // Sort the meta tags alphabetically to make testing easier.
     ksort($metatags);
 
-    return serialize($metatags);
+    return Json::encode($metatags);
   }
 
   /**
@@ -87,13 +83,12 @@ class MetatagEntities extends ProcessPluginBase {
    * @return array
    *   An array of D7 tags to their D8 counterparts.
    */
-  protected function tagsMap() {
+  protected function tagsMap(): array {
     $map = [
       // From the main Metatag module.
       'abstract' => 'abstract',
       'cache-control' => 'cache_control',
       'canonical' => 'canonical_url',
-      'content-language' => 'content_language',
       'description' => 'description',
       'expires' => 'expires',
       'generator' => 'generator',
@@ -103,7 +98,6 @@ class MetatagEntities extends ProcessPluginBase {
       'icbm' => 'icbm',
       'image_src' => 'image_src',
       'keywords' => 'keywords',
-      'news_keywords' => 'news_keywords',
       'next' => 'next',
       'original-source' => 'original_source',
       'pragma' => 'pragma',
@@ -116,7 +110,6 @@ class MetatagEntities extends ProcessPluginBase {
       'robots' => 'robots',
       'set_cookie' => 'set_cookie',
       'shortlink' => 'shortlink',
-      'standout' => 'standout',
       'title' => 'title',
 
       // From metatag_app_links.metatag.inc:
@@ -445,6 +438,40 @@ class MetatagEntities extends ProcessPluginBase {
     \Drupal::service('module_handler')->alter('metatag_migrate_metatagd7_tags_map', $map);
 
     return $map;
+  }
+
+  /**
+   * Decode the different versions of encoded values supported by Metatag.
+   *
+   * Metatag v1 stored data in serialized arrays. Metatag v2 stores data in
+   * JSON-encoded strings.
+   *
+   * @param string $string
+   *   The string to decode.
+   *
+   * @return array
+   *   A Metatag values array.
+   */
+  private function decodeValue($string): array {
+    $data = array();
+
+    // Serialized arrays from Metatag v1.
+    if (substr($string, 0, 2) === 'a:') {
+      $data = @unserialize($string, ['allowed_classes' => FALSE]);
+    }
+
+    // Encoded JSON from Metatag v2.
+    elseif (substr($string, 0, 2) === '{"') {
+      // @todo Handle non-array responses.
+      $data = json_decode($string, TRUE);
+    }
+
+    // This is expected to be an array, if it isn't then something went wrong.
+    if (!is_array($data)) {
+      throw new MigrateException('Data from Metatag-D7 was not a serialized array or a JSON-encoded string.');
+    }
+
+    return $data;
   }
 
 }

@@ -12,6 +12,7 @@ use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Layout\LayoutPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Class BootstrapLayoutsManager
@@ -27,6 +28,13 @@ class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
    * @var \Drupal\bootstrap_layouts\BootstrapLayoutsUpdateManager
    */
   protected $updateManager;
+
+  /**
+   * The messenger.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
 
   /**
    * Constructs a new \Drupal\bootstrap_layouts\BootstrapLayoutsManager object.
@@ -46,13 +54,16 @@ class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
    *   The Layout Manager.
    * @param \Drupal\bootstrap_layouts\BootstrapLayoutsUpdateManager $update_manager
    *   The Bootstrap Layouts update manager.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger.
    */
-  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler, ThemeManagerInterface $theme_manager, LayoutPluginManager $layout_manager, BootstrapLayoutsUpdateManager $update_manager) {
+  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler, ThemeManagerInterface $theme_manager, LayoutPluginManager $layout_manager, BootstrapLayoutsUpdateManager $update_manager, MessengerInterface $messenger) {
     parent::__construct($namespaces, $cache_backend, $module_handler, $theme_handler, $theme_manager, 'Drupal\bootstrap_layouts\Plugin\BootstrapLayouts\BootstrapLayoutsHandlerInterface', 'Drupal\bootstrap_layouts\Annotation\BootstrapLayoutsHandler');
     $this->layoutManager = $layout_manager;
     $this->updateManager = $update_manager;
     $this->alterInfo('bootstrap_layouts_handler_info');
     $this->setCacheBackend($cache_backend, 'bootstrap_layouts_handler_info');
+    $this->messenger = $messenger;
   }
 
   /**
@@ -66,7 +77,8 @@ class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
       $container->get('theme_handler'),
       $container->get('theme.manager'),
       $container->get('plugin.manager.core.layout'),
-      $container->get('plugin.manager.bootstrap_layouts.update')
+      $container->get('plugin.manager.bootstrap_layouts.update'),
+      $container->get('messenger')
     );
   }
 
@@ -269,26 +281,12 @@ class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
               $handler->saveInstance($storage_id, $layout);
               if ($display_messages) {
                 $message = $this->t('Successfully updated the existing Bootstrap layout found in "@id".', ['@id' => $storage_id]);
+                $this->messenger->addStatus($message);
               }
             }
             catch (\Exception $exception) {
               $message = $this->t('Unable to update the existing Bootstrap layout found in "@id":', ['@id' => $storage_id]);
-            }
-            if (isset($message)) {
-              $error = isset($exception) ? $exception->getMessage() : FALSE;
-              $type = $error ? 'error' : 'status';
-              if (\Drupal::hasService('messenger') && ($messenger = \Drupal::messenger())) {
-                $messenger->addMessage($message, $type);
-                if ($error) {
-                  $messenger->addError($error);
-                }
-              }
-              else {
-                drupal_set_message($message, $type);
-                if ($error) {
-                  drupal_set_message($error, 'error');
-                }
-              }
+              $this->messenger->addError($message);
             }
           }
         }

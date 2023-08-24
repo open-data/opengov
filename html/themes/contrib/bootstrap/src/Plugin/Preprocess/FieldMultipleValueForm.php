@@ -19,24 +19,19 @@ class FieldMultipleValueForm extends PreprocessBase implements PreprocessInterfa
    */
   public function preprocessElement(Element $element, Variables $variables) {
     // Wrap header columns in label element for Bootstrap.
-    if ($variables['multiple']) {
-      $header = [
-        [
-          'data' => [
-            '#prefix' => '<label class="label">',
-            'title' => ['#markup' => $element->getProperty('title')],
-            '#suffix' => '</label>',
-          ],
-          'colspan' => 2,
-          'class' => [
-            'field-label',
-            !empty($element['#required']) ? 'form-required' : '',
-          ],
-        ],
-        t('Order', [], ['context' => 'Sort order']),
+    if ($variables['multiple'] && !empty($variables['table']['#header'])) {
+      $prefixes = [
+        '#prefix' => '<label class="label">',
+        '#suffix' => '</label>',
       ];
 
-      $variables['table']['#header'] = $header;
+      foreach ($variables['table']['#header'] as &$header_row) {
+        if (is_array($header_row) && isset($header_row['data'])) {
+          $header_row['data'] = is_array($header_row['data']) ? ($prefixes + $header_row['data']) : ($prefixes + ['#markup' => $header_row['data']]);
+        } else {
+          $header_row = ['data' => $prefixes + ['#markup' => $header_row]];
+        }
+      }
     }
   }
 

@@ -77,7 +77,7 @@ function webform_token_info() {
   ];
   $webform_submission['source-url'] = [
     'name' => t('Source URL'),
-    'description' => t('The URL the user submitted the webform submission.'),
+    'description' => t('The URL where the user submitted the webform submission.'),
     'type' => 'url',
   ];
   $webform_submission['token-view-url'] = [
@@ -355,6 +355,20 @@ function webform_token_info() {
     'name' => t('Close date'),
     'description' => t('The date the webform is closed to new submissions.'),
     'type' => 'date',
+  ];
+  $webform['settings'] = [
+    'name' => t('Settings'),
+    'description' => Markup::create(t('Webform settings tokens.') .
+      _webform_token_render_more(t('Learn about Webform settings tokens'),
+        '<ul>' .
+        '<li>confirmation_title</li>' .
+        '<li>confirmation_message</li>' .
+        '<li>form_open_message</li>' .
+        '<li>form_close_message</li>' .
+        '</ul>'
+      )
+    ),
+    'dynamic' => TRUE,
   ];
   $webform['element'] = [
     'name' => t('Element properties'),
@@ -819,6 +833,17 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
     }
 
     /* Dynamic tokens. */
+
+    if (($settings_tokens = $token_service->findWithPrefix($tokens, 'settings'))) {
+      /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
+      $token_manager = \Drupal::service('webform.token_manager');
+      foreach ($settings_tokens as $key => $original) {
+        $token_value = $webform->getSetting($key, '');
+        $replacements[$original] = (!is_array($token_value))
+          ? $token_manager->replace($token_value, NULL, $data, $options, $bubbleable_metadata)
+          : '';
+      }
+    }
 
     if (($element_tokens = $token_service->findWithPrefix($tokens, 'element'))) {
       foreach ($element_tokens as $key => $original) {

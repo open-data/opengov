@@ -194,7 +194,7 @@ class NestedArray
      * @param $statistics mixed array
      * @return array
      */
-    public function arrayDiff($array1, $array2, $negate, &$statistics)
+    public function arrayDiff($array1, $array2, $negate = false, &$statistics)
     {
         $result = [];
         foreach ($array1 as $key => $val) {
@@ -273,7 +273,7 @@ class NestedArray
      * @param int   $key_level
      * @param bool  $exclude_parents_key
      */
-    public function yamlSplitArray(array &$array, array &$split_array, $indent_level, &$key_flatten, &$key_level, $exclude_parents_key)
+    public function yamlSplitArray(array &$array, array &$split_array, $indent_level = '', &$key_flatten, &$key_level, $exclude_parents_key)
     {
         foreach ($array as $key => $value) {
             if (!$exclude_parents_key && !empty($key_flatten)) {

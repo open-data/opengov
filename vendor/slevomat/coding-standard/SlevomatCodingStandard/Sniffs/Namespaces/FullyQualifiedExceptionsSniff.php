@@ -4,6 +4,7 @@ namespace SlevomatCodingStandard\Sniffs\Namespaces;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SlevomatCodingStandard\Helpers\FixerHelper;
 use SlevomatCodingStandard\Helpers\NamespaceHelper;
 use SlevomatCodingStandard\Helpers\ReferencedNameHelper;
 use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
@@ -22,16 +23,16 @@ class FullyQualifiedExceptionsSniff implements Sniff
 
 	public const CODE_NON_FULLY_QUALIFIED_EXCEPTION = 'NonFullyQualifiedException';
 
-	/** @var string[] */
+	/** @var list<string> */
 	public $specialExceptionNames = [];
 
-	/** @var string[] */
+	/** @var list<string> */
 	public $ignoredNames = [];
 
-	/** @var string[]|null */
+	/** @var list<string>|null */
 	private $normalizedSpecialExceptionNames;
 
-	/** @var string[]|null */
+	/** @var list<string>|null */
 	private $normalizedIgnoredNames;
 
 	/**
@@ -128,17 +129,14 @@ class FullyQualifiedExceptionsSniff implements Sniff
 
 			$phpcsFile->fixer->beginChangeset();
 
-			for ($i = $referencedName->getStartPointer(); $i <= $referencedName->getEndPointer(); $i++) {
-				$phpcsFile->fixer->replaceToken($i, '');
-			}
-			$phpcsFile->fixer->addContent($referencedName->getStartPointer(), $fullyQualifiedName);
+			FixerHelper::change($phpcsFile, $referencedName->getStartPointer(), $referencedName->getEndPointer(), $fullyQualifiedName);
 
 			$phpcsFile->fixer->endChangeset();
 		}
 	}
 
 	/**
-	 * @return string[]
+	 * @return list<string>
 	 */
 	private function getSpecialExceptionNames(): array
 	{
@@ -150,7 +148,7 @@ class FullyQualifiedExceptionsSniff implements Sniff
 	}
 
 	/**
-	 * @return string[]
+	 * @return list<string>
 	 */
 	private function getIgnoredNames(): array
 	{

@@ -19,7 +19,7 @@ use const T_USE;
 use const T_VAR;
 use const T_VARIABLE;
 
-class PropertySpacingSniff extends AbstractPropertyAndConstantSpacing
+class PropertySpacingSniff extends AbstractPropertyConstantAndEnumCaseSpacing
 {
 
 	public const CODE_INCORRECT_COUNT_OF_BLANK_LINES_AFTER_PROPERTY = 'IncorrectCountOfBlankLinesAfterProperty';
@@ -47,7 +47,7 @@ class PropertySpacingSniff extends AbstractPropertyAndConstantSpacing
 
 		$nextPointer = TokenHelper::findNextEffective($phpcsFile, $pointer + 1);
 		if (in_array($tokens[$nextPointer]['code'], [T_VAR, T_PUBLIC, T_PROTECTED, T_PRIVATE, T_READONLY, T_STATIC], true)) {
-			// We don't want to report the some property twice
+			// We don't want to report the same property twice
 			return $nextPointer;
 		}
 

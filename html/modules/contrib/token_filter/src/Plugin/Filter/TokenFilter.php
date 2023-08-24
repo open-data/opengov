@@ -127,7 +127,10 @@ class TokenFilter extends FilterBase implements ContainerFactoryPluginInterface 
     }
 
     $clear = $this->settings['replace_empty'];
-    $replacements = $this->token->replace($text, $data, ['clear' => $clear, 'langcode' => $langcode], $cache);
+    $replacements = $this->token->replace($text, $data, [
+      'clear' => $clear,
+      'langcode' => $langcode,
+    ], $cache);
 
     return (new FilterProcessResult($replacements))->merge($cache);
   }

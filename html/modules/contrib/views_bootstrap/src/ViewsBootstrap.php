@@ -76,7 +76,6 @@ class ViewsBootstrap {
     return $hooks;
   }
 
-
   /**
    * Return an array of breakpoint names.
    */

@@ -92,14 +92,13 @@ function template_preprocess_ctools_wizard_trail_links(&$variables) {
 function ctools_condition_info_alter(&$definitions) {
   // Drupal 9.x only: override core node_type with ctools constraints.
   if (isset($definitions['node_type']) && $definitions['node_type']['class'] == 'Drupal\node\Plugin\Condition\NodeType') {
-    @trigger_error('\Drupal\node\Plugin\Condition\NodeType is deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use \Drupal\Core\Entity\Plugin\Condition\EntityBundle instead. See https://www.drupal.org/node/2983299', E_USER_DEPRECATED);
     $definitions['node_type']['class'] = NodeType::class;
   }
 
   // Replace all generic entity bundle conditions classes if they are unaltered,
   // these exist in Drupal 9.3+.
   foreach ($definitions as $id => $definition) {
-    if (strpos($id, 'entity_bundle:') === 0 && $definition['class'] == CoreEntityBundle::class) {
+    if (strpos($id, 'entity_bundle:') === 0 && ($definition['class'] == CoreEntityBundle::class || $definition['class'] == 'Drupal\ctools\Plugin\Condition\EntityBundleConstraint')) {
       $definitions[$id]['class'] = EntityBundle::class;
     }
   }

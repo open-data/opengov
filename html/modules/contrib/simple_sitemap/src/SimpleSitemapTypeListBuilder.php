@@ -5,7 +5,6 @@ namespace Drupal\simple_sitemap;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
-use Drupal\simple_sitemap\Form\FormHelper;
 
 /**
  * Defines a class to build a listing of sitemap type entities.
@@ -53,8 +52,7 @@ class SimpleSitemapTypeListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function render() {
-    $build['#prefix'] = FormHelper::getDonationText();
-    $build += parent::render();
+    $build = parent::render();
     $build['table']['#empty'] = $this->t('No sitemap types have been defined yet. <a href="@url">Add a new one</a>.', [
       '@url' => Url::fromRoute('simple_sitemap_type.add')->toString(),
     ]);

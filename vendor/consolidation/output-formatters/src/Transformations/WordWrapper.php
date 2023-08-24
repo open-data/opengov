@@ -1,4 +1,5 @@
 <?php
+
 namespace Consolidation\OutputFormatters\Transformations;
 
 use Consolidation\OutputFormatters\Transformations\Wrap\CalculateWidths;
@@ -136,6 +137,11 @@ class WordWrapper
     {
         if (!is_string($cell)) {
             return $cell;
+        }
+
+        if ($cellWidth == 0) {
+            // Fourth parameter cannot be true if parameter 2 is 0.
+            return wordwrap($cell, $cellWidth, "\n", false);
         }
         return wordwrap($cell, $cellWidth, "\n", true);
     }

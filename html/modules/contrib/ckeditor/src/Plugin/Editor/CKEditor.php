@@ -2,6 +2,7 @@
 
 namespace Drupal\ckeditor\Plugin\Editor;
 
+use Drupal\Core\Extension\ExtensionPathResolver;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\ckeditor\CKEditorPluginManager;
@@ -389,7 +390,9 @@ class CKEditor extends EditorBase implements ContainerFactoryPluginInterface {
     if (empty($langcodes)) {
       $langcodes = [];
       // Collect languages included with CKEditor based on file listing.
-      $files = scandir('core/assets/vendor/ckeditor/lang');
+      $extension_path_resolver = \Drupal::service('extension.path.resolver');
+      assert($extension_path_resolver instanceof ExtensionPathResolver);
+      $files = scandir($extension_path_resolver->getPath('module', 'ckeditor') . '/vendor/lang');
       foreach ($files as $file) {
         if ($file[0] !== '.' && preg_match('/\.js$/', $file)) {
           $langcode = basename($file, '.js');

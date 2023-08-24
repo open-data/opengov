@@ -6,6 +6,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use SlevomatCodingStandard\Helpers\AnnotationHelper;
 use SlevomatCodingStandard\Helpers\DocCommentHelper;
+use SlevomatCodingStandard\Helpers\FixerHelper;
 use SlevomatCodingStandard\Helpers\FunctionHelper;
 use SlevomatCodingStandard\Helpers\NamespaceHelper;
 use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
@@ -21,7 +22,7 @@ class UselessFunctionDocCommentSniff implements Sniff
 
 	public const CODE_USELESS_DOC_COMMENT = 'UselessDocComment';
 
-	/** @var string[] */
+	/** @var list<string> */
 	public $traversableTypeHints = [];
 
 	/** @var array<int, string>|null */
@@ -90,7 +91,7 @@ class UselessFunctionDocCommentSniff implements Sniff
 			}
 		}
 
-		foreach (AnnotationHelper::getAnnotations($phpcsFile, $functionPointer) as [$annotation]) {
+		foreach (AnnotationHelper::getAnnotations($phpcsFile, $functionPointer) as $annotation) {
 			if (!in_array($annotation->getName(), ['@param', '@return'], true)) {
 				return;
 			}
@@ -118,9 +119,9 @@ class UselessFunctionDocCommentSniff implements Sniff
 		$changeEnd = TokenHelper::findNextEffective($phpcsFile, $docCommentClosePointer + 1) - 1;
 
 		$phpcsFile->fixer->beginChangeset();
-		for ($i = $changeStart; $i <= $changeEnd; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+
+		FixerHelper::removeBetweenIncluding($phpcsFile, $changeStart, $changeEnd);
+
 		$phpcsFile->fixer->endChangeset();
 	}
 

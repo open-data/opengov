@@ -385,6 +385,14 @@ class CommandInfo
     }
 
     /**
+     * Determine if help was provided for this command info
+     */
+    public function hasHelp()
+    {
+        return !empty($this->help) || !empty($this->description);
+    }
+
+    /**
      * Get the help text of the command (the description)
      */
     public function getHelp()
@@ -444,7 +452,7 @@ class CommandInfo
      */
     public function setHidden($hidden)
     {
-        $this->hidden = $hidden;
+        $this->AddAnnotation('hidden', $hidden);
         return $this;
     }
 
@@ -565,6 +573,7 @@ class CommandInfo
         $opts = $this->options()->getValues();
         foreach ($opts as $name => $defaultValue) {
             $description = $this->options()->getDescription($name);
+            $suggestedValues = $this->options()->getSuggestedValues($name);
 
             $fullName = $name;
             $shortcut = '';
@@ -584,7 +593,7 @@ class CommandInfo
             if ($defaultValue === false) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
             } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description, null, $suggestedValues);
             } elseif (is_array($defaultValue)) {
                 $optionality = count($defaultValue) ? InputOption::VALUE_OPTIONAL : InputOption::VALUE_REQUIRED;
                 $explicitOptions[$fullName] = new InputOption(
@@ -592,10 +601,11 @@ class CommandInfo
                     $shortcut,
                     InputOption::VALUE_IS_ARRAY | $optionality,
                     $description,
-                    count($defaultValue) ? $defaultValue : null
+                    count($defaultValue) ? $defaultValue : null,
+                    $suggestedValues
                 );
             } else {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue, $suggestedValues);
             }
         }
 
@@ -624,27 +634,43 @@ class CommandInfo
         return $this->findOptionAmongAlternatives($optionName);
     }
 
-    public function addArgumentDescription($name, $description)
+    public function addArgumentDescription($name, $description, $suggestedValues = [])
     {
-        $this->addOptionOrArgumentDescription($this->arguments(), $name, $description);
+        $this->addOptionOrArgumentDescription($this->arguments(), $name, $description, $suggestedValues);
     }
 
-    public function addOptionDescription($name, $description)
+    public function addOption($name, $description, $suggestedValues = [], $defaultValue = null)
+    {
+        $this->addOptionOrArgumentDescription($this->options(), $name, $description, $suggestedValues, $defaultValue);
+    }
+
+    /**
+     * @deprecated Use addOption() instead.
+     */
+    public function addOptionDescription($name, $description, $suggestedValues = [], $defaultValue = null)
     {
         $variableName = $this->findMatchingOption($name);
-        if ($this->simpleOptionParametersAllowed && $this->arguments()->exists($variableName)) {
-            $existingArg = $this->arguments()->removeMatching($variableName);
+        $defaultFromParameter = null;
+        $parameterName = $this->arguments()->approximatelyMatchingKey($variableName);
+        if ($this->simpleOptionParametersAllowed && $parameterName) {
+            $defaultFromParameter = $this->arguments()->removeMatching($variableName);
             // One of our parameters is an option, not an argument. Flag it so that we can inject the right value when needed.
-            $this->parameterMap[$variableName] = true;
+            $this->parameterMap[$parameterName] = $variableName;
         }
-        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description);
+        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description, $suggestedValues, $defaultValue ?? $defaultFromParameter);
     }
 
-    protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description)
+    protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description, $suggestedValues = [], $defaultFromParameter = null)
     {
         list($description, $defaultValue) = $this->splitOutDefault($description);
-        $set->add($variableName, $description);
-        if ($defaultValue !== null) {
+        if (empty($defaultValue) && !empty($defaultFromParameter)) {
+            $defaultValue = $defaultFromParameter;
+        }
+        // "Avoid cannot set a default value except for InputArgument::OPTIONAL mode." error.
+        $set->add($variableName, $description, $defaultValue === [] ? null : $defaultValue, $suggestedValues);
+        // Now set the defaultValue if we fudged it above. This is more permissive.
+        // Note that there is no setSuggestions() method so it has to be set above.
+        if ($defaultValue === []) {
             $set->setDefaultValue($variableName, $defaultValue);
         }
     }
@@ -689,6 +715,9 @@ class CommandInfo
         // is @silent.
         foreach ($this->options()->getValues() as $name => $default) {
             if (in_array($optionName, explode('|', $name))) {
+                return $name;
+            }
+            if ($optionName == $this->convertArgumentName($name)) {
                 return $name;
             }
         }
@@ -813,9 +842,26 @@ class CommandInfo
      */
     protected function convertName($camel)
     {
-        $splitter="-";
+        $snake = $this->camelToSnake($camel, '-');
+        return preg_replace("/-/", ':', $snake, 1);
+    }
+
+    /**
+     * Convert an argument name from snake_case or camelCase
+     * to a hyphenated-string.
+     */
+    protected function convertArgumentName($camel)
+    {
+        $snake = $this->camelToSnake($camel, '-');
+        return strtr($snake, '_', '-');
+    }
+
+    /**
+     * Convert a camelCase string to a snake_case string.
+     */
+    protected function camelToSnake($camel, $splitter = '_')
+    {
         $camel=preg_replace('/(?!^)[[:upper:]][[:lower:]]/', '$0', preg_replace('/(?!^)[[:upper:]]+/', $splitter.'$0', $camel));
-        $camel = preg_replace("/$splitter/", ':', $camel, 1);
         return strtolower($camel);
     }
 

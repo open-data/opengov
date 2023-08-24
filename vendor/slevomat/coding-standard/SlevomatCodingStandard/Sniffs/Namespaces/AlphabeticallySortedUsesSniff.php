@@ -4,7 +4,9 @@ namespace SlevomatCodingStandard\Sniffs\Namespaces;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 use SlevomatCodingStandard\Helpers\CommentHelper;
+use SlevomatCodingStandard\Helpers\FixerHelper;
 use SlevomatCodingStandard\Helpers\NamespaceHelper;
 use SlevomatCodingStandard\Helpers\StringHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
@@ -23,9 +25,9 @@ use function sprintf;
 use function strcasecmp;
 use function strcmp;
 use function uasort;
+use const T_COMMA;
 use const T_OPEN_TAG;
 use const T_SEMICOLON;
-use const T_WHITESPACE;
 
 class AlphabeticallySortedUsesSniff implements Sniff
 {
@@ -67,14 +69,34 @@ class AlphabeticallySortedUsesSniff implements Sniff
 				} else {
 					$order = $this->compareUseStatements($useStatement, $lastUse);
 					if ($order < 0) {
-						$fix = $phpcsFile->addFixableError(
+						// The use statements are not ordered correctly. Go through all statements and if any are multi-part then
+						// we report the problem but cannot fix it, because this would lose the secondary parts of the statement.
+						$fixable = true;
+						$tokens = $phpcsFile->getTokens();
+						foreach ($useStatements as $statement) {
+							$nextBreaker = TokenHelper::findNext($phpcsFile, [T_SEMICOLON, T_COMMA], $statement->getPointer());
+
+							if ($tokens[$nextBreaker]['code'] === T_COMMA) {
+								$fixable = false;
+								break;
+							}
+						}
+
+						$errorParameters = [
 							sprintf(
 								'Use statements should be sorted alphabetically. The first wrong one is %s.',
 								$useStatement->getFullyQualifiedTypeName()
 							),
 							$useStatement->getPointer(),
-							self::CODE_INCORRECT_ORDER
-						);
+							self::CODE_INCORRECT_ORDER,
+						];
+
+						if (!$fixable) {
+							$phpcsFile->addError(...$errorParameters);
+							return;
+						}
+
+						$fix = $phpcsFile->addFixableError(...$errorParameters);
 						if ($fix) {
 							$this->fixAlphabeticalOrder($phpcsFile, $useStatements);
 						}
@@ -89,7 +111,7 @@ class AlphabeticallySortedUsesSniff implements Sniff
 	}
 
 	/**
-	 * @param UseStatement[] $useStatements
+	 * @param array<string, UseStatement> $useStatements
 	 */
 	private function fixAlphabeticalOrder(File $phpcsFile, array $useStatements): void
 	{
@@ -105,9 +127,9 @@ class AlphabeticallySortedUsesSniff implements Sniff
 
 		$commentsBefore = [];
 		foreach ($useStatements as $useStatement) {
-			$pointerBeforeUseStatement = TokenHelper::findPreviousExcluding($phpcsFile, T_WHITESPACE, $useStatement->getPointer() - 1);
+			$pointerBeforeUseStatement = TokenHelper::findPreviousNonWhitespace($phpcsFile, $useStatement->getPointer() - 1);
 
-			if (!in_array($tokens[$pointerBeforeUseStatement]['code'], TokenHelper::$inlineCommentTokenCodes, true)) {
+			if (!in_array($tokens[$pointerBeforeUseStatement]['code'], Tokens::$commentTokens, true)) {
 				continue;
 			}
 
@@ -116,7 +138,9 @@ class AlphabeticallySortedUsesSniff implements Sniff
 				continue;
 			}
 
-			$commentStartPointer = CommentHelper::getMultilineCommentStartPointer($phpcsFile, $pointerBeforeUseStatement);
+			$commentStartPointer = in_array($tokens[$pointerBeforeUseStatement]['code'], TokenHelper::$inlineCommentTokenCodes, true)
+				? CommentHelper::getMultilineCommentStartPointer($phpcsFile, $pointerBeforeUseStatement)
+				: $tokens[$pointerBeforeUseStatement]['comment_opener'];
 
 			$commentsBefore[$useStatement->getPointer()] = TokenHelper::getContent(
 				$phpcsFile,
@@ -135,9 +159,7 @@ class AlphabeticallySortedUsesSniff implements Sniff
 
 		$phpcsFile->fixer->beginChangeset();
 
-		for ($i = $firstPointer; $i <= $lastSemicolonPointer; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetweenIncluding($phpcsFile, $firstPointer, $lastSemicolonPointer);
 
 		$phpcsFile->fixer->addContent(
 			$firstPointer,
