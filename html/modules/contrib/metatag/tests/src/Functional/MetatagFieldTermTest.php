@@ -82,7 +82,7 @@ class MetatagFieldTermTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpEntityType() {
+  protected function setUpEntityType(): void {
     $new_perms = [
       // From Taxonomy.
       'administer taxonomy',

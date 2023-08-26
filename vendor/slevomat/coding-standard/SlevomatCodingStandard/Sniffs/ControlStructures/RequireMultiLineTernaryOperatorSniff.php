@@ -4,6 +4,8 @@ namespace SlevomatCodingStandard\Sniffs\ControlStructures;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SlevomatCodingStandard\Helpers\FixerHelper;
+use SlevomatCodingStandard\Helpers\IndentationHelper;
 use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
 use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
@@ -22,9 +24,6 @@ class RequireMultiLineTernaryOperatorSniff implements Sniff
 {
 
 	public const CODE_MULTI_LINE_TERNARY_OPERATOR_NOT_USED = 'MultiLineTernaryOperatorNotUsed';
-
-	private const TAB_INDENT = "\t";
-	private const SPACES_INDENT = '    ';
 
 	/** @var int */
 	public $lineLengthLimit = 0;
@@ -104,14 +103,12 @@ class RequireMultiLineTernaryOperatorSniff implements Sniff
 
 		$phpcsFile->fixer->beginChangeset();
 
-		for ($i = $pointerBeforeInlineThen + 1; $i < $inlineThenPointer; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetween($phpcsFile, $pointerBeforeInlineThen, $inlineThenPointer);
+
 		$phpcsFile->fixer->addContentBefore($inlineThenPointer, $phpcsFile->eolChar . $indentation);
 
-		for ($i = $pointerBeforeInlineElse + 1; $i < $inlineElsePointer; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetween($phpcsFile, $pointerBeforeInlineElse, $inlineElsePointer);
+
 		$phpcsFile->fixer->addContentBefore($inlineElsePointer, $phpcsFile->eolChar . $indentation);
 
 		$phpcsFile->fixer->endChangeset();
@@ -164,15 +161,18 @@ class RequireMultiLineTernaryOperatorSniff implements Sniff
 
 	private function getIndentation(File $phpcsFile, int $endOfLinePointer): string
 	{
-		$pointerAfterWhitespace = TokenHelper::findNextExcluding($phpcsFile, T_WHITESPACE, $endOfLinePointer + 1);
+		$pointerAfterWhitespace = TokenHelper::findNextNonWhitespace($phpcsFile, $endOfLinePointer + 1);
 		$actualIndentation = TokenHelper::getContent($phpcsFile, $endOfLinePointer + 1, $pointerAfterWhitespace - 1);
 
 		if (strlen($actualIndentation) !== 0) {
-			return $actualIndentation . (substr($actualIndentation, -1) === self::TAB_INDENT ? self::TAB_INDENT : self::SPACES_INDENT);
+			return $actualIndentation . (substr(
+				$actualIndentation,
+				-1
+			) === IndentationHelper::TAB_INDENT ? IndentationHelper::TAB_INDENT : IndentationHelper::SPACES_INDENT);
 		}
 
-		$tabPointer = TokenHelper::findPreviousContent($phpcsFile, T_WHITESPACE, self::TAB_INDENT, $endOfLinePointer - 1);
-		return $tabPointer !== null ? self::TAB_INDENT : self::SPACES_INDENT;
+		$tabPointer = TokenHelper::findPreviousContent($phpcsFile, T_WHITESPACE, IndentationHelper::TAB_INDENT, $endOfLinePointer - 1);
+		return $tabPointer !== null ? IndentationHelper::TAB_INDENT : IndentationHelper::SPACES_INDENT;
 	}
 
 }

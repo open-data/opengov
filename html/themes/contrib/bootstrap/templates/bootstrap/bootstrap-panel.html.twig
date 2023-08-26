@@ -94,11 +94,11 @@
 
     <div{{ body_attributes.addClass(body_classes) }}>
       {% if description and description.position == 'before' %}
-        <p{{ description.attributes.addClass(description_classes) }}>{{ description.content }}</p>
+        <div{{ description.attributes.addClass(description_classes) }}>{{ description.content }}</div>
       {% endif %}
       {{ body }}
       {% if description and description.position == 'after' or description.position == 'invisible' %}
-        <p{{ description.attributes.addClass(description_classes) }}>{{ description.content }}</p>
+        <div{{ description.attributes.addClass(description_classes) }}>{{ description.content }}</div>
       {% endif %}
     </div>
   {% endblock %}

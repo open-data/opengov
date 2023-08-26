@@ -6,10 +6,12 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHPStan\PhpDocParser\Ast\ConstExpr\ConstFetchNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
-use SlevomatCodingStandard\Helpers\Annotation\GenericAnnotation;
-use SlevomatCodingStandard\Helpers\AnnotationConstantExpressionHelper;
 use SlevomatCodingStandard\Helpers\AnnotationHelper;
-use SlevomatCodingStandard\Helpers\AnnotationTypeHelper;
+use SlevomatCodingStandard\Helpers\DocCommentHelper;
+use SlevomatCodingStandard\Helpers\FixerHelper;
+use SlevomatCodingStandard\Helpers\NamespaceHelper;
+use SlevomatCodingStandard\Helpers\PhpDocParserHelper;
+use SlevomatCodingStandard\Helpers\ReferencedName;
 use SlevomatCodingStandard\Helpers\TypeHelper;
 use SlevomatCodingStandard\Helpers\TypeHintHelper;
 use function sprintf;
@@ -39,106 +41,119 @@ class FullyQualifiedClassNameInAnnotationSniff implements Sniff
 	{
 		$annotations = AnnotationHelper::getAnnotations($phpcsFile, $docCommentOpenPointer);
 
-		foreach ($annotations as $annotationName => $annotationsByName) {
-			foreach ($annotationsByName as $annotation) {
-				if ($annotation instanceof GenericAnnotation) {
+		foreach ($annotations as $annotation) {
+			/** @var list<IdentifierTypeNode> $identifierTypeNodes */
+			$identifierTypeNodes = AnnotationHelper::getAnnotationNodesByType($annotation->getNode(), IdentifierTypeNode::class);
+
+			foreach ($identifierTypeNodes as $typeHintNode) {
+				$typeHint = $typeHintNode->name;
+
+				$lowercasedTypeHint = strtolower($typeHint);
+				if (
+					TypeHintHelper::isSimpleTypeHint($lowercasedTypeHint)
+					|| TypeHintHelper::isSimpleUnofficialTypeHints($lowercasedTypeHint)
+					|| !TypeHelper::isTypeName($typeHint)
+					|| TypeHintHelper::isTypeDefinedInAnnotation($phpcsFile, $docCommentOpenPointer, $typeHint)
+				) {
 					continue;
 				}
 
-				if ($annotation->isInvalid()) {
+				$fullyQualifiedTypeHint = TypeHintHelper::getFullyQualifiedTypeHint($phpcsFile, $docCommentOpenPointer, $typeHint);
+				if ($fullyQualifiedTypeHint === $typeHint) {
 					continue;
 				}
 
-				foreach (AnnotationHelper::getAnnotationTypes($annotation) as $annotationType) {
-					foreach (AnnotationTypeHelper::getIdentifierTypeNodes($annotationType) as $typeHintNode) {
-						$typeHint = AnnotationTypeHelper::getTypeHintFromNode($typeHintNode);
+				$fix = $phpcsFile->addFixableError(sprintf(
+					'Class name %s in %s should be referenced via a fully qualified name.',
+					$fullyQualifiedTypeHint,
+					$annotation->getName()
+				), $annotation->getStartPointer(), self::CODE_NON_FULLY_QUALIFIED_CLASS_NAME);
 
-						$lowercasedTypeHint = strtolower($typeHint);
-						if (
-							TypeHintHelper::isSimpleTypeHint($lowercasedTypeHint)
-							|| TypeHintHelper::isSimpleUnofficialTypeHints($lowercasedTypeHint)
-							|| !TypeHelper::isTypeName($typeHint)
-							|| TypeHintHelper::isTypeDefinedInAnnotation($phpcsFile, $docCommentOpenPointer, $typeHint)
-						) {
-							continue;
-						}
-
-						$fullyQualifiedTypeHint = TypeHintHelper::getFullyQualifiedTypeHint(
-							$phpcsFile,
-							$annotation->getStartPointer(),
-							$typeHint
-						);
-						if ($fullyQualifiedTypeHint === $typeHint) {
-							continue;
-						}
-						$fix = $phpcsFile->addFixableError(sprintf(
-							'Class name %s in %s should be referenced via a fully qualified name.',
-							$fullyQualifiedTypeHint,
-							$annotationName
-						), $annotation->getStartPointer(), self::CODE_NON_FULLY_QUALIFIED_CLASS_NAME);
-
-						if (!$fix) {
-							continue;
-						}
-
-						$fixedAnnotationContent = AnnotationHelper::fixAnnotationType(
-							$phpcsFile,
-							$annotation,
-							$typeHintNode,
-							new IdentifierTypeNode($fullyQualifiedTypeHint)
-						);
-
-						$phpcsFile->fixer->beginChangeset();
-
-						$phpcsFile->fixer->replaceToken($annotation->getStartPointer(), $fixedAnnotationContent);
-						for ($i = $annotation->getStartPointer() + 1; $i <= $annotation->getEndPointer(); $i++) {
-							$phpcsFile->fixer->replaceToken($i, '');
-						}
-
-						$phpcsFile->fixer->endChangeset();
-					}
+				if (!$fix) {
+					continue;
 				}
 
-				foreach (AnnotationHelper::getAnnotationConstantExpressions($annotation) as $constantExpression) {
-					foreach (AnnotationConstantExpressionHelper::getConstantFetchNodes($constantExpression) as $constantFetchNode) {
-						$typeHint = $constantFetchNode->className;
+				$parsedDocComment = DocCommentHelper::parseDocComment($phpcsFile, $docCommentOpenPointer);
 
-						$fullyQualifiedTypeHint = TypeHintHelper::getFullyQualifiedTypeHint(
-							$phpcsFile,
-							$annotation->getStartPointer(),
-							$typeHint
-						);
-						if ($fullyQualifiedTypeHint === $typeHint) {
-							continue;
-						}
+				$fixedDocComment = AnnotationHelper::fixAnnotation(
+					$parsedDocComment,
+					$annotation,
+					$typeHintNode,
+					new IdentifierTypeNode($fullyQualifiedTypeHint)
+				);
 
-						$fix = $phpcsFile->addFixableError(sprintf(
-							'Class name %s in %s should be referenced via a fully qualified name.',
-							$fullyQualifiedTypeHint,
-							$annotationName
-						), $annotation->getStartPointer(), self::CODE_NON_FULLY_QUALIFIED_CLASS_NAME);
+				$phpcsFile->fixer->beginChangeset();
 
-						if (!$fix) {
-							continue;
-						}
+				FixerHelper::change(
+					$phpcsFile,
+					$parsedDocComment->getOpenPointer(),
+					$parsedDocComment->getClosePointer(),
+					$fixedDocComment
+				);
 
-						$fixedAnnotationContent = AnnotationHelper::fixAnnotationConstantFetchNode(
-							$phpcsFile,
-							$annotation,
-							$constantFetchNode,
-							new ConstFetchNode($fullyQualifiedTypeHint, $constantFetchNode->name)
-						);
+				$phpcsFile->fixer->endChangeset();
+			}
 
-						$phpcsFile->fixer->beginChangeset();
+			/** @var list<ConstFetchNode> $constantFetchNodes */
+			$constantFetchNodes = AnnotationHelper::getAnnotationNodesByType($annotation->getNode(), ConstFetchNode::class);
 
-						$phpcsFile->fixer->replaceToken($annotation->getStartPointer(), $fixedAnnotationContent);
-						for ($i = $annotation->getStartPointer() + 1; $i <= $annotation->getEndPointer(); $i++) {
-							$phpcsFile->fixer->replaceToken($i, '');
-						}
+			foreach ($constantFetchNodes as $constantFetchNode) {
+				$isClassConstant = $constantFetchNode->className !== '';
 
-						$phpcsFile->fixer->endChangeset();
-					}
+				$typeHint = $isClassConstant
+					? $constantFetchNode->className
+					: $constantFetchNode->name;
+
+				if ($typeHint === 'self') {
+					continue;
 				}
+
+				$fullyQualifiedTypeHint = $isClassConstant
+					? NamespaceHelper::resolveClassName($phpcsFile, $typeHint, $docCommentOpenPointer)
+					: NamespaceHelper::resolveName($phpcsFile, $typeHint, ReferencedName::TYPE_CONSTANT, $docCommentOpenPointer);
+
+				if ($fullyQualifiedTypeHint === $typeHint) {
+					continue;
+				}
+
+				$fix = $phpcsFile->addFixableError(sprintf(
+					'%s name %s in %s should be referenced via a fully qualified name.',
+					$isClassConstant ? 'Class' : 'Constant',
+					$fullyQualifiedTypeHint,
+					$annotation->getName()
+				), $annotation->getStartPointer(), self::CODE_NON_FULLY_QUALIFIED_CLASS_NAME);
+
+				if (!$fix) {
+					continue;
+				}
+
+				$fixedConstantFetchNode = PhpDocParserHelper::cloneNode($constantFetchNode);
+				if ($isClassConstant) {
+					$fixedConstantFetchNode->className = $fullyQualifiedTypeHint;
+				} else {
+					$fixedConstantFetchNode->name = $fullyQualifiedTypeHint;
+				}
+
+				$parsedDocComment = DocCommentHelper::parseDocComment($phpcsFile, $docCommentOpenPointer);
+
+				$fixedDocComment = AnnotationHelper::fixAnnotation(
+					$parsedDocComment,
+					$annotation,
+					$constantFetchNode,
+					$fixedConstantFetchNode
+				);
+
+				$phpcsFile->fixer->beginChangeset();
+
+				FixerHelper::change(
+					$phpcsFile,
+					$parsedDocComment->getOpenPointer(),
+					$parsedDocComment->getClosePointer(),
+					$fixedDocComment
+				);
+
+				$phpcsFile->fixer->endChangeset();
+
 			}
 		}
 	}

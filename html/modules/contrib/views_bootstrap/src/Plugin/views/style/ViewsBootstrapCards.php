@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\style\StylePluginBase;
-use Drupal\Component\Utility\Html;
 
 /**
  * Style plugin to render each item in an ordered or unordered list.

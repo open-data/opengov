@@ -10,10 +10,6 @@ use Drupal\views\Plugin\views\argument\ArgumentPluginBase;
  *
  * @ingroup views_argument_handlers
  *
- * @property bool argument_validated
- *   Used by the parent class to remember that an argument value has already
- *   been validated.
- *
  * @ViewsArgument("search_api")
  */
 class SearchApiStandard extends ArgumentPluginBase {
@@ -24,17 +20,6 @@ class SearchApiStandard extends ArgumentPluginBase {
    * @var \Drupal\search_api\Plugin\views\query\SearchApiQuery
    */
   public $query;
-
-  /**
-   * The operator to use for multiple arguments.
-   *
-   * Either "and" or "or".
-   *
-   * @var string
-   *
-   * @see \Drupal\views\Plugin\views\argument\ArgumentPluginBase::unpackArgumentValue()
-   */
-  public $operator;
 
   /**
    * {@inheritdoc}

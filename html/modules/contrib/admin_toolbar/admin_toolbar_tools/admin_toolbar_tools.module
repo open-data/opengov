@@ -5,9 +5,9 @@
  * Provides extra menu links for the core drupal toolbar.
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_toolbar().
@@ -24,6 +24,10 @@ function admin_toolbar_tools_toolbar() {
     ],
     '#attached' => ['library' => ['admin_toolbar_tools/toolbar.icon']],
   ];
+
+  // Toolbar item for primary local tasks.
+  $items['admin_toolbar_local_tasks'] = \Drupal::service('admin_toolbar_tools.helper')->buildLocalTasksToolbar();
+
   return $items;
 }
 

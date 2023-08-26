@@ -4,6 +4,7 @@ namespace SlevomatCodingStandard\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SlevomatCodingStandard\Helpers\FixerHelper;
 use SlevomatCodingStandard\Helpers\PropertyHelper;
 use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
@@ -52,7 +53,7 @@ class PropertyDeclarationSniff implements Sniff
 
 	public const CODE_MULTIPLE_SPACES_BETWEEN_MODIFIERS = 'MultipleSpacesBetweenModifiers';
 
-	/** @var string[]|null */
+	/** @var list<string>|null */
 	public $modifiersOrder = [];
 
 	/** @var bool */
@@ -87,7 +88,7 @@ class PropertyDeclarationSniff implements Sniff
 
 		$nextPointer = TokenHelper::findNextEffective($phpcsFile, $modifierPointer + 1);
 		if (in_array($tokens[$nextPointer]['code'], TokenHelper::$propertyModifiersTokenCodes, true)) {
-			// We don't want to report the some property twice
+			// We don't want to report the same property twice
 			return;
 		}
 
@@ -192,11 +193,7 @@ class PropertyDeclarationSniff implements Sniff
 
 		$phpcsFile->fixer->beginChangeset();
 
-		$phpcsFile->fixer->replaceToken($firstModifierPointer, $expectedModifiersFormatted);
-
-		for ($i = $firstModifierPointer + 1; $i <= $lastModifierPointer; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::change($phpcsFile, $firstModifierPointer, $lastModifierPointer, $expectedModifiersFormatted);
 
 		$phpcsFile->fixer->endChangeset();
 	}
@@ -254,11 +251,7 @@ class PropertyDeclarationSniff implements Sniff
 
 		$phpcsFile->fixer->beginChangeset();
 
-		$phpcsFile->fixer->replaceToken($firstModifierPointer, $expectedModifiersFormatted);
-
-		for ($i = $firstModifierPointer + 1; $i <= $lastModifierPointer; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::change($phpcsFile, $firstModifierPointer, $lastModifierPointer, $expectedModifiersFormatted);
 
 		$phpcsFile->fixer->endChangeset();
 	}
@@ -389,7 +382,7 @@ class PropertyDeclarationSniff implements Sniff
 			foreach ($modifiersGroups as $modifiersGroupNo => $modifiersGroup) {
 				$this->normalizedModifiersOrder[$modifiersGroupNo] = [];
 
-				/** @var string[] $modifiers */
+				/** @var list<string> $modifiers */
 				$modifiers = preg_split('~\\s*,\\s*~', strtolower($modifiersGroup));
 
 				foreach ($modifiers as $modifier) {

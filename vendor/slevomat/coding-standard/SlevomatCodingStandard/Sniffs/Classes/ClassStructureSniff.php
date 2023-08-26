@@ -7,6 +7,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 use SlevomatCodingStandard\Helpers\ClassHelper;
 use SlevomatCodingStandard\Helpers\DocCommentHelper;
+use SlevomatCodingStandard\Helpers\FixerHelper;
 use SlevomatCodingStandard\Helpers\FunctionHelper;
 use SlevomatCodingStandard\Helpers\PropertyHelper;
 use SlevomatCodingStandard\Helpers\SniffSettingsHelper;
@@ -179,7 +180,7 @@ class ClassStructureSniff implements Sniff
 		'__debuginfo' => self::GROUP_MAGIC_METHODS,
 	];
 
-	/** @var string[] */
+	/** @var list<string> */
 	public $groups = [];
 
 	/** @var array<string, int>|null */
@@ -447,7 +448,7 @@ class ClassStructureSniff implements Sniff
 			return false;
 		}
 
-		return in_array($returnAnnotation->getContent(), ['static', 'self', $parentClassName], true);
+		return in_array((string) $returnAnnotation->getValue()->type, ['static', 'self', $parentClassName], true);
 	}
 
 	private function getParentClassName(File $phpcsFile, int $pointer): string
@@ -465,27 +466,22 @@ class ClassStructureSniff implements Sniff
 		int $nextGroupMemberPointer
 	): void
 	{
-		$tokens = $file->getTokens();
-
 		$previousMemberEndPointer = $this->findPreviousMemberEndPointer($file, $groupFirstMemberPointer);
 
 		$groupStartPointer = $this->findGroupStartPointer($file, $groupFirstMemberPointer, $previousMemberEndPointer);
 		$groupEndPointer = $this->findGroupEndPointer($file, $groupLastMemberPointer);
+		$groupContent = TokenHelper::getContent($file, $groupStartPointer, $groupEndPointer);
 
 		$nextGroupMemberStartPointer = $this->findGroupStartPointer($file, $nextGroupMemberPointer);
 
 		$file->fixer->beginChangeset();
 
-		$content = '';
-		for ($i = $groupStartPointer; $i <= $groupEndPointer; $i++) {
-			$content .= $tokens[$i]['content'];
-			$file->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetweenIncluding($file, $groupStartPointer, $groupEndPointer);
 
 		$linesBetween = $this->removeBlankLinesAfterMember($file, $previousMemberEndPointer, $groupStartPointer);
 
 		$newLines = str_repeat($file->eolChar, $linesBetween);
-		$file->fixer->addContentBefore($nextGroupMemberStartPointer, $content . $newLines);
+		$file->fixer->addContentBefore($nextGroupMemberStartPointer, $groupContent . $newLines);
 
 		$file->fixer->endChangeset();
 	}
@@ -521,6 +517,8 @@ class ClassStructureSniff implements Sniff
 		$tokens = $phpcsFile->getTokens();
 
 		if ($tokens[$memberPointer]['code'] === T_FUNCTION && !FunctionHelper::isAbstract($phpcsFile, $memberPointer)) {
+			$endPointer = $tokens[$memberPointer]['scope_closer'];
+		} elseif ($tokens[$memberPointer]['code'] === T_USE && array_key_exists('scope_closer', $tokens[$memberPointer])) {
 			$endPointer = $tokens[$memberPointer]['scope_closer'];
 		} else {
 			$endPointer = TokenHelper::findNext($phpcsFile, T_SEMICOLON, $memberPointer + 1);
@@ -590,7 +588,7 @@ class ClassStructureSniff implements Sniff
 			$normalizedGroupsWithShortcuts = [];
 			$order = 1;
 			foreach (SniffSettingsHelper::normalizeArray($this->groups) as $groupsString) {
-				/** @var string[] $groups */
+				/** @var list<string> $groups */
 				$groups = preg_split('~\\s*,\\s*~', strtolower($groupsString));
 				foreach ($groups as $groupOrShortcut) {
 					$groupOrShortcut = preg_replace('~\\s+~', ' ', $groupOrShortcut);

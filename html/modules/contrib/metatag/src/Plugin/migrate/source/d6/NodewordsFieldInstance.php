@@ -40,7 +40,7 @@ class NodewordsFieldInstance extends DrupalSqlBase {
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
    *   The entity type bundle info service.
    */
-  public function setEntityTypeBundleInfo(EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+  public function setEntityTypeBundleInfo(EntityTypeBundleInfoInterface $entity_type_bundle_info): void {
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
   }
 
@@ -121,14 +121,18 @@ class NodewordsFieldInstance extends DrupalSqlBase {
    * {@inheritdoc}
    */
   public function count($refresh = FALSE) {
-    return $this->initializeIterator()->count();
+    /** @var \ArrayIterator $items */
+    $items = $this->initializeIterator();
+    return $items->count();
   }
 
   /**
    * {@inheritdoc}
    */
   protected function doCount() {
-    return $this->initializeIterator()->count();
+    /** @var \ArrayIterator $items */
+    $items = $this->initializeIterator();
+    return $items->count();
   }
 
 }

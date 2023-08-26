@@ -297,7 +297,7 @@ class ThemeSettings extends Config {
       }
       else {
         $favicon_path = $config->get('favicon.path');
-        if (file_exists($favicon_path)) {
+        if ($favicon_path && file_exists($favicon_path)) {
           $config->set('favicon.url', $file_url_generator->generateString($favicon_path));
         }
       }

@@ -1,3 +1,221 @@
+Metatag 2.0.0, 2023-06-27
+-------------------------
+#3364475 by DamienMcKenna: Update scripts to convert JSON data on revision
+  tables.
+#3364554 by DamienMcKenna: Fix
+  metatag_post_update_v2_02_remove_entity_values() to work on revisions.
+#3367318 by DamienMcKenna: Update post-update scripts per #3367290.
+#3367071 by pvbergen, DamienMcKenna: Custom separator also used for string
+  concatenation.
+#3370353 by jwilson3, DamienMcKenna: Fix spelling of "processsed".
+
+
+Metatag 2.0.0-rc2, 2023-05-30
+-----------------------------
+#3363582 by DamienMcKenna: Fix tests in 2.0.x branch.
+#3363582 by DamienMcKenna: Resolve problems with field serialization changes.
+
+
+Metatag 2.0.0-rc1, 2023-05-26
+-----------------------------
+#3164404 by DamienMcKenna: Rewrite tags testing architecture.
+#3305586 by DamienMcKenna: Remove Panelizer support.
+#3272768 by DamienMcKenna, SandeepSingh199: Convert to JSON data storage.
+#3326103 by DamienMcKenna, harshitthakore: Remove the old TypedData plugin for
+  Search API integration.
+#2973351 by DamienMcKenna, Simon Georges, thejimbirch: Remove News Keywords and
+  Standout meta tags.
+#3328352 by DamienMcKenna: Bump core requirements to 9.4.0.
+#3329071 by DamienMcKenna: Removed a file that was accidentally added again.
+#3325139 by DamienMcKenna: Update TestV2Updates to be compatible with 9.4.x.
+#3067803 by DamienMcKenna, KarenS, aludescher, jonathan_hunt, basvredeling,
+  owenbush, osopolar, peter3bweb, brunodbo, robertshell22, thejimbirch: Use
+  custom delimiter instead of commas for multiple values.
+#3333595 by DamienMcKenna: Tidy codebase after custom separator logic was added.
+#3065441 by DamienMcKenna, eelkeblok, solideogloria: Disable, uninstall
+  Metatag: Google Plus.
+#3065441 by DamienMcKenna: Follow-up to make post-update scripts names generic
+#2973351 by DamienMcKenna: Test coverage for removal of News Keywords, Standout
+  meta tags.
+#3132065 by DamienMcKenna: Remove deprecated Twitter Card plugins.
+#3334901 by DamienMcKenna: Rename v2 post-update scripts to control execution
+  order.
+#3217263 by DamienMcKenna, peduardo, thejimbirch, dtfabio, Liam Morland,
+  murilohp: Remove deprecated obsolete meta http-equiv="content-language".
+#3305566 by DamienMcKenna, kenyoOwen: Remove APIs deprecated in Metatag 8.x-1.x.
+#3065441 by DamienMcKenna: Remove all four GooglePlus meta tags.
+#3305753 by DamienMcKenna: Add return types on all custom class methods.
+#3335741 by DamienMcKenna: Indicate the module now requires PHP 8.0.
+#3336234 by DamienMcKenna: V2 config update scripts don't work as intended.
+#3132062 by DamienMcKenna, igork96: Remove deprecated Twitter Card types.
+#3132062 by RenatoG: Tidied up post-update code.
+#3335302 by DamienMcKenna: Follow-up to fix a v2 regression.
+#3358950 by DamienMcKenna: Update metatag_data_encode() to the v2 storage
+  method.
+#3083743 by DamienMcKenna: Follow-up to fix tests for new Robots tags.
+#3106383 by DamienMcKenna: Follow-up to fix tests for removed Robots options.
+#3361816 by DamienMcKenna: Remove deprecated Google Rating tag.
+#2945817 by DamienMcKenna, mglaman, AndyF, yobottehg, mayurngondhkar, rutel95,
+  mrweiner, GRO, robpowell, Wim Leers, gabesullice, axle_foley00, s_leu,
+  robertom, superbiche, vaibhavjain, garphy, rakesh.gectcr, neclimdul, -enzo-,
+  rollsd, yovince, sime, phenaproxima, faysal.turjo, Mykola Dolynskyi, slucero,
+  wstocker, joshua.boltz, apmsooner, ebeyrent, osman, hitesh.koli, achap,
+  marc.groth, bgrobertson, ainarend, dan2k3k4, sonnykt: Support JSON API, REST,
+  GraphQL and custom normalizations via new computed field.
+
+
+Metatag 8.x-1.26, 2023-06-27
+----------------------------
+#3364554 by DamienMcKenna: Made v1 fixture data more consistent.
+#3355945 by Ranjit1032002, Anwoon, DamienMcKenna: Deprecated function:
+  html_entity_decode(): Passing null to parameter #1 ($string) of type string is
+  deprecated in metatag_preprocess_html().
+#3366264 by DamienMcKenna: Tidy Metatag v1 fixture, replace serialized strings
+  with regular arrays.
+#3366285 by DamienMcKenna: Work out solution for binary data in Metatag v1
+  fixture file.
+By DamienMcKenna: Run updates in batches of 100 records, not 10.
+#3367290 by DamienMcKenna: Streamline the post update scripts.
+#3366933 by DamienMcKenna, Jabastin Arul, dk-massive: Errors in field
+  configuration can lead metatag_post_update_remove_robots_noydir_noodp() to
+  fail.
+
+
+Metatag 8.x-1.25, 2023-05-31
+----------------------------
+#3363189 by DamienMcKenna, floown, jvizcarrondo, uditrawat:
+  metatag_post_update_remove_robots_noydir_noodp() fails on entity types without
+  revision support.
+g#3363315 by DamienMcKenna: metatag_post_update_convert_author_data() doesn't
+  update the revisions tables.
+#3363231 by DamienMcKenna, jan kellermann: remove_robots_noydir_noodp:
+  TypeError: explode(): Argument #2 ($string) must be of type string, array
+  given.
+#3363366 by marcoscano, DamienMcKenna: metatag_generate_entity_metatags() no
+  longer accepts NULL, causing BC-breaking change.
+#3362195 by DamienMcKenna, jayvolk: Wording improvements for Twitter Player Card
+  field descriptions.
+
+
+Metatag 8.x-1.24, 2023-05-26
+----------------------------
+#3083743 by Eugene Bocharov, DamienMcKenna, bserem, gkannan25, osopolar,
+  timohuisman, akalam, zcht, druhu, maticb, vuil: Add Google's new robots tags.
+#3360836 by DamienMcKenna: Nodewords migration triggers wrong API.
+#3106383 by DamienMcKenna, fathima.asmat: Remove the NOYDIR option on ROBOTS
+  tag.
+#3106384 by DamienMcKenna: Remove the NOODP option on ROBOTS tag.
+#3298064 by DamienMcKenna: Deprecate Google CSE Ratings tag.
+#3362522 by DamienMcKenna: Fix meta tag output sort order.
+#3362760 by DamienMcKenna: Deprecate normalization plugins.
+#3361309 by DamienMcKenna: Update migration status.
+
+
+Metatag 8.x-1.23, 2023-05-12
+----------------------------
+#3312950 by DamienMcKenna, nkraft: Warning: Undefined array key "href" in
+  Drupal\metatag_favicons\Plugin\metatag\Tag\MaskIcon->output().
+#3313273 by DamienMcKenna, jenger1965, wells, JesperN, othermachines,
+  flocondetoile: Incorrect unserialization error logged.
+#3323467 by DamienMcKenna: Wrong source module for Nodewords migrations.
+#3326102 by DamienMcKenna: Deprecate TypedData plugin (for Search API
+  integration).
+#3327418 by Steven Jones, DamienMcKenna: Trivial typo in description of
+  metatag_routes module.
+#3329070 by DamienMcKenna: Remove remaining Console references.
+#3329071 by DamienMcKenna: Deprecate some Twitter Card plugins.
+#3329362 by Project Update Bot, DamienMcKenna: Minor improvement to
+  metatag.api.php.
+#3323961 by ressa, DamienMcKenna: Update README.md with new standard format.
+#3332348 by DamienMcKenna: Add function for getting list of overridden meta tags
+  for a given entity.
+#3314204 by DamienMcKenna, joshua.boltz: Handling of single vs multiple-value
+  metatags with Search API integration.
+#3299222 by DamienMcKenna: Mobile tags are not overwriting core's tags as
+  expected.
+#3329792 by DamienMcKenna, sahil.goyal, amanshukla6158: Drupal coding standards
+  issues.
+#3334601 by DamienMcKenna: Backport fixture file from 2.0.x.
+#2973351 by DamienMcKenna: Updated fixtures file.
+#3132065 by DamienMcKenna: Updated fixtures with Twitter Cards data.
+#3217263 by DamienMcKenna: Updated fixtures file for content-language tag.
+#3065441 by DamienMcKenna: Updated fixtures file with more Google Plus values.
+#3132062 by DamienMcKenna: Updated fixtures with Twitter Cards Type data.
+#3336234 by DamienMcKenna: Add UUID values to fixture config items.
+#3335688 by idebr, DamienMcKenna: Document meta name="referrer" relationship
+  with Referrer-policy HTTP header.
+#3132062 by DamienMcKenna: Updated fixtures with some documentation and todo's.
+#3350298 by DamienMcKenna: Backport metatag_data_decode() from v2.
+#3351181 by godotislate, DamienMcKenna: Missing access checks on entity queries
+  in metatag_open_graph update hooks.
+#3352508 by DamienMcKenna, klimp: Resolve access check errors for D10
+  compatibility.
+#3353594 by mukesh88, rckstr_rohan, DamienMcKenna: Spellung misteaks.
+#3353826 by DamienMcKenna: Add default settings file.
+#3325035 by Panchuk: View page meta tags can be overridden by view block that
+  placed on same page.
+#3335302 by DamienMcKenna, bsnodgrass, Anna D: Deprecated function:
+  str_replace() line 432 MetaNameBase.php.
+#3308774 by achap, DamienMcKenna: Allow modules to alter views before building
+  meta tags.
+#3336301 by RenatoG, DamienMcKenna: Unnecessary else in
+  metatag_post_update_convert_author_data().
+#3358948 by DamienMcKenna: Add a function for abstracting the field data
+  encoding method.
+#3359952 by DamienMcKenna: Rename logo file to just "logo.png".
+#3351558 by parisek, DamienMcKenna: Translation of meta tags is limited to 128
+  characters.
+#3356420 by DamienMcKenna, jwilson3, PapaGrande: Character count on fields via
+  Maxlength integration.
+
+
+Metatag 8.x-1.22, 2022-09-29
+----------------------------
+#3299228 by DamienMcKenna: Refactor favicon meta tags.
+#3298081 by DamienMcKenna: Deprecate Google Plus meta tags.
+#3299229 by DamienMcKenna, thejimbirch: Deprecate news_keywords, standout meta
+  tags.
+#3300806 by heddn, DamienMcKenna: hreflang_per_language not in config schema.
+#3302675 by DamienMcKenna: Fix $modules definitions in tests.
+#3034248 by DanielVeza, chadmandoo, DamienMcKenna, jwilson3, justin2pin, InaW,
+  ChandeepKhosa, thejimbirch, pianomansam, FiNeX: Promote use of Token Or
+  module to make tokens more flexible.
+#3302685 by DamienMcKenna: Tiny changes from tests refactoring.
+#3303196 by DamienMcKenna: Add extra isSOMETHING() methods to MetaNameBase.
+#3304779 by luigisa, DamienMcKenna: MetatagManager::processedTokenCache() does
+  not respect the entity language.
+#3302969 by DamienMcKenna: Refactored MetaNameBase output logic.
+#3252150 by andregp, DamienMcKenna, phenaproxima, Berdir, elber, japerry,
+  Kristen Pol: Drupal 10 compatibility.
+#3305580 by DamienMcKenna: Deprecate Panelizer integration.
+#3304488 by RandalV, DamienMcKenna: metatag_get_route_entity() does not check
+  if the entity parameter is an actual entity.
+#3306039 by DamienMcKenna: Recover lost WebProfiler test script.
+#3303424 by DamienMcKenna: Android, iOS app alternate link tags don't work
+  correctly.
+#3306085 by DamienMcKenna, Berdir: Replace "bartik" theme in tests.
+#3305322 by DamienMcKenna: Remove the verbose() test methods.
+#2767107 by DamienMcKenna, Antares89: Add support for the Diff module.
+#3311343 by Anybody, DamienMcKenna: Metatag routes misses package name SEO in
+  info.yml.
+#2901039 by rcodina, tsplash, DamienMcKenna, Wannes DR, mErilainen,
+  weekbeforenext, natemow, mpp, borisson_, AMDandy, jenniferaube, klmd302: Add
+  a TypedData plugin to support Search API.
+#3311542 by DamienMcKenna, lostcarpark, lucassc: Add new Metatag logo files,
+  update tests to use them.
+#3024450 by DamienMcKenna, DantonMariano, Tаo, michaellenahan, mdmanouwer,
+  Ahmed.Raza, lexsoft00, ndobromirov, Endika Melero: Log when there are problems
+  unserializing the meta tag data.
+#3309850 by DamienMcKenna: Skip token processing if there are no tokens in the
+  value.
+#3305751 by DamienMcKenna: Fix coding standards issues.
+#3311891 by DamienMcKenna, GiorgosK: MaskIcon::setValue() should not set a NULL
+  value.
+#3311911 by DamienMcKenna: TypedData logic has an error.
+#3261473 by DamienMcKenna, saidatom, claudiu.cristea, heddn, Evaldas Užkuras,
+  Eugene Bocharov: Views cache wrapper overrides other modules cache logic.
+
+
 Metatag 8.x-1.21, 2022-07-16
 ----------------------------
 #3268439 by Dave Reid: Follow-up to fix the scroll height feature.

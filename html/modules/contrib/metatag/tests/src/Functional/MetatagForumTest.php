@@ -10,7 +10,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
  *
  * @group metatag
  */
-class MetatagForumTest extends BrowserTestBase {
+class ForumTest extends BrowserTestBase {
 
   use StringTranslationTrait;
 
@@ -36,6 +36,13 @@ class MetatagForumTest extends BrowserTestBase {
    * @var \Drupal\user\UserInterface
    */
   protected $adminUser;
+
+  /**
+   * The nid of a node that is being tested.
+   *
+   * @var int
+   */
+  protected $nodeId;
 
   /**
    * Setup basic environment.

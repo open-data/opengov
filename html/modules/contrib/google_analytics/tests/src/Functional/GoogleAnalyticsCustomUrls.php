@@ -17,7 +17,7 @@ class GoogleAnalyticsCustomUrls extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['google_analytics'];
+  protected static $modules = ['google_analytics'];
 
   /**
    * Default theme.
@@ -36,7 +36,7 @@ class GoogleAnalyticsCustomUrls extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $permissions = [
@@ -63,23 +63,23 @@ class GoogleAnalyticsCustomUrls extends BrowserTestBase {
       ->save();
 
     $this->drupalGet('user/password', ['query' => ['name' => 'foo']]);
-    $this->assertRaw('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":"' . $base_path . 'user/password"});');
+    $this->assertSession()->responseContains('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":"' . $base_path . 'user/password"});');
 
     $this->drupalGet('user/password', ['query' => ['name' => 'foo@example.com']]);
-    $this->assertRaw('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":"' . $base_path . 'user/password"});');
+    $this->assertSession()->responseContains('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":"' . $base_path . 'user/password"});');
 
     $this->drupalGet('user/password');
-    $this->assertNoRaw('"page_path":"' . $base_path . 'user/password"});');
+    $this->assertSession()->responseNotContains('"page_path":"' . $base_path . 'user/password"});');
 
     // Test whether 403 forbidden tracking code is shown if user has no access.
     $this->drupalGet('admin');
-    $this->assertResponse(403);
-    $this->assertRaw($base_path . '403.html');
+    $this->assertSession()->statusCodeEquals(403);
+    $this->assertSession()->responseContains($base_path . '403.html');
 
     // Test whether 404 not found tracking code is shown on non-existent pages.
     $this->drupalGet($this->randomMachineName(64));
-    $this->assertResponse(404);
-    $this->assertRaw($base_path . '404.html');
+    $this->assertSession()->statusCodeEquals(404);
+    $this->assertSession()->responseContains($base_path . '404.html');
   }
 
 }

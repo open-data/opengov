@@ -2,16 +2,17 @@
 
 namespace Drupal\metatag\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\metatag\MetatagManagerInterface;
 use Drupal\metatag\MetatagTagPluginManager;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Advanced widget for metatag field.
@@ -135,13 +136,14 @@ class MetatagFirehose extends WidgetBase implements ContainerFactoryPluginInterf
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    // @todo Does this need to be rewritten to use $items->getValue()?
     $item = $items[$delta];
     $default_tags = metatag_get_default_tags($items->getEntity());
 
     // Retrieve the values for each metatag from the serialized array.
     $values = [];
     if (!empty($item->value)) {
-      $values = unserialize($item->value, ['allowed_classes' => FALSE]);
+      $values = metatag_data_decode($item->value);
     }
 
     // Make sure that this variable is always an array to avoid problems when
@@ -233,7 +235,7 @@ class MetatagFirehose extends WidgetBase implements ContainerFactoryPluginInterf
           }
         }
       }
-      $value = serialize($flattened_value);
+      $value = Json::encode($flattened_value);
     }
 
     return $values;

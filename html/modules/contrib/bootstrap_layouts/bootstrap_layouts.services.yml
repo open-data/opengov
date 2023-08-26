@@ -3,7 +3,7 @@ services:
     class: \Drupal\bootstrap_layouts\BootstrapLayoutsManager
     calls:
       - [setContainer, ['@service_container']]
-    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@theme_handler', '@theme.manager', '@plugin.manager.core.layout', '@plugin.manager.bootstrap_layouts.update']
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@theme_handler', '@theme.manager', '@plugin.manager.core.layout', '@plugin.manager.bootstrap_layouts.update', '@messenger']
   plugin.manager.bootstrap_layouts.update:
     class: \Drupal\bootstrap_layouts\BootstrapLayoutsUpdateManager
     calls:

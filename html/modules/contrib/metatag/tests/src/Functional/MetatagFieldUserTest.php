@@ -82,7 +82,7 @@ class MetatagFieldUserTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function entityDefaultValues($title = 'Barfoo') {
+  protected function entityDefaultValues($title = 'Barfoo'): array {
     $password = $this->randomString(16);
     return [
       'mail' => 'test' . $this->adminUser->getEmail(),

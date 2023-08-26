@@ -20,7 +20,7 @@ class MetatagTrimmer {
    * @return string
    *   The trimmed string.
    */
-  public function trimAfterValue($string, $maxlength) {
+  public function trimAfterValue($string, $maxlength): string {
     // If the string is shorter than the max length then skip the rest of the
     // logic.
     if ($maxlength > mb_strlen($string)) {
@@ -47,7 +47,7 @@ class MetatagTrimmer {
    * @return string
    *   The trimmed string.
    */
-  public function trimBeforeValue($string, $maxlength) {
+  public function trimBeforeValue($string, $maxlength): string {
     // If the string is shorter than the max length then skip the rest of the
     // logic.
     if ($maxlength > mb_strlen($string)) {
@@ -78,7 +78,7 @@ class MetatagTrimmer {
    *   The trim method to use for the trimming.
    *   Allowed values: 'afterValue', 'onValue' and 'beforeValue'.
    */
-  public function trimByMethod($value, $maxlength, $method) {
+  public function trimByMethod($value, $maxlength, $method): string {
     if (empty($value) || empty($maxlength)) {
       return $value;
     }

@@ -44,6 +44,13 @@ class MetatagManagerTest extends KernelTestBase {
   protected $metatagManager;
 
   /**
+   * Config factory.
+   *
+   * @var Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -51,6 +58,7 @@ class MetatagManagerTest extends KernelTestBase {
 
     $this->entityTypeManager = $this->container->get('entity_type.manager');
     $this->metatagManager = $this->container->get('metatag.manager');
+    $this->configFactory = $this->container->get('config.factory');
 
     $this->installConfig([
       'system',
@@ -88,6 +96,7 @@ class MetatagManagerTest extends KernelTestBase {
     $tags = $this->metatagManager->generateElements([
       'og_image_width' => 100,
       'og_image_height' => 100,
+      // @todo Update this to use the metatag-logo.png file.
       'og_image_url' => 'https://www.example.com/example/foo.png',
     ]);
 
@@ -137,7 +146,7 @@ class MetatagManagerTest extends KernelTestBase {
     $tags = $this->metatagManager->generateElements([
       'og_image_width' => 100,
       'og_image_height' => 100,
-      'og_image_url' => 'https://www.example.com/example/foo.png, https://www.example.com/example/foo2.png',
+      'og_image_url' => 'https://www.example.com/example/foo.png,https://www.example.com/example/foo2.png',
     ]);
 
     $expected = [
@@ -187,6 +196,156 @@ class MetatagManagerTest extends KernelTestBase {
       ],
     ];
     $this->assertEquals($expected, $tags);
+  }
+
+  /**
+   * Tests the default settings to make sure they load as expected.
+   */
+  public function testDefaultSettings() {
+    $config = $this->configFactory->get('metatag.settings');
+    $this->assertEquals($config->get('entity_type_groups'), []);
+    $this->assertEquals($config->get('separator'), '');
+    $this->assertEquals($config->get('tag_trim_method'), 'beforeValue');
+    $this->assertEquals($config->get('tag_trim_maxlength'), []);
+    $this->assertEquals($config->get('tag_scroll_max_height'), '');
+  }
+
+  /**
+   * Tests separator configuration and handling of multiple values.
+   */
+  public function testSeparator() {
+    // Get the initial value of the separator, which is empty.
+    $value = $this->configFactory->get('metatag.settings')->get('separator');
+    $expected = '';
+    $this->assertEquals($expected, $value);
+
+    // Confirm that if it's empty it falls back to ','.
+    $value = $this->metatagManager->getSeparator();
+    $expected = ',';
+    $this->assertEquals($expected, $value);
+
+    // Make sure the separator works.
+    $tags = $this->metatagManager->generateElements([
+      'og_image_width' => 100,
+      'og_image_height' => 100,
+      'og_image_url' => 'https://www.example.com/example/foo.png' . $this->metatagManager->getSeparator() . 'https://www.example.com/example/foo2.png',
+    ]);
+
+    $expected = [
+      '#attached' => [
+        'html_head' => [
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:url',
+                'content' => 'https://www.example.com/example/foo.png',
+              ],
+            ],
+            'og_image_url_0',
+          ],
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:url',
+                'content' => 'https://www.example.com/example/foo2.png',
+              ],
+            ],
+            'og_image_url_1',
+          ],
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:width',
+                'content' => 100,
+              ],
+            ],
+            'og_image_width',
+          ],
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:height',
+                'content' => 100,
+              ],
+            ],
+            'og_image_height',
+          ],
+        ],
+      ],
+    ];
+    $this->assertEquals($expected, $tags);
+
+    // Change the value of the separator.
+    $config = $this->configFactory->getEditable('metatag.settings');
+    $config->set('separator', '||')->save();
+    $value = $this->configFactory->get('metatag.settings')->get('separator');
+    $expected = '||';
+    $this->assertEquals($expected, $value);
+
+    // Make sure Metatag Manager correctly picks up the new value.
+    $value = $this->metatagManager->getSeparator();
+    $expected = '||';
+    $this->assertEquals($expected, $value);
+
+    // Make sure the new value works.
+    $tags = $this->metatagManager->generateElements([
+      'og_image_width' => 100,
+      'og_image_height' => 100,
+      'og_image_url' => 'https://www.example.com/example/foo.png' . $this->metatagManager->getSeparator() . 'https://www.example.com/example/foo2.png',
+    ]);
+
+    $expected = [
+      '#attached' => [
+        'html_head' => [
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:url',
+                'content' => 'https://www.example.com/example/foo.png',
+              ],
+            ],
+            'og_image_url_0',
+          ],
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:url',
+                'content' => 'https://www.example.com/example/foo2.png',
+              ],
+            ],
+            'og_image_url_1',
+          ],
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:width',
+                'content' => 100,
+              ],
+            ],
+            'og_image_width',
+          ],
+          [
+            [
+              '#tag' => 'meta',
+              '#attributes' => [
+                'property' => 'og:image:height',
+                'content' => 100,
+              ],
+            ],
+            'og_image_height',
+          ],
+        ],
+      ],
+    ];
+    $this->assertEquals($expected, $tags);
+
   }
 
 }

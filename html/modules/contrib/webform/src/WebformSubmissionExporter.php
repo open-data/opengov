@@ -746,12 +746,21 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
       unset($values['exporters']);
     }
 
-    if (isset($values['range_type'])) {
-      $range_type = $values['range_type'];
-      $values['range_type'] = $range_type;
-      if (isset($values[$range_type])) {
-        $values += $values[$range_type];
-      }
+    // Get select range type's start and end values which are stored in
+    // a nested array.
+    // @code
+    // $values = [
+    //   'range_type' => 'serial',
+    //   'serial' => [
+    //     'range_start' => 0,
+    //     'range_end' => 10,
+    //   ],
+    // ];
+    // @endcode
+    $range_type = $values['range_type'] ?? '';
+    $range_values = $values[$range_type] ?? [];
+    if ($range_values && is_array($range_values)) {
+      $values += $range_values;
     }
 
     // Make sure only support options are returned.
@@ -981,8 +990,10 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
       $latest_query->sort('sid', 'DESC');
       $latest_query->range(0, (int) $export_options['range_latest']);
       if ($latest_query_entity_ids = $latest_query->execute()) {
-        $query->condition('sid', end($latest_query_entity_ids), '>=');
+        $query->condition('sid', $latest_query_entity_ids, 'IN');
       }
+      $query->sort('created');
+      $query->sort('sid');
     }
     else {
       // Sort by created and sid in ASC or DESC order.
@@ -990,10 +1001,12 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
       $query->sort('sid', $export_options['order'] ?? 'ASC');
     }
 
-    // Do not check access to submission since the exporter UI and Drush
-    // already have access checking.
+    // Do not check access to submissions via Drush CLI.
+    // There is already submission access checking being applied.
     // @see webform_query_webform_submission_access_alter()
-    $query->accessCheck(FALSE);
+    if (PHP_SAPI === 'cli') {
+      $query->accessCheck(FALSE);
+    }
 
     return $query;
   }
@@ -1071,7 +1084,7 @@ class WebformSubmissionExporter implements WebformSubmissionExporterInterface {
    * {@inheritdoc}
    */
   public function getTotal() {
-    return $this->getQuery()->count()->execute();
+    return $this->getQuery()->accessCheck(FALSE)->count()->execute();
   }
 
   /**

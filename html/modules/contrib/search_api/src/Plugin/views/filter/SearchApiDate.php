@@ -88,7 +88,12 @@ class SearchApiDate extends Date {
    * {@inheritdoc}
    */
   protected function opBetween($field) {
-    if ($this->value['type'] == 'offset') {
+    if (!empty($this->value['max'])
+        && strpos($this->value['max'], ':') === FALSE) {
+      // No time was specified, so make the date range inclusive.
+      $this->value['max'] .= ' +1 day';
+    }
+    if (($this->value['type'] ?? '') == 'offset') {
       $time = $this->getTimeService()->getRequestTime();
       $a = strtotime($this->value['min'], $time);
       $b = strtotime($this->value['max'], $time);
@@ -110,6 +115,9 @@ class SearchApiDate extends Date {
    *   The views field.
    */
   protected function opSimple($field) {
+    if (!isset($this->value['value']) || $this->value['value'] === '') {
+      return;
+    }
     $value = intval(strtotime($this->value['value'], 0));
     if (($this->value['type'] ?? '') == 'offset') {
       $time = $this->getTimeService()->getRequestTime();

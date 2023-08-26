@@ -37,9 +37,11 @@ class Deprecation
 
     private $trace = [];
     private $message;
+    private $languageDeprecation;
     private $originClass;
     private $originMethod;
     private $triggeringFile;
+    private $triggeringClass;
 
     /** @var string[] Absolute paths to vendor directories */
     private static $vendors;
@@ -56,9 +58,14 @@ class Deprecation
     /**
      * @param string $message
      * @param string $file
+     * @param bool   $languageDeprecation
      */
-    public function __construct($message, array $trace, $file)
+    public function __construct($message, array $trace, $file, $languageDeprecation = false)
     {
+        if (isset($trace[2]['class']) && \in_array($trace[2]['class'], [DebugClassLoader::class, LegacyDebugClassLoader::class], true)) {
+            $this->triggeringClass = $trace[2]['args'][0];
+        }
+
         if (isset($trace[2]['function']) && 'trigger_deprecation' === $trace[2]['function']) {
             $file = $trace[2]['file'];
             array_splice($trace, 1, 1);
@@ -66,6 +73,7 @@ class Deprecation
 
         $this->trace = $trace;
         $this->message = $message;
+        $this->languageDeprecation = $languageDeprecation;
 
         $i = \count($trace);
         while (1 < $i && $this->lineShouldBeSkipped($trace[--$i])) {
@@ -158,6 +166,26 @@ class Deprecation
     /**
      * @return bool
      */
+    public function originatesFromDebugClassLoader()
+    {
+        return isset($this->triggeringClass);
+    }
+
+    /**
+     * @return string
+     */
+    public function triggeringClass()
+    {
+        if (null === $this->triggeringClass) {
+            throw new \LogicException('Check with originatesFromDebugClassLoader() before calling this method.');
+        }
+
+        return $this->triggeringClass;
+    }
+
+    /**
+     * @return bool
+     */
     public function originatesFromAnObject()
     {
         return isset($this->originClass);
@@ -239,7 +267,12 @@ class Deprecation
      */
     public function getType()
     {
-        if (self::PATH_TYPE_SELF === $pathType = $this->getPathType($this->triggeringFile)) {
+        $pathType = $this->getPathType($this->triggeringFile);
+        if ($this->languageDeprecation && self::PATH_TYPE_VENDOR === $pathType) {
+            // the triggering file must be used for language deprecations
+            return self::TYPE_INDIRECT;
+        }
+        if (self::PATH_TYPE_SELF === $pathType) {
             return self::TYPE_SELF;
         }
         if (self::PATH_TYPE_UNDETERMINED === $pathType) {

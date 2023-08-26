@@ -59,7 +59,7 @@ function template_preprocess_views_bootstrap_cards(array &$vars) {
   $view = $vars['view'];
   $vars['id'] = ViewsBootstrap::getUniqueId($view);
 
-  // card rows.
+  // Card rows.
   $image = $view->style_plugin->options['card_image_field'];
   $title = $view->style_plugin->options['card_title_field'];
   $content = $view->style_plugin->options['card_content_field'];
@@ -221,7 +221,7 @@ function template_preprocess_views_bootstrap_tab(array &$vars) {
       }
     }
     foreach ($vars['rows'] as $id => $row) {
-      $vars['rows'][$id] = array();
+      $vars['rows'][$id] = [];
       $vars['rows'][$id]['content'] = $row;
       $vars['rows'][$id]['attributes'] = new Attribute();
       if ($row_class = $view->style_plugin->getRowClass($id)) {
@@ -257,4 +257,3 @@ function template_preprocess_views_bootstrap_table(array &$vars) {
     $vars['attributes']['class'][] = 'table-' . $style;
   }
 }
-

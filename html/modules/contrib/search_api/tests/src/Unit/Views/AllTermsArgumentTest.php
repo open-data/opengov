@@ -47,7 +47,7 @@ class AllTermsArgumentTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->setupContainer();
@@ -118,7 +118,7 @@ class AllTermsArgumentTest extends UnitTestCase {
       });
     $query->method('addConditionGroup')
       ->willReturnCallback(function (ConditionGroupInterface $added_condition_group, $group = NULL) {
-        Assert::assertNull($group);
+        Assert::assertEquals(0, $group);
         Assert::assertSame($this->conditionGroup, $added_condition_group);
       });
     $query->method('abort')
@@ -164,7 +164,7 @@ class AllTermsArgumentTest extends UnitTestCase {
     $expected = [
       new Condition('field_voc_a', 1, '<>'),
       new Condition('field_voc_a', 2, '<>'),
-      (new ConditionGroup('AND'))
+      (new ConditionGroup())
         ->addCondition('field_voc_b_1', 3, '<>')
         ->addCondition('field_voc_b_2', 3, '<>'),
     ];

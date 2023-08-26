@@ -78,7 +78,7 @@ class DuplicateSpacesSniff implements Sniff
 
 		if ($tokens[$whitespacePointer]['code'] === T_WHITESPACE) {
 			if ($this->ignoreSpacesBeforeAssignment) {
-				$pointerAfter = TokenHelper::findNextExcluding($phpcsFile, T_WHITESPACE, $whitespacePointer + 1);
+				$pointerAfter = TokenHelper::findNextNonWhitespace($phpcsFile, $whitespacePointer + 1);
 				if (
 					$pointerAfter !== null
 					&& in_array($tokens[$pointerAfter]['code'], Tokens::$assignmentTokens, true)
@@ -88,7 +88,7 @@ class DuplicateSpacesSniff implements Sniff
 			}
 
 			if ($this->ignoreSpacesInParameters) {
-				$pointerAfter = TokenHelper::findNextExcluding($phpcsFile, T_WHITESPACE, $whitespacePointer + 1);
+				$pointerAfter = TokenHelper::findNextNonWhitespace($phpcsFile, $whitespacePointer + 1);
 				if (
 					$pointerAfter !== null
 					&& $tokens[$pointerAfter]['code'] === T_VARIABLE
@@ -99,7 +99,7 @@ class DuplicateSpacesSniff implements Sniff
 			}
 
 			if ($this->ignoreSpacesInMatch) {
-				$pointerAfter = TokenHelper::findNextExcluding($phpcsFile, T_WHITESPACE, $whitespacePointer + 1);
+				$pointerAfter = TokenHelper::findNextNonWhitespace($phpcsFile, $whitespacePointer + 1);
 				if (
 					$pointerAfter !== null
 					&& $tokens[$pointerAfter]['code'] === T_MATCH_ARROW
@@ -141,14 +141,14 @@ class DuplicateSpacesSniff implements Sniff
 		$fix = false;
 		foreach ($matches[0] as [$match, $offset]) {
 			$firstPointerOnLine = TokenHelper::findFirstNonWhitespaceOnLine($phpcsFile, $whitespacePointer - 1);
-			$indendation = IndentationHelper::getIndentation($phpcsFile, $firstPointerOnLine);
-			$indendationWithoutTabs = str_replace(
+			$indentation = IndentationHelper::getIndentation($phpcsFile, $firstPointerOnLine);
+			$indentationWithoutTabs = str_replace(
 				IndentationHelper::TAB_INDENT,
 				$tabWidth === 0 ? IndentationHelper::SPACES_INDENT : str_repeat(' ', $tabWidth),
-				$indendation
+				$indentation
 			);
 
-			$position = $tokens[$whitespacePointer]['column'] + $offset - strlen($indendation) + strlen($indendationWithoutTabs);
+			$position = $tokens[$whitespacePointer]['column'] + $offset - strlen($indentation) + strlen($indentationWithoutTabs);
 
 			$fixable = $phpcsFile->addFixableError(
 				sprintf('Duplicate spaces at position %d.', $position),

@@ -59,7 +59,7 @@ class ReferencedNameHelper
 {
 
 	/**
-	 * @return ReferencedName[]
+	 * @return list<ReferencedName>
 	 */
 	public static function getAllReferencedNames(File $phpcsFile, int $openTagPointer): array
 	{
@@ -71,7 +71,7 @@ class ReferencedNameHelper
 	}
 
 	/**
-	 * @return ReferencedName[]
+	 * @return list<ReferencedName>
 	 */
 	public static function getAllReferencedNamesInAttributes(File $phpcsFile, int $openTagPointer): array
 	{
@@ -123,7 +123,7 @@ class ReferencedNameHelper
 	}
 
 	/**
-	 * @return ReferencedName[]
+	 * @return list<ReferencedName>
 	 */
 	private static function createAllReferencedNames(File $phpcsFile, int $openTagPointer): array
 	{
@@ -144,17 +144,18 @@ class ReferencedNameHelper
 			// Find referenced names inside double quotes string
 			if (self::isNeedParsedContent($tokens[$nameStartPointer]['code'])) {
 				$content = $tokens[$nameStartPointer]['content'];
-				if (self::isNeedParsedContent($tokens[$nameStartPointer - 1]['code'])) {
-					$content = '"' . $content;
+				$currentPointer = $nameStartPointer + 1;
+				while (self::isNeedParsedContent($tokens[$currentPointer]['code'])) {
+					$content .= $tokens[$currentPointer]['content'];
+					$currentPointer++;
 				}
-				if (self::isNeedParsedContent($tokens[$nameStartPointer + 1]['code'])) {
-					$content .= '"';
-				}
+
 				$names = self::getReferencedNamesFromString($content);
 				foreach ($names as $name) {
 					$referencedNames[] = new ReferencedName($name, $nameStartPointer, $nameStartPointer, ReferencedName::TYPE_CLASS);
 				}
-				$beginSearchAtPointer = $nameStartPointer + 1;
+
+				$beginSearchAtPointer = $currentPointer;
 				continue;
 			}
 
@@ -395,7 +396,7 @@ class ReferencedNameHelper
 	}
 
 	/**
-	 * @return ReferencedName[]
+	 * @return list<ReferencedName>
 	 */
 	private static function createAllReferencedNamesInAttributes(File $phpcsFile, int $openTagPointer): array
 	{
@@ -472,7 +473,7 @@ class ReferencedNameHelper
 	}
 
 	/**
-	 * @return string[]
+	 * @return list<string>
 	 */
 	private static function getReferencedNamesFromString(string $content): array
 	{

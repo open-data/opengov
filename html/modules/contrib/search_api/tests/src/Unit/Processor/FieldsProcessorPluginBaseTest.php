@@ -37,7 +37,7 @@ class FieldsProcessorPluginBaseTest extends UnitTestCase {
   /**
    * Creates a new processor object for use in the tests.
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->setUpMockContainer();
@@ -540,12 +540,11 @@ class FieldsProcessorPluginBaseTest extends UnitTestCase {
     $query = \Drupal::getContainer()
       ->get('search_api.query_helper')
       ->createQuery($this->index);
-    $conditions = $query->createConditionGroup();
+    $conditions = $query->createAndAddConditionGroup();
     $conditions->addCondition('text_field', 'foo');
     $conditions->addCondition('text_field', ['foo', 'bar'], 'IN');
     $conditions->addCondition('string_field', NULL, '<>');
     $conditions->addCondition('integer_field', 'bar');
-    $query->addConditionGroup($conditions);
     $query2 = clone $query;
 
     $this->processor->preprocessSearchQuery($query);

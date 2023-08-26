@@ -359,7 +359,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
       '#title' => $this->t('Review import'),
     ];
     // Displaying when no UUID or token is found.
-    if (!isset($source['uuid']) && !isset($source['uuid'])) {
+    if (!isset($source['uuid']) && !isset($source['token'])) {
       $form['review']['warning'] = [
         '#type' => 'webform_message',
         '#message_type' => 'warning',
@@ -675,7 +675,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
       '@skipped' => $stats['skipped'],
     ];
     if ($is_cli) {
-      \Drupal::logger('webform')->notice(t('Submission import completed. (total: @total; created: @created; updated: @updated; skipped: @skipped)', $t_args));
+      \Drupal::logger('webform')->notice('Submission import completed. (total: @total; created: @created; updated: @updated; skipped: @skipped)', $t_args);
     }
     else {
       \Drupal::messenger()->addStatus(t('Submission import completed. (total: @total; created: @created; updated: @updated; skipped: @skipped)', $t_args));

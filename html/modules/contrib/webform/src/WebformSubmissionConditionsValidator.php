@@ -463,7 +463,15 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
 
       // Set data to empty array or string for any webform element that is hidden.
       if (!$element_visible && !empty($element['#webform_key']) && isset($data[$key])) {
-        $data[$key] = (is_array($data[$key])) ? [] : '';
+        switch ($element['#type']) {
+          case 'text_format':
+            $data[$key]['value'] = '';
+            break;
+
+          default:
+            $data[$key] = (is_array($data[$key])) ? [] : '';
+            break;
+        }
       }
 
       $this->processFormRecursive($element, $webform_submission, $data, $check_access, $element_visible);
@@ -825,7 +833,7 @@ class WebformSubmissionConditionsValidator implements WebformSubmissionCondition
         // escape sequence format.
         // @see \Drupal\webform\Plugin\WebformElement\TextBase::validatePattern
         $pcre_pattern = preg_replace('/\\\\u([a-fA-F0-9]{4})/', '\\x{\\1}', $trigger_value);
-        return preg_match('{' . $pcre_pattern . '}u', $element_value);
+        return preg_match('{' . $pcre_pattern . '}u', $element_value ?? '');
 
       case 'less':
         return ($element_value !== '' && floatval($trigger_value) > floatval($element_value));

@@ -22,7 +22,7 @@ class AppleTouchIcon76x76 extends LinkSizesBase {
   /**
    * {@inheritdoc}
    */
-  protected function sizes() {
+  protected function iconSize(): string {
     return '76x76';
   }
 

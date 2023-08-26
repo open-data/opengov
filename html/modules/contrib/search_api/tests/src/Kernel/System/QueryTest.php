@@ -42,7 +42,7 @@ class QueryTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('search_api', ['search_api_item']);
@@ -168,7 +168,7 @@ class QueryTest extends KernelTestBase {
     $query->keys('foo bar')
       ->addCondition('field1', 'value', '<')
       ->addCondition('field2', [15, 25], 'BETWEEN')
-      ->addConditionGroup($query->createConditionGroup('OR', $tags)
+      ->addConditionGroup($query->createConditionGroup('OR', $tags, FALSE)
         ->addCondition('field2', 'foo')
         ->addCondition('field3', 1, '<>')
       )
@@ -215,10 +215,10 @@ class QueryTest extends KernelTestBase {
    */
   public function testDisplayPluginIntegration() {
     $query = $this->index->query();
-    $this->assertSame(NULL, $query->getSearchId(FALSE));
+    $this->assertNull($query->getSearchId(FALSE));
     $this->assertSame('search_1', $query->getSearchId());
     $this->assertSame('search_1', $query->getSearchId(FALSE));
-    $this->assertSame(NULL, $query->getDisplayPlugin());
+    $this->assertNull($query->getDisplayPlugin());
 
     $query = $this->index->query()->setSearchId('search_api_test');
     $this->assertInstanceOf('Drupal\search_api_test\Plugin\search_api\display\TestDisplay', $query->getDisplayPlugin());

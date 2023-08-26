@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\google_analytics\Functional;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search\SearchIndexInterface;
 use Drupal\Tests\BrowserTestBase;
@@ -15,13 +14,13 @@ use Drupal\Tests\BrowserTestBase;
 class GoogleAnalyticsSearchTest extends BrowserTestBase {
 
   use StringTranslationTrait;
-  
+
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['google_analytics', 'search', 'node'];
+  protected static $modules = ['google_analytics', 'search', 'node'];
 
   /**
    * Admin user.
@@ -40,7 +39,7 @@ class GoogleAnalyticsSearchTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
@@ -71,10 +70,10 @@ class GoogleAnalyticsSearchTest extends BrowserTestBase {
 
     // Check tracking code visibility.
     $this->drupalGet('');
-    $this->assertRaw($ua_code);
+    $this->assertSession()->responseContains($ua_code);
 
     $this->drupalGet('search/node');
-    $this->assertNoRaw('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":"');
+    $this->assertSession()->responseNotContains('"page_path":(window.google_analytics_search_results) ?');
 
     // Enable site search support.
     $this->config('google_analytics.settings')->set('track.site_search', 1)->save();
@@ -83,20 +82,27 @@ class GoogleAnalyticsSearchTest extends BrowserTestBase {
     $search = ['keys' => $this->randomMachineName(8)];
 
     // Fire a search, it's expected to get 0 results.
-    $this->drupalPostForm('search/node', $search, $this->t('Search'));
-    $this->assertRaw('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":(window.google_analytics_search_results) ?');
-    $this->assertRaw('window.google_analytics_search_results = 0;');
+    $this->drupalGet('search/node');
+    $this->submitForm($search, $this->t('Search'));
+    $this->assertSession()->responseContains('"page_path":(window.google_analytics_search_results) ?');
+    // Check GA Site Search query param is 'search' when there are no results.
+    $this->assertSession()->responseMatches('/(.+search=' . urlencode("no-results:{$search['keys']}") . ')/');
+    $this->assertSession()->responseContains('window.google_analytics_search_results = 0;');
 
     // Create a node and reindex.
     $this->createNodeAndIndex($search['keys']);
-    $this->drupalPostForm('search/node', $search, $this->t('Search'));
-    $this->assertSession()->responseContains('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":(window.google_analytics_search_results) ?');
+    $this->drupalGet('search/node');
+    $this->submitForm($search, $this->t('Search'));
+    $this->assertSession()->responseContains('"page_path":(window.google_analytics_search_results) ?');
+    // Check the GA Site Search query param is 'search'.
+    $this->assertSession()->responseMatches('/(.+search=' . urlencode($search['keys']) . ')/');
     $this->assertSession()->responseContains('window.google_analytics_search_results = 1;');
 
     // Create a second node with same values and reindex.
     $this->createNodeAndIndex($search['keys']);
-    $this->drupalPostForm('search/node', $search, $this->t('Search'));
-    $this->assertSession()->responseContains('gtag("config", ' . Json::encode($ua_code) . ', {"groups":"default","page_path":(window.google_analytics_search_results) ?');
+    $this->drupalGet('search/node');
+    $this->submitForm($search, $this->t('Search'));
+    $this->assertSession()->responseContains('"page_path":(window.google_analytics_search_results) ?');
     $this->assertSession()->responseContains('window.google_analytics_search_results = 2;');
   }
 

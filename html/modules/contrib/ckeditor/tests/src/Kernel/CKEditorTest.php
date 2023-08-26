@@ -281,6 +281,13 @@ class CKEditorTest extends KernelTestBase {
     $expected[] = $this->fileUrlGenerator->generateString($this->getModulePath('ckeditor_test') . '/css/llama.css') . $query_string;
     $this->assertSame($expected, $this->ckeditor->buildContentsCssJSSetting($editor), '"contentsCss" configuration part of JS settings built correctly while a CKEditorPluginInterface implementation exists.');
 
+    // Some things cannot be tested in Drupal 10 anymore.
+    // @see https://www.drupal.org/project/drupal/issues/3270438
+    [$version] = explode('.', \Drupal::VERSION, 2);
+    if ($version == 10) {
+      return;
+    }
+
     // Enable the Olivero theme, which specifies a CKEditor stylesheet.
     \Drupal::service('theme_installer')->install(['olivero']);
     $this->config('system.theme')->set('default', 'olivero')->save();
@@ -459,6 +466,13 @@ class CKEditorTest extends KernelTestBase {
       'core/modules/system/tests/themes/test_ckeditor_stylesheets_relative/css/yokotsoko.css',
     ];
     $this->assertSame($expected, _ckeditor_theme_css('test_ckeditor_stylesheets_relative'));
+
+    // Some things cannot be tested in Drupal 10 anymore.
+    // @see https://www.drupal.org/project/drupal/issues/3270438
+    [$version] = explode('.', \Drupal::VERSION, 2);
+    if ($version == 10) {
+      return;
+    }
 
     // Case 4: Install theme which has a Drupal root CSS URL.
     $theme_installer->install(['test_ckeditor_stylesheets_drupal_root']);

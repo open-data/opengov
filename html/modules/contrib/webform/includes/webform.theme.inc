@@ -446,29 +446,6 @@ function webform_preprocess_fieldset(&$variables) {
 
   $element = &$variables['element'];
 
-  // @todo [Drupal 9.3] Remove the below code
-  // Fieldset elements now respect the #description_display option
-  // @see https://www.drupal.org/node/3143489
-  //
-  // If the description is displayed 'before' we need to move it to the
-  // fieldset's prefix.
-  // @see fieldset.html.twig
-  if (isset($element['#description_display']) && $element['#description_display'] === 'before' && !empty($variables['description']['content'])) {
-    if (isset($variables['prefix'])) {
-      if (is_array($variables['prefix'])) {
-        $variables['prefix'] = ['prefix' => $variables['prefix']];
-      }
-      else {
-        $variables['prefix'] = ['prefix' => ['#markup' => $variables['prefix']]];
-      }
-    }
-    else {
-      $variables['prefix'] = [];
-    }
-    $variables['prefix']['description'] = $variables['description']['content'];
-    unset($variables['description']['content']);
-  }
-
   // Apply inline title defined by radios, checkboxes, and buttons.
   // @see \Drupal\webform\Plugin\WebformElement\OptionsBase::prepare
   if (isset($element['#_title_display'])) {
@@ -498,21 +475,24 @@ function webform_preprocess_fieldset(&$variables) {
     unset($variables['attributes']['required']);
   }
 
-  // Add role="radiogroup" on fieldsets containing radiobuttons.
   // Add aria-required="true" only on fieldsets containing required
   // radiobuttons.
   //
   // Issue #3240249: Aria-required on fieldset trigger accessibility fails.
   // @see https://www.drupal.org/project/webform/issues/3240249
+  // @see https://www.drupal.org/project/webform/issues/3277192
   /** @var \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager */
   $element_manager = \Drupal::service('plugin.manager.webform.element');
   $element_plugin = $element_manager->getElementInstance($element);
   $is_radios = ($element_plugin instanceof WebformRadios || $element_plugin instanceof WebformEntityRadios);
   if ($is_radios) {
-    $variables['attributes']['role'] = 'radiogroup';
     $id = $variables['attributes']['id'] . '-legend';
     $variables['legend']['attributes']['id'] = $id;
-    $variables['attributes']['aria-labelledby'] = $id;
+
+    if (isset($variables['attributes']['aria-required'])) {
+      // The aria-required is _not_ necessary on a fieldset of radio elements.
+      unset($variables['attributes']['aria-required']);
+    }
   }
   elseif (isset($variables['attributes']['aria-required'])) {
     unset($variables['attributes']['aria-required']);

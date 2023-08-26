@@ -69,7 +69,7 @@ class DrupalBootstrapStyles extends JsDelivr {
 
     $files = array_filter(isset($data['files']) ? $data['files'] : [], function ($file) use ($library, $version) {
       if (isset($file['name'])) {
-        if (str_contains($file['name'], '/dist/' . $version . '/' . Bootstrap::PROJECT_BRANCH . '/')) {
+        if (strpos($file['name'], '/dist/' . $version . '/' . Bootstrap::PROJECT_BRANCH . '/') !== 0) {
           return FALSE;
         }
         $theme = !!preg_match("`drupal-bootstrap-([\w]+)(\.min)?\.css$`", $file['name']);

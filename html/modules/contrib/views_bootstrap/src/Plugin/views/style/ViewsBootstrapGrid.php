@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\style\StylePluginBase;
-use Drupal\Component\Utility\Html;
 use Drupal\views_bootstrap\ViewsBootstrap;
 
 /**
@@ -72,13 +71,13 @@ class ViewsBootstrapGrid extends StylePluginBase {
       $prefix = 'col' . ($breakpoint != 'xs' ? '-' . $breakpoint : '');
       $form[$breakpoint_option] = [
         '#type' => 'select',
-        '#title' => $this->t("Column width of items at '$breakpoint' breakpoint"),
+        '#title' => $this->t("Column width of items at @breakpoint breakpoint", ['@breakpoint' => $breakpoint]),
         '#default_value' => isset($this->options[$breakpoint_option]) ? $this->options[$breakpoint_option] : NULL,
-        '#description' => $this->t("Set the number of columns each item should take up at the '$breakpoint' breakpoint and higher."),
+        '#description' => $this->t("Set the number of columns each item should take up at the @breakpoint breakpoint and higher.", ['@breakpoint' => $breakpoint]),
         '#options' => [
-          'none' => 'None (or inherit from previous)',
-          $prefix => 'Equal',
-          $prefix . '-auto' => 'Fit to content',
+          'none' => $this->t('None (or inherit from previous)'),
+          $prefix => $this->t('Equal'),
+          $prefix . '-auto' => $this->t('Fit to content'),
         ],
       ];
       foreach ([1, 2, 3, 4, 6, 12] as $width) {

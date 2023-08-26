@@ -65,6 +65,15 @@
               transport_type: 'beacon'
             });
           }
+          else if (drupalSettings.google_analytics.trackTel && $(this).is("a[href^='tel:'],area[href^='tel:']")) {
+            // Tel link clicked.
+            console.info("Click on telephone number '%s' has been tracked.", this.href.substring(4));
+            gtag('event', 'Click', {
+              event_category: 'Telephone calls',
+              event_label: this.href.substring(4),
+              transport_type: 'beacon'
+            });
+          }
           else if (drupalSettings.google_analytics.trackOutbound && this.href.match(/^\w+:\/\//i)) {
             if (drupalSettings.google_analytics.trackDomainMode !== 2 || (drupalSettings.google_analytics.trackDomainMode === 2 && !Drupal.google_analytics.isCrossDomain(this.hostname, drupalSettings.google_analytics.trackCrossDomains))) {
               // External link clicked / No top-level cross domain clicked.

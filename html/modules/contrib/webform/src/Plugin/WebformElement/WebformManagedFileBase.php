@@ -28,6 +28,7 @@ use Drupal\webform\WebformSubmissionForm;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 /**
  * Provides a base class webform 'managed_file' elements.
@@ -293,6 +294,15 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       $element = $container;
     }
 
+    // Allow ManagedFile Ajax callback to disable flexbox wrapper.
+    // @see \Drupal\file\Element\ManagedFile::uploadAjaxCallback
+    // @see \Drupal\webform\Plugin\WebformElementBase::preRenderFixFlexboxWrapper
+    $request_params = \Drupal::request()->request->all();
+    if (\Drupal::request()->request->get('_drupal_ajax')
+      && !empty($request_params['files'])) {
+      $element['#webform_wrapper'] = FALSE;
+    }
+
     // Add process callback.
     // Set element's #process callback so that is not replaced by
     // additional #process callbacks.
@@ -400,7 +410,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       case 'value':
       case 'raw':
       default:
-        return file_create_url($file->getFileUri());
+        return $file->createFileUrl(FALSE);
     }
   }
 
@@ -557,6 +567,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
     // Look for an existing temp files that have not been uploaded.
     $fids = $this->getFileStorage()->getQuery()
+      ->accessCheck(FALSE)
       ->condition('status', 0)
       ->condition('uid', $this->currentUser->id())
       ->condition('uri', $upload_location . '/' . $key . '.%', 'LIKE')
@@ -608,7 +619,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
    * @param array $element
    *   An element.
    *
-   * @return int
+   * @return string
    *   File extensions.
    */
   protected function getFileExtensions(array $element = NULL) {
@@ -620,7 +631,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
   /**
    * Get the default allowed file extensions.
    *
-   * @return int
+   * @return string
    *   File extensions.
    */
   protected function getDefaultFileExtensions() {
@@ -1366,12 +1377,14 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
       /** @var \Drupal\Core\File\FileSystemInterface $file_system */
       $file_system = \Drupal::service('file_system');
       $filename = $file_system->basename($uri);
+      // Fallback name in case file name contains none ASCII characters.
+      $filename_fallback = \Drupal::transliteration()->transliterate($filename);
       // Force blacklisted files to be downloaded instead of opening in the browser.
       if (in_array($headers['Content-Type'], static::$blacklistedMimeTypes)) {
-        $headers['Content-Disposition'] = 'attachment; filename="' . Unicode::mimeHeaderEncode($filename) . '"';
+        $headers['Content-Disposition'] = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, (string) $filename, $filename_fallback);
       }
       else {
-        $headers['Content-Disposition'] = 'inline; filename="' . Unicode::mimeHeaderEncode($filename) . '"';
+        $headers['Content-Disposition'] = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_INLINE, (string) $filename, $filename_fallback);
       }
       return $headers;
     }
@@ -1444,7 +1457,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
         'filepath' => $this->fileSystem->realpath($file->getFileUri()) ?: $file->getFileUri(),
         // URI is used when debugging or resending messages.
         // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::buildAttachments
-        '_fileurl' => file_create_url($file->getFileUri()),
+        '_fileurl' => $file->createFileUrl(FALSE),
       ];
     }
     return $attachments;

@@ -17,7 +17,7 @@ class GoogleAnalyticsRolesTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['google_analytics'];
+  protected static $modules = ['google_analytics'];
 
   /**
    * Default theme.
@@ -36,7 +36,7 @@ class GoogleAnalyticsRolesTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $permissions = [
@@ -63,28 +63,28 @@ class GoogleAnalyticsRolesTest extends BrowserTestBase {
 
     // Check tracking code visibility.
     $this->drupalGet('');
-    $this->assertRaw($ua_code);
+    $this->assertSession()->responseContains($ua_code);
     $this->drupalGet('admin');
-    $this->assertResponse(403);
-    $this->assertRaw('/403.html');
+    $this->assertSession()->statusCodeEquals(403);
+    $this->assertSession()->responseContains('/403.html');
 
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('');
-    $this->assertRaw($ua_code);
+    $this->assertSession()->responseContains($ua_code);
     $this->drupalGet('admin');
-    $this->assertNoRaw($ua_code);
+    $this->assertSession()->responseNotContains($ua_code);
 
     // Test if the non-default settings are working as expected.
     // Enable tracking only for authenticated users.
     $this->config('google_analytics.settings')->set('visibility.user_role_roles', [AccountInterface::AUTHENTICATED_ROLE => AccountInterface::AUTHENTICATED_ROLE])->save();
 
     $this->drupalGet('');
-    $this->assertRaw($ua_code);
+    $this->assertSession()->responseContains($ua_code);
 
     $this->drupalLogout();
     $this->drupalGet('');
-    $this->assertNoRaw($ua_code);
+    $this->assertSession()->responseNotContains($ua_code);
 
     // Add to every role except the selected ones.
     $this->config('google_analytics.settings')->set('visibility.user_role_mode', 1)->save();
@@ -93,29 +93,29 @@ class GoogleAnalyticsRolesTest extends BrowserTestBase {
 
     // Check tracking code visibility.
     $this->drupalGet('');
-    $this->assertRaw($ua_code);
+    $this->assertSession()->responseContains($ua_code);
     $this->drupalGet('admin');
-    $this->assertResponse(403);
-    $this->assertRaw('/403.html');
+    $this->assertSession()->statusCodeEquals(403);
+    $this->assertSession()->responseContains('/403.html');
 
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('');
-    $this->assertRaw($ua_code);
+    $this->assertSession()->responseContains($ua_code);
     $this->drupalGet('admin');
-    $this->assertNoRaw($ua_code);
+    $this->assertSession()->responseNotContains($ua_code);
 
     // Disable tracking for authenticated users.
     $this->config('google_analytics.settings')->set('visibility.user_role_roles', [AccountInterface::AUTHENTICATED_ROLE => AccountInterface::AUTHENTICATED_ROLE])->save();
 
     $this->drupalGet('');
-    $this->assertNoRaw($ua_code);
+    $this->assertSession()->responseNotContains($ua_code);
     $this->drupalGet('admin');
-    $this->assertNoRaw($ua_code);
+    $this->assertSession()->responseNotContains($ua_code);
 
     $this->drupalLogout();
     $this->drupalGet('');
-    $this->assertRaw($ua_code);
+    $this->assertSession()->responseContains($ua_code);
   }
 
 }

@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\simple_sitemap\Entity\SimpleSitemap;
-use Drupal\simple_sitemap\Form\FormHelper;
 use Drupal\simple_sitemap\Form\StatusForm;
 
 /**
@@ -94,7 +93,6 @@ class SimpleSitemapListBuilder extends DraggableListBuilder {
     $form['entities']['#empty'] = $this->t('No sitemaps have been defined yet. <a href="@url">Add a new one</a>.', [
       '@url' => Url::fromRoute('simple_sitemap.add')->toString(),
     ]);
-    $form['#prefix'] = FormHelper::getDonationText();
 
     return $form;
   }

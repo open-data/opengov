@@ -5,6 +5,7 @@ namespace SlevomatCodingStandard\Sniffs\ControlStructures;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use SlevomatCodingStandard\Helpers\FixerHelper;
 use SlevomatCodingStandard\Helpers\IdentificatorHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
 use function array_key_exists;
@@ -121,18 +122,11 @@ class RequireTernaryOperatorSniff implements Sniff
 		$phpcsFile->fixer->replaceToken($tokens[$ifPointer]['parenthesis_opener'], '');
 		$phpcsFile->fixer->replaceToken($tokens[$ifPointer]['parenthesis_closer'], ' ? ');
 
-		for ($i = $tokens[$ifPointer]['parenthesis_closer'] + 1; $i < $pointerAfterReturnInIf; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetween($phpcsFile, $tokens[$ifPointer]['parenthesis_closer'], $pointerAfterReturnInIf);
 
-		$phpcsFile->fixer->replaceToken($semicolonAfterReturnInIf, ' : ');
+		FixerHelper::change($phpcsFile, $semicolonAfterReturnInIf, $pointerAfterReturnInElse - 1, ' : ');
 
-		for ($i = $semicolonAfterReturnInIf + 1; $i < $pointerAfterReturnInElse; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
-		for ($i = $semicolonAfterReturnInElse + 1; $i <= $tokens[$elsePointer]['scope_closer']; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetweenIncluding($phpcsFile, $semicolonAfterReturnInElse + 1, $tokens[$elsePointer]['scope_closer']);
 
 		$phpcsFile->fixer->endChangeset();
 	}
@@ -208,24 +202,13 @@ class RequireTernaryOperatorSniff implements Sniff
 
 		$phpcsFile->fixer->beginChangeset();
 
-		$phpcsFile->fixer->replaceToken($ifPointer, sprintf('%s = ', $identificatorInIf));
-		for ($i = $ifPointer + 1; $i <= $tokens[$ifPointer]['parenthesis_opener']; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
-		$phpcsFile->fixer->replaceToken($tokens[$ifPointer]['parenthesis_closer'], ' ? ');
+		FixerHelper::change($phpcsFile, $ifPointer, $tokens[$ifPointer]['parenthesis_opener'], sprintf('%s = ', $identificatorInIf));
 
-		for ($i = $tokens[$ifPointer]['parenthesis_closer'] + 1; $i < $pointerAfterAssignmentInIf; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::change($phpcsFile, $tokens[$ifPointer]['parenthesis_closer'], $pointerAfterAssignmentInIf - 1, ' ? ');
 
-		$phpcsFile->fixer->replaceToken($semicolonAfterAssignmentInIf, ' : ');
+		FixerHelper::change($phpcsFile, $semicolonAfterAssignmentInIf, $pointerAfterAssignmentInElse - 1, ' : ');
 
-		for ($i = $semicolonAfterAssignmentInIf + 1; $i < $pointerAfterAssignmentInElse; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
-		for ($i = $semicolonAfterAssignmentInElse + 1; $i <= $tokens[$elsePointer]['scope_closer']; $i++) {
-			$phpcsFile->fixer->replaceToken($i, '');
-		}
+		FixerHelper::removeBetweenIncluding($phpcsFile, $semicolonAfterAssignmentInElse + 1, $tokens[$elsePointer]['scope_closer']);
 
 		$phpcsFile->fixer->endChangeset();
 	}

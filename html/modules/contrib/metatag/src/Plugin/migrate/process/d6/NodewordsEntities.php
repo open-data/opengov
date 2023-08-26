@@ -2,6 +2,7 @@
 
 namespace Drupal\metatag\Plugin\migrate\process\d6;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\migrate\MigrateException;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
@@ -82,7 +83,7 @@ class NodewordsEntities extends ProcessPluginBase {
     // Sort the meta tags alphabetically to make testing easier.
     ksort($metatags);
 
-    return serialize($metatags);
+    return Json::encode($metatags);
   }
 
   /**
@@ -91,13 +92,12 @@ class NodewordsEntities extends ProcessPluginBase {
    * @return array
    *   An array of D6 tags to their D8 counterparts.
    */
-  public function tagsMap() {
+  public function tagsMap(): array {
     $map = [
       // From the main Metatag module.
       'abstract' => 'abstract',
       'cache-control' => 'cache_control',
       'canonical' => 'canonical_url',
-      'content-language' => 'content_language',
       'description' => 'description',
       'expires' => 'expires',
       'generator' => 'generator',
@@ -107,7 +107,6 @@ class NodewordsEntities extends ProcessPluginBase {
       'icbm' => 'icbm',
       'image_src' => 'image_src',
       'keywords' => 'keywords',
-      'news_keywords' => 'news_keywords',
       'next' => 'next',
       'original-source' => 'original_source',
       'page_title' => 'title',
@@ -121,7 +120,6 @@ class NodewordsEntities extends ProcessPluginBase {
       'robots' => 'robots',
       'set_cookie' => 'set_cookie',
       'shortlink' => 'shortlink',
-      'standout' => 'standout',
       'syndication-source' => 'original_source',
       'title' => 'title',
 
@@ -246,14 +244,6 @@ class NodewordsEntities extends ProcessPluginBase {
       'doc_status' => 'doc_status',
       'google_rating' => 'google_rating',
       'thumbnail' => 'thumbnail',
-
-      // From metatag_google_plus.metatag.inc; not doing these, Google+ closed.
-      'itemtype' => '',
-      'itemprop:name' => '',
-      'itemprop:description' => '',
-      'itemprop:image' => '',
-      'author' => '',
-      'publisher' => '',
 
       // From metatag_hreflang.metatag.inc:
       'hreflang_xdefault' => 'hreflang_xdefault',
@@ -445,9 +435,9 @@ class NodewordsEntities extends ProcessPluginBase {
       'yandex-verification' => 'yandex',
     ];
 
-    // Trigger hook_metatag_migrate_metatagd7_tags_map_alter().
+    // Trigger hook_metatag_migrate_nodewordsd6_tags_map_alter().
     // Allow modules to override tags or the entity used for token replacements.
-    \Drupal::service('module_handler')->alter('metatag_migrate_metatagd7_tags_map', $map);
+    \Drupal::service('module_handler')->alter('metatag_migrate_nodewordsd6_tags_map', $map);
 
     return $map;
   }

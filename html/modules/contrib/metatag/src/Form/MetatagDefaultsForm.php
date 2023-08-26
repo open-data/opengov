@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\metatag\MetatagDefaultsInterface;
 use Drupal\metatag\MetatagManager;
 use Drupal\metatag\MetatagManagerInterface;
@@ -109,7 +110,7 @@ class MetatagDefaultsForm extends EntityForm {
     $form['#suffix'] = '</div>';
 
     $default_type = NULL;
-    if (!empty($metatag_defaults)) {
+    if ($metatag_defaults) {
       $default_type = $metatag_defaults->getOriginalId();
     }
     else {
@@ -157,7 +158,9 @@ class MetatagDefaultsForm extends EntityForm {
     $entity_type_groups = $settings->get('entity_type_groups');
 
     // Find the current entity type and bundle.
-    if ($metatag_defaults_id = $metatag_defaults->id()) {
+    $entity_bundle = NULL;
+    $metatag_defaults_id = $metatag_defaults->id();
+    if (!empty($metatag_defaults_id)) {
       $type_parts = explode('__', $metatag_defaults_id);
       $entity_type = $type_parts[0];
       $entity_bundle = $type_parts[1] ?? NULL;
@@ -187,17 +190,9 @@ class MetatagDefaultsForm extends EntityForm {
   }
 
   /**
-   * Ajax form submit handler that will return the whole rebuilt form.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return array
-   *   The form structure.
+   * {@inheritdoc}
    */
-  public function rebuildForm(array &$form, FormStateInterface $form_state) {
+  public function rebuildForm(array &$form, FormStateInterface $form_state): array {
     return $form;
   }
 
@@ -269,7 +264,7 @@ class MetatagDefaultsForm extends EntityForm {
     }
 
     // Set tags within the Metatag entity.
-    $tags = $this->metatagPluginManager->getDefinitions();
+    $tags = $this->metatagManager->sortedTags();
     $tag_values = [];
     foreach ($tags as $tag_id => $tag_definition) {
       if ($form_state->hasValue($tag_id)) {
@@ -287,6 +282,7 @@ class MetatagDefaultsForm extends EntityForm {
     ksort($tag_values);
 
     $metatag_defaults->set('tags', $tag_values);
+    /** @var int $status */
     $status = $metatag_defaults->save();
 
     switch ($status) {
@@ -303,6 +299,8 @@ class MetatagDefaultsForm extends EntityForm {
     }
 
     $form_state->setRedirectUrl($metatag_defaults->toUrl('collection'));
+
+    return $status;
   }
 
   /**
@@ -311,7 +309,7 @@ class MetatagDefaultsForm extends EntityForm {
    * @return array
    *   A list of available bundles as $id => $label.
    */
-  protected function getAvailableBundles() {
+  protected function getAvailableBundles(): array {
     $options = [];
     $entity_types = static::getSupportedEntityTypes();
     $metatags_defaults_manager = $this->entityTypeManager->getStorage('metatag_defaults');
@@ -338,7 +336,7 @@ class MetatagDefaultsForm extends EntityForm {
    * @return array
    *   A list of available entity types as $machine_name => $label.
    */
-  public static function getSupportedEntityTypes() {
+  public static function getSupportedEntityTypes(): array {
     $entity_types = [];
 
     /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
@@ -389,7 +387,7 @@ class MetatagDefaultsForm extends EntityForm {
    * @return string
    *   A label.
    */
-  public static function getEntityTypeLabel(EntityTypeInterface $entityType) {
+  public static function getEntityTypeLabel(EntityTypeInterface $entityType): string {
     $label = $entityType->getLabel();
 
     if (is_a($label, 'Drupal\Core\StringTranslation\TranslatableMarkup')) {
@@ -403,13 +401,13 @@ class MetatagDefaultsForm extends EntityForm {
   /**
    * Route title callback.
    *
-   * @param \Drupal\metatag\MetatagDefaultsInterface|null $metatag_defaults
+   * @param \Drupal\metatag\MetatagDefaultsInterface $metatag_defaults
    *   Metatags default entity.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   Translated route title.
    */
-  public function getTitle(MetatagDefaultsInterface $metatag_defaults) {
+  public function getTitle(MetatagDefaultsInterface $metatag_defaults): TranslatableMarkup {
     return $this->t('Edit default meta tags for @path', [
       '@path' => $metatag_defaults->label(),
     ]);

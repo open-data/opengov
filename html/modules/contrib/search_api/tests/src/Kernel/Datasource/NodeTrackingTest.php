@@ -8,6 +8,7 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\node\Entity\Node;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api\IndexInterface;
 use Drupal\Tests\search_api\Kernel\PostRequestIndexingTrait;
 use Drupal\Tests\search_api\Kernel\TestLogger;
 
@@ -35,9 +36,14 @@ class NodeTrackingTest extends KernelTestBase {
   ];
 
   /**
+   * The test index used in this test.
+   */
+  protected IndexInterface $index;
+
+  /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installSchema('search_api', ['search_api_item']);
