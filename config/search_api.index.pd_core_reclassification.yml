@@ -35,6 +35,9 @@ third_party_settings:
     multilingual:
       limit_to_content_language: false
       include_language_independent: true
+      specific_languages: {  }
+      use_language_undefined_as_fallback_language: false
+      use_universal_collation: false
 id: pd_core_reclassification
 name: 'Proactive Disclosure: Reclassification Index'
 description: 'Read-only search index for Solr core_reclassification'
