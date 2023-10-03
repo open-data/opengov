@@ -11,18 +11,22 @@ Drupal 9 Test Plan
 <ul class="contains-task-list">
 
 <li class="task-list-item">
+  - [ ]
   <input type="checkbox" class="task-list-item-checkbox">
    🡲 View Profile
 </li>
 <li class="task-list-item">
+  - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
    🡲 Edit Profile
   <ul class="contains-task-list">
     <li class="task-list-item">
+      - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
    🡮 <i>Edit</i>
 </li>
     <li class="task-list-item">
+      - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
    🡮 <i>Submissions</i>
       
@@ -31,8 +35,9 @@ Drupal 9 Test Plan
 </li>
 
 <li class="task-list-item">
+  - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
-   - [ ]🡲 Log Out
+   🡲 Log Out
 </input>
 </li>
   
