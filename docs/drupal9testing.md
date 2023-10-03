@@ -5,28 +5,34 @@ Drupal 9 Test Plan
 </h1>
 
 <h2 tabindex="-1" dir="auto">
-User-Account Activities:
+◼ User-Account Activities:
 </h2>
 
 <ul class="contains-task-list">
 
 <li class="task-list-item">
   <input type="checkbox" class="task-list-item-checkbox">
-   🔵 View Profile
+   🡲 View Profile
 </li>
 <li class="task-list-item">
   <input type="checkbox" class="task-list-item-checkbox">
-   🔵 Edit Profile
+   🡲 Edit Profile
   <ul class="contains-task-list">
     <li class="task-list-item">
   <input type="checkbox" class="task-list-item-checkbox">
-   🔵 Edit
+   🡮 <i>Edit</i>
 </li>
     <li class="task-list-item">
   <input type="checkbox" class="task-list-item-checkbox">
-   🔵 Submissions
+   🡮 <i>Submissions</i>
+      
 </li>
   </ul>
+</li>
+
+<li class="task-list-item">
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡲 View Profile
 </li>
   
 </ul>
