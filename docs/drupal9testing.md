@@ -32,7 +32,8 @@ Drupal 9 Test Plan
 
 <li class="task-list-item">
   <input type="checkbox" class="task-list-item-checkbox">
-   🡲 View Profile
+   - [ ]🡲 Log Out
+</input>
 </li>
   
 </ul>
