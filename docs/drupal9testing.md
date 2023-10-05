@@ -62,13 +62,107 @@ Drupal 9 Test Plan
   - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
    🡦 <i>Basic Page</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Blog Post</i><li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Book Page</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Commitment</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Consultation</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>External</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Idea</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Landing Page</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Open Data Impact Story</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Suggest Dataset</i>
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Webform</i>
+  
   </ul>
     </li>
-    <li class="task-list-item">
-      - [ ] 
+    
+  <li class="task-list-item">
+     - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
    🡮 <i>Files</i>
     </li>
-  
+  <li class="task-list-item">
+     - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡮 <i>Media</i>
+    <ul>
+      <li class="task-list-item">
+      - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Add Media</i>
+        <ul>
+            <li class="task-list-item">
+            - [ ] 
+            <input type="checkbox" class="task-list-item-checkbox">
+             🡖 <i>Audio</i>
+              <li class="task-list-item">
+            - [ ] 
+            <input type="checkbox" class="task-list-item-checkbox">
+             🡖 <i>Document</i>
+              <li class="task-list-item">
+            - [ ] 
+            <input type="checkbox" class="task-list-item-checkbox">
+             🡖 <i>Image</i>
+              <li class="task-list-item">
+            - [ ] 
+            <input type="checkbox" class="task-list-item-checkbox">
+             🡖 <i>Remote Video</i>
+              <li class="task-list-item">
+            - [ ] 
+            <input type="checkbox" class="task-list-item-checkbox">
+             🡖 <i>Slideshow Item</i>
+              <li class="task-list-item">
+            - [ ] 
+            <input type="checkbox" class="task-list-item-checkbox">
+             🡖 <i>Video</i>
+        </ul>
+    <li class="task-list-item">
+        - [ ] 
+        <input type="checkbox" class="task-list-item-checkbox">
+          🡦 <i>Media Library</i>
+    </li>
+    </ul>
+    <li class="task-list-item">
+     - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡮 <i>Review Dataset Suggestions</i>
+    </li>
+    </li>
 </ul>
+
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡲 Structure
+</input>
+</li>
 </article>
