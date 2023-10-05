@@ -15,6 +15,7 @@ Drupal 9 Test Plan
   <input type="checkbox" class="task-list-item-checkbox">
    🡲 View Profile
 </li>
+
 <li class="task-list-item">
   - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
@@ -25,12 +26,12 @@ Drupal 9 Test Plan
   <input type="checkbox" class="task-list-item-checkbox">
    🡮 <i>Edit</i>
 </li>
-    <li class="task-list-item">
-      - [ ] 
+    
+<li class="task-list-item">
+  - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
    🡮 <i>Submissions</i>
       
-</li>
   </ul>
 </li>
 
@@ -40,7 +41,34 @@ Drupal 9 Test Plan
    🡲 Log Out
 </input>
 </li>
+
+<li class="task-list-item">
+  - [ ]
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡲 Content
+  <ul class="contains-task-list">
+    <li class="task-list-item">
+      - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡮 <i>Add Content</i>
+      <ul class="contains-task-list">
+    <li class="task-list-item">
+      - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>App</i>
+</li>
+    
+<li class="task-list-item">
+  - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡦 <i>Basic Page</i>
+  </ul>
+    </li>
+    <li class="task-list-item">
+      - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡮 <i>Files</i>
+    </li>
   
 </ul>
-  
 </article>
