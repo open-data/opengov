@@ -163,6 +163,115 @@ Drupal 9 Test Plan
   - [ ] 
   <input type="checkbox" class="task-list-item-checkbox">
    🡲 Structure
-</input>
+  <ul>
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡮 Block Layout
+    <ul>
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Add Custom Block
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Block Types
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Custom Block Library
+  </ul>
+
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡮 Menus
+   <ul>
+     <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Add Menus
+    <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 All Menus
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Administration
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Brand
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Brand FR
+   </ul>
+    
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡮 Taxonomy
+   <ul>
+     <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Add Vocabulary
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 App FreeTags
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 App Ribbon
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Blog Author
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Commitment FreeTags
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Consultation Status
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Dataset Subjects
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Departments
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Device Formats
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Idea FreeTags
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Idea Status
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Site Structure
+  <li class="task-list-item">
+    - [ ] 
+  <input type="checkbox" class="task-list-item-checkbox">
+   🡖 Subscriptions
+    </ul>
+
+
+
+  </ul>
+  
 </li>
 </article>
