@@ -1,8 +1,66 @@
 <article class="markdown-body entry-content container-lg" itemprop="text">
 
 <h1 tabindex="-1" dir="auto">
-Drupal 9 Test Plan
+Drupal 9 Test Plan for Business Users
 </h1>
+
+<h2 tabindex="-1" dir="auto">
+◼ Checking your User-Account for bugs; Editing account information and viewing submissions. 
+</h2>
+
+<ol>
+  
+<li class="task-list-item">
+  <b>Editing your account information</b> - After selecting your user account/profile under the "Edit" tab, you should be able to:
+  <ul>
+    <li>
+    - [ ]
+    <input type="checkbox" class="task-list-item-checkbox">
+    Edit your "First Name"
+    </li>
+    <li>
+    - [ ]
+    <input type="checkbox" class="task-list-item-checkbox">
+    Edit your "Last Name"
+    </li>
+    <li>
+    - [ ]
+    <input type="checkbox" class="task-list-item-checkbox">
+    Edit your "Current Password" - click the blue "Reset your Password" prompt, submit the request and receive a password reset email.
+    </li>
+    <li>
+    - [ ]
+    <input type="checkbox" class="task-list-item-checkbox">
+    Edit your "Email Address"
+    </li>
+    <li>
+    - [ ]
+    <input type="checkbox" class="task-list-item-checkbox">
+    Edit your "Password" - following the password recommendation and prompt to "enter the new password in both fields."
+    </li>
+    
+  </ul>
+</li>
+<li>
+  <b>Reviewing the content submissions made under your account</b> - After selecting your user account/profile, under the "Submissions" tab you should be able to:
+  <ul>
+    <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      See all the content you've created and/or modified, ordered from most recent date of modification.
+    </li>
+  </ul>
+</li>
+
+</ol>
+
+
+
+
+
+
+
+
 
 <h2 tabindex="-1" dir="auto">
 ◼ User-Account Activities:
