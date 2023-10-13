@@ -9,7 +9,6 @@ Drupal 9 Test Plan for Business Users
 </h2>
 
 <ol>
-  
 <li class="task-list-item">
   <b>Editing your account information</b> - After selecting your user account/profile under the "Edit" tab, you should be able to:
   <ul>
@@ -51,7 +50,37 @@ Drupal 9 Test Plan for Business Users
     </li>
   </ul>
 </li>
+</ol>
 
+
+<h2 tabindex="-1" dir="auto">
+◼ Adding Content; Basic Pages, Book Pages, Media Files and Suggested Datasets.
+</h2>
+<ol>
+  
+  <li>
+    <b>Basic Pages</b> 
+  </li>
+  
+  <li>
+    <b>Book Pages</b> 
+  </li>
+  
+  <li>
+    <b>Media Files</b> - After selecting the "Add Media" option within the "Content" then "Media" tabs, you should be able to:
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Upload an Image - <i>browse, select and upload an image from your device. You must include a Alternate Text description of the image to meet accessibility requirements. Recall, content must exist in both official languages. Therefore you must add a translated version of every image and it's Alternate Text.</i>
+    </li>
+    </ul>
+  </li>
+  
+  <li>
+    <b>Suggested Datasets</b> 
+  </li>
+  
 </ol>
 
 
