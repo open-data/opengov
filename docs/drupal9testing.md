@@ -5,12 +5,12 @@ Drupal 9 Test Plan for Business Users
 </h1>
 
 <h2 tabindex="-1" dir="auto">
-◼ Checking your User-Account for bugs; Editing account information and viewing submissions. 
+🟩 Checking your User-Account for bugs; Editing account information and viewing submissions. 
 </h2>
 
 <ol>
 <li class="task-list-item">
-  <b>Editing your account information</b> - After selecting your user account/profile under the "Edit" tab, you should be able to:
+  <h3>Editing your account information - In the "Edit" option within your User Account page, you should be able to:</h3>
   <ul>
     <li>
     - [ ]
@@ -25,7 +25,7 @@ Drupal 9 Test Plan for Business Users
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Current Password" - click the blue "Reset your Password" prompt, submit the request and receive a password reset email.
+    Edit your "Current Password" - <i>click the blue "Reset your Password" prompt, submit a request and receive a password reset email.</i>
     </li>
     <li>
     - [ ]
@@ -35,13 +35,13 @@ Drupal 9 Test Plan for Business Users
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Password" - following the password recommendation and prompt to "enter the new password in both fields."
+    Edit your "Password" - <i>follow the password recommendations and enter your new password in both fields as prompted.</i>
     </li>
     
   </ul>
 </li>
 <li>
-  <b>Reviewing the content submissions made under your account</b> - After selecting your user account/profile, under the "Submissions" tab you should be able to:
+  <h3>Reviewing the content submissions - In the "Submissions" option within your User Account page, you should be able to:</h3>
   <ul>
     <li>
       - [ ]
@@ -54,7 +54,7 @@ Drupal 9 Test Plan for Business Users
 
 
 <h2 tabindex="-1" dir="auto">
-◼ Adding Content; Basic Pages, Book Pages, Media Files and Suggested Datasets.
+🟦 Adding Content; Basic Pages, Book Pages, Media Files and Suggested Datasets.
 </h2>
 <ol>
   
@@ -67,12 +67,12 @@ Drupal 9 Test Plan for Business Users
   </li>
   
   <li>
-    <b>Media Files</b> - After selecting the "Add Media" option within the "Content" then "Media" tabs, you should be able to:
+    <h3>Media Files - In the "Add Media" option under "Content" and "Media" tabs, you should be able to:</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload an Image - <i>browse, select and upload an image from your device. You must include a Alternate Text description of the image to meet accessibility requirements. Recall, content must exist in both official languages. Therefore you must add a translated version of every image and it's Alternate Text.</i>
+      Upload an Image - <i>browse, select and upload an image from your device. You must include a "Alternate Text" description of the image to meet accessibility requirements. Remember, images containing text or language must have a translated version re-uploaded. Additionally, all images must have translated versions of the Alternate Text descriptions to meet official language requirements. You can add translated alternate text by "Editing" an uploaded image and viewing the "Translate" tab for that image.</i>
     </li>
     </ul>
   </li>
