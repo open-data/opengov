@@ -94,61 +94,24 @@ Drupal 9 Test Plan for Business Users
     </li>
     </ul>
   </li>
+</ol>
+
+<h2>🟨 Reviewing Dataset Suggestions</h2>
+<ol>
   
   <li>
-    <h3>Suggested Datasets</h3> 
+    <h3>Searching and Filtering Dataset Suggestions</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Suggested title of dataset(s)" -<i>Input a title that best describes the content of the dataset(s)</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Government institution" - <i>Specify which governemnt agency is responisble for the dataset</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Enter a "Description" - <i>Content to describe for the dataset(s)</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Subject" - <i>An accurate subject helps prioritize the dataset(s) in a subject filter</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Enter "Keywords" - <i>Select some terms that will help identify the dataset in a search query</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Status" - <i>Choose a status that reflects the phase of development for the dataset(s)</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Status Link" - <i>Input a URL or site path that links to "Status" webpage, if there is one</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Specify a "Dataset release date" - <i>Select a date for the dataset to go public</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Input "Feedback" - <i>Share commentary for the dataset in the "Feedback" window</i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format - <i>Below the "Body" editing window, you can select from a list to save the page as a draft, published or archived article.</i>
+      Partitioning Suggested Datasets - <i>At the top of the Suggested Datasets page, you can select between "Published", "Unapproved" and "Untranslated" Dataset Suggestions. </i>
       </li>
     </ul>
+  </li>
+
+  <li>
+    <h3>Managing Dataset Suggestions</h3>
   </li>
   
 </ol>
