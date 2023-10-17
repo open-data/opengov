@@ -126,7 +126,7 @@ Drupal 9 Test Plan for Business Users
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Status" - <i>Choose a status that reflects the phase of development for the dataset(s)</li>
+      Select a "Status" - <i>Choose a status that reflects the phase of development for the dataset(s)</i>
       </li>
       <li>
       - [ ]
