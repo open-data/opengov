@@ -85,32 +85,6 @@ Drupal 9 Test Plan for Business Users
   </li>
   
   <li>
-    <h3>Book Pages</h3>
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Title" for your bookpage
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Enter some content for the "Body" for your bookpage
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Input a "URL alias" for your page - <i>On the right hand side you can expand the URL alias tab, uncheck the "Generate automatic URL alias" selection and manually enter a URL alias. </i>
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format - <i>Below the "Body" editing window, you can select from a list to save the page as a draft, published or archived article.</i>
-      </li>
-    </ul>
-  </li>
-  
-  <li>
     <h3>Media Files - In the "Add Media" option under "Content" and "Media" tabs, you should be able to:</h3>
     <ul>
       <li>
