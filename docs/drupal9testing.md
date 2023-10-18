@@ -100,12 +100,27 @@ Drupal 9 Test Plan for Business Users
 <ol>
   
   <li>
-    <h3>Searching and Filtering Dataset Suggestions</h3>
+    <h3>Searching, Filtering and peforming Actions on Dataset Suggestions</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
       Partitioning Suggested Datasets - <i>At the top of the Suggested Datasets page, you can select between "Published", "Unapproved" and "Untranslated" Dataset Suggestions. </i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Filtering Dataset Suggestions by institution - <i>On the Suggested Datasets page, you can filter Dataset Suggestions by selecting a Canadian agency from the "Government Institution" list</i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Filtering Dataset Suggestions by status - <i>Onthe Suggested Datasets page, you can filter Dataset Suggestions by selecting one of the status in the "Suggested Dataset Status" list</i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Applying an Action - <i>After partitioning, filtering, and selecting one or more Dataset Suggestions by clicking their checkboxes; you can apply "Delete" or "Publish Content" actions to the selected Dataset Suggestions by pressing the "Apply to Selected items" button</i>
       </li>
     </ul>
   </li>
