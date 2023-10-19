@@ -129,7 +129,7 @@ Drupal 9 Test Plan for Business Users
     <h3>Managing Dataset Suggestions - In the "Content" tab and selecting "Review Dataset Suggestions", you should be able to:</h3>
   </li>
   <ol>
-    <b>Edit the content of Dataset Suggestion - Check the "Edit" tab for the Suggested Dataset</b>
+    <h4><b>Edit the content of Dataset Suggestion - Check the "Edit" tab for the Suggested Dataset</b></h4>
     <ol>
       <ul>
       <li>
@@ -187,7 +187,7 @@ Drupal 9 Test Plan for Business Users
   </ol>
 
   <ol>
-    <b>Delete all existing Translations for some Dataset Suggestion - Check the "Delete" tab for the Suggested Dataset</b>
+    <h4><b>Delete all existing Translations for some Dataset Suggestion - Check the "Delete" tab for the Suggested Dataset</b></h4>
     <ol>
       <ul>
       <li>
@@ -200,7 +200,7 @@ Drupal 9 Test Plan for Business Users
   </ol>
 
   <ol>
-    <b>Check the Revision History for a Dataset Suggestion and revert to another instance - Check the "Revisions" tab for the Suggested Dataset</b>
+    <h4><b>Check the Revision History for a Dataset Suggestion and revert to another instance - Check the "Revisions" tab for the Suggested Dataset</b></h4>
     <ol>
       <ul>
       <li>
