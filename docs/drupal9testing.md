@@ -126,7 +126,7 @@ Drupal 9 Test Plan for Business Users
   </li>
 
   <li>
-    <h3>Managing Dataset Suggestions In the "Content" tab and selecting "Review Dataset Suggestions", then selecting an existing Dataset Suggestion and navigating to it's "Edit" tab, you should be able to:</h3>
+    <h3>Managing Dataset Suggestions - In the "Content" tab and selecting "Review Dataset Suggestions", then selecting an existing Dataset Suggestion and navigating to it's "Edit" tab, you should be able to:</h3>
   </li>
   <ol>
     <b>Edit the content of Dataset Suggestion</b>
