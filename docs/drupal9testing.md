@@ -59,7 +59,7 @@ Drupal 9 Test Plan for Business Users
 <ol>
   
   <li>
-    <h3>Basic Pages</h3> 
+    <h3>Basic Pages - In the "Content" tab, or by navigating through the "Content", "Add Content" and "Basic Page" tabs, you should be able to:</h3> 
     <ul>
       <li>
       - [ ]
@@ -85,7 +85,7 @@ Drupal 9 Test Plan for Business Users
   </li>
   
   <li>
-    <h3>Media Files - In the "Add Media" option under "Content" and "Media" tabs, you should be able to:</h3>
+    <h3>Media Files - In the "Content" tab, by navigating through the "Media" and "Add Media" tabs, you should be able to:</h3>
     <ul>
       <li>
       - [ ]
@@ -96,11 +96,11 @@ Drupal 9 Test Plan for Business Users
   </li>
 </ol>
 
-<h2>🟨 Reviewing Dataset Suggestions</h2>
+<h2>🟨 Dataset Suggestions: Searching, Filtering, Actions and Revisions.</h2>
 <ol>
   
   <li>
-    <h3>Searching, Filtering and peforming Actions on Dataset Suggestions</h3>
+    <h3>Searching, Filtering and performing actions on Dataset Suggestions - In the "Content" tab and selecting "Review Dataset Suggestions" you should be able to:</h3>
     <ul>
       <li>
       - [ ]
@@ -126,10 +126,10 @@ Drupal 9 Test Plan for Business Users
   </li>
 
   <li>
-    <h3>Managing Dataset Suggestions</h3>
+    <h3>Managing Dataset Suggestions In the "Content" tab and selecting "Review Dataset Suggestions", then selecting an existing Dataset Suggestion and navigating to it's "Edit" tab, you should be able to:</h3>
   </li>
   <ol>
-    Editing a Dataset Suggestion
+    <b>Edit the content of Dataset Suggestion</b>
     <ol>
       <ul>
       <li>
@@ -187,7 +187,7 @@ Drupal 9 Test Plan for Business Users
   </ol>
 
   <ol>
-    Deleting translations for a Dataset Suggestion
+    <b>Delete all existing Translations for some Dataset Suggestion</b>
     <ol>
       <ul>
       <li>
@@ -200,7 +200,7 @@ Drupal 9 Test Plan for Business Users
   </ol>
 
   <ol>
-    Checking Revision History for a Dataset Suggestion and reverting to another instance
+    <b>Check the Revision History for a Dataset Suggestion and revert to another instance</b>
     <ol>
       <ul>
       <li>
