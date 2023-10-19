@@ -185,5 +185,36 @@ Drupal 9 Test Plan for Business Users
     </ul>
     </ol>
   </ol>
+
+  <ol>
+    Deleting translations for a Dataset Suggestion
+    <ol>
+      <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Selecting a Dataset Suggestion and going to the "Delete" tab, then select the "Delete All Translations" button</i>
+      </li>
+    </ul>
+    </ol>
+  </ol>
+
+  <ol>
+    Checking Revision History for a Dataset Suggestion and reverting to another instance
+    <ol>
+      <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Select a Dataset Suggestion and go to the "Revisions" tab. You should see a history of changes made to the Suggested Dataset
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      When viewing the Revision History of a Dataset Suggestion, select the "Revert" button to implement an previously existing instance of the Suggested Dataset based on the date, time and author criteria you need.
+      </li>
+    </ul>
+    </ol>
+  </ol>
   
 </ol>
