@@ -218,10 +218,10 @@ Drupal 9 Test Plan for Business Users
   </ol>
 </ol>
 
-<h2>Providing Feedback on a Dataset.</h2>
+<h2>🟪 Providing Feedback on a Dataset.</h2>
   <ol>
     <li>
-      <h3>🟪 Dataset Feedback - When viewing a Dataset or Open Information record from the Open Government webpage; select the "Provide feedback" button or fill the feedback form at the bottom of the page.</h3>
+      <h3>Dataset Feedback - When viewing a Dataset or Open Information record from the Open Government webpage; select the "Provide feedback" button or fill the feedback form at the bottom of the page.</h3>
     </li>
     <ul>
       <li>
