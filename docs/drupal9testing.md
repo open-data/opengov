@@ -229,5 +229,10 @@ Drupal 9 Test Plan for Business Users
       <input type="checkbox" class="task-list-item-checkbox">
       Submit a feedback form - <i>Enter a name and email address, then select one of the "I am a" and "Reason for feedback" labels. Provide a paragraph of feedback and submit the form</i>
       </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Review your feedback submission - <i>Verify that Drupal received your feedback form by selecting the "Manage" tab, then "Structure" and then "Webforms". The "Webform Submissions" page is where you can view your feedback submission</i>
+      </li>
     </ul>
   </ol>
