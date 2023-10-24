@@ -25,17 +25,12 @@ Drupal 9 Test Plan for Business Users
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Current Password" - <i>click the blue "Reset your Password" prompt, submit a request and receive a password reset email.</i>
-    </li>
-    <li>
-    - [ ]
-    <input type="checkbox" class="task-list-item-checkbox">
     Edit your "Email Address"
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Password" - <i>follow the password recommendations and enter your new password in both fields as prompted.</i>
+    Edit your "Password"
     </li>
     
   </ul>
@@ -74,12 +69,12 @@ Drupal 9 Test Plan for Business Users
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Input a "URL alias" for your page - <i>On the right hand side you can expand the URL alias tab, uncheck the "Generate automatic URL alias" selection and manually enter a URL alias. </i>
+      Define a "URL alias" for your page
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format - <i>Below the "Body" editing window, you can select from a list to save the page as a draft, published or archived article.</i>
+      Select a "Save as" format
       </li>
     </ul>
   </li>
@@ -90,7 +85,12 @@ Drupal 9 Test Plan for Business Users
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload an Image - <i>browse, select and upload an image from your device. You must include a "Alternate Text" description of the image to meet accessibility requirements. Remember, images containing text or language must have a translated version re-uploaded. Additionally, all images must have translated versions of the Alternate Text descriptions to meet official language requirements. You can add translated alternate text by "Editing" an uploaded image and viewing the "Translate" tab for that image.</i>
+      Upload an "Image"
+    </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Upload a "Document"
     </li>
     </ul>
   </li>
@@ -110,17 +110,17 @@ Drupal 9 Test Plan for Business Users
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Filtering Dataset Suggestions by institution - <i>On the Suggested Datasets page, you can filter Dataset Suggestions by selecting a Canadian agency from the "Government Institution" list</i>
+      Filtering Dataset Suggestions by "Government institution"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Filtering Dataset Suggestions by status - <i>Onthe Suggested Datasets page, you can filter Dataset Suggestions by selecting one of the status in the "Suggested Dataset Status" list</i>
+      Filtering Dataset Suggestions by "Suggested Dataset status"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Applying an Action - <i>After partitioning, filtering, and selecting one or more Dataset Suggestions by clicking their checkboxes; you can apply "Delete" or "Publish Content" actions to the selected Dataset Suggestions by pressing the "Apply to Selected items" button</i>
+      Applying an Action - <i>After selecting one or more Dataset Suggestions you can apply "Delete" or "Publish Content" actions</i>
       </li>
     </ul>
   </li>
@@ -129,28 +129,28 @@ Drupal 9 Test Plan for Business Users
     <h3>Managing Dataset Suggestions - In the "Content" tab and selecting "Review Dataset Suggestions", you should be able to:</h3>
   </li>
   <ol>
-    <h4><b>Edit the content of Dataset Suggestion - Check the "Edit" tab for the Suggested Dataset</b></h4>
+    <h4><b>Edit the content of Dataset Suggestions:</b></h4>
     <ol>
       <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Suggested title of dataset(s)" -<i>Input a title that best describes the content of the dataset(s)</i>
+      Enter the "Suggested title of dataset(s)"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Government institution" - <i>Specify which governemnt agency is responisble for the dataset</i>
+      Select a "Government institution"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter a "Description" - <i>Content to describe for the dataset(s)</i>
+      Enter a "Description"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Subject" - <i>An accurate subject helps prioritize the dataset(s) in a subject filter</i>
+      Select a "Subject"
       </li>
       <li>
       - [ ]
@@ -160,7 +160,7 @@ Drupal 9 Test Plan for Business Users
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Status" - <i>Choose a status that reflects the phase of development for the dataset(s)</i>
+      Select a "Status"
       </li>
       <li>
       - [ ]
@@ -170,48 +170,48 @@ Drupal 9 Test Plan for Business Users
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Specify a "Dataset release date" - <i>Select a date for the dataset to go public</i>
+      Specify a "Dataset release date"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Input "Feedback" - <i>Share commentary for the dataset in the "Feedback" window</i>
+      Input "Feedback"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format - <i>Below the "Body" editing window, you can select from a list to save the page as a draft, published or archived article.</i>
-      </li>
-    </ul>
-    </ol>
-  </ol>
-
-  <ol>
-    <h4><b>Delete all existing Translations for some Dataset Suggestion - Check the "Delete" tab for the Suggested Dataset</b></h4>
-    <ol>
-      <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Selecting a Dataset Suggestion and going to the "Delete" tab, then select the "Delete All Translations" button</i>
+      Select a "Save as" format
       </li>
     </ul>
     </ol>
   </ol>
 
   <ol>
-    <h4><b>Check the Revision History for a Dataset Suggestion and revert to another instance - Check the "Revisions" tab for the Suggested Dataset</b></h4>
+    <h4><b>Delete all existing Translations for some Dataset Suggestion</b></h4>
     <ol>
       <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a Dataset Suggestion and go to the "Revisions" tab. You should see a history of changes made to the Suggested Dataset
+      When viewing a Dataset Suggestion, go to the "Delete" tab and "Delete All Translations"</i>
+      </li>
+    </ul>
+    </ol>
+  </ol>
+
+  <ol>
+    <h4><b>Check the Revision History for a Dataset Suggestion and changing to another instance of the Dataset Suggestion</b></h4>
+    <ol>
+      <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      In the "Revisions" tab for a Dataset Suggestion, you should see a change log/history
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      When viewing the Revision History of a Dataset Suggestion, select the "Revert" button to implement an previously existing instance of the Suggested Dataset based on the date, time and author criteria you need.
+      "Revert" to another instance of the Dataset Suggestion based on the date, time and author criteria in the change log.
       </li>
     </ul>
     </ol>
@@ -221,18 +221,18 @@ Drupal 9 Test Plan for Business Users
 <h2>🟪 Providing Feedback on a Dataset.</h2>
   <ol>
     <li>
-      <h3>Dataset Feedback - When viewing a Dataset or Open Information record from the Open Government webpage; select the "Provide feedback" button or fill the feedback form at the bottom of the page.</h3>
+      <h3>Dataset Feedback - When viewing a Dataset or Open Information record from the Open Government webpage, select the "Provide feedback" button. Also test the feedback form at the bottom of the Dataset page.</h3>
     </li>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Submit a feedback form - <i>Enter a name and email address, then select one of the "I am a" and "Reason for feedback" labels. Provide a paragraph of feedback and submit the form</i>
+      Submit a feedback form
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Review your feedback submission - <i>Verify that Drupal received your feedback form by selecting the "Manage" tab, then "Structure" and then "Webforms". The "Webform Submissions" page is where you can view your feedback submission</i>
+      Review your feedback submission - <i>Verify that Drupal received your feedback form by selecting the "Manage" tab, then "Structure" and then "Webforms". The "Webform Submissions" page is where you should see your feedback submission</i>
       </li>
     </ul>
   </ol>
