@@ -15,47 +15,47 @@ Drupal 9 Test Plan for Administrators
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "First Name"
+    Edit an accounts "First Name"
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Specify "Your current logout threshold" - <i>Log out and test you cannot login again until the specified time has passed</i>
+    Specify "Your current logout threshold" for an account - <i>Log out and test you cannot login again until the specified time has passed</i>
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Last Name"
+    Edit an accounts "Last Name"
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Email Address"
+    Edit an accounts "Email Address"
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Username"
+    Edit an accounts "Username"
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Password"
+    Edit an accounts "Password"
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Status" - <i>Test that you can block the account and prevent the account from logging into Drupal</i>
+    Edit an accounts "Status" - <i>Block an account and test the account cannot login, unblock and the account shall login</i>
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Edit your "Roles" -<i>Change to each role and check your account permissions equate to the new role</i>
+    Edit an accounts "Roles" - <i>Test that each role modifies the accounts permissions to the permissions granted by the new role</i>
     </li>
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Check that you can "Cancel account" <i>Delete your account</i>
+    Check that you apply "Cancel account" to an account- <i>Delete the account</i>
     </li>
     
   </ul>
