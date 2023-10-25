@@ -10,7 +10,7 @@ Drupal 9 Test Plan for Administrators
 
 <ol>
 <li class="task-list-item">
-  <h3>Editing your account information and parameters - In the "Edit" option within your User Account page, you should be able to:</h3>
+  <h3>Editing an accounts information and permissions - In the "Edit" option within a User Account page, you should be able to:</h3>
   <ul>
     <li>
     - [ ]
@@ -61,12 +61,12 @@ Drupal 9 Test Plan for Administrators
   </ul>
 </li>
 <li>
-  <h3>Reviewing the content submissions - In the "Submissions" option within your User Account page, you should be able to:</h3>
+  <h3>Reviewing the content submissions - In the "Submissions" option within a User Account page, you should be able to:</h3>
   <ul>
     <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      See all the content you've created and/or modified, ordered from most recent date of modification.
+      See all the content the account has created and/or modified, ordered from most recent date of modification.
     </li>
   </ul>
 </li>
