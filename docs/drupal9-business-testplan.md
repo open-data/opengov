@@ -49,7 +49,7 @@ Drupal 9 Test Plan for Business Users
 
 
 <h2 tabindex="-1" dir="auto">
-🟦 Adding Content: Basic Pages, Book Pages and Media Files.
+🟦 Adding Content: Basic Pages and Media Files.
 </h2>
 <ol>
   
