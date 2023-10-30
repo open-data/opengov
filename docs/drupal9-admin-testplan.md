@@ -78,44 +78,74 @@ Drupal 9 Test Plan for Administrators
 <ol>
   
   <li>
-    <h3>Searching and Filter content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Search or Filter content as described below:</h3> 
+    <h3>Under the blue Drupal logo you should be able to:</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Title" for 
+      Flush all caches
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter some content for the "Body" for your page
+      Flush CSS and JavaScript 
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Define a "URL alias" for your page
+      Flush plugins cache
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format
+      Flush render cache
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Flush routing and links cache
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Flush static cache
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Flush twig cache
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Flush views cache
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Rebuild theme registry
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Run Chron 
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Run updates
       </li>
     </ul>
   </li>
   
   <li>
-    <h3>Media Files - In the "Content" tab, by navigating through the "Media" and "Add Media" tabs, you should be able to:</h3>
+    <h3>Index - Under the blue Drupal logo in the "Index" tab, you should be able to:</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload an "Image"
-    </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Upload a "Document"
-    </li>
+      *list administative tasks for each module?*
+      </li>
     </ul>
   </li>
   
