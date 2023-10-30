@@ -76,6 +76,11 @@ Drupal 9 Test Plan for Business Users
       <input type="checkbox" class="task-list-item-checkbox">
       Select a "Save as" format
       </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Apply an "Action" to one or more content items - <i>Change moderation state, Delete content or Update URL Alias</i>
+      </li>
     </ul>
   </li>
   
