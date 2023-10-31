@@ -232,44 +232,64 @@ Drupal 9 Test Plan for Administrators
 <ol>
   
   <li>
-    <h3>Searching and Filter content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Search or Filter content as described below:</h3> 
+    <h3>Organizing a Block Layout - In the "Structure" tab select the "Block Layout" option, you should be able to arrange the block layout for your seleted theme, as well as configure specific blocks:</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Title" for 
+      Select a Theme - <i>GCweb, Claro, Seven or Bootstrap</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter some content for the "Body" for your page
+      "Place a block" inside a block region - <i>This is adding a new block</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Define a "URL alias" for your page
+      Move a block from one region to another - <i>using the "Region" dropdown list</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format
+      "Configure" a block - <i>Go into the settings for the block and perhaps change it's Name, Roles, Content Type or configure its translation</i>
       </li>
     </ul>
   </li>
   
   <li>
-    <h3>Media Files - In the "Content" tab, by navigating through the "Media" and "Add Media" tabs, you should be able to:</h3>
+    <h3>Adding a custom block:From the "Block layout" tab, select the "Add custom block" option, you should be able to create a new block:</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload an "Image"
-    </li>
+      Create a "basic" block
+      </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload a "Document"
-    </li>
+      Create an "External API" block
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Feature" block
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Search block"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Slideshow" block
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Spotlight block"
+      </li>
     </ul>
   </li>
   
