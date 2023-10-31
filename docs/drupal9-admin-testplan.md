@@ -188,7 +188,7 @@ Drupal 9 Test Plan for Administrators
   </li>
   
   <li>
-    <h3>Adding Content - In the "Content" tab, select the "Add content" optionyou should be able to:</h3>
+    <h3>Adding Content - In the "Content" tab, select the "Add content" options you should be able to:</h3>
     <ul>
       <li>
       - [ ]
@@ -254,6 +254,42 @@ Drupal 9 Test Plan for Administrators
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
       Create a "Webform"
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Adding Media - In the "Content" tab, select the "Media" and "Add Media" options, you should be able to:</h3>
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Add some "Audio"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Add a "Document"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Add an "Image"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Add a "Remote video"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Add a "Slideshow item"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Add a "Video"
       </li>
     </ul>
   </li>
