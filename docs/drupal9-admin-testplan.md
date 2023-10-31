@@ -157,27 +157,27 @@ Drupal 9 Test Plan for Administrators
 <ol>
   
   <li>
-    <h3>Searching and Filter content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Search or Filter content as described below:</h3> 
+    <h3>Searching, Filtering and Actions on content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Filter, Search and apply Actions on content as described below:</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Title" for 
+      Select a "Content type" to filter 
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter some content for the "Body" for your page
+      Select a "Moderation state" to filter
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Define a "URL alias" for your page
+      Select a "Language" option to filter
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format
+      Enter a "Title" to search for
       </li>
       <li>
       - [ ]
@@ -188,18 +188,73 @@ Drupal 9 Test Plan for Administrators
   </li>
   
   <li>
-    <h3>Media Files - In the "Content" tab, by navigating through the "Media" and "Add Media" tabs, you should be able to:</h3>
+    <h3>Adding Content - In the "Content" tab, select the "Add content" optionyou should be able to:</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload an "Image"
-    </li>
+      Create an "App"
+      </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload a "Document"
-    </li>
+      Create a "Basic Page"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Blog Post"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Commitment"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Consultation"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "External"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Idea"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Landing page"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Map"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Open Data Impact Story"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Suggested Dataset"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Theme and Topic page"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Webform"
+      </li>
     </ul>
   </li>
   
