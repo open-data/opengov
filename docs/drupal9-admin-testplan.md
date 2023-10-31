@@ -193,37 +193,7 @@ Drupal 9 Test Plan for Administrators
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Create an "App"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
       Create a "Basic Page"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Blog Post"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Commitment"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Consultation"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "External"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Idea"
       </li>
       <li>
       - [ ]
@@ -233,27 +203,7 @@ Drupal 9 Test Plan for Administrators
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Map"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Open Data Impact Story"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
       Create a "Suggested Dataset"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Theme and Topic page"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Webform"
       </li>
     </ul>
   </li>
@@ -264,32 +214,12 @@ Drupal 9 Test Plan for Administrators
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Add some "Audio"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
       Add a "Document"
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
       Add an "Image"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Add a "Remote video"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Add a "Slideshow item"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Add a "Video"
       </li>
     </ul>
   </li>
