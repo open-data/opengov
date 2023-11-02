@@ -101,7 +101,7 @@ Drupal 9 Test Plan for Business Users
   </li>
 
   <li>
-  <h3>Creating & Editing Content Pages - In the "Content" tab, whether creating a new page or editing an existing page, you should be able to:</h3>
+  <h3>Creating and/or Editing Content Pages - In the "Content" tab, whether creating a new page or editing an existing page, you should be able to:</h3>
     <ul>
       <li>
       - [ ]
