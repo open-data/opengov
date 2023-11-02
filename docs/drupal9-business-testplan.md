@@ -49,12 +49,59 @@ Drupal 9 Test Plan for Business Users
 
 
 <h2 tabindex="-1" dir="auto">
-🟦 Adding Content: Basic Pages and Media Files.
+🟦 Content: Filtering, creating and managing content
 </h2>
 <ol>
+
+<li>
+    <h3>Searching, Filtering and Actions on content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Filter, Search and apply Actions on content as described below:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Select a "Content type" to filter 
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Select a "Moderation state" to filter
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Select a "Language" option to filter
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Enter a "Title" to search for
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Apply an "Action" to one or more content items - <i>Change moderation state, Delete content or Update URL Alias</i>
+      </li>
+    </ul>
+  </li>
   
   <li>
-    <h3>Basic Pages - In the "Content" tab, or by navigating through the "Content", "Add Content" and "Basic Page" tabs, you should be able to:</h3> 
+    <h3>Creating Pages - In the "Content" tab and by selecting the "Add Content" option, you should be able to:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Basic Page"
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Landing page"
+      </li>
+    </ul>
+  </li>
+
+  <li>
+  <h3>Creating & Editing Content Pages - In the "Content" tab, whether creating a new page or editing an existing page, you should be able to:</h3>
     <ul>
       <li>
       - [ ]
@@ -75,11 +122,6 @@ Drupal 9 Test Plan for Business Users
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
       Select a "Save as" format
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Apply an "Action" to one or more content items - <i>Change moderation state, Delete content or Update URL Alias</i>
       </li>
     </ul>
   </li>
