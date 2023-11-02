@@ -152,6 +152,36 @@ Drupal 9 Test Plan for Administrators
 </ol>
 
 <h2 tabindex="-1" dir="auto">
+🟦 Content: Editing the "Layout" of a page
+</h2>
+<ol>
+  
+  <li>
+    <h3>123</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Select a "Content type" to filter 
+      </li>
+    </ul>
+  </li>
+  
+  <li>
+    <h3>123</h3>
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Create a "Basic Page"
+      </li>
+    </ul>
+  </li>
+  
+</ol>
+
+
+<h2 tabindex="-1" dir="auto">
 🟧 Structure: 
 </h2>
 <ol>
