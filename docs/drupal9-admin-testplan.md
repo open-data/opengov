@@ -157,23 +157,27 @@ Drupal 9 Test Plan for Administrators
 <ol>
   
   <li>
-    <h3>123</h3> 
+    <h3>Editing the Layout of a page</h3> 
     <ul>
       <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Content type" to filter 
+        - [ ]
+        <input type="checkbox" class="task-list-item-checkbox">
+        Use the "Add section" option - <i>The "One column" and "Three column" sections are most used. Test a few others you find interesting </i>
       </li>
-    </ul>
-  </li>
-  
-  <li>
-    <h3>123</h3>
-    <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Basic Page"
+      Use the "Add block" option - <i>You can search/filter for the pre-existing blocks you'd like to test</i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Configure a Section - <i>You can configure the Wrapper, Classes and Regions of a section</i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Move a Section - <i>You can click-and-drag a section to re-arrange the page layout</i>
       </li>
     </ul>
   </li>
