@@ -242,11 +242,6 @@ Drupal 9 Test Plan for Administrators
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Slideshow" block
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
       Create a "Spotlight block"
       </li>
     </ul>
