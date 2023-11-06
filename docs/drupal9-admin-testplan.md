@@ -157,7 +157,7 @@ Drupal 9 Test Plan for Administrators
 <ol>
   
   <li>
-    <h3>Editing the Layout of a page</h3> 
+    <h3>Edit the Layout of a page - When viewing a page, go to the "Layout" tab. You should be able to:</h3> 
     <ul>
       <li>
         - [ ]
@@ -217,7 +217,7 @@ Drupal 9 Test Plan for Administrators
   </li>
   
   <li>
-    <h3>Adding a custom block:From the "Block layout" tab, select the "Add custom block" option, you should be able to create a new block:</h3>
+    <h3>Adding a custom block - From the "Block layout" tab, select the "Add custom block" option, you should be able to:</h3>
     <ul>
       <li>
       - [ ]
