@@ -281,7 +281,7 @@ Drupal 9 Test Plan for Administrators
   </li>
   
   <li>
-    <h3>Changing Appearance Settings, when in the Appearance page, select the "Settings" tab and you should be able to:</h3>
+    <h3>Changing Appearance Settings - when on the Appearance page, select the "Settings" tab and you should be able to:</h3>
     <ul>
       <li>
       - [ ]
@@ -299,52 +299,35 @@ Drupal 9 Test Plan for Administrators
 </ol>
 
 <h2 tabindex="-1" dir="auto">
-🟨 Extend:
+🟨 Extend - Managing Drupal modules:
 </h2>
 <ol>
   
   <li>
-    <h3>Searching and Filter content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Search or Filter content as described below:</h3> 
+    <h3>Installing, uninstalling, activating and deactivating Drupal modules - In the "Extend" tab, you should be able to:</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Title" for 
+      Install a "Contributed module" - <i>Click the contributed modules link or browse a Drupal module site</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter some content for the "Body" for your page
+      Uninstall a module - <i>Go to the uninstall tab from the Extend page. Select a module from the list and press the "Uninstall" button at the bottom of the page. Check to make sure all functionality is removed for that module.</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Define a "URL alias" for your page
+      Activate a module - <i>On the Extend page, click the vacant checkbox for a module that is not active</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format
+      Deactivate a module - <i>On the Extend page, click the non-vacant checkbox for a module that is active</i>
       </li>
     </ul>
-  </li>
-  
-  <li>
-    <h3>Media Files - In the "Content" tab, by navigating through the "Media" and "Add Media" tabs, you should be able to:</h3>
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Upload an "Image"
-    </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Upload a "Document"
-    </li>
-    </ul>
-  </li>
-  
+  </li>  
 </ol>
 
 <h2 tabindex="-1" dir="auto">
