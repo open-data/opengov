@@ -250,48 +250,48 @@ Drupal 9 Test Plan for Administrators
 </ol>
 
 <h2 tabindex="-1" dir="auto">
-🟪 Appearance:
+🟪 Appearance - Managing themes and changing their settings:
 </h2>
 <ol>
   
   <li>
-    <h3>Searching and Filter content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Search or Filter content as described below:</h3> 
+    <h3>Managing themes - If you go to the "Appearance" tab you should be able to :</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Title" for 
+      Install a theme
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Enter some content for the "Body" for your page
+      Uninstall a theme
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Define a "URL alias" for your page
+      Set a theme as default - <i>"Set as Default" button</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format
+      Set an "Administration theme" - <i>Akin to selecting which theme you will use on the site</i>
       </li>
     </ul>
   </li>
   
   <li>
-    <h3>Media Files - In the "Content" tab, by navigating through the "Media" and "Add Media" tabs, you should be able to:</h3>
+    <h3>Changing Appearance Settings, when in the Appearance page, select the "Settings" tab and you should be able to:</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload an "Image"
+      Change "Global settings" - <i>Some appearance settings or behaviours that span the entire site, regardless of theme chosen</i>
     </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload a "Document"
+      Change "Settings" for a specific theme - <i>Can specify some behaviours, "Favicon" and logo for one specific theme</i>
     </li>
     </ul>
   </li>
