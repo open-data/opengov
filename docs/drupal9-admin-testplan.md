@@ -331,49 +331,132 @@ Drupal 9 Test Plan for Administrators
 </ol>
 
 <h2 tabindex="-1" dir="auto">
-🟫 Configuration:
+🟫 Configuration - Specifying behaviour of the Drupal 9 site:
 </h2>
 <ol>
   
   <li>
-    <h3>Searching and Filter content - In the "Content" tab you should be able to select between "Content", "Comments", "Files" and "Media". You should able to Search or Filter content as described below:</h3> 
+    <h3>People:</h3> 
     <ul>
       <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Enter the "Title" for 
+      Account Settings
+        <ul>
+          <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Set the name used to indicate anonymous users
+          </li>
+        </ul>
       </li>
       <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Enter some content for the "Body" for your page
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Define a "URL alias" for your page
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Select a "Save as" format
+      Automated logout settings
+        <ul>
+          <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            abc123
+          </li>
+        </ul>
       </li>
     </ul>
   </li>
   
   <li>
-    <h3>Media Files - In the "Content" tab, by navigating through the "Media" and "Add Media" tabs, you should be able to:</h3>
+    <h3>System:</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload an "Image"
-    </li>
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Content authoring:</h3> 
+    <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Upload a "Document"
-    </li>
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>User interface:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Development:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Media:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Search and metadata:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Regional and language:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Web services:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      abc123 
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h3>Workflow:</h3> 
+    <ul>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      abc123 
+      </li>
     </ul>
   </li>
   
