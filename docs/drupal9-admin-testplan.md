@@ -342,14 +342,69 @@ Drupal 9 Test Plan for Administrators
       Account Settings
         <ul>
           <li>
-            - [ ]
-            <input type="checkbox" class="task-list-item-checkbox">
-            Set the name used to indicate anonymous users
+            Settings
+            <ul>
+              <li>
+                - [ ]
+                <input type="checkbox" class="task-list-item-checkbox">
+                Specify the name used to indicate anonymous users
+              </li>
+            </ul>
+          </li>
+          <li>
+            Manage fields
+            <ul>
+              <li>
+                - [ ]
+                <input type="checkbox" class="task-list-item-checkbox">
+                abc123
+              </li>
+            </ul>
+          </li>
+          <li>
+            Manage form display
+            <ul>
+              <li>
+                - [ ]
+                <input type="checkbox" class="task-list-item-checkbox">
+                abc123
+              </li>
+            </ul>
+          </li>
+          <li>
+            Manage display
+            <ul>
+              <li>
+                - [ ]
+                <input type="checkbox" class="task-list-item-checkbox">
+                abc123
+              </li>
+            </ul>
+          </li>
+          <li>
+            Translate account settings
+            <ul>
+              <li>
+                - [ ]
+                <input type="checkbox" class="task-list-item-checkbox">
+                abc123
+              </li>
+            </ul>
           </li>
         </ul>
       </li>
       <li>
       Automated logout settings
+        <ul>
+          <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            abc123
+          </li>
+        </ul>
+      </li>
+      <li>
+      IP address bans
         <ul>
           <li>
             - [ ]
