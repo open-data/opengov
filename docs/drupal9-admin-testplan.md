@@ -400,9 +400,44 @@ Drupal 9 Test Plan for Administrators
             Manage display
             <ul>
               <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
-                abc123
+                Editing the "Default" display - <i>Select the Default tab along the top of the Manage Display page</i>
+                <ul>
+                  <li>
+                    - [ ]
+                    <input type="checkbox" class="task-list-item-checkbox">
+                    Activate or Deactivae a "Field" - <i>Click and drag a Field into or out of the "Disabled" list</i>
+                  </li>
+                  <li>
+                    - [ ]
+                    <input type="checkbox" class="task-list-item-checkbox">
+                    Specify the behaviour of the "Label" for a Field - <i>Above, Inline, Hidden, Visually Hidden</i> 
+                  </li>
+                  <li>
+                    - [ ]
+                    <input type="checkbox" class="task-list-item-checkbox">
+                    Specify the "Format" of a Field - <i>"Highlighted plain text" or "Plain text" for text fields. "Image" or "URL to image" for picture fields.</i>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Editing the "Compact" display - <i>Select the Compact tab along the top of the Manage Display page</i>
+                <ul>
+                  <li>
+                    - [ ]
+                    <input type="checkbox" class="task-list-item-checkbox">
+                    abc123
+                  </li>
+                  <li>
+                    - [ ]
+                    <input type="checkbox" class="task-list-item-checkbox">
+                    abc123
+                  </li>
+                  <li>
+                    - [ ]
+                    <input type="checkbox" class="task-list-item-checkbox">
+                    abc123
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>
