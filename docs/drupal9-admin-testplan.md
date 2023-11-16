@@ -377,22 +377,17 @@ Drupal 9 Test Plan for Administrators
             </ul>
           </li>
           <li>
-            Manage fields
-            <ul>
-              <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
-                abc123
-              </li>
-            </ul>
-          </li>
-          <li>
             Manage form display
             <ul>
               <li>
                 - [ ]
                 <input type="checkbox" class="task-list-item-checkbox">
-                abc123
+                Activate or Deactivae a "Field" - <i>Click and drag a Field into or out of the "Disabled" list</i>
+              </li>
+              <li>
+                - [ ]
+                <input type="checkbox" class="task-list-item-checkbox">
+                Specify which "Form modes" should be allow to have custom display settings - <i>Inside the "Custom display settings" collapsable list. Activate then deactivate "Register" to test.</i>
               </li>
             </ul>
           </li>
@@ -422,21 +417,11 @@ Drupal 9 Test Plan for Administrators
               <li>
                 - [ ]
                 <input type="checkbox" class="task-list-item-checkbox">
-                Specify which "View mode" should be allow to have custom display settings - <i>Inside the "Custom display settings" collapsable list. Deactivate then reactivate "Compact" to test.</i>
+                Specify which "View modes" should be allow to have custom display settings - <i>Inside the "Custom display settings" collapsable list. Deactivate then reactivate "Compact" to test.</i>
               </li>
             </ul>
           </li>
-          <li>
-            Translate account settings
-            <ul>
-              <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
-                abc123
-              </li>
-            </ul>
-          </li>
-        </ul>
+    </ul>
       </li>
       <li>
       Automated logout settings
@@ -444,17 +429,7 @@ Drupal 9 Test Plan for Administrators
           <li>
             - [ ]
             <input type="checkbox" class="task-list-item-checkbox">
-            abc123
-          </li>
-        </ul>
-      </li>
-      <li>
-      IP address bans
-        <ul>
-          <li>
-            - [ ]
-            <input type="checkbox" class="task-list-item-checkbox">
-            abc123
+            Test that the auto logout is working. You should be automatically logged out after one hour of inactivity.
           </li>
         </ul>
       </li>
