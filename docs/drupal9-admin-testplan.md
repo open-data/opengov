@@ -538,17 +538,27 @@ Drupal 9 Test Plan for Administrators
 </ol>
 
 <h2 tabindex="-1" dir="auto">
-🟥 People: abc123
+🟥 People: Managing site users and their permissions
 </h2>
 <ol>
   
   <li>
-    <h3>People:</h3> 
+    <h3>List:</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      abc123
+      Create a user with the "Add user" button - <i>Provider a username, password, and other data for creating a new Drupal site user</i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Search and/or filter for a user or users - <i>Search/filter by username, status, role or permissions</i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Apply an action to a user or users - <i>Update URL alias, Block selected user(s), etc</i>
       </li>
     </ul>
   </li>
@@ -559,8 +569,8 @@ Drupal 9 Test Plan for Administrators
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      abc123
-    </li>
+      Specify which permissions belong to which user roles. Test to make sure whichever permission you add or remove to a user role behaves as intended.
+      </li>
     </ul>
   </li>
 
@@ -570,8 +580,13 @@ Drupal 9 Test Plan for Administrators
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      abc123
-    </li>
+      Create a new role with the "Add role" button - <i>Specify a Role name</i>
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      Edit the name of an existing role - <i>Select the "Edit" button from the "Roles" tab</i>
+      </li>
     </ul>
   </li>
   
