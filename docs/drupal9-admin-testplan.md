@@ -504,24 +504,23 @@ Drupal 9 Test Plan for Administrators
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
+      Modify an ATI summary in the staging or test environments by changing the email address field that receives ATI notification email for the department, to a personal email address. This can be done using an update command in Solr.
+    </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
       From the "Completed Access to Information Requests" page, browse, search and/or filter for an ATI record.
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      After finding an appropriate ATI record to test, select it and fill out the "Request a copy of records" form - <i>For testing, you should request an ATI record from an organization you can easily contact for verifying your request was received.</i>
+      After finding an appropriate ATI record to test, select it and fill out the "Request a copy of records" form.
       </li>
-    </ul>
-  </li>
-  
-  <li>
-    <h3>Verifying your ATI test:</h3>
-    <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      abc123
-    </li>
+      Verify that you have received an ATI request email notification at the personal email you specified in the previous step.
+      </li>
     </ul>
   </li>
   
