@@ -499,18 +499,23 @@ Drupal 9 Test Plan for Administrators
 <ol>
   
   <li>
-    <h3>abc123 - :</h3> 
+    <h3>Testing an ATI request :</h3> 
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      abc123
+      From the "Completed Access to Information Requests" page, browse, search and/or filter for an ATI record.
+      </li>
+      <li>
+      - [ ]
+      <input type="checkbox" class="task-list-item-checkbox">
+      After finding an appropriate ATI record to test, select it and fill out the "Request a copy of records" form - <i>For testing, you should request an ATI record from an organization you can easily contact for verifying your request was received.</i>
       </li>
     </ul>
   </li>
   
   <li>
-    <h3>abc123 - :</h3>
+    <h3>Verifying your ATI test:</h3>
     <ul>
       <li>
       - [ ]
