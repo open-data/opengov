@@ -436,105 +436,6 @@ Drupal 9 Test Plan for Administrators
     </ul>
   </li>
   
-  <li>
-    <h3>System:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>Content authoring:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>User interface:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>Development:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>Media:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>Search and metadata:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>Regional and language:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>Web services:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-
-  <li>
-    <h3>Workflow:</h3> 
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      abc123 
-      </li>
-    </ul>
-  </li>
-  
 </ol>
 
 <h2 tabindex="-1" dir="auto">
@@ -593,7 +494,7 @@ Drupal 9 Test Plan for Administrators
 </ol>
 
 <h2 tabindex="-1" dir="auto">
-🟪 Reports: abc123
+🟪 Access to Information Requests: Testing an ATI record request and verifying it's received
 </h2>
 <ol>
   
