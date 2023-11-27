@@ -20,7 +20,7 @@ Drupal 9 Test Plan for Administrators
     <li>
     - [ ]
     <input type="checkbox" class="task-list-item-checkbox">
-    Specify "Your current logout threshold" for an account - <i>Log out and test you cannot login again until the specified time has passed</i>
+    Specify "Your current logout threshold" for an account - <i>Log in and test that the account is notified that "the session is about to expire" after the specified amount of inactivity time has passed. </i>
     </li>
     <li>
     - [ ]
