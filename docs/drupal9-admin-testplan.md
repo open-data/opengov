@@ -85,46 +85,48 @@ Drupal 9 Test Plan for Administrators
       <input type="checkbox" class="task-list-item-checkbox">
       Flush all caches
       </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Flush CSS and JavaScript 
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Flush plugins cache
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Flush render cache
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Flush routing and links cache
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Flush static cache
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Flush twig cache
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Flush views cache
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Rebuild theme registry
-      </li>
+        <ul>
+           <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Flush CSS and JavaScript 
+            </li>
+            <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Flush plugins cache
+            </li>
+            <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Flush render cache
+            </li>
+            <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Flush routing and links cache
+            </li>
+            <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Flush static cache
+            </li>
+            <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Flush twig cache
+            </li>
+            <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Flush views cache
+            </li>
+            <li>
+            - [ ]
+            <input type="checkbox" class="task-list-item-checkbox">
+            Rebuild theme registry
+            </li>
+        </ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
