@@ -138,17 +138,6 @@ Drupal 9 Test Plan for Administrators
     </ul>
   </li>
   
-  <li>
-    <h3>Index - Under the blue Drupal logo in the "Index" tab, you should be able to:</h3>
-    <ul>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      *list administative tasks for each module?*
-      </li>
-    </ul>
-  </li>
-  
 </ol>
 
 <h2 tabindex="-1" dir="auto">
