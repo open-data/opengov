@@ -132,11 +132,6 @@ Drupal 9 Test Plan for Administrators
       <input type="checkbox" class="task-list-item-checkbox">
       Run Chron 
       </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Run updates
-      </li>
     </ul>
   </li>
   
