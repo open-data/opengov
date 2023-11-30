@@ -203,32 +203,17 @@ Drupal 9 Test Plan for Administrators
   </li>
   
   <li>
-    <h3>Adding a custom block - From the "Block layout" tab, select the "Add custom block" option, you should be able to:</h3>
+    <h3>Adding and deleting a custom block - Select the "Block layout" tab, from the "Custom block library", you should be able to:</h3>
     <ul>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Create a "basic" block
+      Create a block - <i>Try creating a "basic" block as a baseline example. Or try any block type you prefer"</i>
       </li>
       <li>
       - [ ]
       <input type="checkbox" class="task-list-item-checkbox">
-      Create an "External API" block
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Feature" block
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Search block"
-      </li>
-      <li>
-      - [ ]
-      <input type="checkbox" class="task-list-item-checkbox">
-      Create a "Spotlight block"
+      Delete a block - <i>Select your test block from the custom block library, the delete button is at the bottom of the page.</i>
       </li>
     </ul>
   </li>
