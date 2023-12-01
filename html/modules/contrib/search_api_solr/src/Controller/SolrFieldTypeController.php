@@ -3,8 +3,8 @@
 namespace Drupal\search_api_solr\Controller;
 
 use Drupal\search_api\ServerInterface;
-use Drupal\search_api_solr\SolrConfigInterface;
-use ZipStream\Option\Archive;
+use Drupal\search_api_solr\SolrFieldTypeInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Provides different listings of SolrFieldType.
@@ -29,15 +29,20 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
    */
   public function getConfigZip(ServerInterface $search_api_server) {
     try {
-      $archive_options = new Archive();
-      $archive_options->setSendHttpHeaders(TRUE);
-
+      $archive_options = NULL;
+      if (class_exists('\ZipStream\Option\Archive')) {
+        // Version 2.x. Version 3.x uses named parameters instead of options.
+        $archive_options = new \ZipStream\Option\Archive();
+        $archive_options->setSendHttpHeaders(TRUE);
+      }
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
       // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
       header('X-Accel-Buffering: no');
-      $zip = $this->getListBuilder($search_api_server)->getConfigZip($archive_options);
+      /** @var SolrConfigSetController $solrConfigSetController */
+      $solrConfigSetController = $this->getListBuilder($search_api_server);
+      $zip = $solrConfigSetController->getConfigZip($archive_options);
       $zip->finish();
       @ob_end_flush();
 
@@ -52,37 +57,39 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
   }
 
   /**
-   * Disables a Solr Entity on this server.
+   * Disables a Solr Field Type on this server.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   Search API server.
-   * @param \Drupal\search_api_solr\SolrConfigInterface $solr_field_type
-   *   Solr field type.
+   * @param \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type
+   *   Solr entity.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect response.
    *
+   * @throws \Drupal\Core\Entity\EntityMalformedException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function disableOnServer(ServerInterface $search_api_server, SolrConfigInterface $solr_field_type) {
-    return parent::disableOnServer($search_api_server, $solr_field_type);
+  public function disableOnServer(ServerInterface $search_api_server, SolrFieldTypeInterface $solr_field_type): RedirectResponse {
+    return $this->doDisableOnServer($search_api_server, $solr_field_type);
   }
 
   /**
-   * Enables a Solr Entity on this server.
+   * Enables a Solr Field Type on this server.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   Search API server.
    * @param \Drupal\search_api_solr\SolrConfigInterface $solr_field_type
-   *   Solr field type.
+   *   Solr entity.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect response.
    *
+   * @throws \Drupal\Core\Entity\EntityMalformedException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function enableOnServer(ServerInterface $search_api_server, SolrConfigInterface $solr_field_type) {
-    return parent::enableOnServer($search_api_server, $solr_field_type);
+  public function enableOnServer(ServerInterface $search_api_server, SolrFieldTypeInterface $solr_field_type): RedirectResponse {
+    return $this->doEnableOnServer($search_api_server, $solr_field_type);
   }
 
 }

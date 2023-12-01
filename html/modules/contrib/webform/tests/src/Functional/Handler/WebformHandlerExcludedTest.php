@@ -30,6 +30,8 @@ class WebformHandlerExcludedTest extends WebformBrowserTestBase {
    * Test excluded handlers.
    */
   public function testExcludeHandlers() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     /** @var \Drupal\webform\Plugin\WebformHandlerManagerInterface $handler_manager */
@@ -37,37 +39,37 @@ class WebformHandlerExcludedTest extends WebformBrowserTestBase {
 
     // Check add mail and handler plugin.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers');
-    $this->assertLink('Add email');
-    $this->assertLink('Add handler');
+    $assert_session->linkExists('Add email');
+    $assert_session->linkExists('Add handler');
 
     // Check add mail accessible.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers/add/email');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Exclude the email handler.
     \Drupal::configFactory()->getEditable('webform.settings')->set('handler.excluded_handlers', ['email' => 'email'])->save();
 
     // Check add mail hidden.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers');
-    $this->assertNoLink('Add email');
-    $this->assertLink('Add handler');
+    $assert_session->linkNotExists('Add email');
+    $assert_session->linkExists('Add handler');
 
     // Check add mail access denied.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers/add/email');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Exclude the email handler.
     \Drupal::configFactory()->getEditable('webform.settings')->set('handler.excluded_handlers', ['action' => 'action', 'broken' => 'broken', 'debug' => 'debug', 'email' => 'email', 'remote_post' => 'remote_post', 'settings' => 'settings'])->save();
 
     // Check add mail and handler hidden.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers');
-    $this->assertNoLink('Add email');
-    $this->assertNoLink('Add handler');
+    $assert_session->linkNotExists('Add email');
+    $assert_session->linkNotExists('Add handler');
 
     // Check handler definitions.
     $definitions = $handler_manager->getDefinitions();
     $definitions = $handler_manager->removeExcludeDefinitions($definitions);
-    $this->assertEqual(array_keys($definitions), []);
+    $this->assertEquals(array_keys($definitions), []);
   }
 
 }

@@ -46,7 +46,7 @@ class WebformMessageManagerTest extends UnitTestCase {
     $url->method('toString')
       ->willReturn('http://example.com/');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Mock current user.
     $current_user = $this->getMockBuilder(AccountInterface::class)
@@ -127,7 +127,7 @@ class WebformMessageManagerTest extends UnitTestCase {
     // Set message manager mock webform.
     $message_manager->setWebform($webform);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check custom single message.
     $expected = [

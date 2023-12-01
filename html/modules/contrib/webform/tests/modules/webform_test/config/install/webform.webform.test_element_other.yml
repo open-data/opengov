@@ -103,6 +103,25 @@ elements: |
       '#other__option_label': 'Is there another option you wish to enter?'
       '#other__placeholder': 'What is this other option'
       '#other__description': 'Other checkbox description'
+    checkboxes_other_indexed:
+      '#type': webform_checkboxes_other
+      '#title': 'Checkboxes other indexed'
+      '#options':
+        - 'Zero'
+        - 'One'
+        - 'Two'
+        - 'Three'
+      '#default_value':
+        - 0
+        - 1
+        - 2
+        - 3
+      '#required': true
+      '#options_display': two_columns
+      '#options_description_display': help
+      '#other__option_label': 'Is there another option you wish to enter?'
+      '#other__placeholder': 'What is this other option'
+      '#other__description': 'Other checkbox description'
   radios_other:
     '#type': details
     '#title': 'Radios other (radios_other)'
@@ -178,7 +197,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -199,6 +218,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -345,5 +367,7 @@ handlers:
     status: true
     conditions: {  }
     weight: 1
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

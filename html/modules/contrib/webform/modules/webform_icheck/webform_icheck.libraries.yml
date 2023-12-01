@@ -19,6 +19,7 @@ libraries.jquery.icheck:
     name: MIT
     url: https://en.wikipedia.org/wiki/MIT_License
     gpl-compatible: true
+  directory: &webform_icheck_directory jquery.icheck
   cdn: &webform_icheck_cdn
     /libraries/jquery.icheck/: https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/
   js:
@@ -29,6 +30,7 @@ libraries.jquery.icheck:
 libraries.jquery.icheck.flat:
   version: *webform_icheck_version
   license: *webform_icheck_license
+  directory: *webform_icheck_directory
   cdn: *webform_icheck_cdn
   css:
     component:
@@ -39,6 +41,7 @@ libraries.jquery.icheck.flat:
 libraries.jquery.icheck.line:
   version: *webform_icheck_version
   license: *webform_icheck_license
+  directory: *webform_icheck_directory
   cdn: *webform_icheck_cdn
   css:
     component:
@@ -49,6 +52,7 @@ libraries.jquery.icheck.line:
 libraries.jquery.icheck.minimal:
   version: *webform_icheck_version
   license: *webform_icheck_license
+  directory: *webform_icheck_directory
   cdn: *webform_icheck_cdn
   css:
     component:
@@ -59,6 +63,7 @@ libraries.jquery.icheck.minimal:
 libraries.jquery.icheck.square:
   version: *webform_icheck_version
   license: *webform_icheck_license
+  directory: *webform_icheck_directory
   cdn: *webform_icheck_cdn
   css:
     component:

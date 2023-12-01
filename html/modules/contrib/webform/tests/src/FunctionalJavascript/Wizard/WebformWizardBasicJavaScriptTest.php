@@ -29,11 +29,11 @@ class WebformWizardBasicJavaScriptTest extends WebformWebDriverTestBase {
 
     $webform = Webform::load('test_form_wizard_basic');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check page 1 URL.
     $this->drupalGet('/webform/test_form_wizard_basic');
-    $this->assertRaw('Element 1');
+    $assert_session->responseContains('Element 1');
     $this->assertQuery();
 
     // Check page 2 URL.
@@ -48,7 +48,7 @@ class WebformWizardBasicJavaScriptTest extends WebformWebDriverTestBase {
 
     // Check page 1 URL with ?page=*.
     $this->drupalGet('/webform/test_form_wizard_basic');
-    $this->assertRaw('Element 1');
+    $assert_session->responseContains('Element 1');
     $this->assertQuery();
 
     // Check page 2 URL with ?page=2.
@@ -63,7 +63,7 @@ class WebformWizardBasicJavaScriptTest extends WebformWebDriverTestBase {
 
     // Check page 1 URL with custom param.
     $this->drupalGet('/webform/test_form_wizard_basic', ['query' => ['custom_param' => '1']]);
-    $this->assertRaw('Element 1');
+    $assert_session->responseContains('Element 1');
     $this->assertQuery('custom_param=1');
 
     // Check page 2 URL with ?page=2.
@@ -76,7 +76,7 @@ class WebformWizardBasicJavaScriptTest extends WebformWebDriverTestBase {
     $assert_session->waitForText('Element 1');
     $this->assertQuery('custom_param=1&page=page_1');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Set the webform to use ajax.
     $webform->setSetting('ajax', TRUE);
@@ -84,8 +84,8 @@ class WebformWizardBasicJavaScriptTest extends WebformWebDriverTestBase {
 
     // There should be no announcements when first visiting the form.
     $this->drupalGet('/webform/test_form_wizard_basic');
-    $this->assertRaw('Element 1');
-    $this->assertEqual('', $page->findById('drupal-live-announce')->getText());
+    $assert_session->responseContains('Element 1');
+    $this->assertEquals('', $page->findById('drupal-live-announce')->getText());
 
     // Check announcements on next and previous pages.
     $page->pressButton('Next >');
@@ -107,7 +107,7 @@ class WebformWizardBasicJavaScriptTest extends WebformWebDriverTestBase {
    * @param string $expected_query
    *   The expected query string.
    */
-  protected function assertQuery($expected_query = '') {
+  protected function assertQuery($expected_query = ''): void {
     $actual_query = parse_url($this->getSession()->getCurrentUrl(), PHP_URL_QUERY) ?: '';
     $this->assertEquals($expected_query, $actual_query);
   }

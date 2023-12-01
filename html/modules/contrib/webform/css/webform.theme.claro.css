@@ -21,10 +21,6 @@
 }
 
 /*****************************************************************************   */
-/* Fields */
-/*****************************************************************************   */
-
-/*****************************************************************************   */
 /* Messages */
 /*****************************************************************************   */
 
@@ -60,8 +56,6 @@ html.js .webform-message--close .webform-message__link:active {
  * @see claro/css/src/components/messages.css
  */
 .webform-message .messages.messages--webform {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   margin-bottom: 1rem;
   padding: 1.5rem 1.5rem 2rem -webkit-calc(1.5rem - 5px);
@@ -149,12 +143,6 @@ table td > .form-item:only-child,
 table td > .button:only-child {
   margin-top: 0;
   margin-bottom: 0;
-}
-/**
- * Results table.
- */
-th.webform-results-table__icon.sortable-heading {
-  padding: 0 1rem;
 }
 
 /**
@@ -280,62 +268,11 @@ div.webform-form-filter input.webform-form-filter-text {
   margin-bottom: 0;
 }
 
-/*****************************************************************************   */
-/* jQuery UI */
-/*****************************************************************************   */
-
 /**
- * jQuery UI tooltip.
- *
- * Used for webform element help (tooltips).
- *
- * @see core/assets/vendor/jquery.ui/themes/base/tabs.css
+ * jQuery UI content.
  */
-.ui-tooltip.ui-widget {
-  border: 1px solid #ed5;
-  border-radius: 2px;
-  background: #fe6;
-}
-
-.ui-tooltip hr {
-  height: 1px;
-  margin: 0.3em 0;
-  background: #666;
-}
-
-.ui-tooltip code {
-  padding: 0.2em;
-  white-space: nowrap;
-  background-color: #f5f5f2;
-  font-size: 0.9em;
-  font-weight: bold;
-}
-
-/**
- * jQuery UI tabs.
- */
-.webform-tabs.ui-tabs .ui-tabs-panel {
-  padding: 0;
-}
-
-.webform-tabs.ui-tabs .ui-tabs-nav {
-  padding: 5px 10px 4px 0px;
-}
-
-.webform-tabs.ui-tabs .ui-tabs-nav li {
-  padding: 0 5px;
-}
-
-.webform-tabs .ui-tabs-tab.ui-tab a {
-  border-radius: 0;
-}
-
-.webform-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
-  padding: .5em .75em;
-}
-
-.webform-tabs .ui-tabs-active.ui-state-active a {
-  border-bottom: 3px solid #003cc5;
+.ui-widget-content a.button--primary {
+  color: #fff;
 }
 
 /**
@@ -372,4 +309,12 @@ div.webform-form-filter input.webform-form-filter-text {
 
 .webform-off-canvas .fieldset__wrapper--group {
   margin: 0;
+}
+
+.webform-off-canvas #drupal-off-canvas .form-type--boolean {
+  margin-left: 1.6875rem;
+}
+
+.webform-off-canvas #drupal-off-canvas .form-item .form-item__description {
+  color: #55565b;
 }

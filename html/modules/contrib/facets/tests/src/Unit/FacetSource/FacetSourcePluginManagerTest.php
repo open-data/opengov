@@ -9,7 +9,6 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
 use Drupal\Tests\UnitTestCase;
-use Zend\Stdlib\ArrayObject;
 
 /**
  * Unit test for plugin manager.
@@ -21,28 +20,28 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
   /**
    * The cache backend.
    *
-   * @var \Drupal\Core\Cache\CacheBackendInterface|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\Core\Cache\CacheBackendInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $cache;
 
   /**
    * The plugin discovery.
    *
-   * @var \Drupal\Component\Plugin\Discovery\DiscoveryInterface|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\Component\Plugin\Discovery\DiscoveryInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $discovery;
 
   /**
    * The plugin factory.
    *
-   * @var \Drupal\Component\Plugin\Factory\DefaultFactory|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\Component\Plugin\Factory\DefaultFactory|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $factory;
 
   /**
    * The module handler.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $moduleHandler;
 
@@ -56,18 +55,16 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
-    $this->discovery = $this->getMock(DiscoveryInterface::class);
+  public function setUp(): void {
+    $this->discovery = $this->createMock(DiscoveryInterface::class);
 
-    $this->factory = $this->getMockBuilder(DefaultFactory::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->factory = $this->createMock(DefaultFactory::class);
 
-    $this->moduleHandler = $this->getMock(ModuleHandlerInterface::class);
+    $this->moduleHandler = $this->createMock(ModuleHandlerInterface::class);
 
-    $this->cache = $this->getMock(CacheBackendInterface::class);
+    $this->cache = $this->createMock(CacheBackendInterface::class);
 
-    $namespaces = new ArrayObject();
+    $namespaces = new \ArrayObject();
 
     $this->sut = new FacetSourcePluginManager($namespaces, $this->cache, $this->moduleHandler);
     $discovery_property = new \ReflectionProperty($this->sut, 'discovery');
@@ -82,7 +79,7 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
    * Tests plugin manager constructor.
    */
   public function testConstruct() {
-    $namespaces = new ArrayObject();
+    $namespaces = new \ArrayObject();
     $sut = new FacetSourcePluginManager($namespaces, $this->cache, $this->moduleHandler);
     $this->assertInstanceOf(FacetSourcePluginManager::class, $sut);
   }
@@ -117,7 +114,7 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
       ->method('getDefinitions')
       ->willReturn($definitions);
 
-    $this->setExpectedException(PluginException::class);
+    $this->expectException(PluginException::class);
     $this->sut->getDefinitions();
   }
 

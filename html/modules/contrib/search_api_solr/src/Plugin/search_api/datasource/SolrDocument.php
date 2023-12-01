@@ -24,8 +24,19 @@ use Drupal\search_api_solr\SolrFieldManagerInterface;
  */
 class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
 
-  protected $solr_field = 'solr_field';
-  protected $solr_document = 'solr_document';
+  /**
+   * Solr field property name.
+   *
+   * @var string
+   */
+  protected $solrField = 'solr_field';
+
+  /**
+   * Solr document property name.
+   *
+   * @var string
+   */
+  protected $solrDocument = 'solr_document';
 
   use PluginFormTrait;
   use LoggerTrait;
@@ -64,7 +75,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    *   The Solr document factory.
    */
   public function getSolrDocumentFactory() {
-    return $this->solrDocumentFactory ?: \Drupal::getContainer()->get($this->solr_document . '.factory');
+    return $this->solrDocumentFactory ?: \Drupal::getContainer()->get($this->solrDocument . '.factory');
   }
 
   /**
@@ -87,7 +98,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    *   The Solr field manager.
    */
   public function getSolrFieldManager() {
-    return $this->solrFieldManager ?: \Drupal::getContainer()->get($this->solr_field . '.manager');
+    return $this->solrFieldManager ?: \Drupal::getContainer()->get($this->solrField . '.manager');
   }
 
   /**
@@ -173,13 +184,16 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
   public function loadMultiple(array $ids) {
     $documents = [];
     try {
+      foreach ($ids as $i => $id) {
+        $ids[$i] = "solr_document/$id";
+      }
       // Query the index for the Solr documents.
       $results = $this->index->query()
         ->addCondition('search_api_id', $ids, 'IN')
         ->execute()
         ->getResultItems();
       foreach ($results as $id => $result) {
-        $documents[$id] = $this->solrDocumentFactory->create($result);
+        $documents[$id] = $this->getSolrDocumentFactory()->create($result);
       }
     }
     catch (SearchApiException $e) {

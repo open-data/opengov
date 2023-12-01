@@ -2,6 +2,7 @@
 
 namespace Drupal\metatag\Plugin\Field\FieldType;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
@@ -13,11 +14,9 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "metatag",
  *   label = @Translation("Meta tags"),
  *   description = @Translation("This field stores code meta tags."),
+ *   list_class = "\Drupal\metatag\Plugin\Field\FieldType\MetatagFieldItemList",
  *   default_widget = "metatag_firehose",
  *   default_formatter = "metatag_empty_formatter",
- *   serialized_property_names = {
- *     "value"
- *   }
  * )
  */
 class MetatagFieldItem extends FieldItemBase {
@@ -53,7 +52,7 @@ class MetatagFieldItem extends FieldItemBase {
    */
   public function isEmpty() {
     $value = $this->get('value')->getValue();
-    return $value === NULL || $value === '' || $value === serialize([]);
+    return $value === NULL || $value === '' || $value === Json::encode([]);
   }
 
   /**
@@ -66,10 +65,12 @@ class MetatagFieldItem extends FieldItemBase {
     $default_tags = metatag_get_default_tags($this->getEntity());
 
     // Get the value about to be saved.
+    // @todo Does this need to be rewritten to use $this->getValue()?
     $current_value = $this->value;
+
     // Only unserialize if still serialized string.
     if (is_string($current_value)) {
-      $current_tags = unserialize($current_value);
+      $current_tags = metatag_data_decode($current_value);
     }
     else {
       $current_tags = $current_value;
@@ -84,8 +85,11 @@ class MetatagFieldItem extends FieldItemBase {
       }
     }
 
+    // Sort the values prior to saving. so that they are easier to manage.
+    ksort($tags_to_save);
+
     // Update the value to only save overridden tags.
-    $this->value = serialize($tags_to_save);
+    $this->value = Json::encode($tags_to_save);
   }
 
 }

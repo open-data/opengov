@@ -4,9 +4,9 @@ var prefix = 'fas';
 var iconName = 'slash';
 var width = 640;
 var height = 512;
-var ligatures = [];
+var aliases = [];
 var unicode = 'f715';
-var svgPathData = 'M594.53 508.63L6.18 53.9c-6.97-5.42-8.23-15.47-2.81-22.45L23.01 6.18C28.43-.8 38.49-2.06 45.47 3.37L633.82 458.1c6.97 5.42 8.23 15.47 2.81 22.45l-19.64 25.27c-5.42 6.98-15.48 8.23-22.46 2.81z';
+var svgPathData = 'M5.1 9.2C13.3-1.2 28.4-3.1 38.8 5.1l592 464c10.4 8.2 12.3 23.3 4.1 33.7s-23.3 12.3-33.7 4.1L9.2 42.9C-1.2 34.7-3.1 19.6 5.1 9.2z';
 
 exports.definition = {
   prefix: prefix,
@@ -14,7 +14,7 @@ exports.definition = {
   icon: [
     width,
     height,
-    ligatures,
+    aliases,
     unicode,
     svgPathData
   ]};
@@ -24,6 +24,7 @@ exports.prefix = prefix;
 exports.iconName = iconName;
 exports.width = width;
 exports.height = height;
-exports.ligatures = ligatures;
+exports.ligatures = aliases;
 exports.unicode = unicode;
 exports.svgPathData = svgPathData;
+exports.aliases = aliases;

@@ -90,7 +90,9 @@ class WebformElementAttributes extends FormElement {
         '#type' => 'textfield',
         '#title' => t('@title CSS classes', $t_args),
         '#description' => t("Apply classes to the @type.", $t_args),
-        '#default_value' => implode(' ', $element['#default_value']['class']),
+        '#default_value' => (is_array($element['#default_value']['class']))
+          ? implode(' ', $element['#default_value']['class'])
+          : $element['#default_value']['class'],
       ];
     }
 
@@ -130,7 +132,7 @@ class WebformElementAttributes extends FormElement {
     // Apply custom properties. Typically used for descriptions.
     foreach ($element as $key => $value) {
       if (strpos($key, '__') !== FALSE) {
-        list($element_key, $property_key) = explode('__', ltrim($key, '#'));
+        [$element_key, $property_key] = explode('__', ltrim($key, '#'));
         $element[$element_key]["#$property_key"] = $value;
       }
     }
@@ -156,14 +158,17 @@ class WebformElementAttributes extends FormElement {
         $class_other = $element['class']['other']['#value'];
         if (isset($class[WebformSelectOther::OTHER_OPTION])) {
           unset($class[WebformSelectOther::OTHER_OPTION]);
-          $class[$class_other] = $class_other;
+          if ($class_other) {
+            $class_other = preg_split('/[ ]+/', $class_other);
+            $class += array_combine($class_other, $class_other);
+          }
         }
         if ($class) {
           $attributes['class'] = array_values($class);
         }
       }
       else {
-        $attributes['class'] = [$values['class']];
+        $attributes['class'] = preg_split('/[ ]+/', $values['class']);
       }
     }
 

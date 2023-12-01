@@ -55,7 +55,7 @@ class RangeSliderProcessor extends SliderProcessor implements PreQueryProcessorI
     /** @var \Drupal\facets\Result\ResultInterface[] $results */
     foreach ($results as &$result) {
       $new_active_filters = $active_filters;
-      unset($new_active_filters[$facet->getUrlAlias()]);
+      unset($new_active_filters[$facet->id()]);
       // Add one generic query filter with the min and max placeholder.
       $new_active_filters[$facet->id()][] = '(min:__range_slider_min__,max:__range_slider_max__)';
       $url = \Drupal::service('facets.utility.url_generator')->getUrl($new_active_filters, FALSE);

@@ -39,9 +39,9 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
     '#weight' => -1000,
   ];
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Accessibility.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   // Get query without ajax parameters.
   $query = \Drupal::request()->query->all();
@@ -55,9 +55,9 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
     '#url' => Url::fromRoute('<current>', [], ['query' => ['accessibility' => $accessibility ? 0 : 1] + $query]),
   ];
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Required.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   $form['accessibility'][] = ['#markup' => ' | '];
 
@@ -73,7 +73,7 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
 
   $form['accessibility']['required'] = [
     '#type' => 'link',
-    '#title' => $required ? t('Disabled required') : t('Enable required'),
+    '#title' => $required ? t('Disable required') : t('Enable required'),
     '#url' => Url::fromRoute('<current>', [], ['query' => ['required' => $required ? 0 : 1] + $query]),
   ];
 
@@ -86,9 +86,9 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // No validate.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   $form['accessibility'][] = ['#markup' => ' | '];
 
@@ -107,9 +107,9 @@ function webform_examples_accessibility_webform_submission_form_alter(array &$fo
     '#url' => Url::fromRoute('<current>', [], ['query' => ['novalidate' => $novalidate ? 0 : 1] + $query]),
   ];
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Inline form error.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   if (\Drupal::moduleHandler()->moduleExists('inline_form_errors')) {
     $form['accessibility'][] = ['#markup' => ' | '];

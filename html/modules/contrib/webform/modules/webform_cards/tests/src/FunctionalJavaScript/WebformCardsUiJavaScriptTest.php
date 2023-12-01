@@ -33,7 +33,7 @@ class WebformCardsUiJavaScriptTest extends WebformWebDriverTestBase {
 
     $this->drupalLogin($this->rootUser);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check that 'Add page' and 'Add card' actions are visible.
     $this->drupalGet('/admin/structure/webform/manage/contact');

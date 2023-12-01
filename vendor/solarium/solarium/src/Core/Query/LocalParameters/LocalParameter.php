@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Query\LocalParameters;
 
 /**
@@ -62,6 +69,15 @@ class LocalParameter implements LocalParameterInterface
         self::TYPE_COST => 'local_cost',
     ];
 
+    public const IS_SPLIT_SMART = [
+        self::TYPE_EXCLUDE,
+        self::TYPE_TAG,
+        self::TYPE_RANGE,
+        self::TYPE_STAT,
+        self::TYPE_TERM,
+        self::TYPE_QUERY,
+    ];
+
     /**
      * @var string
      */
@@ -102,6 +118,18 @@ class LocalParameter implements LocalParameterInterface
     public function getType(): string
     {
         return $this->type;
+    }
+
+    /**
+     * @param array $values
+     *
+     * @return \Solarium\Core\Query\LocalParameters\LocalParameterInterface
+     */
+    public function setValues(array $values): LocalParameterInterface
+    {
+        $this->clearValues();
+
+        return $this->addValues($values);
     }
 
     /**
@@ -154,5 +182,22 @@ class LocalParameter implements LocalParameterInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Will a parameter of this type be "split smart" by Solr?
+     *
+     * A local parameter is "split smart" if a literal comma in a value can be escaped
+     * with backslash when a comma is normally used to separate multiple values.
+     *
+     * {@internal Method name inspired by splitSmart() in org.apache.solr.common.util.StrUtils}
+     *
+     * @param string $type
+     *
+     * @return bool
+     */
+    public static function isSplitSmart(string $type): bool
+    {
+        return \in_array($type, self::IS_SPLIT_SMART);
     }
 }

@@ -31,9 +31,9 @@ class WebformEntityTest extends KernelTestBase {
     $this->installSchema('webform', ['webform']);
     $this->installConfig('webform');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Create.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Create webform.
     /** @var \Drupal\webform\WebformInterface $webform */
@@ -43,9 +43,9 @@ class WebformEntityTest extends KernelTestBase {
     $this->assertFalse($webform->isTemplate());
     $this->assertTrue($webform->isOpen());
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Override.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     try {
       $webform->setOverride(TRUE);
@@ -53,21 +53,19 @@ class WebformEntityTest extends KernelTestBase {
       $this->fail('Not possible to save webform with override = TRUE.');
     }
     catch (WebformException $e) {
-      $this->pass('Not possible to save webform with override = TRUE.');
     }
 
     try {
       $webform->setOverride(FALSE);
       $webform->save();
-      $this->pass('Possible to save webform with override = FALSE.');
     }
     catch (WebformException $e) {
       $this->fail('Possible to save webform with override = FALSE.');
     }
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Status.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check set status to FALSE.
     $webform->setStatus(FALSE);
@@ -98,9 +96,9 @@ class WebformEntityTest extends KernelTestBase {
     $this->assertTrue($webform->isOpen());
     $this->assertTrue($webform->isScheduled());
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Scheduled.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $webform->setStatus(WebformInterface::STATUS_SCHEDULED);
 
@@ -163,18 +161,18 @@ class WebformEntityTest extends KernelTestBase {
     $this->assertNull($webform->get('open'));
     $this->assertNull($webform->get('close'));
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Templates.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check that templates are always closed.
     $webform->set('template', TRUE)->save();
     $this->assertTrue($webform->isTemplate());
     $this->assertFalse($webform->isOpen());
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Elements.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Set elements.
     $elements = [
@@ -281,9 +279,9 @@ class WebformEntityTest extends KernelTestBase {
     $webform->set('elements', 'invalid')->save();
     $this->assertEquals([], $webform->getElementsInitialized());
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Wizard pages.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check get no wizard pages.
     $this->assertEquals($webform->getPages(), []);

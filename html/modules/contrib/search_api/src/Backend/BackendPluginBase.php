@@ -79,7 +79,7 @@ abstract class BackendPluginBase extends ConfigurablePluginBase implements Backe
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, array $plugin_definition) {
-    if (!empty($configuration['#server']) && $configuration['#server'] instanceof ServerInterface) {
+    if (($configuration['#server'] ?? NULL) instanceof ServerInterface) {
       $this->setServer($configuration['#server']);
       unset($configuration['#server']);
     }
@@ -143,6 +143,17 @@ abstract class BackendPluginBase extends ConfigurablePluginBase implements Backe
   public function setMessenger(MessengerInterface $messenger) {
     $this->messenger = $messenger;
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfiguration(array $configuration) {
+    parent::setConfiguration($configuration);
+
+    if ($this->server && $this->server->getBackendConfig() !== $configuration) {
+      $this->server->setBackendConfig($configuration);
+    }
   }
 
   /**
@@ -329,6 +340,7 @@ abstract class BackendPluginBase extends ConfigurablePluginBase implements Backe
     }
     $properties = array_flip(parent::__sleep());
     unset($properties['server']);
+    unset($properties['logger']);
     return array_keys($properties);
   }
 

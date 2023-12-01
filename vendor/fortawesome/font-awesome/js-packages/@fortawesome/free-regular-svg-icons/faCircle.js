@@ -4,9 +4,9 @@ var prefix = 'far';
 var iconName = 'circle';
 var width = 512;
 var height = 512;
-var ligatures = [];
+var aliases = [128308,128309,128992,128993,128994,128995,128996,9679,9898,9899,11044,61708,61915];
 var unicode = 'f111';
-var svgPathData = 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200z';
+var svgPathData = 'M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z';
 
 exports.definition = {
   prefix: prefix,
@@ -14,7 +14,7 @@ exports.definition = {
   icon: [
     width,
     height,
-    ligatures,
+    aliases,
     unicode,
     svgPathData
   ]};
@@ -24,6 +24,7 @@ exports.prefix = prefix;
 exports.iconName = iconName;
 exports.width = width;
 exports.height = height;
-exports.ligatures = ligatures;
+exports.ligatures = aliases;
 exports.unicode = unicode;
 exports.svgPathData = svgPathData;
+exports.aliases = aliases;

@@ -71,7 +71,7 @@ class AssetResolverTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->libraryDiscovery = $this->getMockBuilder('Drupal\Core\Asset\LibraryDiscovery')
@@ -86,9 +86,6 @@ class AssetResolverTest extends UnitTestCase {
     $active_theme = $this->getMockBuilder('\Drupal\Core\Theme\ActiveTheme')
       ->disableOriginalConstructor()
       ->getMock();
-    $active_theme->expects($this->any())
-      ->method('getName')
-      ->willReturn('bartik');
     $this->themeManager->expects($this->any())
       ->method('getActiveTheme')
       ->willReturn($active_theme);
@@ -114,12 +111,6 @@ class AssetResolverTest extends UnitTestCase {
   /**
    * @covers ::getCssAssets
    * @dataProvider providerAttachedAssets
-   * @group legacy
-   *
-   * Note the legacy group is used here because
-   * ActiveTheme::getStyleSheetsRemove() is called and is deprecated. As this
-   * code path will still be triggered until Drupal 9 we have to add the group.
-   * We do not trigger a silenced deprecation.
    */
   public function testGetCssAssets(AttachedAssetsInterface $assets_a, AttachedAssetsInterface $assets_b, $expected_cache_item_count) {
     $this->assetResolver->getCssAssets($assets_a, FALSE);
@@ -150,7 +141,7 @@ class AssetResolverTest extends UnitTestCase {
         1,
       ],
       'different libraries, same timestamps' => [
-        (new AttachedAssets())->setAlreadyLoadedLibraries([])->setLibraries(['core/drupal'])->setSettings(['currenttime' => $time]),
+        (new AttachedAssets())->setAlreadyLoadedLibraries([])->setLibraries(['core/drupal'])->setSettings(['currentTime' => $time]),
         (new AttachedAssets())->setAlreadyLoadedLibraries([])->setLibraries(['core/drupal', 'core/jquery'])->setSettings(['currentTime' => $time]),
         2,
       ],

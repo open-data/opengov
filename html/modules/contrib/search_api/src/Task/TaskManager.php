@@ -11,7 +11,7 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Provides a service for managing pending tasks.
@@ -55,7 +55,7 @@ class TaskManager implements TaskManagerInterface {
   /**
    * The event dispatcher.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
 
@@ -71,7 +71,7 @@ class TaskManager implements TaskManagerInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
    * @param \Drupal\Core\StringTranslation\TranslationInterface $translation
    *   The string translation service.
@@ -107,9 +107,14 @@ class TaskManager implements TaskManagerInterface {
    *   An entity query for search tasks.
    */
   protected function getTasksQuery(array $conditions = []) {
-    $query = $this->getTaskStorage()->getQuery();
+    $query = $this->getTaskStorage()->getQuery()->accessCheck(FALSE);
     foreach ($conditions as $property => $values) {
-      $query->condition($property, $values, is_array($values) ? 'IN' : '=');
+      if ($values === NULL) {
+        $query->notExists($property);
+      }
+      else {
+        $query->condition($property, $values, is_array($values) ? 'IN' : '=');
+      }
     }
     $query->sort('id');
     return $query;
@@ -119,13 +124,18 @@ class TaskManager implements TaskManagerInterface {
    * {@inheritdoc}
    */
   public function getTasksCount(array $conditions = []) {
-    return $this->getTasksQuery($conditions)->count()->execute();
+    return $this->getTasksQuery($conditions)
+      ->count()
+      ->accessCheck(FALSE)
+      ->execute();
   }
 
   /**
    * {@inheritdoc}
    */
   public function addTask($type, ServerInterface $server = NULL, IndexInterface $index = NULL, $data = NULL) {
+    $server_id = $server ? $server->id() : NULL;
+    $index_id = $index ? $index->id() : NULL;
     if (isset($data)) {
       if ($data instanceof EntityInterface) {
         $data = [
@@ -136,10 +146,20 @@ class TaskManager implements TaskManagerInterface {
       $data = serialize($data);
     }
 
+    $result = $this->getTasksQuery([
+      'type' => $type,
+      'server_id' => $server_id,
+      'index_id' => $index_id,
+      'data' => $data,
+    ])->execute();
+    if ($result) {
+      return $this->getTaskStorage()->load(reset($result));
+    }
+
     $task = $this->getTaskStorage()->create([
       'type' => $type,
-      'server_id' => $server ? $server->id() : NULL,
-      'index_id' => $index ? $index->id() : NULL,
+      'server_id' => $server_id,
+      'index_id' => $index_id,
       'data' => $data,
     ]);
     $task->save();
@@ -192,7 +212,7 @@ class TaskManager implements TaskManagerInterface {
    */
   public function executeSpecificTask(TaskInterface $task) {
     $event = new TaskEvent($task);
-    $this->eventDispatcher->dispatch('search_api.task.' . $task->getType(), $event);
+    $this->eventDispatcher->dispatch($event, 'search_api.task.' . $task->getType());
     if (!$event->isPropagationStopped()) {
       $id = $task->id();
       $type = $task->getType();
@@ -352,11 +372,13 @@ class TaskManager implements TaskManagerInterface {
     $pending = $this->getTasksCount($conditions);
     $context['finished'] = 1 - $pending / $context['results']['total'];
     $executed = $context['results']['total'] - $pending;
-    $context['message'] = $this->formatPlural(
-      $executed,
-      'Successfully executed @count pending task.',
-      'Successfully executed @count pending tasks.'
-    );
+    if ($executed > 0) {
+      $context['message'] = $this->formatPlural(
+        $executed,
+        'Successfully executed @count pending task.',
+        'Successfully executed @count pending tasks.'
+      );
+    }
   }
 
   /**

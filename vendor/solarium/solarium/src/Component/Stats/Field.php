@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Stats;
 
 use Solarium\Core\Configurable;
@@ -38,6 +45,7 @@ class Field extends Configurable
     public function setKey(string $value): self
     {
         $this->setOption('key', $value);
+
         return $this;
     }
 
@@ -65,7 +73,7 @@ class Field extends Configurable
      */
     public function addPivots($pivots): self
     {
-        if (is_string($pivots)) {
+        if (\is_string($pivots)) {
             $pivots = explode(',', $pivots);
             $pivots = array_map('trim', $pivots);
         }
@@ -136,8 +144,8 @@ class Field extends Configurable
     /**
      * Initialize options.
      *
-     * Several options need some extra checks or setup work, for these options
-     * the setters are called.
+     * {@internal Options that set a list of facet names need additional setup work
+     *            because they can be an array or a comma separated string.}
      */
     protected function init()
     {

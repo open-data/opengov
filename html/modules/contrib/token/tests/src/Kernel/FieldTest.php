@@ -42,16 +42,32 @@ class FieldTest extends KernelTestBase {
   protected $vocabulary;
 
   /**
-   * Modules to enable.
+   * The field used in this test class.
    *
-   * @var array
+   * @var \Drupal\field\Entity\FieldConfig
    */
-  public static $modules = ['node', 'text', 'field', 'filter', 'contact', 'options', 'taxonomy', 'language', 'datetime', 'datetime_range'];
+  protected $field;
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected static $modules = [
+    'node',
+    'text',
+    'field',
+    'filter',
+    'contact',
+    'options',
+    'taxonomy',
+    'language',
+    'datetime',
+    'datetime_range',
+  ];
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');
@@ -97,6 +113,7 @@ class FieldTest extends KernelTestBase {
 
     $this->testFormat = FilterFormat::create([
       'format' => 'test',
+      'name' => 'Test format',
       'weight' => 1,
       'filters' => [
         'filter_html_escape' => ['status' => TRUE],

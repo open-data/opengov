@@ -1,12 +1,8 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\Core\Theme\RegistryTest.
- */
-
 namespace Drupal\Tests\Core\Theme;
 
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Theme\ActiveTheme;
 use Drupal\Core\Theme\Registry;
 use Drupal\Tests\UnitTestCase;
@@ -18,9 +14,9 @@ use Drupal\Tests\UnitTestCase;
 class RegistryTest extends UnitTestCase {
 
   /**
-   * The tested theme registry.
+   * The mocked theme registry.
    *
-   * @var \Drupal\Tests\Core\Theme\TestRegistry
+   * @var \Drupal\Core\Theme\Registry|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $registry;
 
@@ -60,11 +56,26 @@ class RegistryTest extends UnitTestCase {
   protected $themeInitialization;
 
   /**
+   * The mocked cache backend.
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $runtimeCache;
+
+
+  /**
    * The theme manager.
    *
    * @var \Drupal\Core\Theme\ThemeManagerInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $themeManager;
+
+  /**
+   * The module list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $moduleList;
 
   /**
    * The list of functions that get_defined_functions() should provide.
@@ -76,7 +87,7 @@ class RegistryTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->cache = $this->createMock('Drupal\Core\Cache\CacheBackendInterface');
@@ -84,15 +95,16 @@ class RegistryTest extends UnitTestCase {
     $this->moduleHandler = $this->createMock('Drupal\Core\Extension\ModuleHandlerInterface');
     $this->themeHandler = $this->createMock('Drupal\Core\Extension\ThemeHandlerInterface');
     $this->themeInitialization = $this->createMock('Drupal\Core\Theme\ThemeInitializationInterface');
+    $this->runtimeCache = $this->createMock('Drupal\Core\Cache\CacheBackendInterface');
     $this->themeManager = $this->createMock('Drupal\Core\Theme\ThemeManagerInterface');
-
+    $this->moduleList = $this->createMock(ModuleExtensionList::class);
     $this->setupTheme();
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     static::$functions = [];
   }
@@ -134,13 +146,19 @@ class RegistryTest extends UnitTestCase {
     // Include the module and theme files so that hook_theme can be called.
     include_once $this->root . '/core/modules/system/tests/modules/theme_test/theme_test.module';
     include_once $this->root . '/core/tests/fixtures/test_stable/test_stable.theme';
-    $this->moduleHandler->expects($this->exactly(2))
-      ->method('getImplementations')
+    $this->moduleHandler->expects($this->atLeastOnce())
+      ->method('invokeAllWith')
       ->with('theme')
-      ->will($this->returnValue(['theme_test']));
+      ->willReturnCallback(function (string $hook, callable $callback) {
+        $callback(function () {}, 'theme_test');
+      });
     $this->moduleHandler->expects($this->atLeastOnce())
       ->method('getModuleList')
       ->willReturn([]);
+    $this->moduleList->expects($this->exactly(2))
+      ->method('getPath')
+      ->with('theme_test')
+      ->willReturn('core/modules/system/tests/modules/theme_test');
 
     $registry = $this->registry->get();
 
@@ -151,27 +169,17 @@ class RegistryTest extends UnitTestCase {
     $this->assertArrayHasKey('theme_test_suggestion_provided', $registry);
     $this->assertArrayHasKey('theme_test_specific_suggestions', $registry);
     $this->assertArrayHasKey('theme_test_suggestions', $registry);
-    $this->assertArrayHasKey('theme_test_function_suggestions', $registry);
     $this->assertArrayHasKey('theme_test_foo', $registry);
     $this->assertArrayHasKey('theme_test_render_element', $registry);
-    $this->assertArrayHasKey('theme_test_render_element_children', $registry);
-    $this->assertArrayHasKey('theme_test_function_template_override', $registry);
 
-    $this->assertArrayNotHasKey('test_theme_not_existing_function', $registry);
-    $this->assertFalse(in_array('test_stable_preprocess_theme_test_render_element', $registry['theme_test_render_element']['preprocess functions']));
-
-    $info = $registry['theme_test_function_suggestions'];
-    $this->assertEquals('module', $info['type']);
-    $this->assertEquals('core/modules/system/tests/modules/theme_test', $info['theme path']);
-    $this->assertEquals('theme_theme_test_function_suggestions', $info['function']);
-    $this->assertEquals([], $info['variables']);
+    $this->assertNotContains('test_stable_preprocess_theme_test_render_element', $registry['theme_test_render_element']['preprocess functions']);
 
     // The second call will initialize with the second theme. Ensure that this
     // returns a different object and the discovery for the second theme's
     // preprocess function worked.
     $other_registry = $this->registry->get();
     $this->assertNotSame($registry, $other_registry);
-    $this->assertTrue(in_array('test_stable_preprocess_theme_test_render_element', $other_registry['theme_test_render_element']['preprocess functions']));
+    $this->assertContains('test_stable_preprocess_theme_test_render_element', $other_registry['theme_test_render_element']['preprocess functions']);
   }
 
   /**
@@ -200,12 +208,12 @@ class RegistryTest extends UnitTestCase {
       ->method('getModuleList')
       ->willReturn([]);
 
-    $class = new \ReflectionClass(TestRegistry::class);
+    $class = new \ReflectionClass(Registry::class);
     $reflection_method = $class->getMethod('postProcessExtension');
     $reflection_method->setAccessible(TRUE);
     $reflection_method->invokeArgs($this->registry, [&$hooks, $theme->reveal()]);
 
-    $this->assertArrayEquals($expected, $hooks);
+    $this->assertEquals($expected, $hooks);
   }
 
   /**
@@ -225,7 +233,7 @@ class RegistryTest extends UnitTestCase {
 
     // Test the discovery of suggestions via the presence of preprocess
     // functions that follow the "__" naming pattern.
-    $data['base_hook_with_autodiscovered_suggestions'] = [
+    $data['base_hook_with_auto-discovered_suggestions'] = [
       'defined_functions' => [
         'test_preprocess_test_hook__suggestion',
         'test_preprocess_test_hook__suggestion__another',
@@ -486,18 +494,18 @@ class RegistryTest extends UnitTestCase {
   }
 
   protected function setupTheme() {
-    $this->registry = new TestRegistry($this->root, $this->cache, $this->lock, $this->moduleHandler, $this->themeHandler, $this->themeInitialization);
+    $this->registry = $this->getMockBuilder(Registry::class)
+      ->onlyMethods(['getPath'])
+      ->setConstructorArgs([$this->root, $this->cache, $this->lock, $this->moduleHandler, $this->themeHandler, $this->themeInitialization, $this->runtimeCache, $this->moduleList])
+      ->getMock();
+    $this->registry->expects($this->any())
+      ->method('getPath')
+      ->willReturnCallback(function ($module) {
+        if ($module == 'theme_test') {
+          return 'core/modules/system/tests/modules/theme_test';
+        }
+      });
     $this->registry->setThemeManager($this->themeManager);
-  }
-
-}
-
-class TestRegistry extends Registry {
-
-  protected function getPath($module) {
-    if ($module == 'theme_test') {
-      return 'core/modules/system/tests/modules/theme_test';
-    }
   }
 
 }

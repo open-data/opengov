@@ -17,16 +17,14 @@ class TaxonomyTest extends KernelTestBase {
   protected $vocab;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  public static $modules = ['taxonomy', 'text', 'language'];
+  protected static $modules = ['taxonomy', 'text', 'language'];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('taxonomy_term');
@@ -135,6 +133,10 @@ class TaxonomyTest extends KernelTestBase {
     $parent_term->addTranslation('de', [
       'name' => 'german-parent-term',
     ])->save();
+
+    // Check translation source tokens.
+    $this->assertTokens('term', ['term' => $parent_term], ['source:name' => 'english-parent-term']);
+    $this->assertTokens('term', ['term' => $parent_term], ['source:name' => 'english-parent-term'], ['langcode' => 'de']);
 
     // Create a term related to the parent term.
     $child_term = $this->addTerm($this->vocab, [

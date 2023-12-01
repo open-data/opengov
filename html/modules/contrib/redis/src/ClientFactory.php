@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\redis;
+
 use Drupal\Core\Site\Settings;
 
 /**
@@ -118,6 +119,12 @@ class ClientFactory {
         $className = self::getClass(self::REDIS_IMPL_CLIENT, 'PhpRedis');
         self::$_clientInterface = new $className();
       }
+      elseif (class_exists('Relay\Relay'))
+      {
+        // Fallback on PhpRedis if available.
+        $className = self::getClass(self::REDIS_IMPL_CLIENT, 'Relay');
+        self::$_clientInterface = new $className();
+      }
       else
       {
         if (!isset(self::$_clientInterface))
@@ -150,6 +157,7 @@ class ClientFactory {
         'port' => self::REDIS_DEFAULT_PORT,
         'base' => self::REDIS_DEFAULT_BASE,
         'password' => self::REDIS_DEFAULT_PASSWORD,
+        'persistent' => FALSE,
       ];
 
       // If using replication, lets create the client appropriately.
@@ -165,14 +173,17 @@ class ClientFactory {
           $settings['port'],
           $settings['base'],
           $settings['password'],
-          $settings['replication.host']);
+          $settings['replication.host'],
+          $settings['persistent']);
       }
       else {
         self::$_client = self::getClientInterface()->getClient(
           $settings['host'],
           $settings['port'],
           $settings['base'],
-          $settings['password']);
+          $settings['password'],
+          [], // There are no replication hosts.
+          $settings['persistent']);
       }
     }
 

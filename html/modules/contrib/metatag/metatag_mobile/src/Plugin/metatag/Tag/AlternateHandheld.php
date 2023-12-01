@@ -17,13 +17,31 @@ namespace Drupal\metatag_mobile\Plugin\metatag\Tag;
  *   multiple = FALSE
  * )
  */
-class alternateHandheld extends LinkMediaBase {
+class AlternateHandheld extends LinkMediaBase {
 
   /**
    * {@inheritdoc}
    */
-  protected function media() {
+  protected function media(): string {
     return 'handheld';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTestOutputExistsXpath(): array {
+    return ["//link[@rel='alternate' and @media='handheld']"];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTestOutputValuesXpath(array $values): array {
+    $xpath_strings = [];
+    foreach ($values as $value) {
+      $xpath_strings[] = "//link[@rel='alternate' and @media='handheld' and @href='{$value}']";
+    }
+    return $xpath_strings;
   }
 
 }

@@ -18,6 +18,7 @@ use Drupal\search_api\UnsavedConfigurationInterface;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api\Utility\FieldsHelperInterface;
 use Drupal\Core\TempStore\SharedTempStoreFactory;
+use Drupal\search_api\Utility\Utility;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -256,22 +257,11 @@ class IndexFieldsForm extends EntityForm {
       }
     }
 
-    $boost_values = [
-      '0.0',
-      '0.1',
-      '0.2',
-      '0.3',
-      '0.5',
-      '0.8',
-      '1.0',
-      '2.0',
-      '3.0',
-      '5.0',
-      '8.0',
-      '13.0',
-      '21.0',
-    ];
-    $boosts = array_combine($boost_values, $boost_values);
+    $additional_factors = [];
+    foreach ($fields as $field) {
+      $additional_factors[] = $field->getBoost();
+    }
+    $boosts = Utility::getBoostFactors($additional_factors);
 
     $build = [
       '#type' => 'details',
@@ -333,7 +323,7 @@ class IndexFieldsForm extends EntityForm {
       $build['fields'][$key]['boost'] = [
         '#type' => 'select',
         '#options' => $boosts,
-        '#default_value' => sprintf('%.1f', $field->getBoost()),
+        '#default_value' => Utility::formatBoostFactor($field->getBoost()),
         '#states' => [
           'visible' => [
             ':input[name="fields[' . $key . '][type]"]' => $fulltext_types,
@@ -414,7 +404,7 @@ class IndexFieldsForm extends EntityForm {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $field_values = $form_state->getValues()['fields'];
+    $field_values = $form_state->getValue('fields', []);
     $new_ids = [];
 
     foreach ($field_values as $field_id => $field) {
@@ -464,13 +454,24 @@ class IndexFieldsForm extends EntityForm {
     $new_fields = [];
     foreach ($field_values as $field_id => $new_settings) {
       if (!isset($fields[$field_id])) {
-        $args['%field_id'] = $field_id;
+        $args = [
+          '%field_id' => $field_id,
+        ];
         $this->messenger->addWarning($this->t('The field with ID %field_id does not exist anymore.', $args));
         continue;
       }
       $field = $fields[$field_id];
       $field->setLabel($new_settings['title']);
-      $field->setType($new_settings['type']);
+      try {
+        $field->setType($new_settings['type']);
+      }
+      catch (SearchApiException $e) {
+        $args = [
+          '%field_id' => $field_id,
+          '%field' => $field->getLabel(),
+        ];
+        $this->messenger->addWarning($this->t('The type of field %field (%field_id) cannot be changed.', $args));
+      }
       $field->setBoost($new_settings['boost']);
       $field->setFieldIdentifier($new_settings['id']);
 

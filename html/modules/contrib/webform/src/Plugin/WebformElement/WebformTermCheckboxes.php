@@ -43,7 +43,7 @@ class WebformTermCheckboxes extends Checkboxes implements WebformElementEntityRe
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

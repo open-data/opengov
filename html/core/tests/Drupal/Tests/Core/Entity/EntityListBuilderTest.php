@@ -16,7 +16,7 @@ use Drupal\entity_test\EntityTestListBuilder;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * @coversDefaultClass \Drupal\entity_test\EntityTestListBuilder
+ * @coversDefaultClass \Drupal\Core\Entity\EntityListBuilder
  * @group Entity
  */
 class EntityListBuilderTest extends UnitTestCase {
@@ -80,7 +80,7 @@ class EntityListBuilderTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->role = $this->createMock('Drupal\user\RoleInterface');
@@ -107,7 +107,7 @@ class EntityListBuilderTest extends UnitTestCase {
     $this->moduleHandler->expects($this->once())
       ->method('invokeAll')
       ->with('entity_operation', [$this->role])
-      ->will($this->returnValue($operations));
+      ->willReturn($operations);
     $this->moduleHandler->expects($this->once())
       ->method('alter')
       ->with('entity_operation');
@@ -116,10 +116,10 @@ class EntityListBuilderTest extends UnitTestCase {
 
     $this->role->expects($this->any())
       ->method('access')
-      ->will($this->returnValue(AccessResult::allowed()));
+      ->willReturn(AccessResult::allowed());
     $this->role->expects($this->any())
       ->method('hasLinkTemplate')
-      ->will($this->returnValue(TRUE));
+      ->willReturn(TRUE);
     $url = $this->getMockBuilder('\Drupal\Core\Url')
       ->disableOriginalConstructor()
       ->getMock();
@@ -128,7 +128,7 @@ class EntityListBuilderTest extends UnitTestCase {
       ->with(['query' => ['destination' => '/foo/bar']]);
     $this->role->expects($this->any())
       ->method('toUrl')
-      ->will($this->returnValue($url));
+      ->willReturn($url);
 
     $this->redirectDestination->expects($this->atLeastOnce())
       ->method('getAsArray')
@@ -139,15 +139,15 @@ class EntityListBuilderTest extends UnitTestCase {
     $list->setRedirectDestination($this->redirectDestination);
 
     $operations = $list->getOperations($this->role);
-    $this->assertInternalType('array', $operations);
+    $this->assertIsArray($operations);
     $this->assertArrayHasKey('edit', $operations);
-    $this->assertInternalType('array', $operations['edit']);
+    $this->assertIsArray($operations['edit']);
     $this->assertArrayHasKey('title', $operations['edit']);
     $this->assertArrayHasKey('delete', $operations);
-    $this->assertInternalType('array', $operations['delete']);
+    $this->assertIsArray($operations['delete']);
     $this->assertArrayHasKey('title', $operations['delete']);
     $this->assertArrayHasKey($operation_name, $operations);
-    $this->assertInternalType('array', $operations[$operation_name]);
+    $this->assertIsArray($operations[$operation_name]);
     $this->assertArrayHasKey('title', $operations[$operation_name]);
   }
 

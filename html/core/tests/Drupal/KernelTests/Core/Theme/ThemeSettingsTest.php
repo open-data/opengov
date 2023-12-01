@@ -18,7 +18,7 @@ class ThemeSettingsTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system'];
+  protected static $modules = ['system'];
 
   /**
    * List of discovered themes.
@@ -27,7 +27,10 @@ class ThemeSettingsTest extends KernelTestBase {
    */
   protected $availableThemes;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
     // Theme settings rely on System module's system.theme.global configuration.
     $this->installConfig(['system']);
@@ -44,9 +47,9 @@ class ThemeSettingsTest extends KernelTestBase {
   public function testDefaultConfig() {
     $name = 'test_basetheme';
     $path = $this->availableThemes[$name]->getPath();
-    $this->assertTrue(file_exists("$path/" . InstallStorage::CONFIG_INSTALL_DIRECTORY . "/$name.settings.yml"));
+    $this->assertFileExists("$path/" . InstallStorage::CONFIG_INSTALL_DIRECTORY . "/$name.settings.yml");
     $this->container->get('theme_installer')->install([$name]);
-    $this->assertIdentical(theme_get_setting('base', $name), 'only');
+    $this->assertSame('only', theme_get_setting('base', $name));
   }
 
   /**
@@ -55,7 +58,7 @@ class ThemeSettingsTest extends KernelTestBase {
   public function testNoDefaultConfig() {
     $name = 'stark';
     $path = $this->availableThemes[$name]->getPath();
-    $this->assertFalse(file_exists("$path/" . InstallStorage::CONFIG_INSTALL_DIRECTORY . "/$name.settings.yml"));
+    $this->assertFileDoesNotExist("$path/" . InstallStorage::CONFIG_INSTALL_DIRECTORY . "/$name.settings.yml");
     $this->container->get('theme_installer')->install([$name]);
     $this->assertNotNull(theme_get_setting('features.favicon', $name));
   }
@@ -71,7 +74,7 @@ class ThemeSettingsTest extends KernelTestBase {
     $theme_handler = $this->container->get('theme_handler');
     $theme = $theme_handler->getTheme('stark');
 
-    // Tests default behaviour.
+    // Tests default behavior.
     $expected = '/' . $theme->getPath() . '/logo.svg';
     $this->assertEquals($expected, theme_get_setting('logo.url', 'stark'));
 
@@ -85,7 +88,9 @@ class ThemeSettingsTest extends KernelTestBase {
     theme_settings_convert_to_config($values, $config)->save();
 
     // Tests logo path with scheme.
-    $expected = file_url_transform_relative(file_create_url('public://logo_with_scheme.png'));
+    /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
+    $file_url_generator = \Drupal::service('file_url_generator');
+    $expected = $file_url_generator->generateString('public://logo_with_scheme.png');
     $this->assertEquals($expected, theme_get_setting('logo.url', 'stark'));
 
     $values = [

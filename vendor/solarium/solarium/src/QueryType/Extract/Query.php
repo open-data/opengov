@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Extract;
 
 use Solarium\Core\Client\Client;
@@ -8,7 +15,6 @@ use Solarium\Core\Query\DocumentInterface;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
 use Solarium\QueryType\Update\Query\Document;
-use Solarium\QueryType\Update\ResponseParser as UpdateResponseParser;
 
 /**
  * Extract query.
@@ -16,11 +22,21 @@ use Solarium\QueryType\Update\ResponseParser as UpdateResponseParser;
  * Sends a document extract request to Solr, i.e. upload rich document content
  * such as PDF, Word or HTML, parse the file contents and add it to the index.
  *
- * The Solr server must have the {@link http://wiki.apache.org/solr/ExtractingRequestHandler
+ * The Solr server must have the {@link https://solr.apache.org/guide/uploading-data-with-solr-cell-using-apache-tika.html#configuring-the-extractingrequesthandler-in-solrconfig-xml
  * ExtractingRequestHandler} enabled.
  */
 class Query extends BaseQuery
 {
+    /**
+     * Extract format 'text'.
+     */
+    const EXTRACT_FORMAT_TEXT = 'text';
+
+    /**
+     * Extract format 'xml'.
+     */
+    const EXTRACT_FORMAT_XML = 'xml';
+
     /**
      * Default options.
      *
@@ -40,6 +56,13 @@ class Query extends BaseQuery
      * @var array
      */
     protected $fieldMappings = [];
+
+    /**
+     * Resource name that was added to the request.
+     *
+     * @var string
+     */
+    protected $resourceName;
 
     /**
      * Get type for this query.
@@ -64,11 +87,11 @@ class Query extends BaseQuery
     /**
      * Get a response parser for this query.
      *
-     * @return UpdateResponseParser
+     * @return ResponseParser
      */
     public function getResponseParser(): ResponseParserInterface
     {
-        return new UpdateResponseParser();
+        return new ResponseParser();
     }
 
     /**
@@ -101,13 +124,13 @@ class Query extends BaseQuery
     /**
      * Set the file to upload and index.
      *
-     * @param string $filename
+     * @param string|resource $file
      *
      * @return self
      */
-    public function setFile(string $filename): self
+    public function setFile($file): self
     {
-        $this->setOption('file', $filename);
+        $this->setOption('file', $file);
 
         return $this;
     }
@@ -115,9 +138,9 @@ class Query extends BaseQuery
     /**
      * Get the file to upload and index.
      *
-     * @return string|null
+     * @return string|resource|null
      */
-    public function getFile(): ?string
+    public function getFile()
     {
         return $this->getOption('file');
     }
@@ -158,7 +181,7 @@ class Query extends BaseQuery
     {
         $this->setOption('defaultField', $defaultField);
 
-        return  $this;
+        return $this;
     }
 
     /**
@@ -361,7 +384,7 @@ class Query extends BaseQuery
     }
 
     /**
-     * Set the ExtractOnly parameter of SOLR Extraction Handler.
+     * Set the extractOnly parameter of the ExtractingRequestHandler.
      *
      * @param bool $value
      *
@@ -375,13 +398,41 @@ class Query extends BaseQuery
     }
 
     /**
-     * Get the ExtractOnly parameter of SOLR Extraction Handler.
+     * Get the extractOnly parameter of the ExtractingRequestHandler.
      *
      * @return bool|null
      */
     public function getExtractOnly(): ?bool
     {
         return $this->getOption('extractonly');
+    }
+
+    /**
+     * Set the extractFormat parameter of the ExtractingRequestHandler.
+     *
+     * This parameter is valid only if 'extractonly' is set to true.
+     *
+     * @param string $format Use one of the EXTRACT_FORMAT_* constants
+     *
+     * @return self Provides fluent interface
+     *
+     * @see setExtractOnly()
+     */
+    public function setExtractFormat(string $format): self
+    {
+        $this->setOption('extractformat', $format);
+
+        return $this;
+    }
+
+    /**
+     * Get the extractFormat parameter of the ExtractingRequestHandler.
+     *
+     * @return string|null
+     */
+    public function getExtractFormat(): ?string
+    {
+        return $this->getOption('extractformat');
     }
 
     /**
@@ -403,15 +454,40 @@ class Query extends BaseQuery
     }
 
     /**
+     * Set the resource name that was added to the request.
+     *
+     * Will be called by the {@see RequestBuilder} after it determines the resource name.
+     *
+     * @param string $resourceName
+     *
+     * @return self Provides fluent interface
+     */
+    public function setResourceName(string $resourceName): self
+    {
+        $this->resourceName = $resourceName;
+
+        return $this;
+    }
+
+    /**
+     * Get the resource name that was added to the request.
+     *
+     * Will return null if the {@see RequestBuilder} hasn't determined the resource name yet.
+     *
+     * @return string|null
+     */
+    public function getResourceName(): ?string
+    {
+        return $this->resourceName;
+    }
+
+    /**
      * Initialize options.
      *
-     * Several options need some extra checks or setup work, for these options
-     * the setters are called.
+     * {@internal The 'fmap' option needs additional setup work.}
      */
     protected function init()
     {
-        parent::init();
-
         if (isset($this->options['fmap'])) {
             $this->setFieldMappings($this->options['fmap']);
         }

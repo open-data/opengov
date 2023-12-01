@@ -41,6 +41,9 @@ class WebformTestElementController extends ControllerBase {
       }
     }
 
+    // Add query args to cache context.
+    $build['#cache']['contexts'][] = 'url.query_args';
+
     return $build;
   }
 

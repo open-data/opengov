@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\Utility\WebformXss;
 
 /**
@@ -144,13 +145,14 @@ class WebformHtmlEditor extends FormElement {
       }
     }
 
+    // phpcs:ignore Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing
     if (\Drupal::moduleHandler()->moduleExists('imce') && \Drupal\imce\Imce::access()) {
       $element['#attached']['library'][] = 'imce/drupal.imce.ckeditor';
-      $element['#attached']['drupalSettings']['webform']['html_editor']['ImceImageIcon'] = file_create_url(drupal_get_path('module', 'imce') . '/js/plugins/ckeditor/icons/imceimage.png');
+      $element['#attached']['drupalSettings']['webform']['html_editor']['ImceImageIcon'] = \Drupal::service('file_url_generator')->generateAbsoluteString(\Drupal::service('extension.list.module')->getPath('imce') . '/js/plugins/ckeditor/icons/imceimage.png');
     }
 
     if (!empty($element['#states'])) {
-      webform_process_states($element, '#wrapper_attributes');
+      WebformFormHelper::processStates($element, '#wrapper_attributes');
     }
 
     return $element;
@@ -234,6 +236,8 @@ class WebformHtmlEditor extends FormElement {
    * @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::getMessage
    */
   public static function checkMarkup($text, array $options = []) {
+    $text = $text ?? '';
+
     $options += [
       'tidy' => \Drupal::config('webform.settings')->get('html_editor.tidy'),
     ];
@@ -272,8 +276,7 @@ class WebformHtmlEditor extends FormElement {
    *   HTML text with dis-allowed HTML tags removed.
    */
   public static function stripTags($text) {
-    $allowed_tags = '<' . implode('><', static::getAllowedTags()) . '>';
-    return strip_tags($text, $allowed_tags);
+    return Xss::filter($text, static::getAllowedTags());
   }
 
 }

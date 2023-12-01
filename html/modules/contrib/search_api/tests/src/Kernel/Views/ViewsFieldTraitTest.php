@@ -25,13 +25,14 @@ class ViewsFieldTraitTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'field',
     'search_api',
     'search_api_test_example_content',
     'user',
     'system',
     'entity_test',
+    'filter',
     'text',
   ];
 
@@ -66,7 +67,7 @@ class ViewsFieldTraitTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('entity_test_mulrev_changed');
@@ -102,7 +103,7 @@ class ViewsFieldTraitTest extends KernelTestBase {
         'aggregated_field' => [
           'label' => 'Aggregated field',
           'property_path' => 'aggregated_field',
-          'type' => 'text',
+          'type' => 'string',
           'configuration' => [
             'type' => 'union',
             'fields' => [
@@ -123,7 +124,7 @@ class ViewsFieldTraitTest extends KernelTestBase {
     ]);
 
     $this->field = new ViewsTestField([], 'search_api', []);
-    /** @var \Drupal\search_api\Plugin\views\query\SearchApiQuery|\PHPUnit_Framework_MockObject_MockObject $query */
+    /** @var \Drupal\search_api\Plugin\views\query\SearchApiQuery|\PHPUnit\Framework\MockObject\MockObject $query */
     $query = $this->getMockBuilder(SearchApiQuery::class)
       ->disableOriginalConstructor()
       ->getMock();
@@ -192,28 +193,30 @@ class ViewsFieldTraitTest extends KernelTestBase {
 
     $this->field->preRender($values);
 
-    $this->assertObjectHasAttribute($entity_name, $values[0]);
+    $properties = get_object_vars($values[0]);
+    $this->assertArrayHasKey($entity_name, $properties);
     $this->assertEquals(['Test entity 1 name'], $values[0]->$entity_name);
-    $this->assertObjectHasAttribute("$entity_body:_object", $values[0]);
+    $this->assertArrayHasKey("$entity_body:_object", $properties);
     $this->assertCount(1, $values[0]->{"$entity_body:_object"});
     $this->assertInstanceOf(TypedDataInterface::class, $values[0]->{"$entity_body:_object"}[0]);
     $this->assertArrayHasKey($entity_body, $values[0]->_relationship_objects);
     $this->assertNotEmpty($values[0]->_relationship_objects[$entity_body]);
-    $this->assertObjectHasAttribute($entity_user_name, $values[0]);
+    $this->assertArrayHasKey($entity_user_name, $properties);
     $this->assertEquals(['User 1'], $values[0]->$entity_user_name);
     $this->assertTrue(empty($values[0]->$user_name), 'User name should not be extracted for non-user entity.');
-    $this->assertObjectHasAttribute('aggregated_field', $values[0]);
+    $this->assertArrayHasKey('aggregated_field', $properties);
     $this->assertContains('Test entity 1 name', $values[0]->aggregated_field);
     $this->assertContains('Test entity 1 body', $values[0]->aggregated_field);
 
-    $this->assertObjectHasAttribute($entity_name, $values[1]);
+    $properties = get_object_vars($values[1]);
+    $this->assertArrayHasKey($entity_name, $properties);
     $this->assertEquals(['Fake value'], $values[1]->$entity_name);
     $this->assertArrayHasKey($entity_body, $values[1]->_relationship_objects);
     $this->assertNotEmpty($values[1]->_relationship_objects[$entity_body]);
-    $this->assertObjectHasAttribute($entity_user_name, $values[1]);
+    $this->assertArrayHasKey($entity_user_name, $properties);
     $this->assertEquals(['Other fake value'], $values[1]->$entity_user_name);
     $this->assertTrue(empty($values[1]->$user_name), 'User name should not be extracted for non-user entity.');
-    $this->assertObjectHasAttribute('aggregated_field', $values[1]);
+    $this->assertArrayHasKey('aggregated_field', $properties);
     $this->assertContains('Test entity 2 name', $values[1]->aggregated_field);
     $this->assertContains('Test entity 2 body', $values[1]->aggregated_field);
 
@@ -224,24 +227,26 @@ class ViewsFieldTraitTest extends KernelTestBase {
     $this->assertArrayNotHasKey(Utility::createCombinedId($datasource_id, 'user_id:entity'), $values[1]->_relationship_objects);
     $this->assertArrayNotHasKey($entity_user_name, $values[1]->_relationship_objects);
 
-    $this->assertObjectHasAttribute($user_name, $values[2]);
+    $properties = get_object_vars($values[2]);
+    $this->assertArrayHasKey($user_name, $properties);
     $this->assertEquals(['User 3'], $values[2]->$user_name);
     $this->assertTrue(empty($values[2]->$entity_name), 'Test entity name should not be extracted for user entity.');
     $this->assertTrue(empty($values[2]->$entity_user_name), 'Test entity author name should not be extracted for user entity.');
-    $this->assertObjectHasAttribute('aggregated_field', $values[2]);
+    $this->assertArrayHasKey('aggregated_field', $properties);
     $this->assertEquals(['User 3'], $values[2]->aggregated_field);
 
-    $this->assertObjectHasAttribute($entity_name, $values[3]);
+    $properties = get_object_vars($values[3]);
+    $this->assertArrayHasKey($entity_name, $properties);
     $this->assertEquals(['Test entity 3 name'], $values[3]->$entity_name);
-    $this->assertObjectHasAttribute("$entity_body:_object", $values[3]);
+    $this->assertArrayHasKey("$entity_body:_object", $properties);
     $this->assertCount(1, $values[3]->{"$entity_body:_object"});
     $this->assertInstanceOf(TypedDataInterface::class, $values[3]->{"$entity_body:_object"}[0]);
     $this->assertArrayHasKey($entity_body, $values[3]->_relationship_objects);
     $this->assertNotEmpty($values[3]->_relationship_objects[$entity_body]);
-    $this->assertObjectHasAttribute($entity_user_name, $values[3]);
+    $this->assertArrayHasKey($entity_user_name, $properties);
     $this->assertEquals(['User 3'], $values[3]->$entity_user_name);
     $this->assertTrue(empty($values[3]->$user_name), 'User name should not be extracted for non-user entity.');
-    $this->assertObjectHasAttribute('aggregated_field', $values[3]);
+    $this->assertArrayHasKey('aggregated_field', $properties);
     $this->assertContains('Test entity 3 name', $values[3]->aggregated_field);
     $this->assertContains('Test entity 3 body', $values[3]->aggregated_field);
   }

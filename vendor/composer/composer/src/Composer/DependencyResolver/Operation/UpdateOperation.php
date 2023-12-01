@@ -20,22 +20,26 @@ use Composer\Package\Version\VersionParser;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class UpdateOperation extends SolverOperation
+class UpdateOperation extends SolverOperation implements OperationInterface
 {
+    const TYPE = 'update';
+
+    /**
+     * @var PackageInterface
+     */
     protected $initialPackage;
+
+    /**
+     * @var PackageInterface
+     */
     protected $targetPackage;
 
     /**
-     * Initializes update operation.
-     *
      * @param PackageInterface $initial initial package
      * @param PackageInterface $target  target package (updated)
-     * @param string           $reason  update reason
      */
-    public function __construct(PackageInterface $initial, PackageInterface $target, $reason = null)
+    public function __construct(PackageInterface $initial, PackageInterface $target)
     {
-        parent::__construct($reason);
-
         $this->initialPackage = $initial;
         $this->targetPackage = $target;
     }
@@ -61,23 +65,32 @@ class UpdateOperation extends SolverOperation
     }
 
     /**
-     * Returns job type.
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function getJobType()
+    public function show($lock)
     {
-        return 'update';
+        return self::format($this->initialPackage, $this->targetPackage, $lock);
     }
 
     /**
-     * {@inheritDoc}
+     * @param bool $lock
+     * @return string
      */
-    public function __toString()
+    public static function format(PackageInterface $initialPackage, PackageInterface $targetPackage, $lock = false)
     {
-        $actionName = VersionParser::isUpgrade($this->initialPackage->getVersion(), $this->targetPackage->getVersion()) ? 'Updating' : 'Downgrading';
+        $fromVersion = $initialPackage->getFullPrettyVersion();
+        $toVersion = $targetPackage->getFullPrettyVersion();
 
-        return $actionName.' '.$this->initialPackage->getPrettyName().' ('.$this->formatVersion($this->initialPackage).') to '.
-            $this->targetPackage->getPrettyName(). ' ('.$this->formatVersion($this->targetPackage).')';
+        if ($fromVersion === $toVersion && $initialPackage->getSourceReference() !== $targetPackage->getSourceReference()) {
+            $fromVersion = $initialPackage->getFullPrettyVersion(true, PackageInterface::DISPLAY_SOURCE_REF);
+            $toVersion = $targetPackage->getFullPrettyVersion(true, PackageInterface::DISPLAY_SOURCE_REF);
+        } elseif ($fromVersion === $toVersion && $initialPackage->getDistReference() !== $targetPackage->getDistReference()) {
+            $fromVersion = $initialPackage->getFullPrettyVersion(true, PackageInterface::DISPLAY_DIST_REF);
+            $toVersion = $targetPackage->getFullPrettyVersion(true, PackageInterface::DISPLAY_DIST_REF);
+        }
+
+        $actionName = VersionParser::isUpgrade($initialPackage->getVersion(), $targetPackage->getVersion()) ? 'Upgrading' : 'Downgrading';
+
+        return $actionName.' <info>'.$initialPackage->getPrettyName().'</info> (<comment>'.$fromVersion.'</comment> => <comment>'.$toVersion.'</comment>)';
     }
 }

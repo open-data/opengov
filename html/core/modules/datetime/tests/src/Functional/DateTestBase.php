@@ -21,7 +21,7 @@ abstract class DateTestBase extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'entity_test', 'datetime', 'field_ui'];
+  protected static $modules = ['node', 'entity_test', 'datetime', 'field_ui'];
 
   /**
    * An array of display options.
@@ -97,7 +97,10 @@ abstract class DateTestBase extends BrowserTestBase {
       'administer entity_test content',
       'administer entity_test form display',
       'administer content types',
+      'bypass node access',
       'administer node fields',
+      'administer node form display',
+      'administer node display',
     ]);
     $this->drupalLogin($web_user);
 
@@ -139,7 +142,7 @@ abstract class DateTestBase extends BrowserTestBase {
     $this->displayOptions = [
       'type' => $formatter_type,
       'label' => 'hidden',
-      'settings' => ['format_type' => 'medium'] + $this->defaultSettings,
+      'settings' => ['format_type' => 'medium'],
     ];
     EntityViewDisplay::create([
       'targetEntityType' => $this->field->getTargetEntityTypeId(),
@@ -151,7 +154,7 @@ abstract class DateTestBase extends BrowserTestBase {
   }
 
   /**
-   * Renders a entity_test and sets the output in the internal browser.
+   * Renders an entity_test and sets the output in the internal browser.
    *
    * @param int $id
    *   The entity_test ID to render.

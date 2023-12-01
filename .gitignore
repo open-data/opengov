@@ -1,5 +1,5 @@
 # Composer files
-/composer.lock
+#/composer.lock
 /html/**/.git
 /html/**/.gitignore
 /vendor/**/.git
@@ -8,10 +8,13 @@
 # Sites folder
 /html/sites/default/*
 /html/sites/default/settings.php
+/html/sites/default/default.settings.php
 /html/sites/default/settings.local.php
 /html/sites/default/services.yml
 /html/sites/default/files
 /html/sites/sites.php
+/html/sites/settings.php
+/html/sites/default.settings.php
 /html/sites/tbsblog.ca/*
 
 # Project workspace

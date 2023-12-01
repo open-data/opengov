@@ -10,8 +10,8 @@ use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\Context\Context;
-use Drupal\Core\Plugin\ContextAwarePluginBase;
-use Drupal\Core\Messenger\MessengerTrait;
+use Drupal\Core\Plugin\ContextAwarePluginTrait;
+use Drupal\Core\Plugin\PluginBase;
 use Drupal\pathauto\AliasTypeBatchUpdateInterface;
 use Drupal\pathauto\AliasTypeInterface;
 use Drupal\pathauto\PathautoState;
@@ -25,9 +25,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   deriver = "\Drupal\pathauto\Plugin\Deriver\EntityAliasTypeDeriver"
  * )
  */
-class EntityAliasTypeBase extends ContextAwarePluginBase implements AliasTypeInterface, AliasTypeBatchUpdateInterface, ContainerFactoryPluginInterface {
+class EntityAliasTypeBase extends PluginBase implements AliasTypeInterface, AliasTypeBatchUpdateInterface, ContainerFactoryPluginInterface {
 
-  use MessengerTrait;
+  use ContextAwarePluginTrait;
 
   /**
    * The module handler service.
@@ -234,7 +234,7 @@ class EntityAliasTypeBase extends ContextAwarePluginBase implements AliasTypeInt
 
     PathautoState::bulkDelete($this->getEntityTypeId(), $pids_by_id);
     $context['sandbox']['count'] += count($pids_by_id);
-    $context['sandbox']['current'] = max($pids_by_id);
+    $context['sandbox']['current'] = !empty($pids_by_id) ? max($pids_by_id) : 0;
     $context['results']['deletions'][] = $this->getLabel();
 
     if ($context['sandbox']['count'] != $context['sandbox']['total']) {
@@ -280,8 +280,7 @@ class EntityAliasTypeBase extends ContextAwarePluginBase implements AliasTypeInt
     }
 
     if (!empty($options['message'])) {
-      $this->messenger->addMessage($this->translationManager
-        ->formatPlural(count($ids), 'Updated 1 %label URL alias.', 'Updated @count %label URL aliases.'), [
+      $this->messenger->addMessage($this->formatPlural(count($ids), 'Updated 1 %label URL alias.', 'Updated @count %label URL aliases.'), [
           '%label' => $this->getLabel(),
         ]);
     }

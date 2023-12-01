@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\webform_node\Unit;
 
-use Drupal\Tests\AssertHelperTrait;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -10,8 +9,6 @@ use Drupal\Tests\UnitTestCase;
  * @group webform_node
  */
 class WebformNodeUninstallValidatorTest extends UnitTestCase {
-
-  use AssertHelperTrait;
 
   /**
    * A mock webform node uninstall validator.
@@ -42,7 +39,7 @@ class WebformNodeUninstallValidatorTest extends UnitTestCase {
     $module = 'not_webform_node';
     $expected = [];
     $reasons = $this->webformNodeUninstallValidator->validate($module);
-    $this->assertSame($expected, $this->castSafeStrings($reasons));
+    $this->assertEquals($expected, $reasons);
   }
 
   /**
@@ -56,7 +53,7 @@ class WebformNodeUninstallValidatorTest extends UnitTestCase {
     $module = 'webform_node';
     $expected = [];
     $reasons = $this->webformNodeUninstallValidator->validate($module);
-    $this->assertSame($expected, $this->castSafeStrings($reasons));
+    $this->assertEquals($expected, $reasons);
   }
 
   /**
@@ -70,7 +67,7 @@ class WebformNodeUninstallValidatorTest extends UnitTestCase {
     $module = 'webform_node';
     $expected = ['To uninstall Webform node, delete all content that has the Webform content type.'];
     $reasons = $this->webformNodeUninstallValidator->validate($module);
-    $this->assertSame($expected, $this->castSafeStrings($reasons));
+    $this->assertEquals($expected, $reasons);
   }
 
 }

@@ -28,7 +28,7 @@ class ContentModerationRouteSubscriberTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $this->routeSubscriber = new ContentModerationRouteSubscriber($entity_type_manager);
@@ -36,20 +36,20 @@ class ContentModerationRouteSubscriberTest extends UnitTestCase {
   }
 
   /**
-   * Creates the entity manager mock returning entity type objects.
+   * Creates the entity type manager mock returning entity type objects.
    */
   protected function setupEntityTypes() {
     $definition = $this->createMock(EntityTypeInterface::class);
     $definition->expects($this->any())
       ->method('getClass')
-      ->will($this->returnValue(SimpleTestEntity::class));
+      ->willReturn(SimpleTestEntity::class);
     $definition->expects($this->any())
       ->method('isRevisionable')
       ->willReturn(FALSE);
     $revisionable_definition = $this->createMock(EntityTypeInterface::class);
     $revisionable_definition->expects($this->any())
       ->method('getClass')
-      ->will($this->returnValue(SimpleTestEntity::class));
+      ->willReturn(SimpleTestEntity::class);
     $revisionable_definition->expects($this->any())
       ->method('isRevisionable')
       ->willReturn(TRUE);

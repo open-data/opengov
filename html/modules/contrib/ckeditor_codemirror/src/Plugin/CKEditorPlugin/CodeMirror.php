@@ -5,8 +5,11 @@ namespace Drupal\ckeditor_codemirror\Plugin\CKEditorPlugin;
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
 use Drupal\ckeditor\CKEditorPluginContextualInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\editor\Entity\Editor;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the "CodeMirror" plugin.
@@ -17,7 +20,34 @@ use Drupal\editor\Entity\Editor;
  *   module = "ckeditor_codemirror"
  * )
  */
-class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface {
+class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * File system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, FileSystemInterface $file_system) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->fileSystem = $file_system;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('file_system')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -29,35 +59,35 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
   /**
    * {@inheritdoc}
    */
-  public function getDependencies(Editor $editor) {
+  public function getDependencies(Editor $editor): array {
     return [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getLibraries(Editor $editor) {
+  public function getLibraries(Editor $editor): array {
     return [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isInternal() {
+  public function isInternal(): bool {
     return FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getButtons() {
+  public function getButtons(): array {
     return [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isEnabled(Editor $editor) {
+  public function isEnabled(Editor $editor): bool {
     $settings = $editor->getSettings();
 
     if (isset($settings['plugins']['codemirror'])) {
@@ -70,22 +100,20 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
   /**
    * {@inheritdoc}
    */
-  public function getConfig(Editor $editor) {
+  public function getConfig(Editor $editor): array {
     $settings = $editor->getSettings()['plugins']['codemirror'];
 
     $config = [
       'codemirror' => [
-        'enable' => isset($settings['enable']) ? $settings['enable'] : FALSE,
-        'mode' => isset($settings['mode']) ? $settings['mode'] : 'htmlmixed',
-        'theme' => isset($settings['theme']) ? $settings['theme'] : 'default',
+        'enable' => $settings['enable'] ?? FALSE,
+        'mode' => $settings['mode'] ?? 'htmlmixed',
+        'theme' => $settings['theme'] ?? 'default',
       ],
-      'startupMode' => isset($settings['startupMode'])
-      ? $settings['startupMode'] : 'wysiwyg',
+      'startupMode' => $settings['startupMode'] ?? 'wysiwyg',
     ];
 
     foreach ($this->options() as $option => $description) {
-      $config['codemirror'][$option] = isset($settings['options'][$option])
-        ? $settings['options'][$option] : TRUE;
+      $config['codemirror'][$option] = $settings['options'][$option] ?? TRUE;
     }
 
     return $config;
@@ -97,7 +125,7 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
    * @return array
    *   An array of settings options and their descriptions.
    */
-  private function options() {
+  private function options(): array {
     return [
       'lineNumbers' => $this->t('Show line numbers.'),
       'lineWrapping' => $this->t('Enable line wrapping.'),
@@ -116,7 +144,7 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
   /**
    * {@inheritdoc}
    */
-  public function settingsForm(array $form, FormStateInterface $form_state, Editor $editor) {
+  public function settingsForm(array $form, FormStateInterface $form_state, Editor $editor): array {
     $editor_settings = $editor->getSettings();
     if (isset($editor_settings['plugins']['codemirror'])) {
       $settings = $editor_settings['plugins']['codemirror'];
@@ -127,8 +155,7 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
     $form['enable'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable CodeMirror source view syntax highlighting.'),
-      '#default_value' => isset($settings['enable'])
-      ? $settings['enable'] : FALSE,
+      '#default_value' => $settings['enable'] ?? FALSE,
     ];
 
     $form['startupMode'] = [
@@ -138,8 +165,7 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
         'wysiwyg' => $this->t('WYSIWYG (default)'),
         'source' => $this->t('Source'),
       ],
-      '#default_value' => isset($settings['startupMode'])
-      ? $settings['startupMode'] : 'wysiwyg',
+      '#default_value' => $settings['startupMode'] ?? 'wysiwyg',
     ];
 
     $form['mode'] = [
@@ -150,16 +176,17 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
         'text/html' => $this->t('HTML only'),
         'application/x-httpd-php' => $this->t('PHP (including HTML)'),
         'text/javascript' => $this->t('Javascript only'),
+        'css' => $this->t('CSS'),
+        'text/x-scss' => $this->t('SCSS'),
       ],
-      '#default_value' => isset($settings['mode'])
-      ? $settings['mode'] : 'htmlmixed',
+      '#default_value' => $settings['mode'] ?? 'htmlmixed',
     ];
 
     $theme_options = ['default' => 'default'];
     $themes_directory = _ckeditor_codemirror_get_library_path()
       . '/codemirror/theme';
     if (is_dir($themes_directory)) {
-      $theme_css_files = file_scan_directory($themes_directory, '/\.css/i');
+      $theme_css_files = $this->fileSystem->scanDirectory($themes_directory, '/\.css/i');
       foreach ($theme_css_files as $file) {
         $theme_options[$file->name] = $file->name;
       }
@@ -169,14 +196,13 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
       '#type' => 'select',
       '#title' => $this->t('Theme'),
       '#options' => $theme_options,
-      '#default_value' => isset($settings['theme'])
-      ? $settings['theme'] : 'default',
+      '#default_value' => $settings['theme'] ?? 'default',
     ];
 
     $form['options'] = [
       '#type' => 'details',
-      '#title' => t('Additional settings'),
-      '#description' => t('Source highlighting and code formatting options:'),
+      '#title' => $this->t('Additional settings'),
+      '#description' => $this->t('Source highlighting and code formatting options:'),
       '#open' => FALSE,
     ];
 
@@ -184,7 +210,7 @@ class CodeMirror extends CKEditorPluginBase implements CKEditorPluginConfigurabl
       $form['options'][$setting] = [
         '#type' => 'checkbox',
         '#title' => $description,
-        '#default_value' => isset($settings['options'][$setting]) ? $settings['options'][$setting] : TRUE,
+        '#default_value' => $settings['options'][$setting] ?? TRUE,
       ];
     }
 

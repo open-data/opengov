@@ -16,7 +16,6 @@ use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Processor\ProcessorPluginBase;
 use Drupal\search_api\Processor\ProcessorProperty;
 use Drupal\search_api\Query\QueryInterface;
-use Drupal\search_api\SearchApiException;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -175,7 +174,7 @@ class ContentAccess extends ProcessorPluginBase {
     foreach ($fields as $field) {
       // Collect grant records for the node. If there are none, use the pseudo
       // grant "node_access__all".
-      $sql = 'SELECT gid, realm FROM {node_access} WHERE (nid = 0 OR nid = :nid) AND grant_view = 1';
+      $sql = 'SELECT [gid], [realm] FROM {node_access} WHERE ([nid] = 0 OR [nid] = :nid) AND [grant_view] = 1';
       $args = [':nid' => $node->id()];
       $grant_records = $this->getDatabase()->query($sql, $args)->fetchAll();
       if ($grant_records) {
@@ -241,12 +240,7 @@ class ContentAccess extends ProcessorPluginBase {
         $account = User::load($account);
       }
       if ($account instanceof AccountInterface) {
-        try {
-          $this->addNodeAccess($query, $account);
-        }
-        catch (SearchApiException $e) {
-          $this->logException($e);
-        }
+        $this->addNodeAccess($query, $account);
       }
       else {
         $account = $query->getOption('search_api_access_account', $this->getCurrentUser());
@@ -268,9 +262,6 @@ class ContentAccess extends ProcessorPluginBase {
    *   The query to which a node access filter should be added, if applicable.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user for whom the search is executed.
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   *   Thrown if not all necessary fields are indexed on the index.
    */
   protected function addNodeAccess(QueryInterface $query, AccountInterface $account) {
     // Don't do anything if the user can access all content.
@@ -303,12 +294,11 @@ class ContentAccess extends ProcessorPluginBase {
     // If there are no "other" datasources, we don't need the nested OR,
     // however, and can add the inner conditions directly to the query.
     if ($unaffected_datasources) {
-      $outer_conditions = $query->createConditionGroup('OR', ['content_access']);
-      $query->addConditionGroup($outer_conditions);
+      $outer_conditions = $query->createAndAddConditionGroup('OR', ['content_access']);
       foreach ($unaffected_datasources as $datasource_id) {
         $outer_conditions->addCondition('search_api_datasource', $datasource_id);
       }
-      $access_conditions = $query->createConditionGroup('AND');
+      $access_conditions = $query->createConditionGroup();
       $outer_conditions->addConditionGroup($access_conditions);
     }
     else {

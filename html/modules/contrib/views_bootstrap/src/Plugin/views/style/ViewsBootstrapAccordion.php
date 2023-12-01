@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\style\StylePluginBase;
-use Drupal\views_bootstrap\ViewsBootstrap;
 
 /**
  * Style plugin to render each item as a row in a Bootstrap Accordion.
@@ -62,6 +61,35 @@ class ViewsBootstrapAccordion extends StylePluginBase {
         '#description' => $this->t('Select the field that will be used as the accordian panel titles.'),
       ];
     }
+    $options_select = [
+      '0' => $this->t('Collapsed'),
+      '1' => $this->t('Uncollapsed'),
+    ];
+    $form['collapse'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Collapse options'),
+    ];
+    $form['collapse']['first'] = [
+      '#type' => 'select',
+      '#title' => $this->t('First element'),
+      '#options' => $options_select,
+      '#default_value' => $this->options['collapse']['first'],
+      '#description' => $this->t('To collapse/uncollapse the first element of the list. If there is only one item, first element settings prevails than the others (middle, last)'),
+    ];
+    $form['collapse']['middle'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Middle elements'),
+      '#options' => $options_select,
+      '#default_value' => $this->options['collapse']['middle'],
+      '#description' => $this->t('To collapse/uncollapse the middle elements of the list.'),
+    ];
+    $form['collapse']['last'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Last element'),
+      '#options' => $options_select,
+      '#default_value' => $this->options['collapse']['last'],
+      '#description' => $this->t('To collapse/uncollapse the last element of the list.'),
+    ];
   }
 
 }

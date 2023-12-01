@@ -11,7 +11,14 @@
  * included to provide Ajax capabilities.
  */
 
-(function($, window, Drupal, drupalSettings) {
+(function (
+  $,
+  window,
+  Drupal,
+  drupalSettings,
+  loadjs,
+  { isFocusable, tabbable },
+) {
   /**
    * Attaches the Ajax behavior to each Ajax form element.
    *
@@ -32,47 +39,47 @@
         if (typeof elementSettings.selector === 'undefined') {
           elementSettings.selector = `#${base}`;
         }
-        $(elementSettings.selector)
-          .once('drupal-ajax')
-          .each(function() {
-            elementSettings.element = this;
-            elementSettings.base = base;
-            Drupal.ajax(elementSettings);
-          });
+        // Use jQuery selector instead of a native selector for
+        // backwards compatibility.
+        once('drupal-ajax', $(elementSettings.selector)).forEach((el) => {
+          elementSettings.element = el;
+          elementSettings.base = base;
+          Drupal.ajax(elementSettings);
+        });
       }
 
       // Load all Ajax behaviors specified in the settings.
-      Object.keys(settings.ajax || {}).forEach(base => loadAjaxBehavior(base));
+      Object.keys(settings.ajax || {}).forEach((base) =>
+        loadAjaxBehavior(base),
+      );
 
       Drupal.ajax.bindAjaxLinks(document.body);
 
       // This class means to submit the form to the action using Ajax.
-      $('.use-ajax-submit')
-        .once('ajax')
-        .each(function() {
-          const elementSettings = {};
+      once('ajax', '.use-ajax-submit').forEach((el) => {
+        const elementSettings = {};
 
-          // Ajax submits specified in this manner automatically submit to the
-          // normal form action.
-          elementSettings.url = $(this.form).attr('action');
-          // Form submit button clicks need to tell the form what was clicked so
-          // it gets passed in the POST request.
-          elementSettings.setClick = true;
-          // Form buttons use the 'click' event rather than mousedown.
-          elementSettings.event = 'click';
-          // Clicked form buttons look better with the throbber than the progress
-          // bar.
-          elementSettings.progress = { type: 'throbber' };
-          elementSettings.base = $(this).attr('id');
-          elementSettings.element = this;
+        // Ajax submits specified in this manner automatically submit to the
+        // normal form action.
+        elementSettings.url = $(el.form).attr('action');
+        // Form submit button clicks need to tell the form what was clicked so
+        // it gets passed in the POST request.
+        elementSettings.setClick = true;
+        // Form buttons use the 'click' event rather than mousedown.
+        elementSettings.event = 'click';
+        // Clicked form buttons look better with the throbber than the progress
+        // bar.
+        elementSettings.progress = { type: 'throbber' };
+        elementSettings.base = el.id;
+        elementSettings.element = el;
 
-          Drupal.ajax(elementSettings);
-        });
+        Drupal.ajax(elementSettings);
+      });
     },
 
     detach(context, settings, trigger) {
       if (trigger === 'unload') {
-        Drupal.ajax.expired().forEach(instance => {
+        Drupal.ajax.expired().forEach((instance) => {
           // Set this to null and allow garbage collection to reclaim
           // the memory.
           Drupal.ajax.instances[instance.instanceIndex] = null;
@@ -95,7 +102,7 @@
    * @param {string} customMessage
    *   The custom message.
    */
-  Drupal.AjaxError = function(xmlhttp, uri, customMessage) {
+  Drupal.AjaxError = function (xmlhttp, uri, customMessage) {
     let statusCode;
     let statusText;
     let responseText;
@@ -120,7 +127,7 @@
     // exception here.
     try {
       statusText = `\n${Drupal.t('StatusText: !statusText', {
-        '!statusText': $.trim(xmlhttp.statusText),
+        '!statusText': xmlhttp.statusText.trim(),
       })}`;
     } catch (e) {
       // Empty.
@@ -131,7 +138,7 @@
     // xmlhttp.responseText is going to throw an exception. So we'll catch it.
     try {
       responseText = `\n${Drupal.t('ResponseText: !responseText', {
-        '!responseText': $.trim(xmlhttp.responseText),
+        '!responseText': xmlhttp.responseText.trim(),
       })}`;
     } catch (e) {
       // Empty.
@@ -230,7 +237,7 @@
    *
    * @see Drupal.AjaxCommands
    */
-  Drupal.ajax = function(settings) {
+  Drupal.ajax = function (settings) {
     if (arguments.length !== 1) {
       throw new Error(
         'Drupal.ajax() function must be called with one configuration object only',
@@ -270,9 +277,9 @@
    * @return {Array.<Drupal.Ajax>}
    *   The list of expired {@link Drupal.Ajax} objects.
    */
-  Drupal.ajax.expired = function() {
+  Drupal.ajax.expired = function () {
     return Drupal.ajax.instances.filter(
-      instance =>
+      (instance) =>
         instance &&
         instance.element !== false &&
         !document.body.contains(instance.element),
@@ -285,34 +292,31 @@
    * @param {HTMLElement} element
    *   Element to enable Ajax functionality for.
    */
-  Drupal.ajax.bindAjaxLinks = element => {
+  Drupal.ajax.bindAjaxLinks = (element) => {
     // Bind Ajax behaviors to all items showing the class.
-    $(element)
-      .find('.use-ajax')
-      .once('ajax')
-      .each((i, ajaxLink) => {
-        const $linkElement = $(ajaxLink);
+    once('ajax', '.use-ajax', element).forEach((ajaxLink) => {
+      const $linkElement = $(ajaxLink);
 
-        const elementSettings = {
-          // Clicked links look better with the throbber than the progress bar.
-          progress: { type: 'throbber' },
-          dialogType: $linkElement.data('dialog-type'),
-          dialog: $linkElement.data('dialog-options'),
-          dialogRenderer: $linkElement.data('dialog-renderer'),
-          base: $linkElement.attr('id'),
-          element: ajaxLink,
-        };
-        const href = $linkElement.attr('href');
-        /**
-         * For anchor tags, these will go to the target of the anchor rather
-         * than the usual location.
-         */
-        if (href) {
-          elementSettings.url = href;
-          elementSettings.event = 'click';
-        }
-        Drupal.ajax(elementSettings);
-      });
+      const elementSettings = {
+        // Clicked links look better with the throbber than the progress bar.
+        progress: { type: 'throbber' },
+        dialogType: $linkElement.data('dialog-type'),
+        dialog: $linkElement.data('dialog-options'),
+        dialogRenderer: $linkElement.data('dialog-renderer'),
+        base: $linkElement.attr('id'),
+        element: ajaxLink,
+      };
+      const href = $linkElement.attr('href');
+      /**
+       * For anchor tags, these will go to the target of the anchor rather than
+       * the usual location.
+       */
+      if (href) {
+        elementSettings.url = href;
+        elementSettings.event = 'click';
+      }
+      Drupal.ajax(elementSettings);
+    });
   };
 
   /**
@@ -375,7 +379,7 @@
    * @param {Drupal.Ajax~elementSettings} elementSettings
    *   Settings for this Ajax object.
    */
-  Drupal.Ajax = function(base, element, elementSettings) {
+  Drupal.Ajax = function (base, element, elementSettings) {
     const defaults = {
       event: element ? 'mousedown' : null,
       keypress: true,
@@ -460,7 +464,7 @@
     // 1. /nojs/
     // 2. /nojs$ - The end of a URL string.
     // 3. /nojs? - Followed by a query (e.g. path/nojs?destination=foobar).
-    // 4. /nojs# - Followed by a fragment (e.g.: path/nojs#myfragment).
+    // 4. /nojs# - Followed by a fragment (e.g.: path/nojs#my-fragment).
     const originalUrl = this.url;
 
     /**
@@ -513,6 +517,9 @@
     ajax.options = {
       url: ajax.url,
       data: ajax.submit,
+      isInProgress() {
+        return ajax.ajaxing;
+      },
       beforeSerialize(elementSettings, options) {
         return ajax.beforeSerialize(elementSettings, options);
       },
@@ -550,10 +557,34 @@
           }
         }
 
-        return ajax.success(response, status);
+        return (
+          // Ensure that the return of the success callback is a Promise.
+          // When the return is a Promise, using resolve will unwrap it, and
+          // when the return is not a Promise we make sure it can be used as
+          // one. This is useful for code that overrides the success method.
+          Promise.resolve(ajax.success(response, status))
+            // Ajaxing status is back to false when all the AJAX commands have
+            // finished executing.
+            .then(() => {
+              ajax.ajaxing = false;
+              // jQuery normally triggers the ajaxSuccess, ajaxComplete, and
+              // ajaxStop events after the "success" function passed to $.ajax()
+              // returns, but we prevented that via
+              // $.event.special[EVENT_NAME].trigger in order to wait for the
+              // commands to finish executing. Now that they have, re-trigger
+              // those events.
+              $(document).trigger('ajaxSuccess', [xmlhttprequest, this]);
+              $(document).trigger('ajaxComplete', [xmlhttprequest, this]);
+              if (--$.active === 0) {
+                $(document).trigger('ajaxStop');
+              }
+            })
+        );
+      },
+      error(xmlhttprequest, status, error) {
+        ajax.ajaxing = false;
       },
       complete(xmlhttprequest, status) {
-        ajax.ajaxing = false;
         if (status === 'error' || status === 'parsererror') {
           return ajax.error(xmlhttprequest, ajax.url);
         }
@@ -582,7 +613,7 @@
     ajax.options.url += `${Drupal.ajax.WRAPPER_FORMAT}=${wrapper}`;
 
     // Bind the ajaxSubmit function to the element event.
-    $(ajax.element).on(elementSettings.event, function(event) {
+    $(ajax.element).on(elementSettings.event, function (event) {
       if (
         !drupalSettings.ajaxTrustedUrl[ajax.url] &&
         !Drupal.url.isLocal(ajax.url)
@@ -600,7 +631,7 @@
     // can be triggered through keyboard input as well as e.g. a mousedown
     // action.
     if (elementSettings.keypress) {
-      $(ajax.element).on('keypress', function(event) {
+      $(ajax.element).on('keypress', function (event) {
         return ajax.keypressResponse(this, event);
       });
     }
@@ -645,7 +676,7 @@
    *   pre-serialization fails, the Deferred will be returned in the rejected
    *   state.
    */
-  Drupal.Ajax.prototype.execute = function() {
+  Drupal.Ajax.prototype.execute = function () {
     // Do not perform another ajax command if one is already in progress.
     if (this.ajaxing) {
       return;
@@ -683,7 +714,7 @@
    * @param {jQuery.Event} event
    *   Triggered event.
    */
-  Drupal.Ajax.prototype.keypressResponse = function(element, event) {
+  Drupal.Ajax.prototype.keypressResponse = function (element, event) {
     // Create a synonym for this to reduce code confusion.
     const ajax = this;
 
@@ -719,7 +750,7 @@
    * @param {jQuery.Event} event
    *   Triggered event.
    */
-  Drupal.Ajax.prototype.eventResponse = function(element, event) {
+  Drupal.Ajax.prototype.eventResponse = function (element, event) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -769,7 +800,7 @@
    * @param {object} options
    *   jQuery.ajax options.
    */
-  Drupal.Ajax.prototype.beforeSerialize = function(element, options) {
+  Drupal.Ajax.prototype.beforeSerialize = function (element, options) {
     // Allow detaching behaviors to update field values before collecting them.
     // This is only needed when field values are added to the POST data, so only
     // when there is a form such that this.$form.ajaxSubmit() is used instead of
@@ -804,7 +835,7 @@
    * @param {object} options
    *   jQuery.ajax options.
    */
-  Drupal.Ajax.prototype.beforeSubmit = function(formValues, element, options) {
+  Drupal.Ajax.prototype.beforeSubmit = function (formValues, element, options) {
     // This function is left empty to make it simple to override for modules
     // that wish to add functionality here.
   };
@@ -817,7 +848,7 @@
    * @param {object} options
    *   jQuery.ajax options.
    */
-  Drupal.Ajax.prototype.beforeSend = function(xmlhttprequest, options) {
+  Drupal.Ajax.prototype.beforeSend = function (xmlhttprequest, options) {
     // For forms without file inputs, the jQuery Form plugin serializes the
     // form values, and then calls jQuery's $.ajax() function, which invokes
     // this handler. In this circumstance, options.extraData is never used. For
@@ -877,7 +908,7 @@
    * @return {string}
    *   The HTML markup for the throbber.
    */
-  Drupal.theme.ajaxProgressThrobber = message => {
+  Drupal.theme.ajaxProgressThrobber = (message) => {
     // Build markup without adding extra white space since it affects rendering.
     const messageMarkup =
       typeof message === 'string'
@@ -905,7 +936,7 @@
    * @return {string}
    *   The HTML markup for the throbber.
    */
-  Drupal.theme.ajaxProgressMessage = message =>
+  Drupal.theme.ajaxProgressMessage = (message) =>
     `<div class="message">${message}</div>`;
 
   /**
@@ -916,13 +947,13 @@
    * @return {string}
    *   The HTML markup for the progress bar.
    */
-  Drupal.theme.ajaxProgressBar = $element =>
+  Drupal.theme.ajaxProgressBar = ($element) =>
     $('<div class="ajax-progress ajax-progress-bar"></div>').append($element);
 
   /**
    * Sets the progress bar progress indicator.
    */
-  Drupal.Ajax.prototype.setProgressIndicatorBar = function() {
+  Drupal.Ajax.prototype.setProgressIndicatorBar = function () {
     const progressBar = new Drupal.ProgressBar(
       `ajax-progress-${this.element.id}`,
       $.noop,
@@ -948,7 +979,7 @@
   /**
    * Sets the throbber progress indicator.
    */
-  Drupal.Ajax.prototype.setProgressIndicatorThrobber = function() {
+  Drupal.Ajax.prototype.setProgressIndicatorThrobber = function () {
     this.progress.element = $(
       Drupal.theme('ajaxProgressThrobber', this.progress.message),
     );
@@ -958,9 +989,39 @@
   /**
    * Sets the fullscreen progress indicator.
    */
-  Drupal.Ajax.prototype.setProgressIndicatorFullscreen = function() {
+  Drupal.Ajax.prototype.setProgressIndicatorFullscreen = function () {
     this.progress.element = $(Drupal.theme('ajaxProgressIndicatorFullscreen'));
     $('body').append(this.progress.element);
+  };
+
+  /**
+   * Helper method to make sure commands are executed in sequence.
+   *
+   * @param {Array.<Drupal.AjaxCommands~commandDefinition>} response
+   *   Drupal Ajax response.
+   * @param {number} status
+   *   XMLHttpRequest status.
+   *
+   * @return {Promise}
+   *  The promise that will resolve once all commands have finished executing.
+   */
+  Drupal.Ajax.prototype.commandExecutionQueue = function (response, status) {
+    const ajaxCommands = this.commands;
+    return Object.keys(response || {}).reduce(
+      // Add all commands to a single execution queue.
+      (executionQueue, key) =>
+        executionQueue.then(() => {
+          const { command } = response[key];
+          if (command && ajaxCommands[command]) {
+            // When a command returns a promise, the remaining commands will not
+            // execute until that promise has been fulfilled. This is typically
+            // used to ensure JavaScript files added via the 'add_js' command
+            // have loaded before subsequent commands execute.
+            return ajaxCommands[command](this, response[key], status);
+          }
+        }),
+      Promise.resolve(),
+    );
   };
 
   /**
@@ -970,8 +1031,11 @@
    *   Drupal Ajax response.
    * @param {number} status
    *   XMLHttpRequest status.
+   *
+   * @return {Promise}
+   * The promise that will resolve once all commands have finished executing.
    */
-  Drupal.Ajax.prototype.success = function(response, status) {
+  Drupal.Ajax.prototype.success = function (response, status) {
     // Remove the progress element.
     if (this.progress.element) {
       $(this.progress.element).remove();
@@ -992,54 +1056,61 @@
 
     // Track if any command is altering the focus so we can avoid changing the
     // focus set by the Ajax command.
-    let focusChanged = false;
-    Object.keys(response || {}).forEach(i => {
-      if (response[i].command && this.commands[response[i].command]) {
-        this.commands[response[i].command](this, response[i], status);
-        if (
-          response[i].command === 'invoke' &&
-          response[i].method === 'focus'
-        ) {
-          focusChanged = true;
-        }
-      }
+    const focusChanged = Object.keys(response || {}).some((key) => {
+      const { command, method } = response[key];
+      return (
+        command === 'focusFirst' || (command === 'invoke' && method === 'focus')
+      );
     });
 
-    // If the focus hasn't be changed by the ajax commands, try to refocus the
-    // triggering element or one of its parents if that element does not exist
-    // anymore.
-    if (
-      !focusChanged &&
-      this.element &&
-      !$(this.element).data('disable-refocus')
-    ) {
-      let target = false;
+    return (
+      this.commandExecutionQueue(response, status)
+        // If the focus hasn't been changed by the AJAX commands, try to refocus
+        // the triggering element or one of its parents if that element does not
+        // exist anymore.
+        .then(() => {
+          if (
+            !focusChanged &&
+            this.element &&
+            !$(this.element).data('disable-refocus')
+          ) {
+            let target = false;
 
-      for (let n = elementParents.length - 1; !target && n >= 0; n--) {
-        target = document.querySelector(
-          `[data-drupal-selector="${elementParents[n].getAttribute(
-            'data-drupal-selector',
-          )}"]`,
-        );
-      }
-
-      if (target) {
-        $(target).trigger('focus');
-      }
-    }
-
-    // Reattach behaviors, if they were detached in beforeSerialize(). The
-    // attachBehaviors() called on the new content from processing the response
-    // commands is not sufficient, because behaviors from the entire form need
-    // to be reattached.
-    if (this.$form && document.body.contains(this.$form.get(0))) {
-      const settings = this.settings || drupalSettings;
-      Drupal.attachBehaviors(this.$form.get(0), settings);
-    }
-
-    // Remove any response-specific settings so they don't get used on the next
-    // call by mistake.
-    this.settings = null;
+            for (let n = elementParents.length - 1; !target && n >= 0; n--) {
+              target = document.querySelector(
+                `[data-drupal-selector="${elementParents[n].getAttribute(
+                  'data-drupal-selector',
+                )}"]`,
+              );
+            }
+            if (target) {
+              $(target).trigger('focus');
+            }
+          }
+          // Reattach behaviors, if they were detached in beforeSerialize(). The
+          // attachBehaviors() called on the new content from processing the
+          // response commands is not sufficient, because behaviors from the
+          // entire form need to be reattached.
+          if (this.$form && document.body.contains(this.$form.get(0))) {
+            const settings = this.settings || drupalSettings;
+            Drupal.attachBehaviors(this.$form.get(0), settings);
+          }
+          // Remove any response-specific settings so they don't get used on the
+          // next call by mistake.
+          this.settings = null;
+        })
+        .catch((error) =>
+          // eslint-disable-next-line no-console
+          console.error(
+            Drupal.t(
+              'An error occurred during the execution of the Ajax response: !error',
+              {
+                '!error': error,
+              },
+            ),
+          ),
+        )
+    );
   };
 
   /**
@@ -1056,7 +1127,7 @@
    *   Returns an object with `showEffect`, `hideEffect` and `showSpeed`
    *   properties.
    */
-  Drupal.Ajax.prototype.getEffect = function(response) {
+  Drupal.Ajax.prototype.getEffect = function (response) {
     const type = response.effect || this.effect;
     const speed = response.speed || this.speed;
 
@@ -1088,7 +1159,7 @@
    * @param {string} [customMessage]
    *   Extra message to print with the Ajax error.
    */
-  Drupal.Ajax.prototype.error = function(xmlhttprequest, uri, customMessage) {
+  Drupal.Ajax.prototype.error = function (xmlhttprequest, uri, customMessage) {
     // Remove the progress element.
     if (this.progress.element) {
       $(this.progress.element).remove();
@@ -1133,7 +1204,7 @@
   Drupal.theme.ajaxWrapperNewContent = ($newContent, ajax, response) =>
     (response.effect || ajax.effect) !== 'none' &&
     $newContent.filter(
-      i =>
+      (i) =>
         !(
           // We can not consider HTML comments or whitespace text as separate
           // roots, since they do not cause visual regression with effect.
@@ -1161,7 +1232,7 @@
    * @todo Add deprecation warning after it is possible. For more information
    *   see: https://www.drupal.org/project/drupal/issues/2973400
    */
-  Drupal.theme.ajaxWrapperMultipleRootElements = $elements =>
+  Drupal.theme.ajaxWrapperMultipleRootElements = ($elements) =>
     $('<div></div>').append($elements);
 
   /**
@@ -1192,7 +1263,7 @@
    *
    * @constructor
    */
-  Drupal.AjaxCommands = function() {};
+  Drupal.AjaxCommands = function () {};
   Drupal.AjaxCommands.prototype = {
     /**
      * Command to insert new content into the DOM.
@@ -1206,7 +1277,7 @@
      * @param {string} [response.method]
      *   The jQuery DOM manipulation method to be used.
      * @param {string} [response.selector]
-     *   A optional jQuery selector string.
+     *   An optional jQuery selector string.
      * @param {object} [response.settings]
      *   An optional array of settings that will be used.
      */
@@ -1226,7 +1297,7 @@
       let $newContent = $($.parseHTML(response.data, document, true));
       // For backward compatibility, in some cases a wrapper will be added. This
       // behavior will be removed before Drupal 9.0.0. If different behavior is
-      // needed, the theme functions can be overriden.
+      // needed, the theme functions can be overridden.
       // @see https://www.drupal.org/node/2940704
       $newContent = Drupal.theme(
         'ajaxWrapperNewContent',
@@ -1297,7 +1368,7 @@
     remove(ajax, response, status) {
       const settings = response.settings || ajax.settings || drupalSettings;
       $(response.selector)
-        .each(function() {
+        .each(function () {
           Drupal.detachBehaviors(this, settings);
         })
         .remove();
@@ -1347,7 +1418,7 @@
      *   The XMLHttpRequest status.
      */
     alert(ajax, response, status) {
-      window.alert(response.text, response.title);
+      window.alert(response.text);
     },
 
     /**
@@ -1426,7 +1497,7 @@
 
       // Clean up drupalSettings.ajax.
       if (ajaxSettings) {
-        Drupal.ajax.expired().forEach(instance => {
+        Drupal.ajax.expired().forEach((instance) => {
           // If the Ajax object has been created through drupalSettings.ajax
           // it will have a selector. When there is no selector the object
           // has been initialized with a special class name picked up by the
@@ -1467,6 +1538,47 @@
      */
     data(ajax, response, status) {
       $(response.selector).data(response.name, response.value);
+    },
+
+    /**
+     * Command to focus the first tabbable element within a container.
+     *
+     * If no tabbable elements are found and the container is focusable, then
+     * focus will move to that container.
+     *
+     * @param {Drupal.Ajax} [ajax]
+     *   {@link Drupal.Ajax} object created by {@link Drupal.ajax}.
+     * @param {object} response
+     *   The response from the Ajax request.
+     * @param {string} response.selector
+     *   A query selector string of the container to focus within.
+     * @param {number} [status]
+     *   The XMLHttpRequest status.
+     */
+    focusFirst(ajax, response, status) {
+      let focusChanged = false;
+      const container = document.querySelector(response.selector);
+      if (container) {
+        // Find all tabbable elements within the container.
+        const tabbableElements = tabbable(container);
+
+        // Move focus to the first tabbable item found.
+        if (tabbableElements.length) {
+          tabbableElements[0].focus();
+          focusChanged = true;
+        } else if (isFocusable(container)) {
+          // If no tabbable elements are found, but the container is focusable,
+          // move focus to the container.
+          container.focus();
+          focusChanged = true;
+        }
+      }
+
+      // If no items were available to receive focus, return focus to the
+      // triggering element.
+      if (ajax.hasOwnProperty('element') && !focusChanged) {
+        ajax.element.focus();
+      }
     },
 
     /**
@@ -1531,17 +1643,17 @@
      *   The XMLHttpRequest status.
      */
     update_build_id(ajax, response, status) {
-      $(`input[name="form_build_id"][value="${response.old}"]`).val(
-        response.new,
-      );
+      document
+        .querySelectorAll(
+          `input[name="form_build_id"][value="${response.old}"]`,
+        )
+        .forEach((item) => {
+          item.value = response.new;
+        });
     },
 
     /**
      * Command to add css.
-     *
-     * Uses the proprietary addImport method if available as browsers which
-     * support that method ignore @import statements in dynamically added
-     * stylesheets.
      *
      * @param {Drupal.Ajax} [ajax]
      *   {@link Drupal.Ajax} object created by {@link Drupal.ajax}.
@@ -1553,21 +1665,7 @@
      *   The XMLHttpRequest status.
      */
     add_css(ajax, response, status) {
-      // Add the styles in the normal way.
       $('head').prepend(response.data);
-      // Add imports in the styles using the addImport method if available.
-      let match;
-      const importMatch = /^@import url\("(.*)"\);$/gim;
-      if (
-        document.styleSheets[0].addImport &&
-        importMatch.test(response.data)
-      ) {
-        importMatch.lastIndex = 0;
-        do {
-          match = importMatch.exec(response.data);
-          document.styleSheets[0].addImport(match[1]);
-        } while (match);
-      }
     },
 
     /**
@@ -1595,5 +1693,118 @@
       }
       messages.add(response.message, response.messageOptions);
     },
+
+    /**
+     * Command to add JS.
+     *
+     * @param {Drupal.Ajax} [ajax]
+     *   {@link Drupal.Ajax} object created by {@link Drupal.ajax}.
+     * @param {object} response
+     *   The response from the Ajax request.
+     * @param {Array} response.data
+     *   An array of objects of script attributes.
+     * @param {number} [status]
+     *   The XMLHttpRequest status.
+     */
+    add_js(ajax, response, status) {
+      const parentEl = document.querySelector(response.selector || 'body');
+      const settings = ajax.settings || drupalSettings;
+      const allUniqueBundleIds = response.data.map((script) => {
+        // loadjs requires a unique ID, and an AJAX instance's `instanceIndex`
+        // is guaranteed to be unique.
+        // @see Drupal.behaviors.AJAX.detach
+        const uniqueBundleId = script.src + ajax.instanceIndex;
+        loadjs(script.src, uniqueBundleId, {
+          // The default loadjs behavior is to load script with async, in Drupal
+          // we need to explicitly tell scripts to load async, this is set in
+          // the before callback below if necessary.
+          async: false,
+          before(path, scriptEl) {
+            // This allows all attributes to be added, like defer, async and
+            // crossorigin.
+            Object.keys(script).forEach((attributeKey) => {
+              scriptEl.setAttribute(attributeKey, script[attributeKey]);
+            });
+
+            // By default, loadjs appends the script to the head. When scripts
+            // are loaded via AJAX, their location has no impact on
+            // functionality. But, since non-AJAX loaded scripts can choose
+            // their parent element, we provide that option here for the sake of
+            // consistency.
+            parentEl.appendChild(scriptEl);
+            // Return false to bypass loadjs' default DOM insertion mechanism.
+            return false;
+          },
+        });
+        return uniqueBundleId;
+      });
+      // Returns the promise so that the next AJAX command waits on the
+      // completion of this one to execute, ensuring the JS is loaded before
+      // executing.
+      return new Promise((resolve, reject) => {
+        loadjs.ready(allUniqueBundleIds, {
+          success() {
+            Drupal.attachBehaviors(parentEl, settings);
+            // All JS files were loaded and new and old behaviors have
+            // been attached. Resolve the promise and let the remaining
+            // commands execute.
+            resolve();
+          },
+          error(depsNotFound) {
+            const message = Drupal.t(
+              `The following files could not be loaded: @dependencies`,
+              { '@dependencies': depsNotFound.join(', ') },
+            );
+            reject(message);
+          },
+        });
+      });
+    },
   };
-})(jQuery, window, Drupal, drupalSettings);
+
+  /**
+   * Delay jQuery's global completion events until after commands have executed.
+   *
+   * jQuery triggers the ajaxSuccess, ajaxComplete, and ajaxStop events after
+   * a successful response is returned and local success and complete events
+   * are triggered. However, Drupal Ajax responses contain commands that run
+   * asynchronously in a queue, so the following stops these events from getting
+   * triggered until after the Promise that executes the command queue is
+   * resolved.
+   */
+  const stopEvent = (xhr, settings) => {
+    return (
+      // Only interfere with Drupal's Ajax responses.
+      xhr.getResponseHeader('X-Drupal-Ajax-Token') === '1' &&
+      // The isInProgress() function might not be defined if the Ajax request
+      // was initiated without Drupal.ajax() or new Drupal.Ajax().
+      settings.isInProgress &&
+      // Until this is false, the Ajax request isn't completely done (the
+      // response's commands might still be running).
+      settings.isInProgress()
+    );
+  };
+  $.extend(true, $.event.special, {
+    ajaxSuccess: {
+      trigger(event, xhr, settings) {
+        if (stopEvent(xhr, settings)) {
+          return false;
+        }
+      },
+    },
+    ajaxComplete: {
+      trigger(event, xhr, settings) {
+        if (stopEvent(xhr, settings)) {
+          // jQuery decrements its internal active ajax counter even when we
+          // stop the ajaxComplete event, but we don't want that counter
+          // decremented, because for our purposes this request is still active
+          // while commands are executing. By incrementing it here, the net
+          // effect is that it remains unchanged. By remaining above 0, the
+          // ajaxStop event is also prevented.
+          $.active++;
+          return false;
+        }
+      },
+    },
+  });
+})(jQuery, window, Drupal, drupalSettings, loadjs, window.tabbable);

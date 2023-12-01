@@ -23,7 +23,7 @@ class SolrFieldNamesTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'field',
     'node',
     'user',
@@ -92,8 +92,8 @@ class SolrFieldNamesTest extends KernelTestBase {
     $backend = SearchApiSolrBackend::create($this->container, [], 'test', []);
     $fields = $backend->getSolrFieldNames($index);
 
-    $this->assertSame($fields['title'], 'sm_title');
-    $this->assertSame($fields['bio'], 'ss_bio');
+    $this->assertSame('sm_title', $fields['title']);
+    $this->assertSame('ss_bio', $fields['bio']);
 
     $fields = $index->getFields();
     $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [$fields['title']->getPropertyPath(), $fields['title']->getDatasource()->getPropertyDefinitions()]);

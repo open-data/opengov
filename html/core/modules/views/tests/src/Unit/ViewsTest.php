@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\views\Unit;
 
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\views\Views;
@@ -27,7 +28,7 @@ class ViewsTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->container = new ContainerBuilder();
@@ -57,19 +58,34 @@ class ViewsTest extends UnitTestCase {
     $view_storage->expects($this->once())
       ->method('load')
       ->with('test_view')
-      ->will($this->returnValue($view));
+      ->willReturn($view);
 
     $entity_type_manager = $this->createMock('Drupal\Core\Entity\EntityTypeManagerInterface');
     $entity_type_manager->expects($this->once())
       ->method('getStorage')
       ->with('view')
-      ->will($this->returnValue($view_storage));
+      ->willReturn($view_storage);
     $this->container->set('entity_type.manager', $entity_type_manager);
 
     $executable = Views::getView('test_view');
     $this->assertInstanceOf('Drupal\views\ViewExecutable', $executable);
     $this->assertEquals($view->id(), $executable->storage->id());
     $this->assertEquals(spl_object_hash($view), spl_object_hash($executable->storage));
+  }
+
+  /**
+   * Tests the getView() method against a non-existent view.
+   *
+   * @covers ::getView
+   */
+  public function testGetNonExistentView() {
+    $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+    $storage = $this->prophesize(EntityStorageInterface::class);
+    $storage->load('test_view_non_existent')->willReturn(NULL);
+    $entity_type_manager->getStorage('view')->willReturn($storage->reveal());
+    $this->container->set('entity_type.manager', $entity_type_manager->reveal());
+    $executable_does_not_exist = Views::getView('test_view_non_existent');
+    $this->assertNull($executable_does_not_exist);
   }
 
   /**
@@ -152,13 +168,17 @@ class ViewsTest extends UnitTestCase {
     $view_storage->expects($this->once())
       ->method('loadMultiple')
       ->with(['test_view_1', 'test_view_2', 'test_view_3'])
-      ->will($this->returnValue(['test_view_1' => $view_1, 'test_view_2' => $view_2, 'test_view_3' => $view_3]));
+      ->willReturn([
+        'test_view_1' => $view_1,
+        'test_view_2' => $view_2,
+        'test_view_3' => $view_3,
+      ]);
 
     $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $entity_type_manager->expects($this->exactly(2))
       ->method('getStorage')
       ->with('view')
-      ->will($this->returnValue($view_storage));
+      ->willReturn($view_storage);
     $this->container->set('entity_type.manager', $entity_type_manager);
 
     $definitions = [

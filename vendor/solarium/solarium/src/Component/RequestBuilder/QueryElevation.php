@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\RequestBuilder;
 
 use Solarium\Component\QueryElevation as QueryelevationComponent;
@@ -38,6 +45,9 @@ class QueryElevation implements ComponentRequestBuilderInterface
         // add overrides for pre-configured elevations
         $request->addParam('elevateIds', null === ($ids = $component->getElevateIds()) ? null : implode(',', $ids));
         $request->addParam('excludeIds', null === ($ids = $component->getExcludeIds()) ? null : implode(',', $ids));
+
+        // add tags of filter queries to exclude for elevated documents
+        $request->addParam('elevate.excludeTags', null === ($tags = $component->getExcludeTags()) ? null : implode(',', $tags));
 
         return $request;
     }

@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Event;
 
 use Solarium\Core\Client\Endpoint;
@@ -8,7 +15,7 @@ use Solarium\Core\Client\Response;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * PostExecuteRequest event, see Events for details.
+ * PostExecuteRequest event, see {@see Events} for details.
  */
 class PostExecuteRequest extends Event
 {

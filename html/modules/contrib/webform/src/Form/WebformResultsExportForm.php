@@ -4,7 +4,6 @@ namespace Drupal\webform\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\WebformSubmissionExporterInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,22 +26,12 @@ class WebformResultsExportForm extends FormBase {
   protected $submissionExporter;
 
   /**
-   * Constructs a WebformResultsExportForm object.
-   *
-   * @param \Drupal\webform\WebformSubmissionExporterInterface $webform_submission_exporter
-   *   The webform submission exported.
-   */
-  public function __construct(WebformSubmissionExporterInterface $webform_submission_exporter) {
-    $this->submissionExporter = $webform_submission_exporter;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('webform_submission.exporter')
-    );
+    $instance = parent::create($container);
+    $instance->submissionExporter = $container->get('webform_submission.exporter');
+    return $instance;
   }
 
   /**

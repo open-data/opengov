@@ -12,7 +12,7 @@ class EnsureDevelWebProfilerWorks extends EnsureDevelWorks {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     // Modules for core functionality.
     'node',
     'field',

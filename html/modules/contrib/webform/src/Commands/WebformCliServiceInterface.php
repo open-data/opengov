@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile
 
 namespace Drupal\webform\Commands;
 
@@ -66,11 +67,6 @@ interface WebformCliServiceInterface {
    * Implements drush_hook_COMMAND().
    */
   public function drush_webform_libraries_status();
-
-  /**
-   * Implements drush_hook_COMMAND().
-   */
-  public function drush_webform_libraries_make();
 
   /**
    * Implements drush_hook_COMMAND().

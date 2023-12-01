@@ -76,16 +76,6 @@ class SearchApiTagCache extends Tag {
   /**
    * {@inheritdoc}
    */
-  public function getCacheTags() {
-    $tags = $this->view->storage->getCacheTags();
-    $tag = 'search_api_list:' . $this->getQuery()->getIndex()->id();
-    $tags = Cache::mergeTags([$tag], $tags);
-    return $tags;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getRowId(ResultRow $row) {
     return $row->search_api_id;
   }

@@ -3,12 +3,10 @@
 namespace Drupal\comment\Plugin\views\filter;
 
 use Drupal\Core\Database\Database;
-use Drupal\Core\Database\Query\Condition;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
 
 /**
- * Filter handler to accept a user id to check for nodes that user posted or
- * commented on.
+ * Filter handler, accepts user ID to check for nodes user posted/commented on.
  *
  * @ingroup views_filter_handlers
  *
@@ -25,10 +23,10 @@ class UserUid extends FilterPluginBase {
 
     $entity_id = $this->definition['entity_id'];
     $entity_type = $this->definition['entity_type'];
-    $subselect->where("c.entity_id = $this->tableAlias.$entity_id");
+    $subselect->where("[c].[entity_id] = [$this->tableAlias].[$entity_id]");
     $subselect->condition('c.entity_type', $entity_type);
 
-    $condition = (new Condition('OR'))
+    $condition = ($this->view->query->getConnection()->condition('OR'))
       ->condition("$this->tableAlias.uid", $this->value, $this->operator)
       ->exists($subselect);
 

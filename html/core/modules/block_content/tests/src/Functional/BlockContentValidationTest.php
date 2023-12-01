@@ -26,7 +26,7 @@ class BlockContentValidationTest extends BlockContentTestBase {
     // Validate the block.
     $violations = $block->validate();
     // Make sure we have no violations.
-    $this->assertEqual(count($violations), 0);
+    $this->assertCount(0, $violations);
     // Save the block.
     $block->save();
 
@@ -35,13 +35,11 @@ class BlockContentValidationTest extends BlockContentTestBase {
     // Validate this block.
     $violations = $block->validate();
     // Make sure we have 1 violation.
-    $this->assertEqual(count($violations), 1);
+    $this->assertCount(1, $violations);
     // Make sure the violation is on the info property
-    $this->assertEqual($violations[0]->getPropertyPath(), 'info');
+    $this->assertEquals('info', $violations[0]->getPropertyPath());
     // Make sure the message is correct.
-    $this->assertEqual($violations[0]->getMessage(), new FormattableMarkup('A custom block with block description %value already exists.', [
-      '%value' => $block->label(),
-    ]));
+    $this->assertEquals(new FormattableMarkup('A custom block with Block description %value already exists.', ['%value' => $block->label()]), $violations[0]->getMessage());
   }
 
 }

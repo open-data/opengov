@@ -42,7 +42,7 @@ class ConfigEntityNormalizerTest extends UnitTestCase {
     $config_entity = $this->createMock('Drupal\Core\Config\Entity\ConfigEntityInterface');
     $config_entity->expects($this->once())
       ->method('toArray')
-      ->will($this->returnValue($test_export_properties));
+      ->willReturn($test_export_properties);
 
     $this->assertSame(['test' => 'test'], $normalizer->normalize($config_entity));
   }
@@ -75,7 +75,8 @@ class ConfigEntityNormalizerTest extends UnitTestCase {
         return $entity;
       });
 
-    // Stubs for the denormalizer going from entity manager to entity storage.
+    // Stubs for the denormalizer going from entity type manager to entity
+    // storage.
     $entity_type_id = $this->randomMachineName();
     $entity_type_class = $this->randomMachineName();
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);

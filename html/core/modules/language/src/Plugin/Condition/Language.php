@@ -104,7 +104,7 @@ class Language extends ConditionPluginBase implements ContainerFactoryPluginInte
     $language_list = $this->languageManager->getLanguages(LanguageInterface::STATE_ALL);
     $selected = $this->configuration['langcodes'];
     // Reduce the language list to an array of language names.
-    $language_names = array_reduce($language_list, function (&$result, $item) use ($selected) {
+    $language_names = array_reduce($language_list, function ($result, $item) use ($selected) {
       // If the current item of the $language_list array is one of the selected
       // languages, add it to the $results array.
       if (!empty($selected[$item->getId()])) {
@@ -122,9 +122,9 @@ class Language extends ConditionPluginBase implements ContainerFactoryPluginInte
       $languages = array_pop($language_names);
     }
     if (!empty($this->configuration['negate'])) {
-      return t('The language is not @languages.', ['@languages' => $languages]);
+      return $this->t('The language is not @languages.', ['@languages' => $languages]);
     }
-    return t('The language is @languages.', ['@languages' => $languages]);
+    return $this->t('The language is @languages.', ['@languages' => $languages]);
   }
 
   /**

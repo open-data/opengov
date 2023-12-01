@@ -13,7 +13,7 @@ use Drupal\Core\Http\Exception\CacheableNotFoundHttpException;
  * @internal JSON:API maintains no PHP API since its API is the HTTP API. This
  *   class may change at any time and this will break any dependencies on it.
  *
- * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see https://www.drupal.org/project/drupal/issues/3032787
  * @see jsonapi.api.php
  *
  * @see \Drupal\jsonapi\Revisions\VersionNegotiatorInterface
@@ -65,7 +65,7 @@ class VersionNegotiator {
    */
   public function getRevision(EntityInterface $entity, $resource_version_identifier) {
     try {
-      list($version_negotiator_name, $version_argument) = explode(VersionNegotiator::SEPARATOR, $resource_version_identifier, 2);
+      [$version_negotiator_name, $version_argument] = explode(VersionNegotiator::SEPARATOR, $resource_version_identifier, 2);
       if (!isset($this->negotiators[$version_negotiator_name])) {
         static::throwBadRequestHttpException($resource_version_identifier);
       }

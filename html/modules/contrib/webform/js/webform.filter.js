@@ -44,15 +44,16 @@
         var hasDetails = $details.length;
         var totalItems;
         var args = {
-          '@item': $input.data('item-singlular') || Drupal.t('item'),
+          '@item': $input.data('item-singular') || Drupal.t('item'),
           '@items': $input.data('item-plural') || Drupal.t('items'),
           '@total': null
         };
 
         if ($table.length) {
           $filterRows = $table.find(sourceSelector);
+          var off = /chrom(e|ium)/.test(window.navigator.userAgent.toLowerCase()) ? 'chrome-off-' + Math.floor(Math.random() * 100000000) : 'off';
           $input
-            .attr('autocomplete', 'off')
+            .attr('autocomplete', off)
             .on('keyup', debounce(filterElementList, 200))
             .keyup();
 
@@ -63,7 +64,6 @@
             setTimeout(function () {$input.trigger('focus');});
           }
         }
-
 
         /**
          * Reset the filtering

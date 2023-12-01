@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\metatag\Functional;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -17,7 +18,7 @@ class DisabledDefaultTags extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     // Modules for core functionality.
     'node',
     'taxonomy',
@@ -39,7 +40,12 @@ class DisabledDefaultTags extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     // Set the front page to the main /node page, so that the front page is not
@@ -62,11 +68,10 @@ class DisabledDefaultTags extends BrowserTestBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function loadMetatagDefault($id) {
+  protected function loadMetatagDefault($id): EntityInterface|NULL {
     /** @var \Drupal\Core\Entity\EntityStorageInterface $global_metatag_manager */
     $global_metatag_manager = \Drupal::entityTypeManager()
       ->getStorage('metatag_defaults');
-    /** @var \Drupal\metatag\Entity\MetatagDefaults $entity_metatags */
     return $global_metatag_manager->load($id);
   }
 
@@ -74,14 +79,15 @@ class DisabledDefaultTags extends BrowserTestBase {
    * Test that a disabled Frontpage metatag default doesn't load.
    */
   public function testFrontpage() {
+    /** @var \Drupal\metatag\Entity\MetatagDefaults $metatag */
     $metatag = $this->loadMetatagDefault('front');
-    $metatag->overwriteTags(['canonical_url' => 'http://test.canonical']);
+    $metatag->overwriteTags(['canonical_url' => 'https://test.canonical']);
     $metatag->save();
 
     $this->drupalGet('<front>');
     $this->assertSession()->statusCodeEquals(200);
     $xpath = $this->xpath("//link[@rel='canonical']");
-    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'http://test.canonical');
+    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'https://test.canonical');
 
     // Now disable the default. Canonical should then fall back
     // to Global's default, which is page url.
@@ -101,14 +107,15 @@ class DisabledDefaultTags extends BrowserTestBase {
    * Test that a disabled 404 metatag default doesn't load.
    */
   public function test404() {
+    /** @var \Drupal\metatag\Entity\MetatagDefaults $metatag */
     $metatag = $this->loadMetatagDefault('404');
-    $metatag->overwriteTags(['canonical_url' => 'http://test.canonical']);
+    $metatag->overwriteTags(['canonical_url' => 'https://test.canonical']);
     $metatag->save();
 
     $this->drupalGet('i-dont-exist');
     $this->assertSession()->statusCodeEquals(404);
     $xpath = $this->xpath("//link[@rel='canonical']");
-    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'http://test.canonical');
+    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'https://test.canonical');
 
     // Now disable the default. Canonical should then fall back
     // to Global's default, which is page url.
@@ -128,14 +135,15 @@ class DisabledDefaultTags extends BrowserTestBase {
    * Test that a disabled 403 metatag default doesn't load.
    */
   public function test403() {
+    /** @var \Drupal\metatag\Entity\MetatagDefaults $metatag */
     $metatag = $this->loadMetatagDefault('403');
-    $metatag->overwriteTags(['canonical_url' => 'http://test.canonical']);
+    $metatag->overwriteTags(['canonical_url' => 'https://test.canonical']);
     $metatag->save();
 
     $this->drupalGet('admin/content');
     $this->assertSession()->statusCodeEquals(403);
     $xpath = $this->xpath("//link[@rel='canonical']");
-    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'http://test.canonical');
+    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'https://test.canonical');
 
     // Now disable the default. Canonical should then fall back
     // to Global's default, which is page url.
@@ -173,7 +181,7 @@ class DisabledDefaultTags extends BrowserTestBase {
       ->getStorage('metatag_defaults');
     /** @var \Drupal\metatag\Entity\MetatagDefaults $entity_metatags */
     $entity_metatags = $global_metatag_manager->load('node');
-    $entity_metatags->overwriteTags(['canonical_url' => 'http://test.canonical']);
+    $entity_metatags->overwriteTags(['canonical_url' => 'https://test.canonical']);
     $entity_metatags->save();
 
     // Load the node's entity page.
@@ -182,7 +190,7 @@ class DisabledDefaultTags extends BrowserTestBase {
 
     // Check the meta tags.
     $xpath = $this->xpath("//link[@rel='canonical']");
-    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'http://test.canonical');
+    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'https://test.canonical');
 
     // Now disable this metatag.
     $entity_metatags->set('status', 0);
@@ -220,7 +228,7 @@ class DisabledDefaultTags extends BrowserTestBase {
       ->getStorage('metatag_defaults');
     /** @var \Drupal\metatag\Entity\MetatagDefaults $entity_metatags */
     $entity_metatags = $global_metatag_manager->create(['id' => 'node__metatag_test']);
-    $entity_metatags->overwriteTags(['canonical_url' => 'http://test.canonical']);
+    $entity_metatags->overwriteTags(['canonical_url' => 'https://test.canonical']);
     $entity_metatags->save();
 
     // Load the node's entity page.
@@ -229,7 +237,7 @@ class DisabledDefaultTags extends BrowserTestBase {
 
     // Check the meta tags.
     $xpath = $this->xpath("//link[@rel='canonical']");
-    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'http://test.canonical');
+    $this->assertEquals((string) $xpath[0]->getAttribute('href'), 'https://test.canonical');
 
     // Now disable this metatag.
     $entity_metatags->set('status', 0);

@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\Core\Plugin\Context\ContextInterface;
 use Drupal\Core\Plugin\Context\EntityContextDefinition;
@@ -52,7 +53,7 @@ class DefaultsSectionStorageTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
@@ -103,134 +104,6 @@ class DefaultsSectionStorageTest extends UnitTestCase {
     $this->plugin->setThirdPartySetting('the_module', 'the_key', 'value 2');
     // Assert that the returned value matches.
     $this->assertSame('value 2', $this->plugin->getThirdPartySetting('the_module', 'the_key'));
-  }
-
-  /**
-   * @covers ::extractIdFromRoute
-   *
-   * @dataProvider providerTestExtractIdFromRoute
-   *
-   * @expectedDeprecation \Drupal\layout_builder\SectionStorageInterface::extractIdFromRoute() is deprecated in Drupal 8.7.0 and will be removed before Drupal 9.0.0. \Drupal\layout_builder\SectionStorageInterface::deriveContextsFromRoute() should be used instead. See https://www.drupal.org/node/3016262.
-   *
-   * @group legacy
-   */
-  public function testExtractIdFromRoute($expected, $value, array $defaults) {
-    $result = $this->plugin->extractIdFromRoute($value, [], 'the_parameter_name', $defaults);
-    $this->assertSame($expected, $result);
-  }
-
-  /**
-   * Provides data for ::testExtractIdFromRoute().
-   */
-  public function providerTestExtractIdFromRoute() {
-    $data = [];
-    $data['with value'] = [
-      'foo.bar.baz',
-      'foo.bar.baz',
-      [],
-    ];
-    $data['empty value, without bundle'] = [
-      'my_entity_type.bundle_name.default',
-      '',
-      [
-        'entity_type_id' => 'my_entity_type',
-        'view_mode_name' => 'default',
-        'bundle_key' => 'my_bundle',
-        'my_bundle' => 'bundle_name',
-      ],
-    ];
-    $data['empty value, with bundle'] = [
-      'my_entity_type.bundle_name.default',
-      '',
-      [
-        'entity_type_id' => 'my_entity_type',
-        'view_mode_name' => 'default',
-        'bundle' => 'bundle_name',
-      ],
-    ];
-    $data['without value, empty defaults'] = [
-      NULL,
-      '',
-      [],
-    ];
-    return $data;
-  }
-
-  /**
-   * @covers ::getSectionListFromId
-   *
-   * @dataProvider providerTestGetSectionListFromId
-   *
-   * @expectedDeprecation \Drupal\layout_builder\SectionStorageInterface::getSectionListFromId() is deprecated in Drupal 8.7.0 and will be removed before Drupal 9.0.0. The section list should be derived from context. See https://www.drupal.org/node/3016262.
-   *
-   * @group legacy
-   */
-  public function testGetSectionListFromId($success, $expected_entity_id, $value) {
-    if ($expected_entity_id) {
-      $entity_storage = $this->prophesize(EntityStorageInterface::class);
-      $entity_storage->load($expected_entity_id)->willReturn('the_return_value');
-
-      $this->entityTypeManager->getDefinition('entity_view_display')->willReturn(new EntityType(['id' => 'entity_view_display']));
-      $this->entityTypeManager->getStorage('entity_view_display')->willReturn($entity_storage->reveal());
-    }
-    else {
-      $this->entityTypeManager->getDefinition('entity_view_display')->shouldNotBeCalled();
-      $this->entityTypeManager->getStorage('entity_view_display')->shouldNotBeCalled();
-    }
-
-    if (!$success) {
-      $this->expectException(\InvalidArgumentException::class);
-    }
-
-    $result = $this->plugin->getSectionListFromId($value);
-    if ($success) {
-      $this->assertEquals('the_return_value', $result);
-    }
-  }
-
-  /**
-   * Provides data for ::testGetSectionListFromId().
-   */
-  public function providerTestGetSectionListFromId() {
-    $data = [];
-    $data['with value'] = [
-      TRUE,
-      'foo.bar.baz',
-      'foo.bar.baz',
-    ];
-    $data['without value, empty defaults'] = [
-      FALSE,
-      NULL,
-      '',
-    ];
-    return $data;
-  }
-
-  /**
-   * @covers ::getSectionListFromId
-   *
-   * @expectedDeprecation \Drupal\layout_builder\SectionStorageInterface::getSectionListFromId() is deprecated in Drupal 8.7.0 and will be removed before Drupal 9.0.0. The section list should be derived from context. See https://www.drupal.org/node/3016262.
-   *
-   * @group legacy
-   */
-  public function testGetSectionListFromIdCreate() {
-    $expected = 'the_return_value';
-    $value = 'foo.bar.baz';
-    $expected_create_values = [
-      'targetEntityType' => 'foo',
-      'bundle' => 'bar',
-      'mode' => 'baz',
-      'status' => TRUE,
-    ];
-    $entity_storage = $this->prophesize(EntityStorageInterface::class);
-    $entity_storage->load($value)->willReturn(NULL);
-    $entity_storage->create($expected_create_values)->willReturn($expected);
-
-    $this->entityTypeManager->getDefinition('entity_view_display')->willReturn(new EntityType(['id' => 'entity_view_display']));
-    $this->entityTypeManager->getStorage('entity_view_display')->willReturn($entity_storage->reveal());
-
-    $result = $this->plugin->getSectionListFromId($value);
-    $this->assertSame($expected, $result);
   }
 
   /**
@@ -348,6 +221,12 @@ class DefaultsSectionStorageTest extends UnitTestCase {
    * @covers \Drupal\layout_builder\Routing\LayoutBuilderRoutesTrait::buildLayoutRoutes
    */
   public function testBuildRoutes() {
+    $module_handler = $this->prophesize(ModuleHandlerInterface::class);
+    $module_handler->moduleExists('field_ui')->willReturn(TRUE);
+    $container = new ContainerBuilder();
+    $container->set('module_handler', $module_handler->reveal());
+    \Drupal::setContainer($container);
+
     $entity_types = [];
 
     $not_fieldable = $this->prophesize(EntityTypeInterface::class);
@@ -531,6 +410,21 @@ class DefaultsSectionStorageTest extends UnitTestCase {
     $this->plugin->buildRoutes($collection);
     $this->assertEquals($expected, $collection->all());
     $this->assertSame(array_keys($expected), array_keys($collection->all()));
+  }
+
+  /**
+   * @covers ::buildRoutes
+   */
+  public function testBuildRoutesNoFieldUi() {
+    $module_handler = $this->prophesize(ModuleHandlerInterface::class);
+    $module_handler->moduleExists('field_ui')->willReturn(FALSE);
+    $container = new ContainerBuilder();
+    $container->set('module_handler', $module_handler->reveal());
+    \Drupal::setContainer($container);
+
+    $collection = new RouteCollection();
+    $this->plugin->buildRoutes($collection);
+    $this->assertEmpty($collection->all());
   }
 
 }

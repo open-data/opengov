@@ -12,6 +12,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ *
+ */
 abstract class ManageConditions extends FormBase {
 
   /**
@@ -31,6 +34,9 @@ abstract class ManageConditions extends FormBase {
    */
   protected $machine_name;
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.condition'),
@@ -38,7 +44,10 @@ abstract class ManageConditions extends FormBase {
     );
   }
 
-  function __construct(PluginManagerInterface $manager, FormBuilderInterface $form_builder) {
+  /**
+   *
+   */
+  public function __construct(PluginManagerInterface $manager, FormBuilderInterface $form_builder) {
     $this->manager = $manager;
     $this->formBuilder = $form_builder;
   }
@@ -62,15 +71,15 @@ abstract class ManageConditions extends FormBase {
     foreach ($this->manager->getDefinitionsForContexts($contexts) as $plugin_id => $definition) {
       $options[$plugin_id] = (string) $definition['label'];
     }
-    $form['items'] = array(
+    $form['items'] = [
       '#type' => 'markup',
       '#prefix' => '<div id="configured-conditions">',
       '#suffix' => '</div>',
       '#theme' => 'table',
-      '#header' => array($this->t('Plugin Id'), $this->t('Summary'), $this->t('Operations')),
+      '#header' => [$this->t('Plugin Id'), $this->t('Summary'), $this->t('Operations')],
       '#rows' => $this->renderRows($cached_values),
-      '#empty' => $this->t('No required conditions have been configured.')
-    );
+      '#empty' => $this->t('No required conditions have been configured.'),
+    ];
     $form['conditions'] = [
       '#type' => 'select',
       '#options' => $options,
@@ -85,7 +94,7 @@ abstract class ManageConditions extends FormBase {
       ],
       '#submit' => [
         'callback' => [$this, 'submitForm'],
-      ]
+      ],
     ];
     return $form;
   }
@@ -95,16 +104,19 @@ abstract class ManageConditions extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $cached_values = $form_state->getTemporaryValue('wizard');
-    list(, $route_parameters) = $this->getOperationsRouteInfo($cached_values, $this->machine_name, $form_state->getValue('conditions'));
+    [, $route_parameters] = $this->getOperationsRouteInfo($cached_values, $this->machine_name, $form_state->getValue('conditions'));
     $form_state->setRedirect($this->getAddRoute($cached_values), $route_parameters);
   }
 
+  /**
+   *
+   */
   public function add(array &$form, FormStateInterface $form_state) {
     $condition = $form_state->getValue('conditions');
     $content = $this->formBuilder->getForm($this->getConditionClass(), $condition, $this->getTempstoreId(), $this->machine_name);
     $content['#attached']['library'][] = 'core/drupal.dialog.ajax';
     $cached_values = $form_state->getTemporaryValue('wizard');
-    list(, $route_parameters) = $this->getOperationsRouteInfo($cached_values, $this->machine_name, $form_state->getValue('conditions'));
+    [, $route_parameters] = $this->getOperationsRouteInfo($cached_values, $this->machine_name, $form_state->getValue('conditions'));
     $route_name = $this->getAddRoute($cached_values);
     $route_options = [
       'query' => [
@@ -114,7 +126,7 @@ abstract class ManageConditions extends FormBase {
     $url = Url::fromRoute($route_name, $route_parameters, $route_options);
     $content['submit']['#attached']['drupalSettings']['ajax'][$content['submit']['#id']]['url'] = $url->toString();
     $response = new AjaxResponse();
-    $response->addCommand(new OpenModalDialogCommand($this->t('Configure Required Context'), $content, array('width' => '700')));
+    $response->addCommand(new OpenModalDialogCommand($this->t('Configure Required Context'), $content, ['width' => '700']));
     return $response;
   }
 
@@ -124,52 +136,55 @@ abstract class ManageConditions extends FormBase {
    * @return array
    */
   public function renderRows($cached_values) {
-    $configured_conditions = array();
+    $configured_conditions = [];
     foreach ($this->getConditions($cached_values) as $row => $condition) {
-      /** @var $instance \Drupal\Core\Condition\ConditionInterface */
+      /** @var \Drupal\Core\Condition\ConditionInterface $instance */
       $instance = $this->manager->createInstance($condition['id'], $condition);
-      list($route_name, $route_parameters) = $this->getOperationsRouteInfo($cached_values, $cached_values['id'], $row);
-      $build = array(
+      [$route_name, $route_parameters] = $this->getOperationsRouteInfo($cached_values, $cached_values['id'], $row);
+      $build = [
         '#type' => 'operations',
         '#links' => $this->getOperations($route_name, $route_parameters),
-      );
-      $configured_conditions[] = array(
+      ];
+      $configured_conditions[] = [
         $instance->getPluginId(),
         $instance->summary(),
         'operations' => [
           'data' => $build,
         ],
-      );
+      ];
     }
     return $configured_conditions;
   }
 
-  protected function getOperations($route_name_base, array $route_parameters = array()) {
-    $operations['edit'] = array(
+  /**
+   *
+   */
+  protected function getOperations($route_name_base, array $route_parameters = []) {
+    $operations['edit'] = [
       'title' => $this->t('Edit'),
       'url' => new Url($route_name_base . '.edit', $route_parameters),
       'weight' => 10,
-      'attributes' => array(
+      'attributes' => [
         'class' => ['use-ajax'],
         'data-dialog-type' => 'modal',
         'data-dialog-options' => Json::encode([
           'width' => 700,
         ]),
-      ),
-    );
+      ],
+    ];
     $route_parameters['id'] = $route_parameters['condition'];
-    $operations['delete'] = array(
+    $operations['delete'] = [
       'title' => $this->t('Delete'),
       'url' => new Url($route_name_base . '.delete', $route_parameters),
       'weight' => 100,
-      'attributes' => array(
-        'class' => array('use-ajax'),
+      'attributes' => [
+        'class' => ['use-ajax'],
         'data-dialog-type' => 'modal',
         'data-dialog-options' => Json::encode([
           'width' => 700,
         ]),
-      ),
-    );
+      ],
+    ];
     return $operations;
   }
 

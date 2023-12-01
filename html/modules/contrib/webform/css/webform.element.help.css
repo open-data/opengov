@@ -30,17 +30,18 @@
 }
 
 .webform-element-help--title {
-  margin: 0 0 0.2em 0;
+  margin-bottom: 0.2em;
   font-size: 1.1em;
   font-weight: bold;
 }
 
-.ui-tooltip.webform-element-help--tooltip {
-  max-width: 400px;
+.webform-element-help--content {
+  font-weight: normal;
 }
 
-@media only screen and (max-width: 400px) {
-  .ui-tooltip.webform-element-help--tooltip {
-    max-width: 300px;
-  }
+.webform-element-help--content a:link,
+.webform-element-help--content a:visited,
+.webform-element-help--content a:hover,
+.webform-element-help--content a:active {
+  color: #9cf;
 }

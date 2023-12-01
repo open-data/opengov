@@ -3,7 +3,7 @@
 /*
  * This file is part of Psy Shell.
  *
- * (c) 2012-2020 Justin Hileman
+ * (c) 2012-2023 Justin Hileman
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -29,10 +29,8 @@ class Libedit extends GNUReadline
 
     /**
      * Let's emulate GNU Readline by manually reading and parsing the history file!
-     *
-     * @return bool
      */
-    public static function isSupported()
+    public static function isSupported(): bool
     {
         return \function_exists('readline') && !\function_exists('readline_list_history');
     }
@@ -40,7 +38,15 @@ class Libedit extends GNUReadline
     /**
      * {@inheritdoc}
      */
-    public function listHistory()
+    public static function supportsBracketedPaste(): bool
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listHistory(): array
     {
         $history = \file_get_contents($this->historyFile);
         if (!$history) {
@@ -64,7 +70,7 @@ class Libedit extends GNUReadline
     /**
      * {@inheritdoc}
      */
-    public function writeHistory()
+    public function writeHistory(): bool
     {
         $res = parent::writeHistory();
 
@@ -91,9 +97,9 @@ class Libedit extends GNUReadline
      *
      * @param string $line The history line to parse
      *
-     * @return string | null
+     * @return string|null
      */
-    protected function parseHistoryLine($line)
+    protected function parseHistoryLine(string $line)
     {
         // empty line, comment or timestamp
         if (!$line || $line[0] === "\0") {

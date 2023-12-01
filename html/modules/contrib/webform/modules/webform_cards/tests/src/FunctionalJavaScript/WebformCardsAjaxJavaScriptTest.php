@@ -28,7 +28,7 @@ class WebformCardsAjaxJavaScriptTest extends WebformWebDriverTestBase {
     $page = $session->getPage();
     $assert_session = $this->assertSession();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Get the webform and load card 1.
     $this->drupalGet('/webform/test_cards_ajax');
@@ -54,7 +54,7 @@ class WebformCardsAjaxJavaScriptTest extends WebformWebDriverTestBase {
     $actual_path = parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH) ?: '';
     $this->assertEquals($base_path . 'webform/test_cards_ajax', $actual_path);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Get the webform and load card 1.
     $this->drupalGet('/webform/test_cards_ajax');

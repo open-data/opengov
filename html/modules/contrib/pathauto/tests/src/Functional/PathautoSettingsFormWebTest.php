@@ -15,11 +15,16 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   use PathautoTestHelperTrait;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stable';
+
+  /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['node', 'pathauto'];
+  protected static $modules = ['node', 'pathauto'];
 
   /**
    * Admin user.
@@ -87,7 +92,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'article']);
@@ -107,44 +112,46 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * Test if the default values are shown correctly in the form.
    */
-  function testDefaultFormValues() {
+  public function testDefaultFormValues() {
     $this->drupalGet('/admin/config/search/path/settings');
-    $this->assertNoFieldChecked('edit-verbose');
-    $this->assertField('edit-separator', $this->defaultFormValues['separator']);
-    $this->assertFieldChecked('edit-case');
-    $this->assertField('edit-max-length', $this->defaultFormValues['max_length']);
-    $this->assertField('edit-max-component-length', $this->defaultFormValues['max_component_length']);
-    $this->assertFieldChecked('edit-update-action-2');
-    $this->assertFieldChecked('edit-transliterate');
-    $this->assertNoFieldChecked('edit-reduce-ascii');
-    $this->assertField('edit-ignore-words', $this->defaultFormValues['ignore_words']);
+    $this->assertSession()->checkboxNotChecked('edit-verbose');
+    $this->assertSession()->fieldExists('edit-separator');
+    $this->assertSession()->checkboxChecked('edit-case');
+    $this->assertSession()->fieldExists('edit-max-length');
+    $this->assertSession()->fieldExists('edit-max-component-length');
+    $this->assertSession()->checkboxChecked('edit-update-action-2');
+    $this->assertSession()->checkboxChecked('edit-transliterate');
+    $this->assertSession()->checkboxNotChecked('edit-reduce-ascii');
+    $this->assertSession()->fieldExists('edit-ignore-words');
   }
 
   /**
    * Test the verbose option.
    */
-  function testVerboseOption() {
+  public function testVerboseOption() {
     $edit = ['verbose' => '1'];
-    $this->drupalPostForm('/admin/config/search/path/settings', $edit, t('Save configuration'));
-    $this->assertText(t('The configuration options have been saved.'));
-    $this->assertFieldChecked('edit-verbose');
+    $this->drupalGet('/admin/config/search/path/settings');
+    $this->submitForm($edit, 'Save configuration');
+    $this->assertSession()->pageTextContains('The configuration options have been saved.');
+    $this->assertSession()->checkboxChecked('edit-verbose');
 
     $title = 'Verbose settings test';
     $this->drupalGet('/node/add/article');
-    $this->assertFieldChecked('edit-path-0-pathauto');
-    $this->drupalPostForm(NULL, ['title[0][value]' => $title], t('Save'));
-    $this->assertText('Created new alias /content/verbose-settings-test for');
+    $this->assertSession()->checkboxChecked('edit-path-0-pathauto');
+    $this->submitForm(['title[0][value]' => $title], 'Save');
+    $this->assertSession()->pageTextContains('Created new alias /content/verbose-settings-test for');
 
     $node = $this->drupalGetNodeByTitle($title);
-    $this->drupalPostForm('/node/' . $node->id() . '/edit', ['title[0][value]' => 'Updated title'], t('Save'));
-    $this->assertText('Created new alias /content/updated-title for');
-    $this->assertText('replacing /content/verbose-settings-test.');
+    $this->drupalGet('/node/' . $node->id() . '/edit');
+    $this->submitForm(['title[0][value]' => 'Updated title'], 'Save');
+    $this->assertSession()->pageTextContains('Created new alias /content/updated-title for');
+    $this->assertSession()->pageTextContains('replacing /content/verbose-settings-test.');
   }
 
   /**
    * Tests generating aliases with different settings.
    */
-  function testSettingsForm() {
+  public function testSettingsForm() {
     // Ensure the separator settings apply correctly.
     $this->checkAlias('My awesome content', '/content/my.awesome.content', ['separator' => '.']);
 
@@ -170,7 +177,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   /**
    * Test the punctuation setting form items.
    */
-  function testPunctuationSettings() {
+  public function testPunctuationSettings() {
     // Test the replacement of punctuations.
     $settings = [];
     foreach ($this->defaultPunctuations as $key => $punctuation) {
@@ -215,8 +222,9 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
   protected function checkAlias($title, $alias, $settings = []) {
     // Submit the settings form.
     $edit = array_merge($this->defaultFormValues + $this->defaultPunctuations, $settings);
-    $this->drupalPostForm('/admin/config/search/path/settings', $edit, t('Save configuration'));
-    $this->assertText(t('The configuration options have been saved.'));
+    $this->drupalGet('/admin/config/search/path/settings');
+    $this->submitForm($edit, 'Save configuration');
+    $this->assertSession()->pageTextContains('The configuration options have been saved.');
 
     // If we do not clear the caches here, AliasCleaner will use its
     // cleanStringCache instance variable. Due to that the creation of aliases
@@ -232,7 +240,7 @@ class PathautoSettingsFormWebTest extends BrowserTestBase {
     );
 
     $this->drupalGet($alias);
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $this->assertEntityAlias($node, $alias);
   }
 

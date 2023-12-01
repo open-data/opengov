@@ -5,6 +5,8 @@
  * Hooks related to Webform module.
  */
 
+// phpcs:disable DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable
+
 /**
  * @addtogroup hooks
  * @{
@@ -120,6 +122,7 @@ function hook_webform_element_configuration_form_alter(array &$form, \Drupal\Cor
     '#type' => 'textfield',
     '#title' => t('Custom data'),
     '#description' => t("The custom data value will be added to the \$element's render array attributes."),
+    // The element #default_value is auto-populated upstream and should NOT be set here.
   ];
 }
 
@@ -439,12 +442,13 @@ function hook_webform_third_party_settings_form_alter(array &$form, \Drupal\Core
  * @see \Drupal\webform\Plugin\WebformHandlerInterface
  */
 function hook_webform_handler_invoke_alter(\Drupal\webform\Plugin\WebformHandlerInterface $handler, $method_name, array &$args) {
-  $webform = $handler->getWebform();
-  $webform_submission = $handler->getWebformSubmission();
-
-  $webform_id = $handler->getWebform()->id();
   $handler_id = $handler->getHandlerId();
-  $state = $webform_submission->getState();
+  $webform = $handler->getWebform();
+  if ($webform) {
+    $webform_id = $handler->getWebform()->id();
+    $webform_submission = $handler->getWebformSubmission();
+    $state = $webform_submission->getState();
+  }
 }
 
 /**
@@ -625,8 +629,8 @@ function hook_webform_access_rules() {
     // The below 2 operations can be queried together as following:
     //
     // \Drupal::entityTypeManager()
-    //   ->getAccessControlHandler('webform_submission')
-    //   ->access($webform_submission, 'some_operation', $account);
+    // ->getAccessControlHandler('webform_submission')
+    // ->access($webform_submission, 'some_operation', $account);
     //
     // This will return TRUE as long as the $account is has either
     // 'some_operation_any' or has 'some_operation_own' and is author of

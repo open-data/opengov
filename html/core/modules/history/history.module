@@ -13,7 +13,6 @@ use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\history\HistoryRenderCallback;
 use Drupal\user\UserInterface;
 
 /**
@@ -21,8 +20,10 @@ use Drupal\user\UserInterface;
  *
  * Entities changed within this time may be marked as new, updated, or read,
  * depending on their state for the current user. Defaults to 30 days ago.
+ *
+ * @todo Remove when https://www.drupal.org/node/2006632 lands.
  */
-define('HISTORY_READ_LIMIT', REQUEST_TIME - 30 * 24 * 60 * 60);
+define('HISTORY_READ_LIMIT', ((int) $_SERVER['REQUEST_TIME']) - 30 * 24 * 60 * 60);
 
 /**
  * Implements hook_help().
@@ -82,7 +83,7 @@ function history_read_multiple($nids) {
     return $return;
   }
 
-  $result = \Drupal::database()->query('SELECT nid, timestamp FROM {history} WHERE uid = :uid AND nid IN ( :nids[] )', [
+  $result = \Drupal::database()->query('SELECT [nid], [timestamp] FROM {history} WHERE [uid] = :uid AND [nid] IN ( :nids[] )', [
     ':uid' => \Drupal::currentUser()->id(),
     ':nids[]' => array_keys($nodes_to_read),
   ]);
@@ -110,16 +111,17 @@ function history_write($nid, $account = NULL) {
   }
 
   if ($account->isAuthenticated()) {
+    $request_time = \Drupal::time()->getRequestTime();
     \Drupal::database()->merge('history')
       ->keys([
         'uid' => $account->id(),
         'nid' => $nid,
       ])
-      ->fields(['timestamp' => REQUEST_TIME])
+      ->fields(['timestamp' => $request_time])
       ->execute();
     // Update static cache.
     $history = &drupal_static('history_read_multiple', []);
-    $history[$nid] = REQUEST_TIME;
+    $history[$nid] = $request_time;
   }
 }
 
@@ -136,6 +138,9 @@ function history_cron() {
  * Implements hook_ENTITY_TYPE_view_alter() for node entities.
  */
 function history_node_view_alter(array &$build, EntityInterface $node, EntityViewDisplayInterface $display) {
+  if ($node->isNew() || isset($node->in_preview)) {
+    return;
+  }
   // Update the history table, stating that this user viewed this node.
   if ($display->getOriginalMode() === 'full') {
     $build['#cache']['contexts'][] = 'user.roles:authenticated';
@@ -179,23 +184,4 @@ function history_user_delete($account) {
   \Drupal::database()->delete('history')
     ->condition('uid', $account->id())
     ->execute();
-}
-
-/**
- * #lazy_builder callback; attaches the last read timestamp for a node.
- *
- * @param int $node_id
- *   The node ID for which to attach the last read timestamp.
- *
- * @return array
- *   A renderable array containing the last read timestamp.
- *
- * @deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use
- *   \Drupal\history\HistoryRenderCallback::lazyBuilder() instead.
- *
- * @see https://www.drupal.org/node/2966725
- */
-function history_attach_timestamp($node_id) {
-  @trigger_error('history_attach_timestamp() is deprecated in Drupal 8.8.0 and will be removed before Drupal 9.0.0. Use \Drupal\history\HistoryRenderCallback::lazyBuilder() instead. See https://www.drupal.org/node/2966725', E_USER_DEPRECATED);
-  return HistoryRenderCallback::lazyBuilder($node_id);
 }

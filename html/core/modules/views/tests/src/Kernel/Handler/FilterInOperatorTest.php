@@ -17,7 +17,7 @@ use Drupal\views\Views;
 class FilterInOperatorTest extends ViewsKernelTestBase {
   use StringTranslationTrait;
 
-  public static $modules = ['system'];
+  protected static $modules = ['system'];
 
   /**
    * Views used by this test.
@@ -46,7 +46,7 @@ class FilterInOperatorTest extends ViewsKernelTestBase {
     $view = Views::getView('test_view');
     $view->setDisplay();
 
-    // Add a in_operator ordering.
+    // Add an in_operator ordering.
     $view->displayHandlers->get('default')->overrideOption('filters', [
       'age' => [
         'id' => 'age',
@@ -70,13 +70,13 @@ class FilterInOperatorTest extends ViewsKernelTestBase {
       ],
     ];
 
-    $this->assertEqual(2, count($view->result));
+    $this->assertCount(2, $view->result);
     $this->assertIdenticalResultset($view, $expected_result, $this->columnMap);
 
     $view->destroy();
     $view->setDisplay();
 
-    // Add a in_operator ordering.
+    // Add an in_operator ordering.
     $view->displayHandlers->get('default')->overrideOption('filters', [
       'age' => [
         'id' => 'age',
@@ -104,7 +104,7 @@ class FilterInOperatorTest extends ViewsKernelTestBase {
       ],
     ];
 
-    $this->assertEqual(3, count($view->result));
+    $this->assertCount(3, $view->result);
     $this->assertIdenticalResultset($view, $expected_result, $this->columnMap);
   }
 
@@ -130,7 +130,7 @@ class FilterInOperatorTest extends ViewsKernelTestBase {
       ],
     ];
 
-    $this->assertEqual(2, count($view->result));
+    $this->assertCount(2, $view->result);
     $this->assertIdenticalResultset($view, $expected_result, $this->columnMap);
   }
 
@@ -160,7 +160,7 @@ class FilterInOperatorTest extends ViewsKernelTestBase {
       ],
     ];
 
-    $this->assertEqual(3, count($view->result));
+    $this->assertCount(3, $view->result);
     $this->assertIdenticalResultset($view, $expected_result, $this->columnMap);
   }
 
@@ -234,7 +234,7 @@ class FilterInOperatorTest extends ViewsKernelTestBase {
   }
 
   /**
-   * Tests that the InOperator filter can handle TranslateableMarkup.
+   * Tests that the InOperator filter can handle TranslatableMarkup.
    */
   public function testFilterOptionAsMarkup() {
     $view = $this->prophesize(ViewExecutable::class);

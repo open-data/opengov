@@ -74,6 +74,8 @@ class CommentForm extends ContentEntityForm {
    *   The entity type bundle service.
    * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time service.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager service.
    */
   public function __construct(EntityRepositoryInterface $entity_repository, AccountInterface $current_user, RendererInterface $renderer, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, EntityFieldManagerInterface $entity_field_manager = NULL) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
@@ -248,7 +250,7 @@ class CommentForm extends ContentEntityForm {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $element = parent::actions($form, $form_state);
-    /* @var \Drupal\comment\CommentInterface $comment */
+    /** @var \Drupal\comment\CommentInterface $comment */
     $comment = $this->entity;
     $entity = $comment->getCommentedEntity();
     $field_definition = $this->entityFieldManager->getFieldDefinitions($entity->getEntityTypeId(), $entity->bundle())[$comment->getFieldName()];
@@ -369,9 +371,9 @@ class CommentForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $comment = $this->entity;
-    $entity = $this->entityManager->getTranslationFromContext($comment->getCommentedEntity());
+    $entity = $this->entityRepository->getTranslationFromContext($comment->getCommentedEntity());
     $field_name = $comment->getFieldName();
-    $uri = $entity->toUrl('canonical', ['language' => \Drupal::languageManager()->getCurrentLanguage()]);
+    $uri = $entity->toUrl();
     $logger = $this->logger('comment');
 
     if ($this->currentUser->hasPermission('post comments') && ($this->currentUser->hasPermission('administer comments') || $entity->{$field_name}->status == CommentItemInterface::OPEN)) {
@@ -380,9 +382,9 @@ class CommentForm extends ContentEntityForm {
 
       // Add a log entry.
       $logger->notice('Comment posted: %subject.', [
-          '%subject' => $comment->getSubject(),
-          'link' => Link::fromTextAndUrl(t('View'), $comment->toUrl()->setOption('fragment', 'comment-' . $comment->id()))->toString(),
-        ]);
+        '%subject' => $comment->getSubject(),
+        'link' => Link::fromTextAndUrl(t('View'), $comment->toUrl()->setOption('fragment', 'comment-' . $comment->id()))->toString(),
+      ]);
 
       // Explain the approval queue if necessary.
       if (!$comment->isPublished()) {

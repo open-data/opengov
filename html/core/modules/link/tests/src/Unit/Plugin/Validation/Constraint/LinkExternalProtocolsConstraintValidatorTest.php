@@ -18,8 +18,13 @@ class LinkExternalProtocolsConstraintValidatorTest extends UnitTestCase {
   /**
    * @covers ::validate
    * @dataProvider providerValidate
+   * @runInSeparateProcess
    */
-  public function testValidate($value, $valid) {
+  public function testValidate($url, $valid) {
+    $link = $this->createMock('Drupal\link\LinkItemInterface');
+    $link->expects($this->any())
+      ->method('getUrl')
+      ->willReturn(Url::fromUri($url));
     $context = $this->createMock(ExecutionContextInterface::class);
 
     if ($valid) {
@@ -38,11 +43,11 @@ class LinkExternalProtocolsConstraintValidatorTest extends UnitTestCase {
 
     $validator = new LinkExternalProtocolsConstraintValidator();
     $validator->initialize($context);
-    $validator->validate($value, $constraint);
+    $validator->validate($link, $constraint);
   }
 
   /**
-   * Data provider for ::testValidate
+   * Data provider for ::testValidate.
    */
   public function providerValidate() {
     $data = [];
@@ -50,19 +55,11 @@ class LinkExternalProtocolsConstraintValidatorTest extends UnitTestCase {
     // Test allowed protocols.
     $data[] = ['http://www.drupal.org', TRUE];
     $data[] = ['https://www.drupal.org', TRUE];
+    // cSpell:disable-next-line
     $data[] = ['magnet:?xt=urn:sha1:YNCKHTQCWBTRNJIV4WNAE52SJUQCZO5C', TRUE];
 
     // Invalid protocols.
     $data[] = ['ftp://ftp.funet.fi/pub/standards/RFC/rfc959.txt', FALSE];
-
-    foreach ($data as &$single_data) {
-      $url = Url::fromUri($single_data[0]);
-      $link = $this->createMock('Drupal\link\LinkItemInterface');
-      $link->expects($this->any())
-        ->method('getUrl')
-        ->willReturn($url);
-      $single_data[0] = $link;
-    }
 
     return $data;
   }

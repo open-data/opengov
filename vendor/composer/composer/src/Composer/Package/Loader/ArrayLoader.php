@@ -12,13 +12,16 @@
 
 namespace Composer\Package\Loader;
 
-use Composer\Package;
-use Composer\Package\AliasPackage;
+use Composer\Package\BasePackage;
+use Composer\Package\CompleteAliasPackage;
+use Composer\Package\CompletePackage;
+use Composer\Package\RootPackage;
+use Composer\Package\PackageInterface;
+use Composer\Package\CompletePackageInterface;
 use Composer\Package\Link;
 use Composer\Package\RootAliasPackage;
-use Composer\Package\RootPackageInterface;
 use Composer\Package\Version\VersionParser;
-use Composer\Semver\VersionParser as SemverVersionParser;
+use Composer\Pcre\Preg;
 
 /**
  * @author Konstantin Kudryashiv <ever.zet@gmail.com>
@@ -26,10 +29,15 @@ use Composer\Semver\VersionParser as SemverVersionParser;
  */
 class ArrayLoader implements LoaderInterface
 {
+    /** @var VersionParser */
     protected $versionParser;
+    /** @var bool */
     protected $loadOptions;
 
-    public function __construct(SemverVersionParser $parser = null, $loadOptions = false)
+    /**
+     * @param bool $loadOptions
+     */
+    public function __construct(VersionParser $parser = null, $loadOptions = false)
     {
         if (!$parser) {
             $parser = new VersionParser;
@@ -38,29 +46,114 @@ class ArrayLoader implements LoaderInterface
         $this->loadOptions = $loadOptions;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function load(array $config, $class = 'Composer\Package\CompletePackage')
+    {
+        if ($class !== 'Composer\Package\CompletePackage' && $class !== 'Composer\Package\RootPackage') {
+            trigger_error('The $class arg is deprecated, please reach out to Composer maintainers ASAP if you still need this.', E_USER_DEPRECATED);
+        }
+
+        $package = $this->createObject($config, $class);
+
+        foreach (BasePackage::$supportedLinkTypes as $type => $opts) {
+            if (isset($config[$type])) {
+                $method = 'set'.ucfirst($opts['method']);
+                $package->{$method}(
+                    $this->parseLinks(
+                        $package->getName(),
+                        $package->getPrettyVersion(),
+                        $opts['method'],
+                        $config[$type]
+                    )
+                );
+            }
+        }
+
+        $package = $this->configureObject($package, $config);
+
+        return $package;
+    }
+
+    /**
+     * @param list<array<mixed>> $versions
+     *
+     * @return list<CompletePackage|CompleteAliasPackage>
+     */
+    public function loadPackages(array $versions)
+    {
+        $packages = array();
+        $linkCache = array();
+
+        foreach ($versions as $version) {
+            $package = $this->createObject($version, 'Composer\Package\CompletePackage');
+
+            $this->configureCachedLinks($linkCache, $package, $version);
+            $package = $this->configureObject($package, $version);
+
+            $packages[] = $package;
+        }
+
+        return $packages;
+    }
+
+    /**
+     * @template PackageClass of CompletePackageInterface
+     *
+     * @param mixed[] $config package data
+     * @param string  $class  FQCN to be instantiated
+     *
+     * @return CompletePackage|RootPackage
+     *
+     * @phpstan-param class-string<PackageClass> $class
+     */
+    private function createObject(array $config, $class)
     {
         if (!isset($config['name'])) {
             throw new \UnexpectedValueException('Unknown package has no name defined ('.json_encode($config).').');
         }
-        if (!isset($config['version'])) {
+        if (!isset($config['version']) || !is_scalar($config['version'])) {
             throw new \UnexpectedValueException('Package '.$config['name'].' has no version defined.');
+        }
+        if (!is_string($config['version'])) {
+            $config['version'] = (string) $config['version'];
         }
 
         // handle already normalized versions
-        if (isset($config['version_normalized'])) {
+        if (isset($config['version_normalized']) && is_string($config['version_normalized'])) {
             $version = $config['version_normalized'];
+
+            // handling of existing repos which need to remain composer v1 compatible, in case the version_normalized contained VersionParser::DEFAULT_BRANCH_ALIAS, we renormalize it
+            if ($version === VersionParser::DEFAULT_BRANCH_ALIAS) {
+                $version = $this->versionParser->normalize($config['version']);
+            }
         } else {
             $version = $this->versionParser->normalize($config['version']);
         }
-        $package = new $class($config['name'], $version, $config['version']);
+
+        return new $class($config['name'], $version, $config['version']);
+    }
+
+    /**
+     * @param CompletePackage $package
+     * @param mixed[]         $config package data
+     *
+     * @return RootPackage|RootAliasPackage|CompletePackage|CompleteAliasPackage
+     */
+    private function configureObject(PackageInterface $package, array $config)
+    {
+        if (!$package instanceof CompletePackage) {
+            throw new \LogicException('ArrayLoader expects instances of the Composer\Package\CompletePackage class to function correctly');
+        }
+
         $package->setType(isset($config['type']) ? strtolower($config['type']) : 'library');
 
         if (isset($config['target-dir'])) {
             $package->setTargetDir($config['target-dir']);
         }
 
-        if (isset($config['extra']) && is_array($config['extra'])) {
+        if (isset($config['extra']) && \is_array($config['extra'])) {
             $package->setExtra($config['extra']);
         }
 
@@ -78,8 +171,12 @@ class ArrayLoader implements LoaderInterface
             $package->setInstallationSource($config['installation-source']);
         }
 
+        if (isset($config['default-branch']) && $config['default-branch'] === true) {
+            $package->setIsDefaultBranch(true);
+        }
+
         if (isset($config['source'])) {
-            if (!isset($config['source']['type']) || !isset($config['source']['url']) || !isset($config['source']['reference'])) {
+            if (!isset($config['source']['type'], $config['source']['url'], $config['source']['reference'])) {
                 throw new \UnexpectedValueException(sprintf(
                     "Package %s's source key should be specified as {\"type\": ..., \"url\": ..., \"reference\": ...},\n%s given.",
                     $config['name'],
@@ -95,8 +192,7 @@ class ArrayLoader implements LoaderInterface
         }
 
         if (isset($config['dist'])) {
-            if (!isset($config['dist']['type'])
-             || !isset($config['dist']['url'])) {
+            if (!isset($config['dist']['type'], $config['dist']['url'])) {
                 throw new \UnexpectedValueException(sprintf(
                     "Package %s's dist key should be specified as ".
                     "{\"type\": ..., \"url\": ..., \"reference\": ..., \"shasum\": ...},\n%s given.",
@@ -113,21 +209,7 @@ class ArrayLoader implements LoaderInterface
             }
         }
 
-        foreach (Package\BasePackage::$supportedLinkTypes as $type => $opts) {
-            if (isset($config[$type])) {
-                $method = 'set'.ucfirst($opts['method']);
-                $package->{$method}(
-                    $this->parseLinks(
-                        $package->getName(),
-                        $package->getPrettyVersion(),
-                        $opts['description'],
-                        $config[$type]
-                    )
-                );
-            }
-        }
-
-        if (isset($config['suggest']) && is_array($config['suggest'])) {
+        if (isset($config['suggest']) && \is_array($config['suggest'])) {
             foreach ($config['suggest'] as $target => $reason) {
                 if ('self.version' === trim($reason)) {
                     $config['suggest'][$target] = $package->getPrettyVersion();
@@ -149,7 +231,7 @@ class ArrayLoader implements LoaderInterface
         }
 
         if (!empty($config['time'])) {
-            $time = preg_match('/^\d++$/D', $config['time']) ? '@'.$config['time'] : $config['time'];
+            $time = Preg::isMatch('/^\d++$/D', $config['time']) ? '@'.$config['time'] : $config['time'];
 
             try {
                 $date = new \DateTime($time, new \DateTimeZone('UTC'));
@@ -162,38 +244,43 @@ class ArrayLoader implements LoaderInterface
             $package->setNotificationUrl($config['notification-url']);
         }
 
-        if (!empty($config['archive']['exclude'])) {
-            $package->setArchiveExcludes($config['archive']['exclude']);
-        }
+        if ($package instanceof CompletePackageInterface) {
+            if (!empty($config['archive']['name'])) {
+                $package->setArchiveName($config['archive']['name']);
+            }
+            if (!empty($config['archive']['exclude'])) {
+                $package->setArchiveExcludes($config['archive']['exclude']);
+            }
 
-        if ($package instanceof Package\CompletePackageInterface) {
-            if (isset($config['scripts']) && is_array($config['scripts'])) {
+            if (isset($config['scripts']) && \is_array($config['scripts'])) {
                 foreach ($config['scripts'] as $event => $listeners) {
                     $config['scripts'][$event] = (array) $listeners;
                 }
-                if (isset($config['scripts']['composer'])) {
-                    trigger_error('The `composer` script name is reserved for internal use, please avoid defining it', E_USER_DEPRECATED);
+                foreach (array('composer', 'php', 'putenv') as $reserved) {
+                    if (isset($config['scripts'][$reserved])) {
+                        trigger_error('The `'.$reserved.'` script name is reserved for internal use, please avoid defining it', E_USER_DEPRECATED);
+                    }
                 }
                 $package->setScripts($config['scripts']);
             }
 
-            if (!empty($config['description']) && is_string($config['description'])) {
+            if (!empty($config['description']) && \is_string($config['description'])) {
                 $package->setDescription($config['description']);
             }
 
-            if (!empty($config['homepage']) && is_string($config['homepage'])) {
+            if (!empty($config['homepage']) && \is_string($config['homepage'])) {
                 $package->setHomepage($config['homepage']);
             }
 
-            if (!empty($config['keywords']) && is_array($config['keywords'])) {
+            if (!empty($config['keywords']) && \is_array($config['keywords'])) {
                 $package->setKeywords($config['keywords']);
             }
 
             if (!empty($config['license'])) {
-                $package->setLicense(is_array($config['license']) ? $config['license'] : array($config['license']));
+                $package->setLicense(\is_array($config['license']) ? $config['license'] : array($config['license']));
             }
 
-            if (!empty($config['authors']) && is_array($config['authors'])) {
+            if (!empty($config['authors']) && \is_array($config['authors'])) {
                 $package->setAuthors($config['authors']);
             }
 
@@ -201,7 +288,7 @@ class ArrayLoader implements LoaderInterface
                 $package->setSupport($config['support']);
             }
 
-            if (!empty($config['funding']) && is_array($config['funding'])) {
+            if (!empty($config['funding']) && \is_array($config['funding'])) {
                 $package->setFunding($config['funding']);
             }
 
@@ -210,88 +297,163 @@ class ArrayLoader implements LoaderInterface
             }
         }
 
-        if ($aliasNormalized = $this->getBranchAlias($config)) {
-            if ($package instanceof RootPackageInterface) {
-                $package = new RootAliasPackage($package, $aliasNormalized, preg_replace('{(\.9{7})+}', '.x', $aliasNormalized));
-            } else {
-                $package = new AliasPackage($package, $aliasNormalized, preg_replace('{(\.9{7})+}', '.x', $aliasNormalized));
-            }
-        }
-
         if ($this->loadOptions && isset($config['transport-options'])) {
             $package->setTransportOptions($config['transport-options']);
+        }
+
+        if ($aliasNormalized = $this->getBranchAlias($config)) {
+            $prettyAlias = Preg::replace('{(\.9{7})+}', '.x', $aliasNormalized);
+
+            if ($package instanceof RootPackage) {
+                return new RootAliasPackage($package, $aliasNormalized, $prettyAlias);
+            }
+
+            return new CompleteAliasPackage($package, $aliasNormalized, $prettyAlias);
         }
 
         return $package;
     }
 
     /**
-     * @param  string $source        source package name
-     * @param  string $sourceVersion source package version (pretty version ideally)
-     * @param  string $description   link description (e.g. requires, replaces, ..)
-     * @param  array  $links         array of package name => constraint mappings
+     * @param array<string, array<string, array<string, array<string, array{string, Link}>>>> $linkCache
+     * @param PackageInterface                                                                $package
+     * @param mixed[]                                                                         $config
+     *
+     * @return void
+     */
+    private function configureCachedLinks(&$linkCache, $package, array $config)
+    {
+        $name = $package->getName();
+        $prettyVersion = $package->getPrettyVersion();
+
+        foreach (BasePackage::$supportedLinkTypes as $type => $opts) {
+            if (isset($config[$type])) {
+                $method = 'set'.ucfirst($opts['method']);
+
+                $links = array();
+                foreach ($config[$type] as $prettyTarget => $constraint) {
+                    $target = strtolower($prettyTarget);
+
+                    // recursive links are not supported
+                    if ($target === $name) {
+                        continue;
+                    }
+
+                    if ($constraint === 'self.version') {
+                        $links[$target] = $this->createLink($name, $prettyVersion, $opts['method'], $target, $constraint);
+                    } else {
+                        if (!isset($linkCache[$name][$type][$target][$constraint])) {
+                            $linkCache[$name][$type][$target][$constraint] = array($target, $this->createLink($name, $prettyVersion, $opts['method'], $target, $constraint));
+                        }
+
+                        list($target, $link) = $linkCache[$name][$type][$target][$constraint];
+                        $links[$target] = $link;
+                    }
+                }
+
+                $package->{$method}($links);
+            }
+        }
+    }
+
+    /**
+     * @param  string                $source        source package name
+     * @param  string                $sourceVersion source package version (pretty version ideally)
+     * @param  string                $description   link description (e.g. requires, replaces, ..)
+     * @param  array<string, string> $links         array of package name => constraint mappings
+     *
      * @return Link[]
+     *
+     * @phpstan-param Link::TYPE_* $description
      */
     public function parseLinks($source, $sourceVersion, $description, $links)
     {
         $res = array();
         foreach ($links as $target => $constraint) {
-            if (!is_string($constraint)) {
-                throw new \UnexpectedValueException('Link constraint in '.$source.' '.$description.' > '.$target.' should be a string, got '.gettype($constraint) . ' (' . var_export($constraint, true) . ')');
-            }
-            if ('self.version' === $constraint) {
-                $parsedConstraint = $this->versionParser->parseConstraints($sourceVersion);
-            } else {
-                $parsedConstraint = $this->versionParser->parseConstraints($constraint);
-            }
-
-            $res[strtolower($target)] = new Link($source, $target, $parsedConstraint, $description, $constraint);
+            $target = strtolower($target);
+            $res[$target] = $this->createLink($source, $sourceVersion, $description, $target, $constraint);
         }
 
         return $res;
     }
 
     /**
+     * @param  string       $source           source package name
+     * @param  string       $sourceVersion    source package version (pretty version ideally)
+     * @param  Link::TYPE_* $description      link description (e.g. requires, replaces, ..)
+     * @param  string       $target           target package name
+     * @param  string       $prettyConstraint constraint string
+     * @return Link
+     */
+    private function createLink($source, $sourceVersion, $description, $target, $prettyConstraint)
+    {
+        if (!\is_string($prettyConstraint)) {
+            throw new \UnexpectedValueException('Link constraint in '.$source.' '.$description.' > '.$target.' should be a string, got '.\gettype($prettyConstraint) . ' (' . var_export($prettyConstraint, true) . ')');
+        }
+        if ('self.version' === $prettyConstraint) {
+            $parsedConstraint = $this->versionParser->parseConstraints($sourceVersion);
+        } else {
+            $parsedConstraint = $this->versionParser->parseConstraints($prettyConstraint);
+        }
+
+        return new Link($source, $target, $parsedConstraint, $description, $prettyConstraint);
+    }
+
+    /**
      * Retrieves a branch alias (dev-master => 1.0.x-dev for example) if it exists
      *
-     * @param  array       $config the entire package config
+     * @param mixed[] $config the entire package config
+     *
      * @return string|null normalized version of the branch alias or null if there is none
      */
     public function getBranchAlias(array $config)
     {
-        if (('dev-' !== substr($config['version'], 0, 4) && '-dev' !== substr($config['version'], -4))
-            || !isset($config['extra']['branch-alias'])
-            || !is_array($config['extra']['branch-alias'])
+        if (strpos($config['version'], 'dev-') !== 0 && '-dev' !== substr($config['version'], -4)) {
+            return null;
+        }
+
+        if (isset($config['extra']['branch-alias']) && \is_array($config['extra']['branch-alias'])) {
+            foreach ($config['extra']['branch-alias'] as $sourceBranch => $targetBranch) {
+                // ensure it is an alias to a -dev package
+                if ('-dev' !== substr($targetBranch, -4)) {
+                    continue;
+                }
+
+                // normalize without -dev and ensure it's a numeric branch that is parseable
+                if ($targetBranch === VersionParser::DEFAULT_BRANCH_ALIAS) {
+                    $validatedTargetBranch = VersionParser::DEFAULT_BRANCH_ALIAS;
+                } else {
+                    $validatedTargetBranch = $this->versionParser->normalizeBranch(substr($targetBranch, 0, -4));
+                }
+                if ('-dev' !== substr($validatedTargetBranch, -4)) {
+                    continue;
+                }
+
+                // ensure that it is the current branch aliasing itself
+                if (strtolower($config['version']) !== strtolower($sourceBranch)) {
+                    continue;
+                }
+
+                // If using numeric aliases ensure the alias is a valid subversion
+                if (($sourcePrefix = $this->versionParser->parseNumericAliasPrefix($sourceBranch))
+                    && ($targetPrefix = $this->versionParser->parseNumericAliasPrefix($targetBranch))
+                    && (stripos($targetPrefix, $sourcePrefix) !== 0)
+                ) {
+                    continue;
+                }
+
+                return $validatedTargetBranch;
+            }
+        }
+
+        if (
+            isset($config['default-branch'])
+            && $config['default-branch'] === true
+            && false === $this->versionParser->parseNumericAliasPrefix($config['version'])
         ) {
-            return;
+            return VersionParser::DEFAULT_BRANCH_ALIAS;
         }
 
-        foreach ($config['extra']['branch-alias'] as $sourceBranch => $targetBranch) {
-            // ensure it is an alias to a -dev package
-            if ('-dev' !== substr($targetBranch, -4)) {
-                continue;
-            }
-
-            // normalize without -dev and ensure it's a numeric branch that is parseable
-            $validatedTargetBranch = $this->versionParser->normalizeBranch(substr($targetBranch, 0, -4));
-            if ('-dev' !== substr($validatedTargetBranch, -4)) {
-                continue;
-            }
-
-            // ensure that it is the current branch aliasing itself
-            if (strtolower($config['version']) !== strtolower($sourceBranch)) {
-                continue;
-            }
-
-            // If using numeric aliases ensure the alias is a valid subversion
-            if (($sourcePrefix = $this->versionParser->parseNumericAliasPrefix($sourceBranch))
-                && ($targetPrefix = $this->versionParser->parseNumericAliasPrefix($targetBranch))
-                && (stripos($targetPrefix, $sourcePrefix) !== 0)
-            ) {
-                continue;
-            }
-
-            return $validatedTargetBranch;
-        }
+        return null;
     }
 }

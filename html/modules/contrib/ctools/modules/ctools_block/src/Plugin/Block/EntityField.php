@@ -108,7 +108,7 @@ class EntityField extends BlockBase implements ContextAwarePluginInterface, Cont
     $this->formatterManager = $formatter_manager;
 
     // Get the entity type and field name from the plugin id.
-    list (, $entity_type_id, $field_name) = explode(':', $plugin_id);
+    [, $entity_type_id, $field_name] = explode(':', $plugin_id);
     $this->entityTypeId = $entity_type_id;
     $this->fieldName = $field_name;
 
@@ -190,7 +190,7 @@ class EntityField extends BlockBase implements ContextAwarePluginInterface, Cont
     return [
       'formatter' => [
         'label' => 'above',
-        'type' => isset($field_type_definition['default_formatter']) ? $field_type_definition['default_formatter'] : '',
+        'type' => $field_type_definition['default_formatter'] ?? '',
         'settings' => [],
         'third_party_settings' => [],
         'weight' => 0,
@@ -296,7 +296,7 @@ class EntityField extends BlockBase implements ContextAwarePluginInterface, Cont
    * Gets the field definition.
    *
    * @return \Drupal\Core\Field\FieldDefinitionInterface
-   *   The field defination.
+   *   The field definition.
    */
   protected function getFieldDefinition() {
     if (empty($this->fieldDefinition)) {
@@ -312,11 +312,16 @@ class EntityField extends BlockBase implements ContextAwarePluginInterface, Cont
    * Gets the field storage definition.
    *
    * @return \Drupal\Core\Field\FieldStorageDefinitionInterface
-   *   The field storage defination.
+   *   The field storage definition.
    */
   protected function getFieldStorageDefinition() {
     if (empty($this->fieldStorageDefinition)) {
-      $field_definitions = $this->entityFieldManager->getFieldStorageDefinitions($this->entityTypeId);
+      // Some base fields have no storage.
+      $field_definitions = array_merge(
+        $this->entityFieldManager->getBaseFieldDefinitions($this->entityTypeId),
+        $this->entityFieldManager->getFieldStorageDefinitions($this->entityTypeId)
+      );
+
       $this->fieldStorageDefinition = $field_definitions[$this->fieldName];
     }
     return $this->fieldStorageDefinition;

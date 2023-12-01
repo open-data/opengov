@@ -220,7 +220,7 @@ system.site_maintenance_mode:
     _form: '\Drupal\system\Form\SiteMaintenanceModeForm'
     _title: 'Maintenance mode'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer site configuration+administer software updates'
 
 system.run_cron:
   path: '/admin/reports/status/run-cron'
@@ -281,11 +281,11 @@ system.modules_list_confirm:
   requirements:
     _permission: 'administer modules'
 
-system.modules_list_experimental_confirm:
-  path: '/admin/modules/list/confirm-experimental'
+system.modules_list_non_stable_confirm:
+  path: '/admin/modules/list/confirm-non-stable'
   defaults:
-    _form: '\Drupal\system\Form\ModulesListExperimentalConfirmForm'
-    _title: 'Experimental modules'
+    _form: '\Drupal\system\Form\ModulesListNonStableConfirmForm'
+    _title: 'Non-stable modules'
   requirements:
     _permission: 'administer modules'
 
@@ -412,6 +412,13 @@ system.theme_settings_theme:
   requirements:
     _access: 'TRUE'
 
+'<button>':
+  path: ''
+  options:
+    _no_path: TRUE
+  requirements:
+    _access: 'TRUE'
+
 '<current>':
   path: '<current>'
 
@@ -480,7 +487,7 @@ system.batch_page.json:
     _admin_route: TRUE
 
 # Note: This route just exists for generating URLs, the dedicated
-# frontcontroller is used if the URL is accessed.
+# front controller is used if the URL is accessed.
 system.db_update:
   path: '/update.php/{op}'
   defaults:

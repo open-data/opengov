@@ -8,6 +8,8 @@
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\webform_access\Entity\WebformAccessType;
 
+// phpcs:disable Drupal.Commenting.InlineComment.InvalidEndChar
+
 /**
  * Implements hook_token_info().
  */
@@ -61,13 +63,13 @@ function webform_access_token_info() {
       'description' => t('The email addresses of <strong>administrators</strong> assigned to the %title access type for the current webform.', ['%title' => $webform_access_type->label()]),
     ];
     $webform_access["type:$webform_access_type_name:all"] = [
-      'name' => t('@label ((Users, custom email addresses, Adminstrators)', $t_args),
+      'name' => t('@label (Users, custom email addresses, Adminstrators)', $t_args),
       'description' => t('The email addresses of <strong>users</strong>, <strong>custom email addresses</strong>, and <strong>administrators</strong> assigned to the %title access type for the current webform.', ['%title' => $webform_access_type->label()]),
     ];
   }
   $tokens['webform_access'] = $webform_access;
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   return ['types' => $types, 'tokens' => $tokens];
 }
@@ -92,9 +94,9 @@ function webform_access_tokens($type, $tokens, array $data, array $options, Bubb
       // Type is always defined (type, admins, users, or emails)
       $type = $parts[0];
       // Access type id is optional.
-      $webform_access_type_id = (isset($parts[1])) ? $parts[1] : NULL;
+      $webform_access_type_id = $parts[1] ?? NULL;
       // Properties can be admins, users, or emails.
-      $property = (isset($parts[2])) ? $parts[2] : NULL;
+      $property = $parts[2] ?? NULL;
 
       /** @var \Drupal\webform_access\WebformAccessGroupInterface $webform_access_group */
       $webform_access_groups = $webform_access_group_storage->loadByEntities($webform, $source_entity, NULL, $webform_access_type_id);

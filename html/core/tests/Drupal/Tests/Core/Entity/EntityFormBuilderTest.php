@@ -12,7 +12,7 @@ use Drupal\Tests\UnitTestCase;
 class EntityFormBuilderTest extends UnitTestCase {
 
   /**
-   * The entity manager.
+   * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\PHPUnit\Framework\MockObject\MockObject
    */
@@ -35,7 +35,7 @@ class EntityFormBuilderTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->formBuilder = $this->createMock('Drupal\Core\Form\FormBuilderInterface');
@@ -52,21 +52,21 @@ class EntityFormBuilderTest extends UnitTestCase {
     $form_controller = $this->createMock('Drupal\Core\Entity\EntityFormInterface');
     $form_controller->expects($this->any())
       ->method('getFormId')
-      ->will($this->returnValue('the_form_id'));
+      ->willReturn('the_form_id');
     $this->entityTypeManager->expects($this->any())
       ->method('getFormObject')
       ->with('the_entity_type', 'default')
-      ->will($this->returnValue($form_controller));
+      ->willReturn($form_controller);
 
     $this->formBuilder->expects($this->once())
       ->method('buildForm')
       ->with($form_controller, $this->isInstanceOf('Drupal\Core\Form\FormStateInterface'))
-      ->will($this->returnValue('the form contents'));
+      ->willReturn('the form contents');
 
     $entity = $this->createMock('Drupal\Core\Entity\EntityInterface');
     $entity->expects($this->once())
       ->method('getEntityTypeId')
-      ->will($this->returnValue('the_entity_type'));
+      ->willReturn('the_entity_type');
 
     $this->assertSame('the form contents', $this->entityFormBuilder->getForm($entity));
   }

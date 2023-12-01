@@ -12,6 +12,7 @@
 namespace Dflydev\DotAccessConfiguration;
 
 use Dflydev\DotAccessData\Data;
+use Dflydev\DotAccessData\Exception\MissingPathException;
 use Dflydev\PlaceholderResolver\PlaceholderResolverInterface;
 use Dflydev\PlaceholderResolver\RegexPlaceholderResolver;
 
@@ -27,7 +28,11 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function getRaw($key)
     {
-        return $this->data()->get($key);
+        try {
+            return $this->data()->get($key);
+        } catch (MissingPathException $e) {
+            return null;
+        }
     }
 
     /**
@@ -166,7 +171,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     protected function data()
     {
         if (null === $this->data) {
-            $this->data = new Data;
+            $this->data = new Data();
         }
 
         return $this->data;

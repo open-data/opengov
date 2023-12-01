@@ -37,6 +37,7 @@ class StatusCommand extends BaseCommand
     const EXIT_CODE_VERSION_CHANGES = 4;
 
     /**
+     * @return void
      * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
      */
     protected function configure()
@@ -59,8 +60,6 @@ EOT
     }
 
     /**
-     * @param  InputInterface  $input
-     * @param  OutputInterface $output
      * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -73,7 +72,7 @@ EOT
         // Dispatch pre-status-command
         $composer->getEventDispatcher()->dispatchScript(ScriptEvents::PRE_STATUS_CMD, true);
 
-        $exitCode = $this->doExecute($input, $output);
+        $exitCode = $this->doExecute($input);
 
         // Dispatch post-status-command
         $composer->getEventDispatcher()->dispatchScript(ScriptEvents::POST_STATUS_CMD, true);
@@ -82,11 +81,9 @@ EOT
     }
 
     /**
-     * @param  InputInterface  $input
-     * @param  OutputInterface $output
      * @return int
      */
-    private function doExecute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input)
     {
         // init repos
         $composer = $this->getComposer();
@@ -107,7 +104,7 @@ EOT
 
         // list packages
         foreach ($installedRepo->getCanonicalPackages() as $package) {
-            $downloader = $dm->getDownloaderForInstalledPackage($package);
+            $downloader = $dm->getDownloaderForPackage($package);
             $targetDir = $im->getInstallPath($package);
 
             if ($downloader instanceof ChangeReportInterface) {
@@ -121,7 +118,7 @@ EOT
             }
 
             if ($downloader instanceof VcsCapableDownloaderInterface) {
-                if ($currentRef = $downloader->getVcsReference($package, $targetDir)) {
+                if ($downloader->getVcsReference($package, $targetDir)) {
                     switch ($package->getInstallationSource()) {
                         case 'source':
                             $previousRef = $package->getSourceReference();

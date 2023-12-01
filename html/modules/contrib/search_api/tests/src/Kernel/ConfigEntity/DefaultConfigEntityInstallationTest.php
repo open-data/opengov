@@ -20,7 +20,7 @@ class DefaultConfigEntityInstallationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'entity_test',
     'search_api',
     'search_api_test',
@@ -32,7 +32,7 @@ class DefaultConfigEntityInstallationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('entity_test_mulrev_changed');
@@ -62,7 +62,7 @@ class DefaultConfigEntityInstallationTest extends KernelTestBase {
    * Tests that creating new config entities directly works correctly.
    */
   public function testNormalEntityCreation() {
-    $dir = __DIR__ . '/../../../search_api_test_inconsistent_config/config/install/';
+    $dir = __DIR__ . '/../../../modules/search_api_test_inconsistent_config/config/install/';
     $yaml_file = $dir . 'search_api.server.inconsistent_search_server.yml';
     $values = Yaml::decode(file_get_contents($yaml_file));
     Server::create($values)->save();

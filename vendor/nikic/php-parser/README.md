@@ -3,10 +3,10 @@ PHP Parser
 
 [![Coverage Status](https://coveralls.io/repos/github/nikic/PHP-Parser/badge.svg?branch=master)](https://coveralls.io/github/nikic/PHP-Parser?branch=master)
 
-This is a PHP 5.2 to PHP 8.0 parser written in PHP. Its purpose is to simplify static code analysis and
+This is a PHP 5.2 to PHP 8.2 parser written in PHP. Its purpose is to simplify static code analysis and
 manipulation.
 
-[**Documentation for version 4.x**][doc_master] (stable; for running on PHP >= 7.0; for parsing PHP 5.2 to PHP 8.0).
+[**Documentation for version 4.x**][doc_4_x] (stable; for running on PHP >= 7.0; for parsing PHP 5.2 to PHP 8.2).
 
 [Documentation for version 3.x][doc_3_x] (unsupported; for running on PHP >= 5.5; for parsing PHP 5.2 to PHP 7.2).
 
@@ -215,11 +215,11 @@ Component documentation:
  * [JSON representation](doc/component/JSON_representation.markdown)
    * JSON encoding and decoding of ASTs
  * [Performance](doc/component/Performance.markdown)
-   * Disabling XDebug
+   * Disabling Xdebug
    * Reusing objects
    * Garbage collection impact
  * [Frequently asked questions](doc/component/FAQ.markdown)
    * Parent and sibling references
 
  [doc_3_x]: https://github.com/nikic/PHP-Parser/tree/3.x/doc
- [doc_master]: https://github.com/nikic/PHP-Parser/tree/master/doc
+ [doc_4_x]: https://github.com/nikic/PHP-Parser/tree/4.x/doc

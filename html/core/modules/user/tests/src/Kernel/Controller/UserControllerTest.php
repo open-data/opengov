@@ -2,35 +2,75 @@
 
 namespace Drupal\Tests\user\Kernel\Controller;
 
-use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Controller\UserController;
-use Drupal\user\UserDataInterface;
-use Drupal\user\UserStorageInterface;
-use Psr\Log\LoggerInterface;
 
 /**
- * @coversDefaultClass \Drupal\user\Controller\UserController
+ * Tests for the User controller.
+ *
  * @group user
+ *
+ * @coversDefaultClass \Drupal\user\Controller\UserController
  */
 class UserControllerTest extends KernelTestBase {
 
+  use UserCreationTrait;
+
   /**
-   * @group legacy
-   * @expectedDeprecation Calling Drupal\user\Controller\UserController::__construct without the $flood parameter is deprecated in drupal:8.8.0 and is required in drupal:9.0.0. See https://www.drupal.org/node/1681832
+   * The user controller.
+   *
+   * @var \Drupal\user\Controller\UserController
    */
-  public function testConstructorDeprecations() {
-    $date_formatter = $this->prophesize(DateFormatterInterface::class);
-    $user_storage = $this->prophesize(UserStorageInterface::class);
-    $user_data = $this->prophesize(UserDataInterface::class);
-    $logger = $this->prophesize(LoggerInterface::class);
-    $controller = new UserController(
-      $date_formatter->reveal(),
-      $user_storage->reveal(),
-      $user_data->reveal(),
-      $logger->reveal()
-    );
-    $this->assertNotNull($controller);
+  protected $userController;
+
+  /**
+   * The logged in user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $user;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static $modules = [
+    'user',
+  ];
+
+  /**
+   * {@inheritDoc}
+   */
+  protected function setUp(): void {
+
+    parent::setUp();
+
+    $this->userController = UserController::create(\Drupal::getContainer());
+
+    // Create and log in a user.
+    $this->user = $this->setUpCurrentUser();
+
+  }
+
+  /**
+   * Tests the redirection to a user edit page.
+   *
+   * @covers ::userEditPage
+   */
+  public function testUserEditPage() {
+
+    $response = $this->userController->userEditPage();
+
+    // Ensure the response is directed to the correct user edit page.
+    $edit_url = Url::fromRoute('entity.user.edit_form', [
+      'user' => $this->user->id(),
+    ])->setAbsolute()
+      ->toString();
+    $this->assertEquals($edit_url, $response->getTargetUrl());
+
+    $this->assertEquals(301, $response->getStatusCode());
+
   }
 
 }

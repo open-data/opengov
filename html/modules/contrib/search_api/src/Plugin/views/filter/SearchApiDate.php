@@ -47,7 +47,15 @@ class SearchApiDate extends Date {
   }
 
   /**
-   * {@inheritdoc}
+   * Defines the operators supported by this filter.
+   *
+   * @return array[]
+   *   An associative array of operators, keyed by operator ID, with information
+   *   about that operator:
+   *   - title: The full title of the operator (translated).
+   *   - short: The short title of the operator (translated).
+   *   - method: The method to call for this operator in query().
+   *   - values: The number of values that this operator expects/needs.
    */
   public function operators() {
     $operators = parent::operators();
@@ -61,21 +69,6 @@ class SearchApiDate extends Date {
   public function acceptExposedInput($input) {
     if (empty($this->options['exposed'])) {
       return TRUE;
-    }
-
-    // Unfortunately, this is necessary due to a bug in our parent filter. See
-    // #2704077.
-    if (!empty($this->options['expose']['identifier'])) {
-      $value = &$input[$this->options['expose']['identifier']];
-      if (!is_array($value)) {
-        $value = [
-          'value' => $value,
-        ];
-      }
-      $value += [
-        'min' => '',
-        'max' => '',
-      ];
     }
 
     $return = parent::acceptExposedInput($input);
@@ -95,7 +88,12 @@ class SearchApiDate extends Date {
    * {@inheritdoc}
    */
   protected function opBetween($field) {
-    if ($this->value['type'] == 'offset') {
+    if (!empty($this->value['max'])
+        && strpos($this->value['max'], ':') === FALSE) {
+      // No time was specified, so make the date range inclusive.
+      $this->value['max'] .= ' +1 day';
+    }
+    if (($this->value['type'] ?? '') == 'offset') {
       $time = $this->getTimeService()->getRequestTime();
       $a = strtotime($this->value['min'], $time);
       $b = strtotime($this->value['max'], $time);
@@ -111,11 +109,17 @@ class SearchApiDate extends Date {
   }
 
   /**
-   * {@inheritdoc}
+   * Filters by a simple operator (=, !=, >, etc.).
+   *
+   * @param string $field
+   *   The views field.
    */
   protected function opSimple($field) {
+    if (!isset($this->value['value']) || $this->value['value'] === '') {
+      return;
+    }
     $value = intval(strtotime($this->value['value'], 0));
-    if (!empty($this->value['type']) && $this->value['type'] == 'offset') {
+    if (($this->value['type'] ?? '') == 'offset') {
       $time = $this->getTimeService()->getRequestTime();
       $value = strtotime($this->value['value'], $time);
     }

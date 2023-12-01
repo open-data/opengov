@@ -64,6 +64,12 @@ class CharactersTest extends UnitTestCase {
         'Password1234',
         TRUE,
       ],
+      [
+        4,
+        'letter',
+        'password',
+        TRUE,
+      ],
       // Failing conditions.
       [
         1,
@@ -87,6 +93,12 @@ class CharactersTest extends UnitTestCase {
         4,
         'numeric',
         'Password123',
+        FALSE,
+      ],
+      [
+        4,
+        'letter',
+        'pass',
         FALSE,
       ],
     ];

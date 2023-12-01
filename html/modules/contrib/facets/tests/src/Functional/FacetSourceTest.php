@@ -12,7 +12,7 @@ class FacetSourceTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'views',
     'search_api',
     'facets',
@@ -23,7 +23,7 @@ class FacetSourceTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Make sure we're logged in with a user that has sufficient permissions.
@@ -45,7 +45,7 @@ class FacetSourceTest extends FacetsTestBase {
     ];
     $this->assertSession()->fieldExists('filter_key');
     $this->assertSession()->fieldExists('url_processor');
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->statusCodeEquals(200);
 
     $this->assertSession()->addressEquals('admin/config/search/facets');
@@ -68,7 +68,7 @@ class FacetSourceTest extends FacetsTestBase {
     ];
     $this->assertSession()->fieldExists('filter_key');
     $this->assertSession()->fieldExists('url_processor');
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->statusCodeEquals(200);
 
     $this->assertSession()->addressEquals('admin/config/search/facets');
@@ -96,7 +96,7 @@ class FacetSourceTest extends FacetsTestBase {
       'breadcrumb[active]' => TRUE,
       'breadcrumb[group]' => TRUE,
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->statusCodeEquals(200);
 
     $this->assertSession()->addressEquals('admin/config/search/facets');

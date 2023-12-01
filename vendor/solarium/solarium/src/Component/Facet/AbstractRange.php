@@ -1,11 +1,18 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Facet;
 
 /**
  * Facet range.
  *
- * @see http://wiki.apache.org/solr/SimpleFacetParameters#Facet_by_Range
+ * @see https://solr.apache.org/guide/faceting.html#range-faceting
  */
 abstract class AbstractRange extends AbstractFacet
 {
@@ -263,11 +270,13 @@ abstract class AbstractRange extends AbstractFacet
     /**
      * @param \Solarium\Component\Facet\Pivot|array $pivot
      *
-     * @return \Solarium\Core\Configurable
+     * @return self Provides fluent interface
      */
-    public function setPivot($pivot)
+    public function setPivot($pivot): self
     {
-        return $this->setOption('pivot', $pivot);
+        $this->setOption('pivot', $pivot);
+
+        return $this;
     }
 
     /**
@@ -281,8 +290,8 @@ abstract class AbstractRange extends AbstractFacet
     /**
      * Initialize options.
      *
-     * Several options need some extra checks or setup work, for these options
-     * the setters are called.
+     * {@internal Several options need some extra checks or setup work,
+     *            for these options the setters are called.}
      */
     protected function init()
     {

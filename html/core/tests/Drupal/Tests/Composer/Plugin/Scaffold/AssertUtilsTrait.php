@@ -2,10 +2,13 @@
 
 namespace Drupal\Tests\Composer\Plugin\Scaffold;
 
+use Drupal\Tests\Traits\PhpUnitWarnings;
+
 /**
  * Convenience class for creating fixtures.
  */
 trait AssertUtilsTrait {
+  use PhpUnitWarnings;
 
   /**
    * Asserts that a given file exists and is/is not a symlink.
@@ -20,7 +23,7 @@ trait AssertUtilsTrait {
   protected function assertScaffoldedFile($path, $is_link, $contents_contains) {
     $this->assertFileExists($path);
     $contents = file_get_contents($path);
-    $this->assertContains($contents_contains, basename($path) . ': ' . $contents);
+    $this->assertStringContainsString($contents_contains, basename($path) . ': ' . $contents);
     $this->assertSame($is_link, is_link($path));
   }
 
@@ -38,7 +41,7 @@ trait AssertUtilsTrait {
       return;
     }
     $contents = file_get_contents($path);
-    $this->assertNotContains($contents_not_contains, $contents, basename($path) . ' contains unexpected contents:');
+    $this->assertStringNotContainsString($contents_not_contains, $contents, basename($path) . ' contains unexpected contents:');
   }
 
 }

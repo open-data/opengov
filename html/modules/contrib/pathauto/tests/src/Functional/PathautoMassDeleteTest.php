@@ -4,6 +4,7 @@ namespace Drupal\Tests\pathauto\Functional;
 
 use Drupal\pathauto\PathautoState;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Component\Render\FormattableMarkup;
 
 /**
  * Mass delete functionality tests.
@@ -15,11 +16,16 @@ class PathautoMassDeleteTest extends BrowserTestBase {
   use PathautoTestHelperTrait;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stable';
+
+  /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['node', 'taxonomy', 'pathauto'];
+  protected static $modules = ['node', 'taxonomy', 'pathauto'];
 
   /**
    * Admin user.
@@ -52,7 +58,7 @@ class PathautoMassDeleteTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $permissions = [
@@ -71,7 +77,7 @@ class PathautoMassDeleteTest extends BrowserTestBase {
   /**
    * Tests the deletion of all the aliases.
    */
-  function testDeleteAll() {
+  public function testDeleteAll() {
     /** @var \Drupal\pathauto\AliasStorageHelperInterface $alias_storage_helper */
     $alias_storage_helper = \Drupal::service('pathauto.alias_storage_helper');
 
@@ -81,9 +87,10 @@ class PathautoMassDeleteTest extends BrowserTestBase {
       'delete[all_aliases]' => TRUE,
       'options[keep_custom_aliases]' => FALSE,
     ];
-    $this->drupalPostForm('admin/config/search/path/delete_bulk', $edit, t('Delete aliases now!'));
-    $this->assertText(t('All of your path aliases have been deleted.'));
-    $this->assertUrl('admin/config/search/path/delete_bulk');
+    $this->drupalGet('admin/config/search/path/delete_bulk');
+    $this->submitForm($edit, 'Delete aliases now!');
+    $this->assertSession()->pageTextContains('All of your path aliases have been deleted.');
+    $this->assertSession()->addressEquals('admin/config/search/path/delete_bulk');
 
     // Make sure that all of them are actually deleted.
     $this->assertEquals(0, $alias_storage_helper->countAll(), 'All the aliases have been deleted.');
@@ -97,9 +104,10 @@ class PathautoMassDeleteTest extends BrowserTestBase {
         'delete[plugins][' . $pathauto_plugin . ']' => TRUE,
         'options[keep_custom_aliases]' => FALSE,
       ];
-      $this->drupalPostForm('admin/config/search/path/delete_bulk', $edit, t('Delete aliases now!'));
+      $this->drupalGet('admin/config/search/path/delete_bulk');
+      $this->submitForm($edit, 'Delete aliases now!');
       $alias_type = $manager->createInstance($pathauto_plugin);
-      $this->assertRaw(t('All of your %label path aliases have been deleted.', ['%label' => $alias_type->getLabel()]));
+      $this->assertSession()->responseContains(new FormattableMarkup('All of your %label path aliases have been deleted.', ['%label' => $alias_type->getLabel()]));
       // Check that the aliases were actually deleted.
       foreach ($this->{$attribute} as $entity) {
         $this->assertNoEntityAlias($entity);
@@ -123,9 +131,10 @@ class PathautoMassDeleteTest extends BrowserTestBase {
       'delete[all_aliases]' => TRUE,
       'options[keep_custom_aliases]' => TRUE,
     ];
-    $this->drupalPostForm('admin/config/search/path/delete_bulk', $edit, t('Delete aliases now!'));
-    $this->assertText(t('All of your automatically generated path aliases have been deleted.'));
-    $this->assertUrl('admin/config/search/path/delete_bulk');
+    $this->drupalGet('admin/config/search/path/delete_bulk');
+    $this->submitForm($edit, 'Delete aliases now!');
+    $this->assertSession()->pageTextContains('All of your automatically generated path aliases have been deleted.');
+    $this->assertSession()->addressEquals('admin/config/search/path/delete_bulk');
 
     // Make sure that only custom aliases and aliases with no information about
     // their state still exist.
@@ -138,7 +147,7 @@ class PathautoMassDeleteTest extends BrowserTestBase {
   /**
    * Helper function to generate aliases.
    */
-  function generateAliases() {
+  public function generateAliases() {
     // Delete all aliases to avoid duplicated aliases. They will be recreated
     // below.
     $this->deleteAllAliases();
@@ -176,7 +185,7 @@ class PathautoMassDeleteTest extends BrowserTestBase {
       }
     }
     else {
-      foreach ($this->accounts as $id => $account) {
+      foreach ($this->accounts as $account) {
         $account->save();
       }
     }

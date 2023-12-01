@@ -114,7 +114,6 @@ _:-ms-fullscreen,
 }
 
 .form-element[disabled] {
-  -webkit-opacity: 1;
   color: var(--input--disabled-fg-color);
   border-color: var(--input--disabled-border-color);
   background-color: var(--input--disabled-bg-color);
@@ -139,4 +138,8 @@ _:-ms-fullscreen,
   .form-item__label + .form-element {
     margin-top: 0;
   }
+}
+
+.form-element--type-textarea.error + .ck-editor > .ck-editor__main {
+  border: var(--input--error-border-size) solid var(--input--error-border-color);
 }

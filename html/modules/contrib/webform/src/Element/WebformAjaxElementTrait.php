@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 
 /**
- * Trait class for element Ajax support.
+ * Trait for ajax element support.
  *
  * @see \Drupal\webform_test_element\Plugin\WebformElement\WebformTestElementProperties
  */

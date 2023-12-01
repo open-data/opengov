@@ -4,6 +4,9 @@ namespace Drupal\ctools\Testing;
 
 use Drupal\Component\Render\FormattableMarkup;
 
+/**
+ * Trait used for common entity creation methods.
+ */
 trait EntityCreationTrait {
 
   /**
@@ -25,16 +28,18 @@ trait EntityCreationTrait {
    * @return \Drupal\Core\Entity\EntityInterface
    *   Created entity.
    */
-  protected function createEntity($entity_type, array $values = array()) {
+  protected function createEntity($entity_type, array $values = []) {
     $storage = $this->getEntityTypeManager()->getStorage($entity_type);
     $entity = $storage->create($values);
     $status = $entity->save();
     \Drupal::service('router.builder')->rebuild();
 
-    if ($this instanceof \PHPUnit_Framework_TestCase) {
-      $this->assertSame(SAVED_NEW, $status, (new FormattableMarkup('Created entity %id of type %type.', ['%id' => $entity->id(), '%type' => $entity_type]))->__toString());
+    if ($this instanceof \PHPUnit\Framework\TestCase) {
+      // phpcs:ignore
+      $this->assertSame(SAVED_NEW, $status, (new FormattableMarkup('Created entity %id of type %type.', ['%id' => $entity->id(), '%type' => $entity_type]))->__toString()); //psp
     }
     else {
+      // phpcs:ignore
       $this->assertEquals(SAVED_NEW, $status, (new FormattableMarkup('Created entity %id of type %type.', ['%id' => $entity->id(), '%type' => $entity_type]))->__toString());
     }
 
@@ -42,7 +47,10 @@ trait EntityCreationTrait {
   }
 
   /**
-   * @return \Drupal\Core\Entity\EntityTypeManagerInterface
+   * Retrieves the Entity Type Manager for the Entity.
+   *
+   * @return \Drupal\Core\Entity\EntityTypeManager|\Drupal\Core\Entity\EntityTypeManagerInterface|object|null
+   * @throws \Exception
    */
   protected function getEntityTypeManager() {
     if (!isset($this->entityTypeManager)) {

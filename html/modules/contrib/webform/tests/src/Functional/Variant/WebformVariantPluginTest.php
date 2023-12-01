@@ -28,7 +28,7 @@ class WebformVariantPluginTest extends WebformBrowserTestBase {
     $webform = Webform::load('contact');
 
     // Check initial dependencies.
-    $this->assertEqual($webform->getDependencies(), ['module' => ['webform']]);
+    $this->assertEquals($webform->getDependencies(), ['module' => ['webform']]);
 
     /** @var \Drupal\webform\Plugin\WebformVariantManagerInterface $variant_manager */
     $variant_manager = $this->container->get('plugin.manager.webform.variant');
@@ -47,7 +47,7 @@ class WebformVariantPluginTest extends WebformBrowserTestBase {
     $webform->save();
 
     // Check that variant has been added to the dependencies.
-    $this->assertEqual($webform->getDependencies(), ['module' => ['webform_test_variant', 'webform']]);
+    $this->assertEquals($webform->getDependencies(), ['module' => ['webform_test_variant', 'webform']]);
 
     // Uninstall the webform_test_variant.module which will also remove the
     // test variant.
@@ -55,8 +55,8 @@ class WebformVariantPluginTest extends WebformBrowserTestBase {
     $webform = Webform::load('contact');
 
     // Check that variant was removed from the dependencies.
-    $this->assertNotEqual($webform->getDependencies(), ['module' => ['webform_test_variant', 'webform']]);
-    $this->assertEqual($webform->getDependencies(), ['module' => ['webform']]);
+    $this->assertNotEquals($webform->getDependencies(), ['module' => ['webform_test_variant', 'webform']]);
+    $this->assertEquals($webform->getDependencies(), ['module' => ['webform']]);
   }
 
 }

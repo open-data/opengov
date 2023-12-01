@@ -1,4 +1,5 @@
 <?php
+
 namespace Drush\TestTraits;
 
 /**
@@ -59,7 +60,7 @@ trait OutputUtilsTrait
      * @return string
      *   The simplified output.
      */
-    protected function simplifyOutput($output)
+    protected function simplifyOutput(string $output)
     {
         // We do not care if Drush inserts a -t or not in the string. Depends on whether there is a tty.
         $output = preg_replace('# -t #', ' ', $output);
@@ -147,14 +148,14 @@ trait OutputUtilsTrait
      * @param string $key
      *   Optionally return only a top level element from the json object.
      *
-     * @return object
-     *   Decoded object.
+     * @return array
+     *   Decoded array.
      */
     public function getOutputFromJSON($key = null)
     {
         $output = $this->getOutput();
         $json = json_decode($output, true);
-        if (!$json) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \Exception("No json output received.\n\nOutput:\n\n$output\n\nStderr:\n\n" . $this->getErrorOutput());
         }
         if (isset($key)) {

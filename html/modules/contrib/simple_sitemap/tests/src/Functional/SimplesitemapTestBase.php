@@ -18,7 +18,7 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
    *
    * @var string[]
    */
-  public static $modules = [
+  protected static $modules = [
     'simple_sitemap',
     'node',
     'content_translation',
@@ -27,7 +27,7 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
   /**
    * Simple sitemap generator.
    *
-   * @var \Drupal\simple_sitemap\Simplesitemap
+   * @var \Drupal\simple_sitemap\Manager\Generator
    */
   protected $generator;
 
@@ -59,26 +59,24 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
    */
   protected $node2;
 
+  /**
+   * The default sitemap URL.
+   *
+   * @var string
+   */
   protected $defaultSitemapUrl = 'sitemap.xml';
 
   /**
-   * Use the testing profile.
+   * Use the stable9 theme.
    *
    * @var string
    */
-  protected $profile = 'testing';
-
-  /**
-   * Use the classy theme.
-   *
-   * @var string
-   */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'stable9';
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->generator = $this->container->get('simple_sitemap.generator');
@@ -127,6 +125,14 @@ abstract class SimplesitemapTestBase extends BrowserTestBase {
     $this->assertGreaterThan(1, $nr_found);
   }
 
+  /**
+   * Helper function to create languages.
+   *
+   * @param array|string $langcodes
+   *   An array of language codes or the single language code.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
   protected function addLanguages($langcodes = 'de') {
     foreach ((array) $langcodes as $langcode) {
       ConfigurableLanguage::createFromLangcode($langcode)

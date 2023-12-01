@@ -6,6 +6,7 @@ namespace Drupal\Tests\search_api_solr\Kernel;
  * Tests the document datasources using the solr techproducts example.
  *
  * @group search_api_solr
+ * @group not_solr_3
  */
 class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
 
@@ -36,7 +37,8 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
   public function testBackend() {
     try {
       $this->firstSearch();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->markTestSkipped('Techproducts example not reachable.');
     }
 
@@ -49,7 +51,7 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
     $this->assertEquals(1, $results->getResultCount(), 'Search for »Technology« returned correct number of results.');
     /** @var \Drupal\search_api\Item\ItemInterface $result */
     foreach ($results as $result) {
-      $this->assertContains('<strong>Technology</strong>', (string) $result->getExtraData('highlighted_fields', ['manu' => ['']])['manu'][0]);
+      $this->assertStringContainsString('<strong>Technology</strong>', (string) $result->getExtraData('highlighted_fields', ['manu' => ['']])['manu'][0]);
       $this->assertEmpty($result->getExtraData('highlighted_keys', []));
       $this->assertEquals('… A-DATA <strong>Technology</strong> Inc. …', $result->getExcerpt());
     }
@@ -64,7 +66,7 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
     $this->assertEquals(1, $results->getResultCount(), 'Search for »Technology« returned correct number of results.');
     /** @var \Drupal\search_api\Item\ItemInterface $result */
     foreach ($results as $result) {
-      $this->assertContains('<strong>Technology</strong>', (string) $result->getExtraData('highlighted_fields', ['manu' => ['']])['manu'][0]);
+      $this->assertStringContainsString('<strong>Technology</strong>', (string) $result->getExtraData('highlighted_fields', ['manu' => ['']])['manu'][0]);
       $this->assertEquals(['Technology'], $result->getExtraData('highlighted_keys', []));
       $this->assertEquals('… A-DATA <strong>Technology</strong> Inc. …', $result->getExcerpt());
     }
@@ -102,6 +104,11 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
     ], array_keys($result->getResultItems()), 'Search for all tech products, 3 rows limit via query');
   }
 
+  /**
+   * @group not_solr3
+   * @group not_solr4
+   * @group not_solr5
+   */
   public function testStreamingExpressions() {
     if ('false' === SOLR_CLOUD) {
       $this->markTestSkipped('This test requires a Solr Cloud setup.');
@@ -109,7 +116,8 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
 
     try {
       $this->firstSearch();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->markTestSkipped('Techproducts example not reachable.');
     }
 

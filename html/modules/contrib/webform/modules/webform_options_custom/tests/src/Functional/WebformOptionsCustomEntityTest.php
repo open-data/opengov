@@ -27,23 +27,25 @@ class WebformOptionsCustomEntityTest extends WebformBrowserTestBase {
    * Test options custom entity.
    */
   public function testOptionsCustomEntity() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('test_element_options_custom_ent');
 
     $node = Node::load(1);
     $this->drupalGet('/webform/test_element_options_custom_ent');
 
     // Check that data-option-value is populated with the node ids.
-    $this->assertRaw('<div data-name="Room 1" data-option-value="1">Room 1</div>');
-    $this->assertRaw('<div data-name="Room 2" data-option-value="2">Room 2</div>');
-    $this->assertRaw('<div data-name="Room 3" data-option-value="3">Room 3</div>');
+    $assert_session->responseContains('<div data-name="Room 1" data-option-value="1">Room 1</div>');
+    $assert_session->responseContains('<div data-name="Room 2" data-option-value="2">Room 2</div>');
+    $assert_session->responseContains('<div data-name="Room 3" data-option-value="3">Room 3</div>');
 
     // Check that data-descriptions are populated with the node titles.
-    $this->assertRaw('data-descriptions="{&quot;1&quot;:&quot;This is room number #1. [1 remaining]&quot;,&quot;2&quot;:&quot;This is room number #2. [1 remaining]&quot;,&quot;3&quot;:&quot;This is room number #3. [1 remaining]&quot;}"');
+    $assert_session->responseContains('data-descriptions="{&quot;1&quot;:&quot;This is room number #1. [1 remaining]&quot;,&quot;2&quot;:&quot;This is room number #2. [1 remaining]&quot;,&quot;3&quot;:&quot;This is room number #3. [1 remaining]&quot;}"');
 
     // Check that node link is used in the preview.
     // Please note that the description is used in the node's title.
     $this->postSubmission($webform, ['webform_options_custom_entity[select][]' => '1'], 'Preview');
-    $this->assertRaw('<a href="' . $node->toUrl()->setAbsolute()->toString() . '" hreflang="en">Room 1 -- This is room number #1.</a>');
+    $assert_session->responseContains('<a href="' . $node->toUrl()->setAbsolute()->toString() . '" hreflang="en">Room 1 -- This is room number #1.</a>');
   }
 
 }

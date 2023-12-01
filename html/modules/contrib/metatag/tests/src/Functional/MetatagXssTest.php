@@ -3,13 +3,16 @@
 namespace Drupal\Tests\metatag\Functional;
 
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Ensures that meta tags do not allow xss vulnerabilities.
  *
  * @group metatag
  */
-class MetatagXssTest extends BrowserTestBase {
+class XssTest extends BrowserTestBase {
+
+  use StringTranslationTrait;
 
   /**
    * String that causes an alert when page titles aren't filtered for xss.
@@ -59,7 +62,7 @@ class MetatagXssTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'node',
     'views',
     'system',
@@ -72,7 +75,12 @@ class MetatagXssTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     // Create a user that can manage content types and create content.
@@ -93,18 +101,21 @@ class MetatagXssTest extends BrowserTestBase {
     $this->drupalLogin($this->adminUser);
 
     // Set up a content type.
-    $this->drupalCreateContentType(['type' => 'metatag_node', 'name' => 'Test Content Type']);
+    $this->drupalCreateContentType([
+      'type' => 'metatag_node',
+      'name' => 'Test Content Type',
+    ]);
 
     // Add a metatag field to the content type.
     $this->drupalGet('admin/structure/types/manage/metatag_node/fields/add-field');
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $edit = [
       'label' => 'Metatag',
       'field_name' => 'metatag_field',
       'new_storage_type' => 'metatag',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save and continue'));
-    $this->drupalPostForm(NULL, [], t('Save field settings'));
+    $this->submitForm($edit, $this->t('Save and continue'));
+    $this->submitForm([], $this->t('Save field settings'));
   }
 
   /**
@@ -112,104 +123,105 @@ class MetatagXssTest extends BrowserTestBase {
    */
   public function testXssMetatagConfig() {
     $this->drupalGet('admin/config/search/metatag/global');
-    $this->assertResponse(200);
+    $session = $this->assertSession();
+    $session->statusCodeEquals(200);
     $values = [
       'title' => $this->xssTitleString,
       'abstract' => $this->xssString,
       'image_src' => $this->xssImageString,
     ];
-    $this->drupalPostForm(NULL, $values, 'Save');
-    $this->assertText('Saved the Global Metatag defaults.');
+    $this->submitForm($values, 'Save');
+    $session->pageTextContains('Saved the Global Metatag defaults.');
     $this->rebuildAll();
 
     // Load the Views-based front page.
     $this->drupalGet('node');
-    $this->assertResponse(200);
-    $this->assertText(t('No front page content has been created yet.'));
+    $session->statusCodeEquals(200);
+    $session->pageTextContains('No front page content has been created yet.');
 
     // Check for the title tag, which will have the HTML tags removed and then
     // be lightly HTML encoded.
-    $this->assertEscaped(strip_tags($this->xssTitleString));
-    $this->assertNoRaw($this->xssTitleString);
+    $session->assertEscaped(strip_tags($this->xssTitleString));
+    $session->responseNotContains($this->xssTitleString);
 
     // Check for the basic meta tag.
-    $this->assertRaw($this->escapedXssTag);
-    $this->assertNoRaw($this->xssString);
+    $session->responseContains($this->escapedXssTag);
+    $session->responseNotContains($this->xssString);
 
     // Check for the image meta tag.
-    $this->assertRaw($this->escapedXssImageTag);
-    $this->assertNoRaw($this->xssImageString);
+    $session->responseContains($this->escapedXssImageTag);
+    $session->responseNotContains($this->xssImageString);
   }
 
   /**
    * Verify XSS injected in the entity metatag override field is not rendered.
    */
   public function testXssEntityOverride() {
-    $save_label = (floatval(\Drupal::VERSION) <= 8.3) ? t('Save and publish') : t('Save');
 
     $this->drupalGet('node/add/metatag_node');
-    $this->assertResponse(200);
+    $session = $this->assertSession();
+    $session->statusCodeEquals(200);
     $edit = [
       'title[0][value]' => $this->randomString(32),
       'field_metatag_field[0][basic][title]' => $this->xssTitleString,
       'field_metatag_field[0][basic][abstract]' => $this->xssString,
       'field_metatag_field[0][advanced][image_src]' => $this->xssImageString,
     ];
-    $this->drupalPostForm(NULL, $edit, $save_label);
+    $this->submitForm($edit, 'Save');
 
     // Check for the title tag, which will have the HTML tags removed and then
     // be lightly HTML encoded.
-    $this->assertEscaped(strip_tags($this->xssTitleString));
-    $this->assertNoRaw($this->xssTitleString);
+    $session->assertEscaped(strip_tags($this->xssTitleString));
+    $session->responseNotContains($this->xssTitleString);
 
     // Check for the basic meta tag.
-    $this->assertRaw($this->escapedXssTag);
-    $this->assertNoRaw($this->xssString);
+    $session->responseContains($this->escapedXssTag);
+    $session->responseNotContains($this->xssString);
 
     // Check for the image meta tag.
-    $this->assertRaw($this->escapedXssImageTag);
-    $this->assertNoRaw($this->xssImageString);
+    $session->responseContains($this->escapedXssImageTag);
+    $session->responseNotContains($this->xssImageString);
   }
 
   /**
    * Verify XSS injected in the entity titles are not rendered.
    */
   public function testXssEntityTitle() {
-    $save_label = (floatval(\Drupal::VERSION) <= 8.3) ? t('Save and publish') : t('Save');
 
     $this->drupalGet('node/add/metatag_node');
-    $this->assertResponse(200);
+    $session = $this->assertSession();
+    $session->statusCodeEquals(200);
     $edit = [
       'title[0][value]' => $this->xssTitleString,
       'body[0][value]' => $this->randomString() . ' ' . $this->randomString(),
     ];
-    $this->drupalPostForm(NULL, $edit, $save_label);
+    $this->submitForm($edit, 'Save');
 
     // Check for the title tag, which will have the HTML tags removed and then
     // be lightly HTML encoded.
-    $this->assertEscaped(strip_tags($this->xssTitleString));
-    $this->assertNoRaw($this->xssTitleString);
+    $session->assertEscaped(strip_tags($this->xssTitleString));
+    $session->responseNotContains($this->xssTitleString);
   }
 
   /**
    * Verify XSS injected in the entity fields are not rendered.
    */
   public function testXssEntityBody() {
-    $save_label = (floatval(\Drupal::VERSION) <= 8.3) ? t('Save and publish') : t('Save');
 
     $this->drupalGet('node/add/metatag_node');
-    $this->assertResponse(200);
+    $session = $this->assertSession();
+    $session->statusCodeEquals(200);
     $edit = [
       'title[0][value]' => $this->randomString(),
       'body[0][value]' => $this->xssTitleString,
     ];
-    $this->drupalPostForm(NULL, $edit, $save_label);
+    $this->submitForm($edit, 'Save');
 
     // Check the body text.
-    // {@code}
+    // @code
     // $this->assertNoTitle($this->xssTitleString);
-    // {@endcode}
-    $this->assertNoRaw($this->xssTitleString);
+    // @endcode
+    $session->responseNotContains($this->xssTitleString);
   }
 
 }

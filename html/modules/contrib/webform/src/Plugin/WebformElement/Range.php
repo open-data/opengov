@@ -48,7 +48,7 @@ class Range extends NumericBase {
     return $properties;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -67,7 +67,7 @@ class Range extends NumericBase {
       return;
     }
 
-    $webform_key = (isset($element['#webform_key'])) ? $element['#webform_key'] : 'range';
+    $webform_key = $element['#webform_key'] ?? 'range';
 
     if (in_array($element['#output'], ['above', 'below'])) {
       $element += ['#output__attributes' => []];

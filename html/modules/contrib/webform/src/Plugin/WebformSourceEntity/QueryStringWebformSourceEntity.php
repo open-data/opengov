@@ -3,16 +3,9 @@
 namespace Drupal\webform\Plugin\WebformSourceEntity;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
-use Drupal\webform\Plugin\WebformSourceEntityInterface;
-use Drupal\webform\WebformEntityReferenceManagerInterface;
+use Drupal\webform\Plugin\WebformSourceEntityBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Detect source entity by examining query string.
@@ -23,7 +16,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *   weight = 0
  * )
  */
-class QueryStringWebformSourceEntity extends PluginBase implements WebformSourceEntityInterface, ContainerFactoryPluginInterface {
+class QueryStringWebformSourceEntity extends WebformSourceEntityBase {
 
   /**
    * Entity type manager service.
@@ -33,7 +26,7 @@ class QueryStringWebformSourceEntity extends PluginBase implements WebformSource
   protected $entityTypeManager;
 
   /**
-   * Current route match service.
+   * The current route match.
    *
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
@@ -61,49 +54,16 @@ class QueryStringWebformSourceEntity extends PluginBase implements WebformSource
   protected $webformEntityReferenceManager;
 
   /**
-   * QueryStringWebformSourceEntity constructor.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The "entity_type.manager" service.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The "current_route_match" service.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The "request_stack" service.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
-   *   The "language_manager" service.
-   * @param \Drupal\webform\WebformEntityReferenceManagerInterface $webform_entity_reference_manager
-   *   The "webform.entity_reference_manager" service.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, RouteMatchInterface $route_match, RequestStack $request_stack, LanguageManagerInterface $language_manager, WebformEntityReferenceManagerInterface $webform_entity_reference_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->entityTypeManager = $entity_type_manager;
-    $this->routeMatch = $route_match;
-    $this->request = $request_stack->getCurrentRequest();
-    $this->languageManager = $language_manager;
-    $this->webformEntityReferenceManager = $webform_entity_reference_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity_type.manager'),
-      $container->get('current_route_match'),
-      $container->get('request_stack'),
-      $container->get('language_manager'),
-      $container->get('webform.entity_reference_manager')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->routeMatch = $container->get('current_route_match');
+    $instance->request = $container->get('request_stack')->getCurrentRequest();
+    $instance->languageManager = $container->get('language_manager');
+    $instance->webformEntityReferenceManager = $container->get('webform.entity_reference_manager');
+    return $instance;
   }
 
   /**

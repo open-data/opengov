@@ -12,7 +12,8 @@ use Drupal\search\Plugin\ConfigurableSearchPluginBase;
  *
  * @SearchPlugin(
  *   id = "search_extra_type_search",
- *   title = @Translation("Dummy search type")
+ *   title = @Translation("Dummy search type"),
+ *   use_admin_theme = TRUE,
  * )
  */
 class SearchExtraTypeSearch extends ConfigurableSearchPluginBase {
@@ -25,6 +26,7 @@ class SearchExtraTypeSearch extends ConfigurableSearchPluginBase {
       $parameters['search_conditions'] = '';
     }
     parent::setSearch($keywords, $parameters, $attributes);
+    return $this;
   }
 
   /**
@@ -90,16 +92,16 @@ class SearchExtraTypeSearch extends ConfigurableSearchPluginBase {
     // Output form for defining rank factor weights.
     $form['extra_type_settings'] = [
       '#type' => 'fieldset',
-      '#title' => t('Extra type settings'),
+      '#title' => $this->t('Extra type settings'),
       '#tree' => TRUE,
     ];
 
     $form['extra_type_settings']['boost'] = [
       '#type' => 'select',
-      '#title' => t('Boost method'),
+      '#title' => $this->t('Boost method'),
       '#options' => [
-        'bi' => t('Bistromathic'),
-        'ii' => t('Infinite Improbability'),
+        'bi' => $this->t('Bistro mathematics'),
+        'ii' => $this->t('Infinite Improbability'),
       ],
       '#default_value' => $this->configuration['boost'],
     ];

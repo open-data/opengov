@@ -33,10 +33,10 @@ elements: |
       '#type': textfield
       '#required': true
       '#default_value': Smith
-    gender:
+    sex:
       '#type': radios
-      '#title': Gender
-      '#options': gender
+      '#title': Sex
+      '#options': sex
       '#required': true
       '#default_value': Male
   contact:
@@ -61,7 +61,7 @@ elements: |
       '#type': textarea
       '#required': true
       '#default_value': 'Here is some feedback'
-  
+
 css: ''
 javascript: ''
 settings:
@@ -82,7 +82,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -103,6 +103,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -146,6 +149,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: 'webform_section'
+  wizard_page_title_tag: 'h3'
   preview: 1
   preview_label: ''
   preview_title: ''

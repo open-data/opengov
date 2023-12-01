@@ -58,13 +58,13 @@ class ViewsBootstrapCarousel extends StylePluginBase {
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
 
-    $fields = ['' => t('<None>')];
+    $fields = ['' => $this->t('<None>')];
     $fields += $this->displayHandler->getFieldLabels(TRUE);
 
     $form['interval'] = [
       '#type' => 'number',
       '#title' => $this->t('Interval'),
-      '#description' => t('The amount of time to delay between automatically cycling an item. If false, carousel will not automatically cycle.'),
+      '#description' => $this->t('The amount of time to delay between automatically cycling an item. If false, carousel will not automatically cycle.'),
       '#default_value' => $this->options['interval'],
     ];
 
@@ -97,32 +97,32 @@ class ViewsBootstrapCarousel extends StylePluginBase {
     $form['pause'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Pause on hover'),
-      '#description' => t('Pauses the cycling of the carousel on mouseenter and resumes the cycling of the carousel on mouseleave.'),
+      '#description' => $this->t('Pauses the cycling of the carousel on mouseenter and resumes the cycling of the carousel on mouseleave.'),
       '#default_value' => $this->options['pause'],
     ];
 
     $form['use_caption'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Add captions to your slides for add title and description over the image.'),
-      '#description' => 'https://getbootstrap.com/docs/4.0/components/carousel/#with-captions',
+      '#description' => $this->t('<a href=":docs">See Bootstrap documentation</a>', [':docs' => 'https://getbootstrap.com/docs/4.0/components/carousel/#with-captions']),
       '#default_value' => $this->options['use_caption'],
     ];
 
     $form['wrap'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Wrap'),
-      '#description' => t('The carousel should cycle continuously or have hard stops.'),
+      '#description' => $this->t('The carousel should cycle continuously or have hard stops.'),
       '#default_value' => $this->options['wrap'],
     ];
 
     $form['effect'] = [
       '#type' => 'select',
       '#title' => $this->t('Effect'),
-      '#description' => t('Transition effect (since bootstrap 4.1)') . '(https://getbootstrap.com/docs/4.1/components/carousel/#crossfade)' ,
+      '#description' => $this->t('Transition effect (since bootstrap 4.1). <a href=":docs">See Bootstrap documentation</a>', [':docs' => 'https://getbootstrap.com/docs/4.1/components/carousel/#crossfade']),
       '#options' => [
-        '' => t('No effect'),
-        'slide' => t('Slide'),
-        'slide carousel-fade' => t('Fade'),
+        '' => $this->t('No effect'),
+        'slide' => $this->t('Slide'),
+        'slide carousel-fade' => $this->t('Fade'),
       ],
       '#default_value' => $this->options['effect'],
     ];

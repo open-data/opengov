@@ -6,7 +6,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\EventSubscriber\AjaxResponseSubscriber;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
@@ -22,7 +22,10 @@ class AjaxResponseTest extends UnitTestCase {
    */
   protected $ajaxResponse;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     $this->ajaxResponse = new AjaxResponse();
   }
 
@@ -36,15 +39,15 @@ class AjaxResponseTest extends UnitTestCase {
     $command_one = $this->createMock('Drupal\Core\Ajax\CommandInterface');
     $command_one->expects($this->once())
       ->method('render')
-      ->will($this->returnValue(['command' => 'one']));
+      ->willReturn(['command' => 'one']);
     $command_two = $this->createMock('Drupal\Core\Ajax\CommandInterface');
     $command_two->expects($this->once())
       ->method('render')
-      ->will($this->returnValue(['command' => 'two']));
+      ->willReturn(['command' => 'two']);
     $command_three = $this->createMock('Drupal\Core\Ajax\CommandInterface');
     $command_three->expects($this->once())
       ->method('render')
-      ->will($this->returnValue(['command' => 'three']));
+      ->willReturn(['command' => 'three']);
 
     $this->ajaxResponse->addCommand($command_one);
     $this->ajaxResponse->addCommand($command_two);
@@ -80,7 +83,7 @@ class AjaxResponseTest extends UnitTestCase {
 
     $ajax_response_attachments_processor = $this->createMock('\Drupal\Core\Render\AttachmentsResponseProcessorInterface');
     $subscriber = new AjaxResponseSubscriber($ajax_response_attachments_processor);
-    $event = new FilterResponseEvent(
+    $event = new ResponseEvent(
       $this->createMock('\Symfony\Component\HttpKernel\HttpKernelInterface'),
       $request,
       HttpKernelInterface::MASTER_REQUEST,
@@ -88,7 +91,7 @@ class AjaxResponseTest extends UnitTestCase {
     );
     $subscriber->onResponse($event);
     $this->assertEquals('text/html; charset=utf-8', $response->headers->get('Content-Type'));
-    $this->assertEquals($response->getContent(), '<textarea>[]</textarea>');
+    $this->assertEquals('<textarea>[]</textarea>', $response->getContent());
   }
 
 }

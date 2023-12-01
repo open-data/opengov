@@ -4,7 +4,7 @@ namespace Drupal\Core\Config;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Lock\LockBackendInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * The import storage transformer helps to use the configuration management api.
@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * This service does not implement an interface and is final because it is not
  * meant to be replaced, extended or used in a different context.
  * Its single purpose is to transform a storage for the import step of a
- * configuration synchronisation by dispatching the import transformation event.
+ * configuration synchronization by dispatching the import transformation event.
  */
 final class ImportStorageTransformer {
 
@@ -26,7 +26,7 @@ final class ImportStorageTransformer {
   /**
    * The event dispatcher to get changes to the configuration.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
 
@@ -56,7 +56,7 @@ final class ImportStorageTransformer {
   /**
    * ImportStorageTransformer constructor.
    *
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection.
@@ -117,7 +117,7 @@ final class ImportStorageTransformer {
     self::replaceStorageContents($storage, $mutable);
 
     // Dispatch the event so that event listeners can alter the configuration.
-    $this->eventDispatcher->dispatch(ConfigEvents::STORAGE_TRANSFORM_IMPORT, new StorageTransformEvent($mutable));
+    $this->eventDispatcher->dispatch(new StorageTransformEvent($mutable), ConfigEvents::STORAGE_TRANSFORM_IMPORT);
 
     // Return the storage with the altered configuration.
     return $mutable;

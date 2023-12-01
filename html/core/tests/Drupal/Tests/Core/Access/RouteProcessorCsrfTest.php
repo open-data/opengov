@@ -28,7 +28,10 @@ class RouteProcessorCsrfTest extends UnitTestCase {
    */
   protected $processor;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     $this->csrfToken = $this->getMockBuilder('Drupal\Core\Access\CsrfTokenGenerator')
       ->disableOriginalConstructor()
       ->getMock();
@@ -37,8 +40,8 @@ class RouteProcessorCsrfTest extends UnitTestCase {
   }
 
   /**
- * Tests the processOutbound() method with no _csrf_token route requirement.
- */
+   * Tests the processOutbound() method with no _csrf_token route requirement.
+   */
   public function testProcessOutboundNoRequirement() {
     $this->csrfToken->expects($this->never())
       ->method('get');

@@ -7,7 +7,6 @@ use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api\Item\Field;
 use Drupal\search_api\Utility\Utility;
-use Drupal\system\Entity\Action;
 
 /**
  * Provides a base class for Drupal unit tests for processors.
@@ -17,7 +16,7 @@ abstract class ProcessorTestBase extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'node',
     'field',
@@ -61,7 +60,7 @@ abstract class ProcessorTestBase extends KernelTestBase {
    *   (optional) The plugin ID of the processor that should be set up for
    *   testing.
    */
-  public function setUp($processor = NULL) {
+  public function setUp($processor = NULL): void {
     parent::setUp();
 
     $this->installSchema('node', ['node_access']);
@@ -73,12 +72,6 @@ abstract class ProcessorTestBase extends KernelTestBase {
     $this->installSchema('comment', ['comment_entity_statistics']);
     $this->installConfig(['field']);
     $this->installConfig('search_api');
-
-    Action::create([
-      'id' => 'foo',
-      'label' => 'Foobaz',
-      'plugin' => 'comment_publish_action',
-    ])->save();
 
     // Do not use a batch for tracking the initial items after creating an
     // index when running the tests via the GUI. Otherwise, it seems Drupal's

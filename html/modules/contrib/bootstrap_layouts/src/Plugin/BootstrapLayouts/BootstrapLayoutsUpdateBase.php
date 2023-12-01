@@ -30,7 +30,7 @@ class BootstrapLayoutsUpdateBase extends PluginBase implements BootstrapLayoutsU
     $this->setContainer($container);
 
     // Retrieve the path to provider.
-    $this->path = drupal_get_path('module', $this->pluginDefinition['provider']) ?: drupal_get_path('theme', $this->pluginDefinition['provider']);
+    $this->path = \Drupal::service('extension.list.module')->getPath($this->pluginDefinition['provider']) ?: \Drupal::service('extension.list.theme')->getPath($this->pluginDefinition['provider']);
   }
 
   /**

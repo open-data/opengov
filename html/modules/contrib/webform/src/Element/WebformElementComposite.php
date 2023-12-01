@@ -130,7 +130,7 @@ class WebformElementComposite extends FormElement {
       '#min_items' => 1,
       '#header' => TRUE,
       '#add' => FALSE,
-      '#default_value' => (isset($element['#default_value'])) ? $element['#default_value'] : NULL,
+      '#default_value' => $element['#default_value'] ?? NULL,
       '#error_no_message' => TRUE,
       '#element' => [
         'settings' => [
@@ -340,7 +340,7 @@ class WebformElementComposite extends FormElement {
       $element_plugin = $element_manager->getElementInstance($composite_element);
 
       $t_args = [
-        '%title' => (isset($composite_element['#title'])) ? $composite_element['#title'] : $composite_element_key,
+        '%title' => $composite_element['#title'] ?? $composite_element_key,
         '@type' => $composite_element['#type'],
       ];
 

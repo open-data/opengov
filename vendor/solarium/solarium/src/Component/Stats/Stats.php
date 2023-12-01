@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Stats;
 
 use Solarium\Component\AbstractComponent;
@@ -13,7 +20,7 @@ use Solarium\Exception\InvalidArgumentException;
 /**
  * Stats component.
  *
- * @see http://wiki.apache.org/solr/StatsComponent
+ * @see https://solr.apache.org/guide/the-stats-component.html
  */
 class Stats extends AbstractComponent
 {
@@ -72,7 +79,7 @@ class Stats extends AbstractComponent
      */
     public function createField($options = null): Field
     {
-        if (is_string($options)) {
+        if (\is_string($options)) {
             $fq = new Field();
             $fq->setKey($options);
         } else {
@@ -92,7 +99,6 @@ class Stats extends AbstractComponent
      * Supports a field instance or a config array, in that case a new
      * field instance wil be created based on the options.
      *
-     *
      * @param Field|array $field
      *
      * @throws InvalidArgumentException
@@ -101,18 +107,18 @@ class Stats extends AbstractComponent
      */
     public function addField($field): self
     {
-        if (is_array($field)) {
+        if (\is_array($field)) {
             $field = new Field($field);
         }
 
         $key = $field->getKey();
 
-        if (0 === strlen($key)) {
+        if (null === $key || 0 === \strlen($key)) {
             throw new InvalidArgumentException('A field must have a key value');
         }
 
         // Double add calls for the same field are ignored, but non-unique keys cause an exception.
-        if (array_key_exists($key, $this->fields) && $this->fields[$key] !== $field) {
+        if (\array_key_exists($key, $this->fields) && $this->fields[$key] !== $field) {
             throw new InvalidArgumentException('A field must have a unique key value');
         }
 
@@ -132,7 +138,7 @@ class Stats extends AbstractComponent
     {
         foreach ($fields as $key => $field) {
             // in case of a config array: add key to config
-            if (is_array($field) && !isset($field['key'])) {
+            if (\is_array($field) && !isset($field['key'])) {
                 $field['key'] = $key;
             }
 
@@ -175,7 +181,7 @@ class Stats extends AbstractComponent
      */
     public function removeField($field): self
     {
-        if (is_object($field)) {
+        if (\is_object($field)) {
             $field = $field->getKey();
         }
 
@@ -218,8 +224,8 @@ class Stats extends AbstractComponent
     /**
      * Initialize options.
      *
-     * Several options need some extra checks or setup work, for these options
-     * the setters are called.
+     * {@internal Options that set a list of field or facet names need additional setup work
+     *            because they can be an array or a comma separated string.}
      */
     protected function init()
     {

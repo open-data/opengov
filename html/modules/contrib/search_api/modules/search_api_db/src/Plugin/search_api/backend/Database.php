@@ -2,12 +2,13 @@
 
 namespace Drupal\search_api_db\Plugin\search_api\backend;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Database as CoreDatabase;
 use Drupal\Core\Database\DatabaseException;
-use Drupal\Core\Database\Query\Condition;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -16,10 +17,13 @@ use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\TypedData\DataDefinition;
 use Drupal\search_api\Backend\BackendPluginBase;
+use Drupal\search_api\Contrib\AutocompleteBackendInterface;
 use Drupal\search_api\DataType\DataTypePluginManager;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\IndexInterface;
+use Drupal\search_api\Item\Field;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
@@ -32,7 +36,11 @@ use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_db\DatabaseCompatibility\DatabaseCompatibilityHandlerInterface;
 use Drupal\search_api_db\DatabaseCompatibility\GenericDatabase;
+use Drupal\search_api_db\DatabaseCompatibility\LocationAwareDatabaseInterface;
+use Drupal\search_api_db\Event\QueryPreExecuteEvent;
+use Drupal\search_api_db\Event\SearchApiDbEvents;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Indexes and searches items using the database.
@@ -68,7 +76,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   description = @Translation("Indexes items in the database. Supports several advanced features, but should not be used for large sites.")
  * )
  */
-class Database extends BackendPluginBase implements PluginFormInterface {
+class Database extends BackendPluginBase implements AutocompleteBackendInterface, PluginFormInterface {
 
   use PluginFormTrait;
 
@@ -125,18 +133,18 @@ class Database extends BackendPluginBase implements PluginFormInterface {
   protected $keyValueStore;
 
   /**
-   * The transliteration service to use.
-   *
-   * @var \Drupal\Component\Transliteration\TransliterationInterface
-   */
-  protected $transliterator;
-
-  /**
    * The date formatter.
    *
    * @var \Drupal\Core\Datetime\DateFormatterInterface|null
    */
   protected $dateFormatter;
+
+  /**
+   * The event dispatcher.
+   *
+   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface|null
+   */
+  protected $eventDispatcher;
 
   /**
    * The data type helper.
@@ -201,6 +209,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
     $backend->setLogger($container->get('logger.channel.search_api_db'));
     $backend->setKeyValueStore($container->get('keyvalue')->get(self::INDEXES_KEY_VALUE_STORE_ID));
     $backend->setDateFormatter($container->get('date.formatter'));
+    $backend->setEventDispatcher($container->get('event_dispatcher'));
     $backend->setDataTypeHelper($container->get('search_api.data_type_helper'));
 
     // For a new backend plugin, the database might not be set yet. In that case
@@ -351,6 +360,29 @@ class Database extends BackendPluginBase implements PluginFormInterface {
    */
   public function setDateFormatter(DateFormatterInterface $date_formatter) {
     $this->dateFormatter = $date_formatter;
+    return $this;
+  }
+
+  /**
+   * Retrieves the event dispatcher.
+   *
+   * @return \Symfony\Contracts\EventDispatcher\EventDispatcherInterface
+   *   The event dispatcher.
+   */
+  public function getEventDispatcher() {
+    return $this->eventDispatcher ?: \Drupal::service('event_dispatcher');
+  }
+
+  /**
+   * Sets the event dispatcher.
+   *
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   *   The new event dispatcher.
+   *
+   * @return $this
+   */
+  public function setEventDispatcher(EventDispatcherInterface $event_dispatcher) {
+    $this->eventDispatcher = $event_dispatcher;
     return $this;
   }
 
@@ -513,9 +545,15 @@ class Database extends BackendPluginBase implements PluginFormInterface {
   public function viewSettings() {
     $info = [];
 
+    if ($this->configuration['database']) {
+      $database = str_replace(':', ' > ', $this->configuration['database']);
+    }
+    else {
+      $database = $this->t('None selected yet');
+    }
     $info[] = [
       'label' => $this->t('Database'),
-      'info' => str_replace(':', ' > ', $this->configuration['database']),
+      'info' => $database,
     ];
     if ($this->configuration['min_chars'] > 1) {
       $info[] = [
@@ -564,7 +602,16 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       'search_api_autocomplete',
       'search_api_facets',
       'search_api_facets_operator_or',
+      'search_api_random_sort',
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsDataType($type): bool {
+    return $type === 'location'
+      && $this->dbmsCompatibility instanceof LocationAwareDatabaseInterface;
   }
 
   /**
@@ -751,8 +798,11 @@ class Database extends BackendPluginBase implements PluginFormInterface {
    *   (optional) The type of table being created. Either "index" (for the
    *   denormalized table for an entire index) or "field" (for field-specific
    *   tables).
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   *   Thrown if creating the table failed.
    */
-  protected function createFieldTable(FieldInterface $field = NULL, array $db, $type = 'field') {
+  protected function createFieldTable(?FieldInterface $field, array $db, string $type = 'field'): void {
     $new_table = !$this->database->schema()->tableExists($db['table']);
     if ($new_table) {
       $table = [
@@ -781,7 +831,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       return;
     }
 
-    $column = isset($db['column']) ? $db['column'] : 'value';
+    $column = $db['column'] ?? 'value';
     $db_field = $this->sqlType($field->getType());
     $db_field += [
       'description' => "The field's value for this item",
@@ -818,7 +868,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
     // index with the same as the first table, which conflicts in SQLite.
     //
     // The core issue addressing this (https://www.drupal.org/node/1008128) was
-    // closed as it fixed the PostgresSQL part. The SQLite fix is added in
+    // closed as it fixed the PostgreSQL part. The SQLite fix is added in
     // https://www.drupal.org/node/2625664
     // We prevent this by adding an extra underscore (which is also the proposed
     // solution in the original core issue).
@@ -828,12 +878,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
     try {
       $this->database->schema()->addIndex($db['table'], '_' . $column, $index_spec, $table_spec);
     }
-    catch (\PDOException $e) {
-      $variables['%column'] = $column;
-      $variables['%table'] = $db['table'];
-      $this->logException($e, '%type while trying to add a database index for column %column to table %table: @message in %function (line %line of %file).', $variables, RfcLogLevel::WARNING);
-    }
-    catch (DatabaseException $e) {
+    catch (\PDOException | DatabaseException $e) {
       $variables['%column'] = $column;
       $variables['%table'] = $db['table'];
       $this->logException($e, '%type while trying to add a database index for column %column to table %table: @message in %function (line %line of %file).', $variables, RfcLogLevel::WARNING);
@@ -861,6 +906,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
     switch ($type) {
       case 'text':
         return ['type' => 'varchar', 'length' => 30];
+
       case 'string':
       case 'uri':
         return ['type' => 'varchar', 'length' => 255];
@@ -877,7 +923,26 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       case 'boolean':
         return ['type' => 'int', 'size' => 'tiny'];
 
+      /** @noinspection PhpMissingBreakStatementInspection */
+      case 'location':
+        if ($this->dbmsCompatibility instanceof LocationAwareDatabaseInterface) {
+          return $this->dbmsCompatibility->getLocationFieldSqlType();
+        }
+        // Fall-through.
+
       default:
+        try {
+          $data_type = $this->getDataTypePluginManager()->createInstance($type);
+          if ($data_type && !$data_type->isDefault()) {
+            $fallback_type = $data_type->getFallbackType();
+            if ($fallback_type != $type) {
+              return $this->sqlType($fallback_type);
+            }
+          }
+        }
+        catch (PluginException $e) {
+          // Ignore.
+        }
         throw new SearchApiException("Unknown field type '$type'.");
     }
   }
@@ -1245,7 +1310,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
 
           // Don't add NULL values to the array of values. Also, adding an empty
           // array is, of course, a waste of time.
-          if (isset($converted_value) && $converted_value !== []) {
+          if (($converted_value ?? []) !== []) {
             $values = array_merge($values, is_array($converted_value) ? $converted_value : [$converted_value]);
           }
         }
@@ -1497,7 +1562,26 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       case 'boolean':
         return $value ? 1 : 0;
 
+      /** @noinspection PhpMissingBreakStatementInspection */
+      case 'location':
+        if ($this->dbmsCompatibility instanceof LocationAwareDatabaseInterface) {
+          return $this->dbmsCompatibility->convertValue($value, $original_type);
+        }
+        // Fall-through.
+
       default:
+        try {
+          $data_type = $this->getDataTypePluginManager()->createInstance($type);
+          if ($data_type && !$data_type->isDefault()) {
+            $fallback_type = $data_type->getFallbackType();
+            if ($fallback_type != $type) {
+              return $this->convert($value, $fallback_type, $original_type, $index);
+            }
+          }
+        }
+        catch (PluginException $e) {
+          // Ignore.
+        }
         throw new SearchApiException("Unknown field type '$type'.");
     }
   }
@@ -1607,41 +1691,52 @@ class Database extends BackendPluginBase implements PluginFormInterface {
 
     $results = $query->getResults();
 
-    $skip_count = $query->getOption('skip result count');
-    $count = NULL;
-    if (!$skip_count) {
-      $count_query = $db_query->countQuery();
-      $count = $count_query->execute()->fetchField();
-      $results->setResultCount($count);
+    try {
+      $skip_count = $query->getOption('skip result count');
+      $count = NULL;
+      if (!$skip_count) {
+        $count_query = $db_query->countQuery();
+        $count = $count_query->execute()->fetchField();
+        $results->setResultCount($count);
+      }
+
+      // With a "min_count" of 0, some facets can even be available if there are
+      // no results.
+      if ($query->getOption('search_api_facets')) {
+        $facets = $this->getFacets($query, clone $db_query, $count);
+        $results->setExtraData('search_api_facets', $facets);
+      }
+      // Everything else can be skipped if the count is 0.
+      if ($skip_count || $count) {
+        $query_options = $query->getOptions();
+        if (isset($query_options['offset']) || isset($query_options['limit'])) {
+          $offset = $query_options['offset'] ?? 0;
+          $limit = $query_options['limit'] ?? 1000000;
+          $db_query->range($offset, $limit);
+        }
+
+        $this->setQuerySort($query, $db_query, $fields);
+
+        $result = $db_query->execute();
+
+        $indexed_fields = $index->getFields(TRUE);
+        $retrieved_field_names = $query->getOption('search_api_retrieved_field_values', []);
+        foreach ($result as $row) {
+          $item = $this->getFieldsHelper()->createItem($index, $row->item_id);
+          $item->setScore($row->score / self::SCORE_MULTIPLIER);
+          $this->extractRetrievedFieldValuesWhereAvailable($row, $indexed_fields, $retrieved_field_names, $item);
+          $results->addResultItem($item);
+        }
+        if ($skip_count && !empty($item)) {
+          $results->setResultCount(1);
+        }
+      }
     }
-
-    // With a "min_count" of 0, some facets can even be available if there are
-    // no results.
-    if ($query->getOption('search_api_facets')) {
-      $facets = $this->getFacets($query, clone $db_query, $count);
-      $results->setExtraData('search_api_facets', $facets);
-    }
-    // Everything else can be skipped if the count is 0.
-    if ($skip_count || $count) {
-      $query_options = $query->getOptions();
-      if (isset($query_options['offset']) || isset($query_options['limit'])) {
-        $offset = isset($query_options['offset']) ? $query_options['offset'] : 0;
-        $limit = isset($query_options['limit']) ? $query_options['limit'] : 1000000;
-        $db_query->range($offset, $limit);
+    catch (\PDOException | DatabaseException $e) {
+      if ($query instanceof RefinableCacheableDependencyInterface) {
+        $query->mergeCacheMaxAge(0);
       }
-
-      $this->setQuerySort($query, $db_query, $fields);
-
-      $result = $db_query->execute();
-
-      foreach ($result as $row) {
-        $item = $this->getFieldsHelper()->createItem($index, $row->item_id);
-        $item->setScore($row->score / self::SCORE_MULTIPLIER);
-        $results->addResultItem($item);
-      }
-      if ($skip_count && !empty($item)) {
-        $results->setResultCount(1);
-      }
+      throw new SearchApiException('A database exception occurred while searching.', $e->getCode(), $e);
     }
 
     // Add additional warnings and ignored keys.
@@ -1653,6 +1748,30 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       foreach (array_keys($this->$property) as $value) {
         $results->$method($value);
       }
+    }
+  }
+
+  /**
+   * Adds retrieved field values to a result item.
+   *
+   * The query result may include values of *some* indexed fields listed in the
+   * "search_api_retrieved_field_values" query option.  When such a field value
+   * is spotted, we add these to the given result item.
+   */
+  public function extractRetrievedFieldValuesWhereAvailable(object $result_row, array $indexed_fields, array $retrieved_fields, ItemInterface $item): void {
+    foreach ($retrieved_fields as $retrieved_field_name) {
+      $retrieved_field_value = $result_row->{$retrieved_field_name} ?? NULL;
+      if (!isset($retrieved_field_value)) {
+        continue;
+      }
+
+      if (!array_key_exists($retrieved_field_name, $indexed_fields)) {
+        continue;
+      }
+      $retrieved_field = clone $indexed_fields[$retrieved_field_name];
+
+      $retrieved_field->addValue($retrieved_field_value);
+      $item->setField($retrieved_field_name, $retrieved_field);
     }
   }
 
@@ -1677,7 +1796,8 @@ class Database extends BackendPluginBase implements PluginFormInterface {
   protected function createDbQuery(QueryInterface $query, array $fields) {
     $keys = &$query->getKeys();
     $keys_set = (boolean) $keys;
-    $keys = $this->prepareKeys($keys);
+    $tokenizer_active = $query->getIndex()->isValidProcessor('tokenizer');
+    $keys = $this->prepareKeys($keys, $tokenizer_active);
 
     // Only filter by fulltext keys if there are any real keys present.
     if ($keys && (!is_array($keys) || count($keys) > 2 || (!isset($keys['#negation']) && count($keys) > 1))) {
@@ -1726,8 +1846,20 @@ class Database extends BackendPluginBase implements PluginFormInterface {
 
     $condition_group = $query->getConditionGroup();
     $this->addLanguageConditions($condition_group, $query);
+    // @todo #2877319 Maybe, like addLanguageConditions(), add a method here
+    //   checking for the "search_api_location" option on the query and, if
+    //   present, add new conditions based on the option(s) to the query.
+    //   Or place the conditions directly on the query below this if block -
+    //   in that case, you might need to remove any conditions on those fields
+    //   from the query.
+    if ($this->dbmsCompatibility instanceof LocationAwareDatabaseInterface) {
+      $index_table = $this->getIndexDbInfo($query->getIndex())['index_table'];
+      $index_table_alias = $this->getTableAlias(['table' => $index_table], $db_query);
+      $this->dbmsCompatibility->addLocationFilter($index_table_alias, $query, $db_query);
+    }
+
     if ($condition_group->getConditions()) {
-      $condition = $this->createDbCondition($condition_group, $fields, $db_query, $query->getIndex());
+      $condition = $this->createDbCondition($condition_group, $fields, $db_query, $query->getIndex(), $query);
       if ($condition) {
         $db_query->condition($condition);
       }
@@ -1739,7 +1871,13 @@ class Database extends BackendPluginBase implements PluginFormInterface {
 
     // Allow subclasses and other modules to alter the query (before a count
     // query is constructed from it).
-    $this->getModuleHandler()->alter('search_api_db_query', $db_query, $query);
+    $event_base_name = SearchApiDbEvents::QUERY_PRE_EXECUTE;
+    $event = new QueryPreExecuteEvent($db_query, $query);
+    $this->getEventDispatcher()->dispatch($event, $event_base_name);
+    $db_query = $event->getDbQuery();
+
+    $description = 'This hook is deprecated in search_api:8.x-1.16 and is removed from search_api:2.0.0. Please use the "search_api_db.query_pre_execute" event instead. See https://www.drupal.org/node/3103591';
+    $this->getModuleHandler()->alterDeprecated($description, 'search_api_db_query', $db_query, $query);
     $this->preQuery($db_query, $query);
 
     return $db_query;
@@ -1752,24 +1890,28 @@ class Database extends BackendPluginBase implements PluginFormInterface {
    *
    * @param array|string|null $keys
    *   The keys which should be preprocessed.
+   * @param bool $tokenizer_active
+   *   (optional) TRUE if we can rely on the "Tokenizer" processor already
+   *   having preprocessed the keywords.
    *
    * @return array|string|null
    *   The preprocessed keys.
    */
-  protected function prepareKeys($keys) {
+  protected function prepareKeys($keys, bool $tokenizer_active = FALSE) {
     if (is_scalar($keys)) {
-      $keys = $this->splitKeys($keys);
+      $keys = $this->splitKeys($keys, $tokenizer_active);
       return is_array($keys) ? $this->eliminateDuplicates($keys) : $keys;
     }
     elseif (!$keys) {
       return NULL;
     }
-    $keys = $this->eliminateDuplicates($this->splitKeys($keys));
+    $keys = $this->splitKeys($keys, $tokenizer_active);
+    $keys = $this->eliminateDuplicates($keys);
     $conj = $keys['#conjunction'];
     $neg = !empty($keys['#negation']);
     foreach ($keys as $i => &$nested) {
       if (is_array($nested)) {
-        $nested = $this->prepareKeys($nested);
+        $nested = $this->prepareKeys($nested, $tokenizer_active);
         if (is_array($nested) && $neg == !empty($nested['#negation'])) {
           if ($nested['#conjunction'] == $conj) {
             unset($nested['#conjunction'], $nested['#negation']);
@@ -1801,11 +1943,14 @@ class Database extends BackendPluginBase implements PluginFormInterface {
    *
    * @param array|string $keys
    *   The keys to split.
+   * @param bool $tokenizer_active
+   *   (optional) TRUE if we can rely on the "Tokenizer" processor already
+   *   having preprocessed the keywords.
    *
    * @return array|string|null
    *   The keys split into separate words.
    */
-  protected function splitKeys($keys) {
+  protected function splitKeys($keys, bool $tokenizer_active = FALSE) {
     if (is_scalar($keys)) {
       $processed_keys = $this->dbmsCompatibility->preprocessIndexValue(trim($keys));
       if (is_numeric($processed_keys)) {
@@ -1815,9 +1960,14 @@ class Database extends BackendPluginBase implements PluginFormInterface {
         $this->ignored[$keys] = 1;
         return NULL;
       }
-      $words = static::splitIntoWords($processed_keys);
+      if ($tokenizer_active) {
+        $words = array_filter(explode(' ', $processed_keys), 'strlen');
+      }
+      else {
+        $words = static::splitIntoWords($processed_keys);
+      }
       if (count($words) > 1) {
-        $processed_keys = $this->splitKeys($words);
+        $processed_keys = $this->splitKeys($words, $tokenizer_active);
         if ($processed_keys) {
           $processed_keys['#conjunction'] = 'AND';
         }
@@ -1829,7 +1979,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
     }
     foreach ($keys as $i => $key) {
       if (Element::child($i)) {
-        $keys[$i] = $this->splitKeys($key);
+        $keys[$i] = $this->splitKeys($key, $tokenizer_active);
       }
     }
     return array_filter($keys);
@@ -1938,17 +2088,21 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       $field = reset($fields);
       $db_query = $this->database->select($field['table'], 't');
       $mul_words = ($word_count > 1);
+      // Depending on several factors, a different set of columns is expected to
+      // be returned in this query (that will potentially be nested later).
+      // Also, grouping might be added for some combinations, in which case we
+      // need to SUM() the score so it doesn't get grouped as well.
       if ($neg_nested) {
         $db_query->fields('t', ['item_id', 'word']);
       }
       elseif ($neg) {
         $db_query->fields('t', ['item_id']);
       }
-      elseif ($not_nested && $match_parts) {
+      elseif ($match_parts) {
         $db_query->fields('t', ['item_id']);
-        $db_query->addExpression('SUM(t.score)', 'score');
+        $db_query->addExpression('SUM([t].[score])', 'score');
       }
-      elseif ($not_nested || $match_parts) {
+      elseif ($not_nested) {
         $db_query->fields('t', ['item_id', 'score']);
       }
       else {
@@ -1959,7 +2113,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
         $db_query->condition('t.word', $words, 'IN');
       }
       else {
-        $db_or = new Condition('OR');
+        $db_or = $db_query->orConditionGroup();
         // GROUP BY all existing non-aggregated columns.
         foreach ($db_query->getFields() as $column) {
           $db_query->groupBy("{$column['table']}.{$column['field']}");
@@ -1977,7 +2131,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
           // afterwards verify that each word matched at least once.
           $alias = 'w' . ++$this->expressionCounter;
           $like = '%' . $this->database->escapeLike($word) . '%';
-          $alias = $db_query->addExpression("CASE WHEN t.word LIKE :like_$alias THEN 1 ELSE 0 END", $alias, [":like_$alias" => $like]);
+          $alias = $db_query->addExpression("CASE WHEN [t].[word] LIKE :like_$alias THEN 1 ELSE 0 END", $alias, [":like_$alias" => $like]);
           $db_query->groupBy($alias);
           $keyword_hits[] = $alias;
         }
@@ -2004,12 +2158,12 @@ class Database extends BackendPluginBase implements PluginFormInterface {
           if (!$match_parts) {
             $word .= ' ';
             $var = ':word' . strlen($word);
-            $query->addExpression($var, 't.word', [$var => $word]);
+            $query->addExpression($var, NULL, [$var => $word]);
           }
           else {
             $i += $word_count;
             for ($j = 0; $j < $subs; ++$j) {
-              $alias = isset($keyword_hits[$j]) ? $keyword_hits[$j] : "w$j";
+              $alias = $keyword_hits[$j] ?? "w$j";
               $keyword_hits[$j] = $query->addExpression($i == $j ? '1' : '0', $alias);
             }
           }
@@ -2030,7 +2184,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       $db_query = $this->database->select($db_query, 't');
       $db_query->addField('t', 'item_id', 'item_id');
       if (!$neg) {
-        $db_query->addExpression('SUM(t.score)', 'score');
+        $db_query->addExpression('SUM([t].[score])', 'score');
         $db_query->groupBy('t.item_id');
       }
       if ($conj == 'AND' && $subs > 1) {
@@ -2040,10 +2194,10 @@ class Database extends BackendPluginBase implements PluginFormInterface {
         }
         if (!$match_parts) {
           if ($mul_words) {
-            $db_query->having('COUNT(DISTINCT t.word) >= ' . $var, [$var => $subs]);
+            $db_query->having('COUNT(DISTINCT [t].[word]) >= ' . $var, [$var => $subs]);
           }
           else {
-            $db_query->having('COUNT(t.word) >= ' . $var, [$var => $subs]);
+            $db_query->having('COUNT([t].[word]) >= ' . $var, [$var => $subs]);
           }
         }
         else {
@@ -2076,7 +2230,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
         $condition = $db_query;
       }
       else {
-        $condition = new Condition('OR');
+        $condition = $db_query->conditionGroupFactory('OR');
         $db_query->condition($condition);
       }
       foreach ($negated as $k) {
@@ -2132,6 +2286,8 @@ class Database extends BackendPluginBase implements PluginFormInterface {
    *   The database query to which the condition will be added.
    * @param \Drupal\search_api\IndexInterface $index
    *   The index we're searching on.
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The Search API query that is the source of the conditions.
    *
    * @return \Drupal\Core\Database\Query\ConditionInterface|null
    *   The condition to set on the query, or NULL if none is necessary.
@@ -2140,9 +2296,9 @@ class Database extends BackendPluginBase implements PluginFormInterface {
    *   Thrown if an unknown field or operator was used in one of the contained
    *   conditions.
    */
-  protected function createDbCondition(ConditionGroupInterface $conditions, array $fields, SelectInterface $db_query, IndexInterface $index) {
+  protected function createDbCondition(ConditionGroupInterface $conditions, array $fields, SelectInterface $db_query, IndexInterface $index, QueryInterface $query) {
     $conjunction = $conditions->getConjunction();
-    $db_condition = new Condition($conjunction);
+    $db_condition = $db_query->conditionGroupFactory($conjunction);
     $db_info = $this->getIndexDbInfo($index);
 
     // Store the table aliases for the fields in this condition group.
@@ -2150,7 +2306,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
     $wildcard_count = 0;
     foreach ($conditions->getConditions() as $condition) {
       if ($condition instanceof ConditionGroupInterface) {
-        $sub_condition = $this->createDbCondition($condition, $fields, $db_query, $index);
+        $sub_condition = $this->createDbCondition($condition, $fields, $db_query, $index, $query);
         if ($sub_condition) {
           $db_condition->condition($sub_condition);
         }
@@ -2180,8 +2336,15 @@ class Database extends BackendPluginBase implements PluginFormInterface {
             $method = $not_equals ? 'isNotNull' : 'isNull';
             $db_condition->$method($column);
           }
+          elseif (($field_info['type'] ?? '') === 'location'
+              && $this->dbmsCompatibility instanceof LocationAwareDatabaseInterface) {
+            // @todo #2877319 Place filter on query, possibly also taking the
+            //   options into account. Or, if this is handled somewhere else,
+            //   simply ignore this condition.
+            $this->dbmsCompatibility->addLocationDbCondition($field_info['column'], $value, $operator, $query, $db_query);
+          }
           elseif ($not_between) {
-            $nested_condition = new Condition('OR');
+            $nested_condition = $db_query->conditionGroupFactory('OR');
             $nested_condition->condition($column, $value[0], '<');
             $nested_condition->condition($column, $value[1], '>');
             $nested_condition->isNull($column);
@@ -2190,7 +2353,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
           elseif ($not_equals) {
             // Since SQL never returns TRUE for comparison with NULL values, we
             // need to include "OR field IS NULL" explicitly for some operators.
-            $nested_condition = new Condition('OR');
+            $nested_condition = $db_query->conditionGroupFactory('OR');
             $nested_condition->condition($column, $value, $operator);
             $nested_condition->isNull($column);
             $db_condition->condition($nested_condition);
@@ -2200,16 +2363,17 @@ class Database extends BackendPluginBase implements PluginFormInterface {
           }
         }
         elseif ($this->getDataTypeHelper()->isTextType($field_info['type'])) {
-          $keys = $this->prepareKeys($value);
+          $tokenizer_active = $index->isValidProcessor('tokenizer');
+          $keys = $this->prepareKeys($value, $tokenizer_active);
           if (!isset($keys)) {
             continue;
           }
-          $query = $this->createKeysQuery($keys, [$field => $field_info], $fields, $index);
+          $fulltext_query = $this->createKeysQuery($keys, [$field => $field_info], $fields, $index);
           // We only want the item IDs, so we use the keys query as a nested
           // query.
-          $query = $this->database->select($query, 't')
+          $fulltext_query = $this->database->select($fulltext_query, 't')
             ->fields('t', ['item_id']);
-          $db_condition->condition('t.item_id', $query, $not_equals ? 'NOT IN' : 'IN');
+          $db_condition->condition('t.item_id', $fulltext_query, $not_equals ? 'NOT IN' : 'IN');
         }
         elseif ($not_equals) {
           // The situation is more complicated for negative conditions on
@@ -2303,7 +2467,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
   protected function preQuery(SelectInterface &$db_query, QueryInterface $query) {}
 
   /**
-   * Adds the approiate "ORDER BY" statements to a search database query.
+   * Adds the appropriate "ORDER BY" statements to a search database query.
    *
    * @param \Drupal\search_api\Query\QueryInterface $query
    *   The search query whose sorts should be applied.
@@ -2331,6 +2495,16 @@ class Database extends BackendPluginBase implements PluginFormInterface {
         }
         if ($field_name == 'search_api_relevance') {
           $db_query->orderBy('score', $order);
+          continue;
+        }
+
+        if ($field_name == 'search_api_random') {
+          $this->dbmsCompatibility->orderByRandom($db_query);
+          continue;
+        }
+
+        if ($this->dbmsCompatibility instanceof LocationAwareDatabaseInterface
+            && $this->dbmsCompatibility->addLocationSort($field_name, $order, $query, $db_query)) {
           continue;
         }
 
@@ -2387,7 +2561,13 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       }
       $field = $fields[$facet['field']];
 
-      if (empty($facet['operator']) || $facet['operator'] != 'or') {
+      if (($field['type'] ?? '') === 'location') {
+        $msg = $this->t('Facets on location fields are currently not supported.');
+        $this->warnings[(string) $msg] = 1;
+        continue;
+      }
+
+      if (($facet['operator'] ?? 'and') != 'or') {
         // First, check whether this can even possibly have any results.
         if ($result_count !== NULL && $result_count < $facet['min_count']) {
           continue;
@@ -2448,7 +2628,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       if (!$facet['missing'] && !$is_text_type) {
         $select->isNotNull($alias . '.value');
       }
-      $select->addExpression('COUNT(DISTINCT t.item_id)', 'num');
+      $select->addExpression('COUNT(DISTINCT [t].[item_id])', 'num');
       $select->groupBy('value');
       $select->orderBy('num', 'DESC');
       $select->orderBy('value', 'ASC');
@@ -2458,7 +2638,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
         $select->range(0, $limit);
       }
       if ($facet['min_count'] > 1) {
-        $select->having('COUNT(DISTINCT t.item_id) >= :count', [':count' => $facet['min_count']]);
+        $select->having('COUNT(DISTINCT [t].[item_id]) >= :count', [':count' => $facet['min_count']]);
       }
 
       $terms = [];
@@ -2467,9 +2647,9 @@ class Database extends BackendPluginBase implements PluginFormInterface {
       foreach ($select->execute() as $row) {
         $terms[] = [
           'count' => $row->num,
-          'filter' => isset($row->value) ? '"' . $row->value . '"' : '!',
+          'filter' => $row->value !== NULL ? '"' . $row->value . '"' : '!',
         ];
-        if (isset($row->value)) {
+        if ($row->value !== NULL) {
           $values[] = $row->value;
         }
         else {
@@ -2549,11 +2729,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
     try {
       $result = $this->database->queryTemporary((string) $db_query, $args);
     }
-    catch (\PDOException $e) {
-      $this->logException($e, '%type while trying to create a temporary table: @message in %function (line %line of %file).');
-      return FALSE;
-    }
-    catch (DatabaseException $e) {
+    catch (\PDOException | DatabaseException $e) {
       $this->logException($e, '%type while trying to create a temporary table: @message in %function (line %line of %file).');
       return FALSE;
     }
@@ -2561,34 +2737,13 @@ class Database extends BackendPluginBase implements PluginFormInterface {
   }
 
   /**
-   * Retrieves autocompletion suggestions for some user input.
-   *
-   * @param \Drupal\search_api\Query\QueryInterface $query
-   *   A query representing the base search, with all completely entered words
-   *   in the user input so far as the search keys.
-   * @param \Drupal\search_api_autocomplete\SearchInterface $search
-   *   An object containing details about the search the user is on, and
-   *   settings for the autocompletion. See the class documentation for details.
-   *   Especially $search->getOptions() should be checked for settings, like
-   *   whether to try and estimate result counts for returned suggestions.
-   * @param string $incomplete_key
-   *   The start of another fulltext keyword for the search, which should be
-   *   completed. Might be empty, in which case all user input up to now was
-   *   considered completed. Then, additional keywords for the search could be
-   *   suggested.
-   * @param string $user_input
-   *   The complete user input for the fulltext search keywords so far.
-   *
-   * @return \Drupal\search_api_autocomplete\Suggestion\SuggestionInterface[]
-   *   An array of autocomplete suggestions.
-   *
-   * @see \Drupal\search_api_autocomplete\AutocompleteBackendInterface::getAutocompleteSuggestions()
+   * {@inheritdoc}
    */
-  public function getAutocompleteSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
+  public function getAutocompleteSuggestions(QueryInterface $query, SearchInterface $search, string $incomplete_key, string $user_input): array {
     $settings = $this->configuration['autocomplete'];
 
     // If none of the options is checked, the user apparently chose a very
-    // roundabout way of telling us he doesn't want autocompletion.
+    // roundabout way of telling us they don't want autocompletion.
     if (!array_filter($settings)) {
       return [];
     }
@@ -2630,7 +2785,12 @@ class Database extends BackendPluginBase implements PluginFormInterface {
 
     // Also collect all keywords already contained in the query so we don't
     // suggest them.
-    $keys = static::splitIntoWords($user_input);
+    if ($query->getIndex()->isValidProcessor('tokenizer')) {
+      $keys = array_filter(explode(' ', $user_input), 'strlen');
+    }
+    else {
+      $keys = static::splitIntoWords($user_input);
+    }
     $keys = array_combine($keys, $keys);
 
     foreach ($passes as $pass) {
@@ -2698,8 +2858,9 @@ class Database extends BackendPluginBase implements PluginFormInterface {
           ->condition('t.field_name', $field)
           ->condition('t.item_id', $all_results, 'IN');
         if ($pass == 1) {
-          $field_query->condition('t.word', $incomplete_like, 'LIKE')
-            ->condition('t.word', $keys, 'NOT IN');
+          $field_query
+            ->condition('t.word', $keys, 'NOT IN')
+            ->condition('t.word', $incomplete_like, 'LIKE');
         }
         if (!isset($word_query)) {
           $word_query = $field_query;
@@ -2712,10 +2873,10 @@ class Database extends BackendPluginBase implements PluginFormInterface {
         return [];
       }
       $db_query = $this->database->select($word_query, 't');
-      $db_query->addExpression('COUNT(DISTINCT t.item_id)', 'results');
+      $db_query->addExpression('COUNT(DISTINCT [t].[item_id])', 'results');
       $db_query->fields('t', ['word'])
         ->groupBy('t.word')
-        ->having('COUNT(DISTINCT t.item_id) <= :max', [':max' => $max_occurrences])
+        ->having('COUNT(DISTINCT [t].[item_id]) <= :max', [':max' => $max_occurrences])
         ->orderBy('results', 'DESC')
         ->range(0, $limit);
       $incomp_len = strlen($incomplete_key);
@@ -2770,6 +2931,39 @@ class Database extends BackendPluginBase implements PluginFormInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getBackendDefinedFields(IndexInterface $index): array {
+    $backend_defined_fields = [];
+    if (!($this->dbmsCompatibility instanceof LocationAwareDatabaseInterface)) {
+      return [];
+    }
+
+    foreach ($index->getFields() as $field) {
+      if ($field->getType() === 'location'
+          || $field->getFieldIdentifier() === 'field_geofield') {
+        $distance_field_name = $field->getFieldIdentifier() . '__distance';
+        $property_path_name = $field->getPropertyPath() . '__distance';
+        $distance_field = new Field($index, $distance_field_name);
+        $distance_field->setLabel($field->getLabel() . ' (distance)');
+        $distance_field->setDataDefinition(DataDefinition::create('decimal'));
+        try {
+          $distance_field->setType('decimal');
+        }
+        catch (SearchApiException $e) {
+          // Cannot happen.
+        }
+        $distance_field->setDatasourceId($field->getDatasourceId());
+        $distance_field->setPropertyPath($property_path_name);
+
+        $backend_defined_fields[$distance_field_name] = $distance_field;
+      }
+    }
+
+    return $backend_defined_fields;
+  }
+
+  /**
    * Implements the magic __sleep() method.
    *
    * Prevents the database connection and logger from being serialized.
@@ -2777,7 +2971,6 @@ class Database extends BackendPluginBase implements PluginFormInterface {
   public function __sleep() {
     $properties = array_flip(parent::__sleep());
     unset($properties['database']);
-    unset($properties['logger']);
     return array_keys($properties);
   }
 

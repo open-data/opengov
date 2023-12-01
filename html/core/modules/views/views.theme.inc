@@ -139,7 +139,9 @@ function template_preprocess_views_view_fields(&$variables) {
       }
 
       if (!empty($variables['options']['separator']) && $previous_inline && $object->inline && $object->content) {
-        $object->separator = Xss::filterAdmin($variables['options']['separator']);
+        $object->separator = [
+          '#markup' => $variables['options']['separator'],
+        ];
       }
 
       $object->class = Html::cleanCssIdentifier($id);
@@ -658,9 +660,26 @@ function template_preprocess_views_view_table(&$variables) {
     $variables['caption_needed'] = FALSE;
   }
 
+  // For backwards compatibility, initialize the 'summary' and 'description'
+  // variables, although core templates now all use 'summary_element' instead.
   $variables['summary'] = $handler->options['summary'];
   $variables['description'] = $handler->options['description'];
-  $variables['caption_needed'] |= !empty($variables['summary']) || !empty($variables['description']);
+  if (!empty($handler->options['summary']) || !empty($handler->options['description'])) {
+    $variables['summary_element'] = [
+      '#type' => 'details',
+      '#title' => $handler->options['summary'],
+      // To ensure that the description is properly escaped during rendering,
+      // use an 'inline_template' to let Twig do its magic, instead of 'markup'.
+      'description' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ description }}',
+        '#context' => [
+          'description' => $handler->options['description'],
+        ],
+      ],
+    ];
+    $variables['caption_needed'] = TRUE;
+  }
 
   $variables['responsive'] = FALSE;
   // If the table has headers and it should react responsively to columns hidden
@@ -937,7 +956,7 @@ function template_preprocess_views_view_opml(&$variables) {
   }
   $variables['title'] = $title;
   $variables['items'] = $items;
-  $variables['updated'] = gmdate(DATE_RFC2822, REQUEST_TIME);
+  $variables['updated'] = gmdate(DATE_RFC2822, \Drupal::time()->getRequestTime());
 
   // During live preview we don't want to output the header since the contents
   // of the feed are being displayed inside a normal HTML page.
@@ -1000,7 +1019,7 @@ function template_preprocess_views_exposed_form(&$variables) {
  *     exposed input.
  */
 function template_preprocess_views_mini_pager(&$variables) {
-  /* @var $pager_manager \Drupal\Core\Pager\PagerManagerInterface */
+  /** @var \Drupal\Core\Pager\PagerManagerInterface $pager_manager */
   $pager_manager = \Drupal::service('pager.manager');
 
   $tags = &$variables['tags'];

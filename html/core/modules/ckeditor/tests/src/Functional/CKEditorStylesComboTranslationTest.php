@@ -11,13 +11,14 @@ use Drupal\Tests\BrowserTestBase;
  * Tests administration of the CKEditor StylesCombo plugin.
  *
  * @group ckeditor
+ * @group legacy
  */
 class CKEditorStylesComboTranslationTest extends BrowserTestBase {
 
   /**
-   * {inheritdoc}
+   * {@inheritdoc}
    */
-  public static $modules = ['ckeditor', 'config_translation'];
+  protected static $modules = ['ckeditor', 'config_translation'];
 
   /**
    * {@inheritdoc}
@@ -41,7 +42,7 @@ class CKEditorStylesComboTranslationTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->format = strtolower($this->randomMachineName());
@@ -51,13 +52,23 @@ class CKEditorStylesComboTranslationTest extends BrowserTestBase {
       'filters' => [],
     ]);
     $filter_format->save();
+    $ckeditor = $this->container->get('plugin.manager.editor')->createInstance('ckeditor');
+    $settings = $ckeditor->getDefaultSettings();
+    $settings['toolbar']['rows'][0][] = [
+      'name' => 'Styles dropdown',
+      'items' => ['Styles'],
+    ];
     $editor = Editor::create([
       'format' => $this->format,
       'editor' => 'ckeditor',
+      'settings' => $settings,
     ]);
     $editor->save();
 
-    $this->adminUser = $this->drupalCreateUser(['administer filters', 'translate configuration']);
+    $this->adminUser = $this->drupalCreateUser([
+      'administer filters',
+      'translate configuration',
+    ]);
 
     ConfigurableLanguage::createFromLangcode('de')->save();
   }
@@ -70,7 +81,8 @@ class CKEditorStylesComboTranslationTest extends BrowserTestBase {
     $edit = [
       'editor[settings][plugins][stylescombo][styles]' => 'h1.title|Title',
     ];
-    $this->drupalPostForm('admin/config/content/formats/manage/' . $this->format, $edit, 'Save configuration');
+    $this->drupalGet('admin/config/content/formats/manage/' . $this->format);
+    $this->submitForm($edit, 'Save configuration');
 
     $this->drupalGet('admin/config/content/formats/manage/' . $this->format . '/translate/de/add');
     $this->assertEquals('textarea', $this->assertSession()->fieldExists('List of styles')->getTagName());

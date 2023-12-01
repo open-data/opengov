@@ -14,12 +14,12 @@ class NextIdTest extends DatabaseTestBase {
    *
    * @var array
    */
-  public static $modules = ['database_test', 'system'];
+  protected static $modules = ['database_test', 'system'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installSchema('system', 'sequences');
   }
@@ -33,9 +33,9 @@ class NextIdTest extends DatabaseTestBase {
     // We can test for exact increase in here because we know there is no
     // other process operating on these tables -- normally we could only
     // expect $second > $first.
-    $this->assertEqual($first + 1, $second, 'The second call from a sequence provides a number increased by one.');
+    $this->assertEquals($first + 1, $second, 'The second call from a sequence provides a number increased by one.');
     $result = $this->connection->nextId(1000);
-    $this->assertEqual($result, 1001, 'Sequence provides a larger number than the existing ID.');
+    $this->assertEquals(1001, $result, 'Sequence provides a larger number than the existing ID.');
   }
 
 }

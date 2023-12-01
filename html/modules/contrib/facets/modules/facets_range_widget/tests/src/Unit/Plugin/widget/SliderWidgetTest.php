@@ -21,7 +21,7 @@ class SliderWidgetTest extends WidgetTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->widget = new SliderWidget([], 'slider_widget', []);
   }
@@ -30,7 +30,7 @@ class SliderWidgetTest extends WidgetTestBase {
    * {@inheritdoc}
    */
   public function testGetQueryType() {
-    $result = $this->widget->getQueryType($this->queryTypes);
+    $result = $this->widget->getQueryType();
     $this->assertEquals(NULL, $result);
   }
 
@@ -100,7 +100,7 @@ class SliderWidgetTest extends WidgetTestBase {
       $this->fail('Test is too slow');
     }
 
-    $this->assertInternalType('array', $build);
+    $this->assertSame('array', gettype($build));
     $build = $build['#attached']['drupalSettings']['facets']['sliders']['barn_owl'];
     $this->assertEquals(3, $build['min']);
     $this->assertEquals(19999, $build['max']);

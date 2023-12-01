@@ -17,7 +17,7 @@ class HideNonNarrowingResultProcessorTest extends UnitTestCase {
   /**
    * The processor to be tested.
    *
-   * @var \Drupal\facets\processor\SortProcessorInterface
+   * @var \Drupal\facets\Processor\SortProcessorInterface
    */
   protected $processor;
 
@@ -31,7 +31,7 @@ class HideNonNarrowingResultProcessorTest extends UnitTestCase {
   /**
    * Creates a new processor object for use in the tests.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $facet = new Facet([], 'facets_facet');

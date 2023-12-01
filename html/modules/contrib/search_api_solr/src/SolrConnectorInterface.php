@@ -2,19 +2,34 @@
 
 namespace Drupal\search_api_solr;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\QueryType\Extract\Result as ExtractResult;
-use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Update\Query\Query as UpdateQuery;
+use ZipStream\ZipStream;
 
 /**
  * The Solr connector interface.
  */
 interface SolrConnectorInterface extends ConfigurableInterface {
+
+  const QUERY_TIMEOUT = 'query_timeout';
+  const INDEX_TIMEOUT = 'index_timeout';
+  const OPTIMIZE_TIMEOUT = 'optimize_timeout';
+  const FINALIZE_TIMEOUT = 'finalize_timeout';
+
+  /**
+   * Sets the event dispatcher.
+   *
+   * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
+   */
+  public function setEventDispatcher(ContainerAwareEventDispatcher $eventDispatcher): SolrConnectorInterface;
 
   /**
    * Returns TRUE for Cloud.
@@ -23,6 +38,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   Whether this is a Solr Cloud connector.
    */
   public function isCloud();
+
+  /**
+   * Returns TRUE if the connector supports a Solr trusted context.
+   *
+   * @return bool
+   *   Whether the connector supports a Solr trusted context.
+   */
+  public function isTrustedContextSupported();
 
   /**
    * Returns a link to the Solr server.
@@ -121,6 +144,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function getLuke();
 
   /**
+   * Gets the name of the used configset.
+   *
+   * @return string|null
+   *   Configset name.
+   */
+  public function getConfigSetName(): ?string;
+
+  /**
    * Gets the full schema version string the core is using.
    *
    * @param bool $reset
@@ -147,6 +178,32 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function getSchemaVersion($reset = FALSE);
 
   /**
+   * Gets the Solr branch targeted by the schema.
+   *
+   * @param bool $reset
+   *   If TRUE the server will be asked regardless if a previous call is cached.
+   *
+   * @return string
+   *   The targeted Solr branch.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function getSchemaTargetedSolrBranch($reset = FALSE);
+
+  /**
+   * Indicates if the Solr config-set is our jum-start config-set.
+   *
+   * @param bool $reset
+   *   If TRUE the server will be asked regardless if a previous call is cached.
+   *
+   * @return bool
+   *   The targeted Solr branch.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function isJumpStartConfigSet(bool $reset = FALSE): bool;
+
+  /**
    * Pings the Solr core to tell whether it can be accessed.
    *
    * @param array $options
@@ -170,6 +227,19 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function pingServer();
 
   /**
+   * Pings the Solr endpoint to tell whether it can be accessed.
+   *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   * @param array $options
+   *   (optional) An array of options.
+   *
+   * @return mixed
+   *   The latency in milliseconds if the endpoint can be accessed,
+   *   otherwise FALSE.
+   */
+  public function pingEndpoint(?Endpoint $endpoint = NULL, array $options = []);
+
+  /**
    * Gets summary information about the Solr Core.
    *
    * @return array
@@ -184,13 +254,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *
    * @param string $path
    *   The path to append to the base URI.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *
    * @return string
    *   The decoded response.
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function coreRestGet($path);
+  public function coreRestGet($path, ?Endpoint $endpoint = NULL);
 
   /**
    * Sends a REST POST request to the Solr core and returns the result.
@@ -199,13 +270,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   The path to append to the base URI.
    * @param string $command_json
    *   The command to send encoded as JSON.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *
    * @return string
    *   The decoded response.
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function coreRestPost($path, $command_json = '');
+  public function coreRestPost($path, $command_json = '', ?Endpoint $endpoint = NULL);
 
   /**
    * Sends a REST GET request to the Solr server and returns the result.
@@ -254,7 +326,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   /**
    * Creates a new Solarium more like this query.
    *
-   * @return \Solarium\QueryType\MorelikeThis\Query
+   * @return \Solarium\QueryType\MoreLikeThis\Query
    *   The MoreLikeThis query.
    */
   public function getMoreLikeThisQuery();
@@ -352,6 +424,21 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function update(UpdateQuery $query, ?Endpoint $endpoint = NULL);
+
+  /**
+   * Executes a search query and returns the raw response.
+   *
+   * @param \Drupal\search_api_solr\Solarium\Autocomplete\Query $query
+   *   The Solarium select query object.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
+   * @return \Solarium\Core\Query\Result\ResultInterface
+   *   The Solarium Result object.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function autocomplete(AutocompleteQuery $query, ?Endpoint $endpoint = NULL);
 
   /**
    * Executes any query.
@@ -459,7 +546,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   the directory contents are instead listed and returned. NULL represents
    *   the root config directory.
    *
-   * @return \Solarium\Core\Client\Response
+   * @return \Solarium\Core\Client\Response|array
    *   A Solarium response object containing either the file contents or a file
    *   list.
    *
@@ -500,15 +587,17 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * The timeout will not be saved in the configuration of the connector. It
    * will be overwritten for the current request only.
    *
-   * @param int $timeout
+   * @param int $seconds
    *   The new query timeout value to set.
+   * @param string $timeout
+   *   (optional) The configured timeout to use. Default is self::QUERY_TIMEOUT.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *   (optional) The Solarium endpoint object.
    *
    * @return int
    *   The previous query timeout value.
    */
-  public function adjustTimeout(int $timeout, ?Endpoint $endpoint = NULL);
+  public function adjustTimeout(int $seconds, string $timeout = self::QUERY_TIMEOUT, ?Endpoint &$endpoint = NULL): int;
 
   /**
    * Get the query timeout.
@@ -524,26 +613,35 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   /**
    * Get the index timeout.
    *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
    * @return int
    *   The current index timeout value.
    */
-  public function getIndexTimeout();
+  public function getIndexTimeout(?Endpoint $endpoint = NULL);
 
   /**
    * Get the optimize timeout.
    *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
    * @return int
    *   The current optimize timeout value.
    */
-  public function getOptimizeTimeout();
+  public function getOptimizeTimeout(?Endpoint $endpoint = NULL);
 
   /**
    * Get the finalize timeout.
    *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
    * @return int
    *   The current finalize timeout value.
    */
-  public function getFinalizeTimeout();
+  public function getFinalizeTimeout(?Endpoint $endpoint = NULL);
 
   /**
    * Alter the newly assembled Solr configuration files.
@@ -557,5 +655,18 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   empty when the config generation is triggered via UI or drush.
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '');
+
+  /**
+   * Alter the zip archive of newly assembled Solr configuration files.
+   *
+   * @param \ZipStream\ZipStream $zip
+   *   Zip archive.
+   * @param string $lucene_match_version
+   *   Lucene (Solr) minor version string.
+   * @param string $server_id
+   *   Optional Search API server id. Will be set in most cases but might be
+   *   empty when the config generation is triggered via UI or drush.
+   */
+  public function alterConfigZip(ZipStream $zip, string $lucene_match_version, string $server_id = '');
 
 }

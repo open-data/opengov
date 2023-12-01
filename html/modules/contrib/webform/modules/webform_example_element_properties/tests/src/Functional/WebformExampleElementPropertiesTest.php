@@ -26,6 +26,8 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
    * Tests element custom properties.
    */
   public function testCustomProperties() {
+    $assert_session = $this->assertSession();
+
     // Create and login admin user.
     $admin_user = $this->drupalCreateUser([
       'administer webform',
@@ -48,17 +50,16 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
 
     // Check that name element render array does not contain custom property
     // or data.
-    $this->assertEqual($webform->getElementDecoded('name'), $name_element);
+    $this->assertEquals($webform->getElementDecoded('name'), $name_element);
 
     // Check that name input does not contain custom data.
     $this->drupalGet('/webform/contact');
-    $this->assertRaw('<input data-drupal-selector="edit-name" type="text" id="edit-name" name="name" value="' . htmlentities($admin_user->label()) . '" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
+    $assert_session->responseContains('<input data-drupal-selector="edit-name" type="text" id="edit-name" name="name" value="' . htmlentities($admin_user->label()) . '" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
 
     // Submit empty custom property and data.
-    $edit = [
-      'properties[custom_data]' => '',
-    ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, 'Save');
+    $this->drupalGet('/admin/structure/webform/manage/contact/element/name/edit');
+    $edit = ['properties[custom_data]' => ''];
+    $this->submitForm($edit, 'Save');
 
     // Get updated contact webform.
     $webform_storage->resetCache();
@@ -66,13 +67,12 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
 
     // Check that name element render array still does not contain custom
     // property or data.
-    $this->assertEqual($webform->getElementDecoded('name'), $name_element);
+    $this->assertEquals($webform->getElementDecoded('name'), $name_element);
 
     // Add custom property and data.
-    $edit = [
-      'properties[custom_data]' => 'custom-data',
-    ];
-    $this->drupalPostForm('/admin/structure/webform/manage/contact/element/name/edit', $edit, 'Save');
+    $this->drupalGet('/admin/structure/webform/manage/contact/element/name/edit');
+    $edit = ['properties[custom_data]' => 'custom-data'];
+    $this->submitForm($edit, 'Save');
 
     // Get updated contact webform.
     $webform_storage->resetCache();
@@ -82,11 +82,11 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
     $name_element += [
       '#custom_data' => 'custom-data',
     ];
-    $this->assertEqual($webform->getElementDecoded('name'), $name_element);
+    $this->assertEquals($webform->getElementDecoded('name'), $name_element);
 
     // Check that name input does contain custom data.
     $this->drupalGet('/webform/contact');
-    $this->assertRaw('<input data-custom="custom-data" data-drupal-selector="edit-name" type="text" id="edit-name" name="name" value="' . htmlentities($admin_user->label()) . '" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
+    $assert_session->responseContains('<input data-custom="custom-data" data-drupal-selector="edit-name" type="text" id="edit-name" name="name" value="' . htmlentities($admin_user->label()) . '" size="60" maxlength="255" class="form-text required" required="required" aria-required="true" />');
   }
 
 }

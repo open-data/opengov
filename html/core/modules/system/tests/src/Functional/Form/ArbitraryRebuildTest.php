@@ -18,14 +18,17 @@ class ArbitraryRebuildTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['text', 'form_test'];
+  protected static $modules = ['text', 'form_test'];
 
   /**
    * {@inheritdoc}
    */
   protected $defaultTheme = 'stark';
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     // Auto-create a field for testing.
@@ -59,10 +62,11 @@ class ArbitraryRebuildTest extends BrowserTestBase {
       'name' => 'foo',
       'mail' => 'bar@example.com',
     ];
-    $this->drupalPostForm('user/register', $edit, 'Rebuild');
-    $this->assertText('Form rebuilt.');
-    $this->assertFieldByName('name', 'foo', 'Entered username has been kept.');
-    $this->assertFieldByName('mail', 'bar@example.com', 'Entered mail address has been kept.');
+    $this->drupalGet('user/register');
+    $this->submitForm($edit, 'Rebuild');
+    $this->assertSession()->pageTextContains('Form rebuilt.');
+    $this->assertSession()->fieldValueEquals('name', 'foo');
+    $this->assertSession()->fieldValueEquals('mail', 'bar@example.com');
   }
 
   /**
@@ -73,10 +77,11 @@ class ArbitraryRebuildTest extends BrowserTestBase {
       'name' => 'foo',
       'mail' => 'bar@example.com',
     ];
-    $this->drupalPostForm('user/register', $edit, t('Add another item'));
-    $this->assertText('Test a multiple valued field', 'Form has been rebuilt.');
-    $this->assertFieldByName('name', 'foo', 'Entered username has been kept.');
-    $this->assertFieldByName('mail', 'bar@example.com', 'Entered mail address has been kept.');
+    $this->drupalGet('user/register');
+    $this->submitForm($edit, 'Add another item');
+    $this->assertSession()->pageTextContains('Test a multiple valued field');
+    $this->assertSession()->fieldValueEquals('name', 'foo');
+    $this->assertSession()->fieldValueEquals('mail', 'bar@example.com');
   }
 
 }

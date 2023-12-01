@@ -44,11 +44,16 @@ trait LoggedStatementsTrait {
    * {@inheritdoc}
    */
   public function getDriverClass($class) {
-    // Override because the base class uses reflection to determine namespace
-    // based on object, which would break.
-    $namespace = (new \ReflectionClass(get_parent_class($this)))->getNamespaceName();
-    $driver_class = $namespace . '\\' . $class;
-    return class_exists($driver_class) ? $driver_class : $class;
+    static $fixed_namespace;
+    if (!$fixed_namespace) {
+      // Override because we've altered the namespace in
+      // \Drupal\KernelTests\Core\Cache\EndOfTransactionQueriesTest::getDatabaseConnectionInfo()
+      // to use the logging Connection classes. Set to a proper database driver
+      // namespace.
+      $this->connectionOptions['namespace'] = (new \ReflectionClass(get_parent_class($this)))->getNamespaceName();
+      $fixed_namespace = TRUE;
+    }
+    return parent::getDriverClass($class);
   }
 
   /**

@@ -43,6 +43,8 @@ use Drupal\password_policy\PasswordPolicyInterface;
  *     "label",
  *     "password_reset",
  *     "policy_constraints",
+ *     "send_reset_email",
+ *     "send_pending_email",
  *     "roles",
  *   }
  * )
@@ -69,6 +71,20 @@ class PasswordPolicy extends ConfigEntityBase implements PasswordPolicyInterface
    * @var int
    */
   protected $password_reset = 30;
+
+  /**
+   * Send email notification upon reset.
+   *
+   * @var int
+   */
+  protected $send_reset_email = 0;
+
+  /**
+   * Send pending email days before.
+   *
+   * @var int[]
+   */
+  protected $send_pending_email = [0];
 
   /**
    * Constraint instance IDs.
@@ -129,6 +145,26 @@ class PasswordPolicy extends ConfigEntityBase implements PasswordPolicyInterface
    */
   public function getPasswordReset() {
     return $this->password_reset;
+  }
+
+  /**
+   * Return the password reset email value from the policy.
+   *
+   * @return int
+   *   Whether to send email upon password resets.
+   */
+  public function getPasswordResetEmailValue() {
+    return $this->send_reset_email;
+  }
+
+  /**
+   * Return the number of days before expiration to send a pending email.
+   *
+   * @return int[]
+   *   Number of days before expiration to send a pending email.
+   */
+  public function getPasswordPendingValue() {
+    return $this->send_pending_email;
   }
 
   /**

@@ -9,6 +9,7 @@ use Drupal\webform\WebformSubmissionForm;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url as CoreUrl;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'captcha' element.
@@ -29,6 +30,22 @@ use Drupal\Core\Url as CoreUrl;
 class Captcha extends WebformElementBase {
 
   /**
+   * The current route match.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->routeMatch = $container->get('current_route_match');
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function defineDefaultProperties() {
@@ -44,7 +61,7 @@ class Captcha extends WebformElementBase {
     ];
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -80,16 +97,23 @@ class Captcha extends WebformElementBase {
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     // Hide and solve the element if the user is assigned 'skip CAPTCHA'
     // and '#captcha_admin_mode' is not enabled.
-    $is_admin = \Drupal::currentUser()->hasPermission('skip CAPTCHA');
+    $is_admin = $this->currentUser->hasPermission('skip CAPTCHA');
     if ($is_admin && empty($element['#captcha_admin_mode'])) {
       $element['#access'] = FALSE;
       $element['#captcha_admin_mode'] = TRUE;
     }
 
     // Always enable admin mode for test.
-    $is_test = (strpos(\Drupal::routeMatch()->getRouteName(), '.webform.test_form') !== FALSE) ? TRUE : FALSE;
+    $is_test = (strpos($this->routeMatch->getRouteName(), '.webform.test_form') !== FALSE) ? TRUE : FALSE;
     if ($is_test) {
       $element['#captcha_admin_mode'] = TRUE;
+    }
+
+    // Add default CAPTCHA description if required.
+    // @see captcha_form_alter()
+    if (empty($element['#description']) && \Drupal::config('captcha.settings')->get('add_captcha_description')) {
+      $this->moduleHandler->loadInclude('captcha', 'inc');
+      $element['#description'] = _captcha_get_description();
     }
 
     parent::prepare($element, $webform_submission);
@@ -108,7 +132,7 @@ class Captcha extends WebformElementBase {
       // @see \Drupal\captcha\Element\Captcha::processCaptchaElement
       '#captcha_info' => ['form_id' => ''],
     ];
-    if (\Drupal::moduleHandler()->moduleExists('image_captcha')) {
+    if ($this->moduleHandler->moduleExists('image_captcha')) {
       $element['#captcha_type'] = 'image_captcha/Image';
     }
 
@@ -145,7 +169,7 @@ class Captcha extends WebformElementBase {
     $captcha_types['default'] = $this->t('Default challenge type');
     // We do our own version of Drupal's module_invoke_all() here because
     // we want to build an array with custom keys and values.
-    foreach (\Drupal::moduleHandler()->getImplementations('captcha') as $module) {
+    foreach ($this->moduleHandler->getImplementations('captcha') as $module) {
       $result = call_user_func_array($module . '_captcha', ['list']);
       if (is_array($result)) {
         foreach ($result as $type) {

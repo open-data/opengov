@@ -14,7 +14,7 @@ use Drupal\Tests\UnitTestCase;
 class FieldLinkTest extends UnitTestCase {
 
   /**
-   * Test the url transformations in the FieldLink process plugin.
+   * Tests the url transformations in the FieldLink process plugin.
    *
    * @dataProvider canonicalizeUriDataProvider
    */
@@ -66,6 +66,10 @@ class FieldLinkTest extends UnitTestCase {
         'https://yahoo.com',
         ['uri_scheme' => 'https://'],
       ],
+      'Absolute URL without explicit protocol (protocol-relative)' => [
+        '//example.com',
+        'http://example.com',
+      ],
       'Absolute URL with non-standard characters' => [
         'http://www.ßÀÑÐ¥ƒå¢ë.com',
         'http://www.ßÀÑÐ¥ƒå¢ë.com',
@@ -86,11 +90,23 @@ class FieldLinkTest extends UnitTestCase {
         'http://www.example.com/page#links',
         'http://www.example.com/page#links',
       ],
+      'empty' => [
+        '',
+        'route:<nolink>',
+      ],
+      'No link' => [
+        '<nolink>',
+        'route:<nolink>',
+      ],
+      'none' => [
+        '<none>',
+        'route:<nolink>',
+      ],
     ];
   }
 
   /**
-   * Test the attributes that are deeply serialized are discarded.
+   * Tests the attributes that are deeply serialized are discarded.
    */
   public function testCanonicalizeUriSerialized() {
     $link_plugin = new FieldLink([], '', [], $this->createMock(MigrationInterface::class));

@@ -8,6 +8,7 @@ use Drupal\search_api\Plugin\search_api\processor\Tokenizer;
 use Drupal\search_api\Query\Query;
 use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Tests the "Tokenizer" processor.
@@ -23,7 +24,7 @@ class TokenizerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->processor = new Tokenizer([], 'tokenizer', []);
@@ -124,6 +125,31 @@ class TokenizerTest extends UnitTestCase {
       [
         'foo-bar',
         [Utility::createTextToken('foobar')],
+      ],
+      // Test changing ignored characters.
+      [
+        'word-word',
+        [$word_token, $word_token],
+        ['ignored' => '._'],
+      ],
+      [
+        'foobar',
+        [Utility::createTextToken('foobr')],
+        ['ignored' => 'a'],
+      ],
+      [
+        'foo-bar',
+        [Utility::createTextToken('foo-bar')],
+        [
+          'ignored' => '',
+          'spaces' => ' ',
+        ],
+      ],
+      // Test multiple ignored characters are still treated as word boundary.
+      [
+        'foobar',
+        [Utility::createTextToken('bar')],
+        ['ignored' => 'o'],
       ],
     ];
   }
@@ -406,7 +432,7 @@ class TokenizerTest extends UnitTestCase {
   public function testPreprocessSearchQuery($keys, $expected) {
     $index = $this->createMock(Index::class);
     assert($index instanceof Index);
-    assert($index instanceof \PHPUnit_Framework_MockObject_MockObject);
+    assert($index instanceof MockObject);
     $index->method('status')->willReturn(TRUE);
     $this->processor->setIndex($index);
 

@@ -4,11 +4,7 @@ namespace Drupal\webform\Controller;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Controller\EntityViewController;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Render\RendererInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\webform\WebformRequestInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -26,6 +22,13 @@ class WebformSubmissionViewController extends EntityViewController {
   protected $currentUser;
 
   /**
+   * The entity repository.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * The webform request handler.
    *
    * @var \Drupal\webform\WebformRequestInterface
@@ -33,33 +36,14 @@ class WebformSubmissionViewController extends EntityViewController {
   protected $requestHandler;
 
   /**
-   * Creates an WebformSubmissionViewController object.
-   *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer service.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   * @param \Drupal\webform\WebformRequestInterface $webform_request
-   *   The webform request handler.
-   */
-  public function __construct(EntityManagerInterface $entity_manager, RendererInterface $renderer, AccountInterface $current_user, WebformRequestInterface $webform_request) {
-    parent::__construct($entity_manager, $renderer);
-    $this->currentUser = $current_user;
-    $this->requestHandler = $webform_request;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity.manager'),
-      $container->get('renderer'),
-      $container->get('current_user'),
-      $container->get('webform.request')
-    );
+    $instance = parent::create($container);
+    $instance->currentUser = $container->get('current_user');
+    $instance->entityRepository = $container->get('entity.repository');
+    $instance->requestHandler = $container->get('webform.request');
+    return $instance;
   }
 
   /**
@@ -118,7 +102,7 @@ class WebformSubmissionViewController extends EntityViewController {
    *   The page title.
    */
   public function title(EntityInterface $webform_submission, $duplicate = FALSE) {
-    $title = $this->entityManager->getTranslationFromContext($webform_submission)->label();
+    $title = $this->entityRepository->getTranslationFromContext($webform_submission)->label();
     return ($duplicate) ? $this->t('Duplicate @title', ['@title' => $title]) : $title;
   }
 

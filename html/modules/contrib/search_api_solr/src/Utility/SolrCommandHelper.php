@@ -2,15 +2,50 @@
 
 namespace Drupal\search_api_solr\Utility;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
-use ZipStream\Option\Archive;
+use Drupal\search_api_solr\SolrBackendInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Drupal\search_api\Utility\CommandHelper;
 
 /**
  * Provides functionality to be used by CLI tools.
  */
 class SolrCommandHelper extends CommandHelper {
+
+  /**
+   * The configset controller.
+   *
+   * @var \Drupal\search_api_solr\Controller\SolrConfigSetController
+   */
+  protected $configsetController;
+
+  /**
+   * Constructs a CommandHelper object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   *   The event dispatcher.
+   * @param \Drupal\search_api_solr\Controller\SolrConfigSetController $configset_controller
+   *   The configset controller.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the "search_api_index" or "search_api_server" entity types'
+   *   storage handlers couldn't be loaded.
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the "search_api_index" or "search_api_server" entity types are
+   *   unknown.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, SolrConfigSetController $configset_controller) {
+    parent::__construct($entity_type_manager, $module_handler, $event_dispatcher);
+    $this->configsetController = $configset_controller;
+  }
 
   /**
    * Re-install all Solr Field Types from their yml files.
@@ -35,11 +70,7 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \ZipStream\Exception\OverflowException
    */
   public function getServerConfigCommand($server_id, $file_name = NULL, $solr_version = NULL) {
-    $servers = $this->loadServers([$server_id]);
-    $server = reset($servers);
-    if (!$server) {
-      throw new SearchApiSolrException('Unknown server');
-    }
+    $server = $this->getServer($server_id);
 
     if ($solr_version) {
       $config = $server->getBackendConfig();
@@ -47,18 +78,25 @@ class SolrCommandHelper extends CommandHelper {
       $config['connector_config']['solr_version'] = $solr_version;
       $server->setBackendConfig($config);
     }
-    $solr_configset_controller = new SolrConfigSetController();
-    $solr_configset_controller->setServer($server);
+    $this->configsetController->setServer($server);
 
-    $archive_options = new Archive();
-    $stream = FALSE;
+    $stream = NULL;
     if ($file_name !== NULL) {
       // If no filename is provided, output stream is standard output.
       $stream = fopen($file_name, 'w+b');
-      $archive_options->setOutputStream($stream);
     }
 
-    $zip = $solr_configset_controller->getConfigZip($archive_options);
+    if (class_exists('\ZipStream\Option\Archive')) {
+      // Version 2.x.
+      $archive_options_or_ressource = new \ZipStream\Option\Archive();
+      $archive_options_or_ressource->setOutputStream($stream);
+    }
+    else {
+      // Version 3.x.
+      $archive_options_or_ressource = $stream;
+    }
+
+    $zip = $this->configsetController->getConfigZip($archive_options_or_ressource);
     $zip->finish();
 
     if ($stream) {
@@ -67,7 +105,7 @@ class SolrCommandHelper extends CommandHelper {
   }
 
   /**
-   * Finalizes one ore more indexes.
+   * Finalizes one or more indexes.
    *
    * @param string[]|null $indexIds
    *   (optional) An array of index IDs, or NULL if we should finalize all
@@ -102,6 +140,40 @@ class SolrCommandHelper extends CommandHelper {
         if ($index->status() && !$index->isReadOnly() && (!$indexIds || in_array($index->id(), $indexIds))) {
           $backend->finalizeIndex($index);
         }
+      }
+    }
+  }
+
+  /**
+   * Gets search server.
+   *
+   * @param string $server_id
+   *   The ID of the server.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  protected function getServer(string $server_id): ServerInterface {
+    $servers = $this->loadServers([$server_id]);
+    $server = reset($servers);
+    if (!$server) {
+      throw new SearchApiSolrException(sprintf('Unknown server %s', $server_id));
+    }
+    if (!($server->getBackend() instanceof SolrBackendInterface)) {
+      throw new SearchApiSolrException(sprintf('Server %s is not a Solr server', $server->label()));
+    }
+
+    return $server;
+  }
+
+  /**
+   * @param \Drupal\search_api\ServerInterface $server
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  protected function reindex(ServerInterface $server): void {
+    foreach ($server->getIndexes() as $index) {
+      if ($index->status() && !$index->isReadOnly()) {
+        $index->reindex();
       }
     }
   }

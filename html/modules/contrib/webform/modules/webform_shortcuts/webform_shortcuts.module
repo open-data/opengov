@@ -19,8 +19,9 @@ function webform_shortcuts_webform_libraries_info() {
     'description' => t('jQuery Hotkeys is a plug-in that lets you easily add and remove handlers for keyboard events anywhere in your code supporting almost any key combination.'),
     'notes' => t('jQuery Hotkeys is used by the form builder to quickly add and save elements.'),
     'homepage_url' => Url::fromUri('https://github.com/jeresig/jquery.hotkeys'),
-    'download_url' => Url::fromUri('https://github.com/jeresig/jquery.hotkeys/archive/0.2.0.zip'),
+    'download_url' => Url::fromUri('https://github.com/jeresig/jquery.hotkeys/archive/refs/tags/0.2.0.zip'),
     'version' => '0.2.0',
+    'license' => 'MIT',
     'optional' => FALSE,
   ];
   return $libraries;
@@ -42,6 +43,7 @@ function webform_shortcuts_preprocess_block(&$variables) {
   $config = \Drupal::config('webform_shortcuts.settings');
 
   // Shortcuts.
+  // phpcs:disable Squiz.Arrays.ArrayDeclaration.KeySpecified
   $shortcuts = [
     '--',
     'add_element' => t('Add element'),
@@ -54,6 +56,7 @@ function webform_shortcuts_preprocess_block(&$variables) {
     'toggle_weights' => t('Show/hide row weights'),
     '--',
   ];
+  // phpcs:enable Squiz.Arrays.ArrayDeclaration.KeySpecified
 
   $items = [];
   $last_shortcut = '';

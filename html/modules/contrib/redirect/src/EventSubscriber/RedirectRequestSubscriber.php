@@ -2,24 +2,21 @@
 
 namespace Drupal\redirect\EventSubscriber;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Logger\RfcLogLevel;
-use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Url;
+use Drupal\path_alias\AliasManagerInterface;
 use Drupal\redirect\Exception\RedirectLoopException;
 use Drupal\redirect\RedirectChecker;
 use Drupal\redirect\RedirectRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\RequestContext;
 
@@ -42,7 +39,7 @@ class RedirectRequestSubscriber implements EventSubscriberInterface {
   protected $config;
 
   /**
-   * @var \Drupal\Core\Path\AliasManager
+   * @var \Drupal\path_alias\AliasManagerInterface
    */
   protected $aliasManager;
 
@@ -82,7 +79,7 @@ class RedirectRequestSubscriber implements EventSubscriberInterface {
    *   The language manager service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config
    *   The config.
-   * @param \Drupal\Core\Path\AliasManagerInterface $alias_manager
+   * @param \Drupal\path_alias\AliasManagerInterface $alias_manager
    *   The alias manager service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
@@ -108,10 +105,10 @@ class RedirectRequestSubscriber implements EventSubscriberInterface {
   /**
    * Handles the redirect if any found.
    *
-   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
    *   The event to process.
    */
-  public function onKernelRequestCheckRedirect(GetResponseEvent $event) {
+  public function onKernelRequestCheckRedirect(RequestEvent $event) {
     // Get a clone of the request. During inbound processing the request
     // can be altered. Allowing this here can lead to unexpected behavior.
     // For example the path_processor.files inbound processor provided by
@@ -125,7 +122,7 @@ class RedirectRequestSubscriber implements EventSubscriberInterface {
     }
 
     // Get URL info and process it to be used for hash generation.
-    parse_str($request->getQueryString(), $request_query);
+    $request_query = $request->query->all();
 
     if (strpos($request->getPathInfo(), '/system/files/') === 0 && !$request->query->has('file')) {
       // Private files paths are split by the inbound path processor and the
@@ -168,6 +165,10 @@ class RedirectRequestSubscriber implements EventSubscriberInterface {
       ];
       $response = new TrustedRedirectResponse($url->setAbsolute()->toString(), $redirect->getStatusCode(), $headers);
       $response->addCacheableDependency($redirect);
+
+      // Invoke hook_redirect_response_alter().
+      $this->moduleHandler->alter('redirect_response', $response, $redirect);
+
       $event->setResponse($response);
     }
   }
@@ -175,12 +176,12 @@ class RedirectRequestSubscriber implements EventSubscriberInterface {
   /**
    * Prior to set the response it check if we can redirect.
    *
-   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
    *   The event object.
    * @param \Drupal\Core\Url $url
    *   The Url where we want to redirect.
    */
-  protected function setResponse(GetResponseEvent $event, Url $url) {
+  protected function setResponse(RequestEvent $event, Url $url) {
     $request = $event->getRequest();
     $this->context->fromRequest($request);
 

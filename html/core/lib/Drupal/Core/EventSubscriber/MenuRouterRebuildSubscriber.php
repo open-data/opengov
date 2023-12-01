@@ -7,7 +7,6 @@ use Drupal\Core\Database\ReplicaKillSwitch;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Routing\RoutingEvents;
-use Symfony\Component\EventDispatcher\Event;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -64,10 +63,10 @@ class MenuRouterRebuildSubscriber implements EventSubscriberInterface {
   /**
    * Rebuilds the menu links and deletes the local_task cache tag.
    *
-   * @param \Symfony\Component\EventDispatcher\Event $event
+   * @param \Drupal\Component\EventDispatcher\Event $event
    *   The event object.
    */
-  public function onRouterRebuild(Event $event) {
+  public function onRouterRebuild($event) {
     $this->menuLinksRebuild();
     Cache::invalidateTags(['local_task']);
   }
@@ -77,15 +76,17 @@ class MenuRouterRebuildSubscriber implements EventSubscriberInterface {
    */
   protected function menuLinksRebuild() {
     if ($this->lock->acquire(__FUNCTION__)) {
-      $transaction = $this->connection->startTransaction();
       try {
+        $transaction = $this->connection->startTransaction();
         // Ensure the menu links are up to date.
         $this->menuLinkManager->rebuild();
         // Ignore any database replicas temporarily.
         $this->replicaKillSwitch->trigger();
       }
       catch (\Exception $e) {
-        $transaction->rollBack();
+        if (isset($transaction)) {
+          $transaction->rollBack();
+        }
         watchdog_exception('menu', $e);
       }
 

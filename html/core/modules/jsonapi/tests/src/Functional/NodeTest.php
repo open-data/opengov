@@ -26,7 +26,7 @@ class NodeTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['node', 'path'];
+  protected static $modules = ['node', 'path'];
 
   /**
    * {@inheritdoc}
@@ -187,6 +187,9 @@ class NodeTest extends ResourceTestBase {
           'node_type' => [
             'data' => [
               'id' => NodeType::load('camelids')->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => 'camelids',
+              ],
               'type' => 'node_type--node_type',
             ],
             'links' => [
@@ -201,6 +204,9 @@ class NodeTest extends ResourceTestBase {
           'uid' => [
             'data' => [
               'id' => $author->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => (int) $author->id(),
+              ],
               'type' => 'user--user',
             ],
             'links' => [
@@ -215,6 +221,9 @@ class NodeTest extends ResourceTestBase {
           'revision_uid' => [
             'data' => [
               'id' => $author->uuid(),
+              'meta' => [
+                'drupal_internal__target_id' => (int) $author->id(),
+              ],
               'type' => 'user--user',
             ],
             'links' => [
@@ -256,6 +265,7 @@ class NodeTest extends ResourceTestBase {
       case 'DELETE':
         return "The 'access content' permission is required.";
     }
+    return '';
   }
 
   /**
@@ -271,7 +281,7 @@ class NodeTest extends ResourceTestBase {
     $this->setUpAuthorization('PATCH');
     $this->config('jsonapi.settings')->set('read_only', FALSE)->save(TRUE);
 
-    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/jsonapi/issues/2878463.
+    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/drupal/issues/2878463.
     $url = Url::fromRoute(sprintf('jsonapi.%s.individual', static::$resourceTypeName), ['entity' => $this->entity->uuid()]);
     // $url = $this->entity->toUrl('jsonapi');
 
@@ -311,14 +321,14 @@ class NodeTest extends ResourceTestBase {
     // Unpublish node.
     $this->entity->setUnpublished()->save();
 
-    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/jsonapi/issues/2878463.
+    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/drupal/issues/2878463.
     $url = Url::fromRoute(sprintf('jsonapi.%s.individual', static::$resourceTypeName), ['entity' => $this->entity->uuid()]);
     // $url = $this->entity->toUrl('jsonapi');
     $request_options = $this->getAuthenticationRequestOptions();
 
     // 403 when accessing own unpublished node.
     $response = $this->request('GET', $url, $request_options);
-    // @todo Remove $expected + assertResourceResponse() in favor of the commented line below once https://www.drupal.org/project/jsonapi/issues/2943176 lands.
+    // @todo Remove $expected + assertResourceResponse() in favor of the commented line below once https://www.drupal.org/project/drupal/issues/2943176 lands.
     $expected_document = [
       'jsonapi' => static::$jsonApiMember,
       'errors' => [
@@ -361,20 +371,23 @@ class NodeTest extends ResourceTestBase {
    * Asserts that normalizations are cached in an incremental way.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
+   *
+   * @internal
    */
-  protected function assertCacheableNormalizations() {
+  protected function assertCacheableNormalizations(): void {
     // Save the entity to invalidate caches.
     $this->entity->save();
     $uuid = $this->entity->uuid();
+    $language = $this->entity->language()->getId();
     $cache = \Drupal::service('render_cache')->get([
       '#cache' => [
-        'keys' => ['node--camelids', $uuid],
+        'keys' => ['node--camelids', $uuid, $language],
         'bin' => 'jsonapi_normalizations',
       ],
     ]);
     // After saving the entity the normalization should not be cached.
     $this->assertFalse($cache);
-    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/jsonapi/issues/2878463.
+    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/drupal/issues/2878463.
     $url = Url::fromRoute(sprintf('jsonapi.%s.individual', static::$resourceTypeName), ['entity' => $uuid]);
     // $url = $this->entity->toUrl('jsonapi');
     $request_options = $this->getAuthenticationRequestOptions();
@@ -398,16 +411,18 @@ class NodeTest extends ResourceTestBase {
    *
    * @param string[] $field_names
    *   The field names.
+   *
+   * @internal
    */
-  protected function assertNormalizedFieldsAreCached($field_names) {
+  protected function assertNormalizedFieldsAreCached(array $field_names): void {
     $cache = \Drupal::service('render_cache')->get([
       '#cache' => [
-        'keys' => ['node--camelids', $this->entity->uuid()],
+        'keys' => ['node--camelids', $this->entity->uuid(), $this->entity->language()->getId()],
         'bin' => 'jsonapi_normalizations',
       ],
     ]);
     $cached_fields = $cache['#data']['fields'];
-    $this->assertCount(count($field_names), $cached_fields);
+    $this->assertSameSize($field_names, $cached_fields);
     array_walk($field_names, function ($field_name) use ($cached_fields) {
       $this->assertInstanceOf(
         CacheableNormalization::class,
@@ -508,7 +523,7 @@ class NodeTest extends ResourceTestBase {
     node_access_rebuild();
     $this->rebuildAll();
     $response = $this->request('GET', $collection_filter_url, $request_options);
-    $this->assertTrue(in_array('user.node_grants:view', explode(' ', $response->getHeader('X-Drupal-Cache-Contexts')[0]), TRUE));
+    $this->assertContains('user.node_grants:view', explode(' ', $response->getHeader('X-Drupal-Cache-Contexts')[0]));
   }
 
 }

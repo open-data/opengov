@@ -13,14 +13,14 @@ simple_sitemap.settings:
     generate_duration:
       label: 'Generation duration'
       type: integer
+    entities_per_queue_item:
+      label: 'Entities per queue item'
+      type: integer
     remove_duplicates:
       label: 'Remove duplicates'
       type: boolean
     skip_untranslated:
       label: 'Skip untranslated'
-      type: boolean
-    disable_language_hreflang:
-      label: 'Disable language hreflang'
       type: boolean
     xsl:
       label: 'Include a stylesheet in the sitemaps for humans'
@@ -33,6 +33,12 @@ simple_sitemap.settings:
       type: string
     custom_links_include_images:
       label: 'Include images of custom links'
+      type: boolean
+    disable_language_hreflang:
+      label: 'Disable language hreflang'
+      type: boolean
+    hide_branding:
+      label: 'Hide branding'
       type: boolean
     excluded_languages:
       label: 'Excluded languages'
@@ -82,19 +88,47 @@ simple_sitemap.custom_links.*:
             label: 'Change frequency'
             type: string
 
-simple_sitemap.variants.*:
-  label: 'Sitemap variants'
-  type: config_object
+simple_sitemap.sitemap.*:
+  label: 'Sitemaps'
+  type: config_entity
   mapping:
-    variants:
-      label: 'Sitemap variants'
+    id:
+      label: 'ID'
+      type: string
+    label:
+      label: 'Label'
+      type: label
+    description:
+      label: 'Description'
+      type: text
+    type:
+      label: 'Type'
+      type: string
+    weight:
+      label: 'Weight'
+      type: integer
+    status:
+      label: 'Status'
+      type: boolean
+
+simple_sitemap.type.*:
+  label: 'Sitemap types'
+  type: config_entity
+  mapping:
+    id:
+      label: 'ID'
+      type: string
+    label:
+      label: 'Label'
+      type: label
+    description:
+      label: 'Description'
+      type: text
+    sitemap_generator:
+      label: 'Sitemap generator'
+      type: string
+    url_generators:
+      label: 'URL generators'
       type: sequence
       sequence:
-        type: mapping
-        mapping:
-          label:
-            label: 'Variant label'
-            type: string
-          weight:
-            label: 'Weight'
-            type: integer
+        type: string

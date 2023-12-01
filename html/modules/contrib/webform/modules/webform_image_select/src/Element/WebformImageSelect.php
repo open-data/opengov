@@ -46,7 +46,7 @@ class WebformImageSelect extends Select {
 
     // Add label filter.
     if ($element['#show_label'] && $element['#filter']) {
-      $field_prefix = (isset($element['#field_prefix'])) ? $element['#field_prefix'] : NULL;
+      $field_prefix = $element['#field_prefix'] ?? NULL;
 
       $wrapper_class = 'js-' . Html::getClass($element['#name'] . '-filter');
       $element['#wrapper_attributes']['class'][] = $wrapper_class;

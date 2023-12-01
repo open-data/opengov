@@ -14,7 +14,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\Context\EntityContext;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\field_ui\FieldUI;
 use Drupal\layout_builder\DefaultsSectionStorageInterface;
 use Drupal\layout_builder\Entity\SampleEntityGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -136,15 +135,21 @@ class DefaultsSectionStorage extends SectionStorageBase implements ContainerFact
   protected function getRouteParameters() {
     $display = $this->getDisplay();
     $entity_type = $this->entityTypeManager->getDefinition($display->getTargetEntityTypeId());
-    $route_parameters = FieldUI::getRouteBundleParameter($entity_type, $display->getTargetBundle());
-    $route_parameters['view_mode_name'] = $display->getMode();
-    return $route_parameters;
+    $bundle_parameter_key = $entity_type->getBundleEntityType() ?: 'bundle';
+    return [
+      $bundle_parameter_key => $display->getTargetBundle(),
+      'view_mode_name' => $display->getMode(),
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildRoutes(RouteCollection $collection) {
+    if (!\Drupal::moduleHandler()->moduleExists('field_ui')) {
+      return;
+    }
+
     foreach ($this->getEntityTypes() as $entity_type_id => $entity_type) {
       // Try to get the route from the current collection.
       if (!$entity_route = $collection->get($entity_type->get('field_ui_base_route'))) {
@@ -216,49 +221,6 @@ class DefaultsSectionStorage extends SectionStorageBase implements ContainerFact
   /**
    * {@inheritdoc}
    */
-  public function extractIdFromRoute($value, $definition, $name, array $defaults) {
-    @trigger_error('\Drupal\layout_builder\SectionStorageInterface::extractIdFromRoute() is deprecated in Drupal 8.7.0 and will be removed before Drupal 9.0.0. \Drupal\layout_builder\SectionStorageInterface::deriveContextsFromRoute() should be used instead. See https://www.drupal.org/node/3016262.', E_USER_DEPRECATED);
-    if (is_string($value) && strpos($value, '.') !== FALSE) {
-      return $value;
-    }
-
-    // If a bundle is not provided but a value corresponding to the bundle key
-    // is, use that for the bundle value.
-    if (empty($defaults['bundle']) && isset($defaults['bundle_key']) && !empty($defaults[$defaults['bundle_key']])) {
-      $defaults['bundle'] = $defaults[$defaults['bundle_key']];
-    }
-
-    if (!empty($defaults['entity_type_id']) && !empty($defaults['bundle']) && !empty($defaults['view_mode_name'])) {
-      return $defaults['entity_type_id'] . '.' . $defaults['bundle'] . '.' . $defaults['view_mode_name'];
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getSectionListFromId($id) {
-    @trigger_error('\Drupal\layout_builder\SectionStorageInterface::getSectionListFromId() is deprecated in Drupal 8.7.0 and will be removed before Drupal 9.0.0. The section list should be derived from context. See https://www.drupal.org/node/3016262.', E_USER_DEPRECATED);
-    if (strpos($id, '.') === FALSE) {
-      throw new \InvalidArgumentException(sprintf('The "%s" ID for the "%s" section storage type is invalid', $id, $this->getStorageType()));
-    }
-
-    $storage = $this->entityTypeManager->getStorage('entity_view_display');
-    // If the display does not exist, create a new one.
-    if (!$display = $storage->load($id)) {
-      list($entity_type_id, $bundle, $view_mode) = explode('.', $id, 3);
-      $display = $storage->create([
-        'targetEntityType' => $entity_type_id,
-        'bundle' => $bundle,
-        'mode' => $view_mode,
-        'status' => TRUE,
-      ]);
-    }
-    return $display;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getContextsDuringPreview() {
     $contexts = parent::getContextsDuringPreview();
 
@@ -304,7 +266,7 @@ class DefaultsSectionStorage extends SectionStorageBase implements ContainerFact
     }
 
     if (is_string($value) && strpos($value, '.') !== FALSE) {
-      list($entity_type_id, $bundle, $view_mode) = explode('.', $value, 3);
+      [$entity_type_id, $bundle, $view_mode] = explode('.', $value, 3);
     }
     elseif (!empty($defaults['entity_type_id']) && !empty($defaults['bundle']) && !empty($defaults['view_mode_name'])) {
       $entity_type_id = $defaults['entity_type_id'];

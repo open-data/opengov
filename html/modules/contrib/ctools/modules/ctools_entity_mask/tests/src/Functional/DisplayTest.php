@@ -7,6 +7,8 @@ use Drupal\file\Entity\File;
 use Drupal\Tests\BrowserTestBase;
 
 /**
+ * Class DisplayTest.
+ *
  * @group ctools_entity_mask
  */
 class DisplayTest extends BrowserTestBase {
@@ -19,7 +21,7 @@ class DisplayTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'block',
     'block_content',
     'ctools_entity_mask',
@@ -37,7 +39,7 @@ class DisplayTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $account = $this->drupalCreateUser(['administer blocks']);
@@ -101,15 +103,17 @@ class DisplayTest extends BrowserTestBase {
     $rendered = $this->container->get('renderer')->renderRoot($build);
     $rendered = (string) $rendered;
 
-    $this->assertContains($block->body->value, $rendered);
-    $this->assertContains($block->field_link->uri, $rendered);
+    // @todo Use assertStringContainsString() when we rely exclusively on
+    // PHPUnit 8.
+    $this->assertNotFalse(strpos($rendered, $block->body->value));
+    $this->assertNotFalse(strpos($rendered, $block->field_link->uri));
 
     $image_url = $block->field_image->entity->getFileUri();
-    $image_url = file_create_url($image_url);
-    // file_create_url() will include the host and port, but the rendered output
-    // won't include those.
-    $image_url = file_url_transform_relative($image_url);
-    $this->assertContains($image_url, $rendered);
+    $image_url = $this->container->get('file_url_generator')->generateAbsoluteString($image_url);
+    $image_url = $this->container->get('file_url_generator')->transformRelative($image_url);
+    // @todo Use assertStringContainsString() when we rely exclusively on
+    // PHPUnit 8.
+    $this->assertNotFalse(strpos($rendered, $image_url));
   }
 
 }

@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Suggester;
 
 use Solarium\Component\ComponentTraits\SuggesterTrait;
@@ -17,12 +24,14 @@ use Solarium\QueryType\Suggester\Result\Term;
 /**
  * Suggester Query.
  *
- * Can be used for an autocomplete feature. See http://wiki.apache.org/solr/Suggester for more info.
+ * Can be used for an autocomplete feature.
+ *
+ * @see https://solr.apache.org/guide/suggester.html
  */
 class Query extends BaseQuery implements SuggesterInterface, QueryInterface
 {
-    use SuggesterTrait;
     use QueryTrait;
+    use SuggesterTrait;
 
     /**
      * Default options.

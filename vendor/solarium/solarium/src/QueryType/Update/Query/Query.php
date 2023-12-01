@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Update\Query;
 
 use Solarium\Core\Client\Client;
@@ -14,15 +21,17 @@ use Solarium\QueryType\Update\Query\Command\Add as AddCommand;
 use Solarium\QueryType\Update\Query\Command\Commit as CommitCommand;
 use Solarium\QueryType\Update\Query\Command\Delete as DeleteCommand;
 use Solarium\QueryType\Update\Query\Command\Optimize as OptimizeCommand;
+use Solarium\QueryType\Update\Query\Command\RawXml as RawXmlCommand;
 use Solarium\QueryType\Update\Query\Command\Rollback as RollbackCommand;
-use Solarium\QueryType\Update\RequestBuilder;
+use Solarium\QueryType\Update\RequestBuilder\Json as JsonRequestBuilder;
+use Solarium\QueryType\Update\RequestBuilder\Xml as XmlRequestBuilder;
 use Solarium\QueryType\Update\ResponseParser;
 use Solarium\QueryType\Update\Result;
 
 /**
  * Update query.
  *
- * Can be used to send multiple update commands to solr, e.g. add, delete,
+ * Can be used to send multiple update commands to Solr, e.g. add, delete,
  * rollback, commit, optimize.
  * Multiple commands of any type can be combined into a single update query.
  */
@@ -34,14 +43,24 @@ class Query extends BaseQuery
     const COMMAND_ADD = 'add';
 
     /**
+     * Update command commit.
+     */
+    const COMMAND_COMMIT = 'commit';
+
+    /**
      * Update command delete.
      */
     const COMMAND_DELETE = 'delete';
 
     /**
-     * Update command commit.
+     * Update command optimize.
      */
-    const COMMAND_COMMIT = 'commit';
+    const COMMAND_OPTIMIZE = 'optimize';
+
+    /**
+     * Update command raw XML.
+     */
+    const COMMAND_RAWXML = 'rawxml';
 
     /**
      * Update command rollback.
@@ -49,9 +68,14 @@ class Query extends BaseQuery
     const COMMAND_ROLLBACK = 'rollback';
 
     /**
-     * Update command optimize.
+     * JSON request format.
      */
-    const COMMAND_OPTIMIZE = 'optimize';
+    const REQUEST_FORMAT_JSON = 'json';
+
+    /**
+     * XML request format.
+     */
+    const REQUEST_FORMAT_XML = 'xml';
 
     /**
      * Update command types.
@@ -60,10 +84,21 @@ class Query extends BaseQuery
      */
     protected $commandTypes = [
         self::COMMAND_ADD => AddCommand::class,
-        self::COMMAND_DELETE => DeleteCommand::class,
         self::COMMAND_COMMIT => CommitCommand::class,
+        self::COMMAND_DELETE => DeleteCommand::class,
         self::COMMAND_OPTIMIZE => OptimizeCommand::class,
+        self::COMMAND_RAWXML => RawXmlCommand::class,
         self::COMMAND_ROLLBACK => RollbackCommand::class,
+    ];
+
+    /**
+     * Request formats.
+     *
+     * @var array
+     */
+    protected $requestFormats = [
+        self::REQUEST_FORMAT_JSON => JsonRequestBuilder::class,
+        self::REQUEST_FORMAT_XML => XmlRequestBuilder::class,
     ];
 
     /**
@@ -73,6 +108,7 @@ class Query extends BaseQuery
      */
     protected $options = [
         'handler' => 'update',
+        'requestformat' => self::REQUEST_FORMAT_JSON,
         'resultclass' => Result::class,
         'documentclass' => Document::class,
         'omitheader' => false,
@@ -99,13 +135,49 @@ class Query extends BaseQuery
     }
 
     /**
+     * Set the request format for this query.
+     *
+     * Use one of the REQUEST_FORMAT_* constants as value.
+     *
+     * @param string $requestFormat
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return self Provides fluent interface
+     */
+    public function setRequestFormat(string $requestFormat): self
+    {
+        $requestFormat = strtolower($requestFormat);
+
+        if (!isset($this->requestFormats[$requestFormat])) {
+            throw new InvalidArgumentException(sprintf('Unsupported request format: %s', $requestFormat));
+        }
+
+        $this->setOption('requestformat', $requestFormat);
+
+        return $this;
+    }
+
+    /**
+     * Get the request format for this query.
+     *
+     * @return string
+     */
+    public function getRequestFormat(): string
+    {
+        return $this->getOption('requestformat');
+    }
+
+    /**
      * Get a requestbuilder for this query.
      *
-     * @return RequestBuilder
+     * @return RequestBuilderInterface
      */
     public function getRequestBuilder(): RequestBuilderInterface
     {
-        return new RequestBuilder();
+        $class = $this->requestFormats[$this->options['requestformat']];
+
+        return new $class();
     }
 
     /**
@@ -133,7 +205,7 @@ class Query extends BaseQuery
         $type = strtolower($type);
 
         if (!isset($this->commandTypes[$type])) {
-            throw new InvalidArgumentException('Update commandtype unknown: '.$type);
+            throw new InvalidArgumentException(sprintf('Update commandtype unknown: %s', $type));
         }
 
         $class = $this->commandTypes[$type];
@@ -154,8 +226,8 @@ class Query extends BaseQuery
     /**
      * Add a command to this update query.
      *
-     * The command must be an instance of one of the Solarium\QueryType\Update_*
-     * classes.
+     * The command must be an instance of one of the
+     * Solarium\QueryType\Update\Query\Command\* classes.
      *
      * @param string|null     $key
      * @param AbstractCommand $command
@@ -201,7 +273,7 @@ class Query extends BaseQuery
     }
 
     /**
-     * Convenience method for adding a rollback command.
+     * Convenience method to add a rollback command.
      *
      * If you need more control, like choosing a key for the command you need to
      * create you own command instance and use the add method.
@@ -214,7 +286,7 @@ class Query extends BaseQuery
     }
 
     /**
-     * Convenience method for adding a delete query command.
+     * Convenience method to add a delete query command.
      *
      * If you need more control, like choosing a key for the command you need to
      * create you own command instance and use the add method.
@@ -399,6 +471,63 @@ class Query extends BaseQuery
     }
 
     /**
+     * Convenience method for adding a raw XML command.
+     *
+     * If you need more control, like choosing a key for the command you need to
+     * create you own command instance and use the add method.
+     *
+     * @param string $command
+     *
+     * @return self Provides fluent interface
+     */
+    public function addRawXmlCommand(string $command): self
+    {
+        $raw = new RawXmlCommand();
+
+        $raw->addCommand($command);
+
+        return $this->add(null, $raw);
+    }
+
+    /**
+     * Convenience method for adding raw XML commands.
+     *
+     * If you need more control, like choosing a key for the command you need to
+     * create you own command instance and use the add method.
+     *
+     * @param array $commands
+     *
+     * @return self Provides fluent interface
+     */
+    public function addRawXmlCommands(array $commands): self
+    {
+        $raw = new RawXmlCommand();
+
+        $raw->addCommands($commands);
+
+        return $this->add(null, $raw);
+    }
+
+    /**
+     * Convenience method for adding a raw XML command from a file.
+     *
+     * If you need more control, like choosing a key for the command you need to
+     * create you own command instance and use the add method.
+     *
+     * @param string $filename
+     *
+     * @return self Provides fluent interface
+     */
+    public function addRawXmlFile(string $filename): self
+    {
+        $raw = new RawXmlCommand();
+
+        $raw->addCommandFromFile($filename);
+
+        return $this->add(null, $raw);
+    }
+
+    /**
      * Set a custom document class for use in the createDocument method.
      *
      * This class should implement the document interface
@@ -417,7 +546,7 @@ class Query extends BaseQuery
     /**
      * Get the current documentclass option.
      *
-     * The value is a classname, not an instance
+     * The value is a classname, not an instance.
      *
      * @return string
      */
@@ -430,7 +559,7 @@ class Query extends BaseQuery
      * Create a document object instance.
      *
      * You can optionally directly supply the fields and boosts
-     * to get a ready-made document instance for direct use in an add command
+     * to get a ready-made document instance for direct use in an add command.
      *
      * @since 2.1.0
      *
@@ -450,20 +579,23 @@ class Query extends BaseQuery
     /**
      * Initialize options.
      *
-     * Several options need some extra checks or setup work, for these options
-     * the setters are called.
+     * {@internal Several options need some extra checks or setup work,
+     *            for these options the setters are called.}
      *
+     * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    protected function init()
+    protected function init(): void
     {
-        parent::init();
+        if (isset($this->options['requestformat'])) {
+            $this->setRequestFormat($this->options['requestformat']);
+        }
 
         if (isset($this->options['command'])) {
             foreach ($this->options['command'] as $key => $value) {
                 $type = $value['type'];
 
-                if (self::COMMAND_ADD == $type) {
+                if (self::COMMAND_ADD === $type) {
                     throw new RuntimeException('Adding documents is not supported in configuration, use the API for this');
                 }
 

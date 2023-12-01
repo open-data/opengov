@@ -24,6 +24,8 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
    * Tests webform example element.
    */
   public function testWebformExampleElement() {
+    $assert_session = $this->assertSession();
+
     $webform = Webform::load('webform_example_element');
 
     // Check form element rendering.
@@ -31,9 +33,9 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
     // NOTE:
     // This is a very lazy but easy way to check that the element is rendering
     // as expected.
-    $this->assertRaw('<div class="js-form-item form-item js-form-type-webform-example-element form-item-webform-example-element js-form-item-webform-example-element">');
-    $this->assertRaw('<label for="edit-webform-example-element">Webform Example Element</label>');
-    $this->assertRaw('<input data-drupal-selector="edit-webform-example-element" type="text" id="edit-webform-example-element" name="webform_example_element" value="" size="60" class="form-text webform-example-element" />');
+    $assert_session->responseContains('<div class="js-form-item form-item js-form-type-webform-example-element form-item-webform-example-element js-form-item-webform-example-element">');
+    $assert_session->responseContains('<label for="edit-webform-example-element">Webform Example Element</label>');
+    $assert_session->responseContains('<input data-drupal-selector="edit-webform-example-element" type="text" id="edit-webform-example-element" name="webform_example_element" value="" size="60" class="form-text webform-example-element" />');
 
     // Check webform element submission.
     $edit = [
@@ -42,8 +44,8 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
     ];
     $sid = $this->postSubmission($webform, $edit);
     $webform_submission = WebformSubmission::load($sid);
-    $this->assertEqual($webform_submission->getElementData('webform_example_element'), '{Test}');
-    $this->assertEqual($webform_submission->getElementData('webform_example_element_multiple'), ['{Test 01}']);
+    $this->assertEquals($webform_submission->getElementData('webform_example_element'), '{Test}');
+    $this->assertEquals($webform_submission->getElementData('webform_example_element_multiple'), ['{Test 01}']);
   }
 
 }

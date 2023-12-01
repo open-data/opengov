@@ -5,16 +5,11 @@ namespace Drupal\webform\Form\AdminConfig;
 use Drupal\Component\Utility\Bytes;
 use Drupal\Component\Utility\Environment;
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Plugin\Field\FieldType\FileItem;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
-use Drupal\webform\WebformLibrariesManagerInterface;
-use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -58,38 +53,15 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
   }
 
   /**
-   * Constructs a WebformAdminConfigElementsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
-   *   The webform element manager.
-   * @param \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager
-   *   The webform libraries manager.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, WebformTokenManagerInterface $token_manager, WebformElementManagerInterface $element_manager, WebformLibrariesManagerInterface $libraries_manager) {
-    parent::__construct($config_factory);
-    $this->moduleHandler = $module_handler;
-    $this->tokenManager = $token_manager;
-    $this->elementManager = $element_manager;
-    $this->librariesManager = $libraries_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('module_handler'),
-      $container->get('webform.token_manager'),
-      $container->get('plugin.manager.webform.element'),
-      $container->get('webform.libraries_manager')
-    );
+    $instance = parent::create($container);
+    $instance->moduleHandler = $container->get('module_handler');
+    $instance->tokenManager = $container->get('webform.token_manager');
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    $instance->librariesManager = $container->get('webform.libraries_manager');
+    return $instance;
   }
 
   /**
@@ -129,8 +101,8 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
       '#type' => 'webform_radios_other',
       '#title' => $this->t('Allowed tags'),
       '#options' => [
-        'admin' => $this->t('Admin tags Excludes: script, iframe, etc…'),
-        'html' => $this->t('HTML tags: Includes only @html_tags.', ['@html_tags' => WebformArrayHelper::toString(Xss::getHtmlTagList())]),
+        'admin' => $this->t('Admin tags -- Admin tags include %html_tags.', ['%html_tags' => WebformArrayHelper::toString(Xss::getAdminTagList())]),
+        'html' => $this->t('HTML tags -- HTML tags include %html_tags.', ['%html_tags' => WebformArrayHelper::toString(Xss::getHtmlTagList())]),
       ],
       '#other__option_label' => $this->t('Custom tags'),
       '#other__placeholder' => $this->t('Enter multiple tags delimited using spaces'),
@@ -482,6 +454,7 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
     foreach ($element_plugins as $element_id => $element_plugin) {
       $element_plugin_definition = $element_plugin->getPluginDefinition();
       $element_plugin_label = $element_plugin_definition['label'];
+      $element_plugin_description = $element_plugin_definition['description'];
       $element_plugin_states = [
         'disabled' => [
           ':input[name="excluded_elements[' . $element_id . ']"]' => ['checked' => FALSE],
@@ -491,29 +464,42 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
       $row = [];
 
       // Title.
-      $row['title'] = ['#markup' => $element_plugin_label];
+      $row['title'] = [
+        'title' => [
+          '#markup' => $element_plugin_label,
+          '#prefix' => '<strong>',
+          '#suffix' => '</strong>',
+        ],
+        'description' => [
+          '#markup' => $element_plugin_description,
+          '#prefix' => '<div>',
+          '#suffix' => '</div>',
+        ],
+      ];
 
       // ID.
       $row['id'] = ['#markup' => $element_id];
 
       // Item format.
       $item_formats = WebformOptionsHelper::appendValueToText($element_plugin->getItemFormats());
-      $item_default_format = $element_plugin->getItemDefaultFormat();
-      $item_default_format_label = (isset($item_formats[$item_default_format])) ? $item_formats[$item_default_format] : $item_default_format;
       $row['item'] = [
         '#type' => 'select',
         '#title' => $this->t('Item format'),
         '#title_display' => 'invisible',
-        '#field_suffix' => [
-          '#type' => 'webform_help',
-          '#help' => $this->t('Defaults to: %value', ['%value' => $item_default_format_label]),
-        ],
         '#empty_option' => $this->t('- Default -'),
         '#options' => $item_formats,
         '#default_value' => $config->get("format.$element_id"),
         '#parents' => ['format', $element_id, 'item'],
         '#states' => $element_plugin_states,
       ];
+      $item_default_format = $element_plugin->getItemDefaultFormat();
+      $item_default_format_label = $item_formats[$item_default_format] ?? $item_default_format;
+      if ($item_default_format_label) {
+        $row['item']['#field_suffix'] = [
+          '#type' => 'webform_help',
+          '#help' => $this->t('Defaults to: %value', ['%value' => $item_default_format_label]),
+        ];
+      }
 
       // Items format.
       if ($element_plugin->supportsMultipleValues()) {
@@ -608,9 +594,11 @@ class WebformAdminConfigElementsForm extends WebformAdminConfigBaseForm {
    */
   public static function validateMaxFilesize($element, FormStateInterface $form_state) {
     // Issue #2359675: File field's Maximum upload size always passes validation.
+    // phpcs:disable
     // if (class_exists('\Drupal\file\Plugin\Field\FieldType\FileItem')) {
     //   FileItem::validateMaxFilesize($element, $form_state);
     // }
+    // phpcs:enable
     // @see \Drupal\file\Plugin\Field\FieldType\FileItem::validateMaxFilesize
     if (!empty($element['#value']) && !Bytes::toInt($element['#value'])) {
       $form_state->setError($element, t('The "@name" option must contain a valid value. You may either leave the text field empty or enter a string like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes).', ['@name' => $element['#title']]));

@@ -18,17 +18,15 @@ class ContentAccessTest extends SearchApiContentAccessTest {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
-    'devel',
+  protected static $modules = [
     'search_api_solr',
-    'search_api_solr_devel',
     'search_api_solr_test',
   ];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp($processor = NULL) {
+  public function setUp($processor = NULL): void {
     parent::setUp();
     $this->enableSolrServer();
   }

@@ -41,33 +41,35 @@ class WebformElementManagedFilePublicTest extends WebformElementBrowserTestBase 
    * Test public upload protection.
    */
   public function testPublicUpload() {
+    $assert_session = $this->assertSession();
+
     // Check status report private file system warning.
     $requirements = webform_requirements('runtime');
-    $this->assertEqual($requirements['webform_file_private']['value'], (string) 'Private file system is set.');
+    $this->assertEquals($requirements['webform_file_private']['value'], (string) 'Private file system is set.');
 
     $this->drupalLogin($this->rootUser);
 
     // Check element webform warning message for public files.
     $this->drupalGet('/admin/structure/webform/manage/test_element_managed_file/element/managed_file_single/edit');
-    $this->assertRaw('Public files upload destination is dangerous for webforms that are available to anonymous and/or untrusted users.');
-    $this->assertFieldById('edit-properties-uri-scheme-public', NULL);
+    $assert_session->responseContains('Public files upload destination is dangerous for webforms that are available to anonymous and/or untrusted users.');
+    $assert_session->fieldExists('edit-properties-uri-scheme-public');
 
     // Check element webform warning message not visible public files.
     \Drupal::configFactory()->getEditable('webform.settings')
       ->set('file.file_public', FALSE)
       ->save();
     $this->drupalGet('/admin/structure/webform/manage/test_element_managed_file/element/managed_file_single/edit');
-    $this->assertNoRaw('Public files upload destination is dangerous for webforms that are available to anonymous and/or untrusted users.');
-    $this->assertNoFieldById('edit-properties-uri-scheme-public', NULL);
+    $assert_session->responseNotContains('Public files upload destination is dangerous for webforms that are available to anonymous and/or untrusted users.');
+    $assert_session->fieldNotExists('edit-properties-uri-scheme-public');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // NOTE: Unable to test private file upload warning because SimpleTest
     // automatically enables private file uploads.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check managed_file element is enabled.
     $this->drupalGet('/admin/structure/webform/manage/test_element_managed_file/element/add');
-    $this->assertRaw('>File<');
+    $assert_session->responseContains('>File<');
 
     // Disable managed file element.
     \Drupal::configFactory()->getEditable('webform.settings')
@@ -76,12 +78,12 @@ class WebformElementManagedFilePublicTest extends WebformElementBrowserTestBase 
 
     // Check disabled managed_file element remove from add element dialog.
     $this->drupalGet('/admin/structure/webform/manage/test_element_managed_file/element/add');
-    $this->assertNoRaw('>File<');
+    $assert_session->responseNotContains('>File<');
 
     // Check disabled managed_file element warning.
     $this->drupalGet('/admin/structure/webform/manage/test_element_managed_file');
-    $this->assertRaw('<em class="placeholder">managed_file_single</em> is a <em class="placeholder">File</em> element, which has been disabled and will not be rendered.');
-    $this->assertRaw('<em class="placeholder">managed_file_multiple</em> is a <em class="placeholder">File</em> element, which has been disabled and will not be rendered.');
+    $assert_session->responseContains('<em class="placeholder">managed_file_single</em> is a <em class="placeholder">File</em> element, which has been disabled and will not be rendered.');
+    $assert_session->responseContains('<em class="placeholder">managed_file_multiple</em> is a <em class="placeholder">File</em> element, which has been disabled and will not be rendered.');
   }
 
 }

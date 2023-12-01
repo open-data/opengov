@@ -51,7 +51,7 @@ class Checkboxes extends OptionsBase {
     return array_merge(parent::defineTranslatableProperties(), ['options_all_text', 'options_none_text']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -137,7 +137,7 @@ class Checkboxes extends OptionsBase {
     $selectors = $element['#options'];
     foreach ($selectors as $index => $text) {
       // Remove description from text.
-      list($text) = WebformOptionsHelper::splitOption($text);
+      [$text] = WebformOptionsHelper::splitOption($text);
       // Append element type to text.
       $text .= ' [' . $this->t('Checkbox') . ']';
       $selectors[$index] = $text;

@@ -5,7 +5,7 @@ namespace Drupal\password_policy;
 use Drupal\user\UserInterface;
 
 /**
- * Interface PasswordPolicyValidatorInterface.
+ * Interface Password Policy Validator Interface.
  *
  * @package Drupal\password_policy
  */
@@ -21,10 +21,10 @@ interface PasswordPolicyValidatorInterface {
    * @param array $edited_user_roles
    *   An optional array containing the edited user roles.
    *
-   * @return bool
-   *   True when the password is valid, else false.
+   * @return \Drupal\password_policy\PasswordPolicyValidationReport
+   *   Validation report object.
    */
-  public function validatePassword(string $password, UserInterface $user, array $edited_user_roles = []): bool;
+  public function validatePassword(string $password, UserInterface $user, array $edited_user_roles = []): PasswordPolicyValidationReport;
 
   /**
    * Builds the password policy constraints table rows.

@@ -32,6 +32,8 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
   protected $minimum_solr_version;
 
   /**
+   * Recommended entity?
+   *
    * @var bool
    */
   protected $recommended = TRUE;
@@ -66,15 +68,15 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    * Formats a given array to an XML string.
    */
   protected function buildXmlFromArray($root_element_name, array $attributes) {
-    /** @noinspection PhpComposerExtensionStubsInspection */
+    /* @noinspection PhpComposerExtensionStubsInspection */
     $root = new \SimpleXMLElement('<' . $root_element_name . '/>');
     self::buildXmlFromArrayRecursive($root, $attributes);
 
     // Create formatted string.
-    /** @noinspection PhpComposerExtensionStubsInspection */
+    /* @noinspection PhpComposerExtensionStubsInspection */
     $dom = dom_import_simplexml($root)->ownerDocument;
     $dom->formatOutput = TRUE;
-    $formatted_xml_string = $dom->saveXML();
+    $formatted_xml_string = str_replace('__EMPTY_STRING_VALUE__', '', $dom->saveXML());
 
     // Remove the XML declaration before returning the XML fragment.
     return preg_replace('/<\?.*?\?>\s*\n?/', '', $formatted_xml_string);
@@ -90,8 +92,11 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    */
   protected static function buildXmlFromArrayRecursive(\SimpleXMLElement $element, array $attributes) {
     foreach ($attributes as $key => $value) {
-      if (is_scalar($value)) {
-        if (is_bool($value) === TRUE) {
+      if (is_scalar($value) || is_null($value)) {
+        if (is_null($value)) {
+          $value = '__EMPTY_STRING_VALUE__';
+        }
+        elseif (is_bool($value) === TRUE) {
           // SimpleXMLElement::addAtribute() converts booleans to integers 0
           // and 1. But Solr requires the strings 'false' and 'true'.
           $value = $value ? 'true' : 'false';
@@ -185,7 +190,7 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
     }
 
     // Remove the fake root element the XML fragment.
-    return $comment . trim(preg_replace('@</?solrconfigs/?>@', '', $formatted_xml_string),  "\n") . "\n";
+    return $comment . trim(preg_replace('@</?solrconfigs/?>@', '', $formatted_xml_string), "\n") . "\n";
   }
 
   /**
@@ -207,8 +212,11 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    * Get all available options.
    *
    * @param string $key
+   *   Key.
    * @param string $default
+   *   Default.
    * @param string $prefix
+   *   Prefix.
    *
    * @return string[]
    *   An array of options as strings.
@@ -229,9 +237,11 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
   }
 
   /**
-  * @return string[]
-  *   An array of environments as strings.
-  */
+   * Get Options.
+   *
+   * @return string[]
+   *   An array of options as strings.
+   */
   abstract public function getOptions();
 
   /**
@@ -259,4 +269,5 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
   public function isRecommended(): bool {
     return $this->recommended;
   }
+
 }

@@ -3,7 +3,7 @@
  * Provides the soft limit functionality.
  */
 
-(function ($) {
+(function ($, once) {
 
   'use strict';
 
@@ -42,14 +42,14 @@
     }
 
     // Hide facets over the limit.
-    facetsList.each(function() {
-      $(this).children('li:gt(' + zero_based_limit + ')').once('applysoftlimit').hide();
+    facetsList.each(function () {
+      $(once('applysoftlimit', $(this).children('li:gt(' + zero_based_limit + ')'))).hide();
     });
 
     // Add "Show more" / "Show less" links.
-    facetsList.once().filter(function () {
+    $(once('applysoftlimit', facetsList.filter(function () {
       return $(this).find('li').length > limit;
-    }).each(function () {
+    }))).each(function () {
       var facet = $(this);
       var showLessLabel = settings.facets.softLimitSettings[facet_id].showLessLabel;
       var showMoreLabel = settings.facets.softLimitSettings[facet_id].showMoreLabel;
@@ -58,6 +58,7 @@
         .on('click', function () {
           if (facet.find('li:hidden').length > 0) {
             facet.find('li:gt(' + zero_based_limit + ')').slideDown();
+            facet.find('li:lt(' + (zero_based_limit + 2) + ') a, li:lt(' + (zero_based_limit + 2) + ') input').focus();
             $(this).addClass('open').text(showLessLabel);
           }
           else {
@@ -69,4 +70,4 @@
     });
   };
 
-})(jQuery);
+})(jQuery, once);

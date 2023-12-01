@@ -12,7 +12,7 @@ class WidgetIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'views',
     'node',
     'search_api',
@@ -26,7 +26,7 @@ class WidgetIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->drupalLogin($this->adminUser);
@@ -43,7 +43,7 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $id = 't';
     $this->createFacet('Facet & checkbox~', $id);
     $this->drupalGet('admin/config/search/facets/' . $id . '/edit');
-    $this->drupalPostForm(NULL, ['widget' => 'checkbox'], 'Save');
+    $this->submitForm(['widget' => 'checkbox'], 'Save');
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertFacetLabel('item');
@@ -57,7 +57,7 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $id = 'links_widget';
     $this->createFacet('>.Facet &* Links', $id);
     $this->drupalGet('admin/config/search/facets/' . $id . '/edit');
-    $this->drupalPostForm(NULL, ['widget' => 'links'], 'Save');
+    $this->submitForm(['widget' => 'links'], 'Save');
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertFacetLabel('item');
@@ -74,8 +74,19 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $id = 'select_widget';
     $this->createFacet('Select', $id);
     $this->drupalGet('admin/config/search/facets/' . $id . '/edit');
-    $this->drupalPostForm(NULL, ['widget' => 'dropdown'], 'Configure widget');
-    $this->drupalPostForm(NULL, ['widget' => 'dropdown', 'facet_settings[show_only_one_result]' => TRUE], 'Save');
+    $this->submitForm(
+      [
+        'widget' => 'dropdown',
+      ],
+      'Configure widget'
+    );
+    $this->submitForm(
+      [
+        'widget' => 'dropdown',
+        'facet_settings[show_only_one_result]' => TRUE,
+      ],
+      'Save'
+    );
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertSession()->pageTextContains('Displaying 5 search results');
@@ -99,7 +110,13 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $this->assertFacetLabel('article');
 
     $this->drupalGet($facet_edit_page);
-    $this->drupalPostForm(NULL, ['widget' => 'links', 'widget_config[show_numbers]' => TRUE], 'Save');
+    $this->submitForm(
+      [
+        'widget' => 'links',
+        'widget_config[show_numbers]' => TRUE,
+      ],
+      'Save'
+    );
 
     // Go back to the same view and check that links now display the count.
     $this->drupalGet('search-api-test-fulltext');
@@ -111,7 +128,8 @@ class WidgetIntegrationTest extends FacetsTestBase {
       'widget_config[show_numbers]' => TRUE,
       'facet_settings[query_operator]' => 'or',
     ];
-    $this->drupalPostForm($facet_edit_page, $edit, 'Save');
+    $this->drupalGet($facet_edit_page);
+    $this->submitForm($edit, 'Save');
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertFacetLabel('item (3)');
@@ -121,7 +139,13 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $this->assertFacetLabel('article (2)');
 
     $this->drupalGet($facet_edit_page);
-    $this->drupalPostForm(NULL, ['widget' => 'links', 'widget_config[show_numbers]' => FALSE], 'Save');
+    $this->submitForm(
+      [
+        'widget' => 'links',
+        'widget_config[show_numbers]' => FALSE,
+      ],
+      'Save'
+    );
 
     // The count should be hidden again.
     $this->drupalGet('search-api-test-fulltext');
@@ -145,8 +169,8 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $this->assertSession()->checkboxNotChecked('edit-facet-settings-hide-non-narrowing-result-processor-status');
     $this->assertSession()->checkboxNotChecked('edit-facet-settings-show-only-one-result');
 
-    $this->drupalPostForm(NULL, ['widget' => 'custom_widget'], 'Configure widget');
-    $this->drupalPostForm(NULL, ['widget' => 'custom_widget'], 'Save');
+    $this->submitForm(['widget' => 'custom_widget'], 'Configure widget');
+    $this->submitForm(['widget' => 'custom_widget'], 'Save');
 
     $this->assertSession()->checkboxChecked('edit-facet-settings-hide-non-narrowing-result-processor-status');
     $this->assertSession()->checkboxChecked('edit-facet-settings-show-only-one-result');
@@ -180,7 +204,8 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $id = 'kepler_16b';
     $this->createFacet('Kepler 16b', $id);
     $editUrl = 'admin/config/search/facets/' . $id . '/edit';
-    $this->drupalPostForm($editUrl, ['widget' => 'links'], 'Save');
+    $this->drupalGet($editUrl);
+    $this->submitForm(['widget' => 'links'], 'Save');
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertFacetLabel('item');
@@ -190,7 +215,8 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $this->checkFacetIsActive('item');
 
     // Enable the all (reset) link.
-    $this->drupalPostForm($editUrl, ['widget_config[show_reset_link]' => TRUE], 'Save');
+    $this->drupalGet($editUrl);
+    $this->submitForm(['widget_config[show_reset_link]' => TRUE], 'Save');
 
     $this->drupalGet('search-api-test-fulltext');
     $this->assertFacetLabel('item');
@@ -202,7 +228,8 @@ class WidgetIntegrationTest extends FacetsTestBase {
       'widget_config[show_reset_link]' => TRUE,
       'widget_config[reset_text]' => 'Planets',
     ];
-    $this->drupalPostForm($editUrl, $edit, 'Save');
+    $this->drupalGet($editUrl);
+    $this->submitForm($edit, 'Save');
 
     // Check that the new text appears and no facets are active.
     $this->drupalGet('search-api-test-fulltext');
@@ -220,6 +247,41 @@ class WidgetIntegrationTest extends FacetsTestBase {
     $this->clickLink('Planets');
     $this->checkFacetIsNotActive('item');
     $this->checkFacetIsNotActive('article');
+  }
+
+  /**
+   * Tests that, when there are multiple facets, the "Show all" link's `is-active` CSS class doesn't leak into subsequent inactive facet links.
+   * https://www.drupal.org/project/facets/issues/3295536
+   */
+  public function testMultilpleResetLinks() {
+    $firstId = 'first_facet';
+    $this->createFacet('First Facet', $firstId);
+    $firstEditUrl = 'admin/config/search/facets/' . $firstId . '/edit';
+    $this->drupalGet($firstEditUrl);
+    $this->submitForm(['widget' => 'links', 'widget_config[show_reset_link]' => TRUE], 'Save');
+
+    $secondId = 'second_facet';
+    $this->createFacet('Second Facet', $secondId);
+    $secondEditUrl = 'admin/config/search/facets/' . $secondId . '/edit';
+    $this->drupalGet($secondEditUrl);
+    $this->submitForm(['widget' => 'links', 'widget_config[show_reset_link]' => TRUE], 'Save');
+
+    $this->drupalGet('search-api-test-fulltext');
+
+    $showAllLinks = $this->findFacetLink('Show all');
+    $this->assertCount(2, $showAllLinks);
+    for ($i = 0; $i < 2; ++$i)
+      $this->assertTrue($showAllLinks[$i]->getParent()->hasClass('is-active'), 'The "Show all" link should be active.');
+
+    $itemLinks = $this->findFacetLink('item');
+    $this->assertCount(2, $itemLinks);
+    for ($i = 0; $i < 2; ++$i)
+      $this->assertTrue(! $itemLinks[$i]->getParent()->hasClass('is-active'), 'The "item" link should not be active.');
+
+    $articleLinks = $this->findFacetLink('article');
+    $this->assertCount(2, $articleLinks);
+    for ($i = 0; $i < 2; ++$i)
+      $this->assertTrue(! $articleLinks[$i]->getParent()->hasClass('is-active'), 'The "article" link should not be active.');
   }
 
 }

@@ -3,7 +3,8 @@
 namespace Drupal\facets_summary\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Cache\UncacheableDependencyTrait;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\facets_summary\Entity\FacetsSummary;
@@ -21,8 +22,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class FacetsSummaryBlock extends BlockBase implements FacetsSummaryBlockInterface, ContainerFactoryPluginInterface {
 
-  use UncacheableDependencyTrait;
-
   /**
    * The facet manager service.
    *
@@ -36,6 +35,13 @@ class FacetsSummaryBlock extends BlockBase implements FacetsSummaryBlockInterfac
    * @var \Drupal\facets_summary\FacetsSummaryInterface
    */
   protected $facetsSummary;
+
+  /**
+   * The cacheable metadata.
+   *
+   * @var \Drupal\Core\Cache\CacheableMetadata
+   */
+  protected $cacheableMetadata;
 
   /**
    * Constructs a source summary block.
@@ -84,6 +90,11 @@ class FacetsSummaryBlock extends BlockBase implements FacetsSummaryBlockInterfac
    * {@inheritdoc}
    */
   public function build() {
+    // Do not build the facet summary if the block is being previewed.
+    if ($this->getContextValue('in_preview')) {
+      return [];
+    }
+
     /** @var \Drupal\facets_summary\FacetsSummaryInterface $summary */
     $facets_summary = $this->getEntity();
 
@@ -92,6 +103,8 @@ class FacetsSummaryBlock extends BlockBase implements FacetsSummaryBlockInterfac
 
     // Add contextual links only when we have results.
     if (!empty($build)) {
+      CacheableMetadata::createFromObject($this)->applyTo($build);
+
       $build['#contextual_links']['facets_summary'] = [
         'route_parameters' => ['facets_summary' => $facets_summary->id()],
       ];
@@ -122,6 +135,46 @@ class FacetsSummaryBlock extends BlockBase implements FacetsSummaryBlockInterfac
       return [$summary->getConfigDependencyKey() => [$summary->getConfigDependencyName()]];
     }
     return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    $this->calculateCacheDependencies();
+
+    return Cache::mergeTags(parent::getCacheTags(), $this->cacheableMetadata->getCacheTags());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    $this->calculateCacheDependencies();
+
+    return Cache::mergeContexts(parent::getCacheContexts(), $this->cacheableMetadata->getCacheContexts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    $this->calculateCacheDependencies();
+
+    return Cache::mergeMaxAges(parent::getCacheMaxAge(), $this->cacheableMetadata->getCacheMaxAge());
+  }
+
+  /**
+   * @throws \Drupal\facets\Exception\InvalidProcessorException
+   */
+  protected function calculateCacheDependencies(): void {
+    if (!$this->cacheableMetadata) {
+      $this->cacheableMetadata = new CacheableMetadata();
+
+      foreach ($this->facetsSummaryManager->getFacets($this->getEntity()) as $facet) {
+        $this->cacheableMetadata->addCacheableDependency($facet);
+      }
+    }
   }
 
 }

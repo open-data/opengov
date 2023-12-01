@@ -48,8 +48,9 @@ trait TestFileCreationTrait {
    *   (optional) File size in bytes to match. Defaults to NULL, which will not
    *   filter the returned list by size.
    *
-   * @return array[]
-   *   List of files in public:// that match the filter(s).
+   * @return object[]
+   *   List of files in public:// that match the filter(s). Each file is an
+   *   object with 'uri', 'filename', and 'name' properties.
    */
   protected function getTestFiles($type, $size = NULL) {
     /** @var \Drupal\Core\File\FileSystemInterface $file_system */
@@ -70,7 +71,7 @@ trait TestFileCreationTrait {
       }
 
       // Copy other test files from fixtures.
-      $original = \Drupal::service('app.root') . '/core/tests/fixtures/files';
+      $original = \Drupal::root() . '/core/tests/fixtures/files';
       $files = $file_system->scanDirectory($original, '/(html|image|javascript|php|sql)-.*/');
       foreach ($files as $file) {
         $file_system->copy($file->uri, PublicStream::basePath());
@@ -153,9 +154,11 @@ trait TestFileCreationTrait {
           case 'text':
             $text .= chr(rand(32, 126));
             break;
+
           case 'binary':
             $text .= chr(rand(0, 31));
             break;
+
           case 'binary-text':
           default:
             $text .= rand(0, 1);

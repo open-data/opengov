@@ -17,7 +17,7 @@ class NodeBulkFormTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     $container = new ContainerBuilder();
     \Drupal::setContainer($container);
@@ -33,26 +33,26 @@ class NodeBulkFormTest extends UnitTestCase {
       $action = $this->createMock('\Drupal\system\ActionConfigEntityInterface');
       $action->expects($this->any())
         ->method('getType')
-        ->will($this->returnValue('node'));
+        ->willReturn('node');
       $actions[$i] = $action;
     }
 
     $action = $this->createMock('\Drupal\system\ActionConfigEntityInterface');
     $action->expects($this->any())
       ->method('getType')
-      ->will($this->returnValue('user'));
+      ->willReturn('user');
     $actions[] = $action;
 
     $entity_storage = $this->createMock('Drupal\Core\Entity\EntityStorageInterface');
     $entity_storage->expects($this->any())
       ->method('loadMultiple')
-      ->will($this->returnValue($actions));
+      ->willReturn($actions);
 
     $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $entity_type_manager->expects($this->once())
       ->method('getStorage')
       ->with('action')
-      ->will($this->returnValue($entity_storage));
+      ->willReturn($entity_storage);
 
     $entity_repository = $this->createMock(EntityRepositoryInterface::class);
 
@@ -66,7 +66,7 @@ class NodeBulkFormTest extends UnitTestCase {
     $views_data->expects($this->any())
       ->method('get')
       ->with('node')
-      ->will($this->returnValue(['table' => ['entity type' => 'node']]));
+      ->willReturn(['table' => ['entity type' => 'node']]);
     $container = new ContainerBuilder();
     $container->set('views.views_data', $views_data);
     $container->set('string_translation', $this->getStringTranslationStub());
@@ -76,7 +76,7 @@ class NodeBulkFormTest extends UnitTestCase {
     $storage->expects($this->any())
       ->method('get')
       ->with('base_table')
-      ->will($this->returnValue('node'));
+      ->willReturn('node');
 
     $executable = $this->getMockBuilder('Drupal\views\ViewExecutable')
       ->disableOriginalConstructor()
@@ -93,7 +93,9 @@ class NodeBulkFormTest extends UnitTestCase {
     $node_bulk_form = new NodeBulkForm([], 'node_bulk_form', $definition, $entity_type_manager, $language_manager, $messenger, $entity_repository);
     $node_bulk_form->init($executable, $display, $options);
 
-    $this->assertAttributeEquals(array_slice($actions, 0, -1, TRUE), 'actions', $node_bulk_form);
+    $reflected_actions = (new \ReflectionObject($node_bulk_form))->getProperty('actions');
+    $reflected_actions->setAccessible(TRUE);
+    $this->assertEquals(array_slice($actions, 0, -1, TRUE), $reflected_actions->getValue($node_bulk_form));
   }
 
 }

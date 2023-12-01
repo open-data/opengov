@@ -2,18 +2,15 @@
 
 namespace Drupal\webform\Plugin;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformSubmissionConditionsValidatorInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -26,6 +23,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see plugin_api
  */
 abstract class WebformHandlerBase extends PluginBase implements WebformHandlerInterface {
+
+  use WebformEntityInjectionTrait;
+  use WebformEntityStorageTrait;
+  use WebformPluginSettingsTrait;
 
   /**
    * The webform.
@@ -105,16 +106,16 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
   protected $loggerFactory;
 
   /**
-   * The webform submission storage.
+   * The renderer.
    *
-   * @var \Drupal\webform\WebformSubmissionStorageInterface
+   * @var \Drupal\Core\Render\RendererInterface
    */
-  protected $submissionStorage;
+  protected $renderer;
 
   /**
    * The webform submission (server-side) conditions (#states) validator.
    *
-   * @var \Drupal\webform\WebformSubmissionConditionsValidator
+   * @var \Drupal\webform\WebformSubmissionConditionsValidatorInterface
    */
   protected $conditionsValidator;
 
@@ -126,7 +127,7 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
   protected $tokenManager;
 
   /**
-   * Constructs a WebformHandlerBase object.
+   * {@inheritdoc}
    *
    * IMPORTANT:
    * Webform handlers are initialized and serialized when they are attached to a
@@ -135,81 +136,20 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
    * "LogicException: The database connection is not serializable." exceptions
    * from being thrown when a form is serialized via an Ajax callback and/or
    * form build.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
-   *   The logger factory.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration factory.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\webform\WebformSubmissionConditionsValidatorInterface $conditions_validator
-   *   The webform submission conditions (#states) validator.
-   *
-   * @see \Drupal\webform\Entity\Webform::getHandlers
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerChannelFactoryInterface $logger_factory, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, WebformSubmissionConditionsValidatorInterface $conditions_validator) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->loggerFactory = $logger_factory;
-    $this->configFactory = $config_factory;
-    $this->submissionStorage = $entity_type_manager->getStorage('webform_submission');
-    $this->conditionsValidator = $conditions_validator;
-
-    // @todo Webform 8.x-6.x: Properly inject the token manager.
-    // @todo Webform 8.x-6.x: Update handlers that injects the token manager.
-    $this->tokenManager = \Drupal::service('webform.token_manager');
-
-    $this->setConfiguration($configuration);
-  }
-
-  /**
-   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('logger.factory'),
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('webform_submission.conditions_validator')
-    );
-  }
+    $instance = new static($configuration, $plugin_id, $plugin_definition);
 
-  /**
-   * {@inheritdoc}
-   */
-  public function setWebform(WebformInterface $webform) {
-    $this->webform = $webform;
-    return $this;
-  }
+    $instance->loggerFactory = $container->get('logger.factory');
+    $instance->configFactory = $container->get('config.factory');
+    $instance->renderer = $container->get('renderer');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->conditionsValidator = $container->get('webform_submission.conditions_validator');
+    $instance->tokenManager = $container->get('webform.token_manager');
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getWebform() {
-    return $this->webform;
-  }
+    $instance->setConfiguration($configuration);
 
-  /**
-   * {@inheritdoc}
-   */
-  public function setWebformSubmission(WebformSubmissionInterface $webform_submission = NULL) {
-    $this->webformSubmission = $webform_submission;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getWebformSubmission() {
-    return $this->webformSubmission;
+    return $instance;
   }
 
   /**
@@ -549,9 +489,9 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Webform methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -563,18 +503,23 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
    */
   public function alterElement(array &$element, FormStateInterface $form_state, array $context) {}
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Webform submission methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
    */
   public function overrideSettings(array &$settings, WebformSubmissionInterface $webform_submission) {}
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Submission form methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareForm(WebformSubmissionInterface $webform_submission, $operation, FormStateInterface $form_state) {}
 
   /**
    * {@inheritdoc}
@@ -596,9 +541,9 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
    */
   public function confirmForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {}
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Submission methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -652,18 +597,18 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
     return AccessResult::neutral();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Preprocessing methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
    */
   public function preprocessConfirmation(array &$variables) {}
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Handler methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -680,9 +625,9 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
    */
   public function deleteHandler() {}
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Element methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -706,9 +651,9 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
    */
   public function deleteElement($key, array $element) {}
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Form helper methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Set configuration settings parents.
@@ -771,9 +716,9 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
     return $elements;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Token methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Replace tokens in text with no render context.
@@ -830,9 +775,9 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
     return $this->tokenManager->elementValidate($form, $token_types);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Logging methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Get webform or webform_submission logger.
@@ -845,41 +790,6 @@ abstract class WebformHandlerBase extends PluginBase implements WebformHandlerIn
    */
   protected function getLogger($channel = 'webform') {
     return $this->loggerFactory->get($channel);
-  }
-
-  /**
-   * Log a webform handler's submission operation.
-   *
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
-   * @param string $operation
-   *   The operation to be logged.
-   * @param string $message
-   *   The message to be logged.
-   * @param array $data
-   *   The data to be saved with log record.
-   *
-   * @deprecated Instead call the 'webform_submission' logger channel directly.
-   *
-   *  $message = 'Some message with an %argument.'
-   *  $context = [
-   *    '%argument' => 'Some value'
-   *    'link' => $webform_submission->toLink($this->t('Edit'), 'edit-form')->toString(),
-   *    'webform_submission' => $webform_submission,
-   *    'handler_id' => NULL,
-   *    'data' => [],
-   *  ];
-   *  \Drupal::logger('webform_submission')->notice($message, $context);
-   */
-  protected function log(WebformSubmissionInterface $webform_submission, $operation, $message = '', array $data = []) {
-    if ($webform_submission->getWebform()->hasSubmissionLog()) {
-      $this->submissionStorage->log($webform_submission, [
-        'handler_id' => $this->getHandlerId(),
-        'operation' => $operation,
-        'message' => $message,
-        'data' => $data,
-      ]);
-    }
   }
 
 }

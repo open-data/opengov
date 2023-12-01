@@ -11,7 +11,7 @@ use Drupal\jsonapi\Exception\EntityAccessDeniedHttpException;
  * @internal JSON:API maintains no PHP API. The API is the HTTP API. This class
  *   may change at any time and could break any dependencies on it.
  *
- * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see https://www.drupal.org/project/drupal/issues/3032787
  * @see jsonapi.api.php
  */
 abstract class Data implements \IteratorAggregate, \Countable {
@@ -69,6 +69,7 @@ abstract class Data implements \IteratorAggregate, \Countable {
    * @return \ArrayIterator
    *   An \ArrayIterator instance
    */
+  #[\ReturnTypeWillChange]
   public function getIterator() {
     return new \ArrayIterator($this->data);
   }
@@ -79,6 +80,7 @@ abstract class Data implements \IteratorAggregate, \Countable {
    * @return int
    *   The number of parameters
    */
+  #[\ReturnTypeWillChange]
   public function count() {
     return count($this->data);
   }
@@ -144,7 +146,7 @@ abstract class Data implements \IteratorAggregate, \Countable {
    * Returns a new Data object containing the entities of $this and $other.
    *
    * @param \Drupal\jsonapi\JsonApiResource\Data $a
-   *   A Data object object to be merged.
+   *   A Data object to be merged.
    * @param \Drupal\jsonapi\JsonApiResource\Data $b
    *   A Data object to be merged.
    *

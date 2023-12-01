@@ -3,9 +3,10 @@
 namespace Drupal\webform_options_custom\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
-use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -14,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class WebformOptionsCustomDeriverBase extends DeriverBase implements ContainerDeriverInterface {
 
   use StringTranslationTrait;
+  use WebformEntityStorageTrait;
 
   /**
    * The type of custom element (element or entity_reference).
@@ -23,20 +25,13 @@ abstract class WebformOptionsCustomDeriverBase extends DeriverBase implements Co
   protected $type;
 
   /**
-   * The custom options storage.
-   *
-   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
-   */
-  protected $optionsCustomStorage;
-
-  /**
    * Constructs new WebformReusableCompositeDeriver.
    *
-   * @param \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $webform_options_custom_storage
-   *   The Dynamic Composite storage.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(ConfigEntityStorageInterface $webform_options_custom_storage) {
-    $this->optionsCustomStorage = $webform_options_custom_storage;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -44,7 +39,7 @@ abstract class WebformOptionsCustomDeriverBase extends DeriverBase implements Co
    */
   public static function create(ContainerInterface $container, $base_plugin_id) {
     return new static(
-      $container->get('entity_type.manager')->getStorage('webform_options_custom')
+      $container->get('entity_type.manager')
     );
   }
 
@@ -52,7 +47,7 @@ abstract class WebformOptionsCustomDeriverBase extends DeriverBase implements Co
    * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
-    $webform_options_custom_entities = $this->optionsCustomStorage->loadMultiple();
+    $webform_options_custom_entities = $this->getEntityStorage('webform_options_custom')->loadMultiple();
     foreach ($webform_options_custom_entities as $webform_options_custom_entity) {
       if ($webform_options_custom_entity->get($this->type)) {
         $this->derivatives[$webform_options_custom_entity->id()] = $base_plugin_definition;

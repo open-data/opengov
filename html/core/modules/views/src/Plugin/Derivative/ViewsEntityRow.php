@@ -2,9 +2,9 @@
 
 namespace Drupal\views\Plugin\Derivative;
 
-use Drupal\Core\DependencyInjection\DeprecatedServicePropertyTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\views\ViewsData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -16,12 +16,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see \Drupal\views\Plugin\views\row\EntityRow
  */
 class ViewsEntityRow implements ContainerDeriverInterface {
-  use DeprecatedServicePropertyTrait;
 
-  /**
-   * {@inheritdoc}
-   */
-  protected $deprecatedProperties = ['entityManager' => 'entity.manager'];
+  use StringTranslationTrait;
 
   /**
    * Stores all entity row plugin information.
@@ -100,7 +96,7 @@ class ViewsEntityRow implements ContainerDeriverInterface {
           'id' => 'entity:' . $entity_type_id,
           'provider' => 'views',
           'title' => $entity_type->getLabel(),
-          'help' => t('Display the @label', ['@label' => $entity_type->getLabel()]),
+          'help' => $this->t('Display the @label', ['@label' => $entity_type->getLabel()]),
           'base' => [$entity_type->getDataTable() ?: $entity_type->getBaseTable()],
           'entity_type' => $entity_type_id,
           'display_types' => ['normal'],

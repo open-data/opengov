@@ -17,7 +17,7 @@ class HooksTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'node',
     'rest',
     'search_api',
@@ -36,7 +36,7 @@ class HooksTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create some nodes.

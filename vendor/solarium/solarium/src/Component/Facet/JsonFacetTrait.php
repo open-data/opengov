@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\FacetSetInterface;
@@ -8,9 +15,9 @@ use Solarium\Core\Query\Helper;
 use Solarium\Exception\InvalidArgumentException;
 
 /**
- * Json facets.
+ * JSON facets.
  *
- * @see https://lucene.apache.org/solr/guide/7_3/json-facet-api.html
+ * @see https://solr.apache.org/guide/json-facet-api.html
  */
 trait JsonFacetTrait
 {
@@ -40,6 +47,7 @@ trait JsonFacetTrait
     public function getDomainFilter()
     {
         $domain = $this->getOption('domain');
+
         return $domain['filter'] ?? null;
     }
 
@@ -53,7 +61,7 @@ trait JsonFacetTrait
      *
      * @return self Provides fluent interface
      */
-    public function setDomainFilterQuery(string $query, array $bind = null): FacetSetInterface
+    public function setDomainFilterQuery(string $query, array $bind = null): self
     {
         if (null !== $bind) {
             $helper = new Helper();
@@ -61,21 +69,29 @@ trait JsonFacetTrait
         }
 
         $filter = $this->getDomainFilter();
-        if (!$filter || is_string($filter)) {
-            return $this->setOption('domain', ['filter' => $query]);
+        if (!$filter || \is_string($filter)) {
+            $this->setOption('domain', ['filter' => $query]);
+
+            return $this;
         }
 
-        foreach ($filter as &$param_or_query) {
-            if (is_string($param_or_query)) {
-                $param_or_query = $query;
-                return $this->setOption('domain', ['filter' => $filter]);
+        foreach ($filter as &$paramOrQuery) {
+            if (\is_string($paramOrQuery)) {
+                $paramOrQuery = $query;
+
+                $this->setOption('domain', ['filter' => $filter]);
+
+                return $this;
             }
         }
-        unset($param_or_query);
+        unset($paramOrQuery);
 
         /* @noinspection UnsupportedStringOffsetOperationsInspection */
         $filter[] = $query;
-        return $this->setOption('domain', ['filter' => $filter]);
+
+        $this->setOption('domain', ['filter' => $filter]);
+
+        return $this;
     }
 
     /**
@@ -85,27 +101,34 @@ trait JsonFacetTrait
      *
      * @return self Provides fluent interface
      */
-    public function addDomainFilterParameter(string $param): FacetSetInterface
+    public function addDomainFilterParameter(string $param): self
     {
         $filter = $this->getDomainFilter();
         if (!$filter) {
-            return $this->setOption('domain', ['filter' => ['param' => $param]]);
+            $this->setOption('domain', ['filter' => ['param' => $param]]);
+
+            return $this;
         }
 
-        if (is_string($filter) || 1 == count($filter)) {
-            return $this->setOption('domain', ['filter' => [$filter, ['param' => $param]]]);
+        if (\is_string($filter) || 1 === \count($filter)) {
+            $this->setOption('domain', ['filter' => [$filter, ['param' => $param]]]);
+
+            return $this;
         }
 
-        foreach ($filter as &$param_or_query) {
-            if (is_array($param_or_query) && $param_or_query['param'] == $param) {
+        foreach ($filter as &$paramOrQuery) {
+            if (\is_array($paramOrQuery) && $paramOrQuery['param'] === $param) {
                 return $this;
             }
         }
-        unset($param_or_query);
+        unset($paramOrQuery);
 
         /* @noinspection UnsupportedStringOffsetOperationsInspection */
         $filter[] = ['param' => $param];
-        return $this->setOption('domain', ['filter' => $filter]);
+
+        $this->setOption('domain', ['filter' => $filter]);
+
+        return $this;
     }
 
     /**
@@ -138,14 +161,13 @@ trait JsonFacetTrait
     /**
      * Add a facet.
      *
-     *
      * @param FacetInterface|array $facet
      *
      * @throws InvalidArgumentException
      *
      * @return self Provides fluent interface
      */
-    public function addFacet($facet): FacetSetInterface
+    public function addFacet($facet): self
     {
         if ($facet instanceof JsonFacetInterface) {
             $this->facetSetAddFacet($facet);
@@ -166,7 +188,7 @@ trait JsonFacetTrait
      *
      * @return self Provides fluent interface
      */
-    public function removeFacet($facet): FacetSetInterface
+    public function removeFacet($facet): self
     {
         $this->facetSetRemoveFacet($facet);
         $this->serialize();
@@ -179,7 +201,7 @@ trait JsonFacetTrait
      *
      * @return self Provides fluent interface
      */
-    public function clearFacets(): FacetSetInterface
+    public function clearFacets(): self
     {
         $this->facetSetClearFacets();
         $this->serialize();

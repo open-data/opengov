@@ -11,6 +11,7 @@ use Drupal\Tests\taxonomy\Functional\TaxonomyTestBase;
  * Tests RDFa markup generation for taxonomy term fields.
  *
  * @group rdf
+ * @group legacy
  */
 class EntityReferenceFieldAttributesTest extends TaxonomyTestBase {
 
@@ -21,7 +22,7 @@ class EntityReferenceFieldAttributesTest extends TaxonomyTestBase {
    *
    * @var array
    */
-  public static $modules = ['rdf', 'field_test', 'file', 'image'];
+  protected static $modules = ['rdf', 'field_test', 'file', 'image'];
 
   /**
    * {@inheritdoc}
@@ -49,10 +50,16 @@ class EntityReferenceFieldAttributesTest extends TaxonomyTestBase {
    */
   protected $vocabulary;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
-    $web_user = $this->drupalCreateUser(['bypass node access', 'administer taxonomy']);
+    $web_user = $this->drupalCreateUser([
+      'bypass node access',
+      'administer taxonomy',
+    ]);
     $this->drupalLogin($web_user);
     $this->vocabulary = $this->createVocabulary();
 

@@ -6,13 +6,14 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Http\RequestStack as DrupalRequestStack;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\PathProcessor\PathProcessorManager;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\RequestStack as SymfonyRequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -116,22 +117,24 @@ class FacetBlockAjaxController extends ControllerBase {
 
     // Rebuild the request and the current path, needed for facets.
     $path = $request->request->get('facet_link');
-    $facets_blocks = $request->request->get('facets_blocks');
-
-    // Make sure we are not updating blocks multiple times.
-    $facets_blocks = array_unique($facets_blocks);
+    $facets_blocks = $request->request->all()['facets_blocks'] ?? [];
 
     if (empty($path) || empty($facets_blocks)) {
       throw new NotFoundHttpException('No facet link or facet blocks found.');
     }
 
-    $this->currentRouteMatch->resetRouteMatch();
-    $new_request = Request::create($path);
-    $request_stack = new RequestStack();
-    $processed = $this->pathProcessor->processInbound($path, $new_request);
+    // Make sure we are not updating blocks multiple times.
+    $facets_blocks = array_unique($facets_blocks);
 
-    $this->currentPath->setPath($processed);
+    $new_request = Request::create($path);
+    $request_stack = new DrupalRequestStack();
+
+    $processed = $this->pathProcessor->processInbound($path, $new_request);
+    $processed_request = Request::create($processed);
+
+    $this->currentPath->setPath($processed_request->getPathInfo());
     $request->attributes->add($this->router->matchRequest($new_request));
+    $this->currentRouteMatch->resetRouteMatch();
     $request_stack->push($new_request);
 
     $container = \Drupal::getContainer();

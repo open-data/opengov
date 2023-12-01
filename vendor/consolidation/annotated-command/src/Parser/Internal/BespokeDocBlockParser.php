@@ -12,6 +12,9 @@ use Consolidation\AnnotatedCommand\Parser\DefaultsWithDescriptions;
 class BespokeDocBlockParser
 {
     protected $fqcnCache;
+    protected $commandInfo;
+    protected $reflection;
+    protected $optionParamName;
 
     /**
      * @var array
@@ -119,7 +122,7 @@ class BespokeDocBlockParser
         if ($matches['variable'] == $this->optionParamName()) {
             return;
         }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments(), $matches['variable'], $matches['description']);
+        $this->commandInfo->addArgumentDescription($matches['variable'], static::removeLineBreaks($matches['description']));
     }
 
     /**
@@ -130,9 +133,10 @@ class BespokeDocBlockParser
         if (!$tag->hasVariable($matches)) {
             throw new \Exception('Could not determine option name from tag ' . (string)$tag);
         }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options(), $matches['variable'], $matches['description']);
+        $this->commandInfo->addOptionDescription($matches['variable'], static::removeLineBreaks($matches['description']));
     }
 
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
     protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set, $name, $description)
     {
         $variableName = $this->commandInfo->findMatchingOption($name);
@@ -144,6 +148,7 @@ class BespokeDocBlockParser
         }
     }
 
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
     protected function splitOutDefault($description)
     {
         if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
@@ -163,7 +168,7 @@ class BespokeDocBlockParser
             throw new \Exception('Could not determine parameter name for default value from tag ' . (string)$tag);
         }
         $variableName = $matches['variable'];
-        $defaultValue = $this->interpretDefaultValue($matches['description']);
+        $defaultValue = DefaultValueFromString::fromString($matches['description'])->value();
         if ($this->commandInfo->arguments()->exists($variableName)) {
             $this->commandInfo->arguments()->setDefaultValue($variableName, $defaultValue);
             return;
@@ -221,11 +226,11 @@ class BespokeDocBlockParser
         return $this->fqcnCache->qualify($this->reflection->getFileName(), $className);
     }
 
+
     private function parseDocBlock($doc)
     {
         // Remove the leading /** and the trailing */
-        $doc = preg_replace('#^\s*/\*+\s*#', '', $doc);
-        $doc = preg_replace('#\s*\*+/\s*#', '', $doc);
+        $doc = DocBlockUtils::stripLeadingCommentCharacters($doc);
 
         // Nothing left? Exit.
         if (empty($doc)) {
@@ -238,7 +243,6 @@ class BespokeDocBlockParser
         foreach (explode("\n", $doc) as $row) {
             // Remove trailing whitespace and leading space + '*'s
             $row = rtrim($row);
-            $row = preg_replace('#^[ \t]*\**#', '', $row);
 
             if (!$tagFactory->parseLine($row)) {
                 $lines[] = $row;
@@ -262,7 +266,7 @@ class BespokeDocBlockParser
 
         // Everything up to the first blank line goes in the description.
         $description = array_shift($lines);
-        while ($this->nextLineIsNotEmpty($lines)) {
+        while (static::nextLineIsNotEmpty($lines)) {
             $description .= ' ' . array_shift($lines);
         }
 
@@ -275,12 +279,7 @@ class BespokeDocBlockParser
 
     protected function nextLineIsNotEmpty($lines)
     {
-        if (empty($lines)) {
-            return false;
-        }
-
-        $nextLine = trim($lines[0]);
-        return !empty($nextLine);
+        return DocBlockUtils::nextLineIsNotEmpty($lines);
     }
 
     protected function processAllTags($tags)
@@ -323,6 +322,7 @@ class BespokeDocBlockParser
         return $this->optionParamName;
     }
 
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
     protected function interpretDefaultValue($defaultValue)
     {
         $defaults = [

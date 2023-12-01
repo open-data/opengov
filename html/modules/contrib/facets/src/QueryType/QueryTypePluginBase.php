@@ -2,14 +2,15 @@
 
 namespace Drupal\facets\QueryType;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Entity\DependencyTrait;
 use Drupal\Core\Plugin\PluginBase;
 
 /**
  * A base class for query type plugins that implements most of the boilerplate.
  */
-abstract class QueryTypePluginBase extends PluginBase implements QueryTypeInterface, ConfigurablePluginInterface {
+abstract class QueryTypePluginBase extends PluginBase implements QueryTypeInterface, ConfigurableInterface, DependentPluginInterface {
 
   use DependencyTrait;
 
@@ -92,7 +93,7 @@ abstract class QueryTypePluginBase extends PluginBase implements QueryTypeInterf
       'limit' => $this->facet->getHardLimit(),
       'operator' => $this->facet->getQueryOperator(),
       'min_count' => $this->facet->getMinCount(),
-      'missing' => FALSE,
+      'missing' => $this->facet->isMissing(),
       'query_type' => $this->getPluginId(),
     ];
   }

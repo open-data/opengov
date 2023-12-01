@@ -4,14 +4,22 @@ namespace Drupal\search_api_solr\Controller;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent;
+use Drupal\search_api_solr\Event\PostConfigSetGenerationEvent;
+use Drupal\search_api_solr\Event\PostConfigSetTemplateMappingEvent;
 use Drupal\search_api_solr\SearchApiSolrConflictingEntitiesException;
+use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
+use Drupal\search_api_solr\Utility\ZipStreamFactory;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
+
+defined('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') || define('SEARCH_API_SOLR_JUMP_START_CONFIG_SET', getenv('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') ?: 0);
 
 /**
  * Provides different listings of SolrFieldType.
@@ -19,6 +27,40 @@ use ZipStream\ZipStream;
 class SolrConfigSetController extends ControllerBase {
 
   use BackendTrait;
+  use EventDispatcherTrait;
+
+  /**
+   * The event dispatcher.
+   *
+   * @var \Psr\EventDispatcher\EventDispatcherInterface
+   */
+  protected $eventDispatcher;
+
+  /**
+   * The module extension list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   */
+  protected $moduleExtensionList;
+
+  /**
+   * Search API SOLR Subscriber class constructor.
+   *
+   * @param \Drupal\Core\Extension\ModuleExtensionList $module_extension_list
+   *   The module extension list.
+   */
+  public function __construct(ModuleExtensionList $module_extension_list) {
+    $this->moduleExtensionList = $module_extension_list;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('extension.list.module')
+    );
+  }
 
   /**
    * Provides an XML snippet containing all extra Solr field types.
@@ -71,9 +113,16 @@ class SolrConfigSetController extends ControllerBase {
    * @throws \Drupal\search_api\SearchApiException
    */
   public function getSchemaExtraFieldsXml(?ServerInterface $search_api_server = NULL): string {
+    $solr_major_version = NULL;
+    if ($search_api_server) {
+      /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+      $backend = $search_api_server->getBackend();
+      $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
+    }
+
     /** @var \Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder $list_builder */
     $list_builder = $this->getListBuilder('solr_field_type', $search_api_server);
-    return $list_builder->getSchemaExtraFieldsXml();
+    return $list_builder->getSchemaExtraFieldsXml($solr_major_version);
   }
 
   /**
@@ -137,6 +186,20 @@ class SolrConfigSetController extends ControllerBase {
       $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
     return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+  }
+
+  /**
+   * Provides an XML snippet containing all index settings as XML.
+   *
+   * @param \Drupal\search_api\ServerInterface|null $search_api_server
+   *   The Search API server entity.
+   *
+   * @return string
+   *   XML snippet containing all index settings.
+   */
+  public function getSolrconfigIndexXml(?ServerInterface $search_api_server = NULL): string {
+    // Reserved for future internal use.
+    return '';
   }
 
   /**
@@ -222,29 +285,58 @@ class SolrConfigSetController extends ControllerBase {
    *   An associative array of files names and content.
    *
    * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function getConfigFiles(): array {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
+    if (!$backend) {
+      throw new SearchApiSolrException('Backend not set on SolrConfigSetController.');
+    }
     $connector = $backend->getSolrConnector();
+    $solr_major_version = $connector->getSolrMajorVersion($this->assumedMinimumVersion);
+    if (!$solr_major_version) {
+      throw new SearchApiSolrException('The config-set could not be created because the targeted Solr version is missing. In case of an auto-detection of the version the Solr server might not be running or is not reachable or the API is blocked (check the log files). As a workaround you can manually configure the targeted Solr version in the settings.');
+    }
     $solr_branch = $real_solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
 
-    // Solr 8.x uses the same schema and solrconf as 7.x. So we can use the same
-    // templates and only adjust luceneMatchVersion to 8.
-    if ('8.x' === $solr_branch) {
-      $solr_branch = '7.x';
+    $template_path = $this->moduleExtensionList->getPath('search_api_solr') . '/solr-conf-templates/';
+    $solr_configset_template_mapping = [
+      '6.x' => $template_path . '6.x',
+      '7.x' => $template_path . '7.x',
+      '8.x' => $template_path . '8.x',
+    ];
+
+    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_configset_template_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetTemplateMappingEvent instead.', 'search_api_solr_configset_template_mapping', $solr_configset_template_mapping);
+    $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
+    $this->eventDispatcher()->dispatch($event);
+    $solr_configset_template_mapping = $event->getConfigSetTemplateMapping();
+
+    if (!isset($solr_configset_template_mapping[$solr_branch])) {
+      throw new SearchApiSolrException(sprintf('No config-set template found for Solr branch %s', $solr_branch));
     }
 
-    $search_api_solr_conf_path = drupal_get_path('module', 'search_api_solr') . '/solr-conf-templates/' . $solr_branch;
-    $solrcore_properties = parse_ini_file($search_api_solr_conf_path . '/solrcore.properties', FALSE, INI_SCANNER_RAW);
+    $search_api_solr_conf_path = $solr_configset_template_mapping[$solr_branch];
+    $solrcore_properties_file = $search_api_solr_conf_path . '/solrcore.properties';
+    if (file_exists($solrcore_properties_file) && is_readable($solrcore_properties_file)) {
+      $solrcore_properties = parse_ini_file($solrcore_properties_file, FALSE, INI_SCANNER_RAW);
+    }
+    else {
+      throw new SearchApiSolrException('solrcore.properties template could not be parsed.');
+    }
 
     $files = [
       'schema_extra_types.xml' => $this->getSchemaExtraTypesXml(),
-      'schema_extra_fields.xml' => $this->getSchemaExtraFieldsXml(),
+      'schema_extra_fields.xml' => $this->getSchemaExtraFieldsXml($backend->getServer()),
       'solrconfig_extra.xml' => $this->getSolrconfigExtraXml(),
+      'solrconfig_index.xml' => $this->getSolrconfigIndexXml(),
     ];
 
-    if ('6.x' !== $solr_branch) {
+    if (!$backend->isNonDrupalOrOutdatedConfigSetAllowed() && (empty($files['schema_extra_types.xml']) || empty($files['schema_extra_fields.xml']))) {
+      throw new SearchApiSolrException(sprintf('The configs of the essential Solr field types are missing or broken for server "%s".', $backend->getServer()->id()));
+    }
+
+    if (version_compare($solr_major_version, '7', '>=')) {
       $files['solrconfig_query.xml'] = $this->getSolrconfigQueryXml();
       $files['solrconfig_requestdispatcher.xml'] = $this->getSolrconfigRequestDispatcherXml();
     }
@@ -264,40 +356,63 @@ class SolrConfigSetController extends ControllerBase {
     }
 
     $solrcore_properties['solr.luceneMatchVersion'] = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
-    // @todo
-    // $solrcore_properties['solr.replication.masterUrl']
-    $solrcore_properties_string = '';
-    foreach ($solrcore_properties as $property => $value) {
-      $solrcore_properties_string .= $property . '=' . $value . "\n";
+    if (!$connector->isCloud()) {
+      // @todo Set the replication masterUrl.
+      // $solrcore_properties['solr.replication.masterUrl']
+      $solrcore_properties_string = '';
+      foreach ($solrcore_properties as $property => $value) {
+        $solrcore_properties_string .= $property . '=' . $value . "\n";
+      }
+      $files['solrcore.properties'] = $solrcore_properties_string;
     }
-    $files['solrcore.properties'] = $solrcore_properties_string;
 
     // Now add all remaining static files from the conf dir that have not been
     // generated dynamically above.
     foreach (scandir($search_api_solr_conf_path) as $file) {
-      if (strpos($file, '.') !== 0) {
-        foreach (array_keys($files) as $existing_file) {
-          if ($file == $existing_file) {
-            continue 2;
-          }
+      if (strpos($file, '.') !== 0 && !array_key_exists($file, $files)) {
+        $file_path = $search_api_solr_conf_path . '/' . $file;
+        if (file_exists($file_path) && is_readable($file_path)) {
+          $files[$file] = str_replace(
+            [
+              'SEARCH_API_SOLR_SCHEMA_VERSION',
+              'SEARCH_API_SOLR_BRANCH',
+              'SEARCH_API_SOLR_JUMP_START_CONFIG_SET',
+            ],
+            [
+              SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION,
+              $real_solr_branch,
+              SEARCH_API_SOLR_JUMP_START_CONFIG_SET,
+            ],
+            file_get_contents($search_api_solr_conf_path . '/' . $file)
+          );
         }
-        $files[$file] = str_replace(
-          ['SEARCH_API_SOLR_MIN_SCHEMA_VERSION', 'SEARCH_API_SOLR_BRANCH'],
-          [SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION, $real_solr_branch],
-          file_get_contents($search_api_solr_conf_path . '/' . $file)
-        );
+        else {
+          throw new SearchApiSolrException(sprintf('%s template is not readable.', $file));
+        }
       }
     }
 
+    if ($connector->isCloud() && isset($files['solrconfig.xml'])) {
+      // solrcore.properties won’t work in SolrCloud mode (it is not read from
+      // ZooKeeper). Therefore we go for a more specific fallback to keep the
+      // possibility to set the property as parameter of the virtual machine.
+      // @see https://lucene.apache.org/solr/guide/8_6/configuring-solrconfig-xml.html
+      $files['solrconfig.xml'] = preg_replace('/solr.luceneMatchVersion:LUCENE_\d+/', 'solr.luceneMatchVersion:' . $solrcore_properties['solr.luceneMatchVersion'], $files['solrconfig.xml']);
+      unset($files['solrcore.properties']);
+    }
+
     $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
-    $this->moduleHandler()->alter('search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
-    return $files;
+    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_config_files_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigFilesGenerationEvent instead.', 'search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
+    $event = new PostConfigFilesGenerationEvent($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
+    $this->eventDispatcher()->dispatch($event);
+
+    return $event->getConfigFiles();
   }
 
   /**
    * Returns a ZipStream of all configuration files.
    *
-   * @param \ZipStream\Option\Archive $archive_options
+   * @param \ZipStream\Option\Archive|ressource|NUll $archive_options_or_ressource
    *   Archive options.
    *
    * @return \ZipStream\ZipStream
@@ -307,21 +422,26 @@ class SolrConfigSetController extends ControllerBase {
    * @throws \ZipStream\Exception\FileNotFoundException
    * @throws \ZipStream\Exception\FileNotReadableException
    */
-  public function getConfigZip(Archive $archive_options): ZipStream {
+  public function getConfigZip($archive_options_or_ressource = NULL): ZipStream {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
+    $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
-    $zip = new ZipStream('solr_' . $solr_branch . '_config.zip', $archive_options);
+    $zip = ZipStreamFactory::createInstance('solr_' . $solr_branch . '_config.zip', $archive_options_or_ressource);
 
     $files = $this->getConfigFiles();
-
     foreach ($files as $name => $content) {
       $zip->addFile($name, $content);
     }
 
-    return $zip;
+    $connector->alterConfigZip($zip, $lucene_match_version, $this->serverId);
+    $this->moduleHandler->alterDeprecated('hook_search_api_solr_config_zip_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetGenerationEvent instead.', 'search_api_solr_config_zip', $zip, $lucene_match_version, $this->serverId);
+    $event = new PostConfigSetGenerationEvent($zip, $lucene_match_version, $this->serverId);
+    $this->eventDispatcher()->dispatch($event);
+
+    return $event->getZipStream();
   }
 
   /**
@@ -339,9 +459,12 @@ class SolrConfigSetController extends ControllerBase {
     $this->setServer($search_api_server);
 
     try {
-      $archive_options = new Archive();
-      $archive_options->setSendHttpHeaders(TRUE);
-
+      $archive_options = NULL;
+      if (class_exists('\ZipStream\Option\Archive')) {
+        // Version 2.x. Version 3.x uses named parameters instead of options.
+        $archive_options = new \ZipStream\Option\Archive();
+        $archive_options->setSendHttpHeaders(TRUE);
+      }
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
@@ -358,7 +481,64 @@ class SolrConfigSetController extends ControllerBase {
     }
     catch (\Exception $e) {
       watchdog_exception('search_api', $e);
-      $this->messenger()->addError($this->t('An error occured during the creation of the config.zip. Look at the logs for details.'));
+      $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
+    }
+
+    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+  }
+
+  /**
+   * Streams a zip archive of a complete Solr configuration currently in use.
+   *
+   * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   The Search API server entity.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   The HTTP response object.
+   */
+  public function streamCurrentConfigZip(ServerInterface $search_api_server): Response {
+    try {
+      /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+      $backend = $search_api_server->getBackend();
+
+      if (class_exists('\ZipStream\Option\Archive')) {
+        $archive_options_or_ressource = new \ZipStream\Option\Archive();
+        $archive_options_or_ressource->setSendHttpHeaders(TRUE);
+      }
+      else {
+        $archive_options_or_ressource = NULL;
+      }
+
+      @ob_clean();
+      // If you are using nginx as a webserver, it will try to buffer the
+      // response. We have to disable this with a custom header.
+      // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
+      header('X-Accel-Buffering: no');
+      $zip = ZipStreamFactory::createInstance('solr_current_config.zip', $archive_options_or_ressource);
+
+      /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+      $backend = $search_api_server->getBackend();
+
+      $files_list = Utility::getServerFiles($search_api_server);
+
+      foreach ($files_list as $file_name => $file_info) {
+        $content = '';
+        if ($file_info['size'] > 0) {
+          $file_data = $backend->getSolrConnector()->getFile($file_name);
+          $content = $file_data->getBody();
+        }
+
+        $zip->addFile($file_name, $content);
+      }
+
+      $zip->finish();
+      @ob_end_flush();
+
+      exit();
+    }
+    catch (\Exception $e) {
+      watchdog_exception('search_api', $e);
+      $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 
     return new RedirectResponse($search_api_server->toUrl('canonical')->toString());

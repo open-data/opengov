@@ -50,8 +50,9 @@ class DefaultPluginManager extends PluginManagerBase implements PluginManagerInt
   protected $alterHook;
 
   /**
-   * The subdirectory within a namespace to look for plugins, or FALSE if the
-   * plugins are in the top level of the namespace.
+   * The subdirectory within a namespace to look for plugins.
+   *
+   * Set to FALSE if the plugins are in the top level of the namespace.
    *
    * @var string|bool
    */
@@ -65,9 +66,10 @@ class DefaultPluginManager extends PluginManagerBase implements PluginManagerInt
   protected $moduleHandler;
 
   /**
-   * A set of defaults to be referenced by $this->processDefinition() if
-   * additional processing of plugins is necessary or helpful for development
-   * purposes.
+   * A set of defaults to be referenced by $this->processDefinition().
+   *
+   * Allows for additional processing of plugins when necessary or helpful for
+   * development purposes.
    *
    * @var array
    */
@@ -88,16 +90,20 @@ class DefaultPluginManager extends PluginManagerBase implements PluginManagerInt
   protected $pluginInterface;
 
   /**
-   * An object that implements \Traversable which contains the root paths
-   * keyed by the corresponding namespace to look for plugin implementations.
+   * An object of root paths that are traversable.
+   *
+   * The root paths are keyed by the corresponding namespace to look for plugin
+   * implementations.
    *
    * @var \Traversable
    */
   protected $namespaces;
 
   /**
-   * Additional namespaces the annotation discovery mechanism should scan for
-   * annotation definitions.
+   * Additional annotation namespaces.
+   *
+   * The annotation discovery mechanism should scan these for annotation
+   * definitions.
    *
    * @var string[]
    */
@@ -246,6 +252,7 @@ class DefaultPluginManager extends PluginManagerBase implements PluginManagerInt
 
     // Keep class definitions standard with no leading slash.
     if ($definition instanceof PluginDefinitionInterface) {
+      assert(is_string($definition->getClass()), 'Plugin definitions must have a class');
       $definition->setClass(ltrim($definition->getClass(), '\\'));
     }
     elseif (is_array($definition) && isset($definition['class'])) {
@@ -286,7 +293,6 @@ class DefaultPluginManager extends PluginManagerBase implements PluginManagerInt
       $this->processDefinition($definition, $plugin_id);
     }
     $this->alterDefinitions($definitions);
-    $this->fixContextAwareDefinitions($definitions);
     // If this plugin was provided by a module that does not exist, remove the
     // plugin definition.
     foreach ($definitions as $plugin_id => $plugin_definition) {
@@ -296,38 +302,6 @@ class DefaultPluginManager extends PluginManagerBase implements PluginManagerInt
       }
     }
     return $definitions;
-  }
-
-  /**
-   * Fix the definitions of context-aware plugins.
-   *
-   * @param array $definitions
-   *   The array of plugin definitions.
-   *
-   * @todo Remove before Drupal 9.0.0.
-   */
-  private function fixContextAwareDefinitions(array &$definitions) {
-    foreach ($definitions as $name => &$definition) {
-      if (is_array($definition) && (!empty($definition['context']) || !empty($definition['context_definitions']))) {
-        // Ensure the new definition key is available.
-        if (!isset($definition['context_definitions'])) {
-          $definition['context_definitions'] = [];
-        }
-
-        // If a context definition is defined with the old key, add it to the
-        // new key and trigger a deprecation error.
-        if (!empty($definition['context'])) {
-          $definition['context_definitions'] += $definition['context'];
-          @trigger_error('Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.', E_USER_DEPRECATED);
-        }
-
-        // Copy the context definitions from the new key to the old key for
-        // backwards compatibility.
-        if (isset($definition['context'])) {
-          $definition['context'] = $definition['context_definitions'];
-        }
-      }
-    }
   }
 
   /**

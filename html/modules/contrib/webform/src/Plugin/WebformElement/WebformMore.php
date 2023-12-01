@@ -22,7 +22,7 @@ class WebformMore extends WebformMarkupBase {
    */
   protected function defineDefaultProperties() {
     return [
-      'more_title' => \Drupal::config('webform.settings')->get('element.default_more_title'),
+      'more_title' => $this->configFactory->get('webform.settings')->get('element.default_more_title'),
       'more' => '',
       'attributes' => [],
       // Markup settings.
@@ -30,7 +30,7 @@ class WebformMore extends WebformMarkupBase {
     ] + $this->defineDefaultBaseProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

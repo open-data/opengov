@@ -1,29 +1,23 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-var prefix = 'fas';
-var iconName = 'long-arrow-alt-down';
-var width = 256;
-var height = 512;
-var ligatures = [];
-var unicode = 'f309';
-var svgPathData = 'M168 345.941V44c0-6.627-5.373-12-12-12h-56c-6.627 0-12 5.373-12 12v301.941H41.941c-21.382 0-32.09 25.851-16.971 40.971l86.059 86.059c9.373 9.373 24.569 9.373 33.941 0l86.059-86.059c15.119-15.119 4.411-40.971-16.971-40.971H168z';
-
+var source = require('./faDownLong');
 exports.definition = {
-  prefix: prefix,
-  iconName: iconName,
+  prefix: source.prefix,
+  iconName: source.iconName,
   icon: [
-    width,
-    height,
-    ligatures,
-    unicode,
-    svgPathData
+    source.width,
+    source.height,
+    source.aliases,
+    source.unicode,
+    source.svgPathData
   ]};
 
 exports.faLongArrowAltDown = exports.definition;
-exports.prefix = prefix;
-exports.iconName = iconName;
-exports.width = width;
-exports.height = height;
-exports.ligatures = ligatures;
-exports.unicode = unicode;
-exports.svgPathData = svgPathData;
+exports.prefix = source.prefix;
+exports.iconName = source.iconName;
+exports.width = source.width;
+exports.height = source.height;
+exports.ligatures = source.aliases;
+exports.unicode = source.unicode;
+exports.svgPathData = source.svgPathData;
+exports.aliases = source.aliases;

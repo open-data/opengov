@@ -6,18 +6,26 @@ use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Package\RootPackageInterface;
-use Drupal\Composer\VendorHardening\Config;
+use Drupal\Composer\Plugin\VendorHardening\Config;
 use Drupal\Composer\Plugin\VendorHardening\VendorHardeningPlugin;
+use Drupal\Tests\PhpUnitCompatibilityTrait;
+use Drupal\Tests\Traits\PhpUnitWarnings;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass Drupal\Composer\Plugin\VendorHardening\VendorHardeningPlugin
+ * @coversDefaultClass \Drupal\Composer\Plugin\VendorHardening\VendorHardeningPlugin
  * @group VendorHardening
  */
 class VendorHardeningPluginTest extends TestCase {
 
-  public function setUp() {
+  use PhpUnitWarnings;
+  use PhpUnitCompatibilityTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp(): void {
     parent::setUp();
     vfsStream::setup('vendor', NULL, [
       'drupal' => [
@@ -36,14 +44,19 @@ class VendorHardeningPluginTest extends TestCase {
   public function testCleanPackage() {
 
     $config = $this->getMockBuilder(Config::class)
-      ->setMethods(['getPathsForPackage'])
       ->disableOriginalConstructor()
       ->getMock();
     $config->expects($this->once())
       ->method('getPathsForPackage')
       ->willReturn(['tests']);
 
-    $plugin = new VendorHardeningPlugin();
+    $plugin = $this->getMockBuilder(VendorHardeningPlugin::class)
+      ->onlyMethods(['getInstallPathForPackage'])
+      ->getMock();
+    $plugin->expects($this->once())
+      ->method('getInstallPathForPackage')
+      ->willReturn(vfsStream::url('vendor/drupal/package'));
+
     $ref_config = new \ReflectionProperty($plugin, 'config');
     $ref_config->setAccessible(TRUE);
     $ref_config->setValue($plugin, $config);
@@ -55,16 +68,24 @@ class VendorHardeningPluginTest extends TestCase {
 
     $this->assertFileExists(vfsStream::url('vendor/drupal/package/tests/SomeTest.php'));
 
-    $plugin->cleanPackage(vfsStream::url('vendor'), 'drupal/package');
+    $package = $this->prophesize(PackageInterface::class);
+    $package->getName()->willReturn('drupal/package');
 
-    $this->assertFileNotExists(vfsStream::url('vendor/drupal/package/tests'));
+    $plugin->cleanPackage($package->reveal());
+
+    $this->assertFileDoesNotExist(vfsStream::url('vendor/drupal/package/tests'));
   }
 
   /**
    * @covers ::cleanPathsForPackage
    */
   public function testCleanPathsForPackage() {
-    $plugin = new VendorHardeningPlugin();
+    $plugin = $this->getMockBuilder(VendorHardeningPlugin::class)
+      ->onlyMethods(['getInstallPathForPackage'])
+      ->getMock();
+    $plugin->expects($this->once())
+      ->method('getInstallPathForPackage')
+      ->willReturn(vfsStream::url('vendor/drupal/package'));
 
     $io = $this->prophesize(IOInterface::class);
     $ref_io = new \ReflectionProperty($plugin, 'io');
@@ -73,11 +94,14 @@ class VendorHardeningPluginTest extends TestCase {
 
     $this->assertFileExists(vfsStream::url('vendor/drupal/package/tests/SomeTest.php'));
 
+    $package = $this->prophesize(PackageInterface::class);
+    $package->getName()->willReturn('drupal/package');
+
     $ref_clean = new \ReflectionMethod($plugin, 'cleanPathsForPackage');
     $ref_clean->setAccessible(TRUE);
-    $ref_clean->invokeArgs($plugin, [vfsStream::url('vendor'), 'drupal/package', ['tests']]);
+    $ref_clean->invokeArgs($plugin, [$package->reveal(), ['tests']]);
 
-    $this->assertFileNotExists(vfsStream::url('vendor/drupal/package/tests'));
+    $this->assertFileDoesNotExist(vfsStream::url('vendor/drupal/package/tests'));
   }
 
   /**
@@ -85,7 +109,6 @@ class VendorHardeningPluginTest extends TestCase {
    */
   public function testCleanAllPackages() {
     $config = $this->getMockBuilder(Config::class)
-      ->setMethods(['getAllCleanupPaths'])
       ->disableOriginalConstructor()
       ->getMock();
     $config->expects($this->once())
@@ -93,18 +116,20 @@ class VendorHardeningPluginTest extends TestCase {
       ->willReturn(['drupal/package' => ['tests']]);
 
     $package = $this->getMockBuilder(PackageInterface::class)
-      ->setMethods(['getName'])
       ->getMockForAbstractClass();
     $package->expects($this->any())
       ->method('getName')
       ->willReturn('drupal/package');
 
     $plugin = $this->getMockBuilder(VendorHardeningPlugin::class)
-      ->setMethods(['getInstalledPackages'])
+      ->onlyMethods(['getInstalledPackages', 'getInstallPathForPackage'])
       ->getMock();
     $plugin->expects($this->once())
       ->method('getInstalledPackages')
       ->willReturn([$package]);
+    $plugin->expects($this->once())
+      ->method('getInstallPathForPackage')
+      ->willReturn(vfsStream::url('vendor/drupal/package'));
 
     $io = $this->prophesize(IOInterface::class);
     $ref_io = new \ReflectionProperty($plugin, 'io');
@@ -117,9 +142,9 @@ class VendorHardeningPluginTest extends TestCase {
 
     $this->assertFileExists(vfsStream::url('vendor/drupal/package/tests/SomeTest.php'));
 
-    $plugin->cleanAllPackages(vfsStream::url('vendor'));
+    $plugin->cleanAllPackages();
 
-    $this->assertFileNotExists(vfsStream::url('vendor/drupal/package/tests'));
+    $this->assertFileDoesNotExist(vfsStream::url('vendor/drupal/package/tests'));
   }
 
   /**
@@ -131,7 +156,7 @@ class VendorHardeningPluginTest extends TestCase {
     // Set up mocks so that writeAccessRestrictionFiles() can eventually use
     // the IOInterface object.
     $composer = $this->getMockBuilder(Composer::class)
-      ->setMethods(['getPackage'])
+      ->onlyMethods(['getPackage'])
       ->getMock();
     $composer->expects($this->once())
       ->method('getPackage')
@@ -142,8 +167,8 @@ class VendorHardeningPluginTest extends TestCase {
 
     $this->assertDirectoryExists($dir);
 
-    $this->assertFileNotExists($dir . '/.htaccess');
-    $this->assertFileNotExists($dir . '/web.config');
+    $this->assertFileDoesNotExist($dir . '/.htaccess');
+    $this->assertFileDoesNotExist($dir . '/web.config');
 
     $plugin->writeAccessRestrictionFiles($dir);
 

@@ -3,6 +3,9 @@
 namespace Drupal\Tests\webform_entity_print\Functional;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 
@@ -16,19 +19,21 @@ class WebformEntityPrintFunctionalTest extends WebformEntityPrintFunctionalTestB
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['webform_entity_print_test'];
+  public static $modules = ['image', 'webform_entity_print_test'];
 
   /**
    * Test entity print.
    */
   public function testEntityPrint() {
-    global $base_path;
+    global $base_path, $base_url;
+
+    $assert_session = $this->assertSession();
 
     $this->drupalLogin($this->rootUser);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // PDF link default.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $webform = Webform::load('test_entity_print');
     $sid = $this->postSubmissionTest($webform);
@@ -36,20 +41,22 @@ class WebformEntityPrintFunctionalTest extends WebformEntityPrintFunctionalTestB
 
     // Check PDF link to html mode enabled.
     $this->drupalGet("/admin/structure/webform/manage/test_entity_print/submission/$sid");
-    $this->assertRaw('<div class="webform-entity-print-links"><a href="' . $base_path . 'print/pdf/webform_submission/' . $sid . '?view_mode=html" class="button webform-entity-print-link webform-entity-print-link-pdf">Download PDF</a></div>');
+    $assert_session->responseContains('<div class="webform-entity-print-links"><a href="' . $base_path . 'print/pdf/webform_submission/' . $sid . '?view_mode=html" class="button webform-entity-print-link webform-entity-print-link-pdf">Download PDF</a></div>');
 
     // Check PDF link to table mode enabled.
     $this->drupalGet("/admin/structure/webform/manage/test_entity_print/submission/$sid/table");
-    $this->assertRaw('<div class="webform-entity-print-links"><a href="' . $base_path . 'print/pdf/webform_submission/' . $sid . '?view_mode=table" class="button webform-entity-print-link webform-entity-print-link-pdf">Download PDF</a></div>');
+    $assert_session->responseContains('<div class="webform-entity-print-links"><a href="' . $base_path . 'print/pdf/webform_submission/' . $sid . '?view_mode=table" class="button webform-entity-print-link webform-entity-print-link-pdf">Download PDF</a></div>');
 
     // Check PDF document HTML view mode.
     $this->drupalGet("/print/pdf/webform_submission/$sid/debug", ['query' => ['view_mode' => 'html']]);
-    $this->assertRaw('<div class="webform-entity-print-header"><h1>' . Html::escape($submission->label()) . '</h1></div>');
-    $this->assertRaw('<label>textfield</label>');
+    $assert_session->responseContains('<div class="webform-entity-print-header"><h1>' . Html::escape($submission->label()) . '</h1></div>');
+
+    // Check text field.
+    $assert_session->responseContains('<label>textfield</label>');
 
     // Check PDF document includes custom style tag with webform and
     // webform entity print global css.
-    $this->assertRaw('<style type="text/css" media="all">
+    $assert_session->responseContains('<style type="text/css" media="all">
 /** custom webform css **/
 /* Remove page margins and padding and rely on the PDF generator\'s default margins. */
 body {
@@ -61,33 +68,71 @@ body {
 }
 </style>');
 
+    // Check image.
+    $image_uri = $base_url . '/system/files/webform/test_entity_print/1/image_file.gif';
+    $image_token_query = [WEBFORM_ENTITY_PRINT_IMAGE_TOKEN => _webform_entity_print_token_generate($image_uri)];
+    $assert_session->responseContains('?' . UrlHelper::buildQuery($image_token_query));
+
+    // Check image style.
+    $image_style_uri = $base_url . '/system/files/styles/thumbnail/private/webform/test_entity_print/1/image_file_style.gif';
+    $image_style_token_query = [WEBFORM_ENTITY_PRINT_IMAGE_TOKEN => _webform_entity_print_token_generate($image_style_uri)];
+    $assert_session->responseContains('&' . UrlHelper::buildQuery($image_style_token_query));
+
+    // Check signature private image.
+    $this->assertRaw('<label>signature_private</label>');
+    $this->assertRaw("/webform/test_entity_print/signature_private/$sid/signature-");
+
+    // Check signature public image.
+    $this->assertRaw('<label>signature_public</label>');
+    $this->assertRaw("/webform/test_entity_print/signature_public/$sid/signature-");
+
+    // Check image access.
+    $this->drupalLogout();
+    $this->drupalGet($image_uri);
+    $assert_session->responseContains('Please login to access the uploaded file.');
+    $this->drupalGet($image_uri, ['query' => $image_token_query]);
+    $assert_session->responseNotContains('Please login to access the uploaded file.');
+    $assert_session->statusCodeEquals(200);
+    $this->drupalLogin($this->rootUser);
+
     // Check PDF document Table view mode.
     $this->drupalGet("/print/pdf/webform_submission/$sid/debug", ['query' => ['view_mode' => 'table']]);
-    $this->assertRaw('<div class="webform-entity-print-header"><h1>' . Html::escape($submission->label()) . '</h1></div>');
-    $this->assertNoRaw('<label>textfield</label>');
-    $this->assertRaw('<th>textfield</th>');
-    $this->assertRaw('<table class="webform-submission-table" data-striping="1">');
+    $assert_session->responseContains('<div class="webform-entity-print-header"><h1>' . Html::escape($submission->label()) . '</h1></div>');
+    $assert_session->responseNotContains('<label>textfield</label>');
+    $assert_session->responseContains('<th>textfield</th>');
+    $assert_session->responseContains('<table class="webform-submission-table" data-striping="1">');
+
+    $this->drupalLogout();
+
+    // Check PDF link token support.
+    // Allow anonymous users to access print version.
+    $role_object = Role::load(AccountInterface::ANONYMOUS_ROLE);
+    $role_object->grantPermission('entity print access type webform_submission');
+    $role_object->save();
+    $token = $submission->getToken();
+    $this->drupalGet("/webform/test_entity_print/submissions/$sid", ['query' => ['token' => $token]]);
+    $assert_session->linkByHrefExists("{$base_path}print/pdf/webform_submission/$sid?view_mode=html&token=$token");
+
+    $this->drupalLogin($this->rootUser);
 
     // Check PDF link customizable.
-    $edit = [
-      'third_party_settings[webform_entity_print][export_types][pdf][link_text]' => 'Generate PDF',
-    ];
-    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
+    $this->drupalGet('/admin/structure/webform/config');
+    $edit = ['third_party_settings[webform_entity_print][export_types][pdf][link_text]' => 'Generate PDF'];
+    $this->submitForm($edit, 'Save configuration');
     $this->drupalGet("/admin/structure/webform/manage/test_entity_print/submission/$sid");
-    $this->assertNoLink('Download PDF');
-    $this->assertLink('Generate PDF');
+    $assert_session->linkNotExists('Download PDF');
+    $assert_session->linkExists('Generate PDF');
 
     // Check PDF link disabled.
-    $edit = [
-      'third_party_settings[webform_entity_print][export_types][pdf][enabled]' => FALSE,
-    ];
-    $this->drupalPostForm('/admin/structure/webform/config', $edit, 'Save configuration');
+    $this->drupalGet('/admin/structure/webform/config');
+    $edit = ['third_party_settings[webform_entity_print][export_types][pdf][enabled]' => FALSE];
+    $this->submitForm($edit, 'Save configuration');
     $this->drupalGet("/admin/structure/webform/manage/test_entity_print/submission/$sid");
-    $this->assertNoLink('Download PDF');
+    $assert_session->linkNotExists('Download PDF');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Exporter.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     /** @var \Drupal\webform\WebformSubmissionExporterInterface $submission_exporter */
     $submission_exporter = \Drupal::service('webform_submission.exporter');
@@ -95,34 +140,33 @@ body {
     $submission_exporter->setExporter();
 
     // Download tar ball archive with PDF documents.
-    $edit = [
-      'exporter' => 'webform_entity_print:pdf',
-    ];
-    $this->drupalPostForm('/admin/structure/webform/manage/test_entity_print/results/download', $edit, 'Download');
+    $this->drupalGet('/admin/structure/webform/manage/test_entity_print/results/download');
+    $edit = ['exporter' => 'webform_entity_print:pdf'];
+    $this->submitForm($edit, 'Download');
 
     // Load the tar and get a list of files.
     $files = $this->getArchiveContents($submission_exporter->getArchiveFilePath());
     $this->assertEquals(["submission-$sid.pdf" => "submission-$sid.pdf"], $files);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // PDF link custom.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $webform = Webform::load('test_entity_print_custom');
     $sid = $this->postSubmissionTest($webform);
 
     // Check custom PDF link to html mode enabled.
     $this->drupalGet("/admin/structure/webform/manage/test_entity_print_custom/submission/$sid");
-    $this->assertRaw('<div class="webform-entity-print-links"><a href="' . $base_path . 'print/pdf/webform_submission/' . $sid . '?view_mode=html" style="color: red" class="custom-class webform-entity-print-link webform-entity-print-link-pdf">{custom link text}</a></div>');
+    $assert_session->responseContains('<div class="webform-entity-print-links"><a href="' . $base_path . 'print/pdf/webform_submission/' . $sid . '?view_mode=html" style="color: red" class="custom-class webform-entity-print-link webform-entity-print-link-pdf">{custom link text}</a></div>');
 
     // Check custom PDF document HTML view mode.
     $this->drupalGet("/print/pdf/webform_submission/$sid/debug", ['query' => ['view_mode' => 'html']]);
-    $this->assertRaw('<div class="webform-entity-print-header"><div>{custom header}</div></div>');
-    $this->assertRaw('<div class="webform-entity-print-footer"><div>{custom footer}</div></div>');
+    $assert_session->responseContains('<div class="webform-entity-print-header"><div>{custom header}</div></div>');
+    $assert_session->responseContains('<div class="webform-entity-print-footer"><div>{custom footer}</div></div>');
 
     // Check PDF document includes custom style tag with webform and
     // webform entity print global css.
-    $this->assertRaw('<style type="text/css" media="all">
+    $assert_session->responseContains('<style type="text/css" media="all">
 /** custom webform css **/
 /* Remove page margins and padding and rely on the PDF generator\'s default margins. */
 body {

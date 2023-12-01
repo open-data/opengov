@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component;
 
 use Solarium\Component\Facet\FacetInterface;
@@ -68,18 +75,18 @@ interface FacetSetInterface
      *
      * @throws InvalidArgumentException
      *
-     * @return \Solarium\Component\FacetSet
+     * @return self Provides fluent interface
      */
-    public function addFacet($facet): self;
+    public function addFacet($facet);
 
     /**
      * Add multiple facets.
      *
      * @param array $facets
      *
-     * @return \Solarium\Component\FacetSet
+     * @return self Provides fluent interface
      */
-    public function addFacets(array $facets): self;
+    public function addFacets(array $facets);
 
     /**
      * Get a facet.
@@ -104,16 +111,16 @@ interface FacetSetInterface
      *
      * @param string|FacetInterface $facet
      *
-     * @return \Solarium\Component\FacetSet
+     * @return self Provides fluent interface
      */
-    public function removeFacet($facet): self;
+    public function removeFacet($facet);
 
     /**
      * Remove all facets.
      *
-     * @return \Solarium\Component\FacetSet
+     * @return self Provides fluent interface
      */
-    public function clearFacets(): self;
+    public function clearFacets();
 
     /**
      * Set multiple facets.
@@ -122,9 +129,9 @@ interface FacetSetInterface
      *
      * @param FacetInterface[] $facets
      *
-     * @return \Solarium\Component\FacetSet
+     * @return self Provides fluent interface
      */
-    public function setFacets(array $facets): self;
+    public function setFacets(array $facets);
 
     /**
      * Create a facet instance.
@@ -135,7 +142,6 @@ interface FacetSetInterface
      *
      * When no key is supplied the facet cannot be added, in that case you will need to add it manually
      * after setting the key, by using the addFacet method.
-     *
      *
      * @param string            $type
      * @param array|object|null $options

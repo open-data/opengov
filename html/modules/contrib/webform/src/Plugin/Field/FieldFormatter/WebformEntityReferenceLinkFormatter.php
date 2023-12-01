@@ -2,16 +2,12 @@
 
 namespace Drupal\webform\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Plugin\WebformSourceEntity\QueryStringWebformSourceEntity;
 use Drupal\webform\WebformMessageManagerInterface;
-use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -50,55 +46,13 @@ class WebformEntityReferenceLinkFormatter extends WebformEntityReferenceFormatte
   protected $tokenManager;
 
   /**
-   * WebformEntityReferenceLinkFormatter constructor.
-   *
-   * @param string $plugin_id
-   *   The plugin_id for the formatter.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
-   *   The definition of the field to which the formatter is associated.
-   * @param array $settings
-   *   The formatter settings.
-   * @param string $label
-   *   The formatter label display setting.
-   * @param string $view_mode
-   *   The view mode.
-   * @param array $third_party_settings
-   *   Third party settings.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\webform\WebformMessageManagerInterface $message_manager
-   *   The webform message manager.
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, RendererInterface $renderer, ConfigFactoryInterface $config_factory, WebformMessageManagerInterface $message_manager, WebformTokenManagerInterface $token_manager) {
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, $renderer, $config_factory);
-
-    $this->messageManager = $message_manager;
-    $this->tokenManager = $token_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $plugin_id,
-      $plugin_definition,
-      $configuration['field_definition'],
-      $configuration['settings'],
-      $configuration['label'],
-      $configuration['view_mode'],
-      $configuration['third_party_settings'],
-      $container->get('renderer'),
-      $container->get('config.factory'),
-      $container->get('webform.message_manager'),
-      $container->get('webform.token_manager')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->messageManager = $container->get('webform.message_manager');
+    $instance->tokenManager = $container->get('webform.token_manager');
+    return $instance;
   }
 
   /**
@@ -120,7 +74,7 @@ class WebformEntityReferenceLinkFormatter extends WebformEntityReferenceFormatte
     $summary[] = $this->t('Label: @label', ['@label' => $this->getSetting('label')]);
     $dialog_option_name = $this->getSetting('dialog');
     if ($dialog_option = $this->configFactory->get('webform.settings')->get('settings.dialog_options.' . $dialog_option_name)) {
-      $summary[] = $this->t('Dialog: @dialog', ['@dialog' => (isset($dialog_option['title']) ? $dialog_option['title'] : $dialog_option_name)]);
+      $summary[] = $this->t('Dialog: @dialog', ['@dialog' => ($dialog_option['title'] ?? $dialog_option_name)]);
     }
     return $summary;
   }
@@ -152,7 +106,7 @@ class WebformEntityReferenceLinkFormatter extends WebformEntityReferenceFormatte
     if ($dialog_options) {
       $options = [];
       foreach ($dialog_options as $dialog_option_name => $dialog_option) {
-        $options[$dialog_option_name] = (isset($dialog_option['title'])) ? $dialog_option['title'] : $dialog_option_name;
+        $options[$dialog_option_name] = $dialog_option['title'] ?? $dialog_option_name;
       }
       $form['dialog'] = [
         '#title' => $this->t('Dialog'),

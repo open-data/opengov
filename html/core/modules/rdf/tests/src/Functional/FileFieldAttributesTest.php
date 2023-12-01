@@ -11,6 +11,7 @@ use Drupal\Tests\rdf\Traits\RdfParsingTrait;
  * Tests the RDFa markup of filefields.
  *
  * @group rdf
+ * @group legacy
  */
 class FileFieldAttributesTest extends FileFieldTestBase {
 
@@ -21,7 +22,7 @@ class FileFieldAttributesTest extends FileFieldTestBase {
    *
    * @var array
    */
-  public static $modules = ['rdf', 'file'];
+  protected static $modules = ['rdf', 'file'];
 
   /**
    * {@inheritdoc}
@@ -56,7 +57,10 @@ class FileFieldAttributesTest extends FileFieldTestBase {
    */
   protected $node;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
     $node_storage = $this->container->get('entity_type.manager')->getStorage('node');
     $this->fieldName = strtolower($this->randomMachineName());
@@ -101,7 +105,7 @@ class FileFieldAttributesTest extends FileFieldTestBase {
     $html = \Drupal::service('renderer')->renderRoot($node_render_array);
 
     $node_uri = $this->node->toUrl('canonical', ['absolute' => TRUE])->toString();
-    $file_uri = file_create_url($this->file->getFileUri());
+    $file_uri = $this->file->createFileUrl(FALSE);
 
     // Node relation to attached file.
     $expected_value = [

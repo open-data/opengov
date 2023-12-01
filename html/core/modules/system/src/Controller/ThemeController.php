@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\PreExistingConfigException;
 use Drupal\Core\Config\UnmetDependenciesException;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Extension\MissingDependencyException;
 use Drupal\Core\Extension\ThemeExtensionList;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Extension\ThemeInstallerInterface;
@@ -161,6 +162,9 @@ class ThemeController extends ControllerBase {
       catch (UnmetDependenciesException $e) {
         $this->messenger()->addError($e->getTranslatedMessage($this->getStringTranslation(), $theme));
       }
+      catch (MissingDependencyException $e) {
+        $this->messenger()->addError($this->t('Unable to install @theme due to missing module dependencies.', ['@theme' => $theme]));
+      }
 
       return $this->redirect('system.themes_page');
     }
@@ -183,7 +187,7 @@ class ThemeController extends ControllerBase {
     $themes_to_enable = array_merge([$theme], $dependencies);
 
     foreach ($themes_to_enable as $name) {
-      if (!empty($all_themes[$name]->info['experimental']) && $all_themes[$name]->status === 0) {
+      if (isset($all_themes[$name]) && $all_themes[$name]->isExperimental() && $all_themes[$name]->status === 0) {
         return TRUE;
       }
     }

@@ -1,8 +1,9 @@
 name: Quick Edit
 type: module
 description: 'In-place content editing.'
+lifecycle: deprecated
+lifecycle_link: https://www.drupal.org/node/3223395#s-quick-edit
 package: Core
-core: 8.x
 version: VERSION
 dependencies:
   - drupal:contextual

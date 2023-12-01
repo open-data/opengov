@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component;
 
 use Solarium\Core\ConfigurableInterface;
@@ -105,6 +112,24 @@ interface SpellcheckInterface extends ConfigurableInterface
      * @return bool|null
      */
     public function getOnlyMorePopular(): ?bool;
+
+    /**
+     * Set alternativetermcount option.
+     *
+     * The the number of suggestions to return for each query term existing in the index and/or dictionary.
+     *
+     * @param int $count
+     *
+     * @return self Provides fluent interface
+     */
+    public function setAlternativeTermCount(int $count): self;
+
+    /**
+     * Get alternativetermcount option.
+     *
+     * @return int|null
+     */
+    public function getAlternativeTermCount(): ?int;
 
     /**
      * Set extendedResults option.

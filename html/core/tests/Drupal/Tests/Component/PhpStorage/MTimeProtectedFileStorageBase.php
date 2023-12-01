@@ -35,6 +35,11 @@ abstract class MTimeProtectedFileStorageBase extends PhpStorageTestBase {
   protected $settings;
 
   /**
+   * The expected test results for the security test.
+   */
+  protected $expected;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
@@ -91,7 +96,7 @@ abstract class MTimeProtectedFileStorageBase extends PhpStorageTestBase {
     // Ensure the file exists and that it and the containing directory have
     // minimal permissions. fileperms() can return high bits unrelated to
     // permissions, so mask with 0777.
-    $this->assertTrue(file_exists($expected_filename));
+    $this->assertFileExists($expected_filename);
     $this->assertSame(0444, fileperms($expected_filename) & 0777);
     $this->assertSame(0777, fileperms($expected_directory) & 0777);
 

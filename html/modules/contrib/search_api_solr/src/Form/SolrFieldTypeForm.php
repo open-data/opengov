@@ -9,9 +9,7 @@ use Drupal\search_api_solr\Utility\Utility;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class SolrFieldTypeForm.
- *
- * @package Drupal\search_api_solr\Form
+ * Form for Solr filed types.
  */
 class SolrFieldTypeForm extends EntityForm {
 
@@ -120,7 +118,7 @@ class SolrFieldTypeForm extends EntityForm {
     /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
     $solr_field_type = $this->entity;
     $solr_field_type->setFieldTypeAsJson($form_state->getValue('field_type'));
-    $solr_field_type->setTextFiles($form_state->getValue('text_files'));
+    $solr_field_type->setTextFiles($form_state->getValue('text_files') ?? []);
 
     $status = $solr_field_type->save();
 

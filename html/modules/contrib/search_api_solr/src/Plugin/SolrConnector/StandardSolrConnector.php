@@ -22,6 +22,7 @@ class StandardSolrConnector extends SolrConnectorPluginBase {
    */
   public function reloadCore() {
     $this->connect();
+    $this->useTimeout(self::INDEX_TIMEOUT);
 
     try {
       $core = $this->configuration['core'];
@@ -34,6 +35,20 @@ class StandardSolrConnector extends SolrConnectorPluginBase {
     }
     catch (HttpException $e) {
       throw new SearchApiSolrException("Reloading core $core failed with error code " . $e->getCode() . '.', $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
+    parent::alterConfigFiles($files, $lucene_match_version, $server_id);
+
+    if (!empty($this->configuration['solr_install_dir'])) {
+      $files['solrcore.properties'] = preg_replace("/solr\.install\.dir.*$/m", 'solr.install.dir=' . $this->configuration['solr_install_dir'], $files['solrcore.properties']);
+    }
+    else {
+      $files['solrcore.properties'] = preg_replace("/solr\.install\.dir.*$/m", '', $files['solrcore.properties']);
     }
   }
 

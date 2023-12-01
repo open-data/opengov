@@ -16,16 +16,15 @@ class MigrateTaxonomyTermTranslationTest extends MigrateDrupal7TestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'comment',
     'content_translation',
     'datetime',
+    'datetime_range',
     'image',
     'language',
     'link',
     'menu_ui',
-    // Required for translation migrations.
-    'migrate_drupal_multilingual',
     'node',
     'taxonomy',
     'telephone',
@@ -42,7 +41,7 @@ class MigrateTaxonomyTermTranslationTest extends MigrateDrupal7TestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('comment');
     $this->installEntitySchema('file');
@@ -72,9 +71,9 @@ class MigrateTaxonomyTermTranslationTest extends MigrateDrupal7TestBase {
    *   The label the migrated entity should have.
    * @param string $expected_vid
    *   The parent vocabulary the migrated entity should have.
-   * @param string $expected_description
+   * @param string|null $expected_description
    *   The description the migrated entity should have.
-   * @param string $expected_format
+   * @param string|null $expected_format
    *   The format the migrated entity should have.
    * @param int $expected_weight
    *   The weight the migrated entity should have.
@@ -84,8 +83,10 @@ class MigrateTaxonomyTermTranslationTest extends MigrateDrupal7TestBase {
    *   The value the migrated entity field should have.
    * @param int $expected_term_reference_tid
    *   The term reference ID the migrated entity field should have.
+   *
+   * @internal
    */
-  protected function assertEntity($id, $expected_language, $expected_label, $expected_vid, $expected_description = '', $expected_format = NULL, $expected_weight = 0, array $expected_parents = [], $expected_field_integer_value = NULL, $expected_term_reference_tid = NULL) {
+  protected function assertEntity(int $id, string $expected_language, string $expected_label, string $expected_vid, ?string $expected_description = '', ?string $expected_format = NULL, int $expected_weight = 0, array $expected_parents = [], int $expected_field_integer_value = NULL, int $expected_term_reference_tid = NULL): void {
     /** @var \Drupal\taxonomy\TermInterface $entity */
     $entity = Term::load($id);
     $this->assertInstanceOf(TermInterface::class, $entity);
@@ -107,8 +108,10 @@ class MigrateTaxonomyTermTranslationTest extends MigrateDrupal7TestBase {
    *   ID of the term to check.
    * @param array $parent_ids
    *   The expected parent term IDs.
+   *
+   * @internal
    */
-  protected function assertHierarchy($vid, $tid, array $parent_ids) {
+  protected function assertHierarchy(string $vid, int $tid, array $parent_ids): void {
     if (!isset($this->treeData[$vid])) {
       $tree = \Drupal::entityTypeManager()
         ->getStorage('taxonomy_term')
@@ -155,14 +158,24 @@ class MigrateTaxonomyTermTranslationTest extends MigrateDrupal7TestBase {
     // Localized.
     $this->assertEntity(19, 'en', 'Jupiter Station', 'vocablocalized', 'Holographic research.', 'filtered_html', '0', []);
     $this->assertEntity(20, 'en', 'DS9', 'vocablocalized', 'Terok Nor', 'filtered_html', '0', []);
+    /** @var \Drupal\taxonomy\TermInterface $entity */
+    $entity = Term::load(20);
+    $this->assertSame('Bajor', $entity->field_sector->value);
 
     // Translate.
     $this->assertEntity(21, 'en', 'High council', 'vocabtranslate', NULL, NULL, '0', []);
+    $entity = Term::load(21);
+    $this->assertSame("K'mpec", $entity->field_chancellor->value);
+
     $this->assertEntity(22, 'fr', 'fr - High council', 'vocabtranslate', NULL, NULL, '0', []);
+    $entity = Term::load(22);
+    $this->assertSame("fr - K'mpec", $entity->field_chancellor->value);
     $this->assertEntity(23, 'is', 'is - High council', 'vocabtranslate', NULL, NULL, '0', []);
 
     // Fixed.
     $this->assertEntity(24, 'fr', 'FR - Crewman', 'vocabfixed', NULL, NULL, '0', []);
+    $entity = Term::load(24);
+    $this->assertSame('fr - specialist', $entity->field_training->value);
   }
 
 }

@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\style\StylePluginBase;
-use Drupal\views_bootstrap\ViewsBootstrap;
 
 /**
  * Style plugin to render each item in an ordered or unordered list.
@@ -33,6 +32,10 @@ class ViewsBootstrapTab extends StylePluginBase {
    * {@inheritdoc}
    */
   protected $usesOptions = TRUE;
+
+  /**
+   * {@inheritdoc}
+   */
   protected $usesRowPlugin = TRUE;
 
   /**
@@ -60,7 +63,7 @@ class ViewsBootstrapTab extends StylePluginBase {
         '#options' => $this->displayHandler->getFieldLabels(TRUE),
         '#required' => TRUE,
         '#default_value' => $this->options['tab_field'],
-        '#description' => t('Select the field that will be used as the tab.'),
+        '#description' => $this->t('Select the field that will be used as the tab.'),
       ];
 
       $form['tab_type'] = [

@@ -4,8 +4,6 @@ namespace Drupal\search_api_solr\Commands;
 
 use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
 use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\ConsoleException;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
@@ -13,7 +11,6 @@ use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\Utility\SolrCommandHelper;
 use Drush\Commands\DrushCommands;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Defines Drush commands for the Search API Solr.
@@ -32,25 +29,18 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   /**
    * Constructs a SearchApiSolrCommands object.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entity type manager.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-   *   The module handler.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
-   *   The event dispatcher.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @param \Drupal\search_api_solr\Utility\SolrCommandHelper $commandHelper
+   *   The command helper.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, ModuleHandlerInterface $moduleHandler, EventDispatcherInterface $eventDispatcher) {
+  public function __construct(SolrCommandHelper $commandHelper) {
     parent::__construct();
-    $this->commandHelper = new SolrCommandHelper($entityTypeManager, $moduleHandler, $eventDispatcher, 'dt');
+    $this->commandHelper = $commandHelper;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setLogger(LoggerInterface $logger) {
+  public function setLogger(LoggerInterface $logger): void {
     parent::setLogger($logger);
     $this->commandHelper->setLogger($logger);
   }
@@ -64,12 +54,10 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *   Deletes all Solr Field Type and re-installs them from their yml files.
    *
    * @aliases solr-reinstall-ft,sasm-reinstall-ft,search-api-solr-delete-and-reinstall-all-field-types,search-api-solr-multilingual-delete-and-reinstall-all-field-types
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   *   Thrown if an index has a server which couldn't be loaded.
    */
   public function reinstallFieldtypes() {
     $this->commandHelper->reinstallFieldtypesCommand();
+    $this->logger()->success('Solr field types re-installed.');
   }
 
   /**
@@ -79,9 +67,6 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *
    * @usage drush search-api-solr:install-missing-fieldtypes
    *   Install missing Solr Field Types.
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   *   Thrown if an index has a server which couldn't be loaded.
    */
   public function installMissingFieldtypes() {
     search_api_solr_install_missing_field_types();
@@ -96,22 +81,26 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *   The file name of the config zip that should be created.
    * @param string $solr_version
    *   The targeted Solr version.
+   * @param array $options
+   *   The options array.
+   *
+   * @command search-api-solr:get-server-config
+   *
+   * @default $options []
+   *
+   * @usage drush search-api-solr:get-server-config server_id file_name
+   *   Get the config files for a solr server and save it as zip file.
+   *
+   * @aliases solr-gsc,sasm-gsc,search-api-solr-get-server-config,search-api-solr-multilingual-get-server-config
    *
    * @throws \Drupal\search_api\ConsoleException
    * @throws \Drupal\search_api\SearchApiException
    * @throws \ZipStream\Exception\FileNotFoundException
    * @throws \ZipStream\Exception\FileNotReadableException
    * @throws \ZipStream\Exception\OverflowException
-   *
-   * @command search-api-solr:get-server-config
-   *
-   * @usage drush search-api-solr:get-server-config server_id file_name
-   *   Get the config files for a solr server and save it as zip file.
-   *
-   * @aliases solr-gsc,sasm-gsc,search-api-solr-get-server-config,search-api-solr-multilingual-get-server-config
    */
   public function getServerConfig($server_id, $file_name = NULL, $solr_version = NULL, array $options = []) {
-    if (!$options['pipe'] && ($file_name === NULL)) {
+    if ((!isset($options['pipe']) || !$options['pipe']) && ($file_name === NULL)) {
       throw new ConsoleException('Required argument missing ("file_name"), and no --pipe option specified.');
     }
     $this->commandHelper->getServerConfigCommand($server_id, $file_name, $solr_version);
@@ -123,12 +112,16 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @param string $indexId
    *   (optional) A search index ID, or NULL to index items for all enabled
    *   indexes.
+   * @param array $options
+   *   The options array.
    *
    * @command search-api-solr:finalize-index
    *
    * @option force
    *   Force the finalization, even if the index isn't "dirty".
    *   Defaults to FALSE.
+   *
+   * @default $options []
    *
    * @usage drush search-api-solr:finalize-index
    *   Finalize all enabled indexes.
@@ -147,6 +140,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   public function finalizeIndex($indexId = NULL, array $options = ['force' => FALSE]) {
     $force = (bool) $options['force'];
     $this->commandHelper->finalizeIndexCommand($indexId ? [$indexId] : $indexId, $force);
+    $this->logger()->success('Solr %index_id finalized.', ['%index_id' => $indexId]);
   }
 
   /**

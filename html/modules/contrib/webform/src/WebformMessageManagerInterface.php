@@ -9,9 +9,9 @@ use Drupal\Core\Entity\EntityInterface;
  */
 interface WebformMessageManagerInterface {
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Hardcode message or custom messages with arguments constants.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Admin closed.
@@ -58,11 +58,11 @@ interface WebformMessageManagerInterface {
    */
   const HANDLER_SUBMISSION_REQUIRED = 'handler_submission_required';
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Configurable custom message constants with :href argument.
   // Values corresponds to admin config and webform settings
   // with *_message appended.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Submission previous.
@@ -84,10 +84,10 @@ interface WebformMessageManagerInterface {
    */
   const DRAFT_PENDING_MULTIPLE = 'draft_pending_multiple';
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Configurable custom message constants.
   // Values corresponds to admin config and webform settings.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Webform exception.

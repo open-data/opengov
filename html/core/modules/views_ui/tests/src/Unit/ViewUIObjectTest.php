@@ -45,7 +45,7 @@ class ViewUIObjectTest extends UnitTestCase {
     }
 
     $storage = $this->getMockBuilder('Drupal\views\Entity\View')
-      ->setMethods($interface_methods)
+      ->onlyMethods($interface_methods)
       ->setConstructorArgs([[], 'view'])
       ->getMock();
     $executable = $this->getMockBuilder('Drupal\views\ViewExecutable')
@@ -85,7 +85,7 @@ class ViewUIObjectTest extends UnitTestCase {
     $account = $this->createMock('Drupal\Core\Session\AccountInterface');
     $account->expects($this->exactly(2))
       ->method('id')
-      ->will($this->returnValue(1));
+      ->willReturn(1);
 
     $container = new ContainerBuilder();
     $container->set('current_user', $account);
@@ -111,61 +111,9 @@ class ViewUIObjectTest extends UnitTestCase {
   }
 
   /**
-   * Tests the isLocked method.
-   *
-   * @expectedDeprecation Using the "lock" public property of a View is deprecated in Drupal 8.7.0 and will not be allowed in Drupal 9.0.0. Use \Drupal\views_ui\ViewUI::setLock() instead. See https://www.drupal.org/node/3025869.
-   * @group legacy
-   */
-  public function testIsLockedLegacy() {
-    $storage = $this->getMockBuilder('Drupal\views\Entity\View')
-      ->setConstructorArgs([[], 'view'])
-      ->getMock();
-    $executable = $this->getMockBuilder('Drupal\views\ViewExecutable')
-      ->disableOriginalConstructor()
-      ->setConstructorArgs([$storage])
-      ->getMock();
-    $storage->set('executable', $executable);
-    $account = $this->createMock('Drupal\Core\Session\AccountInterface');
-    $account->expects($this->exactly(2))
-      ->method('id')
-      ->will($this->returnValue(1));
-
-    $container = new ContainerBuilder();
-    $container->set('current_user', $account);
-    \Drupal::setContainer($container);
-
-    $view_ui = new ViewUI($storage);
-
-    // A view_ui without a lock object is not locked.
-    $this->assertFalse($view_ui->isLocked());
-
-    // Set the lock object with a different owner than the mocked account above.
-    $lock = (object) [
-      'owner' => 2,
-      'data' => [],
-      'updated' => (int) $_SERVER['REQUEST_TIME'],
-    ];
-    $view_ui->lock = $lock;
-    $this->assertTrue($view_ui->isLocked());
-
-    // Set a different lock object with the same object as the mocked account.
-    $lock = (object) [
-      'owner' => 1,
-      'data' => [],
-      'updated' => (int) $_SERVER['REQUEST_TIME'],
-    ];
-    $view_ui->lock = $lock;
-    $this->assertFalse($view_ui->isLocked());
-  }
-
-  /**
    * Tests serialization of the ViewUI object.
    */
   public function testSerialization() {
-    // Set a container so the DependencySerializationTrait has it.
-    $container = new ContainerBuilder();
-    \Drupal::setContainer($container);
-
     $storage = new View([], 'view');
     $executable = $this->getMockBuilder('Drupal\views\ViewExecutable')
       ->disableOriginalConstructor()
@@ -181,7 +129,7 @@ class ViewUIObjectTest extends UnitTestCase {
     $serialized = serialize($view_ui);
 
     // Make sure the ViewExecutable class is not found in the serialized string.
-    $this->assertSame(strpos($serialized, '"Drupal\views\ViewExecutable"'), FALSE);
+    $this->assertStringNotContainsString('"Drupal\views\ViewExecutable"', $serialized);
 
     $unserialized = unserialize($serialized);
     $this->assertInstanceOf('Drupal\views_ui\ViewUI', $unserialized);

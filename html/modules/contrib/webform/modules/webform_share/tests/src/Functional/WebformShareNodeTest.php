@@ -27,6 +27,8 @@ class WebformShareNodeTest extends WebformNodeBrowserTestBase {
   public function testShare() {
     global $base_url;
 
+    $assert_session = $this->assertSession();
+
     $config = \Drupal::configFactory()->getEditable('webform.settings');
 
     /** @var \Drupal\webform\WebformInterface $webform */
@@ -39,30 +41,30 @@ class WebformShareNodeTest extends WebformNodeBrowserTestBase {
 
     $this->drupalLogin($this->rootUser);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Check share page access denied.
     $this->drupalGet('/webform/contact/share');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Check webform node share page access denied.
     $this->drupalGet("/node/$nid/webform/share");
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Check webform node preview access denied.
     $this->drupalGet("/node/$nid/webform/share/preview");
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Enable enable share for all webform node.
     $config->set('settings.default_share_node', TRUE)->save();
 
     // Check share enabled for all webform nodes.
     $this->drupalGet('/webform/contact/share');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
     $this->drupalGet("/node/$nid/webform/share");
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
     $this->drupalGet("/node/$nid/webform/share/preview");
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Enable disable share for all webform nodes.
     $config->set('settings.default_share_node', FALSE)->save();
@@ -72,11 +74,11 @@ class WebformShareNodeTest extends WebformNodeBrowserTestBase {
 
     // Check share enabled for a single webform.
     $this->drupalGet('/webform/contact/share');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
     $this->drupalGet("/node/$nid/webform/share");
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
     $this->drupalGet("/node/$nid/webform/share/preview");
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check webform node script tag.
     $build = [
@@ -90,7 +92,7 @@ class WebformShareNodeTest extends WebformNodeBrowserTestBase {
     $src = preg_replace('#^https?:#', '', $src);
     $expected_script_tag = '<script src="' . $src . '"></script>' . PHP_EOL;
 
-    $this->assertEqual($expected_script_tag, $actual_script_tag);
+    $this->assertEquals($expected_script_tag, $actual_script_tag);
   }
 
 }

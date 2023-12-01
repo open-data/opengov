@@ -49,8 +49,8 @@ trait EntityDefinitionTestTrait {
         $original_storage_definitions = \Drupal::service('entity.last_installed_schema.repository')->getLastInstalledFieldStorageDefinitions($entity_type_id);
 
         foreach ($change_list['field_storage_definitions'] as $field_name => $change) {
-          $storage_definition = isset($storage_definitions[$field_name]) ? $storage_definitions[$field_name] : NULL;
-          $original_storage_definition = isset($original_storage_definitions[$field_name]) ? $original_storage_definitions[$field_name] : NULL;
+          $storage_definition = $storage_definitions[$field_name] ?? NULL;
+          $original_storage_definition = $original_storage_definitions[$field_name] ?? NULL;
           $this->doFieldUpdate($change, $storage_definition, $original_storage_definition);
         }
       }
@@ -227,14 +227,18 @@ trait EntityDefinitionTestTrait {
    * @param bool $is_revisionable
    *   (optional) If the base field should be revisionable or not. Defaults to
    *   FALSE.
-   *  @param bool $set_label
+   * @param bool $set_label
    *   (optional) If the base field should have a label or not. Defaults to
    *   TRUE.
+   * @param bool $is_translatable
+   *   (optional) If the base field should be translatable or not. Defaults to
+   *   FALSE.
    */
-  protected function addBaseField($type = 'string', $entity_type_id = 'entity_test_update', $is_revisionable = FALSE, $set_label = TRUE) {
+  protected function addBaseField($type = 'string', $entity_type_id = 'entity_test_update', $is_revisionable = FALSE, $set_label = TRUE, $is_translatable = FALSE) {
     $definitions['new_base_field'] = BaseFieldDefinition::create($type)
       ->setName('new_base_field')
-      ->setRevisionable($is_revisionable);
+      ->setRevisionable($is_revisionable)
+      ->setTranslatable($is_translatable);
 
     if ($set_label) {
       $definitions['new_base_field']->setLabel(t('A new base field'));

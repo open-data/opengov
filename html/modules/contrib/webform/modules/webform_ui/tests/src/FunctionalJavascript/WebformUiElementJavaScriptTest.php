@@ -5,7 +5,7 @@ namespace Drupal\Tests\webform_ui\FunctionalJavascript;
 use Drupal\Tests\webform\FunctionalJavascript\WebformWebDriverTestBase;
 
 /**
- * Tests webform UI element JavasScript.
+ * Tests webform UI element JavaScript.
  *
  * @group webform_ui
  */
@@ -30,7 +30,7 @@ class WebformUiElementJavaScriptTest extends WebformWebDriverTestBase {
     $page = $this->getSession()->getPage();
     $assert_session = $this->assertSession();
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalLogin($this->rootUser);
 
@@ -43,8 +43,8 @@ class WebformUiElementJavaScriptTest extends WebformWebDriverTestBase {
 
     // Check 'form_id' element key warning.
     $title = $page->findField('properties[title]');
-    $title->setValue('destination');
-    $assert_session->waitForText("Please avoid using the reserved word 'destination' as the element's key.");
+    $title->setValue('form_id');
+    $assert_session->waitForText("Please avoid using the reserved word 'form_id' as the element's key.");
   }
 
 }

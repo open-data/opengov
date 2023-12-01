@@ -22,7 +22,7 @@ abstract class BooleanBase extends WebformElementBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -45,6 +45,15 @@ abstract class BooleanBase extends WebformElementBase {
           return ($value) ? 1 : 0;
         }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getItemFormats() {
+    $formats = parent::getItemFormats();
+    $formats['raw'] = $this->t('Raw/return value');
+    return $formats;
   }
 
   /**
@@ -75,8 +84,8 @@ abstract class BooleanBase extends WebformElementBase {
       '#title' => $this->t('Default value'),
       '#type' => 'select',
       '#options' => [
-        0 => $this->t('Unchecked'),
-        1 => $this->t('Checked'),
+        0 => $this->t('Unchecked', [], ['context' => 'Remove check mark']),
+        1 => $this->t('Checked', [], ['context' => 'Add check mark']),
       ],
     ];
 

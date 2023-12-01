@@ -82,6 +82,7 @@ class SideEffectsSniff implements Sniff
             T_CLASS     => T_CLASS,
             T_INTERFACE => T_INTERFACE,
             T_TRAIT     => T_TRAIT,
+            T_ENUM      => T_ENUM,
             T_FUNCTION  => T_FUNCTION,
         ];
 
@@ -175,6 +176,14 @@ class SideEffectsSniff implements Sniff
             // Ignore anon classes.
             if ($tokens[$i]['code'] === T_ANON_CLASS) {
                 $i = $tokens[$i]['scope_closer'];
+                continue;
+            }
+
+            // Ignore attributes.
+            if ($tokens[$i]['code'] === T_ATTRIBUTE
+                && isset($tokens[$i]['attribute_closer']) === true
+            ) {
+                $i = $tokens[$i]['attribute_closer'];
                 continue;
             }
 

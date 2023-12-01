@@ -3,7 +3,7 @@
  * Transforms links into checkboxes.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,13 +14,25 @@
     }
   };
 
+  window.onbeforeunload = function(e) {
+    if (Drupal.facets) {
+      var $checkboxWidgets = $('.js-facets-checkbox-links');
+      if ($checkboxWidgets.length > 0) {
+        $checkboxWidgets.each(function (index, widget) {
+          var $widget = $(widget);
+          var $widgetLinks = $widget.find('.facet-item > a');
+          $widgetLinks.each(Drupal.facets.updateCheckbox);
+        });
+      }
+    }
+  };
+
   /**
    * Turns all facet links into checkboxes.
    */
   Drupal.facets.makeCheckboxes = function (context) {
     // Find all checkbox facet links and give them a checkbox.
-    var $checkboxWidgets = $('.js-facets-checkbox-links', context)
-      .once('facets-checkbox-transform');
+    var $checkboxWidgets = $(once('facets-checkbox-transform', '.js-facets-checkbox-links', context));
 
     if ($checkboxWidgets.length > 0) {
       $checkboxWidgets.each(function (index, widget) {
@@ -33,11 +45,12 @@
 
         // Transform links to checkboxes.
         $widgetLinks.each(Drupal.facets.makeCheckbox);
+
+        // We have to trigger attaching of behaviours, so that Facets JS API can
+        // register handlers on checkbox widgets.
+        Drupal.attachBehaviors(this.parentNode, Drupal.settings);
       });
 
-      // We have to trigger attaching of behaviours, so that Facets JS API can
-      // register handlers on checkbox widgets.
-      Drupal.attachBehaviors(context, Drupal.settings);
     }
 
     // Set indeterminate value on parents having an active trail.
@@ -79,6 +92,18 @@
   };
 
   /**
+   * Update checkbox active state.
+   */
+  Drupal.facets.updateCheckbox = function () {
+    var $link = $(this);
+    var active = $link.hasClass('is-active');
+
+    if (!active) {
+      $link.parent().find('input.facets-checkbox').prop('checked', false);
+    }
+  };
+
+  /**
    * Disable all facet checkboxes in the facet and apply a 'disabled' class.
    *
    * @param {object} $facet
@@ -100,4 +125,4 @@
     e.preventDefault();
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

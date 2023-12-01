@@ -22,7 +22,8 @@ use Drupal\Core\StreamWrapper\StreamWrapperManager;
  *
  * @param $uri
  *   The URI of the file.
- * @return
+ *
+ * @return string[]|int
  *   If the user does not have permission to access the file, return -1. If the
  *   user has permission, return an array with the appropriate headers. If the
  *   file is not controlled by the current module, the return value should be
@@ -44,9 +45,9 @@ function hook_file_download($uri) {
 /**
  * Alter the URL to a file.
  *
- * This hook is called from file_create_url(), and  is called fairly
- * frequently (10+ times per page), depending on how many files there are in a
- * given page.
+ * This hook is called from \Drupal\Core\File\FileUrlGenerator::generate(),
+ * and is called fairly frequently (10+ times per page), depending on how many
+ * files there are in a given page.
  * If CSS and JS aggregation are disabled, this can become very frequently
  * (50+ times per page) so performance is critical.
  *
@@ -107,8 +108,9 @@ function hook_file_url_alter(&$uri) {
 /**
  * Alter MIME type mappings used to determine MIME type from a file extension.
  *
- * Invoked by \Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser::guess(). It
- * is used to allow modules to add to or modify the default mapping from
+ * Invoked by
+ * \Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser::guessMimeType(). It is
+ * used to allow modules to add to or modify the default mapping from
  * \Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser::$defaultMapping.
  *
  * @param $mapping
@@ -116,7 +118,7 @@ function hook_file_url_alter(&$uri) {
  *   The array has 'mimetypes' and 'extensions' elements, each of which is an
  *   array.
  *
- * @see \Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser::guess()
+ * @see \Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser::guessMimeType()
  * @see \Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser::$defaultMapping
  */
 function hook_file_mimetype_mapping_alter(&$mapping) {

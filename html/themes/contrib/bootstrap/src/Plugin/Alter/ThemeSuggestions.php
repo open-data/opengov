@@ -4,7 +4,6 @@ namespace Drupal\bootstrap\Plugin\Alter;
 
 use Drupal\bootstrap\Bootstrap;
 use Drupal\bootstrap\Plugin\PluginBase;
-use Drupal\bootstrap\Utility\Unicode;
 use Drupal\bootstrap\Utility\Variables;
 use Drupal\Core\Entity\EntityInterface;
 

@@ -45,7 +45,7 @@ interface StreamWrapperInterface extends PhpStreamWrapperInterface {
   const READ = 0x0004;
 
   /**
-   * Wrapper is writeable.
+   * Wrapper is writable.
    */
   const WRITE = 0x0008;
 
@@ -67,12 +67,12 @@ interface StreamWrapperInterface extends PhpStreamWrapperInterface {
   const HIDDEN = 0x000C;
 
   /**
-   * Hidden, readable and writeable using local files.
+   * Hidden, readable and writable using local files.
    */
   const LOCAL_HIDDEN = 0x000D;
 
   /**
-   * Visible, readable and writeable.
+   * Visible, readable and writable.
    */
   const WRITE_VISIBLE = 0x001C;
 
@@ -82,16 +82,17 @@ interface StreamWrapperInterface extends PhpStreamWrapperInterface {
   const READ_VISIBLE = 0x0014;
 
   /**
-   * This is the default 'type' flag. This does not include
-   * StreamWrapperInterface::LOCAL, because PHP grants a greater trust level to
-   * local files (for example, they can be used in an "include" statement,
-   * regardless of the "allow_url_include" setting), so stream wrappers need to
-   * explicitly opt-in to this.
+   * The default 'type' flag.
+   *
+   * This does not include StreamWrapperInterface::LOCAL, because PHP grants a
+   * greater trust level to local files (for example, they can be used in an
+   * "include" statement, regardless of the "allow_url_include" setting), so
+   * stream wrappers need to explicitly opt-in to this.
    */
   const NORMAL = 0x001C;
 
   /**
-   * Visible, readable and writeable using local files.
+   * Visible, readable and writable using local files.
    */
   const LOCAL_NORMAL = 0x001D;
 

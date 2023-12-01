@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\image\Plugin\Field\FieldFormatter\ImageFormatterBase;
@@ -30,14 +29,14 @@ use Drupal\Core\Utility\LinkGeneratorInterface;
  *   }
  * )
  */
-class ResponsiveImageFormatter extends ImageFormatterBase implements ContainerFactoryPluginInterface {
+class ResponsiveImageFormatter extends ImageFormatterBase {
 
   /**
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $responsiveImageStyleStorage;
 
-  /*
+  /**
    * The image style entity storage.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
@@ -128,6 +127,7 @@ class ResponsiveImageFormatter extends ImageFormatterBase implements ContainerFa
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $responsive_image_options = [];
     $responsive_image_styles = $this->responsiveImageStyleStorage->loadMultiple();
+    uasort($responsive_image_styles, '\Drupal\responsive_image\Entity\ResponsiveImageStyle::sort');
     if ($responsive_image_styles && !empty($responsive_image_styles)) {
       foreach ($responsive_image_styles as $machine_name => $responsive_image_style) {
         if ($responsive_image_style->hasImageStyleMappings()) {
@@ -137,7 +137,7 @@ class ResponsiveImageFormatter extends ImageFormatterBase implements ContainerFa
     }
 
     $elements['responsive_image_style'] = [
-      '#title' => t('Responsive image style'),
+      '#title' => $this->t('Responsive image style'),
       '#type' => 'select',
       '#default_value' => $this->getSetting('responsive_image_style') ?: NULL,
       '#required' => TRUE,
@@ -145,18 +145,18 @@ class ResponsiveImageFormatter extends ImageFormatterBase implements ContainerFa
       '#description' => [
         '#markup' => $this->linkGenerator->generate($this->t('Configure Responsive Image Styles'), new Url('entity.responsive_image_style.collection')),
         '#access' => $this->currentUser->hasPermission('administer responsive image styles'),
-        ],
+      ],
     ];
 
     $link_types = [
-      'content' => t('Content'),
-      'file' => t('File'),
+      'content' => $this->t('Content'),
+      'file' => $this->t('File'),
     ];
     $elements['image_link'] = [
-      '#title' => t('Link image to'),
+      '#title' => $this->t('Link image to'),
       '#type' => 'select',
       '#default_value' => $this->getSetting('image_link'),
-      '#empty_option' => t('Nothing'),
+      '#empty_option' => $this->t('Nothing'),
       '#options' => $link_types,
     ];
 
@@ -171,11 +171,11 @@ class ResponsiveImageFormatter extends ImageFormatterBase implements ContainerFa
 
     $responsive_image_style = $this->responsiveImageStyleStorage->load($this->getSetting('responsive_image_style'));
     if ($responsive_image_style) {
-      $summary[] = t('Responsive image style: @responsive_image_style', ['@responsive_image_style' => $responsive_image_style->label()]);
+      $summary[] = $this->t('Responsive image style: @responsive_image_style', ['@responsive_image_style' => $responsive_image_style->label()]);
 
       $link_types = [
-        'content' => t('Linked to content'),
-        'file' => t('Linked to file'),
+        'content' => $this->t('Linked to content'),
+        'file' => $this->t('Linked to file'),
       ];
       // Display this setting only if image is linked.
       if (isset($link_types[$this->getSetting('image_link')])) {
@@ -183,7 +183,7 @@ class ResponsiveImageFormatter extends ImageFormatterBase implements ContainerFa
       }
     }
     else {
-      $summary[] = t('Select a responsive image style.');
+      $summary[] = $this->t('Select a responsive image style.');
     }
 
     return $summary;

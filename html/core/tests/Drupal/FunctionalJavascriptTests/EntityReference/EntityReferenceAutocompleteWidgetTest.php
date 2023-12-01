@@ -21,7 +21,7 @@ class EntityReferenceAutocompleteWidgetTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['node', 'field_ui'];
+  protected static $modules = ['node', 'field_ui'];
 
   /**
    * {@inheritdoc}
@@ -31,7 +31,7 @@ class EntityReferenceAutocompleteWidgetTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create a Content type and two test nodes.
@@ -66,9 +66,9 @@ class EntityReferenceAutocompleteWidgetTest extends WebDriverTestBase {
     ]);
     // To satisfy config schema, the size setting must be an integer, not just
     // a numeric value. See https://www.drupal.org/node/2885441.
-    $this->assertInternalType('integer', $form_display->getComponent($field_name)['settings']['size']);
+    $this->assertIsInt($form_display->getComponent($field_name)['settings']['size']);
     $form_display->save();
-    $this->assertInternalType('integer', $form_display->getComponent($field_name)['settings']['size']);
+    $this->assertIsInt($form_display->getComponent($field_name)['settings']['size']);
 
     // Visit the node add page.
     $this->drupalGet('node/add/page');
@@ -127,17 +127,16 @@ class EntityReferenceAutocompleteWidgetTest extends WebDriverTestBase {
 
     // Change the size of the result set via the UI.
     $this->drupalLogin($this->createUser([
-        'access content',
-        'administer content types',
-        'administer node fields',
-        'administer node form display',
-        'create page content',
-      ]
-    ));
+      'access content',
+      'administer content types',
+      'administer node fields',
+      'administer node form display',
+      'create page content',
+    ]));
     $this->drupalGet('/admin/structure/types/manage/page/form-display');
     $assert_session->pageTextContains('Autocomplete suggestion list size: 1');
     // Click on the widget settings button to open the widget settings form.
-    $this->drupalPostForm(NULL, [], $field_name . "_settings_edit");
+    $this->submitForm([], $field_name . "_settings_edit");
     $this->assertSession()->waitForElement('css', sprintf('[name="fields[%s][settings_edit_form][settings][match_limit]"]', $field_name));
     $page->fillField('Number of results', 2);
     $page->pressButton('Save');

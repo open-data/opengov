@@ -6,12 +6,13 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Url as UrlGenerator;
 use Drupal\webform\Element\WebformAjaxElementTrait;
 use Drupal\webform\Element\WebformEntityTrait;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides an 'entity_reference' trait.
@@ -19,6 +20,41 @@ use Drupal\webform\WebformSubmissionInterface;
 trait WebformEntityReferenceTrait {
 
   use WebformAjaxElementTrait;
+  use WebformEntityTrait {
+    setOptions as WebformEntityTraitSetOptions;
+  }
+
+  /**
+   * The entity repository.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * The entity type repository.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeRepositoryInterface
+   */
+  protected $entityTypeRepository;
+
+  /**
+   * The selection plugin manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface
+   */
+  protected $selectionManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->entityRepository = $container->get('entity.repository');
+    $instance->entityTypeRepository = $container->get('entity_type.repository');
+    $instance->selectionManager = $container->get('plugin.manager.entity_reference_selection');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -76,7 +112,7 @@ trait WebformEntityReferenceTrait {
                 return [
                   '#type' => 'link',
                   '#title' => $entity->label(),
-                  '#url' => UrlGenerator::fromUri(file_create_url($entity->getFileUri())),
+                  '#url' => \Drupal::service('file_url_generator')->generate($entity->getFileUri()),
                 ];
               }
               else {
@@ -89,7 +125,7 @@ trait WebformEntityReferenceTrait {
         }
 
       default:
-        return \Drupal::entityTypeManager()->getViewBuilder($entity->getEntityTypeId())->view($entity, $format);
+        return $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, $format);
     }
   }
 
@@ -110,7 +146,7 @@ trait WebformEntityReferenceTrait {
       case 'breadcrumb':
         if ($entity->getEntityTypeId() === 'taxonomy_term') {
           /** @var \Drupal\taxonomy\TermStorageInterface $taxonomy_storage */
-          $taxonomy_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+          $taxonomy_storage = $this->entityTypeManager->getStorage('taxonomy_term');
           $parents = $taxonomy_storage->loadAllParents($entity->id());
           $breadcrumb = [];
           foreach ($parents as $parent) {
@@ -209,15 +245,6 @@ trait WebformEntityReferenceTrait {
   /**
    * {@inheritdoc}
    */
-  public function getExportDefaultOptions() {
-    return [
-      'entity_reference_items' => ['id', 'title', 'url'],
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function buildExportOptionsForm(array &$form, FormStateInterface $form_state, array $export_options) {
     if (isset($form['entity_reference'])) {
       return;
@@ -261,7 +288,7 @@ trait WebformEntityReferenceTrait {
   public function buildExportHeader(array $element, array $options) {
     if (!$this->hasMultipleValues($element)) {
       $default_options = $this->getExportDefaultOptions();
-      $header = isset($options['entity_reference_items']) ? $options['entity_reference_items'] : $default_options['entity_reference_items'];
+      $header = $options['entity_reference_items'] ?? $default_options['entity_reference_items'];
       if ($options['header_format'] === 'label') {
         foreach ($header as $index => $column) {
           switch ($column) {
@@ -292,7 +319,7 @@ trait WebformEntityReferenceTrait {
   public function buildExportRecord(array $element, WebformSubmissionInterface $webform_submission, array $export_options) {
     $value = $this->getValue($element, $webform_submission);
     $default_options = $this->getExportDefaultOptions();
-    $entity_reference_items = isset($export_options['entity_reference_items']) ? $export_options['entity_reference_items'] : $default_options['entity_reference_items'];
+    $entity_reference_items = $export_options['entity_reference_items'] ?? $default_options['entity_reference_items'];
 
     if (!$this->hasMultipleValues($element)) {
       $entity_type = $this->getTargetType($element);
@@ -368,7 +395,7 @@ trait WebformEntityReferenceTrait {
       $this->replaceTokens($element, $settings['webform_submission']);
     }
 
-    WebformEntityTrait::setOptions($element, $settings);
+    $this->WebformEntityTraitSetOptions($element, $settings);
 
     // Set options all after entity options are defined.
     if (!empty($element['#options_all'])) {
@@ -408,14 +435,11 @@ trait WebformEntityReferenceTrait {
       $value = [$value];
     }
 
-    /** @var \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository */
-    $entity_repository = \Drupal::service('entity.repository');
-
     $target_type = $this->getTargetType($element);
     $entities = $this->entityTypeManager->getStorage($target_type)->loadMultiple($value);
     foreach ($entities as $entity_id => $entity) {
       // Set the entity in the correct language for display.
-      $entities[$entity_id] = $entity_repository->getTranslationFromContext($entity);
+      $entities[$entity_id] = $this->entityRepository->getTranslationFromContext($entity);
     }
     return $entities;
   }
@@ -426,13 +450,13 @@ trait WebformEntityReferenceTrait {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // IMPORTANT: Most of the below code and #ajax tweaks compensate for the
     // fact that the EntityReferenceSelection plugin specifically targets
     // entity references managed via the Field API.
     // @see \Drupal\webform\Plugin\WebformElementBase::setConfigurationFormDefaultValueRecursive
     // @see \Drupal\webform\Plugin\WebformElementBase::buildConfigurationForm
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Get element properties.
     $element_properties = $form_state->get('element_properties');
@@ -485,13 +509,10 @@ trait WebformEntityReferenceTrait {
     $element_properties['selection_settings'] = $selection_settings;
     $form_state->set('element_properties', $element_properties);
 
-    /**************************************************************************/
-
-    /** @var \Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface $entity_reference_selection_manager */
-    $entity_reference_selection_manager = \Drupal::service('plugin.manager.entity_reference_selection');
+    /* ********************************************************************** */
 
     // @see \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem
-    $selection_plugins = $entity_reference_selection_manager->getSelectionGroups($target_type);
+    $selection_plugins = $this->selectionManager->getSelectionGroups($target_type);
     $handlers_options = [];
     foreach (array_keys($selection_plugins) as $selection_group_id) {
       if (array_key_exists($selection_group_id, $selection_plugins[$selection_group_id])) {
@@ -505,7 +526,7 @@ trait WebformEntityReferenceTrait {
 
     // Entity Reference fields are no longer supported to reference Paragraphs.
     // @see paragraphs_form_field_storage_config_edit_form_alter()
-    $target_type_options = \Drupal::service('entity_type.repository')->getEntityTypeLabels(TRUE);
+    $target_type_options = $this->entityTypeRepository->getEntityTypeLabels(TRUE);
     unset($target_type_options[(string) $this->t('Content')]['paragraph']);
 
     $form['entity_reference'] = [
@@ -534,7 +555,7 @@ trait WebformEntityReferenceTrait {
     // Selection settings.
     // Note: The below options are used to populate the #default_value for
     // selection settings.
-    $entity_reference_selection_handler = $entity_reference_selection_manager->getInstance([
+    $entity_reference_selection_handler = $this->selectionManager->getInstance([
       'target_type' => $target_type,
       'handler' => $selection_handler,
     ] + $selection_settings);
@@ -626,9 +647,9 @@ trait WebformEntityReferenceTrait {
     $form_state->setValues($values);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Form/Ajax helpers and callbacks.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Build an ajax elements trigger.
@@ -639,7 +660,7 @@ trait WebformEntityReferenceTrait {
    *   The elements to trigger the Ajax update.
    */
   protected function buildAjaxElementTriggerRecursive($id, array &$element) {
-    $element['#access'] = TRUE;
+    $element += ['#access' => TRUE];
     foreach (Element::children($element) as $key) {
       // Replace #ajax = TRUE with custom ajax element trigger attribute.
       if (isset($element[$key]['#ajax']) && $element[$key]['#ajax'] === TRUE) {
@@ -648,6 +669,32 @@ trait WebformEntityReferenceTrait {
       unset($element[$key]['#ajax'], $element[$key]['#limit_validation_errors']);
       $this->buildAjaxElementTriggerRecursive($id, $element[$key]);
     }
+  }
+
+  /* ************************************************************************ */
+  // Display submission value methods.
+  /* ************************************************************************ */
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function formatHtmlItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    $format = $this->getItemsFormat($element);
+    if (strpos($format, 'checklist:') === 0) {
+      $this->setOptions($element);
+    }
+    return parent::formatHtmlItems($element, $webform_submission, $options);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function formatTextItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    $format = $this->getItemsFormat($element);
+    if (strpos($format, 'checklist:') === 0) {
+      $this->setOptions($element);
+    }
+    return parent::formatTextItems($element, $webform_submission, $options);
   }
 
 }

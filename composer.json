@@ -13,23 +13,6 @@
         {
             "type"    : "package",
             "package" : {
-                "name"    : "w8tcha/ckeditor-codemirror",
-                "version" : "v1.17",
-                "type"    : "drupal-library",
-                "dist"    : {
-                    "url"  : "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/archive/v1.17.11.tar.gz",
-                    "type" : "tar"
-                },
-                "source"  : {
-                    "url"       : "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git",
-                    "type"      : "git",
-                    "reference" : "v1.17"
-                }
-            }
-        },
-        {
-            "type"    : "package",
-            "package" : {
                 "name"    : "wet-boew/wet-boew",
                 "version" : "v4.0.63",
                 "type"    : "drupal-library",
@@ -63,54 +46,43 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "composer/installers": "^1.2",
-        "cweagans/composer-patches": "^1.6.5",
-        "drupal-composer/drupal-scaffold": "^2.5",
-        "drupal/console": "^1.9.4",
-        "drupal/core": "^8.8.0",
-        "drush/drush": "^9.0.0",
-        "opengov/og": "dev-master",
-        "symfony/event-dispatcher": "4.3.4 as 3.4.99",
-        "vlucas/phpdotenv": "^2.4",
+        "php": ">=8",
+        "composer/installers": "^1.9.0",
+        "cweagans/composer-patches": "^1.7.0",
+        "drupal/console": "^1.9.8",
+        "drupal/core": "^9",
+        "drupal/core-composer-scaffold": "^9.4.0",
+        "drupal/core-recommended": "^9",
+        "opengov/og": "dev-drupal9-compatibility",
+        "symfony/event-dispatcher": "^4.4",
         "webflo/drupal-finder": "^1.0.0",
-        "webmozart/path-util": "^2.3",
-        "zaporylie/composer-drupal-optimizations": "^1.0"
+        "wikimedia/composer-merge-plugin": "2.0.1"
     },
     "require-dev": {
-        "drupal/core-dev": "^8.8"
+        "drupal/core-dev": "^9"
     },
     "conflict": {
         "drupal/drupal": "*",
-        "symfony/http-foundation": "3.4.24"
+        "symfony/http-foundation": "3.4.35",
+        "drush/drush": "<8.1.10"
     },
     "config": {
-        "sort-packages": true
-    },
-    "autoload": {
-        "classmap": [
-            "scripts/composer/ScriptHandler.php"
-        ],
-        "files": ["load.environment.php"]
-    },
-    "scripts": {
-        "pre-install-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
-        "pre-update-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::checkComposerVersion"
-        ],
-        "post-install-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::createRequiredFiles"
-        ],
-        "post-update-cmd": [
-            "OpenGovProject\\composer\\ScriptHandler::createRequiredFiles"
-        ]
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "drupal/console-extend-plugin": true,
+            "oomphinc/composer-installers-extender": true,
+            "zaporylie/composer-drupal-optimizations": true,
+            "wikimedia/composer-merge-plugin": true,
+            "drupal/core-composer-scaffold": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "extra": {
         "installer-types": [
-           "bower-asset",
-           "npm-asset"
+            "bower-asset",
+            "npm-asset"
         ],
         "installer-paths": {
             "html/core": [ "type:drupal-core" ],
@@ -134,8 +106,15 @@
             "initial": {
                 ".editorconfig": "../.editorconfig",
                 ".gitattributes": "../.gitattributes"
+            },
+            "locations": {
+                "web-root": "html/"
             }
+        },
+        "merge-plugin": {
+            "include": [
+                "html/modules/contrib/ckeditor_codemirror/composer.libraries.json"
+            ]
         }
     }
 }
-

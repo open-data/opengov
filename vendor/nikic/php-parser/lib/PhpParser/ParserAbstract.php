@@ -16,8 +16,12 @@ use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Else_;
+use PhpParser\Node\Stmt\ElseIf_;
+use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\Node\Stmt\UseUse;
@@ -60,7 +64,7 @@ abstract class ParserAbstract implements Parser
 
     /** @var int[] Map of states to a displacement into the $action table. The corresponding action for this
      *             state/symbol pair is $action[$actionBase[$state] + $symbol]. If $actionBase[$state] is 0, the
-                   action is defaulted, i.e. $actionDefault[$state] should be used instead. */
+     *             action is defaulted, i.e. $actionDefault[$state] should be used instead. */
     protected $actionBase;
     /** @var int[] Table of actions. Indexed according to $actionBase comment. */
     protected $action;
@@ -662,6 +666,8 @@ abstract class ParserAbstract implements Parser
             'null'     => true,
             'false'    => true,
             'mixed'    => true,
+            'never'    => true,
+            'true'     => true,
         ];
 
         if (!$name->isUnqualified()) {
@@ -873,6 +879,33 @@ abstract class ParserAbstract implements Parser
         return $attributes;
     }
 
+    /** @param ElseIf_|Else_ $node */
+    protected function fixupAlternativeElse($node) {
+        // Make sure a trailing nop statement carrying comments is part of the node.
+        $numStmts = \count($node->stmts);
+        if ($numStmts !== 0 && $node->stmts[$numStmts - 1] instanceof Nop) {
+            $nopAttrs = $node->stmts[$numStmts - 1]->getAttributes();
+            if (isset($nopAttrs['endLine'])) {
+                $node->setAttribute('endLine', $nopAttrs['endLine']);
+            }
+            if (isset($nopAttrs['endFilePos'])) {
+                $node->setAttribute('endFilePos', $nopAttrs['endFilePos']);
+            }
+            if (isset($nopAttrs['endTokenPos'])) {
+                $node->setAttribute('endTokenPos', $nopAttrs['endTokenPos']);
+            }
+        }
+    }
+
+    protected function checkClassModifier($a, $b, $modifierPos) {
+        try {
+            Class_::verifyClassModifier($a, $b);
+        } catch (Error $error) {
+            $error->setAttributes($this->getAttributesAt($modifierPos));
+            $this->emitError($error);
+        }
+    }
+
     protected function checkModifier($a, $b, $modifierPos) {
         // Jumping through some hoops here because verifyModifier() is also used elsewhere
         try {
@@ -912,22 +945,17 @@ abstract class ParserAbstract implements Parser
         }
     }
 
-    protected function checkClass(Class_ $node, $namePos) {
-        if (null !== $node->name && $node->name->isSpecialClassName()) {
+    private function checkClassName($name, $namePos) {
+        if (null !== $name && $name->isSpecialClassName()) {
             $this->emitError(new Error(
-                sprintf('Cannot use \'%s\' as class name as it is reserved', $node->name),
+                sprintf('Cannot use \'%s\' as class name as it is reserved', $name),
                 $this->getAttributesAt($namePos)
             ));
         }
+    }
 
-        if ($node->extends && $node->extends->isSpecialClassName()) {
-            $this->emitError(new Error(
-                sprintf('Cannot use \'%s\' as class name as it is reserved', $node->extends),
-                $node->extends->getAttributes()
-            ));
-        }
-
-        foreach ($node->implements as $interface) {
+    private function checkImplementedInterfaces(array $interfaces) {
+        foreach ($interfaces as $interface) {
             if ($interface->isSpecialClassName()) {
                 $this->emitError(new Error(
                     sprintf('Cannot use \'%s\' as interface name as it is reserved', $interface),
@@ -937,22 +965,27 @@ abstract class ParserAbstract implements Parser
         }
     }
 
-    protected function checkInterface(Interface_ $node, $namePos) {
-        if (null !== $node->name && $node->name->isSpecialClassName()) {
+    protected function checkClass(Class_ $node, $namePos) {
+        $this->checkClassName($node->name, $namePos);
+
+        if ($node->extends && $node->extends->isSpecialClassName()) {
             $this->emitError(new Error(
-                sprintf('Cannot use \'%s\' as class name as it is reserved', $node->name),
-                $this->getAttributesAt($namePos)
+                sprintf('Cannot use \'%s\' as class name as it is reserved', $node->extends),
+                $node->extends->getAttributes()
             ));
         }
 
-        foreach ($node->extends as $interface) {
-            if ($interface->isSpecialClassName()) {
-                $this->emitError(new Error(
-                    sprintf('Cannot use \'%s\' as interface name as it is reserved', $interface),
-                    $interface->getAttributes()
-                ));
-            }
-        }
+        $this->checkImplementedInterfaces($node->implements);
+    }
+
+    protected function checkInterface(Interface_ $node, $namePos) {
+        $this->checkClassName($node->name, $namePos);
+        $this->checkImplementedInterfaces($node->extends);
+    }
+
+    protected function checkEnum(Enum_ $node, $namePos) {
+        $this->checkClassName($node->name, $namePos);
+        $this->checkImplementedInterfaces($node->implements);
     }
 
     protected function checkClassMethod(ClassMethod $node, $modifierPos) {
@@ -975,6 +1008,12 @@ abstract class ParserAbstract implements Parser
                     break;
             }
         }
+
+        if ($node->flags & Class_::MODIFIER_READONLY) {
+            $this->emitError(new Error(
+                sprintf('Method %s() cannot be readonly', $node->name),
+                $this->getAttributesAt($modifierPos)));
+        }
     }
 
     protected function checkClassConst(ClassConst $node, $modifierPos) {
@@ -988,9 +1027,9 @@ abstract class ParserAbstract implements Parser
                 "Cannot use 'abstract' as constant modifier",
                 $this->getAttributesAt($modifierPos)));
         }
-        if ($node->flags & Class_::MODIFIER_FINAL) {
+        if ($node->flags & Class_::MODIFIER_READONLY) {
             $this->emitError(new Error(
-                "Cannot use 'final' as constant modifier",
+                "Cannot use 'readonly' as constant modifier",
                 $this->getAttributesAt($modifierPos)));
         }
     }

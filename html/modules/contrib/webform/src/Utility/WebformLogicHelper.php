@@ -12,7 +12,7 @@ class WebformLogicHelper {
    *
    * @var array
    */
-  static private $recursionTracker = [];
+  private static $recursionTracker = [];
 
   /**
    * Track recursions by counting how many times a value is called.

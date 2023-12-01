@@ -2,14 +2,12 @@ name: Standard
 type: profile
 description: 'Install with commonly used features pre-configured.'
 version: VERSION
-core: 8.x
 install:
   - node
   - history
   - block
   - breakpoint
-  - ckeditor
-  - color
+  - ckeditor5
   - config
   - comment
   - contextual
@@ -17,7 +15,6 @@ install:
   - menu_link_content
   - datetime
   - block_content
-  - quickedit
   - editor
   - help
   - image
@@ -34,11 +31,10 @@ install:
   - toolbar
   - field_ui
   - file
-  - rdf
   - views
   - views_ui
   - tour
   - automated_cron
 themes:
-  - bartik
-  - seven
+  - olivero
+  - claro

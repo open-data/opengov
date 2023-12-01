@@ -39,6 +39,25 @@ class WebformTermsOfService extends Checkbox {
   }
 
   /**
+   * Sets the #checked property of a checkbox element.
+   */
+  public static function processCheckbox(&$element, FormStateInterface $form_state, &$complete_form) {
+    $element = parent::processCheckbox($element, $form_state, $complete_form);
+
+    // Remove curly brackets from the {terms of service} title.
+    if (empty($element['#required_error'])) {
+      $title = (empty($element['#title']))
+        ? (string) t('I agree to the {terms of service}.')
+        : $element['#title'];
+      $title = str_replace('{', '', $title);
+      $title = str_replace('}', '', $title);
+      $element['#required_error'] = t('@name field is required.', ['@name' => $title]);
+    }
+
+    return $element;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function preRenderCheckbox($element) {

@@ -118,8 +118,8 @@ elements: |
       '#options_display': buttons_horizontal
       '#options_description_display': description
       '#options':
-        one: 'One'
-        two: 'Two'
+        one: One
+        two: Two
         three: 'Three -- This is a description'
     radios_buttons_vertical:
       '#type': radios
@@ -154,7 +154,7 @@ elements: |
       '#type': radios
       '#title': radios_buttons_wrapping
       '#options':
-        one: 'OneOneOneOneOneOneOne'
+        one: OneOneOneOneOneOneOne
         two: Two
         three: Three
         four: Four
@@ -176,17 +176,17 @@ elements: |
       '#options__properties':
         two:
           '#wrapper_attributes':
-            'data-custom': 'custom wrapper data'
+            data-custom: 'custom wrapper data'
             style: 'border: red 1px solid'
             class:
               - one-custom-wrapper-class
           '#label_attributes':
-            'data-custom': 'custom label data'
+            data-custom: 'custom label data'
             style: 'border: blue 1px solid'
             class:
               - one-custom-label-class
           '#attributes':
-            'data-custom': 'custom input data'
+            data-custom: 'custom input data'
             style: 'border: yellow 1px solid'
             class:
               - one-custom-class
@@ -212,11 +212,11 @@ elements: |
           '#disabled': true
     radios_other_options_properties:
       '#type': webform_radios_other
-      '#title':   radios_other_options_properties
+      '#title': radios_other_options_properties
       '#options':
-        one: 'One'
-        two: 'Two'
-        three: 'Three'
+        one: One
+        two: Two
+        three: Three
       '#options__properties':
         one:
           '#disabled': true
@@ -224,6 +224,20 @@ elements: |
           '#disabled': true
         three:
           '#disabled': true
+    radios_options_grouped:
+      '#type': radios
+      '#title': radios_options_properties
+      '#options_description_display': description
+      '#options':
+        one: 'One -- This is a description'
+        two: 'Two -- This is a description'
+        three: 'Three -- This is a description'
+        four: 'Four -- This is a description'
+      '#options__properties':
+        one:
+          '#prefix': '<div><strong>Group 1</strong></div>'
+        three:
+          '#prefix': '<div><strong>Group 2</strong></div>'
   
 css: ''
 javascript: ''
@@ -245,7 +259,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -266,6 +280,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''
@@ -412,5 +429,7 @@ handlers:
     status: true
     conditions: {  }
     weight: 1
-    settings: {  }
+    settings:
+      format: yaml
+      submission: false
 variants: {  }

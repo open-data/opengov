@@ -1,4 +1,5 @@
 <?php
+
 namespace Drush\Commands\core;
 
 use Consolidation\SiteProcess\Util\Tty;
@@ -6,11 +7,10 @@ use Drush\Drush;
 use Drupal\Core\Url;
 use Drush\Commands\DrushCommands;
 use Drush\Exec\ExecTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 class RunserverCommands extends DrushCommands
 {
-
     use ExecTrait;
 
     protected $uri;
@@ -25,7 +25,7 @@ class RunserverCommands extends DrushCommands
      * @command runserver
      * @param $uri Host IP address and port number to bind to and path to open in web browser. Format is addr:port/path. Only opens a browser if a path is specified.
      * @option default-server A default addr:port/path to use for any values not specified as an argument.
-     * @option browser If opening a web browser, which browser to use (defaults to operating system default). Use --no-browser to avoid opening a browser.
+     * @option browser Open the URL in the default browser. Use --no-browser to avoid opening a browser.
      * @option dns Resolve hostnames/IPs using DNS/rDNS (if possible) to determine binding IPs and/or human friendly hostnames for URLs and browser.
      * @bootstrap full
      * @aliases rs,serve
@@ -39,8 +39,6 @@ class RunserverCommands extends DrushCommands
      *   Start runserver on localhost (using rDNS to determine binding IP), port 8888, and open /user in browser.
      * @usage drush rs /
      *  Start runserver on default IP/port (127.0.0.1, port 8888), and open / in browser.
-     * @usage drush rs --default-server=127.0.0.1:8080/ -
-     *   Use a default (would be specified in your drushrc) that starts runserver on port 8080, and opens a browser to the front page. Set path to a single hyphen path in argument to prevent opening browser for this session.
      * @usage drush rs :9000/admin
      *   Start runserver on 127.0.0.1, port 9000, and open /admin in browser. Note that you need a colon when you specify port and path, but no IP.
      * @usage drush --quiet rs
@@ -67,7 +65,7 @@ class RunserverCommands extends DrushCommands
         _drush_delete_registered_files();
 
         $link = Url::fromUserInput('/' . $path, ['absolute' => true])->toString();
-        $this->logger()->notice(dt('HTTP server listening on !addr, port !port (see http://!hostname:!port/!path), serving site, !site', ['!addr' => $addr, '!hostname' => $hostname, '!port' => $uri['port'], '!path' => $path, '!site' => Drush::bootstrap()->confPath()]));
+        $this->logger()->notice(dt('HTTP server listening on !addr, port !port (see http://!hostname:!port/!path), serving site, !site', ['!addr' => $addr, '!hostname' => $hostname, '!port' => $uri['port'], '!path' => $path, '!site' => \Drupal::service('kernel')->getSitePath()]));
         // Start php built-in server.
         if (!empty($path)) {
             // Start a browser if desired. Include a 2 second delay to allow the server to come up.
@@ -77,6 +75,7 @@ class RunserverCommands extends DrushCommands
         $router = Path::join(DRUSH_BASE_PATH, '/misc/d8-rs-router.php');
         $php = $this->getConfig()->get('php', 'php');
         $process = $this->processManager()->process([$php, '-S', $addr . ':' . $uri['port'], $router]);
+        $process->setTimeout(null);
         $process->setWorkingDirectory(Drush::bootstrapManager()->getRoot());
         $process->setTty(Tty::isTtySupported());
         if ($options['quiet']) {
@@ -88,7 +87,7 @@ class RunserverCommands extends DrushCommands
     /**
      * Determine the URI to use for this server.
      */
-    public function uri($uri, $options)
+    public function uri($uri, $options): array
     {
         $drush_default = [
             'host' => '127.0.0.1',
@@ -121,13 +120,12 @@ class RunserverCommands extends DrushCommands
     /**
      * Parse a URI or partial URI (including just a port, host IP or path).
      *
-     * @param string $uri
+     * @param $uri
      *   String that can contain partial URI.
      *
-     * @return array
      *   URI array as returned by parse_url.
      */
-    public function parseUri($uri)
+    public function parseUri(?string $uri): array
     {
         if (empty($uri)) {
             return [];

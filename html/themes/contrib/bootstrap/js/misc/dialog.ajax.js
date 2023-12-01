@@ -44,7 +44,7 @@
    */
   Drupal.behaviors.dialog.ajaxUpdateButtons = function (reset) {
     if (this.ajaxCurrentButton && this.ajaxOriginalButton) {
-      this.ajaxCurrentButton.html(this.ajaxOriginalButton.html());
+      this.ajaxCurrentButton.html(this.ajaxOriginalButton.html() || this.ajaxOriginalButton.attr('value'));
       this.ajaxCurrentButton.prop('disabled', this.ajaxOriginalButton.prop('disabled'));
     }
     if (reset) {
@@ -89,7 +89,7 @@
         // Strip all HTML from the actual text value. This value is escaped.
         // It actual HTML value will be synced with the original button's HTML
         // below in the "create" method.
-        text: Bootstrap.stripHtml($originalButton),
+        text: Bootstrap.stripHtml($originalButton) || $originalButton.attr('value'),
         class: $originalButton.attr('class').replace('use-ajax-submit', ''),
         click: function click(e) {
           e.preventDefault();

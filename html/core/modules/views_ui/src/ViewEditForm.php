@@ -11,8 +11,9 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\ElementInfoManagerInterface;
-use Drupal\Core\Url;
 use Drupal\Core\TempStore\SharedTempStoreFactory;
+use Drupal\Core\Theme\ThemeManagerInterface;
+use Drupal\Core\Url;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -54,6 +55,13 @@ class ViewEditForm extends ViewFormBase {
   protected $elementInfo;
 
   /**
+   * The theme manager.
+   *
+   * @var \Drupal\Core\Theme\ThemeManagerInterface
+   */
+  protected $themeManager;
+
+  /**
    * Constructs a new ViewEditForm object.
    *
    * @param \Drupal\Core\TempStore\SharedTempStoreFactory $temp_store_factory
@@ -64,12 +72,19 @@ class ViewEditForm extends ViewFormBase {
    *   The date Formatter service.
    * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
    *   The element info manager.
+   * @param \Drupal\Core\Theme\ThemeManagerInterface $theme_manager
+   *   The theme manager.
    */
-  public function __construct(SharedTempStoreFactory $temp_store_factory, RequestStack $requestStack, DateFormatterInterface $date_formatter, ElementInfoManagerInterface $element_info) {
+  public function __construct(SharedTempStoreFactory $temp_store_factory, RequestStack $requestStack, DateFormatterInterface $date_formatter, ElementInfoManagerInterface $element_info, ThemeManagerInterface $theme_manager = NULL) {
     $this->tempStore = $temp_store_factory->get('views');
     $this->requestStack = $requestStack;
     $this->dateFormatter = $date_formatter;
     $this->elementInfo = $element_info;
+    if ($theme_manager === NULL) {
+      @trigger_error('Calling ' . __METHOD__ . ' without the $theme_manager argument is deprecated in drupal:9.1.0 and will be required in drupal:10.0.0. See https://www.drupal.org/node/3159506', E_USER_DEPRECATED);
+      $theme_manager = \Drupal::service('theme.manager');
+    }
+    $this->themeManager = $theme_manager;
   }
 
   /**
@@ -80,7 +95,8 @@ class ViewEditForm extends ViewFormBase {
       $container->get('tempstore.shared'),
       $container->get('request_stack'),
       $container->get('date.formatter'),
-      $container->get('element_info')
+      $container->get('element_info'),
+      $container->get('theme.manager')
     );
   }
 
@@ -110,7 +126,7 @@ class ViewEditForm extends ViewFormBase {
 
     $form['#tree'] = TRUE;
 
-    $form['#attached']['library'][] = 'core/jquery.ui.dialog';
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
     $form['#attached']['library'][] = 'core/drupal.states';
     $form['#attached']['library'][] = 'core/drupal.tabledrag';
     $form['#attached']['library'][] = 'views_ui/views_ui.admin';
@@ -315,8 +331,6 @@ class ViewEditForm extends ViewFormBase {
           $query->remove('destination');
         }
       }
-      // @todo Use Url::fromPath() once https://www.drupal.org/node/2351379 is
-      //   resolved.
       $form_state->setRedirectUrl(Url::fromUri("base:$destination"));
     }
 
@@ -370,14 +384,17 @@ class ViewEditForm extends ViewFormBase {
     // also invoke this on themes.
     // @todo remove this after
     //   https://www.drupal.org/project/drupal/issues/3087455 has been resolved.
-    \Drupal::theme()->alter('views_ui_display_tab', $build, $view, $display_id);
+    $this->themeManager->alter('views_ui_display_tab', $build, $view, $display_id);
     return $build;
   }
 
   /**
    * Helper function to get the display details section of the edit UI.
    *
-   * @param $display
+   * @param \Drupal\views_ui\ViewUI $view
+   *   The ViewUI entity.
+   * @param array $display
+   *   The display.
    *
    * @return array
    *   A renderable page build array.
@@ -390,7 +407,7 @@ class ViewEditForm extends ViewFormBase {
     ];
 
     $is_display_deleted = !empty($display['deleted']);
-    // The master display cannot be duplicated.
+    // The default display cannot be duplicated.
     $is_default = $display['id'] == 'default';
     // @todo: Figure out why getOption doesn't work here.
     $is_enabled = $view->getExecutable()->displayHandlers->get($display['id'])->isEnabled();
@@ -588,8 +605,8 @@ class ViewEditForm extends ViewFormBase {
     $build['columns']['second']['header'] = $this->getFormBucket($view, 'header', $display);
     $build['columns']['second']['footer'] = $this->getFormBucket($view, 'footer', $display);
     $build['columns']['second']['empty'] = $this->getFormBucket($view, 'empty', $display);
-    $build['columns']['third']['arguments'] = $this->getFormBucket($view, 'argument', $display);
     $build['columns']['third']['relationships'] = $this->getFormBucket($view, 'relationship', $display);
+    $build['columns']['third']['arguments'] = $this->getFormBucket($view, 'argument', $display);
 
     return $build;
   }
@@ -776,9 +793,12 @@ class ViewEditForm extends ViewFormBase {
         '#value' => $this->t('Add @display', ['@display' => $label]),
         '#limit_validation_errors' => [],
         '#submit' => ['::submitDisplayAdd', '::submitDelayDestination'],
-        '#attributes' => ['class' => ['add-display']],
+        '#attributes' => [
+          'class' => ['add-display'],
+          'data-drupal-dropdown-label' => $label,
+        ],
         // Allow JavaScript to remove the 'Add ' prefix from the button label when
-        // placing the button in a "Add" dropdown menu.
+        // placing the button in an "Add" dropdown menu.
         '#process' => array_merge(['views_ui_form_button_was_clicked'], $this->elementInfo->getInfoProperty('submit', '#process', [])),
         '#values' => [$this->t('Add @display', ['@display' => $label]), $label],
       ];
@@ -794,7 +814,7 @@ class ViewEditForm extends ViewFormBase {
     // also invoke this on themes.
     // @todo remove this after
     //   https://www.drupal.org/project/drupal/issues/3087455 has been resolved.
-    \Drupal::theme()->alter('views_ui_display_top', $element, $view, $display_id);
+    $this->themeManager->alter('views_ui_display_top', $element, $view, $display_id);
 
     return $element;
   }
@@ -980,6 +1000,7 @@ class ViewEditForm extends ViewFormBase {
         // TODO: Add another class to have another symbol for filter rearrange.
         $class = 'icon compact rearrange';
         break;
+
       case 'field':
         // Fetch the style plugin info so we know whether to list fields or not.
         $style_plugin = $executable->style_plugin;
@@ -993,6 +1014,7 @@ class ViewEditForm extends ViewFormBase {
           return $build;
         }
         break;
+
       case 'header':
       case 'footer':
       case 'empty':

@@ -37,9 +37,9 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
     $first_file = $this->files[0];
     $second_file = $this->files[1];
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Single composite with file upload.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Create submission with file.
     $edit = [
@@ -57,20 +57,20 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
 
     // Check file upload.
     $element_data = $webform_submission->getElementData('webform_test_composite_file');
-    $this->assertEqual($element_data['managed_file'], $fid, 'Test file was upload to the current submission');
+    $this->assertEquals($element_data['managed_file'], $fid, 'Test file was upload to the current submission');
 
     // Check test file file usage.
-    $this->assertIdentical(['webform' => ['webform_submission' => [$sid => '1']]], $this->fileUsage->listUsage($file), 'The file has 1 usage.');
+    $this->assertSame(['webform' => ['webform_submission' => [$sid => '1']]], $this->fileUsage->listUsage($file), 'The file has 1 usage.');
 
     // Check test file uploaded file path.
-    $this->assertEqual($file->getFileUri(), 'private://webform/test_element_comp_file_plugin/' . $sid . '/' . $first_file->filename);
+    $this->assertEquals($file->getFileUri(), 'private://webform/test_element_comp_file_plugin/' . $sid . '/' . $first_file->filename);
 
     // Check that test file exists.
     $this->assertFileExists($file->getFileUri());
 
-    /**************************************************************************/
+    /* ********************************************************************** */
     // Multiple composite with file upload.
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     // Create submission with file.
     $edit = [
@@ -88,13 +88,13 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
 
     // Check file upload.
     $element_data = $webform_submission->getElementData('webform_test_composite_file_multiple_header');
-    $this->assertEqual($element_data[0]['managed_file'], $fid, 'Test file was upload to the current submission');
+    $this->assertEquals($element_data[0]['managed_file'], $fid, 'Test file was upload to the current submission');
 
     // Check test file file usage.
-    $this->assertIdentical(['webform' => ['webform_submission' => [$sid => '1']]], $this->fileUsage->listUsage($file), 'The file has 1 usage.');
+    $this->assertSame(['webform' => ['webform_submission' => [$sid => '1']]], $this->fileUsage->listUsage($file), 'The file has 1 usage.');
 
     // Check test file uploaded file path.
-    $this->assertEqual($file->getFileUri(), 'private://webform/test_element_comp_file_plugin/' . $sid . '/' . $second_file->filename);
+    $this->assertEquals($file->getFileUri(), 'private://webform/test_element_comp_file_plugin/' . $sid . '/' . $second_file->filename);
 
     // Check that test file exists.
     $this->assertFileExists($file->getFileUri());

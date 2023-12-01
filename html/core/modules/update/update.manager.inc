@@ -60,7 +60,7 @@ function update_manager_download_batch_finished($success, $results) {
   }
   elseif ($success) {
     \Drupal::messenger()->addStatus(t('Updates downloaded successfully.'));
-    $_SESSION['update_manager_update_projects'] = $results['projects'];
+    \Drupal::request()->getSession()->set('update_manager_update_projects', $results['projects']);
     return new RedirectResponse(Url::fromRoute('update.confirmation_page', [], ['absolute' => TRUE])->toString());
   }
   else {
@@ -79,7 +79,7 @@ function update_manager_download_batch_finished($success, $results) {
  *   The update manager operation we're in the middle of. Can be either 'update'
  *   or 'install'. Use to provide operation-specific interface text.
  *
- * @return
+ * @return bool
  *   TRUE if the update manager should continue to the next step in the
  *   workflow, or FALSE if we've hit a fatal configuration and must halt the
  *   workflow.
@@ -102,10 +102,10 @@ function _update_manager_check_backends(&$form, $operation) {
   $available_backends = drupal_get_filetransfer_info();
   if (empty($available_backends)) {
     if ($operation == 'update') {
-      $form['available_backends']['#markup'] = t('Your server does not support updating modules and themes from this interface. Instead, update modules and themes by uploading the new versions directly to the server, as documented in <a href=":doc_url">Extending Drupal 8</a>.', [':doc_url' => 'https://www.drupal.org/docs/8/extending-drupal-8/overview']);
+      $form['available_backends']['#markup'] = t('Your server does not support updating modules and themes from this interface. Instead, update modules and themes by uploading the new versions directly to the server, as documented in <a href=":doc_url">Extending Drupal</a>.', [':doc_url' => 'https://www.drupal.org/docs/extending-drupal/overview']);
     }
     else {
-      $form['available_backends']['#markup'] = t('Your server does not support installing modules and themes from this interface. Instead, install modules and themes by uploading them directly to the server, as documented in <a href=":doc_url">Extending Drupal 8</a>.', [':doc_url' => 'https://www.drupal.org/docs/8/extending-drupal-8/overview']);
+      $form['available_backends']['#markup'] = t('Your server does not support adding modules and themes from this interface. Instead, add modules and themes by uploading them directly to the server, as documented in <a href=":doc_url">Extending Drupal</a>.', [':doc_url' => 'https://www.drupal.org/docs/extending-drupal/overview']);
     }
     return FALSE;
   }
@@ -117,21 +117,21 @@ function _update_manager_check_backends(&$form, $operation) {
   if ($operation == 'update') {
     $form['available_backends']['#markup'] = \Drupal::translation()->formatPlural(
       count($available_backends),
-      'Updating modules and themes requires <strong>@backends access</strong> to your server. See <a href=":doc_url">Extending Drupal 8</a> for other update methods.',
-      'Updating modules and themes requires access to your server via one of the following methods: <strong>@backends</strong>. See <a href=":doc_url">Extending Drupal 8</a> for other update methods.',
+      'Updating modules and themes requires <strong>@backends access</strong> to your server. See <a href=":doc_url">Extending Drupal</a> for other update methods.',
+      'Updating modules and themes requires access to your server via one of the following methods: <strong>@backends</strong>. See <a href=":doc_url">Extending Drupal</a> for other update methods.',
       [
         '@backends' => implode(', ', $backend_names),
-        ':doc_url' => 'https://www.drupal.org/docs/8/extending-drupal-8/overview',
+        ':doc_url' => 'https://www.drupal.org/docs/extending-drupal/overview',
       ]);
   }
   else {
     $form['available_backends']['#markup'] = \Drupal::translation()->formatPlural(
       count($available_backends),
-      'Installing modules and themes requires <strong>@backends access</strong> to your server. See <a href=":doc_url">Extending Drupal 8</a> for other installation methods.',
-      'Installing modules and themes requires access to your server via one of the following methods: <strong>@backends</strong>. See <a href=":doc_url">Extending Drupal 8</a> for other installation methods.',
+      'Adding modules and themes requires <strong>@backends access</strong> to your server. See <a href=":doc_url">Extending Drupal</a> for other methods.',
+      'Adding modules and themes requires access to your server via one of the following methods: <strong>@backends</strong>. See <a href=":doc_url">Extending Drupal</a> for other methods.',
       [
         '@backends' => implode(', ', $backend_names),
-        ':doc_url' => 'https://www.drupal.org/docs/8/extending-drupal-8/overview',
+        ':doc_url' => 'https://www.drupal.org/docs/extending-drupal/overview',
       ]);
   }
   return TRUE;
@@ -156,7 +156,7 @@ function update_manager_archive_extract($file, $directory) {
     'filepath' => $file,
   ]);
   if (!$archiver) {
-    throw new Exception(t('Cannot extract %file, not a valid archive.', ['%file' => $file]));
+    throw new Exception("Cannot extract '$file', not a valid archive");
   }
 
   // Remove the directory if it exists, otherwise it might contain a mixture of
@@ -307,7 +307,7 @@ function update_manager_batch_project_get($project, $url, &$context) {
  * it. However, it is supported here because it is a common configuration on
  * shared hosting, and there is nothing Drupal can do to prevent it.
  *
- * @return
+ * @return bool
  *   TRUE if local file transfers are allowed on this server, or FALSE if not.
  *
  * @see install_check_requirements()
@@ -318,7 +318,7 @@ function update_manager_local_transfers_allowed() {
   // the configuration directory to determine if local transfers will be
   // allowed.
   $temporary_file = \Drupal::service('file_system')->tempnam('temporary://', 'update_');
-  $site_path = \Drupal::service('site.path');
+  $site_path = \Drupal::getContainer()->getParameter('site.path');
   $local_transfers_allowed = fileowner($temporary_file) === fileowner($site_path);
 
   // Clean up. If this fails, we can ignore it (since this is just a temporary

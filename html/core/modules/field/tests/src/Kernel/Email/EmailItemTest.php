@@ -16,7 +16,10 @@ use Drupal\field\Entity\FieldStorageConfig;
  */
 class EmailItemTest extends FieldKernelTestBase {
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     // Create an email field storage and field for validation.
@@ -54,20 +57,20 @@ class EmailItemTest extends FieldKernelTestBase {
     // Verify entity has been created properly.
     $id = $entity->id();
     $entity = EntityTest::load($id);
-    $this->assertTrue($entity->field_email instanceof FieldItemListInterface, 'Field implements interface.');
-    $this->assertTrue($entity->field_email[0] instanceof FieldItemInterface, 'Field item implements interface.');
-    $this->assertEqual($entity->field_email->value, $value);
-    $this->assertEqual($entity->field_email[0]->value, $value);
+    $this->assertInstanceOf(FieldItemListInterface::class, $entity->field_email);
+    $this->assertInstanceOf(FieldItemInterface::class, $entity->field_email[0]);
+    $this->assertEquals($value, $entity->field_email->value);
+    $this->assertEquals($value, $entity->field_email[0]->value);
 
     // Verify changing the email value.
     $new_value = $this->randomMachineName();
     $entity->field_email->value = $new_value;
-    $this->assertEqual($entity->field_email->value, $new_value);
+    $this->assertEquals($new_value, $entity->field_email->value);
 
     // Read changed entity and assert changed values.
     $entity->save();
     $entity = EntityTest::load($id);
-    $this->assertEqual($entity->field_email->value, $new_value);
+    $this->assertEquals($new_value, $entity->field_email->value);
 
     // Test sample item generation.
     $entity = EntityTest::create();

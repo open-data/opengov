@@ -58,7 +58,7 @@ JS;
     $this->drupalGet('/webform/test_variant_randomize');
     $new_saved_variant = $this->getSavedVariantId();
     $this->assertContains($new_saved_variant, ['a', 'b']);
-    $this->assertNotEqual($saved_variant, $new_saved_variant);
+    $this->assertNotEquals($saved_variant, $new_saved_variant);
 
     // Disable the other variant.
     /** @var \Drupal\webform\Plugin\WebformVariantInterface $variant_plugin */

@@ -40,7 +40,7 @@ class Menu extends PreprocessBase implements PreprocessInterface {
         $wrapperAttributes->setAttributes($item['url']->getOption('wrapper_attributes') ?: []);
         $wrapperAttributes->setAttributes($item['url']->getOption('container_attributes') ?: []);
         $linkAttributes->setAttributes($item['url']->getOption('attributes') ?: []);
-        
+
         // If URL isn't a link, it's rendered as a <span> element. Add the
         // "navbar-text" class so it doesn't disrupt the navbar items.
         // @see https://www.drupal.org/project/bootstrap/issues/3053464
@@ -54,7 +54,7 @@ class Menu extends PreprocessBase implements PreprocessInterface {
       // around this, just rewrap attributes in core's native Attribute class.
       $item['attributes'] = new Attribute($wrapperAttributes->getArrayCopy());
       $item['link_attributes'] = new Attribute($linkAttributes->getArrayCopy());
-      if ($item['below']) {
+      if (!empty($item['below']) && is_array($item['below'])) {
         $this->convertAttributes($item['below']);
       }
     }

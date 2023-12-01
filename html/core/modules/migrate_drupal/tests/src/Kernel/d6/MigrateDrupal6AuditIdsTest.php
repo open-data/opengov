@@ -8,7 +8,6 @@ use Drupal\migrate\Audit\IdAuditor;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
-use Drupal\Tests\DeprecatedModulesTestTrait;
 use Drupal\Tests\migrate_drupal\Traits\CreateTestContentEntitiesTrait;
 
 /**
@@ -21,15 +20,13 @@ class MigrateDrupal6AuditIdsTest extends MigrateDrupal6TestBase {
   use FileSystemModuleDiscoveryDataProviderTrait;
   use CreateTestContentEntitiesTrait;
   use ContentModerationTestTrait;
-  use DeprecatedModulesTestTrait;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     // Enable all modules.
     self::$modules = array_keys($this->coreModuleListDataProvider());
-    self::$modules = $this->removeDeprecatedModules(self::$modules);
     parent::setUp();
 
     // Install required entity schemas.
@@ -42,6 +39,7 @@ class MigrateDrupal6AuditIdsTest extends MigrateDrupal6TestBase {
     $this->installSchema('node', ['node_access']);
     $this->installSchema('search', ['search_dataset']);
     $this->installSchema('system', ['sequences']);
+    // @todo Remove tracker in https://www.drupal.org/project/drupal/issues/3261452
     $this->installSchema('tracker', ['tracker_node', 'tracker_user']);
 
     // Enable content moderation for nodes of type page.
@@ -131,6 +129,7 @@ class MigrateDrupal6AuditIdsTest extends MigrateDrupal6TestBase {
     );
 
     $expected = [
+      // @todo Remove aggregator in https://www.drupal.org/project/drupal/issues/3264120
       'd6_aggregator_feed',
       'd6_aggregator_item',
       'd6_comment',
@@ -138,6 +137,7 @@ class MigrateDrupal6AuditIdsTest extends MigrateDrupal6TestBase {
       'd6_file',
       'd6_menu_links',
       'd6_node',
+      'd6_node_complete',
       'd6_node_revision',
       'd6_taxonomy_term',
       'd6_term_node_revision',

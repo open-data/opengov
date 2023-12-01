@@ -14,11 +14,9 @@ class MigrateTaxonomyVocabularyTranslationTest extends MigrateDrupal7TestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'config_translation',
     'language',
-    // Required for translation migrations.
-    'migrate_drupal_multilingual',
     'taxonomy',
     'text',
   ];
@@ -26,9 +24,10 @@ class MigrateTaxonomyVocabularyTranslationTest extends MigrateDrupal7TestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->executeMigrations([
+      'language',
       'd7_taxonomy_vocabulary',
       'd7_taxonomy_vocabulary_translation',
     ]);

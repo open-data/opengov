@@ -15,30 +15,33 @@ use Drupal\taxonomy\VocabularyInterface;
 class EntityTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  public static $modules = ['node', 'taxonomy', 'text'];
+  protected static $modules = ['node', 'taxonomy', 'text'];
+
+  /**
+   * Vocabulary for testing chained token support.
+   *
+   * @var \Drupal\taxonomy\VocabularyInterface
+   */
+  protected $vocabulary;
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create the default tags vocabulary.
-    $vocabulary = Vocabulary::create([
+    $this->vocabulary = Vocabulary::create([
       'name' => 'Tags',
       'vid' => 'tags',
     ]);
-    $vocabulary->save();
+    $this->vocabulary->save();
 
     $this->installEntitySchema('taxonomy_term');
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
-
-    $this->vocab = $vocabulary;
   }
 
   function testEntityMapping() {

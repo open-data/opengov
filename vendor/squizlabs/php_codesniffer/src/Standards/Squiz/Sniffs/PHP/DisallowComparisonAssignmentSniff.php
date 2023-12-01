@@ -52,17 +52,18 @@ class DisallowComparisonAssignmentSniff implements Sniff
             }
         }
 
-        // Ignore values in array definitions.
-        $array = $phpcsFile->findNext(
-            T_ARRAY,
+        // Ignore values in array definitions or match structures.
+        $nextNonEmpty = $phpcsFile->findNext(
+            Tokens::$emptyTokens,
             ($stackPtr + 1),
-            null,
-            false,
             null,
             true
         );
 
-        if ($array !== false) {
+        if ($nextNonEmpty !== false
+            && ($tokens[$nextNonEmpty]['code'] === T_ARRAY
+            || $tokens[$nextNonEmpty]['code'] === T_MATCH)
+        ) {
             return;
         }
 
@@ -76,8 +77,9 @@ class DisallowComparisonAssignmentSniff implements Sniff
         ];
 
         $next = $phpcsFile->findNext($ignore, ($stackPtr + 1), null, true);
-        if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS
-            && $tokens[($next - 1)]['code'] === T_STRING
+        if ($tokens[$next]['code'] === T_CLOSURE
+            || ($tokens[$next]['code'] === T_OPEN_PARENTHESIS
+            && $tokens[($next - 1)]['code'] === T_STRING)
         ) {
             // Code will look like: $var = myFunction(
             // and will be ignored.

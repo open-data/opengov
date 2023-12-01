@@ -14,7 +14,7 @@ class RangeSliderWidgetTest extends SliderWidgetTest {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->widget = new RangeSliderWidget([], 'range_slider_widget', []);
   }
@@ -23,7 +23,7 @@ class RangeSliderWidgetTest extends SliderWidgetTest {
    * {@inheritdoc}
    */
   public function testGetQueryType() {
-    $result = $this->widget->getQueryType($this->queryTypes);
+    $result = $this->widget->getQueryType();
     $this->assertEquals('range', $result);
   }
 

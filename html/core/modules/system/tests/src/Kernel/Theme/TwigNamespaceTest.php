@@ -17,7 +17,7 @@ class TwigNamespaceTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'twig_theme_test',
     'twig_namespace_a',
     'twig_namespace_b',
@@ -29,17 +29,22 @@ class TwigNamespaceTest extends KernelTestBase {
    */
   protected $twig;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
-    \Drupal::service('theme_installer')->install(['test_theme', 'bartik']);
+    \Drupal::service('theme_installer')->install(['test_theme', 'olivero']);
     $this->twig = \Drupal::service('twig');
   }
 
   /**
    * Checks to see if a value is a twig template.
+   *
+   * @internal
    */
-  public function assertTwigTemplate($value, $message = '', $group = 'Other') {
-    $this->assertTrue($value instanceof TemplateWrapper, $message, $group);
+  public function assertTwigTemplate($value, string $message = ''): void {
+    $this->assertInstanceOf(TemplateWrapper::class, $value, $message);
   }
 
   /**
@@ -50,7 +55,7 @@ class TwigNamespaceTest extends KernelTestBase {
     $this->assertTwigTemplate($this->twig->load('@node/node.html.twig'), 'Found node.html.twig in node module.');
 
     // Tests resolving namespaced templates in themes.
-    $this->assertTwigTemplate($this->twig->load('@bartik/page.html.twig'), 'Found page.html.twig in Bartik theme.');
+    $this->assertTwigTemplate($this->twig->load('@olivero/layout/page.html.twig'), 'Found page.html.twig in Olivero theme.');
   }
 
   /**

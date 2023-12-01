@@ -25,10 +25,7 @@ class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase 
     'webform',
     'webform_attachment',
     'webform_cards',
-    // Issue #3110478: [Webform 8.x-6.x] Track the D9 readiness state of the
-    // Webform module's (optional) dependencies
-    // @see https://www.drupal.org/project/webform/issues/3110478
-    // 'webform_entity_print_attachment',
+    'webform_entity_print_attachment',
     'webform_image_select',
     'webform_location_geocomplete',
     'webform_options_custom',
@@ -49,12 +46,6 @@ class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase 
     // Comparing all element's expected and actual definitions ensures
     // that there are not unexpected changes to any element's definitions.
     $expected_definitions = $this->getExpectedElementDefinitions();
-
-    // Issue #3110478: [Webform 8.x-6.x] Track the D9 readiness state of the
-    // Webform module's (optional) dependencies
-    // @see https://www.drupal.org/project/webform/issues/3110478
-    unset($expected_definitions['webform_entity_print_attachment:pdf']);
-
     $actual_definitions = $this->getActualElementDefinitions();
     $this->htmlOutput('<pre>' . htmlentities(Yaml::encode($actual_definitions)) . '</pre>');
     foreach ($actual_definitions as $key => $actual_definition) {
@@ -978,7 +969,7 @@ webform_codemirror:
   dependencies: {  }
   default_key: ''
   category: 'Advanced elements'
-  description: 'Provides a form element for editing code in a number of programming languages and markup.'
+  description: 'Provides a form element for editing code in a number of programming languages and markup. Code editing support is provided by the <a href="https://codemirror.net">CodeMirror</a> library.'
   hidden: false
   multiline: true
   composite: false
@@ -1165,6 +1156,26 @@ webform_entity_checkboxes:
   container: false
   root: false
   multiple: true
+'webform_entity_print_attachment:pdf':
+  dependencies: {  }
+  default_key: ''
+  category: 'File attachment elements'
+  description: 'Generates a PDF attachment.'
+  hidden: false
+  multiline: false
+  composite: false
+  states_wrapper: false
+  deprecated: false
+  deprecated_message: ''
+  id: webform_entity_print_attachment
+  label: 'Attachment PDF'
+  deriver: \Drupal\webform_entity_print_attachment\Plugin\Derivative\WebformEntityPrintAttachmentDeriver
+  class: Drupal\webform_entity_print_attachment\Plugin\WebformElement\WebformEntityPrintAttachment
+  provider: webform_entity_print_attachment
+  input: true
+  container: false
+  root: false
+  multiple: false
 webform_entity_radios:
   dependencies: {  }
   default_key: ''
@@ -1534,7 +1545,7 @@ webform_rating:
   dependencies: {  }
   default_key: ''
   category: 'Advanced elements'
-  description: 'Provides a form element to rate something using an attractive voting widget.'
+  description: 'Provides a form element to rate something using an attractive voting widget. Rating widget is provided by the <a href="https://github.com/gjunge/rateit.js">RateIt</a> library.'
   hidden: false
   multiline: false
   composite: false
@@ -1629,7 +1640,7 @@ webform_signature:
   dependencies: {  }
   default_key: ''
   category: 'Advanced elements'
-  description: 'Provides a form element to collect electronic signatures from users.'
+  description: 'Provides a form element to collect electronic signatures from users. Signature support is provided by the <a href="https://github.com/szimek/signature_pad">Signature Pad</a> library.'
   hidden: false
   multiline: false
   composite: false
@@ -1828,7 +1839,7 @@ webform_toggle:
   composite: false
   states_wrapper: false
   deprecated: true
-  deprecated_message: 'The Toogles library is not being maintained and has major accessibility issues. It has been <a href="https://www.drupal.org/project/webform/issues/2890861">deprecated</a> and will be removed before Webform 8.x-5.0.'
+  deprecated_message: 'The Toggles library is not being maintained and has major accessibility issues. It has been <a href="https://www.drupal.org/project/webform/issues/2890861">deprecated</a> and will be removed before Webform 8.x-5.0.'
   id: webform_toggle
   label: Toggle
   class: Drupal\webform_toggles\Plugin\WebformElement\WebformToggle
@@ -1847,7 +1858,7 @@ webform_toggles:
   composite: false
   states_wrapper: false
   deprecated: true
-  deprecated_message: 'The Toogles library is not being maintained and has major accessibility issues. It has been <a href="https://www.drupal.org/project/webform/issues/2890861">deprecated</a> and will be removed before Webform 8.x-5.0.'
+  deprecated_message: 'The Toggles library is not being maintained and has major accessibility issues. It has been <a href="https://www.drupal.org/project/webform/issues/2890861">deprecated</a> and will be removed before Webform 8.x-5.0.'
   id: webform_toggles
   label: Toggles
   class: Drupal\webform_toggles\Plugin\WebformElement\WebformToggles
@@ -1868,7 +1879,7 @@ webform_variant:
   deprecated: false
   deprecated_message: ''
   id: webform_variant
-  label: 'Variant'
+  label: Variant
   class: Drupal\webform\Plugin\WebformElement\WebformVariant
   provider: webform
   input: true

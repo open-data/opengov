@@ -67,8 +67,10 @@ class WebformThemeManager implements WebformThemeManagerInterface {
   protected $activeTheme;
 
   /**
-   * Constructs a WebformTokenManager object.
+   * Constructs a WebformThemeManager object.
    *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration object factory.
    * @param \Drupal\Core\Render\RendererInterface $renderer
@@ -79,18 +81,14 @@ class WebformThemeManager implements WebformThemeManagerInterface {
    *   The theme handler.
    * @param \Drupal\Core\Theme\ThemeInitializationInterface $theme_initialization
    *   The theme initialization.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The current route match.
-   *
-   * @todo Webform 8.x-6.x: Move $route_match first.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, RendererInterface $renderer, ThemeManagerInterface $theme_manager, ThemeHandlerInterface $theme_handler, ThemeInitializationInterface $theme_initialization, RouteMatchInterface $route_match = NULL) {
+  public function __construct(RouteMatchInterface $route_match, ConfigFactoryInterface $config_factory, RendererInterface $renderer, ThemeManagerInterface $theme_manager, ThemeHandlerInterface $theme_handler, ThemeInitializationInterface $theme_initialization) {
+    $this->routeMatch = $route_match;
     $this->configFactory = $config_factory;
     $this->renderer = $renderer;
     $this->themeManager = $theme_manager;
     $this->themeHandler = $theme_handler;
     $this->themeInitialization = $theme_initialization;
-    $this->routeMatch = $route_match ?: \Drupal::routeMatch();
   }
 
   /**
@@ -100,7 +98,9 @@ class WebformThemeManager implements WebformThemeManagerInterface {
    *   A theme's name
    */
   public function getThemeName($name) {
-    return $this->themeHandler->getName($name);
+    return $this->themeHandler->themeExists($name)
+      ? $this->themeHandler->getName($name)
+      : NULL;
   }
 
   /**
@@ -112,9 +112,7 @@ class WebformThemeManager implements WebformThemeManagerInterface {
   public function getThemeNames() {
     $themes = [];
     foreach ($this->themeHandler->listInfo() as $name => $theme) {
-      if ($theme->status === 1) {
-        $themes[$name] = $theme->info['name'];
-      }
+      $themes[$name] = $theme->info['name'];
     }
     asort($themes);
     return ['' => $this->t('Default')] + $themes;
@@ -152,6 +150,11 @@ class WebformThemeManager implements WebformThemeManagerInterface {
    * {@inheritdoc}
    */
   public function setCurrentTheme($theme_name = NULL) {
+    // Make sure the theme exists before setting it.
+    if ($theme_name && !$this->themeHandler->themeExists($theme_name)) {
+      return;
+    }
+
     if (!isset($this->activeTheme)) {
       $this->activeTheme = $this->themeManager->getActiveTheme();
     }

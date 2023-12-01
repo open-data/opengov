@@ -1,10 +1,22 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Server\CoreAdmin\Query\Action;
 
 use Solarium\QueryType\Server\CoreAdmin\Query\Query as CoreAdminQuery;
 use Solarium\QueryType\Server\Query\Action\AbstractAsyncAction;
 
+/**
+ * Class Rename.
+ *
+ * @see https://solr.apache.org/guide/coreadmin-api.html#coreadmin-rename
+ */
 class Rename extends AbstractAsyncAction implements CoreActionInterface
 {
     use CoreActionTrait;
@@ -29,6 +41,7 @@ class Rename extends AbstractAsyncAction implements CoreActionInterface
     public function setOther($other): self
     {
         $this->setOption('other', $other);
+
         return $this;
     }
 

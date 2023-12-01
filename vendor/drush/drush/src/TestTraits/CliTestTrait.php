@@ -1,4 +1,5 @@
 <?php
+
 namespace Drush\TestTraits;
 
 use Symfony\Component\Process\Process;
@@ -76,12 +77,10 @@ trait CliTestTrait
     }
 
     /**
-     * Actually runs the command.
+     * Run a command and return the process without waiting for it to finish.
      *
-     * @param string $command
+     * @param string|array $command
      *   The actual command line to run.
-     * @param integer $expected_return
-     *   The return code to expect
      * @param sting cd
      *   The directory to run the command in.
      * @param array $env
@@ -89,12 +88,66 @@ trait CliTestTrait
      * @param string $input
      *   A string representing the STDIN that is piped to the command.
      */
-    public function execute($command, $expected_return = 0, $cd = null, $env = null, $input = null)
+    public function startExecute($command, $cd = null, $env = null, $input = null)
     {
         try {
             // Process uses a default timeout of 60 seconds, set it to 0 (none).
             $this->process = new Process($command, $cd, $env, $input, 0);
-            $this->process->inheritEnvironmentVariables(true);
+            if ($this->timeout) {
+                $this->process->setTimeout($this->timeout)
+                ->setIdleTimeout($this->idleTimeout);
+            }
+            $this->process->start();
+            $this->timeout = $this->defaultTimeout;
+            $this->idleTimeout = $this->defaultIdleTimeout;
+            return $this->process;
+        } catch (ProcessTimedOutException $e) {
+            if ($e->isGeneralTimeout()) {
+                $message = 'Command runtime exceeded ' . $this->timeout . " seconds:\n" .  $command;
+            } else {
+                $message = 'Command had no output for ' . $this->idleTimeout . " seconds:\n" .  $command;
+            }
+            throw new \Exception($message . $this->buildProcessMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Actually runs the command.
+     *
+     * @param array|string $command
+     *   The actual command line to run.
+     * @param integer $expected_return
+     *   The return code to expect
+     * @param string cd
+     *   The directory to run the command in.
+     * @param array $env
+     *  Extra environment variables.
+     * @param string $input
+     *   A string representing the STDIN that is piped to the command.
+     */
+    public function execute($command, int $expected_return = 0, $cd = null, $env = null, $input = null)
+    {
+        try {
+            // Process uses a default timeout of 60 seconds, set it to 0 (none).
+            //
+            // symfony/process:3.4 array|string.
+            // symfony/process:4.1 array|string.
+            // symfony/process:4.2 array|::fromShellCommandline().
+            // symfony/process:5.x array|::fromShellCommandline().
+            if (!is_array($command) && method_exists(Process::class, 'fromShellCommandline')) {
+                $this->process = Process::fromShellCommandline((string) $command, $cd, $env, $input, 0);
+            } else {
+                $this->process = new Process($command, $cd, $env, $input, 0);
+            }
+
+            // Handle BC method of making env variables inherited. The default
+            // icn later versions is always inherit and this method disappears.
+            // @todo Remove this if() block once Symfony 3 support is dropped.
+            if (method_exists($this->process, 'inheritEnvironmentVariables')) {
+                set_error_handler(null);
+                $this->process->inheritEnvironmentVariables();
+                restore_error_handler();
+            }
             if ($this->timeout) {
                 $this->process->setTimeout($this->timeout)
                 ->setIdleTimeout($this->idleTimeout);
@@ -113,7 +166,7 @@ trait CliTestTrait
             } else {
                 $message = 'Command had no output for ' . $this->idleTimeout . " seconds:\n" .  $command;
             }
-            throw new \Exception($message . $this->buildProcessMessage());
+            throw new \Exception($message . $this->buildProcessMessage(), $e->getCode(), $e);
         }
     }
 
@@ -190,7 +243,7 @@ trait CliTestTrait
      *   Optional regular expression that should be ignored in the error output.
      */
 
-    protected function assertOutputEquals($expected, $filter = '')
+    protected function assertOutputEquals(string $expected, string $filter = '')
     {
         $output = $this->getSimplifiedOutput();
         if (!empty($filter)) {
@@ -211,7 +264,7 @@ trait CliTestTrait
      * @param string $filter
      *   Optional regular expression that should be ignored in the error output.
      */
-    protected function assertErrorOutputEquals($expected, $filter = '')
+    protected function assertErrorOutputEquals(string $expected, string $filter = '')
     {
         $output = $this->getSimplifiedErrorOutput();
         if (!empty($filter)) {

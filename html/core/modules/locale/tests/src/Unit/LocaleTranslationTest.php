@@ -20,6 +20,20 @@ class LocaleTranslationTest extends UnitTestCase {
   protected $storage;
 
   /**
+   * A mocked lock to use when instantiating LocaleTranslation objects.
+   *
+   * @var \Drupal\Core\Lock\LockBackendInterface|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $lock;
+
+  /**
+   * A mocked cache to use when instantiating LocaleTranslation objects.
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $cache;
+
+  /**
    * A mocked language manager built from LanguageManagerInterface.
    *
    * @var \Drupal\Core\Language\LanguageManagerInterface|\PHPUnit\Framework\MockObject\MockObject
@@ -36,7 +50,7 @@ class LocaleTranslationTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     $this->storage = $this->createMock('Drupal\locale\StringStorageInterface');
     $this->cache = $this->createMock('Drupal\Core\Cache\CacheBackendInterface');
     $this->lock = $this->createMock('Drupal\Core\Lock\LockBackendInterface');
@@ -50,8 +64,7 @@ class LocaleTranslationTest extends UnitTestCase {
   public function testDestruct() {
     $translation = new LocaleTranslation($this->storage, $this->cache, $this->lock, $this->getConfigFactoryStub(), $this->languageManager, $this->requestStack);
     // Prove that destruction works without errors when translations are empty.
-    $this->assertAttributeEmpty('translations', $translation);
-    $translation->destruct();
+    $this->assertNull($translation->destruct());
   }
 
 }

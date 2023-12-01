@@ -34,7 +34,7 @@ class WebformLocationPlaces extends WebformLocationBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -54,13 +54,13 @@ class WebformLocationPlaces extends WebformLocationBase {
       '#title' => $this->t('Algolia application id'),
       '#description' => $this->t('Algolia requires users to use a valid application id and API key for more than 1,000 requests per day. By <a href="https://www.algolia.com/users/sign_up/places">signing up</a>, you can create a free Places app and access your API keys.'),
     ];
-    $default_app_id = \Drupal::config('webform.settings')->get('element.default_algolia_places_app_id');
+    $default_app_id = $this->configFactory->get('webform.settings')->get('element.default_algolia_places_app_id');
     if ($default_app_id) {
       $form['composite']['app_id']['#description'] .= '<br /><br />' . $this->t('Defaults to: %value', ['%value' => $default_app_id]);
     }
     else {
       $form['composite']['app_id']['#required'] = TRUE;
-      if (\Drupal::currentUser()->hasPermission('administer webform')) {
+      if ($this->currentUser->hasPermission('administer webform')) {
         $t_args = [':href' => UrlGenerator::fromRoute('webform.config.elements')->toString()];
         $form['composite']['app_id']['#description'] .= '<br /><br />' . $this->t('You can either enter an element specific application id and API key here or set the <a href=":href">default site-wide application id and API key</a>.', $t_args);
       }
@@ -69,7 +69,7 @@ class WebformLocationPlaces extends WebformLocationBase {
       '#type' => 'textfield',
       '#title' => $this->t('Algolia API key'),
     ];
-    $default_api_key = \Drupal::config('webform.settings')->get('element.default_algolia_places_api_key');
+    $default_api_key = $this->configFactory->get('webform.settings')->get('element.default_algolia_places_api_key');
     if ($default_api_key) {
       $form['composite']['api_key']['#description'] = $this->t('Defaults to: %value', ['%value' => $default_api_key]);
     }

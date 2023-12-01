@@ -96,9 +96,9 @@ class WebformYaml implements SerializationInterface {
     return self::encode(self::decode($yaml));
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Helper methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Convert \r\n to \n inside data.
@@ -106,7 +106,7 @@ class WebformYaml implements SerializationInterface {
    * @param array $data
    *   Data with all converted \r\n to \n.
    */
-  protected static function normalize(array &$data) {
+  public static function normalize(array &$data) {
     foreach ($data as $key => &$value) {
       if (is_string($value)) {
         $data[$key] = preg_replace('/\r\n?/', "\n", $value);

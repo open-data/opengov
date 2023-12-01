@@ -20,7 +20,7 @@ abstract class PluginTestBase extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['plugin_test'];
+  protected static $modules = ['plugin_test'];
 
   protected $testPluginManager;
   protected $testPluginExpectedDefinitions;
@@ -29,6 +29,9 @@ abstract class PluginTestBase extends KernelTestBase {
   protected $defaultsTestPluginManager;
   protected $defaultsTestPluginExpectedDefinitions;
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp() {
     parent::setUp();
 

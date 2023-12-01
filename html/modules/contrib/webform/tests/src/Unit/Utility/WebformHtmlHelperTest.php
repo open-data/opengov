@@ -35,7 +35,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
     $container->set('config.factory', $config_factory);
     \Drupal::setContainer($container);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $result = WebformHtmlHelper::toPlainText($text);
     $this->assertEquals((string) $expected, (string) $result, $text);
@@ -75,7 +75,7 @@ class WebformHtmlHelperTest extends UnitTestCase {
     $container->set('config.factory', $config_factory);
     \Drupal::setContainer($container);
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $result = WebformHtmlHelper::toHtmlMarkup($text);
     $this->assertEquals((string) $expected, (string) $result, $text);

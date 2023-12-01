@@ -39,12 +39,12 @@ class CsrfTokenGeneratorTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->privateKey = $this->getMockBuilder('Drupal\Core\PrivateKey')
       ->disableOriginalConstructor()
-      ->setMethods(['get'])
+      ->onlyMethods(['get'])
       ->getMock();
 
     $this->sessionMetadata = $this->getMockBuilder('Drupal\Core\Session\MetadataBag')
@@ -67,12 +67,12 @@ class CsrfTokenGeneratorTest extends UnitTestCase {
     $key = Crypt::randomBytesBase64();
     $this->privateKey->expects($this->any())
       ->method('get')
-      ->will($this->returnValue($key));
+      ->willReturn($key);
 
     $seed = Crypt::randomBytesBase64();
     $this->sessionMetadata->expects($this->any())
       ->method('getCsrfTokenSeed')
-      ->will($this->returnValue($seed));
+      ->willReturn($seed);
   }
 
   /**
@@ -83,7 +83,7 @@ class CsrfTokenGeneratorTest extends UnitTestCase {
   public function testGet() {
     $this->setupDefaultExpectations();
 
-    $this->assertInternalType('string', $this->generator->get());
+    $this->assertIsString($this->generator->get());
     $this->assertNotSame($this->generator->get(), $this->generator->get($this->randomMachineName()));
     $this->assertNotSame($this->generator->get($this->randomMachineName()), $this->generator->get($this->randomMachineName()));
   }
@@ -97,17 +97,17 @@ class CsrfTokenGeneratorTest extends UnitTestCase {
     $key = Crypt::randomBytesBase64();
     $this->privateKey->expects($this->any())
       ->method('get')
-      ->will($this->returnValue($key));
+      ->willReturn($key);
 
     $this->sessionMetadata->expects($this->once())
       ->method('getCsrfTokenSeed')
-      ->will($this->returnValue(NULL));
+      ->willReturn(NULL);
 
     $this->sessionMetadata->expects($this->once())
       ->method('setCsrfTokenSeed')
       ->with($this->isType('string'));
 
-    $this->assertInternalType('string', $this->generator->get());
+    $this->assertIsString($this->generator->get());
   }
 
   /**

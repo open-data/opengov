@@ -14,6 +14,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides a generic destination to import entities.
  *
+ * Available configuration keys:
+ * - default_bundle: (optional) The bundle to use for this row if 'bundle' is
+ *   not defined on the row.
+ *
  * Examples:
  *
  * @code
@@ -44,7 +48,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   revision_timestamp: timestamp
  * destination:
  *   plugin: entity:node
+ *   default_bundle: custom
  * @endcode
+ *
+ * This will save the processed, migrated row as a node of type 'custom'.
  *
  * @MigrateDestination(
  *   id = "entity",
@@ -62,6 +69,11 @@ abstract class Entity extends DestinationBase implements ContainerFactoryPluginI
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $storage;
+
+  /**
+   * The entity field manager.
+   */
+  protected $entityFieldManager;
 
   /**
    * The list of the bundles of this entity type.
@@ -122,7 +134,7 @@ abstract class Entity extends DestinationBase implements ContainerFactoryPluginI
    *   The bundle for this row.
    */
   public function getBundle(Row $row) {
-    $default_bundle = isset($this->configuration['default_bundle']) ? $this->configuration['default_bundle'] : '';
+    $default_bundle = $this->configuration['default_bundle'] ?? '';
     $bundle_key = $this->getKey('bundle');
     return $row->getDestinationProperty($bundle_key) ?: $default_bundle;
   }
@@ -130,7 +142,7 @@ abstract class Entity extends DestinationBase implements ContainerFactoryPluginI
   /**
    * {@inheritdoc}
    */
-  public function fields(MigrationInterface $migration = NULL) {
+  public function fields() {
     // TODO: Implement fields() method.
   }
 

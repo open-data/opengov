@@ -20,29 +20,29 @@ elements: |
     '#type': textfield
     '#title': textfield
     '#tree': '#tree'
-    '#array_parents': { }
+    '#array_parents': {  }
     '#weight': 0
     '#after_build':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#element_validate':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#post_render':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#pre_render':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#process':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#submit':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#validate':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#value_callback':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
   actions:
     '#type': actions
     '#title': actions
     '#pre_render':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
   select_other:
     '#title': select_other
     '#type': webform_select_other
@@ -51,16 +51,16 @@ elements: |
       Two: Two
       Three: Three
     '#other__element_validate':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#other__pre_render':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
   name:
     '#title': name
     '#type': webform_name
     '#first__element_validate':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
     '#first__pre_render':
-      - 'webform_test_ignored_element_callback'
+      - webform_test_ignored_element_callback
   custom_composite:
     '#type': webform_custom_composite
     '#title': custom_composite
@@ -69,7 +69,7 @@ elements: |
         '#type': textfield
         '#title': custom_composite_textfield
         '#pre_render':
-          - 'webform_test_ignored_element_callback'
+          - webform_test_ignored_element_callback
   
 css: ''
 javascript: ''
@@ -91,7 +91,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -112,6 +112,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

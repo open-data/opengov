@@ -40,6 +40,8 @@ trait BlockTestTrait {
       'id' => $id,
       'name' => $name,
       'weight' => 0,
+      'use_hierarchy' => FALSE,
+      'hierarchy' => ['type' => 'taxonomy', 'config' => []],
     ]);
     $facet->setFacetSourceId($facet_source);
     $facet->setFieldIdentifier($field);
@@ -83,15 +85,11 @@ trait BlockTestTrait {
    *   The id of the block.
    */
   protected function deleteBlock($id) {
-    // Delete a facet block trough the UI, the text for that link has changed
-    // in Drupal::VERSION 8.3.
-    $delete_link_title = \Drupal::VERSION >= 8.3 ? 'Remove block' : 'Delete';
-    $delete_confirm_form_button_title = \Drupal::VERSION >= 8.3 ? 'Remove' : 'Delete';
-    $orig_success_message = \Drupal::VERSION >= 8.3 ? 'The block ' . $this->blocks[$id]->label() . ' has been removed.' : 'The block ' . $this->blocks[$id]->label() . ' has been deleted.';
+    $orig_success_message = 'The block ' . $this->blocks[$id]->label() . ' has been removed from the Footer region.';
 
     $this->drupalGet('admin/structure/block/manage/' . $this->blocks[$id]->id(), ['query' => ['destination' => 'admin']]);
-    $this->clickLink($delete_link_title);
-    $this->drupalPostForm(NULL, [], $delete_confirm_form_button_title);
+    $this->clickLink('Remove block');
+    $this->submitForm([], 'Remove');
     $this->assertSession()->pageTextContains($orig_success_message);
   }
 

@@ -1,9 +1,16 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Stream;
 
-use Solarium\Core\Query\Result\QueryType as BaseResult;
 use Solarium\Core\Query\DocumentInterface;
+use Solarium\Core\Query\Result\QueryType as BaseResult;
 
 /**
  * Stream query result.
@@ -27,56 +34,12 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     protected $documents;
 
     /**
-     * Status code returned by Solr.
-     *
-     * @var int
-     */
-    protected $status;
-
-    /**
-     * Solr index queryTime.
-     *
-     * This doesn't include things like the HTTP responsetime. Purely the Solr
-     * query execution time.
-     *
-     * @var int
-     */
-    protected $queryTime;
-
-    /**
-     * Get Solr status code.
-     *
-     * This is not the HTTP status code! The normal value for success is 0.
-     *
-     * @return int
-     */
-    public function getStatus(): int
-    {
-        $this->parseResponse();
-
-        return $this->status;
-    }
-
-    /**
-     * Get Solr query time.
-     *
-     * This doesn't include things like the HTTP responsetime. Purely the Solr
-     * query execution time.
-     *
-     * @return int
-     */
-    public function getQueryTime(): int
-    {
-        $this->parseResponse();
-
-        return $this->queryTime;
-    }
-
-    /**
      * get Solr numFound.
      *
      * Returns the total number of documents found by Solr (this is NOT the
      * number of document fetched from Solr!)
+     *
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return int
      */
@@ -100,6 +63,8 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Get all documents.
      *
+     * @throws \Solarium\Exception\UnexpectedValueException
+     *
      * @return DocumentInterface[]
      */
     public function getDocuments(): array
@@ -111,6 +76,8 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
 
     /**
      * IteratorAggregate implementation.
+     *
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return \ArrayIterator
      */
@@ -124,13 +91,15 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Countable implementation.
      *
+     * @throws \Solarium\Exception\UnexpectedValueException
+     *
      * @return int
      */
     public function count(): int
     {
         $this->parseResponse();
 
-        return count($this->documents);
+        return \count($this->documents);
     }
 
     /**

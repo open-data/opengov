@@ -16,7 +16,7 @@ class Redirect404LogSuppressorTest extends Redirect404TestBase {
    *
    * @var array
    */
-  public static $modules = ['dblog'];
+  protected static $modules = ['dblog'];
 
   /**
    * A user with some relevant administrative permissions.
@@ -35,7 +35,7 @@ class Redirect404LogSuppressorTest extends Redirect404TestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create users with specific permissions.
@@ -52,31 +52,32 @@ class Redirect404LogSuppressorTest extends Redirect404TestBase {
   public function testSuppress404Events() {
     // Cause a page not found and an access denied event.
     $this->drupalGet('page-not-found');
-    $this->assertResponse(404);
+    $this->assertSession()->statusCodeEquals(404);
     $this->drupalLogin($this->webUser);
     $this->drupalGet('admin/reports/dblog');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
 
     // Assert the events are logged in the dblog reports.
-    $this->assertEqual(Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'page not found'")->fetchField(), 1);
-    $this->assertEqual(Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'access denied'")->fetchField(), 1);
+    $this->assertEquals(1, Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'page not found'")->fetchField());
+    $this->assertEquals(1, Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'access denied'")->fetchField());
 
     // Login as admin and enable suppress_404 to avoid logging the 404 event.
     $this->drupalLogin($this->adminUser);
     $edit = ['suppress_404' => TRUE];
-    $this->drupalPostForm('admin/config/search/redirect/settings', $edit, 'Save configuration');
+    $this->drupalGet('admin/config/search/redirect/settings');
+    $this->submitForm($edit, 'Save configuration');
 
     // Cause again a page not found and an access denied event.
     $this->drupalGet('page-not-found');
-    $this->assertResponse(404);
+    $this->assertSession()->statusCodeEquals(404);
     $this->drupalLogin($this->webUser);
     $this->drupalGet('admin/reports/dblog');
-    $this->assertResponse(403);
+    $this->assertSession()->statusCodeEquals(403);
 
     // Assert only the new access denied event is logged now.
     $this->drupalLogin($this->adminUser);
-    $this->assertEqual(Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'page not found'")->fetchField(), 1);
-    $this->assertEqual(Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'access denied'")->fetchField(), 2);
+    $this->assertEquals(1, Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'page not found'")->fetchField());
+    $this->assertEquals(2, Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'access denied'")->fetchField());
 
   }
 }

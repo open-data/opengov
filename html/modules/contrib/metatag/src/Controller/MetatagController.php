@@ -32,13 +32,13 @@ class MetatagController extends ControllerBase {
   /**
    * Constructs a new \Drupal\views_ui\Controller\ViewsUIController object.
    *
-   * @param \Drupal\metatag\MetatagTagPluginManager $tag_manaager
+   * @param \Drupal\metatag\MetatagTagPluginManager $tag_manager
    *   The tag manager object.
    * @param \Drupal\metatag\MetatagGroupPluginManager $group_manager
    *   The group manager object.
    */
-  public function __construct(MetatagTagPluginManager $tag_manaager, MetatagGroupPluginManager $group_manager) {
-    $this->tagManager = $tag_manaager;
+  public function __construct(MetatagTagPluginManager $tag_manager, MetatagGroupPluginManager $group_manager) {
+    $this->tagManager = $tag_manager;
     $this->groupManager = $group_manager;
   }
 
@@ -58,10 +58,13 @@ class MetatagController extends ControllerBase {
    * @return array
    *   The Metatag plugins report page.
    */
-  public function reportPlugins() {
+  public function reportPlugins(): array {
     // Get tags.
     $tag_definitions = $this->tagManager->getDefinitions();
-    uasort($tag_definitions, ['Drupal\Component\Utility\SortArray', 'sortByWeightElement']);
+    uasort($tag_definitions, [
+      'Drupal\Component\Utility\SortArray',
+      'sortByWeightElement',
+    ]);
     $tags = [];
     foreach ($tag_definitions as $tag_name => $tag_definition) {
       $tags[$tag_definition['group']][$tag_name] = $tag_definition;
@@ -69,7 +72,10 @@ class MetatagController extends ControllerBase {
 
     // Get groups.
     $group_definitions = $this->groupManager->getDefinitions();
-    uasort($group_definitions, ['Drupal\Component\Utility\SortArray', 'sortByWeightElement']);
+    uasort($group_definitions, [
+      'Drupal\Component\Utility\SortArray',
+      'sortByWeightElement',
+    ]);
 
     // Build plugin by group.
     $build = [];
@@ -83,7 +89,7 @@ class MetatagController extends ControllerBase {
       ];
       // Group description.
       $build[$group_name]['description'] = [
-        '#markup' => $group_definition['description'],
+        '#markup' => $group_definition['description'] ?? '',
         '#prefix' => '<p>',
         '#suffix' => '</p>',
       ];
@@ -115,7 +121,7 @@ class MetatagController extends ControllerBase {
         $row = [];
         $row['description'] = [
           'data' => [
-            '#markup' => $definition['description'],
+            '#markup' => $definition['description'] ?? '',
           ],
           'colspan' => 8,
         ];

@@ -1,4 +1,5 @@
 <?php
+
 namespace Consolidation\OutputFormatters;
 
 use Consolidation\OutputFormatters\Exception\IncompatibleDataException;
@@ -58,7 +59,7 @@ class FormatterManager
              $defaultFormatters['var_dump'] = '\Consolidation\OutputFormatters\Formatters\VarDumpFormatter';
         }
         foreach ($defaultFormatters as $id => $formatterClassname) {
-            $formatter = new $formatterClassname;
+            $formatter = new $formatterClassname();
             $this->addFormatter($id, $formatter);
         }
         $this->addFormatter('', $this->formatters['string']);
@@ -136,7 +137,7 @@ class FormatterManager
         }
 
         if (isset($automaticOptions[FormatterOptions::FIELDS])) {
-            $automaticOptions[FormatterOptions::FIELD] = new InputOption(FormatterOptions::FIELD, '', InputOption::VALUE_REQUIRED, "Select just one field, and force format to 'string'.", '');
+            $automaticOptions[FormatterOptions::FIELD] = new InputOption(FormatterOptions::FIELD, '', InputOption::VALUE_REQUIRED, "Select just one field, and force format to *string*.", '');
         }
 
         return $automaticOptions;

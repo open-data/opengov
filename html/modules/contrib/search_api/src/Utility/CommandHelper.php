@@ -15,7 +15,9 @@ use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+
+// phpcs:disable DrupalPractice.General.ExceptionT.ExceptionT
 
 /**
  * Provides functionality to be used by CLI tools.
@@ -73,7 +75,7 @@ class CommandHelper implements LoggerAwareInterface {
    *   The entity type manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
    * @param string|callable $translation_function
    *   (optional) A callable for translating strings.
@@ -264,7 +266,7 @@ class CommandHelper implements LoggerAwareInterface {
    *   index all items at once.
    *
    * @return bool
-   *   TRUE if any indexes could be loaded, FALSE otherwise.
+   *   TRUE if indexing for any index was queued, FALSE otherwise.
    *
    * @throws \Drupal\search_api\ConsoleException
    *   Thrown if an indexing batch process could not be created.
@@ -277,7 +279,7 @@ class CommandHelper implements LoggerAwareInterface {
       return FALSE;
     }
 
-    $batch_set = FALSE;
+    $batchSet = FALSE;
     foreach ($indexes as $index) {
       if (!$index->status() || $index->isReadOnly()) {
         continue;
@@ -302,37 +304,40 @@ class CommandHelper implements LoggerAwareInterface {
       // to index all items.
       $current_limit = $limit ?: -1;
 
-      // Get the default batch size.
-      if (!$batchSize) {
+      // Get the batch size to use for this index (in case none was specified in
+      // the command).
+      $currentBatchSize = $batchSize;
+      if (!$currentBatchSize) {
         $cron_limit = $index->getOption('cron_limit');
-        $batchSize = $cron_limit ?: \Drupal::configFactory()
+        $currentBatchSize = $cron_limit ?: \Drupal::configFactory()
           ->get('search_api.settings')
           ->get('default_cron_limit');
       }
 
-      // Get the number items to index.
-      if (!is_int($current_limit += 0) || $current_limit <= 0) {
+      // Get the number of items to index.
+      $current_limit += 0;
+      if (!is_int($current_limit) || $current_limit <= 0) {
         $current_limit = $remaining;
       }
 
       $arguments = [
         '@index' => $index->label(),
         '@limit' => $current_limit,
-        '@batch_size' => $batchSize,
+        '@batch_size' => $currentBatchSize,
       ];
       $this->logger->info($this->t("Indexing a maximum number of @limit items (@batch_size items per batch run) for the index '@index'.", $arguments));
 
       // Create the batch.
       try {
-        IndexBatchHelper::create($index, $batchSize, $current_limit);
-        $batch_set = TRUE;
+        IndexBatchHelper::create($index, $currentBatchSize, $current_limit);
+        $batchSet = TRUE;
       }
       catch (SearchApiException $e) {
         throw new ConsoleException($this->t("Couldn't create a batch, please check the batch size and limit parameters."));
       }
     }
 
-    return $batch_set;
+    return $batchSet;
   }
 
   /**
@@ -370,23 +375,48 @@ class CommandHelper implements LoggerAwareInterface {
             $reindexed_datasources[] = $datasource->label();
           }
         }
-        $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
+        $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.reindex_scheduled" event instead. See https://www.drupal.org/node/3059866';
         $this->moduleHandler->invokeAllDeprecated($description, 'search_api_index_reindex', [$index, FALSE]);
         $event_name = SearchApiEvents::REINDEX_SCHEDULED;
         $event = new ReindexScheduledEvent($index, FALSE);
-        $this->eventDispatcher->dispatch($event_name, $event);
+        $this->eventDispatcher->dispatch($event, $event_name);
         $arguments = [
-          '!index' => $index->label(),
-          '!datasources' => implode(', ', $reindexed_datasources),
+          '@index' => $index->label(),
+          '@datasources' => implode(', ', $reindexed_datasources),
         ];
-        $this->logger->info($this->t('The following datasources of !index were successfully scheduled for reindexing: !datasources.', $arguments));
+        $this->logger->info($this->t('The following datasources of @index were successfully scheduled for reindexing: @datasources.', $arguments));
       }
       else {
         $index->reindex();
-        $this->logger->info($this->t('!index was successfully scheduled for reindexing.', ['!index' => $index->label()]));
+        $this->logger->info($this->t('@index was successfully scheduled for reindexing.', ['@index' => $index->label()]));
       }
     }
 
+    return TRUE;
+  }
+
+  /**
+   * Rebuilds the tracker for an index.
+   *
+   * @param string[]|null $indexIds
+   *   (optional) An array of index IDs, or NULL if we should reset the trackers
+   *   of all indexes.
+   *
+   * @return bool
+   *   TRUE if any index was affected, FALSE otherwise.
+   */
+  public function rebuildTrackerCommand(array $indexIds = NULL) {
+    $indexes = $this->loadIndexes($indexIds);
+    if (!$indexes) {
+      return FALSE;
+    }
+
+    foreach ($indexes as $index) {
+      if ($index->status()) {
+        $index->rebuildTracker();
+        $this->logger->info($this->t('The tracking information for search index %name will be rebuilt.', ['%name' => $index->label()]));
+      }
+    }
     return TRUE;
   }
 

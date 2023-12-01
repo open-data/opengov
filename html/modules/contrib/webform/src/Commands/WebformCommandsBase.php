@@ -1,10 +1,12 @@
 <?php
+// phpcs:ignoreFile
 
 namespace Drupal\webform\Commands;
 
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
+use Drush\Exec\ExecTrait;
 use Psr\Log\LogLevel;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -68,19 +70,8 @@ abstract class WebformCommandsBase extends DrushCommands {
   }
 
   public function drush_download_file($url, $destination) {
-    // Copied from: \Drush\Commands\SyncViaHttpCommands::downloadFile
-    static $use_wget;
-    if ($use_wget === NULL) {
-      $use_wget = drush_shell_exec('which wget');
-    }
-
     $destination_tmp = drush_tempnam('download_file');
-    if ($use_wget) {
-      drush_shell_exec("wget -q --timeout=30 -O %s %s", $destination_tmp, $url);
-    }
-    else {
-      drush_shell_exec("curl -s -L --connect-timeout 30 -o %s %s", $destination_tmp, $url);
-    }
+    \Drupal::httpClient()->get($url, ['sink' => $destination_tmp]);
     if (!drush_file_not_empty($destination_tmp) && $file = @file_get_contents($url)) {
       @file_put_contents($destination_tmp, $file);
     }
@@ -110,16 +101,35 @@ abstract class WebformCommandsBase extends DrushCommands {
 
   public function drush_tarball_extract($path, $destination = FALSE) {
     $this->drush_mkdir($destination);
+    $cwd = getcwd();
     if (preg_match('/\.tgz$/', $path)) {
-      $return = drush_shell_cd_and_exec(dirname($path), "tar -xvzf %s -C %s", $path, $destination);
+      drush_op('chdir', dirname($path));
+      $process = Drush::process(['tar', '-xvzf', $path, '-C', $destination]);
+      $process->run();
+      $return = $process->isSuccessful();
+      drush_op('chdir', $cwd);
+
       if (!$return) {
-        throw new \Exception(dt('Unable to extract !filename.' . PHP_EOL . implode(PHP_EOL, drush_shell_exec_output()), ['!filename' => $path]));
+        throw new \Exception(dt('Unable to extract @filename to @destination.<br /><pre>@process_output</pre>', [
+          '@filename' => $path,
+          '@destination' => $destination,
+          '@process_output' => print_r($process->getOutput(), TRUE),
+        ]));
       }
     }
     else {
-      $return = drush_shell_cd_and_exec(dirname($path), "unzip %s -d %s", $path, $destination);
+      drush_op('chdir', dirname($path));
+      $process = Drush::process(['unzip', $path, '-d', $destination]);
+      $process->run();
+      $return = $process->isSuccessful();
+      drush_op('chdir', $cwd);
+
       if (!$return) {
-        throw new \Exception(dt('Unable to extract !filename.' . PHP_EOL . implode(PHP_EOL, drush_shell_exec_output()), ['!filename' => $path]));
+        throw new \Exception(dt('Unable to extract @filename to @destination.<br /><pre>@process_output</pre>', [
+          '@filename' => $path,
+          '@destination' => $destination,
+          '@process_output' => print_r($process->getOutput(), TRUE),
+        ]));
       }
     }
     return $return;

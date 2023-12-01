@@ -27,10 +27,10 @@ elements: |
       '#title': 'Last Name'
       '#type': textfield
       '#required': true
-    gender:
+    sex:
       '#type': webform_radios_other
-      '#title': Gender
-      '#options': gender
+      '#title': Sex
+      '#options': sex
       '#required': true
   contact_information:
     '#title': 'Contact Information'
@@ -46,12 +46,15 @@ elements: |
     '#type': webform_section
     resume_method:
       '#type': radios
+      '#title': 'Resume method'
+      '#title_display': invisible
       '#options':
         attach: 'Attach resume file'
         paste: 'Paste your resume'
-      '#prefix': '<div class="container-inline">'
-      '#suffix': '</div>'
       '#default_value': attach
+      '#wrapper_attributes':
+        class:
+          - container-inline
     resume_file:
       '#type': managed_file
       '#title': Resume
@@ -84,7 +87,7 @@ elements: |
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': Apply
-  
+
 css: ''
 javascript: ''
 settings:
@@ -105,7 +108,7 @@ settings:
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
@@ -126,6 +129,9 @@ settings:
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_method: ''
+  form_action: ''
+  form_attributes: {  }
   share: false
   share_node: false
   share_theme_name: ''

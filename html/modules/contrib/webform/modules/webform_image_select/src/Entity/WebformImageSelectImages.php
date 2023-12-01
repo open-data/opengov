@@ -40,12 +40,12 @@ use Drupal\webform_image_select\WebformImageSelectImagesInterface;
  *     "label" = "label",
  *   },
  *   links = {
- *     "add-form" = "/admin/structure/webform/config/images/manage/add",
- *     "edit-form" = "/admin/structure/webform/config/images/manage/{webform_image_select_images}/edit",
- *     "source-form" = "/admin/structure/webform/config/images/manage/{webform_image_select_images}/source",
- *     "duplicate-form" = "/admin/structure/webform/config/images/manage/{webform_image_select_images}/duplicate",
- *     "delete-form" = "/admin/structure/webform/config/images/manage/{webform_image_select_images}/delete",
- *     "collection" = "/admin/structure/webform/config/images/manage",
+ *     "add-form" = "/admin/structure/webform/options/images/manage/add",
+ *     "edit-form" = "/admin/structure/webform/options/images/manage/{webform_image_select_images}/edit",
+ *     "source-form" = "/admin/structure/webform/options/images/manage/{webform_image_select_images}/source",
+ *     "duplicate-form" = "/admin/structure/webform/options/images/manage/{webform_image_select_images}/duplicate",
+ *     "delete-form" = "/admin/structure/webform/options/images/manage/{webform_image_select_images}/delete",
+ *     "collection" = "/admin/structure/webform/options/images/manage",
  *   },
  *   config_export = {
  *     "id",

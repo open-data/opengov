@@ -11,6 +11,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Layout\LayoutDefault;
 use Drupal\Core\Layout\LayoutDefinition;
+use Drupal\Core\Layout\LayoutInterface;
 use Drupal\Core\Layout\LayoutPluginManager;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Tests\UnitTestCase;
@@ -54,7 +55,7 @@ class LayoutPluginManagerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->setUpFilesystem();
@@ -117,9 +118,9 @@ class LayoutPluginManagerTest extends UnitTestCase {
     $this->assertSame('2 column layout', (string) $layout_definition->getLabel());
     $this->assertSame('Columns: 2', (string) $layout_definition->getCategory());
     $this->assertSame('A theme provided layout', (string) $layout_definition->getDescription());
-    $this->assertTrue($layout_definition->getLabel() instanceof TranslatableMarkup);
-    $this->assertTrue($layout_definition->getCategory() instanceof TranslatableMarkup);
-    $this->assertTrue($layout_definition->getDescription() instanceof TranslatableMarkup);
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getLabel());
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getCategory());
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getDescription());
     $this->assertSame('twocol', $layout_definition->getTemplate());
     $this->assertSame('themes/theme_a/templates', $layout_definition->getPath());
     $this->assertSame('theme_a/twocol', $layout_definition->getLibrary());
@@ -138,17 +139,17 @@ class LayoutPluginManagerTest extends UnitTestCase {
     ];
     $regions = $layout_definition->getRegions();
     $this->assertEquals($expected_regions, $regions);
-    $this->assertTrue($regions['left']['label'] instanceof TranslatableMarkup);
-    $this->assertTrue($regions['right']['label'] instanceof TranslatableMarkup);
+    $this->assertInstanceOf(TranslatableMarkup::class, $regions['left']['label']);
+    $this->assertInstanceOf(TranslatableMarkup::class, $regions['right']['label']);
 
     $layout_definition = $this->layoutPluginManager->getDefinition('module_a_provided_layout');
     $this->assertSame('module_a_provided_layout', $layout_definition->id());
     $this->assertSame('1 column layout', (string) $layout_definition->getLabel());
     $this->assertSame('Columns: 1', (string) $layout_definition->getCategory());
     $this->assertSame('A module provided layout', (string) $layout_definition->getDescription());
-    $this->assertTrue($layout_definition->getLabel() instanceof TranslatableMarkup);
-    $this->assertTrue($layout_definition->getCategory() instanceof TranslatableMarkup);
-    $this->assertTrue($layout_definition->getDescription() instanceof TranslatableMarkup);
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getLabel());
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getCategory());
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getDescription());
     $this->assertSame(NULL, $layout_definition->getTemplate());
     $this->assertSame('modules/module_a/layouts', $layout_definition->getPath());
     $this->assertSame('module_a/onecol', $layout_definition->getLibrary());
@@ -167,8 +168,8 @@ class LayoutPluginManagerTest extends UnitTestCase {
     ];
     $regions = $layout_definition->getRegions();
     $this->assertEquals($expected_regions, $regions);
-    $this->assertTrue($regions['top']['label'] instanceof TranslatableMarkup);
-    $this->assertTrue($regions['bottom']['label'] instanceof TranslatableMarkup);
+    $this->assertInstanceOf(TranslatableMarkup::class, $regions['top']['label']);
+    $this->assertInstanceOf(TranslatableMarkup::class, $regions['bottom']['label']);
 
     $core_path = '/core/lib/Drupal/Core';
     $layout_definition = $this->layoutPluginManager->getDefinition('plugin_provided_layout');
@@ -176,9 +177,9 @@ class LayoutPluginManagerTest extends UnitTestCase {
     $this->assertEquals('Layout plugin', $layout_definition->getLabel());
     $this->assertEquals('Columns: 1', $layout_definition->getCategory());
     $this->assertEquals('Test layout', $layout_definition->getDescription());
-    $this->assertTrue($layout_definition->getLabel() instanceof TranslatableMarkup);
-    $this->assertTrue($layout_definition->getCategory() instanceof TranslatableMarkup);
-    $this->assertTrue($layout_definition->getDescription() instanceof TranslatableMarkup);
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getLabel());
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getCategory());
+    $this->assertInstanceOf(TranslatableMarkup::class, $layout_definition->getDescription());
     $this->assertSame('plugin-provided-layout', $layout_definition->getTemplate());
     $this->assertSame($core_path, $layout_definition->getPath());
     $this->assertSame(NULL, $layout_definition->getLibrary());
@@ -194,7 +195,7 @@ class LayoutPluginManagerTest extends UnitTestCase {
     ];
     $regions = $layout_definition->getRegions();
     $this->assertEquals($expected_regions, $regions);
-    $this->assertTrue($regions['main']['label'] instanceof TranslatableMarkup);
+    $this->assertInstanceOf(TranslatableMarkup::class, $regions['main']['label']);
   }
 
   /**
@@ -404,6 +405,7 @@ class LayoutDeriver extends DeriverBase {
         'id' => 'invalid_provider',
         'provider' => 'invalid_provider',
       ]);
+      $this->derivatives['invalid_provider']->setClass(LayoutInterface::class);
     }
     return $this->derivatives;
   }

@@ -3,6 +3,9 @@
 namespace Drupal\search_api\Query;
 
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -19,9 +22,10 @@ use Drupal\search_api\Utility\QueryHelperInterface;
 /**
  * Provides a standard implementation for a Search API query.
  */
-class Query implements QueryInterface {
+class Query implements QueryInterface, RefinableCacheableDependencyInterface {
 
   use StringTranslationTrait;
+  use RefinableCacheableDependencyTrait;
   use DependencySerializationTrait {
     __sleep as traitSleep;
     __wakeup as traitWakeup;
@@ -216,7 +220,7 @@ class Query implements QueryInterface {
     $this->index = $index;
     $this->results = new ResultSet($this);
     $this->options = $options;
-    $this->conditionGroup = $this->createConditionGroup('AND');
+    $this->conditionGroup = $this->createConditionGroup();
   }
 
   /**
@@ -403,7 +407,7 @@ class Query implements QueryInterface {
    * {@inheritdoc}
    */
   public function setLanguages(array $languages = NULL) {
-    $this->languages = isset($languages) ? array_values($languages) : NULL;
+    $this->languages = $languages !== NULL ? array_values($languages) : NULL;
     return $this;
   }
 
@@ -412,6 +416,15 @@ class Query implements QueryInterface {
    */
   public function createConditionGroup($conjunction = 'AND', array $tags = []) {
     return new ConditionGroup($conjunction, $tags);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createAndAddConditionGroup(string $conjunction = 'AND', array $tags = []): ConditionGroupInterface {
+    $condition_group = $this->createConditionGroup($conjunction, $tags);
+    $this->addConditionGroup($condition_group);
+    return $condition_group;
   }
 
   /**
@@ -492,7 +505,7 @@ class Query implements QueryInterface {
    * {@inheritdoc}
    */
   public function abort($error_message = NULL) {
-    $this->aborted = isset($error_message) ? $error_message : TRUE;
+    $this->aborted = $error_message ?? TRUE;
   }
 
   /**
@@ -580,16 +593,16 @@ class Query implements QueryInterface {
       // Let modules alter the query.
       $event_base_name = SearchApiEvents::QUERY_PRE_EXECUTE;
       $event = new QueryPreExecuteEvent($this);
-      $this->getEventDispatcher()->dispatch($event_base_name, $event);
+      $this->getEventDispatcher()->dispatch($event, $event_base_name);
       $hooks = ['search_api_query'];
       foreach ($this->tags as $tag) {
         $hooks[] = "search_api_query_$tag";
         $event_name = "$event_base_name.$tag";
         $event = new QueryPreExecuteEvent($this);
-        $this->getEventDispatcher()->dispatch($event_name, $event);
+        $this->getEventDispatcher()->dispatch($event, $event_name);
       }
 
-      $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.query_pre_execute" event instead. See https://www.drupal.org/node/3059866';
+      $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.query_pre_execute" event instead. See https://www.drupal.org/node/3059866';
       $this->getModuleHandler()->alterDeprecated($description, $hooks, $this);
     }
   }
@@ -608,18 +621,18 @@ class Query implements QueryInterface {
     // Let modules alter the results.
     $event_base_name = SearchApiEvents::PROCESSING_RESULTS;
     $event = new ProcessingResultsEvent($this->results);
+    $this->getEventDispatcher()->dispatch($event, $event_base_name);
     $this->results = $event->getResults();
-    $this->getEventDispatcher()->dispatch($event_base_name, $event);
 
     $hooks = ['search_api_results'];
     foreach ($this->tags as $tag) {
       $hooks[] = "search_api_results_$tag";
 
       $event = new ProcessingResultsEvent($this->results);
-      $this->getEventDispatcher()->dispatch("$event_base_name.$tag", $event);
+      $this->getEventDispatcher()->dispatch($event, "$event_base_name.$tag");
       $this->results = $event->getResults();
     }
-    $description = 'This hook is deprecated in search_api 8.x-1.14 and will be removed in 9.x-1.0. Please use the "search_api.processing_results" event instead. See https://www.drupal.org/node/3059866';
+    $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.processing_results" event instead. See https://www.drupal.org/node/3059866';
     $this->getModuleHandler()->alterDeprecated($description, $hooks, $this->results);
 
     // Store the results in the static cache.
@@ -750,6 +763,40 @@ class Query implements QueryInterface {
 
   /**
    * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    $contexts = $this->cacheContexts;
+
+    foreach ($this->getIndex()->getDatasources() as $datasource) {
+      $contexts = Cache::mergeContexts($datasource->getListCacheContexts(), $contexts);
+    }
+
+    return $contexts;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    $tags = $this->cacheTags;
+
+    // If the configuration of the search index changes we should invalidate the
+    // views that show results from this index.
+    $index_tags = $this->getIndex()->getCacheTagsToInvalidate();
+    $tags = Cache::mergeTags($index_tags, $tags);
+
+    return $tags;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return $this->cacheMaxAge;
+  }
+
+  /**
+   * Implements the magic __clone() method to properly clone nested objects.
    */
   public function __clone() {
     $this->results = $this->getResults()->getCloneForQuery($this);

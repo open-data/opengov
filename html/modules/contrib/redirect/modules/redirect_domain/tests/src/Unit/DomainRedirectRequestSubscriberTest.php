@@ -10,7 +10,7 @@ use Drupal\redirect_domain\EventSubscriber\DomainRedirectRequestSubscriber;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
@@ -53,6 +53,20 @@ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
               'destination' => 'redirected.com/redirect',
             ],
           ],
+          'wildcardtest:com' => [
+            [
+              'sub_path' => '/some/path',
+              'destination' => 'somedomain.com/path',
+            ],
+            [
+              'sub_path' => '/*',
+              'destination' => 'wildcardredirect.com',
+            ],
+            [
+              'sub_path' => '/other/path',
+              'destination' => 'otherdomain.com/path',
+            ],
+          ],
         ],
       ],
       'redirect.settings' => [
@@ -64,9 +78,7 @@ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
     ];
 
     // Create a mock redirect checker.
-    $checker = $this->getMockBuilder(RedirectChecker::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $checker = $this->createMock(RedirectChecker::class);
     $checker->expects($this->any())
       ->method('canRedirect')
       ->will($this->returnValue(TRUE));
@@ -114,15 +126,14 @@ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
    * @param $query_string
    *   The query string in the url.
    *
-   * @return GetResponseEvent
+   * @return RequestEvent
    *   The response for the request.
    */
   protected function getGetResponseEventStub($path_info, $query_string) {
     $request = Request::create($path_info . '?' . $query_string, 'GET', [], [], [], ['SCRIPT_NAME' => 'index.php']);
 
-    $http_kernel = $this->getMockBuilder(HttpKernelInterface::class)
-      ->getMock();
-    return new GetResponseEvent($http_kernel, $request, 'test');
+    $http_kernel = $this->createMock(HttpKernelInterface::class);
+    return new RequestEvent($http_kernel, $request, HttpKernelInterface::MASTER_REQUEST);
   }
 
   /**
@@ -139,6 +150,9 @@ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
     $datasets[] = ['http://nonexisting.com', NULL];
     $datasets[] = ['http://simpleexample.com/wrongpath', NULL];
     $datasets[] = ['http://foo.com/fixedredirect', 'http://bar.com/fixedredirect'];
+    $datasets[] = ['http://wildcardtest.com/some/path', 'http://somedomain.com/path'];
+    $datasets[] = ['http://wildcardtest.com/other/path', 'http://wildcardredirect.com'];
+    $datasets[] = ['http://wildcardtest.com/does-not-exist', 'http://wildcardredirect.com'];
     return $datasets;
   }
 }

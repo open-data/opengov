@@ -4,7 +4,7 @@
  */
 
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
   'use strict';
 
   /**
@@ -39,7 +39,7 @@
 
         // Update view on summary block click.
         if (updateFacetsSummaryBlock() && (facetId === 'facets_summary_ajax')) {
-          $('[data-drupal-facets-summary-id=' + facetSettings.facets_summary_id + ']').children('ul').children('li').once().click(function (e) {
+          $(once(facetId, '[data-drupal-facets-summary-id=' + facetSettings.facets_summary_id + '] ul li')).click(function (e) {
             e.preventDefault();
             var facetLink = $(this).find('a');
             updateFacetsView(facetLink.attr('href'), current_dom_id, view_path);
@@ -102,6 +102,13 @@
   var updateFacetsBlocks = function (href) {
     var settings = drupalSettings;
     var facets_blocks = facetsBlocks();
+
+    // Remove All Range Input Form Facet Blocks from being updated.
+    if(settings.facets && settings.facets.rangeInput) {
+      $.each(settings.facets.rangeInput, function (index, value) {
+        delete facets_blocks[value.facetId];
+      });
+    }
 
     // Update facet blocks.
     var facet_settings = {
@@ -197,16 +204,16 @@
   }
 
   // Helper function to add exposed form data to facets url
-  var addExposedFiltersToFacetsUrl = function(href, view_name, view_display_id) {
+  var addExposedFiltersToFacetsUrl = function (href, view_name, view_display_id) {
     var $exposed_form = $('form#views-exposed-form-' + view_name.replace(/_/g, '-') + '-' + view_display_id.replace(/_/g, '-'));
 
     var params = Drupal.Views.parseQueryString(href);
 
-    $.each($exposed_form.serializeArray(), function() {
+    $.each($exposed_form.serializeArray(), function () {
       params[this.name] = this.value;
     });
 
     return href.split('?')[0] + '?' + $.param(params);
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

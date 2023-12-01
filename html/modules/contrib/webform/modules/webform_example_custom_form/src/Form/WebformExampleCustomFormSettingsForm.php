@@ -6,6 +6,9 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+// phpcs:disable DrupalPractice.General.OptionsT.TforValue
+// phpcs:disable DrupalPractice.General.DescriptionT.DescriptionT
+
 /**
  * Example: Webform Custom (Configuration) Form configuration settings form.
  */
@@ -318,10 +321,10 @@ class WebformExampleCustomFormSettingsForm extends ConfigFormBase {
           '#type' => 'textfield',
           '#title' => 'Last name',
         ],
-        'gender' => [
+        'sex' => [
           '#type' => 'webform_select_other',
-          '#options' => 'gender',
-          '#title' => 'Gender',
+          '#options' => 'sex',
+          '#title' => 'Sex',
         ],
         'martial_status' => [
           '#type' => 'webform_select_other',

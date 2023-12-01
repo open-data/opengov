@@ -1,8 +1,133 @@
 # Change Log
 
-### 2.12.1 - 10 Oct 2020
+### 4.9.1, 4.9.0 - 19 May 2023
 
-- Allow symfony/finder 5 (#213)
+- Inject command metadata: make AnnotationData and FormatterOptions available (#301)
+- Only call setHidden() if value is true. (#299)
+
+### 4.8.2 - 11 March 2023
+
+- Fix bug with simple options with dashes in their names. (#295)
+- Add new public ->addOption() method (#294)
+- Attributes - Topic needs path (#293)
+- More robust hook attribute, and misc (#291)
+
+### 4.8.0, 4.8.1 - 28 February 2023
+
+- Add HookSelector attribute and adjust Hook attribute accordingly (#290)
+- Allow for just one param to be passed in Help and Topics Attributes (#289)
+
+### 4.7.1 - 6 December 2022
+
+- PHP 8.2 fixes
+
+### 4.7.0 - 22 November 2022
+
+- Allow command help and descriptions to be defined via docblock comments (#281)
+- Fix hidden via Attribute (#283)
+- Fix command completion (#282)
+
+### 4.6.1 - 9 November 2022
+
+- Use Attributes to set suggestedValues for arg/option completion (#275)
+- Default value and therefore data type of parameter-defined cli options was being dropped (#280)
+- Make nullable properties in Attributes actually nullable (#278)
+- Only ignore commands in parent classes if flag is set (reverts backwards-compatibility break) (#277)
+
+### 4.6.0 - 30 October 2022
+
+- Add support for command completion (#274)
+
+### 4.5.7 - 20 October 2022
+
+- Stop loading commands from inherited classes (#273)
+
+### 4.5.6 - 22 June 2022
+
+- PHP 8.2 compatibility: dynamic properties are deprecated (#271)
+
+### 4.5.5 - 26 April 2022
+
+- No functional change; new release to fix false positives in b/c check caused by lockfile problem.
+
+### 4.5.4 - 5 April 2022
+
+- Allow psr/log ^3
+
+### 4.5.3 - 1 April 2022
+
+- Check the type of the reflection object before attempting to call isBuiltin(). (#265)
+
+### 4.5.2 - 20 February 2022
+
+- Do not pass null to Symfony Command methods (#262)
+- CommandResult inheritance (#260)
+
+### 4.5.1 - 29 December 2021
+
+- PHP 8.1
+
+### 4.5.0 - 27 December 2021
+
+- Symfony 6 / Symfony 5.2 compatibility
+- Make addUsageOrExample() public
+
+### 4.4.0 - 29 September 2021
+
+- Add support for providing command information via php8 Attributes. (#239)
+
+### 4.3.3 - 26 September 2021
+
+- Back out change from 4.3.2.  Will restore in 4.4.0, but with a switch that defaults to "off" (backwards-compatible).
+
+### 4.3.2 - 19 September 2021
+
+- Less parsing by ignoring Traits and IO.php (for Drush) (#237)
+
+### 4.3.1 - 29 August 2021
+
+- Fix bc break in 4.3.0. (#232)
+
+### 4.3.0 - 27 August 2021
+
+- Allow options to be passed in as regular method parameters. (#224)
+
+### 4.2.4 - 10 December 2020
+
+- PHP 8
+
+### 4.2.3 - 3 October 2020
+
+- Add ability to ignore methods using regular expressions. (#212)
+
+### 4.2.2 - 30 September 2020
+
+- PHP 8 / Composer 2 support (#210)
+- Add @ignored-command annotation. (#211)
+- Address deprecation of ReflectionType::getClass() (#209)
+
+### 4.2.1 - 30 August 2020
+
+- Give command handlers the ability to save and restore their state (#208)
+- Do not inject $input and $output into the command instance unless it supports saving and restoring state.
+
+### 4.2.0 - 27 August 2020
+
+DEPRECATED RELEASE. Do not use.
+
+- Inject $input and $output into the command instance if it is set up to receive them. (#207)
+
+### 4.1.1 - 27 May 2020
+
+- Fix bugs with Symfony 5. (#204)
+
+### 4.1.0 - 6 Feb 2020
+
+- Test with PHP 7.4.
+
+### 4.0.0 - 29 Oct 2019
+
+- Compatible with the 2.x branch, but removes support for old PHP versions and requires Symfony 4.
 
 ### 2.12.0 - 8 Mar 2019
 
@@ -151,7 +276,7 @@
 
 ### 2.1.0 - 14 November 2016
 
-- Add support for output formatter wordwrapping 
+- Add support for output formatter wordwrapping
 - Fix version requirement for output-formatters in composer.json
 - Use output-formatters ~3
 - Move php_codesniffer back to require-dev (moved to require by mistake)

@@ -3,8 +3,9 @@
 namespace Drupal\Tests\layout_builder\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\Tests\contextual\FunctionalJavascript\ContextualLinkClickTrait;
-use Zend\Stdlib\ArrayUtils;
+use Drupal\Tests\system\Traits\OffCanvasTestTrait;
 
 /**
  * Tests toggling of content preview.
@@ -15,7 +16,7 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
 
   use ContextualLinkClickTrait;
   use LayoutBuilderSortTrait;
-
+  use OffCanvasTestTrait;
   /**
    * {@inheritdoc}
    */
@@ -24,25 +25,28 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
     'block',
     'node',
     'contextual',
+    'off_canvas_test',
   ];
 
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'starterkit_theme';
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->createContentType(['type' => 'bundle_for_this_particular_test']);
+    LayoutBuilderEntityViewDisplay::load('node.bundle_for_this_particular_test.default')
+      ->enableLayoutBuilder()
+      ->setOverridable()
+      ->save();
 
     $this->drupalLogin($this->drupalCreateUser([
       'configure any layout',
-      'administer node display',
-      'administer node fields',
       'access contextual links',
     ]));
   }
@@ -56,12 +60,6 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
     $links_field_placeholder_label = '"Links" field';
     $body_field_placeholder_label = '"Body" field';
     $content_preview_body_text = 'I should only be visible if content preview is enabled.';
-
-    $this->drupalPostForm(
-      'admin/structure/types/manage/bundle_for_this_particular_test/display/default',
-      ['layout[enabled]' => TRUE, 'layout[allow_custom]' => TRUE],
-      'Save'
-    );
 
     $this->createNode([
       'type' => 'bundle_for_this_particular_test',
@@ -124,13 +122,15 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
 
   /**
    * Checks if contextual links are working properly.
+   *
+   * @internal
    */
-  protected function assertContextualLinks() {
+  protected function assertContextualLinks(): void {
     $page = $this->getSession()->getPage();
     $assert_session = $this->assertSession();
 
     $this->clickContextualLink('.block-field-blocknodebundle-for-this-particular-testbody', 'Configure');
-    $this->assertNotEmpty($assert_session->waitForElement('css', "#drupal-off-canvas"));
+    $this->waitForOffCanvasArea();
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertNotEmpty($this->assertSession()->waitForButton('Close'));
     $page->pressButton('Close');
@@ -142,19 +142,21 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
    *
    * @param string[] $items
    *   An ordered list of strings that should appear in the blocks.
+   *
+   * @internal
    */
-  protected function assertOrderInPage(array $items) {
+  protected function assertOrderInPage(array $items): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $blocks = $page->findAll('css', '[data-layout-content-preview-placeholder-label]');
 
     // Filter will only return value if block contains expected text.
-    $blocks_with_expected_text = ArrayUtils::filter($blocks, function ($block, $key) use ($items) {
+    $blocks_with_expected_text = array_filter($blocks, function ($block, $key) use ($items) {
       $block_text = $block->getText();
       return strpos($block_text, $items[$key]) !== FALSE;
-    }, ArrayUtils::ARRAY_FILTER_USE_BOTH);
+    }, ARRAY_FILTER_USE_BOTH);
 
-    $this->assertCount(count($items), $blocks_with_expected_text);
+    $this->assertSameSize($items, $blocks_with_expected_text);
   }
 
 }

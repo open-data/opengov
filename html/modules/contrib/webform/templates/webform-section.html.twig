@@ -13,6 +13,12 @@
  * - description: The description element containing the following properties:
  *   - content: The description content of the <fieldset>.
  *   - attributes: HTML attributes to apply to the description container.
+ * - description_display: Description display setting. It can have these values:
+ *   - before: The description is output before the element.
+ *   - after: The description is output after the element. This is the default
+ *     value.
+ *   - invisible: The description is output after the element, hidden visually
+ *     but available to screen readers.
  * - children: The rendered child elements of the <fieldset>.
  * - prefix: The content to add before the .section-wrapper children.
  * - suffix: The content to add after the .section-wrapper children.
@@ -50,7 +56,7 @@
         {{ errors }}
       </div>
     {% endif %}
-    {% if description.content %}
+    {% if description_display in ['before', 'invisible'] and description.content %}
       <div{{ description.attributes.addClass('description') }}>{{ description.content }}</div>
     {% endif %}
     {% if prefix %}
@@ -59,6 +65,9 @@
     {{ children }}
     {% if suffix %}
       <span class="field-suffix">{{ suffix }}</span>
+    {% endif %}
+    {% if description_display == 'after' and description.content %}
+      <div{{ description.attributes.addClass('description') }}>{{ description.content }}</div>
     {% endif %}
   </div>
 </section>

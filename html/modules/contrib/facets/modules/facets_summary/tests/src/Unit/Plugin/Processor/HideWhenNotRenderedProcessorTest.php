@@ -10,7 +10,7 @@ use Drupal\facets_summary\Plugin\facets_summary\processor\HideWhenNotRenderedPro
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Class HideWhenNotRenderedProcessorTest.
+ * Provides the HideWhenNotRenderedProcessorTest class.
  *
  * @group facets
  * @coversDefaultClass \Drupal\facets_summary\Plugin\facets_summary\processor\HideWhenNotRenderedProcessor
@@ -27,7 +27,7 @@ class HideWhenNotRenderedProcessorTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->processor = new HideWhenNotRenderedProcessor([], 'hide_when_not_rendered', []);
   }
@@ -87,15 +87,11 @@ class HideWhenNotRenderedProcessorTest extends UnitTestCase {
    *   The value for rendered in current request.
    */
   protected function createContainer($renderedInCurrentRequestValue) {
-    $fsi = $this->getMockBuilder(FacetSourcePluginInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $fsi = $this->createMock(FacetSourcePluginInterface::class);
     $fsi->method('isRenderedInCurrentRequest')
       ->willReturn($renderedInCurrentRequestValue);
 
-    $facetSourceManager = $this->getMockBuilder(FacetSourcePluginManager::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $facetSourceManager = $this->createMock(FacetSourcePluginManager::class);
     $facetSourceManager->method('createInstance')
       ->willReturn($fsi);
 

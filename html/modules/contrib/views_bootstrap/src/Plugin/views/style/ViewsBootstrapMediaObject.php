@@ -79,7 +79,7 @@ class ViewsBootstrapMediaObject extends StylePluginBase {
         'media-middle' => $this->t('Middle'),
       ],
       '#default_value' => $this->options['image_class'],
-      '#description' => t('Align the media object image left or right.'),
+      '#description' => $this->t('Align the media object image left or right.'),
     ];
 
     $form['body_field'] = [

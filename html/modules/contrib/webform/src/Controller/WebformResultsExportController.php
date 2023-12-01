@@ -9,11 +9,8 @@ use Drupal\Core\Url;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformRequestInterface;
-use Drupal\webform\WebformSubmissionExporterInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -44,30 +41,14 @@ class WebformResultsExportController extends ControllerBase implements Container
   protected $requestHandler;
 
   /**
-   * Constructs a WebformResultsExportController object.
-   *
-   * @param \Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface $mime_type_guesser
-   *   The MIME type guesser instance to use.
-   * @param \Drupal\webform\WebformSubmissionExporterInterface $webform_submission_exporter
-   *   The webform submission exported.
-   * @param \Drupal\webform\WebformRequestInterface $request_handler
-   *   The webform request handler.
-   */
-  public function __construct(MimeTypeGuesserInterface $mime_type_guesser, WebformSubmissionExporterInterface $webform_submission_exporter, WebformRequestInterface $request_handler) {
-    $this->mimeTypeGuesser = $mime_type_guesser;
-    $this->submissionExporter = $webform_submission_exporter;
-    $this->requestHandler = $request_handler;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('file.mime_type.guesser'),
-      $container->get('webform_submission.exporter'),
-      $container->get('webform.request')
-    );
+    $instance = parent::create($container);
+    $instance->mimeTypeGuesser = $container->get('file.mime_type.guesser');
+    $instance->submissionExporter = $container->get('webform_submission.exporter');
+    $instance->requestHandler = $container->get('webform.request');
+    return $instance;
   }
 
   /**
@@ -80,7 +61,7 @@ class WebformResultsExportController extends ControllerBase implements Container
    *   A response that renders or redirects to the CSV file.
    */
   public function index(Request $request) {
-    list($webform, $source_entity) = $this->requestHandler->getWebformEntities();
+    [$webform, $source_entity] = $this->requestHandler->getWebformEntities();
     $this->submissionExporter->setWebform($webform);
     $this->submissionExporter->setSourceEntity($source_entity);
 
@@ -150,7 +131,7 @@ class WebformResultsExportController extends ControllerBase implements Container
    *   A response that renders or redirects to the CSV file.
    */
   public function file(Request $request, $filename) {
-    list($webform, $source_entity) = $this->requestHandler->getWebformEntities();
+    [$webform, $source_entity] = $this->requestHandler->getWebformEntities();
     $this->submissionExporter->setWebform($webform);
     $this->submissionExporter->setSourceEntity($source_entity);
 
@@ -199,11 +180,11 @@ class WebformResultsExportController extends ControllerBase implements Container
     return $response;
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Batch functions.
   // Using static method to prevent the service container from being serialized.
-  // "Prevents exception 'AssertionError' with message 'The container was serialized.'."
-  /****************************************************************************/
+  // Prevents 'AssertionError: The container was serialized.' exception.
+  /* ************************************************************************ */
 
   /**
    * Batch API; Initialize batch operations.
@@ -259,7 +240,7 @@ class WebformResultsExportController extends ControllerBase implements Container
    * @param mixed|array $context
    *   The batch current context.
    */
-  public static function batchProcess(WebformInterface $webform, EntityInterface $source_entity = NULL, array $export_options, &$context) {
+  public static function batchProcess(WebformInterface $webform, EntityInterface $source_entity = NULL, array $export_options = [], &$context = []) {
     /** @var \Drupal\webform\WebformSubmissionExporterInterface $submission_exporter */
     $submission_exporter = \Drupal::service('webform_submission.exporter');
     $submission_exporter->setWebform($webform);

@@ -83,7 +83,7 @@ class ConfigTestForm extends EntityForm {
       '#attributes' => [
         'class' => ['js-hide'],
       ],
-      '#submit' => [[get_class($this), 'changeSize']],
+      '#submit' => [[static::class, 'changeSize']],
     ];
     $form['size_wrapper']['size_value'] = [
       '#type' => 'select',
@@ -146,6 +146,7 @@ class ConfigTestForm extends EntityForm {
     }
 
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
+    return $status;
   }
 
   /**

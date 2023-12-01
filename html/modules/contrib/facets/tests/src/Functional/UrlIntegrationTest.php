@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\facets\Functional;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Url;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Entity\Facet;
@@ -18,7 +19,7 @@ class UrlIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'views',
     'node',
     'search_api',
@@ -31,7 +32,7 @@ class UrlIntegrationTest extends FacetsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->drupalLogin($this->adminUser);
@@ -50,13 +51,14 @@ class UrlIntegrationTest extends FacetsTestBase {
     $this->createFacet($name, $id);
 
     $url = Url::fromUserInput('/search-api-test-fulltext', ['query' => ['f[0]' => 'facet:item']]);
-    $this->checkClickedFacetUrl($url);
+    $this->clickFacet();
+    $this->assertSession()->addressEquals($url);
 
     /** @var \Drupal\facets\FacetInterface $facet */
     $facet = Facet::load($id);
-    $this->assertTrue($facet instanceof FacetInterface);
+    $this->assertInstanceOf(FacetInterface::class, $facet);
     $config = $facet->getFacetSourceConfig();
-    $this->assertTrue($config instanceof FacetSourceInterface);
+    $this->assertInstanceOf(FacetSourceInterface::class, $config);
     $this->assertEquals('f', $config->getFilterKey());
 
     $facet = NULL;
@@ -64,48 +66,50 @@ class UrlIntegrationTest extends FacetsTestBase {
 
     // Go to the only enabled facet source's config and change the filter key.
     $this->drupalGet('admin/config/search/facets');
-    $this->clickLink('Configure', 1);
+    $this->clickLink('Configure', 2);
 
     $edit = [
       'filter_key' => 'y',
       'url_processor' => 'query_string',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
 
     /** @var \Drupal\facets\FacetInterface $facet */
     $facet = Facet::load($id);
     $config = $facet->getFacetSourceConfig();
-    $this->assertTrue($config instanceof FacetSourceInterface);
+    $this->assertInstanceOf(FacetSourceInterface::class, $config);
     $this->assertEquals('y', $config->getFilterKey());
 
     $facet = NULL;
     $config = NULL;
 
     $url_2 = Url::fromUserInput('/search-api-test-fulltext', ['query' => ['y[0]' => 'facet:item']]);
-    $this->checkClickedFacetUrl($url_2);
+    $this->clickFacet();
+    $this->assertSession()->addressEquals($url_2);
 
     // Go to the only enabled facet source's config and change the url
     // processor.
     $this->drupalGet('admin/config/search/facets');
-    $this->clickLink('Configure', 1);
+    $this->clickLink('Configure', 2);
 
     $edit = [
       'filter_key' => 'y',
       'url_processor' => 'dummy_query',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
 
     /** @var \Drupal\facets\FacetInterface $facet */
     $facet = Facet::load($id);
     $config = $facet->getFacetSourceConfig();
-    $this->assertTrue($config instanceof FacetSourceInterface);
+    $this->assertInstanceOf(FacetSourceInterface::class, $config);
     $this->assertEquals('y', $config->getFilterKey());
 
     $facet = NULL;
     $config = NULL;
 
     $url_3 = Url::fromUserInput('/search-api-test-fulltext', ['query' => ['y[0]' => 'facet||item']]);
-    $this->checkClickedFacetUrl($url_3);
+    $this->clickFacet();
+    $this->assertSession()->addressEquals($url_3);
   }
 
   /**
@@ -158,7 +162,8 @@ class UrlIntegrationTest extends FacetsTestBase {
     $this->createFacet($name, $id);
 
     $url = Url::fromUserInput('/search-api-test-fulltext');
-    $this->checkClickedFacetUrl($url);
+    $this->clickFacet();
+    $this->assertSession()->addressEquals($url);
 
     // Build the path as described in #2871475.
     $path = 'search-api-test-fulltext';
@@ -198,21 +203,40 @@ class UrlIntegrationTest extends FacetsTestBase {
     foreach ($content_types as $content_type) {
       $this->drupalGet('search-api-test-fulltext');
       $this->clickLink('2');
-      $this->assertTrue(strpos($this->getUrl(), 'page=1'));
+      $this->assertNotFalse(strpos($this->getUrl(), 'page=1'));
       $this->clickLink($content_type);
       $this->assertFalse(strpos($this->getUrl(), 'page=1'));
     }
   }
 
   /**
-   * Tests that creating a facet with a duplicate url alias is forbidden.
+   * Tests that creating a facet with a duplicate url alias emits a warning.
    */
   public function testCreatingDuplicateUrlAlias() {
     $this->createFacet('Owl', 'owl');
     $this->createFacet('Another owl', 'another_owl');
     $this->drupalGet('admin/config/search/facets/another_owl/edit');
-    $this->drupalPostForm(NULL, ['facet_settings[url_alias]' => 'owl'], 'Save');
+    $this->submitForm(['facet_settings[url_alias]' => 'owl'], 'Save');
     $this->assertSession()->pageTextContains('This alias is already in use for another facet defined on the same source.');
+  }
+
+  /**
+   * Tests that modules can change the facet url.
+   */
+  public function testFacetUrlCanBeChanged() {
+    $modules = ['facets_events_test'];
+    $success = $this->container->get('module_installer')->install($modules, TRUE);
+    $this->assertTrue($success, new FormattableMarkup('Enabled modules: %modules', ['%modules' => implode(', ', $modules)]));
+    $this->rebuildAll();
+
+    $id = 'facet';
+    $name = 'Facet';
+    $this->createFacet($name, $id);
+
+    $this->clickFacet();
+    $url = urldecode($this->getSession()->getCurrentUrl());
+    $this->assertStringContainsString('test=fun', $url);
+    $this->assertStringContainsString('f[0]=facet:item', $url);
   }
 
 }

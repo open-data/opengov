@@ -25,7 +25,7 @@ abstract class NumericBase extends WebformElementBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

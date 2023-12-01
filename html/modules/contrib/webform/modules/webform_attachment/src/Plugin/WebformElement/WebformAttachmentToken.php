@@ -25,7 +25,7 @@ class WebformAttachmentToken extends WebformAttachmentBase {
     ] + parent::defineDefaultProperties();
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}

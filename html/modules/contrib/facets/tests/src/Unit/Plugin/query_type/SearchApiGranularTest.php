@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\facets\Unit\Plugin\query_type;
 
+use Drupal\Tests\facets\Unit\Drupal10CompatibilityUnitTestCase;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\FacetInterface;
@@ -13,7 +14,6 @@ use Drupal\search_api\IndexInterface;
 use Drupal\facets\Result\ResultInterface;
 use Drupal\search_api\Plugin\views\query\SearchApiQuery;
 use Drupal\search_api\ServerInterface;
-use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 
 /**
@@ -21,12 +21,12 @@ use Prophecy\Argument;
  *
  * @group facets
  */
-class SearchApiGranularTest extends UnitTestCase {
+class SearchApiGranularTest extends Drupal10CompatibilityUnitTestCase {
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $processor_id = 'granularity_item';
@@ -100,7 +100,7 @@ class SearchApiGranularTest extends UnitTestCase {
     $this->assertInstanceOf(FacetInterface::class, $built_facet);
 
     $results = $built_facet->getResults();
-    $this->assertInternalType('array', $results);
+    $this->assertSame('array', gettype($results));
 
     foreach ($grouped_results as $k => $result) {
       $this->assertInstanceOf(ResultInterface::class, $results[$k]);
@@ -129,7 +129,7 @@ class SearchApiGranularTest extends UnitTestCase {
     $this->assertInstanceOf(FacetInterface::class, $built_facet);
 
     $results = $built_facet->getResults();
-    $this->assertInternalType('array', $results);
+    $this->assertSame('array', gettype($results));
     $this->assertEmpty($results);
   }
 

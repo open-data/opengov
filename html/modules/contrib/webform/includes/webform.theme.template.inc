@@ -180,7 +180,7 @@ function template_preprocess_webform_confirmation(array &$variables) {
   }
   elseif ($webform_submission) {
     $source_url = $webform_submission->getSourceUrl();
-    $query = $source_url->getOption('query');
+    $query = $source_url->getOption('query') ?: [];
     unset($query['webform_id'], $query['ajax_form'], $query['_wrapper_format'], $query['token'], $query['page']);
     $source_url->setOption('query', $query);
     $variables['back_url'] = $source_url->toString();
@@ -346,10 +346,10 @@ function template_preprocess_webform_submission_information(array &$variables) {
   }
   elseif ($source_entity) {
     $entity_type = $source_entity->getEntityTypeId();
-    if (\Drupal::currentUser()->hasPermission("view webform node submissions any $entity_type")) {
+    if (\Drupal::currentUser()->hasPermission("view webform submissions any $entity_type")) {
       $variables['submissions_view'] = TRUE;
     }
-    elseif (\Drupal::currentUser()->hasPermission("view webform node submissions own $entity_type")
+    elseif (\Drupal::currentUser()->hasPermission("view webform submissions own $entity_type")
       && method_exists($source_entity, 'getOwnerId')
       && (int) $source_entity->getOwnerId() === (int) \Drupal::currentUser()->id()
     ) {
@@ -375,6 +375,11 @@ function template_preprocess_webform_submission_information(array &$variables) {
     }
     else {
       $base_route_name = 'webform_submission.delete_form';
+    }
+    // Append token to delete URL.
+    $token = \Drupal::request()->query->get('token');
+    if ($webform->getSetting('token_delete') && $token === $webform_submission->getToken()) {
+      $route_options['query']['token'] = $token;
     }
     $url = $request_handler->getUrl($webform_submission, $source_entity, $base_route_name, $route_options);
     $variables['delete'] = [
@@ -431,7 +436,7 @@ function template_preprocess_webform_element_base_html(array &$variables) {
   if (empty($variables['options']['email']) && isset($element['#type'])) {
     $type = $element['#type'];
 
-    $attributes = (isset($element['#format_attributes'])) ? $element['#format_attributes'] : [];
+    $attributes = $element['#format_attributes'] ?? [];
     $attributes += ['class' => []];
     // Use wrapper attributes for the id instead of #id,
     // this stops the <label> from having a 'for' attribute.
@@ -496,14 +501,14 @@ function _template_progress_webform_set_title(array &$variables, $strip_tags = F
   }
 
   // Strip all HTML tags from the title.
-  if ($strip_tags) {
+  if ($strip_tags && !empty($variables['title'])) {
     $variables['title'] = strip_tags($variables['title']);
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Preprocess templates.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Prepares variables for webform 'wizard' progress templates.
@@ -553,7 +558,9 @@ function template_preprocess_webform_progress(array &$variables) {
   }
 
   if ($webform->getSetting('wizard_progress_percentage')) {
-    $variables['percentage'] = number_format(($current_index / ($total - 1)) * 100, 0) . '%';
+    $variables['percentage'] = ($total > 1)
+      ? number_format(($current_index / ($total - 1)) * 100, 0) . '%'
+      : '0%';
   }
 }
 
@@ -613,15 +620,15 @@ function _template_preprocess_webform_progress(array &$variables) {
   foreach ($pages as $key => $page) {
     $variables['progress'][] = [
       'name' => $key,
-      'title' => (isset($page['#title'])) ? $page['#title'] : '',
-      'type' => (isset($page['#type'])) ? $page['#type'] : 'page',
+      'title' => $page['#title'] ?? '',
+      'type' => $page['#type'] ?? 'page',
     ];
   }
 }
 
-/******************************************************************************/
+/* ************************************************************************** */
 // Element templates.
-/******************************************************************************/
+/* ************************************************************************** */
 
 /**
  * Prepares variables for webform message templates.
@@ -709,12 +716,13 @@ function template_preprocess_webform_section(array &$variables) {
   $element = $variables['element'];
   Element::setAttributes($element, ['id']);
   RenderElement::setAttributes($element);
-  $variables['attributes'] = isset($element['#attributes']) ? $element['#attributes'] : [];
-  $variables['prefix'] = isset($element['#field_prefix']) ? $element['#field_prefix'] : NULL;
-  $variables['suffix'] = isset($element['#field_suffix']) ? $element['#field_suffix'] : NULL;
-  $variables['title_display'] = isset($element['#title_display']) ? $element['#title_display'] : NULL;
-  $variables['title_tag'] = isset($element['#title_tag']) ? $element['#title_tag'] : 'h2';
-  $variables['title_attributes'] = isset($element['#title_attributes']) ? $element['#title_attributes'] : [];
+  $variables['attributes'] = $element['#attributes'] ?? [];
+  $variables['prefix'] = $element['#field_prefix'] ?? NULL;
+  $variables['suffix'] = $element['#field_suffix'] ?? NULL;
+  $variables['title_display'] = $element['#title_display'] ?? NULL;
+  $variables['title_tag'] = $element['#title_tag'] ?? 'h2';
+  $variables['title_attributes'] = $element['#title_attributes'] ?? [];
+  $variables['description_display'] = $element['#description_display'] ?? 'before';
   $variables['children'] = $element['#children'];
   $variables['required'] = !empty($element['#required']) ? $element['#required'] : NULL;
 
@@ -746,9 +754,9 @@ function template_preprocess_webform_section(array &$variables) {
   _webform_preprocess_element($variables);
 }
 
-/******************************************************************************/
-// Composite templates
-/******************************************************************************/
+/* ************************************************************************** */
+// Composite templates.
+/* ************************************************************************** */
 
 /**
  * Prepares variables for webform composite templates.
@@ -768,7 +776,7 @@ function _template_preprocess_webform_composite(array &$variables) {
   }
 
   // Set flexbox variable used for multi column element layout.
-  $variables['flexbox'] = (isset($element['#flexbox'])) ? $element['#flexbox'] : FALSE;
+  $variables['flexbox'] = $element['#flexbox'] ?? FALSE;
 }
 
 /**
@@ -849,9 +857,9 @@ function template_preprocess_webform_composite_telephone(array &$variables) {
   _template_preprocess_webform_composite($variables);
 }
 
-/******************************************************************************/
-// Element templates
-/******************************************************************************/
+/* ************************************************************************** */
+// Element templates.
+/* ************************************************************************** */
 
 /**
  * Prepares variables for webform element help templates.
@@ -865,11 +873,12 @@ function template_preprocess_webform_composite_telephone(array &$variables) {
  *   - attributes: The help attributes.
  */
 function template_preprocess_webform_element_help(array &$variables) {
-  $attributes = (isset($variables['attributes'])) ? $variables['attributes'] : [];
+  $attributes = $variables['attributes'] ?? [];
   $attributes['class'][] = 'webform-element-help';
   $attributes['class'][] = 'js-webform-element-help';
   $attributes['role'] = 'tooltip';
   $attributes['tabindex'] = '0';
+  $attributes['aria-label'] = $variables['help_title'] ?: t('Help tooltip');
 
   $content = (is_array($variables['help'])) ? \Drupal::service('renderer')->render($variables['help']) : $variables['help'];
 
@@ -931,7 +940,7 @@ function template_preprocess_webform_element_managed_file(array &$variables) {
   if (!empty($variables['file'])) {
     /** @var \Drupal\file\FileInterface $file */
     $file = $variables['file'];
-    $variables['uri'] = file_create_url($file->getFileUri());
+    $variables['uri'] = $file->createFileUrl(FALSE);
     $variables['extension'] = strtolower(pathinfo($variables['uri'], PATHINFO_EXTENSION));
     $variables['type'] = \Drupal::service('file.mime_type.guesser')->guess($variables['uri']);
     $variables['file_link'] = [
@@ -996,7 +1005,7 @@ function template_preprocess_webform_element_image_file(array &$variables) {
     $format = $variables['format'];
 
     $uri = $file->getFileUri();
-    $url = Url::fromUri(file_create_url($uri));
+    $url = \Drupal::service('file_url_generator')->generate($uri)->setAbsolute();
 
     $extension = pathinfo($uri, PATHINFO_EXTENSION);
     $is_image = in_array($extension, ['gif', 'png', 'jpg', 'jpeg']);

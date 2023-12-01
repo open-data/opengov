@@ -30,7 +30,7 @@ class CliTest extends KernelTestBase {
    *
    * @var string[]
    */
-  public static $modules = [
+  protected static $modules = [
     'search_api',
     'search_api_test',
     'user',
@@ -41,7 +41,7 @@ class CliTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installSchema('search_api', ['search_api_item']);

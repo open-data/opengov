@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Ping;
 
 use Solarium\Core\Client\Client;
@@ -24,7 +31,7 @@ class Query extends BaseQuery
     protected $options = [
         'resultclass' => Result::class,
         'handler' => 'admin/ping',
-        'omitheader' => true,
+        'omitheader' => false,
     ];
 
     /**
@@ -48,10 +55,12 @@ class Query extends BaseQuery
     }
 
     /**
-     * The ping query has no response parser so we return a null value.
+     * Get a responseparser for this query.
+     *
+     * @return ResponseParser
      */
     public function getResponseParser(): ?ResponseParserInterface
     {
-        return null;
+        return new ResponseParser();
     }
 }

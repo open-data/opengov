@@ -1,11 +1,18 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Facet;
 
 /**
  * Facet interface.
  *
- * @see http://wiki.apache.org/solr/SimpleFacetParameters
+ * @see https://solr.apache.org/guide/faceting.html
  */
 interface FacetInterface
 {
@@ -30,7 +37,59 @@ interface FacetInterface
      *
      * @param string $key
      *
-     * @return self
+     * @return self Provides fluent interface
      */
-    public function setKey(string $key): self;
+    public function setKey(string $key);
+
+    /**
+     * Add an exclude tag.
+     *
+     * @param string $exclude
+     *
+     * @return self Provides fluent interface
+     */
+    public function addExclude(string $exclude);
+
+    /**
+     * Add multiple exclude tags.
+     *
+     * @param array|string $excludes array or string with comma separated exclude tags
+     *
+     * @return self Provides fluent interface
+     */
+    public function addExcludes($excludes);
+
+    /**
+     * Set the list of exclude tags.
+     *
+     * This overwrites any existing exclude tags.
+     *
+     * @param array|string $excludes
+     *
+     * @return self Provides fluent interface
+     */
+    public function setExcludes($excludes);
+
+    /**
+     * Remove a single exclude tag.
+     *
+     * @param string $exclude
+     *
+     * @return self Provides fluent interface
+     */
+    public function removeExclude(string $exclude);
+
+    /**
+     * Remove all exclude tags.
+     *
+     * @return self Provides fluent interface
+     */
+    public function clearExcludes();
+
+    /**
+     * Get the list of exclude tags.
+     *
+     * @return array
+     */
+    public function getExcludes();
 }

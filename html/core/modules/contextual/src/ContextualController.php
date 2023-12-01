@@ -57,17 +57,19 @@ class ContextualController implements ContainerInjectionInterface {
    * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
    *   Thrown when the request contains no ids.
    *
+   * @internal
+   *
    * @see contextual_preprocess()
    */
   public function render(Request $request) {
     $ids = $request->request->get('ids');
     if (!isset($ids)) {
-      throw new BadRequestHttpException(t('No contextual ids specified.'));
+      throw new BadRequestHttpException('No contextual ids specified.');
     }
 
     $tokens = $request->request->get('tokens');
     if (!isset($tokens)) {
-      throw new BadRequestHttpException(t('No contextual ID tokens specified.'));
+      throw new BadRequestHttpException('No contextual ID tokens specified.');
     }
 
     $rendered = [];

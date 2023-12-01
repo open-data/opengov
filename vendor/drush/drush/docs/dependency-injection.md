@@ -1,7 +1,7 @@
 Dependency Injection
 ==================
 
-Drush 9 command files obtain references to the resources they need through a technique called _dependency injection_. When using this programing paradigm, a class by convention will never use the `new` operator to instantiate dependencies. Instead, it will store the other objects it needs in  class variables, and provide a way for other code to assign an object to that variable.
+Drush command files obtain references to the resources they need through a technique called _dependency injection_. When using this programing paradigm, a class by convention will never use the `new` operator to instantiate dependencies. Instead, it will store the other objects it needs in  class variables, and provide a way for other code to assign an object to that variable.
 
 Types of Injection
 -----------------------
@@ -9,7 +9,7 @@ Types of Injection
 There are two ways that a class can receive its dependencies. One is called “constructor injection”, and the other is called “setter injection”.
 
 *Example of constructor injection:*
-```
+```php
     public function __construct(DependencyType $service)
     {
         $this->service = $service;
@@ -17,7 +17,7 @@ There are two ways that a class can receive its dependencies. One is called “c
 ```
 
 *Example of setter injection:*
-```
+```php
     public function setService(DependencyType $service)
     {
         $this->service = $service;
@@ -25,11 +25,36 @@ There are two ways that a class can receive its dependencies. One is called “c
 ```
 A class should use one or the other of these methods. The code that is responsible for providing the dependencies a class need is usually an object called the dependency injection container.
 
+create() method
+------------------
+
+!!! tip
+
+    Drush 11 and prior required [dependency injection via a drush.services.yml file](https://www.drush.org/11.x/dependency-injection/#services-files). This approach is deprecated in Drush 12 and will be removed in Drush 13.
+
+Drush command files can inject services by adding a create() method to the commandfile. See [creating commands](commands.md) for instructions on how to use the Drupal Code Generator to create a simple command file starter. A create() method and a constructor will look something like this:
+```php
+class WootStaticFactoryCommands extends DrushCommands
+{
+    protected $configFactory;
+
+    protected function __construct($configFactory)
+    {
+        $this->configFactory = $configFactory;
+    }
+
+    public static function create(ContainerInterface $container): self
+    {
+        return new static($container->get('config.factory'));
+    }
+```
+See the [Drupal Documentation](https://www.drupal.org/docs/drupal-apis/services-and-dependency-injection/services-and-dependency-injection-in-drupal-8#s-injecting-dependencies-into-controllers-forms-and-blocks) for details on how to inject Drupal services into your command file. Drush's approach mimics Drupal's blocks, forms, and controllers.
+
 Services Files
 ------------------
 
-Drush command files can request that Drupal inject services by using a drush.services.yml file. See the document [commands](commands.md) for instructions on how to use the Drupal Code Generator to create a simple command file starter with a drush.services.yml file. An initial services file will look something like this:
-```
+Drush command files can request that Drupal inject services by using a drush.services.yml file. This used to be the preferred method to do dependency injection for Drush commands, but is being phased out in favor of the create() method, described above. An example services file might look something like this:
+```yaml
 services:
   my_module.commands:
     class: \Drupal\my_module\Commands\MyModuleiCommands
@@ -45,7 +70,7 @@ Drush will also inject dependencies that it provides using a technique called in
 
 For example:
 
-```
+```php
 <?php
 namespace Drupal\my_module\Commands;
 
@@ -57,8 +82,9 @@ use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 class MyModuleCommands extends DrushCommands implements SiteAliasManagerAwareInterface
 {
   use SiteAliasManagerAwareTrait;
+  
   /**
-   * Prints the currenbt alias name and info.
+   * Prints the current alias name and info.
    *
    * @command mymodule:myAlias
    * @return \Consolidation\OutputFormatters\StructuredData\ListDataFromKeys

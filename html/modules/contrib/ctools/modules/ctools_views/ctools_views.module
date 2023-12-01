@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Allows core Views to have greater control over Blocks.
+ */
+
 use Drupal\views\Plugin\views\display\Block as CoreBlock;
 use Drupal\ctools_views\Plugin\Display\Block;
 
@@ -19,7 +24,7 @@ function ctools_views_config_schema_info_alter(&$definitions) {
   // Add to the views block plugin schema.
   $definitions['views_block']['mapping']['pager'] = [
     'type' => 'string',
-    'label' => 'Pager type'
+    'label' => 'Pager type',
   ];
   $definitions['views_block']['mapping']['fields'] = [
     'type' => 'sequence',
@@ -61,6 +66,15 @@ function ctools_views_config_schema_info_alter(&$definitions) {
       ],
     ],
   ];
+
+  $definitions['views_block']['mapping']['exposed'] = [
+    'type' => 'sequence',
+    'label' => 'Exposed filter values',
+    'sequence' => [
+      'type' => 'views.filter.[plugin_id]',
+    ],
+  ];
+
   $definitions['views_block']['mapping']['sort'] = [
     'type' => 'sequence',
     'label' => 'Sort settings',
@@ -73,7 +87,7 @@ function ctools_views_config_schema_info_alter(&$definitions) {
   ];
   $definitions['views_block']['mapping']['pager_offset'] = [
     'type' => 'integer',
-    'label' => 'Pager offset'
+    'label' => 'Pager offset',
   ];
 
   // Add to the views block display plugin schema.
@@ -92,6 +106,10 @@ function ctools_views_config_schema_info_alter(&$definitions) {
   $definitions['views.display.block']['mapping']['allow']['mapping']['sort_fields'] = [
     'type' => 'string',
     'label' => 'Sort fields',
+  ];
+  $definitions['views.display.block']['mapping']['allow']['mapping']['configure_filters'] = [
+    'type' => 'string',
+    'label' => 'Configure filters',
   ];
   $definitions['views.display.block']['mapping']['allow']['mapping']['disable_filters'] = [
     'type' => 'string',

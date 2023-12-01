@@ -105,7 +105,7 @@ class Bootstrap {
    *
    * @todo Enable constant once PHP 5.5 is no longer supported.
    */
-//  const PROJECT_API_SEARCH_URL = self::PROJECT_DOCUMENTATION . '/api/bootstrap/' . self::PROJECT_BRANCH . '/search/@query';
+  // Const PROJECT_API_SEARCH_URL = self::PROJECT_DOCUMENTATION . '/api/bootstrap/' . self::PROJECT_BRANCH . '/search/@query';.
 
   /**
    * The Drupal Bootstrap project page.
@@ -115,9 +115,16 @@ class Bootstrap {
   const PROJECT_PAGE = 'https://www.drupal.org/project/bootstrap';
 
   /**
+   * The File System service, if it exists.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface|false
+   */
+  protected static $fileSystem;
+
+  /**
    * The Messenger service, if it exists.
    *
-   * @var \Drupal\Core\Messenger\MessengerInterface
+   * @var \Drupal\Core\Messenger\MessengerInterface|false
    */
   protected static $messenger;
 
@@ -227,13 +234,13 @@ class Bootstrap {
       $drupal_static_fast['form_managers'] = &drupal_static(__METHOD__ . '__formManagers', []);
     }
 
-    /* @var \Drupal\bootstrap\Plugin\AlterManager[] $alter_managers */
+    /** @var \Drupal\bootstrap\Plugin\AlterManager[] $alter_managers */
     $alter_managers = &$drupal_static_fast['alter_managers'];
     if (!isset($alter_managers[$theme_name])) {
       $alter_managers[$theme_name] = new AlterManager($theme);
     }
 
-    /* @var \Drupal\bootstrap\Plugin\FormManager[] $form_managers */
+    /** @var \Drupal\bootstrap\Plugin\FormManager[] $form_managers */
     $form_managers = &$drupal_static_fast['form_managers'];
     if (!isset($form_managers[$theme_name])) {
       $form_managers[$theme_name] = new FormManager($theme);
@@ -541,7 +548,7 @@ class Bootstrap {
             break;
 
           case 'contains':
-            if (strpos(Unicode::strtolower($string), Unicode::strtolower($text)) !== FALSE) {
+            if (strpos(mb_strtolower($string), mb_strtolower($text)) !== FALSE) {
               return $class;
             }
             break;
@@ -595,7 +602,7 @@ class Bootstrap {
     }
 
     if ($show_message || (!isset($show_message) && static::isAdmin() && !static::getTheme()->getSetting('suppress_deprecated_warnings', FALSE))) {
-      static::message($message, 'warning');
+      \Drupal::messenger()->addMessage($message, 'warning');
     }
 
     // Log message and accompanying backtrace.
@@ -621,6 +628,31 @@ class Bootstrap {
       'icon_position' => 'before',
       'icon_only' => FALSE,
     ];
+  }
+
+  /**
+   * Retrieves the File System service, if it exists.
+   *
+   * @param string $method
+   *   Optional. A specific method on the file system service to check for
+   *   its existance.
+   *
+   * @return \Drupal\Core\File\FileSystemInterface
+   *   The File System service, if it exists and if $method exists if it was
+   *   passed.
+   *
+   * @deprecated in bootstrap:8.x-3.22 and is removed from bootstrap:5.0.0.
+   *   Use the "file_system" service instead.
+   * @see https://www.drupal.org/project/bootstrap/issues/3096963
+   */
+  public static function fileSystem($method = NULL) {
+    if (!isset(static::$fileSystem)) {
+      static::$fileSystem = \Drupal::hasService('file_system') ? \Drupal::service('file_system') : FALSE;
+    }
+    if ($method) {
+      return static::$fileSystem && method_exists(static::$fileSystem, $method) ? static::$fileSystem : FALSE;
+    }
+    return static::$fileSystem;
   }
 
   /**
@@ -868,7 +900,7 @@ class Bootstrap {
             break;
 
           case 'contains':
-            if (strpos(Unicode::strtolower($string), Unicode::strtolower($text)) !== FALSE) {
+            if (strpos(mb_strtolower($string), mb_strtolower($text)) !== FALSE) {
               return self::glyphicon($icon, $default);
             }
             break;
@@ -1304,7 +1336,7 @@ class Bootstrap {
    *   supported:
    *   - 'status'
    *   - 'warning'
-   *   - 'error'
+   *   - 'error'.
    * @param bool $repeat
    *   (optional) If this is FALSE and the message is already set, then the
    *   message won't be repeated. Defaults to FALSE.
@@ -1315,6 +1347,7 @@ class Bootstrap {
    *
    * @deprecated in 8.x-3.18 and will be removed in a future release.
    *   Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead.
+   * @see https://www.drupal.org/project/bootstrap/issues/3096963
    */
   public static function message($message, $type = 'status', $repeat = FALSE) {
     if (!isset(static::$messenger)) {
@@ -1350,7 +1383,7 @@ class Bootstrap {
       $drupal_static_fast['theme_info'] = &drupal_static(__METHOD__ . '__themeInfo', []);
     }
 
-    /* @var \Drupal\bootstrap\Plugin\PreprocessManager[] $preprocess_managers */
+    /** @var \Drupal\bootstrap\Plugin\PreprocessManager[] $preprocess_managers */
     $preprocess_managers = &$drupal_static_fast['preprocess_managers'];
     if (!isset($preprocess_managers[$theme_name])) {
       $preprocess_managers[$theme_name] = new PreprocessManager($theme);

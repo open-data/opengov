@@ -5,7 +5,6 @@ namespace Drupal\webform\EntitySettings;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,22 +20,12 @@ class WebformEntitySettingsConfirmationForm extends WebformEntitySettingsBaseFor
   protected $tokenManager;
 
   /**
-   * Constructs a WebformEntitySettingsConfirmationForm.
-   *
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   */
-  public function __construct(WebformTokenManagerInterface $token_manager) {
-    $this->tokenManager = $token_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('webform.token_manager')
-    );
+    $instance = parent::create($container);
+    $instance->tokenManager = $container->get('webform.token_manager');
+    return $instance;
   }
 
   /**
@@ -152,7 +141,8 @@ class WebformEntitySettingsConfirmationForm extends WebformEntitySettingsBaseFor
     $form['confirmation_url']['confirmation_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Confirmation URL'),
-      '#description' => $this->t('URL to redirect the user to upon successful submission.'),
+      '#description' => $this->t('The URL or path to redirect the user to upon successful submission.') .
+        '<br/>' . $this->t('Paths beginning with a forward slash (/) will redirect be treated as root-relative. Paths without a forward slash (/) will redirect be treated as Drupal relative path.'),
       '#default_value' => $settings['confirmation_url'],
       '#maxlength' => NULL,
       '#states' => [
@@ -201,16 +191,9 @@ class WebformEntitySettingsConfirmationForm extends WebformEntitySettingsBaseFor
     ];
     $form['confirmation_settings']['confirmation_title'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Confirmation title'),
+      '#title' => $this->t('Confirmation page/modal title'),
       '#description' => $this->t('Page title to be shown upon successful submission.'),
       '#default_value' => $settings['confirmation_title'],
-      '#states' => [
-        'visible' => [
-          [':input[name="confirmation_type"]' => ['value' => WebformInterface::CONFIRMATION_PAGE]],
-          'or',
-          [':input[name="confirmation_type"]' => ['value' => WebformInterface::CONFIRMATION_MODAL]],
-        ],
-      ],
     ];
     $form['confirmation_settings']['confirmation_message'] = [
       '#type' => 'webform_html_editor',

@@ -37,6 +37,8 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
   public function testResults() {
     global $base_path;
 
+    $assert_session = $this->assertSession();
+
     $normal_user = $this->drupalCreateUser();
 
     $admin_user = $this->drupalCreateUser([
@@ -50,7 +52,7 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
     /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
     $submission_storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $webform = Webform::load('contact');
 
@@ -63,7 +65,7 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
     // Check access denied to webform results.
     $this->drupalLogin($admin_submission_user);
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Set Node webform to the contact webform.
     $node->webform->target_id = 'contact';
@@ -94,8 +96,8 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
     }
 
     // Check that 6 submission were created.
-    $this->assertEqual($submission_storage->getTotal($webform, $node), 3);
-    $this->assertEqual($submission_storage->getTotal($webform), 6);
+    $this->assertEquals($submission_storage->getTotal($webform, $node), 3);
+    $this->assertEquals($submission_storage->getTotal($webform), 6);
 
     // Check webform node results.
     $this->drupalLogin($admin_submission_user);
@@ -106,23 +108,23 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
     $webform_submission_url = Url::fromRoute('entity.webform_submission.canonical', $webform_submission_route_parameters);
 
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
-    $this->assertResponse(200);
-    $this->assertRaw('<h1>' . $node->label() . '</h1>');
-    $this->assertNoRaw('<h1>' . $webform->label() . '</h1>');
-    $this->assertRaw(('<a href="' . $node_submission_url->toString() . '" title="' . Html::escape($node_submission_title) . '" aria-label="' . Html::escape($node_submission_title) . '">' . $node_sids[1] . '</a>'));
-    $this->assertNoRaw(('<a href="' . $webform_submission_url->toString() . '">' . $webform_sids[1] . '</a>'));
+    $assert_session->statusCodeEquals(200);
+    $assert_session->responseContains('<h1>' . $node->label() . '</h1>');
+    $assert_session->responseNotContains('<h1>' . $webform->label() . '</h1>');
+    $assert_session->responseContains(('<a href="' . $node_submission_url->toString() . '" title="' . Html::escape($node_submission_title) . '" aria-label="' . Html::escape($node_submission_title) . '">' . $node_sids[1] . '</a>'));
+    $assert_session->responseNotContains(('<a href="' . $webform_submission_url->toString() . '">' . $webform_sids[1] . '</a>'));
 
     // Check webform node title.
     $this->drupalGet('/node/' . $node->id() . '/webform/submission/' . $node_sids[1]);
-    $this->assertRaw($node->label() . ': Submission #' . $node_sids[1]);
+    $assert_session->responseContains($node->label() . ': Submission #' . $node_sids[1]);
     $this->drupalGet('/node/' . $node->id() . '/webform/submission/' . $node_sids[2]);
-    $this->assertRaw($node->label() . ': Submission #' . $node_sids[2]);
+    $assert_session->responseContains($node->label() . ': Submission #' . $node_sids[2]);
 
     // Check webform node navigation.
     $this->drupalGet('/node/' . $node->id() . '/webform/submission/' . $node_sids[1]);
     $node_route_parameters = ['node' => $node->id(), 'webform_submission' => $node_sids[2]];
     $node_submission_url = Url::fromRoute('entity.node.webform_submission.canonical', $node_route_parameters);
-    $this->assertRaw('<a href="' . $node_submission_url->toString() . '" rel="next" title="Go to next page">Next submission <b>›</b></a>');
+    $assert_session->responseContains('<a href="' . $node_submission_url->toString() . '" rel="next" title="Go to next page">Next submission <b>›</b></a>');
 
     // Check webform node saved draft.
     $webform->setSetting('draft', WebformInterface::DRAFT_AUTHENTICATED);
@@ -130,52 +132,55 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
 
     // Check webform saved draft.
     $this->drupalLogin($normal_user);
+    $this->drupalGet('/node/' . $node->id());
     $edit = [
       'name' => "nodeDraft",
       'email' => "nodeDraft@example.com",
       'subject' => "Node draft subject",
       'message' => "Node draft message",
     ];
-    $this->drupalPostForm('/node/' . $node->id(), $edit, 'Save Draft');
+    $this->submitForm($edit, 'Save Draft');
     $this->drupalGet('/node/' . $node->id());
-    $this->assertRaw('A partially-completed form was found. Please complete the remaining portions.');
+    $assert_session->responseContains('A partially-completed form was found. Please complete the remaining portions.');
     $this->drupalGet('/webform/contact');
-    $this->assertNoRaw('A partially-completed form was found. Please complete the remaining portions.');
+    $assert_session->responseNotContains('A partially-completed form was found. Please complete the remaining portions.');
 
     /* Table customization */
 
     // Check that access is denied to custom results table.
     $this->drupalLogin($admin_submission_user);
     $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions/custom');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     // Check that access is allowed to custom results table.
     $this->drupalLogin($admin_user);
     $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions/custom');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
 
     // Check default node results table.
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
-    $this->assertRaw('<th specifier="created" class="priority-medium is-active" aria-sort="descending">');
-    $this->assertRaw('sort by Created');
-    $this->assertNoRaw('sort by Changed');
+    $assert_session->responseContains('<th specifier="created" class="priority-medium is-active" aria-sort="descending">');
+    $assert_session->responseContains('sort by Created');
+    $assert_session->responseNotContains('sort by Changed');
 
     // Customize to main webform's results table.
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions/custom');
     $edit = [
       'columns[created][checkbox]' => FALSE,
       'columns[changed][checkbox]' => TRUE,
+      'sort' => 'serial',
       'direction' => 'asc',
       'limit' => 20,
       'default' => TRUE,
     ];
-    $this->drupalPostForm('/admin/structure/webform/manage/' . $webform->id() . '/results/submissions/custom', $edit, 'Save');
-    $this->assertRaw('The customized table has been saved.');
+    $this->submitForm($edit, 'Save');
+    $assert_session->responseContains('The customized table has been saved.');
 
     // Check that the webform node's results table is now customized.
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
-    $this->assertRaw('<th specifier="serial" aria-sort="ascending" class="is-active">');
-    $this->assertNoRaw('sort by Created');
-    $this->assertRaw('sort by Changed');
+    $assert_session->responseContains('<th specifier="serial" aria-sort="ascending" class="is-active">');
+    $assert_session->responseNotContains('sort by Created');
+    $assert_session->responseContains('sort by Changed');
 
     $this->drupalLogout();
 
@@ -198,27 +203,29 @@ class WebformNodeResultsTest extends WebformNodeBrowserTestBase {
     // Check accessing results posted to any webform node.
     $this->drupalLogin($any_user);
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
     foreach ($node_sids as $node_sid) {
-      $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$node_sid}");
+      $assert_session->linkByHrefExists("{$base_path}node/{$nid}/webform/submission/{$node_sid}");
     }
 
     // Check accessing results posted to own webform node.
     $this->drupalLogin($own_user);
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
-    $this->assertResponse(403);
+    $assert_session->statusCodeEquals(403);
 
     $node->setOwnerId($own_user->id())->save();
     $this->drupalGet('/node/' . $node->id() . '/webform/results/submissions');
-    $this->assertResponse(200);
+    $assert_session->statusCodeEquals(200);
     foreach ($node_sids as $node_sid) {
-      $this->assertLinkByHref("{$base_path}node/{$nid}/webform/submission/{$node_sid}");
+      $assert_session->linkByHrefExists("{$base_path}node/{$nid}/webform/submission/{$node_sid}");
     }
 
     // Check deleting webform node results.
-    $this->drupalPostForm('/node/' . $node->id() . '/webform/results/clear', ['confirm' => TRUE], 'Clear');
-    $this->assertEqual($submission_storage->getTotal($webform, $node), 0);
-    $this->assertEqual($submission_storage->getTotal($webform), 3);
+    $edit = ['confirm' => TRUE];
+    $this->drupalGet('/node/' . $node->id() . '/webform/results/clear');
+    $this->submitForm($edit, 'Clear');
+    $this->assertEquals($submission_storage->getTotal($webform, $node), 0);
+    $this->assertEquals($submission_storage->getTotal($webform), 3);
   }
 
 }

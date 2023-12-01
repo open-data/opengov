@@ -22,7 +22,7 @@ This base theme bridges the gap between Drupal and the [Bootstrap Framework].
   - [Wells](https://getbootstrap.com/docs/3.4/components/#wells) (per region)
 
 ### Documentation
-Visit the project's [official documentation site](https://drupal-bootstrap.org)
+Visit the project's [official documentation site](http://drupal-bootstrap.org/api/bootstrap)
 or the markdown files inside the `./docs` directory.
 
 ### Supported modules

@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Query\LocalParameters;
 
 use Solarium\Exception\OutOfBoundsException;
@@ -9,7 +16,7 @@ use Solarium\Exception\OutOfBoundsException;
 /**
  * Local Parameters.
  *
- * @see https://lucene.apache.org/solr/guide/8_3/local-parameters-in-queries.html
+ * @see https://solr.apache.org/guide/local-parameters-in-queries.html
  *
  * @author wicliff <wicliff.wolda@gmail.com>
  */
@@ -21,21 +28,9 @@ class LocalParameters implements \ArrayAccess
     private $parameters = [];
 
     /**
-     * @return string|null
-     */
-    public function render(): ?string
-    {
-        if ('' === $value = implode(' ', array_filter(array_map('strval', $this->parameters)))) {
-            return null;
-        }
-
-        return sprintf('{!%s}', $value);
-    }
-
-    /**
      * @param string $key
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -47,7 +42,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $keys
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -59,7 +54,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $key
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -69,7 +64,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -79,7 +74,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -91,7 +86,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $exclude
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -103,7 +98,19 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $excludes
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    public function setExcludes(array $excludes): self
+    {
+        return $this->setValues(LocalParameter::TYPE_EXCLUDE, $excludes);
+    }
+
+    /**
+     * @param array $excludes
+     *
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -115,7 +122,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $exclude
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -125,7 +132,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -135,7 +142,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -147,7 +154,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $range
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -159,7 +166,19 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $ranges
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    public function setRanges(array $ranges): self
+    {
+        return $this->setValues(LocalParameter::TYPE_RANGE, $ranges);
+    }
+
+    /**
+     * @param array $ranges
+     *
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -171,7 +190,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $range
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -181,7 +200,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -191,7 +210,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -203,7 +222,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $tag
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -215,7 +234,19 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $tags
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    public function setTags(array $tags): self
+    {
+        return $this->setValues(LocalParameter::TYPE_TAG, $tags);
+    }
+
+    /**
+     * @param array $tags
+     *
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -227,7 +258,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $tag
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -237,7 +268,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -247,7 +278,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -257,21 +288,33 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @param string $terms
+     * @param string $term
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
-    public function setTerm(string $terms): self
+    public function setTerm(string $term): self
     {
-        return $this->addValue(LocalParameter::TYPE_TERM, $terms);
+        return $this->addValue(LocalParameter::TYPE_TERM, $term);
     }
 
     /**
      * @param array $terms
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    public function setTerms(array $terms): self
+    {
+        return $this->setValues(LocalParameter::TYPE_TERM, $terms);
+    }
+
+    /**
+     * @param array $terms
+     *
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -283,17 +326,31 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $terms
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
+     *
+     * @deprecated Will be removed in Solarium 8. Use {@see removeTerm()} instead.
      */
     public function removeTerms(string $terms): self
     {
-        return $this->removeValue(LocalParameter::TYPE_TERM, $terms);
+        return $this->removeTerm($terms);
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @param string $term
+     *
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    public function removeTerm(string $term): self
+    {
+        return $this->removeValue(LocalParameter::TYPE_TERM, $term);
+    }
+
+    /**
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -303,7 +360,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -315,7 +372,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $query
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -327,7 +384,19 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $queries
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    public function setQueries(array $queries): self
+    {
+        return $this->setValues(LocalParameter::TYPE_QUERY, $queries);
+    }
+
+    /**
+     * @param array $queries
+     *
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -339,7 +408,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $query
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -349,7 +418,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -359,7 +428,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -369,33 +438,45 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @param string $stats
+     * @param string $stat
+     *
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    public function setStat(string $stat): self
+    {
+        return $this->addValue(LocalParameter::TYPE_STAT, $stat);
+    }
+
+    /**
+     * @param array $stats
      *
      * @throws \Solarium\Exception\OutOfBoundsException
      *
      * @return $this
      */
-    public function setStat(string $stats): self
+    public function setStats(array $stats): self
     {
-        return $this->addValue(LocalParameter::TYPE_STAT, $stats);
+        return $this->setValues(LocalParameter::TYPE_STAT, $stats);
     }
 
     /**
-     * @param array $statss
+     * @param array $stats
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
-    public function addStats(array $statss): self
+    public function addStats(array $stats): self
     {
-        return $this->addValues(LocalParameter::TYPE_STAT, $statss);
+        return $this->addValues(LocalParameter::TYPE_STAT, $stats);
     }
 
     /**
      * @param string $stats
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -405,7 +486,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -415,7 +496,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -427,7 +508,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $min
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -437,7 +518,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -447,7 +528,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -459,7 +540,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $max
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -469,7 +550,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -479,7 +560,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -491,7 +572,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $mean
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -501,7 +582,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -511,7 +592,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -523,7 +604,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $defaultField
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -535,7 +616,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $defaultFields
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -547,7 +628,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $defaultField
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -557,7 +638,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -567,7 +648,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -579,7 +660,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $queryField
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -591,7 +672,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $queryFields
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -603,7 +684,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $queryField
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -613,7 +694,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -623,7 +704,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -635,7 +716,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $type
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -647,7 +728,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $types
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -659,7 +740,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $type
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -669,7 +750,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -679,7 +760,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -691,7 +772,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $value
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -703,7 +784,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param array $values
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -715,7 +796,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $value
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -725,7 +806,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -735,7 +816,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -747,7 +828,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param bool $cache
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -757,7 +838,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -767,7 +848,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -779,7 +860,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param int $cost
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -789,7 +870,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -799,7 +880,7 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -816,8 +897,13 @@ class LocalParameters implements \ArrayAccess
         return isset($this->parameters[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     /**
-     * {@inheritdoc}
+     * ArrayAccess implementation.
+     *
+     * @param mixed $offset
+     *
+     * @return mixed
      */
     public function offsetGet($offset)
     {
@@ -827,9 +913,9 @@ class LocalParameters implements \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
-        return $this->parameters[$offset] = $value;
+        $this->parameters[$offset] = $value;
     }
 
     /**
@@ -841,10 +927,27 @@ class LocalParameters implements \ArrayAccess
     }
 
     /**
+     * Get all local parameters in a key => value format.
+     *
+     * @return array
+     */
+    public function getParameters(): array
+    {
+        $params = [];
+
+        /** @var LocalParameterInterface $parameter */
+        foreach ($this->parameters as $parameter) {
+            $params[$parameter->getType()] = $parameter->getValues();
+        }
+
+        return $params;
+    }
+
+    /**
      * @param string $type
      * @param mixed  $value
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -859,7 +962,7 @@ class LocalParameters implements \ArrayAccess
      * @param string $type
      * @param array  $values
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -874,7 +977,7 @@ class LocalParameters implements \ArrayAccess
      * @param string $type
      * @param mixed  $value
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -888,7 +991,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $type
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return $this
      */
@@ -902,7 +1005,7 @@ class LocalParameters implements \ArrayAccess
     /**
      * @param string $type
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return array
      */
@@ -913,8 +1016,23 @@ class LocalParameters implements \ArrayAccess
 
     /**
      * @param string $type
+     * @param array  $values
      *
-     * @throws \Solarium\Exception\OutOfBoundsException
+     * @throws OutOfBoundsException
+     *
+     * @return $this
+     */
+    private function setValues(string $type, array $values): self
+    {
+        $this->getParameter($type)->setValues($values);
+
+        return $this;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @throws OutOfBoundsException
      *
      * @return \Solarium\Core\Query\LocalParameters\LocalParameterInterface
      */

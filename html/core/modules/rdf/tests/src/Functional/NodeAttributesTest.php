@@ -10,6 +10,7 @@ use Drupal\Tests\rdf\Traits\RdfParsingTrait;
  * Tests the RDFa markup of Nodes.
  *
  * @group rdf
+ * @group legacy
  */
 class NodeAttributesTest extends NodeTestBase {
 
@@ -20,7 +21,7 @@ class NodeAttributesTest extends NodeTestBase {
    *
    * @var array
    */
-  public static $modules = ['rdf'];
+  protected static $modules = ['rdf'];
 
   /**
    * {@inheritdoc}
@@ -34,7 +35,10 @@ class NodeAttributesTest extends NodeTestBase {
    */
   protected $baseUri;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     rdf_get_mapping('node', 'article')

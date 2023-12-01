@@ -20,7 +20,7 @@ abstract class WebformElementManagedFileTestBase extends WebformElementBrowserTe
   public static $modules = ['file', 'webform'];
 
   /**
-   * File usage manager.
+   * The file usage service.
    *
    * @var \Drupal\file\FileUsage\FileUsageInterface
    */

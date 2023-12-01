@@ -2,16 +2,11 @@
 
 namespace Drupal\webform\Plugin\WebformHandler;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Serialization\Yaml;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Plugin\WebformHandlerBase;
-use Drupal\webform\WebformSubmissionConditionsValidatorInterface;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -40,33 +35,17 @@ class ActionWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerChannelFactoryInterface $logger_factory, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, WebformSubmissionConditionsValidatorInterface $conditions_validator, WebformTokenManagerInterface $token_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger_factory, $config_factory, $entity_type_manager, $conditions_validator);
-    $this->tokenManager = $token_manager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('logger.factory'),
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('webform_submission.conditions_validator'),
-      $container->get('webform.token_manager')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->tokenManager = $container->get('webform.token_manager');
+    return $instance;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSummary() {
-    $configuration = $this->getConfiguration();
-    $settings = $configuration['settings'];
+    $settings = $this->getSettings();
 
     // Get state labels.
     $states = [
@@ -199,7 +178,7 @@ class ActionWebformHandler extends WebformHandlerBase {
     foreach ($elements as $element_key => $element) {
       $elements_rows[] = [
         $element_key,
-        (isset($element['#title']) ? $element['#title'] : ''),
+        ($element['#title'] ?? ''),
       ];
     }
     $form['actions']['elements'] = [
@@ -280,9 +259,9 @@ class ActionWebformHandler extends WebformHandlerBase {
     }
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
   // Action helper methods.
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * Execute this action.
@@ -303,7 +282,8 @@ class ActionWebformHandler extends WebformHandlerBase {
 
     // Append notes.
     if ($this->configuration['notes']) {
-      $notes = rtrim($webform_submission->getNotes());
+      $notes = $webform_submission->getNotes() ?? '';
+      $notes = rtrim($notes);
       $notes .= ($notes ? PHP_EOL . PHP_EOL : '') . $this->replaceTokens($this->configuration['notes'], $webform_submission);
       $webform_submission->setNotes($notes);
     }
@@ -323,7 +303,7 @@ class ActionWebformHandler extends WebformHandlerBase {
         $this->replaceTokens($this->configuration['message'], $webform_submission)
       );
       $message_type = $this->configuration['message_type'];
-      $this->messenger()->addMessage(\Drupal::service('renderer')->renderPlain($message), $message_type);
+      $this->messenger()->addMessage($this->renderer->renderPlain($message), $message_type);
     }
 
     // Resave the webform submission without trigger any hooks or handlers.
@@ -400,7 +380,7 @@ class ActionWebformHandler extends WebformHandlerBase {
       '#wrapper_attributes' => ['class' => ['container-inline'], 'style' => 'margin: 0'],
     ];
 
-    $this->messenger()->addWarning(\Drupal::service('renderer')->renderPlain($build), TRUE);
+    $this->messenger()->addWarning($this->renderer->renderPlain($build), TRUE);
   }
 
 }

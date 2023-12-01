@@ -38,14 +38,14 @@ class ConfigFieldMapperTest extends UnitTestCase {
   /**
    * The mocked event dispatcher.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|\PHPUnit\Framework\MockObject\MockObject
+   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $eventDispatcher;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     $this->entityTypeManager = $this->createMock('Drupal\Core\Entity\EntityTypeManagerInterface');
     $this->entity = $this->createMock('Drupal\field\FieldConfigInterface');
 
@@ -61,7 +61,7 @@ class ConfigFieldMapperTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->eventDispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+    $this->eventDispatcher = $this->createMock('Symfony\Contracts\EventDispatcher\EventDispatcherInterface');
 
     $this->configFieldMapper = new ConfigFieldMapper(
       'node_fields',
@@ -88,30 +88,30 @@ class ConfigFieldMapperTest extends UnitTestCase {
     $entity_type
       ->expects($this->any())
       ->method('getConfigPrefix')
-      ->will($this->returnValue('config_prefix'));
+      ->willReturn('config_prefix');
 
     $this->entityTypeManager
       ->expects($this->any())
       ->method('getDefinition')
-      ->will($this->returnValue($entity_type));
+      ->willReturn($entity_type);
 
     $field_storage = $this->createMock('Drupal\field\FieldStorageConfigInterface');
     $field_storage
       ->expects($this->any())
       ->method('id')
-      ->will($this->returnValue('field_storage_id'));
+      ->willReturn('field_storage_id');
 
     $this->entity
       ->expects($this->any())
       ->method('getFieldStorageDefinition')
-      ->will($this->returnValue($field_storage));
+      ->willReturn($field_storage);
 
     $result = $this->configFieldMapper->setEntity($this->entity);
     $this->assertTrue($result);
 
     // Ensure that the configuration name was added to the mapper.
     $plugin_definition = $this->configFieldMapper->getPluginDefinition();
-    $this->assertTrue(in_array('config_prefix.field_storage_id', $plugin_definition['names']));
+    $this->assertContains('config_prefix.field_storage_id', $plugin_definition['names']);
 
     // Make sure setEntity() returns FALSE when called a second time.
     $result = $this->configFieldMapper->setEntity($this->entity);

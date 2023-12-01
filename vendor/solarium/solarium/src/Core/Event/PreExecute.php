@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Core\Event;
 
 use Solarium\Core\Query\QueryInterface;
@@ -7,7 +14,7 @@ use Solarium\Core\Query\Result\ResultInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * PostExecute event, see Events for details.
+ * PreExecute event, see {@see Events} for details.
  */
 class PreExecute extends Event
 {
@@ -61,6 +68,7 @@ class PreExecute extends Event
     public function setResult(ResultInterface $result): self
     {
         $this->result = $result;
+
         return $this;
     }
 }

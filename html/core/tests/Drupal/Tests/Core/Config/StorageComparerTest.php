@@ -36,7 +36,10 @@ class StorageComparerTest extends UnitTestCase {
    */
   protected $configData;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     $this->sourceStorage = $this->createMock('Drupal\Core\Config\StorageInterface');
     $this->targetStorage = $this->createMock('Drupal\Core\Config\StorageInterface');
     $this->storageComparer = new StorageComparer($this->sourceStorage, $this->targetStorage);
@@ -98,22 +101,22 @@ class StorageComparerTest extends UnitTestCase {
     $config_files = array_keys($config_data);
     $this->sourceStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue($config_files));
+      ->willReturn($config_files);
     $this->targetStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue($config_files));
+      ->willReturn($config_files);
     $this->sourceStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($config_data));
+      ->willReturn($config_data);
     $this->targetStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($config_data));
+      ->willReturn($config_data);
     $this->sourceStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
     $this->targetStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
 
     $this->storageComparer->createChangelist();
     $this->assertEmpty($this->storageComparer->getChangelist('create'));
@@ -132,22 +135,22 @@ class StorageComparerTest extends UnitTestCase {
 
     $this->sourceStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue(array_keys($source_data)));
+      ->willReturn(array_keys($source_data));
     $this->targetStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue(array_keys($target_data)));
+      ->willReturn(array_keys($target_data));
     $this->sourceStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($source_data));
+      ->willReturn($source_data);
     $this->targetStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($target_data));
+      ->willReturn($target_data);
     $this->sourceStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
     $this->targetStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
 
     $this->storageComparer->createChangelist();
     $expected = [
@@ -171,22 +174,22 @@ class StorageComparerTest extends UnitTestCase {
 
     $this->sourceStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue(array_keys($source_data)));
+      ->willReturn(array_keys($source_data));
     $this->targetStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue(array_keys($target_data)));
+      ->willReturn(array_keys($target_data));
     $this->sourceStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($source_data));
+      ->willReturn($source_data);
     $this->targetStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($target_data));
+      ->willReturn($target_data);
     $this->sourceStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
     $this->targetStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
 
     $this->storageComparer->createChangelist();
     $expected = [
@@ -210,22 +213,22 @@ class StorageComparerTest extends UnitTestCase {
 
     $this->sourceStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue(array_keys($source_data)));
+      ->willReturn(array_keys($source_data));
     $this->targetStorage->expects($this->once())
       ->method('listAll')
-      ->will($this->returnValue(array_keys($target_data)));
+      ->willReturn(array_keys($target_data));
     $this->sourceStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($source_data));
+      ->willReturn($source_data);
     $this->targetStorage->expects($this->once())
       ->method('readMultiple')
-      ->will($this->returnValue($target_data));
+      ->willReturn($target_data);
     $this->sourceStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
     $this->targetStorage->expects($this->once())
       ->method('getAllCollectionNames')
-      ->will($this->returnValue([]));
+      ->willReturn([]);
 
     $this->storageComparer->createChangelist();
     $expected = [
@@ -236,15 +239,6 @@ class StorageComparerTest extends UnitTestCase {
     $this->assertEquals($expected, $this->storageComparer->getChangelist('update'));
     $this->assertEmpty($this->storageComparer->getChangelist('create'));
     $this->assertEmpty($this->storageComparer->getChangelist('delete'));
-  }
-
-  /**
-   * @expectedDeprecation The storage comparer does not need a config manager. The parameter is deprecated since version 8.7.0 and will be removed in 9.0.0. Omit the third parameter. See https://www.drupal.org/node/2993271.
-   * @group legacy
-   */
-  public function testConfigManagerDeprecation() {
-    $configManager = $this->createMock('Drupal\Core\Config\ConfigManagerInterface');
-    new StorageComparer($this->sourceStorage, $this->targetStorage, $configManager);
   }
 
 }

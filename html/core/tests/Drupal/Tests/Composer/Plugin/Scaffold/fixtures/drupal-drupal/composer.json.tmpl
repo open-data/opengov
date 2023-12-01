@@ -46,7 +46,6 @@
         "fixtures/scaffold-override-fixture"
       ],
       "gitignore": false,
-      "overwrite": true,
       "symlink": __SYMLINK__,
       "file-mapping": {
         "[web-root]/.htaccess": false,
@@ -68,5 +67,10 @@
       "libraries/{$name}": ["type:drupal-library"],
       "drush/Commands/contrib/{$name}": ["type:drupal-drush"]
     }
-  }
+  },
+   "config": {
+      "allow-plugins": {
+        "drupal/core-composer-scaffold": true
+      }
+   }
 }

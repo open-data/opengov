@@ -3,8 +3,8 @@
 namespace Drupal\Core\Cache;
 
 use Drupal\Component\Assertion\Inspector;
-use Drupal\Core\PhpStorage\PhpStorageFactory;
 use Drupal\Component\Utility\Crypt;
+use Drupal\Core\PhpStorage\PhpStorageFactory;
 
 /**
  * Defines a PHP cache implementation.
@@ -25,6 +25,11 @@ class PhpBackend implements CacheBackendInterface {
    * @var string
    */
   protected $bin;
+
+  /**
+   * The PHP storage.
+   */
+  protected $storage;
 
   /**
    * Array to store cache objects.
@@ -84,7 +89,7 @@ class PhpBackend implements CacheBackendInterface {
    */
   public function setMultiple(array $items) {
     foreach ($items as $cid => $item) {
-      $this->set($cid, $item['data'], isset($item['expire']) ? $item['expire'] : CacheBackendInterface::CACHE_PERMANENT, isset($item['tags']) ? $item['tags'] : []);
+      $this->set($cid, $item['data'], $item['expire'] ?? CacheBackendInterface::CACHE_PERMANENT, $item['tags'] ?? []);
     }
   }
 
@@ -184,7 +189,7 @@ class PhpBackend implements CacheBackendInterface {
    * {@inheritdoc}
    */
   public function invalidate($cid) {
-    $this->invalidatebyHash($this->normalizeCid($cid));
+    $this->invalidateByHash($this->normalizeCid($cid));
   }
 
   /**
@@ -193,7 +198,7 @@ class PhpBackend implements CacheBackendInterface {
    * @param string $cidhash
    *   The hashed version of the original cache ID after being normalized.
    */
-  protected function invalidatebyHash($cidhash) {
+  protected function invalidateByHash($cidhash) {
     if ($item = $this->getByHash($cidhash)) {
       $item->expire = REQUEST_TIME - 1;
       $this->writeItem($cidhash, $item);
@@ -214,7 +219,7 @@ class PhpBackend implements CacheBackendInterface {
    */
   public function invalidateAll() {
     foreach ($this->storage()->listAll() as $cidhash) {
-      $this->invalidatebyHash($cidhash);
+      $this->invalidateByHash($cidhash);
     }
   }
 

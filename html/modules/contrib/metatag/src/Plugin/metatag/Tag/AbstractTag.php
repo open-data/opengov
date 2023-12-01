@@ -15,9 +15,10 @@ namespace Drupal\metatag\Plugin\metatag\Tag;
  *   type = "label",
  *   secure = FALSE,
  *   multiple = FALSE,
+ *   trimmable = TRUE,
  *   long = TRUE,
  * )
  */
 class AbstractTag extends MetaNameBase {
-
+  // Nothing here yet. Just a placeholder class for a plugin.
 }

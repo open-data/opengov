@@ -11,6 +11,14 @@ use Drupal\Core\Config\Entity\ImportableEntityStorageInterface;
 interface WebformEntityStorageInterface extends ConfigEntityStorageInterface, ImportableEntityStorageInterface {
 
   /**
+   * Get all webform ids.
+   *
+   * @return array
+   *   An array containing all webform ids.
+   */
+  public function getWebformIds();
+
+  /**
    * Gets the names of all categories.
    *
    * @param null|bool $template
@@ -22,6 +30,11 @@ interface WebformEntityStorageInterface extends ConfigEntityStorageInterface, Im
    *   An array of translated categories, sorted alphabetically.
    */
   public function getCategories($template = NULL);
+
+  /**
+   * Resets the internal, categories cache.
+   */
+  public function resetCategoriesCache();
 
   /**
    * Get all webforms grouped by category.
@@ -74,12 +87,16 @@ interface WebformEntityStorageInterface extends ConfigEntityStorageInterface, Im
   public function getMaxSerial(WebformInterface $webform);
 
   /**
-   * Get total results for all webforms.
+   * Get total number of results for specified webform or all webforms.
    *
-   * @return array
-   *   An associative array keyed by webform id contains total results for
-   *   all webforms.
+   * @param string|null $webform_id
+   *   (optional) A webform id.
+   *
+   * @return array|int
+   *   If no webform id is passed, an associative array keyed by webform id
+   *   contains total results for all webforms, otherwise the total number of
+   *   results for specified webform
    */
-  public function getTotalNumberOfResults();
+  public function getTotalNumberOfResults($webform_id = NULL);
 
 }

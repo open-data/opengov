@@ -2,12 +2,8 @@
 
 namespace Drupal\webform\Form\AdminConfig;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormState;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\Plugin\WebformExporterManagerInterface;
-use Drupal\webform\WebformSubmissionExporterInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,34 +40,14 @@ class WebformAdminConfigExportersForm extends WebformAdminConfigBaseForm {
   }
 
   /**
-   * Constructs a WebformAdminConfigExportersForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\File\FileSystemInterface $file_system
-   *   The file system service.
-   * @param \Drupal\webform\Plugin\WebformExporterManagerInterface $exporter_manager
-   *   The webform exporter manager.
-   * @param \Drupal\webform\WebformSubmissionExporterInterface $submission_exporter
-   *   The webform submission exporter.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, FileSystemInterface $file_system, WebformExporterManagerInterface $exporter_manager, WebformSubmissionExporterInterface $submission_exporter) {
-    parent::__construct($config_factory);
-    $this->fileSystem = $file_system;
-    $this->exporterManager = $exporter_manager;
-    $this->submissionExporter = $submission_exporter;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('file_system'),
-      $container->get('plugin.manager.webform.exporter'),
-      $container->get('webform_submission.exporter')
-    );
+    $instance = parent::create($container);
+    $instance->fileSystem = $container->get('file_system');
+    $instance->exporterManager = $container->get('plugin.manager.webform.exporter');
+    $instance->submissionExporter = $container->get('webform_submission.exporter');
+    return $instance;
   }
 
   /**

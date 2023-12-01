@@ -4,7 +4,6 @@ namespace Drupal\taxonomy\Form;
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\DependencyInjection\DeprecatedServicePropertyTrait;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
@@ -22,12 +21,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @internal
  */
 class OverviewTerms extends FormBase {
-  use DeprecatedServicePropertyTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $deprecatedProperties = ['entityManager' => 'entity.manager'];
 
   /**
    * The module handler service.
@@ -89,24 +82,16 @@ class OverviewTerms extends FormBase {
    *   The renderer service.
    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
    *   The entity repository.
-   * @param \Drupal\Core\Pager\PagerManagerInterface|null $pager_manager
+   * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
    *   The pager manager.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer = NULL, EntityRepositoryInterface $entity_repository = NULL, PagerManagerInterface $pager_manager = NULL) {
+  public function __construct(ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer, EntityRepositoryInterface $entity_repository, PagerManagerInterface $pager_manager) {
     $this->moduleHandler = $module_handler;
     $this->entityTypeManager = $entity_type_manager;
     $this->storageController = $entity_type_manager->getStorage('taxonomy_term');
     $this->termListBuilder = $entity_type_manager->getListBuilder('taxonomy_term');
-    $this->renderer = $renderer ?: \Drupal::service('renderer');
-    if (!$entity_repository) {
-      @trigger_error('Calling OverviewTerms::__construct() with the $entity_repository argument is supported in drupal:8.7.0 and will be required before drupal:9.0.0. See https://www.drupal.org/node/2549139.', E_USER_DEPRECATED);
-      $entity_repository = \Drupal::service('entity.repository');
-    }
+    $this->renderer = $renderer;
     $this->entityRepository = $entity_repository;
-    if (!$pager_manager) {
-      @trigger_error('Calling OverviewTerms::__construct() without the $pager_manager argument is deprecated in drupal:8.8.0 and the $pager_manager argument will be required in drupal:9.0.0. See https://www.drupal.org/node/2779457', E_USER_DEPRECATED);
-      $pager_manager = \Drupal::service('pager.manager');
-    }
     $this->pagerManager = $pager_manager;
   }
 
@@ -151,7 +136,7 @@ class OverviewTerms extends FormBase {
     $vocabulary_hierarchy = $this->storageController->getVocabularyHierarchyType($taxonomy_vocabulary->id());
     $parent_fields = FALSE;
 
-    $page = $this->getRequest()->query->get('page') ?: 0;
+    $page = $this->pagerManager->findPage();
     // Number of terms per page.
     $page_increment = $this->config('taxonomy.settings')->get('terms_per_page_admin');
     // Elements shown on this page.
@@ -176,6 +161,7 @@ class OverviewTerms extends FormBase {
     $term_deltas = [];
     $tree = $this->storageController->loadTree($taxonomy_vocabulary->id(), 0, NULL, TRUE);
     $tree_index = 0;
+    $complete_tree = NULL;
     do {
       // In case this tree is completely empty.
       if (empty($tree[$tree_index])) {
@@ -207,7 +193,7 @@ class OverviewTerms extends FormBase {
           }
         }
       }
-      $back_step = isset($back_step) ? $back_step : 0;
+      $back_step = $back_step ?? 0;
 
       // Continue rendering the tree until we reach the a new root item.
       if ($page_entries >= $page_increment + $back_step + 1 && $term->depth == 0 && $root_entries > 1) {
@@ -245,7 +231,7 @@ class OverviewTerms extends FormBase {
     // error. Ensure the form is rebuilt in the same order as the user
     // submitted.
     $user_input = $form_state->getUserInput();
-    if (!empty($user_input)) {
+    if (!empty($user_input['terms'])) {
       // Get the POST order.
       $order = array_flip(array_keys($user_input['terms']));
       // Update our form with the new order.
@@ -271,9 +257,11 @@ class OverviewTerms extends FormBase {
         case VocabularyInterface::HIERARCHY_DISABLED:
           $help_message = $this->t('You can reorganize the terms in %capital_name using their drag-and-drop handles, and group terms under a parent term by sliding them under and to the right of the parent.', $args);
           break;
+
         case VocabularyInterface::HIERARCHY_SINGLE:
           $help_message = $this->t('%capital_name contains terms grouped under parent terms. You can reorganize the terms in %capital_name using their drag-and-drop handles.', $args);
           break;
+
         case VocabularyInterface::HIERARCHY_MULTIPLE:
           $help_message = $this->t('%capital_name contains terms with multiple parents. Drag and drop of terms with multiple parents is not supported, but you can re-enable drag-and-drop support by editing each term to include only a single parent.', $args);
           break;
@@ -284,9 +272,11 @@ class OverviewTerms extends FormBase {
         case VocabularyInterface::HIERARCHY_DISABLED:
           $help_message = $this->t('%capital_name contains the following terms.', $args);
           break;
+
         case VocabularyInterface::HIERARCHY_SINGLE:
           $help_message = $this->t('%capital_name contains terms grouped under parent terms', $args);
           break;
+
         case VocabularyInterface::HIERARCHY_MULTIPLE:
           $help_message = $this->t('%capital_name contains terms with multiple parents.', $args);
           break;
@@ -351,7 +341,7 @@ class OverviewTerms extends FormBase {
         'operations' => [],
         'weight' => $update_tree_access->isAllowed() ? [] : NULL,
       ];
-      /** @var $term \Drupal\Core\Entity\EntityInterface */
+      /** @var \Drupal\Core\Entity\EntityInterface $term */
       $term = $this->entityRepository->getTranslationFromContext($term);
       $form['terms'][$key]['#term'] = $term;
       $indentation = [];
@@ -604,7 +594,7 @@ class OverviewTerms extends FormBase {
    * Redirects to confirmation form for the reset action.
    */
   public function submitReset(array &$form, FormStateInterface $form_state) {
-    /** @var $vocabulary \Drupal\taxonomy\VocabularyInterface */
+    /** @var \Drupal\taxonomy\VocabularyInterface $vocabulary */
     $vocabulary = $form_state->get(['taxonomy', 'vocabulary']);
     $form_state->setRedirectUrl($vocabulary->toUrl('reset-form'));
   }

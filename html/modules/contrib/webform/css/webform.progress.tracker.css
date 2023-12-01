@@ -6,14 +6,6 @@
  */
 
 /**
- * Reduce top/bottom margins around progress tracker.
- */
-.webform-progress-tracker.progress-tracker {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-/**
  * Update progress text to show completed and active.
  */
 .webform-progress-tracker .progress-step .progress-text {
@@ -22,11 +14,8 @@
   color: #777;
 }
 
-.webform-progress-tracker .progress-step::after {
-  background-color: #777;
-}
-
-.webform-progress-tracker .progress-step.is-active .progress-text {
+.webform-progress-tracker .progress-step.is-active .progress-text,
+.webform-progress-tracker .progress-step.is-complete .progress-text {
   color: #333;
 }
 
@@ -34,23 +23,22 @@
   font-weight: bold;
 }
 
-.webform-progress-tracker .progress-step.is-complete .progress-text {
-  color: #333;
-}
-
-.webform-progress-tracker .progress-step .progress-marker,
-.webform-progress-tracker .progress-step:hover .progress-marker {
+/**
+ * Disable hover state because webform wizard progress markers are not clickable.
+ */
+.webform-progress-tracker .progress-step:not(.is-active) .progress-marker::before,
+.webform-progress-tracker .progress-step:hover .progress-marker::before,
+.webform-progress-tracker .progress-step .progress-marker::after {
   background-color: #777;
 }
 
-.webform-progress-tracker .progress-step.is-complete .progress-marker,
-.webform-progress-tracker .progress-step.is-complete:hover .progress-marker,
-.webform-progress-tracker .progress-step.is-complete::after {
+.webform-progress-tracker .progress-step.is-complete .progress-marker::before,
+.webform-progress-tracker .progress-step.is-complete:hover .progress-marker::before,
+.webform-progress-tracker .progress-step.is-complete .progress-marker::after {
   background-color: #333;
 }
 
-.webform-progress-tracker .progress-step.is-active .progress-marker,
-.webform-progress-tracker .progress-step.is-active:hover .progress-marker {
+.webform-progress-tracker .progress-step.is-active:hover .progress-marker::before {
   background-color: #2196f3;
 }
 
@@ -89,42 +77,10 @@
   color: #2196f3;
 }
 
-.webform-progress-tracker .progress-step.is-complete:hover .progress-marker[role="link"] {
+.webform-progress-tracker .progress-step.is-complete:hover .progress-marker[role="link"]:before {
   background-color: #1976f2;
 }
 
-/**
- * RTL support.
- *
- * @see https://github.com/NigelOToole/progress-tracker/issues/5
- */
-
-[dir="rtl"] .progress-step:not(:last-child)::after {
-  display: none;
-}
-
-[dir="rtl"] .progress-step:not(:first-child)::after {
-  position: absolute;
-  z-index: -10;
-  top: 12px;
-  right: -14px;
-  bottom: 12px;
-  display: block;
-  width: 100%;
-  height: 4px;
-  content: "";
-  -webkit-transition: background-color 0.3s;
-  transition: background-color 0.3s;
-}
-
-[dir="rtl"] .progress-tracker--center .progress-step::after {
-  right: -50%;
-}
-
-[dir="rtl"] .webform-progress-tracker .progress-step {
-  z-index: inherit;
-}
-
-[dir="rtl"] .progress-step:not(:first-child)::after {
-  z-index: 0;
+.webform-progress-tracker .progress-marker::after {
+  z-index: auto;
 }

@@ -3,9 +3,9 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\Plugin\WebformElementWizardPageInterface;
 use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
@@ -49,7 +49,7 @@ class WebformWizardPage extends Details implements WebformElementWizardPageInter
     return array_merge(parent::defineTranslatableProperties(), ['prev_button_label', 'next_button_label']);
   }
 
-  /****************************************************************************/
+  /* ************************************************************************ */
 
   /**
    * {@inheritdoc}
@@ -133,24 +133,6 @@ class WebformWizardPage extends Details implements WebformElementWizardPageInter
   }
 
   /**
-   * Get default from webform or global settings.
-   *
-   * @param \Drupal\webform\WebformInterface $webform
-   *   A webform.
-   * @param string $name
-   *   The name of the setting.
-   *
-   * @return string
-   *   The setting's value.
-   *
-   * @deprecated Scheduled for removal in Webform 8.x-6.x
-   *   Use \Drupal\webform\Webform::getSetting instead.
-   */
-  protected function getDefaultSettings(WebformInterface $webform, $name) {
-    return $webform->getSetting($name, TRUE);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getElementSelectorOptions(array $element) {
@@ -171,10 +153,22 @@ class WebformWizardPage extends Details implements WebformElementWizardPageInter
    * {@inheritdoc}
    */
   public function showPage(array &$element) {
-    // When showing a wizard page, page render it as container instead of the
-    // default details element.
+    // When showing a wizard page, page render it as a container, fieldset or
+    // section instead of the default details element.
     // @see \Drupal\webform\Element\WebformWizardPage
-    $element['#type'] = 'container';
+    $webform_id = $element['#webform'];
+    $webform = Webform::load($webform_id);
+    $page_type = $webform->getSetting('wizard_page_type') ?: 'container';
+    $element['#type'] = $page_type;
+
+    // Set section title tag.
+    // @see \Drupal\webform\Plugin\WebformElement\WebformSection
+    if ($page_type === 'webform_section') {
+      $element['#title_tag'] = $webform->getSetting('wizard_page_title_tag');
+    }
+
+    // Unset default details properties.
+    unset($element['#open']);
   }
 
   /**

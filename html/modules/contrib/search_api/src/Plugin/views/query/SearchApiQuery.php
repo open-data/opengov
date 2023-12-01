@@ -3,13 +3,15 @@
 namespace Drupal\search_api\Plugin\views\query;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Url;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\ParseMode\ParseModeInterface;
@@ -47,13 +49,6 @@ class SearchApiQuery extends QueryPluginBase {
    * @var int
    */
   protected $limit;
-
-  /**
-   * Offset of first displayed result.
-   *
-   * @var int
-   */
-  protected $offset;
 
   /**
    * The index this view accesses.
@@ -101,6 +96,16 @@ class SearchApiQuery extends QueryPluginBase {
   protected $where = [];
 
   /**
+   * Not actually used.
+   *
+   * Copied over from \Drupal\views\Plugin\views\query\Sql::$orderby since
+   * ExposedFormPluginBase depends on it.
+   *
+   * @var array
+   */
+  public $orderby = [];
+
+  /**
    * The conjunction with which multiple filter groups are combined.
    *
    * @var string
@@ -120,6 +125,22 @@ class SearchApiQuery extends QueryPluginBase {
    * @var \Drupal\Core\Messenger\MessengerInterface|null
    */
   protected $messenger;
+
+  /**
+   * Constructs a new class instance.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->offset = 0;
+  }
 
   /**
    * {@inheritdoc}
@@ -164,7 +185,7 @@ class SearchApiQuery extends QueryPluginBase {
   /**
    * Retrieves the contained entity from a Views result row.
    *
-   * @param \Drupal\views\ResultRow $row
+   * @param \Drupal\search_api\Plugin\views\ResultRow $row
    *   The Views result row.
    * @param string $relationship_id
    *   The ID of the view relationship to use.
@@ -260,7 +281,7 @@ class SearchApiQuery extends QueryPluginBase {
       if ($display_type === 'rest_export') {
         $display_type = 'rest';
       }
-      $this->query->setSearchId("views_$display_type:" . $view->id() . '__' . $view->current_display);
+      $this->query->setSearchId("views_$display_type:" . $view->id() . '__' . $display->display['id']);
       $this->query->setOption('search_api_view', $view);
     }
     catch (\Exception $e) {
@@ -280,10 +301,13 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @return $this
    *
-   * @deprecated in 8.x-1.11. Use ::addRetrievedFieldValue() instead.
+   * @deprecated in search_api:8.x-1.11 and is removed from search_api:2.0.0.
+   *   Use addRetrievedFieldValue() instead.
+   *
+   * @see https://www.drupal.org/node/3011060
    */
   public function addRetrievedProperty($combined_property_path) {
-    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::addRetrievedProperty() is deprecated in Search API 8.x-1.11. Use addRetrievedFieldValue() instead. See https://www.drupal.org/node/3009136', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::addRetrievedProperty() is deprecated in search_api:8.x-1.11 and is removed from search_api:2.0.0. Use addRetrievedFieldValue() instead. See https://www.drupal.org/node/3011060', E_USER_DEPRECATED);
     $this->addField(NULL, $combined_property_path);
     return $this;
   }
@@ -329,14 +353,7 @@ class SearchApiQuery extends QueryPluginBase {
    */
   public function addField($table, $field, $alias = '', array $params = []) {
     // Ignore calls for built-in fields which don't need to be retrieved.
-    $built_in = [
-      'search_api_id' => TRUE,
-      'search_api_datasource' => TRUE,
-      'search_api_language' => TRUE,
-      'search_api_relevance' => TRUE,
-      'search_api_excerpt' => TRUE,
-    ];
-    if (isset($built_in[$field])) {
+    if (isset(ResultRow::LAZY_LOAD_PROPERTIES[$field])) {
       return $field;
     }
 
@@ -362,6 +379,9 @@ class SearchApiQuery extends QueryPluginBase {
       ],
       'preserve_facet_query_args' => [
         'default' => FALSE,
+      ],
+      'query_tags' => [
+        'default' => [],
       ],
     ];
   }
@@ -402,6 +422,29 @@ class SearchApiQuery extends QueryPluginBase {
         '#value' => FALSE,
       ];
     }
+
+    $form['query_tags'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Query Tags'),
+      '#description' => $this->t('If set, these tags will be appended to the query and can be used to identify the query in a module. This can be helpful for altering queries.'),
+      '#default_value' => implode(', ', $this->options['query_tags']),
+      '#element_validate' => ['views_element_validate_tags'],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitOptionsForm(&$form, FormStateInterface $form_state) {
+    $value = &$form_state->getValue(['query', 'options', 'query_tags']);
+    if (is_array($value)) {
+      // We already ran on this form state. This happens when the user toggles a
+      // display to override defaults or vice-versa – the submit handler gets
+      // invoked twice, and we don't want to bash the values  from the original
+      // call.
+      return;
+    }
+    $value = array_filter(array_map('trim', explode(',', $value)));
   }
 
   /**
@@ -415,11 +458,13 @@ class SearchApiQuery extends QueryPluginBase {
    *   containing entities to their entity types. Otherwise, TRUE if there is at
    *   least one such datasource.
    *
-   * @deprecated Will be removed in a future version of the module. Use
+   * @deprecated in search_api:8.x-1.5 and is removed from search_api:2.0.0. Use
    *   \Drupal\search_api\IndexInterface::getEntityTypes() instead.
+   *
+   * @see https://www.drupal.org/node/2899682
    */
   public function getEntityTypes($return_bool = FALSE) {
-    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::getEntityTypes() is deprecated in Search API 8.x-1.5. Use \Drupal\search_api\IndexInterface::getEntityTypes() instead. See https://www.drupal.org/node/2899678', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::getEntityTypes() is deprecated in search_api:8.x-1.5 and is removed from search_api:2.0.0. Use \Drupal\search_api\IndexInterface::getEntityTypes() instead. See https://www.drupal.org/node/2899682', E_USER_DEPRECATED);
     $types = $this->index->getEntityTypes();
     return $return_bool ? (bool) $types : $types;
   }
@@ -471,8 +516,7 @@ class SearchApiQuery extends QueryPluginBase {
       // add a new OR filter to the query to which the filters for the groups
       // will be added.
       if ($this->groupOperator === 'OR') {
-        $base = $this->query->createConditionGroup('OR');
-        $this->query->addConditionGroup($base);
+        $base = $this->query->createAndAddConditionGroup('OR');
       }
       else {
         $base = $this->query;
@@ -481,12 +525,19 @@ class SearchApiQuery extends QueryPluginBase {
       foreach ($this->where as $group_id => $group) {
         if (!empty($group['conditions']) || !empty($group['condition_groups'])) {
           $group += ['type' => 'AND'];
-          // For filters without a group, we want to always add them directly to
-          // the query.
-          $conditions = ($group_id === '') ? $this->query : $this->query->createConditionGroup($group['type']);
+          // Filters in the default group 0 (used by arguments) should not take
+          // $this->groupOperator into account, but use a separate conditions
+          // group just for them, placed directly on the query.
+          $conditions = $this->query->createConditionGroup($group['type']);
+          if ($group_id == 0) {
+            $this->query->addConditionGroup($conditions);
+          }
+          else {
+            $base->addConditionGroup($conditions);
+          }
           if (!empty($group['conditions'])) {
             foreach ($group['conditions'] as $condition) {
-              list($field, $value, $operator) = $condition;
+              [$field, $value, $operator] = $condition;
               $conditions->addCondition($field, $value, $operator);
             }
           }
@@ -494,10 +545,6 @@ class SearchApiQuery extends QueryPluginBase {
             foreach ($group['condition_groups'] as $nested_conditions) {
               $conditions->addConditionGroup($nested_conditions);
             }
-          }
-          // If no group was given, the filters were already set on the query.
-          if ($group_id !== '') {
-            $base->addConditionGroup($conditions);
           }
         }
       }
@@ -508,10 +555,11 @@ class SearchApiQuery extends QueryPluginBase {
       $this->query->setOption('search_api_bypass_access', TRUE);
     }
 
-    // If the View and the Panel conspire to provide an overridden path then
-    // pass that through as the base path.
-    if (($path = $this->view->getPath()) && strpos(Url::fromRoute('<current>')->toString(), $path) !== 0) {
-      $this->query->setOption('search_api_base_path', $path);
+    // Add the query tags.
+    if (!empty($this->options['query_tags'])) {
+      foreach ($this->options['query_tags'] as $tag) {
+        $this->query->addTag($tag);
+      }
     }
 
     // Save query information for Views UI.
@@ -665,6 +713,9 @@ class SearchApiQuery extends QueryPluginBase {
         if ($object) {
           $values['_object'] = $object;
           $values['_relationship_objects'][NULL] = [$object];
+          if ($object instanceof EntityAdapter) {
+            $values['_entity'] = $object->getEntity();
+          }
         }
       }
       catch (SearchApiException $e) {
@@ -674,31 +725,79 @@ class SearchApiQuery extends QueryPluginBase {
 
       // Gather any properties from the search results.
       foreach ($result->getFields(FALSE) as $field_id => $field) {
-        if ($field->getValues()) {
-          $path = $field->getCombinedPropertyPath();
-          try {
-            $property = $field->getDataDefinition();
-            // For configurable processor-defined properties, our Views field
-            // handlers use a special property path to distinguish multiple
-            // fields with the same property path. Therefore, we here also set
-            // the values using that special property path so this will work
-            // correctly.
-            if ($property instanceof ConfigurablePropertyInterface) {
-              $path .= '|' . $field_id;
-            }
-          }
-          catch (SearchApiException $e) {
-            // If we're not able to retrieve the data definition at this point,
-            // it doesn't really matter.
-          }
-          $values[$path] = $field->getValues();
+        // Ignore calls for built-in fields which don't need to be retrieved.
+        if (isset(ResultRow::LAZY_LOAD_PROPERTIES[$field_id])) {
+          continue;
         }
+        $path = $field->getCombinedPropertyPath();
+        try {
+          $property = $field->getDataDefinition();
+          // For configurable processor-defined properties, our Views field
+          // handlers use a special property path to distinguish multiple
+          // fields with the same property path. Therefore, we here also set
+          // the values using that special property path so this will work
+          // correctly.
+          if ($property instanceof ConfigurablePropertyInterface) {
+            $path .= '|' . $field_id;
+          }
+        }
+        catch (SearchApiException $e) {
+          // If we're not able to retrieve the data definition at this point,
+          // it doesn't really matter.
+        }
+        $values[$path] = $field->getValues();
       }
 
       $values['index'] = $count++;
 
       $view->result[] = new ResultRow($values);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    $query = $this->getSearchApiQuery();
+    if ($query instanceof CacheableDependencyInterface) {
+      return $query->getCacheContexts();
+    }
+
+    // We are not returning the cache contexts from the parent class since these
+    // are based on the default SQL storage from Views, while our results are
+    // coming from the search engine.
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    $tags = parent::getCacheTags();
+
+    $query = $this->getSearchApiQuery();
+    if ($query instanceof CacheableDependencyInterface) {
+      // Add the list cache tag of the search index, so that the view will be
+      // invalidated if any items on the index are indexed or deleted.
+      $tags[] = 'search_api_list:' . $this->getIndex()->id();
+      $tags = Cache::mergeTags($query->getCacheTags(), $tags);
+    }
+
+    return $tags;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    $max_age = parent::getCacheMaxAge();
+
+    $query = $this->getSearchApiQuery();
+    if ($query instanceof CacheableDependencyInterface) {
+      $max_age = Cache::mergeMaxAges($query->getCacheMaxAge(), $max_age);
+    }
+
+    return $max_age;
   }
 
   /**
@@ -879,6 +978,24 @@ class SearchApiQuery extends QueryPluginBase {
   }
 
   /**
+   * Creates a new condition group and adds it to this query object.
+   *
+   * @param string $conjunction
+   *   The conjunction to use for the condition group – either 'AND' or 'OR'.
+   * @param string[] $tags
+   *   (optional) Tags to set on the condition group.
+   *
+   * @return \Drupal\search_api\Query\ConditionGroupInterface
+   *   The newly added condition group object.
+   */
+  public function createAndAddConditionGroup(string $conjunction = 'AND', array $tags = []): ConditionGroupInterface {
+    if (!$this->shouldAbort()) {
+      return $this->query->createAndAddConditionGroup($conjunction, $tags);
+    }
+    return new ConditionGroup($conjunction, $tags);
+  }
+
+  /**
    * Sets the keys to search for.
    *
    * If this method is not called on the query before execution, this will be a
@@ -927,14 +1044,17 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @param \Drupal\search_api\Query\ConditionGroupInterface $condition_group
    *   A condition group that should be added.
-   * @param string|null $group
+   * @param int $group
    *   (optional) The Views query filter group to add this filter to.
    *
    * @return $this
    *
    * @see \Drupal\search_api\Query\QueryInterface::addConditionGroup()
    */
-  public function addConditionGroup(ConditionGroupInterface $condition_group, $group = NULL) {
+  public function addConditionGroup(ConditionGroupInterface $condition_group, $group = 0) {
+    if (!is_int($group) && !(is_string($group) && ctype_digit($group))) {
+      trigger_error('Passing a non-integer as the second parameter of \Drupal\search_api\Plugin\views\query\SearchApiQuery::addConditionGroup() is deprecated in search_api:8.x-1.24 and is removed from search_api:2.0.0. If passing NULL or an empty string, pass 0 instead (or omit the parameter entirely). See https://www.drupal.org/node/3029582', E_USER_DEPRECATED);
+    }
     if (!$this->shouldAbort()) {
       // Ensure all variants of 0 are actually 0. Thus '', 0 and NULL are all
       // the default group.
@@ -976,14 +1096,17 @@ class SearchApiQuery extends QueryPluginBase {
    *   respectively.
    *   If $value is NULL, $operator also can only be "=" or "<>", meaning the
    *   field must have no or some value, respectively.
-   * @param string|null $group
+   * @param int $group
    *   (optional) The Views query filter group to add this filter to.
    *
    * @return $this
    *
    * @see \Drupal\search_api\Query\QueryInterface::addCondition()
    */
-  public function addCondition($field, $value, $operator = '=', $group = NULL) {
+  public function addCondition($field, $value, $operator = '=', $group = 0) {
+    if (!is_int($group) && !(is_string($group) && ctype_digit($group))) {
+      trigger_error('Passing a non-integer as the fourth parameter of \Drupal\search_api\Plugin\views\query\SearchApiQuery::addCondition() is deprecated in search_api:8.x-1.24 and is removed from search_api:2.0.0. If passing NULL or an empty string, pass 0 instead (or omit the parameter entirely). See https://www.drupal.org/node/3029582', E_USER_DEPRECATED);
+    }
     if (!$this->shouldAbort()) {
       // Ensure all variants of 0 are actually 0. Thus '', 0 and NULL are all
       // the default group.
@@ -1031,8 +1154,8 @@ class SearchApiQuery extends QueryPluginBase {
    * @return $this
    *
    * @see \Drupal\views\Plugin\views\query\Sql::addWhere()
-   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::filter()
-   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::condition()
+   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::addConditionGroup()
+   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::addCondition()
    */
   public function addWhere($group, $field, $value = NULL, $operator = NULL) {
     if ($this->shouldAbort()) {
@@ -1053,7 +1176,7 @@ class SearchApiQuery extends QueryPluginBase {
         $this->where[$group]['condition_groups'][] = $field;
       }
       elseif (!$this->shouldAbort()) {
-        // We only need to abort  if that wasn't done by transformDbCondition()
+        // We only need to abort if that wasn't done by transformDbCondition()
         // already.
         $this->abort('Unexpected condition passed to addWhere().');
       }
@@ -1090,7 +1213,7 @@ class SearchApiQuery extends QueryPluginBase {
    *   The group type – "AND" or "OR".
    */
   public function getGroupType($group) {
-    return !empty($this->where[$group]) ? $this->where[$group] : 'AND';
+    return $this->where[$group]['type'] ?? 'AND';
   }
 
   /**

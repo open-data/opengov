@@ -3,16 +3,10 @@
 namespace Drupal\webform;
 
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Component\Uuid\UuidInterface;
-use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Element\WebformCompositeBase;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -49,44 +43,13 @@ class WebformOptionsStorage extends ConfigEntityStorage implements WebformOption
   protected $usedByWebforms;
 
   /**
-   * Constructs a WebformOptionsStorage object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory service.
-   * @param \Drupal\Component\Uuid\UuidInterface $uuid_service
-   *   The UUID service.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
-   *   The language manager.
-   * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
-   *   The element info manager.
-   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
-   *   The webform element manager.
-   * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
-   *   The memory cache.
-   *
-   * @todo Webform 8.x-6.x: Move $memory_cache right after $language_manager.
-   */
-  public function __construct(EntityTypeInterface $entity_type, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, ElementInfoManagerInterface $element_info, WebformElementManagerInterface $element_manager, MemoryCacheInterface $memory_cache = NULL) {
-    parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager, $memory_cache);
-    $this->elementInfo = $element_info;
-    $this->elementManager = $element_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    return new static(
-      $entity_type,
-      $container->get('config.factory'),
-      $container->get('uuid'),
-      $container->get('language_manager'),
-      $container->get('plugin.manager.element_info'),
-      $container->get('plugin.manager.webform.element'),
-      $container->get('entity.memory_cache')
-    );
+    $instance = parent::createInstance($container, $entity_type);
+    $instance->elementInfo = $container->get('plugin.manager.element_info');
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
+    return $instance;
   }
 
   /**
@@ -133,7 +96,7 @@ class WebformOptionsStorage extends ConfigEntityStorage implements WebformOption
 
     $likert_options = [];
     foreach ($webform_options as $id => $webform_option) {
-      $likert_options[$id] = str_replace(t('Likert') . ': ', '', $webform_option->label());
+      $likert_options[$id] = str_replace($this->t('Likert') . ': ', '', $webform_option->label());
     }
     return $likert_options;
   }
@@ -207,7 +170,7 @@ class WebformOptionsStorage extends ConfigEntityStorage implements WebformOption
     }
 
     $options_id = $webform_options->id();
-    return (isset($this->usedByWebforms[$options_id])) ? $this->usedByWebforms[$options_id] : [];
+    return $this->usedByWebforms[$options_id] ?? [];
   }
 
 }

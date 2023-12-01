@@ -26,6 +26,7 @@ class UmamiMultilingualInstallTest extends InstallerTestBase {
    */
   public function testUmami() {
     $this->drupalGet('');
+    // cSpell:disable-next-line
     $this->assertSession()->pageTextContains('Quiche mediterráneo profundo');
   }
 
@@ -46,6 +47,7 @@ class UmamiMultilingualInstallTest extends InstallerTestBase {
    *
    * @param string $langcode
    *   The language code.
+   *
    * @return string
    *   Contents for the test .po file.
    */

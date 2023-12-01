@@ -11,7 +11,7 @@ use Drupal\user\Entity\User;
  */
 class TypedDataEntityRelationshipPluginTest extends RelationshipsTestBase {
 
-    /**
+  /**
    * @covers ::getName
    */
   public function testRelationshipName() {
@@ -40,6 +40,13 @@ class TypedDataEntityRelationshipPluginTest extends RelationshipsTestBase {
     $uid_plugin->setContextValue('base', $this->entities['node3']);
     $relationship = $uid_plugin->getRelationship();
     $this->assertTrue($relationship->getContextValue() instanceof User);
+    $this->assertSame('entity:user', $relationship->getContextDefinition()->getDataType());
+
+    /** @var \Drupal\ctools\Plugin\RelationshipInterface $uid_plugin */
+    $uid_plugin = $this->relationshipManager->createInstance('typed_data_entity_relationship:entity:node:uid');
+    $uid_plugin->setContextValue('base', $this->entities['node4']);
+    $relationship = $uid_plugin->getRelationship();
+    $this->assertFalse($relationship->hasContextValue());
     $this->assertSame('entity:user', $relationship->getContextDefinition()->getDataType());
   }
 

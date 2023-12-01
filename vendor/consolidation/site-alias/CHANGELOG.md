@@ -1,5 +1,33 @@
 # Changelog
 
+### 3.1.7 2022-10-14
+
+* Resume use of webmozat/path-utils for compatibility with Symfony 4.x. (#59)
+
+### 3.1.6 2022-10-11
+
+* Remove allow-plugins config; it is unused except in CI scripts
+* Allow older versions of symfony/filesystem for ancient PHP binaries
+* Explicitly allow ocramius/package-versions script
+* Run composer update to fix composer.lock sync issues, eliminate Guzzle CVEs
+* Replace Webmozart/PathUtil with Symfony/Filesystem
+
+### 3.1.5 2022-2-23
+
+* BUGFIX: Prevent runtime error with null on PHP 8.1 (#53)
+
+### 3.1.4 2022-2-21
+
+* Symfony 6 support
+
+### 3.1.3 / 3.1.2 2022-1-3
+
+* PHP 8.1 support
+
+### 3.1.1 2021-09-20
+
+* Favor requested data over @self alias (#42)
+
 ### 3.1.0 2021-02-20
 
 * PHP 8 support

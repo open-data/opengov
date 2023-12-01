@@ -17,6 +17,7 @@ class QueryTypePluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/facets/query_type', $namespaces, $module_handler, QueryTypeInterface::class, FacetsQueryType::class);
+    $this->setCacheBackend($cache_backend, 'facet_query_type_plugins');
   }
 
 }

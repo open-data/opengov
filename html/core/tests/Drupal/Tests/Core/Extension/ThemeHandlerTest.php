@@ -43,7 +43,7 @@ class ThemeHandlerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->configFactory = $this->getConfigFactoryStub([
@@ -64,7 +64,7 @@ class ThemeHandlerTest extends UnitTestCase {
     $container->expects($this->any())
       ->method('get')
       ->with('class_loader')
-      ->will($this->returnValue($this->createMock(ClassLoader::class)));
+      ->willReturn($this->createMock(ClassLoader::class));
     \Drupal::setContainer($container);
   }
 
@@ -74,24 +74,24 @@ class ThemeHandlerTest extends UnitTestCase {
    * @see \Drupal\Core\Extension\ThemeHandler::rebuildThemeData()
    */
   public function testRebuildThemeData() {
-    $this->themeList->expects($this->at(0))
+    $this->themeList->expects($this->once())
       ->method('reset')
       ->willReturnSelf();
-    $this->themeList->expects($this->at(1))
+    $this->themeList->expects($this->once())
       ->method('getList')
-      ->will($this->returnValue([
-        'seven' => new Extension($this->root, 'theme', 'core/themes/seven/seven.info.yml', 'seven.theme'),
-      ]));
+      ->willReturn([
+        'stark' => new Extension($this->root, 'theme', 'core/themes/stark/stark.info.yml', 'stark.theme'),
+      ]);
 
     $theme_data = $this->themeHandler->rebuildThemeData();
     $this->assertCount(1, $theme_data);
-    $info = $theme_data['seven'];
+    $info = $theme_data['stark'];
 
     // Ensure some basic properties.
     $this->assertInstanceOf('Drupal\Core\Extension\Extension', $info);
-    $this->assertEquals('seven', $info->getName());
-    $this->assertEquals('core/themes/seven/seven.info.yml', $info->getPathname());
-    $this->assertEquals('core/themes/seven/seven.theme', $info->getExtensionPathname());
+    $this->assertEquals('stark', $info->getName());
+    $this->assertEquals('core/themes/stark/stark.info.yml', $info->getPathname());
+    $this->assertEquals('core/themes/stark/stark.theme', $info->getExtensionPathname());
 
   }
 
@@ -144,8 +144,4 @@ class StubThemeHandler extends ThemeHandler {
     $this->registryRebuild = TRUE;
   }
 
-}
-
-if (!defined('DRUPAL_MINIMUM_PHP')) {
-  define('DRUPAL_MINIMUM_PHP', '5.5.9');
 }

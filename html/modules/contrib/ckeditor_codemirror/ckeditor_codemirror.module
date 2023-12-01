@@ -41,6 +41,9 @@ function _ckeditor_codemirror_get_library_path() {
   $library_names = [
     // README.txt say to use 'ckeditor_codemirror'.
     'ckeditor_codemirror',
+    // Path used by Asset Packagist.
+    // @see https://asset-packagist.org/package/npm-asset/ckeditor-codemirror-plugin
+    'ckeditor-codemirror-plugin',
     // Old README.txt used 'ckeditor-codemirror'.
     'ckeditor-codemirror',
     // The Webform module is using 'ckeditor.codemirror'.

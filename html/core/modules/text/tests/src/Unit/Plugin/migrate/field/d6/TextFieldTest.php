@@ -8,6 +8,8 @@ use Drupal\Tests\UnitTestCase;
 use Drupal\text\Plugin\migrate\field\d6\TextField;
 use Prophecy\Argument;
 
+// cspell:ignore optionwidgets
+
 /**
  * @coversDefaultClass \Drupal\text\Plugin\migrate\field\d6\TextField
  * @group text
@@ -27,7 +29,7 @@ class TextFieldTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     $this->plugin = new TextField([], 'text', []);
 
     $migration = $this->prophesize(MigrationInterface::class);
@@ -124,25 +126,25 @@ class TextFieldTest extends UnitTestCase {
     return [
       ['string_long', 'text_textfield', ['text_processing' => FALSE]],
       ['string', 'text_textfield', [
-          'text_processing' => FALSE,
-          'max_length' => 128,
-        ],
+        'text_processing' => FALSE,
+        'max_length' => 128,
+      ],
       ],
       ['string_long', 'text_textfield', [
-          'text_processing' => FALSE,
-          'max_length' => 4096,
-        ],
+        'text_processing' => FALSE,
+        'max_length' => 4096,
+      ],
       ],
       ['text_long', 'text_textfield', ['text_processing' => TRUE]],
       ['text', 'text_textfield', [
-          'text_processing' => TRUE,
-          'max_length' => 128,
-        ],
+        'text_processing' => TRUE,
+        'max_length' => 128,
+      ],
       ],
       ['text_long', 'text_textfield', [
-          'text_processing' => TRUE,
-          'max_length' => 4096,
-        ],
+        'text_processing' => TRUE,
+        'max_length' => 4096,
+      ],
       ],
       ['list_string', 'optionwidgets_buttons'],
       ['list_string', 'optionwidgets_select'],

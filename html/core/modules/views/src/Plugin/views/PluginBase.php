@@ -39,6 +39,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup views_plugins
  */
+#[\AllowDynamicProperties]
 abstract class PluginBase extends ComponentPluginBase implements ContainerFactoryPluginInterface, ViewsPluginInterface, DependentPluginInterface, TrustedCallbackInterface {
 
   /**
@@ -88,7 +89,7 @@ abstract class PluginBase extends ComponentPluginBase implements ContainerFactor
   public $displayHandler;
 
   /**
-   * Plugins's definition
+   * Plugins's definition.
    *
    * @var array
    */
@@ -136,6 +137,7 @@ abstract class PluginBase extends ComponentPluginBase implements ContainerFactor
    */
   public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
     $this->view = $view;
+    $this->options = $this->options ?? [];
     $this->setOptionDefaults($this->options, $this->defineOptions());
     $this->displayHandler = $display;
 
@@ -245,7 +247,7 @@ abstract class PluginBase extends ComponentPluginBase implements ContainerFactor
           continue;
         }
 
-        $this->unpackOptions($storage[$key], $value, isset($definition[$key]['contains']) ? $definition[$key]['contains'] : [], $all, FALSE);
+        $this->unpackOptions($storage[$key], $value, $definition[$key]['contains'] ?? [], $all, FALSE);
       }
       elseif ($all || !empty($definition[$key])) {
         $storage[$key] = $value;
@@ -268,7 +270,7 @@ abstract class PluginBase extends ComponentPluginBase implements ContainerFactor
     // be moved into one because of the $form_state->getValues() hierarchy. Those
     // elements can add a #fieldset => 'fieldset_name' property, and they'll
     // be moved to their fieldset during pre_render.
-    $form['#pre_render'][] = [get_class($this), 'preRenderAddFieldsetMarkup'];
+    $form['#pre_render'][] = [static::class, 'preRenderAddFieldsetMarkup'];
   }
 
   /**
@@ -603,7 +605,7 @@ abstract class PluginBase extends ComponentPluginBase implements ContainerFactor
           // If this (non-configurable) type is among the current values,
           // add that option too, so it is not lost. If not among the current
           // values, skip displaying it to avoid user confusion.
-          if (isset($type['name']) && !isset($list[$id]) && in_array($id, $current_values)) {
+          if (isset($type['name']) && !isset($list[$id]) && in_array($id, $current_values, TRUE)) {
             $list[$id] = $this->t('@type language selected for page', ['@type' => $type['name']]);
           }
         }

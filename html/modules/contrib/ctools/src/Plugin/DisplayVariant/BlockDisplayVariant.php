@@ -62,6 +62,13 @@ abstract class BlockDisplayVariant extends VariantBase implements ContextAwareVa
   protected $contexts = [];
 
   /**
+   * The condition manager.
+   *
+   * @var \Drupal\Core\Condition\ConditionManager
+   */
+  protected $conditionManager;
+
+  /**
    * Constructs a new BlockDisplayVariant.
    *
    * @param array $configuration
@@ -118,7 +125,7 @@ abstract class BlockDisplayVariant extends VariantBase implements ContextAwareVa
    */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
-      'blocks' => []
+      'blocks' => [],
     ];
   }
 
@@ -145,7 +152,7 @@ abstract class BlockDisplayVariant extends VariantBase implements ContextAwareVa
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
-    // preserve the uuid.
+    // Preserve the uuid.
     if ($this->configuration && !empty($this->configuration['uuid'])) {
       $configuration['uuid'] = $this->configuration['uuid'];
     }

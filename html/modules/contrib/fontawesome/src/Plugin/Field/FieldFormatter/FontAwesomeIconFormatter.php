@@ -27,7 +27,7 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
   /**
    * Drupal configuration service container.
    *
-   * @var Drupal\Core\Config\ConfigFactory
+   * @var \Drupal\Core\Config\ConfigFactory
    */
   protected $configFactory;
 
@@ -69,7 +69,11 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
       '#title' => $this->t('Display multi-value fields as layers?'),
       '#default_value' => $this->getSetting('layers'),
       '#description' => $this->t('Layers are the new way to place icons and text visually on top of each other, replacing the Font Awesome classic icons stacks. With this new approach you can use more than 2 icons. Layers are awesome when you don’t want your page’s background to show through, or when you do want to use multiple colors, layer several icons, layer text, or layer counters onto an icon. Note that layers only work with the SVG version of Font Awesome. For more information, see @layersLink.', [
-        '@layersLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to layers'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/layering'))->toString(),
+        '@layersLink' => Link::fromTextAndUrl($this->t('the Font Awesome guide to layers'), Url::fromUri('https://fontawesome.com/how-to-use/on-the-web/styling/layering', [
+          'attributes' => [
+            'target' => '_blank',
+          ],
+        ]))->toString(),
       ]),
       // Disable power transforms for webfonts.
       '#disabled' => $configuration_settings->get('method') == 'webfonts',
@@ -118,32 +122,11 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
     // Load the configuration settings.
     $configurationSettings = $this->configFactory->get('fontawesome.settings');
 
-    // Attach the libraries as needed.
-    $fontawesomeLibraries = [];
-    if ($configurationSettings->get('method') == 'webfonts') {
-      // Webfonts method.
-      $fontawesomeLibraries[] = 'fontawesome/fontawesome.webfonts';
-
-      // Attach the shim file if needed.
-      if ($configurationSettings->get('use_shim')) {
-        $fontawesomeLibraries[] = 'fontawesome/fontawesome.webfonts.shim';
-      }
-    }
-    else {
-      // SVG method.
-      $fontawesomeLibraries[] = 'fontawesome/fontawesome.svg';
-
-      // Attach the shim file if needed.
-      if ($configurationSettings->get('use_shim')) {
-        $fontawesomeLibraries[] = 'fontawesome/fontawesome.svg.shim';
-      }
-    }
-
     // Loop over each icon and build data.
     $icons = [];
     foreach ($items as $item) {
       // Get the icon settings.
-      $iconSettings = unserialize($item->get('settings')->getValue());
+      $iconSettings = unserialize($item->get('settings')->getValue(), ['allowed_classes' => FALSE]);
       $cssStyles = [];
 
       // Format mask.
@@ -155,13 +138,15 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
 
       // Format power transforms.
       $iconTransforms = [];
-      $powerTransforms = $iconSettings['power_transforms'];
-      foreach ($powerTransforms as $transform) {
-        if (!empty($transform['type'])) {
-          $iconTransforms[] = $transform['type'] . '-' . $transform['value'];
+      if (isset($iconSettings['power_transforms'])) {
+        $powerTransforms = $iconSettings['power_transforms'];
+        foreach ($powerTransforms as $transform) {
+          if (!empty($transform['type'])) {
+            $iconTransforms[] = $transform['type'] . '-' . $transform['value'];
+          }
         }
+        unset($iconSettings['power_transforms']);
       }
-      unset($iconSettings['power_transforms']);
 
       // Move duotone settings into the render.
       if (isset($iconSettings['duotone'])) {
@@ -176,24 +161,27 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
         if (!empty($iconSettings['duotone']['opacity']['secondary'])) {
           $cssStyles[] = '--fa-secondary-opacity: ' . $iconSettings['duotone']['opacity']['secondary'] . ';';
         }
-        if (!empty($iconSettings['duotone']['color']['primary'])) {
-          $cssStyles[] = '--fa-primary-color: ' . $iconSettings['duotone']['color']['primary'] . ';';
-        }
-        if (!empty($iconSettings['duotone']['color']['secondary'])) {
-          $cssStyles[] = '--fa-secondary-color: ' . $iconSettings['duotone']['color']['secondary'] . ';';
+        // Check if we are inheriting color or not.
+        if (empty($iconSettings['duotone']['inherit-color']) || $iconSettings['duotone']['inherit-color'] != 1) {
+          if (!empty($iconSettings['duotone']['color']['primary'])) {
+            $cssStyles[] = '--fa-primary-color: ' . $iconSettings['duotone']['color']['primary'] . ';';
+          }
+          if (!empty($iconSettings['duotone']['color']['secondary'])) {
+            $cssStyles[] = '--fa-secondary-color: ' . $iconSettings['duotone']['color']['secondary'] . ';';
+          }
         }
 
         unset($iconSettings['duotone']);
       }
 
-      // Add additional CSS styles if needed.
-      if (isset($iconSettings['additional_classes'])) {
-        $cssStyles[] = $iconSettings['additional_classes'];
-      }
+      // Get the iconset.
+      $iconset = $iconSettings['iconset'] ?? '';
+      unset($iconSettings['iconset']);
 
       $icons[] = [
         '#theme' => 'fontawesomeicon',
         '#tag' => $configurationSettings->get('tag'),
+        '#iconset' => $iconset,
         '#name' => 'fa-' . $item->get('icon_name')->getValue(),
         '#style' => $item->get('style')->getValue(),
         '#settings' => implode(' ', array_filter($iconSettings)),
@@ -211,9 +199,6 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
         '#theme' => 'fontawesomeicons',
         '#icons' => $icons,
         '#layers' => $settings['layers'],
-      ],
-      '#attached' => [
-        'library' => $fontawesomeLibraries,
       ],
     ];
   }

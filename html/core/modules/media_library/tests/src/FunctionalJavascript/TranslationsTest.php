@@ -37,12 +37,12 @@ class TranslationsTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create some languages.
@@ -81,12 +81,14 @@ class TranslationsTest extends WebDriverTestBase {
     $image->save();
 
     // Create a translated and untranslated media item in each language.
+    // cSpell:disable
     $media_items = [
       ['nl' => 'Eekhoorn', 'es' => 'Ardilla'],
       ['es' => 'Zorro', 'nl' => 'Vos'],
       ['nl' => 'Hert'],
       ['es' => 'Tejón'],
     ];
+    // cSpell:enable
     foreach ($media_items as $translations) {
       $default_langcode = key($translations);
       $default_name = array_shift($translations);
@@ -125,22 +127,24 @@ class TranslationsTest extends WebDriverTestBase {
     // regardless of the interface language.
     $this->drupalGet('nl/admin/content/media-grid');
     $assert_session->elementsCount('css', '.js-media-library-item', 6);
-    $media_items = $page->findAll('css', '.media-library-item__name');
+    $media_items = $page->findAll('css', '.js-media-library-item-preview + div');
     $media_names = [];
     foreach ($media_items as $media_item) {
       $media_names[] = $media_item->getText();
     }
     sort($media_names);
+    // cSpell:disable-next-line
     $this->assertSame(['Ardilla', 'Eekhoorn', 'Hert', 'Tejón', 'Vos', 'Zorro'], $media_names);
 
     $this->drupalGet('es/admin/content/media-grid');
     $assert_session->elementsCount('css', '.js-media-library-item', 6);
-    $media_items = $page->findAll('css', '.media-library-item__name');
+    $media_items = $page->findAll('css', '.js-media-library-item-preview + div');
     $media_names = [];
     foreach ($media_items as $media_item) {
       $media_names[] = $media_item->getText();
     }
     sort($media_names);
+    // cSpell:disable-next-line
     $this->assertSame(['Ardilla', 'Eekhoorn', 'Hert', 'Tejón', 'Vos', 'Zorro'], $media_names);
 
     // All media should only be shown once, and should be shown in the interface
@@ -149,24 +153,26 @@ class TranslationsTest extends WebDriverTestBase {
     $assert_session->elementExists('css', '.js-media-library-open-button[name^="field_media"]')->click();
     $assert_session->waitForText('Add or select media');
     $assert_session->elementsCount('css', '.js-media-library-item', 4);
-    $media_items = $page->findAll('css', '.media-library-item__name');
+    $media_items = $page->findAll('css', '.js-media-library-item-preview + div');
     $media_names = [];
     foreach ($media_items as $media_item) {
       $media_names[] = $media_item->getText();
     }
     sort($media_names);
+    // cSpell:disable-next-line
     $this->assertSame(['Eekhoorn', 'Hert', 'Tejón', 'Vos'], $media_names);
 
     $this->drupalGet('es/node/add/article');
     $assert_session->elementExists('css', '.js-media-library-open-button[name^="field_media"]')->click();
     $assert_session->waitForText('Add or select media');
     $assert_session->elementsCount('css', '.js-media-library-item', 4);
-    $media_items = $page->findAll('css', '.media-library-item__name');
+    $media_items = $page->findAll('css', '.js-media-library-item-preview + div');
     $media_names = [];
     foreach ($media_items as $media_item) {
       $media_names[] = $media_item->getText();
     }
     sort($media_names);
+    // cSpell:disable-next-line
     $this->assertSame(['Ardilla', 'Hert', 'Tejón', 'Zorro'], $media_names);
   }
 

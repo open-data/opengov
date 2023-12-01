@@ -29,6 +29,8 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
    * Test file limit.
    */
   public function testLimits() {
+    $assert_session = $this->assertSession();
+
     $this->drupalLogin($this->rootUser);
 
     // Get a 1 MB text file.
@@ -41,12 +43,12 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
 
     // Check form file limit.
     $this->drupalGet('/webform/test_element_managed_file_limit');
-    $this->assertRaw('1 MB limit per form.');
+    $assert_session->responseContains('1 MB limit per form.');
 
     // Check empty form file limit.
     $webform->setSetting('form_file_limit', '')->save();
     $this->drupalGet('/webform/test_element_managed_file_limit');
-    $this->assertNoRaw('1 MB limit per form.');
+    $assert_session->responseNotContains('1 MB limit per form.');
 
     // Check default form file limit.
     \Drupal::configFactory()
@@ -54,7 +56,7 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
       ->set('settings.default_form_file_limit', '2 MB')
       ->save();
     $this->drupalGet('/webform/test_element_managed_file_limit');
-    $this->assertRaw('2 MB limit per form.');
+    $assert_session->responseContains('2 MB limit per form.');
 
     // Set limit to 2 files.
     \Drupal::configFactory()
@@ -62,7 +64,7 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
       ->set('settings.default_form_file_limit', ($bytes * 2) . ' bytes')
       ->save();
     $this->drupalGet('/webform/test_element_managed_file_limit');
-    $this->assertRaw(format_size($bytes * 2) . ' limit per form.');
+    $assert_session->responseContains(format_size($bytes * 2) . ' limit per form.');
 
     // Check valid file upload.
     $edit = [
@@ -78,17 +80,18 @@ class WebformElementManagedFileLimitTest extends WebformElementManagedFileTestBa
       'files[managed_file_03]' => \Drupal::service('file_system')->realpath($file->uri),
     ];
     $this->postSubmission($webform, $edit);
-    $this->assertRaw('This form\'s file upload quota of <em class="placeholder">2 KB</em> has been exceeded. Please remove some files.');
+    $assert_session->responseContains('This form\'s file upload quota of <em class="placeholder">2 KB</em> has been exceeded. Please remove some files.');
 
     // Check invalid composite file upload.
+    $this->drupalGet('/webform/test_element_managed_file_limit');
     $edit = [
       'files[managed_file_01]' => \Drupal::service('file_system')->realpath($file->uri),
       'files[custom_composite_managed_files_items_0_managed_file]' => \Drupal::service('file_system')->realpath($file->uri),
       'files[custom_composite_managed_files_items_1_managed_file]' => \Drupal::service('file_system')->realpath($file->uri),
     ];
-    $this->drupalPostForm('/webform/test_element_managed_file_limit', [], 'Add');
-    $this->drupalPostForm(NULL, $edit, 'Submit');
-    $this->assertRaw('This form\'s file upload quota of <em class="placeholder">2 KB</em> has been exceeded. Please remove some files.');
+    $this->submitForm([], 'Add');
+    $this->submitForm($edit, 'Submit');
+    $assert_session->responseContains('This form\'s file upload quota of <em class="placeholder">2 KB</em> has been exceeded. Please remove some files.');
   }
 
 }

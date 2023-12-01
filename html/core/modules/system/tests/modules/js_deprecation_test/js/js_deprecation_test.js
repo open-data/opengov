@@ -4,23 +4,22 @@
 * https://www.drupal.org/node/2815083
 * @preserve
 **/
-
 (function (_ref) {
   var deprecationError = _ref.deprecationError,
-      deprecatedProperty = _ref.deprecatedProperty,
-      behaviors = _ref.behaviors;
-
+    deprecatedProperty = _ref.deprecatedProperty,
+    behaviors = _ref.behaviors;
   var deprecatedFunction = function deprecatedFunction() {
     deprecationError({
       message: 'This function is deprecated for testing purposes.'
     });
   };
   var objectWithDeprecatedProperty = deprecatedProperty({
-    target: { deprecatedProperty: 'Kitten' },
+    target: {
+      deprecatedProperty: 'Kitten'
+    },
     deprecatedProperty: 'deprecatedProperty',
     message: 'This property is deprecated for testing purposes.'
   });
-
   behaviors.testDeprecations = {
     attach: function attach() {
       deprecatedFunction();

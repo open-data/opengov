@@ -27,10 +27,11 @@ class WebformElementSignatureJavaScriptTest extends WebformWebDriverTestBase {
   public function testComputedElementAjax() {
     $session = $this->getSession();
     $page = $session->getPage();
+    $assert_session = $this->assertSession();
 
     $webform = Webform::load('test_element_signature');
 
-    /**************************************************************************/
+    /* ********************************************************************** */
 
     $this->drupalGet($webform->toUrl());
 
@@ -60,11 +61,11 @@ class WebformElementSignatureJavaScriptTest extends WebformWebDriverTestBase {
     // Check that default signature element has a test value.
     $this->drupalGet('/webform/test_element_signature/test');
     $this->assertTrue($page->find('css', '#edit-signature input[type="submit"]')->isVisible());
-    $this->assertRaw('<input data-drupal-selector="edit-signature" aria-describedby="edit-signature--description" type="hidden" name="signature" value="data:image/png;base64');
+    $assert_session->responseContains('<input data-drupal-selector="edit-signature" aria-describedby="edit-signature--description" type="hidden" name="signature" value="data:image/png;base64');
 
     // Check that default signature element's test value has been reset.
     $this->click('#edit-signature input[type="submit"]');
-    $this->assertNoRaw('<input data-drupal-selector="edit-signature" aria-describedby="edit-signature--description" type="hidden" name="signature" value="data:image/png;base64');
+    $assert_session->responseNotContains('<input data-drupal-selector="edit-signature" aria-describedby="edit-signature--description" type="hidden" name="signature" value="data:image/png;base64');
   }
 
 }

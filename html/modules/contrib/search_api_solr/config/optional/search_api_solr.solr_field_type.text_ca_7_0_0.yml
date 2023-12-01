@@ -39,6 +39,8 @@ field_type:
           catenateAll: 0
           catenateWords: 1
         -
+          class: solr.FlattenGraphFilterFactory
+        -
           class: solr.LowerCaseFilterFactory
         -
           class: solr.StopFilterFactory
@@ -112,6 +114,8 @@ unstemmed_field_type:
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 1
+        -
+          class: solr.FlattenGraphFilterFactory
         -
           class: solr.LowerCaseFilterFactory
         -
@@ -624,3 +628,24 @@ text_files:
     "\uFB05" => "st"
     # ﬆ => st
     "\uFB06" => "st"
+    # Māori macrons.
+    # Ā => A
+    "\u0100" => "A"
+    # Ē => E
+    "\u0112" => "E"
+    # Ī => I
+    "\u012A" => "I"
+    # Ō => O
+    "\u014C" => "O"
+    # Ū => U
+    "\u016A" => "U"
+    # ā => a
+    "\u0101" => "a"
+    # ē => e
+    "\u0113" => "e"
+    # ī => i
+    "\u012B" => "i"
+    # ō => o
+    "\u014D" => "o"
+    # ū => u
+    "\u016B" => "u"

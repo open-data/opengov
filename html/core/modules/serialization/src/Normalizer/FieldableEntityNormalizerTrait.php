@@ -82,14 +82,15 @@ trait FieldableEntityNormalizerTrait {
    * Denormalizes the bundle property so entity creation can use it.
    *
    * @param array $data
-   *   The data being denormalized.
+   *   The data being denormalized. The bundle information will be removed.
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type_definition
    *   The entity type definition.
    *
    * @throws \Symfony\Component\Serializer\Exception\UnexpectedValueException
+   *   If the bundle value is invalid or the bundle type is ineligible.
    *
-   * @return string
-   *   The valid bundle name.
+   * @return array
+   *   An array containing a single $bundle_key => $bundle_value pair.
    */
   protected function extractBundleData(array &$data, EntityTypeInterface $entity_type_definition) {
     $bundle_key = $entity_type_definition->getKey('bundle');
@@ -101,7 +102,7 @@ trait FieldableEntityNormalizerTrait {
     $key_id = isset($base_field_definitions[$bundle_key]) ? $base_field_definitions[$bundle_key]->getFieldStorageDefinition()->getMainPropertyName() : 'value';
 
     // Normalize the bundle if it is not explicitly set.
-    $bundle_value = isset($data[$bundle_key][0][$key_id]) ? $data[$bundle_key][0][$key_id] : (isset($data[$bundle_key]) ? $data[$bundle_key] : NULL);
+    $bundle_value = $data[$bundle_key][0][$key_id] ?? ($data[$bundle_key] ?? NULL);
     // Unset the bundle from the data.
     unset($data[$bundle_key]);
 
@@ -160,10 +161,6 @@ trait FieldableEntityNormalizerTrait {
    *   The entity type repository.
    */
   protected function getEntityTypeRepository() {
-    if (!$this->entityTypeRepository) {
-      @trigger_error('The entityTypeRepository property must be set on the FieldEntityNormalizerTrait, it is required before Drupal 9.0.0. See https://www.drupal.org/node/2549139.', E_USER_DEPRECATED);
-      $this->entityTypeRepository = \Drupal::service('entity_type.repository');
-    }
     return $this->entityTypeRepository;
   }
 
@@ -174,10 +171,6 @@ trait FieldableEntityNormalizerTrait {
    *   The entity field manager.
    */
   protected function getEntityFieldManager() {
-    if (!$this->entityFieldManager) {
-      @trigger_error('The entityFieldManager property must be set on the FieldEntityNormalizerTrait, it is required before Drupal 9.0.0. See https://www.drupal.org/node/2549139.', E_USER_DEPRECATED);
-      $this->entityFieldManager = \Drupal::service('entity_field.manager');
-    }
     return $this->entityFieldManager;
   }
 
@@ -188,10 +181,6 @@ trait FieldableEntityNormalizerTrait {
    *   The entity type manager.
    */
   protected function getEntityTypeManager() {
-    if (!$this->entityTypeManager) {
-      @trigger_error('The entityTypeManager property must be set on the FieldEntityNormalizerTrait, it is required before Drupal 9.0.0. See https://www.drupal.org/node/2549139.', E_USER_DEPRECATED);
-      $this->entityTypeManager = \Drupal::service('entity_type.manager');
-    }
     return $this->entityTypeManager;
   }
 
@@ -200,7 +189,8 @@ trait FieldableEntityNormalizerTrait {
    *
    * Most normalizers that extend this class can simply use this method to
    * construct the denormalized value without having to override denormalize()
-   * and reimplementing its validation logic or its call to set the field value.
+   * and re-implementing its validation logic or its call to set the field
+   * value.
    *
    * It's recommended to not override this and instead provide a (de)normalizer
    * at the DataType level.

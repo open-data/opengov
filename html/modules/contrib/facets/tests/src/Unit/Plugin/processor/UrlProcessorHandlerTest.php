@@ -23,7 +23,8 @@ class UrlProcessorHandlerTest extends UnitTestCase {
    * Tests that the processor correctly throws an exception.
    */
   public function testEmptyProcessorConfiguration() {
-    $this->setExpectedException(InvalidProcessorException::class, "The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
+    $this->expectException(InvalidProcessorException::class);
+    $this->expectExceptionMessage("The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
     new UrlProcessorHandler([], 'test', []);
   }
 
@@ -31,7 +32,8 @@ class UrlProcessorHandlerTest extends UnitTestCase {
    * Tests that the processor correctly throws an exception.
    */
   public function testInvalidProcessorConfiguration() {
-    $this->setExpectedException(InvalidProcessorException::class, "The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
+    $this->expectException(InvalidProcessorException::class);
+    $this->expectExceptionMessage("The UrlProcessorHandler doesn't have the required 'facet' in the configuration array.");
     new UrlProcessorHandler(['facet' => new \stdClass()], 'test', []);
   }
 
@@ -96,27 +98,20 @@ class UrlProcessorHandlerTest extends UnitTestCase {
    * Sets up a container.
    */
   protected function createContainer() {
-    $url_processor = $this->getMockBuilder(UrlProcessorInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $url_processor = $this->createMock(UrlProcessorInterface::class);
 
-    $manager = $this->getMockBuilder(FacetSourcePluginManager::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $manager = $this->createMock(FacetSourcePluginManager::class);
     $manager->expects($this->exactly(1))
       ->method('createInstance')
       ->willReturn($url_processor);
 
-    $storage = $this->getMock(EntityStorageInterface::class);
-    $em = $this->getMockBuilder(EntityTypeManagerInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $em = $this->createMock(EntityTypeManagerInterface::class);
     $em->expects($this->exactly(1))
       ->method('getStorage')
       ->willReturn($storage);
 
     $container = new ContainerBuilder();
-    $container->set('entity.manager', $em);
     $container->set('entity_type.manager', $em);
     $container->set('plugin.manager.facets.url_processor', $manager);
     \Drupal::setContainer($container);

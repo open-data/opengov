@@ -2,6 +2,7 @@
 
 namespace Drupal\facets\Plugin\facets\processor;
 
+use Drupal\Core\Cache\UnchangingCacheableDependencyTrait;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\Processor\BuildProcessorInterface;
 use Drupal\facets\Processor\ProcessorPluginBase;
@@ -20,6 +21,8 @@ use Drupal\facets\Processor\ProcessorPluginBase;
  */
 class HideNonNarrowingResultProcessor extends ProcessorPluginBase implements BuildProcessorInterface {
 
+  use UnchangingCacheableDependencyTrait;
+
   /**
    * {@inheritdoc}
    */
@@ -34,7 +37,7 @@ class HideNonNarrowingResultProcessor extends ProcessorPluginBase implements Bui
 
     /** @var \Drupal\facets\Result\ResultInterface $result */
     foreach ($results as $id => $result) {
-      if ((($result->getCount() == $result_count) || ($result->getCount() == 0)) && !$result->isActive()) {
+      if ((($result->getCount() == $result_count) || ($result->getCount() == 0)) && !$result->isActive() && !$result->hasActiveChildren()) {
         unset($results[$id]);
       }
     }

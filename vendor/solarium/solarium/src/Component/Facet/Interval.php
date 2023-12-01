@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\Component\Facet;
 
 use Solarium\Component\FacetSetInterface;
@@ -7,7 +14,7 @@ use Solarium\Component\FacetSetInterface;
 /**
  * Facet interval.
  *
- * @see http://wiki.apache.org/solr/SimpleFacetParameters#Interval_Faceting
+ * @see https://solr.apache.org/guide/faceting.html#interval-faceting
  */
 class Interval extends AbstractFacet
 {
@@ -85,8 +92,8 @@ class Interval extends AbstractFacet
     /**
      * Initialize options.
      *
-     * Several options need some extra checks or setup work, for these options
-     * the setters are called.
+     * {@internal Several options need some extra checks or setup work,
+     *            for these options the setters are called.}
      */
     protected function init()
     {

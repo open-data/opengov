@@ -7,12 +7,9 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\AnnounceCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\webform\WebformRequestInterface;
-use Drupal\webform\WebformTokenManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -42,30 +39,14 @@ class WebformSubmissionController extends ControllerBase {
   protected $tokenManager;
 
   /**
-   * Constructs a WebformSubmissionController object.
-   *
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer service.
-   * @param \Drupal\webform\WebformRequestInterface $request_handler
-   *   The webform request handler.
-   * @param \Drupal\webform\WebformTokenManagerInterface $token_manager
-   *   The webform token manager.
-   */
-  public function __construct(RendererInterface $renderer, WebformRequestInterface $request_handler, WebformTokenManagerInterface $token_manager) {
-    $this->renderer = $renderer;
-    $this->requestHandler = $request_handler;
-    $this->tokenManager = $token_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('renderer'),
-      $container->get('webform.request'),
-      $container->get('webform.token_manager')
-    );
+    $instance = parent::create($container);
+    $instance->renderer = $container->get('renderer');
+    $instance->requestHandler = $container->get('webform.request');
+    $instance->tokenManager = $container->get('webform.token_manager');
+    return $instance;
   }
 
   /**
@@ -140,7 +121,7 @@ class WebformSubmissionController extends ControllerBase {
       '@state' => $webform_submission->isSticky() ? 'on' : 'off',
       '@label' => $webform_submission->isSticky() ? t('Unstar/Unflag @label', $t_args) : t('Star/flag @label', $t_args),
     ];
-    return new FormattableMarkup('<span class="webform-icon webform-icon-sticky webform-icon-sticky--@state"></span><span class="visually-hidden">@label</span>', $args);
+    return new FormattableMarkup('<span class="webform-icon webform-icon-sticky webform-icon-sticky--@state" title="@label"></span><span class="visually-hidden">@label</span>', $args);
   }
 
   /**
@@ -158,7 +139,7 @@ class WebformSubmissionController extends ControllerBase {
       '@state' => $webform_submission->isLocked() ? 'on' : 'off',
       '@label' => $webform_submission->isLocked() ? t('Unlock @label', $t_args) : t('Lock @label', $t_args),
     ];
-    return new FormattableMarkup('<span class="webform-icon webform-icon-lock webform-icon-locked--@state"></span><span class="visually-hidden">@label</span>', $args);
+    return new FormattableMarkup('<span class="webform-icon webform-icon-lock webform-icon-locked--@state" title="@label"></span><span class="visually-hidden">@label</span>', $args);
   }
 
   /**

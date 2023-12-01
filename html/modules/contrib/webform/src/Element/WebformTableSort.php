@@ -135,17 +135,6 @@ class WebformTableSort extends Table {
 
   /**
    * Creates checkbox and weights to populate a 'webform_table_order' table.
-   *
-   * @param array $element
-   *   An associative array containing the properties and children of the
-   *   webform_table_order element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   * @param array $complete_form
-   *   The complete webform structure.
-   *
-   * @return array
-   *   The processed element.
    */
   public static function processWebformTableSort(&$element, FormStateInterface $form_state, &$complete_form) {
     $value = is_array($element['#value']) ? $element['#value'] : [];

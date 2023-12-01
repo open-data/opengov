@@ -2,17 +2,23 @@
 
 namespace Drupal\facets\Processor;
 
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Cache\UncacheableDependencyTrait;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\DependencyTrait;
-use Drupal\Core\Form\SubformStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\facets\FacetInterface;
 
 /**
  * A base class for plugins that implements most of the boilerplate.
+ *
+ * By default all plugins that will extend this class will disable facets
+ * caching mechanism. It is strongly recommended to turn it on by implementing
+ * own methods for the CacheableDependencyInterface interface.
  */
-class ProcessorPluginBase extends PluginBase implements ProcessorInterface {
+class ProcessorPluginBase extends PluginBase implements ProcessorInterface, CacheableDependencyInterface {
 
+  use UncacheableDependencyTrait;
   use DependencyTrait;
 
   /**
@@ -32,10 +38,6 @@ class ProcessorPluginBase extends PluginBase implements ProcessorInterface {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array $form, FormStateInterface $form_state, FacetInterface $facet) {
-    if (!($form_state instanceof SubformStateInterface)) {
-      $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-      trigger_error(sprintf('%s::%s() SHOULD receive %s on line %d, but %s was given. More information is available at https://www.drupal.org/node/2774077.', $trace[1]['class'], $trace[1]['function'], SubformStateInterface::class, $trace[1]['line'], get_class($form_state)), E_USER_DEPRECATED);
-    }
     $this->setConfiguration($form_state->getValues());
   }
 
@@ -74,7 +76,7 @@ class ProcessorPluginBase extends PluginBase implements ProcessorInterface {
    */
   public function getDescription() {
     $plugin_definition = $this->getPluginDefinition();
-    return isset($plugin_definition['description']) ? $plugin_definition['description'] : '';
+    return $plugin_definition['description'] ?? '';
   }
 
   /**

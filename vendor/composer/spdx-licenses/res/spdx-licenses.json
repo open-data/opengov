@@ -144,6 +144,11 @@
         true,
         false
     ],
+    "App-s2p": [
+        "App::s2p License",
+        false,
+        false
+    ],
     "APSL-1.0": [
         "Apple Public Source License 1.0",
         true,
@@ -162,6 +167,11 @@
     "APSL-2.0": [
         "Apple Public Source License 2.0",
         true,
+        false
+    ],
+    "Arphic-1999": [
+        "Arphic Public License",
+        false,
         false
     ],
     "Artistic-1.0": [
@@ -184,6 +194,11 @@
         true,
         false
     ],
+    "Baekmuk": [
+        "Baekmuk License",
+        false,
+        false
+    ],
     "Bahyph": [
         "Bahyph License",
         false,
@@ -196,6 +211,11 @@
     ],
     "Beerware": [
         "Beerware License",
+        false,
+        false
+    ],
+    "Bitstream-Vera": [
+        "Bitstream Vera Font License",
         false,
         false
     ],
@@ -274,6 +294,16 @@
         true,
         false
     ],
+    "BSD-3-Clause-Modification": [
+        "BSD 3-Clause Modification",
+        false,
+        false
+    ],
+    "BSD-3-Clause-No-Military-License": [
+        "BSD 3-Clause No Military License",
+        false,
+        false
+    ],
     "BSD-3-Clause-No-Nuclear-License": [
         "BSD 3-Clause No Nuclear License",
         false,
@@ -296,6 +326,11 @@
     ],
     "BSD-4-Clause": [
         "BSD 4-Clause \"Original\" or \"Old\" License",
+        false,
+        false
+    ],
+    "BSD-4-Clause-Shortened": [
+        "BSD 4 Clause Shortened",
         false,
         false
     ],
@@ -327,10 +362,15 @@
     "bzip2-1.0.5": [
         "bzip2 and libbzip2 License v1.0.5",
         false,
-        false
+        true
     ],
     "bzip2-1.0.6": [
         "bzip2 and libbzip2 License v1.0.6",
+        false,
+        false
+    ],
+    "C-UDA-1.0": [
+        "Computational Use of Data Agreement v1.0",
         false,
         false
     ],
@@ -369,6 +409,11 @@
         false,
         false
     ],
+    "CC-BY-2.5-AU": [
+        "Creative Commons Attribution 2.5 Australia",
+        false,
+        false
+    ],
     "CC-BY-3.0": [
         "Creative Commons Attribution 3.0 Unported",
         false,
@@ -376,6 +421,16 @@
     ],
     "CC-BY-3.0-AT": [
         "Creative Commons Attribution 3.0 Austria",
+        false,
+        false
+    ],
+    "CC-BY-3.0-DE": [
+        "Creative Commons Attribution 3.0 Germany",
+        false,
+        false
+    ],
+    "CC-BY-3.0-NL": [
+        "Creative Commons Attribution 3.0 Netherlands",
         false,
         false
     ],
@@ -409,6 +464,11 @@
         false,
         false
     ],
+    "CC-BY-NC-3.0-DE": [
+        "Creative Commons Attribution Non Commercial 3.0 Germany",
+        false,
+        false
+    ],
     "CC-BY-NC-4.0": [
         "Creative Commons Attribution Non Commercial 4.0 International",
         false,
@@ -434,6 +494,11 @@
         false,
         false
     ],
+    "CC-BY-NC-ND-3.0-DE": [
+        "Creative Commons Attribution Non Commercial No Derivatives 3.0 Germany",
+        false,
+        false
+    ],
     "CC-BY-NC-ND-3.0-IGO": [
         "Creative Commons Attribution Non Commercial No Derivatives 3.0 IGO",
         false,
@@ -454,6 +519,16 @@
         false,
         false
     ],
+    "CC-BY-NC-SA-2.0-FR": [
+        "Creative Commons Attribution-NonCommercial-ShareAlike 2.0 France",
+        false,
+        false
+    ],
+    "CC-BY-NC-SA-2.0-UK": [
+        "Creative Commons Attribution Non Commercial Share Alike 2.0 England and Wales",
+        false,
+        false
+    ],
     "CC-BY-NC-SA-2.5": [
         "Creative Commons Attribution Non Commercial Share Alike 2.5 Generic",
         false,
@@ -461,6 +536,16 @@
     ],
     "CC-BY-NC-SA-3.0": [
         "Creative Commons Attribution Non Commercial Share Alike 3.0 Unported",
+        false,
+        false
+    ],
+    "CC-BY-NC-SA-3.0-DE": [
+        "Creative Commons Attribution Non Commercial Share Alike 3.0 Germany",
+        false,
+        false
+    ],
+    "CC-BY-NC-SA-3.0-IGO": [
+        "Creative Commons Attribution Non Commercial Share Alike 3.0 IGO",
         false,
         false
     ],
@@ -489,6 +574,11 @@
         false,
         false
     ],
+    "CC-BY-ND-3.0-DE": [
+        "Creative Commons Attribution No Derivatives 3.0 Germany",
+        false,
+        false
+    ],
     "CC-BY-ND-4.0": [
         "Creative Commons Attribution No Derivatives 4.0 International",
         false,
@@ -509,6 +599,11 @@
         false,
         false
     ],
+    "CC-BY-SA-2.1-JP": [
+        "Creative Commons Attribution Share Alike 2.1 Japan",
+        false,
+        false
+    ],
     "CC-BY-SA-2.5": [
         "Creative Commons Attribution Share Alike 2.5 Generic",
         false,
@@ -520,7 +615,12 @@
         false
     ],
     "CC-BY-SA-3.0-AT": [
-        "Creative Commons Attribution-Share Alike 3.0 Austria",
+        "Creative Commons Attribution Share Alike 3.0 Austria",
+        false,
+        false
+    ],
+    "CC-BY-SA-3.0-DE": [
+        "Creative Commons Attribution Share Alike 3.0 Germany",
         false,
         false
     ],
@@ -549,8 +649,18 @@
         false,
         false
     ],
+    "CDL-1.0": [
+        "Common Documentation License 1.0",
+        false,
+        false
+    ],
     "CDLA-Permissive-1.0": [
         "Community Data License Agreement Permissive 1.0",
+        false,
+        false
+    ],
+    "CDLA-Permissive-2.0": [
+        "Community Data License Agreement Permissive 2.0",
         false,
         false
     ],
@@ -601,17 +711,17 @@
     ],
     "CERN-OHL-P-2.0": [
         "CERN Open Hardware Licence Version 2 - Permissive",
-        false,
+        true,
         false
     ],
     "CERN-OHL-S-2.0": [
         "CERN Open Hardware Licence Version 2 - Strongly Reciprocal",
-        false,
+        true,
         false
     ],
     "CERN-OHL-W-2.0": [
         "CERN Open Hardware Licence Version 2 - Weakly Reciprocal",
-        false,
+        true,
         false
     ],
     "ClArtistic": [
@@ -631,6 +741,16 @@
     ],
     "CNRI-Python-GPL-Compatible": [
         "CNRI Python Open Source GPL Compatible License Agreement",
+        false,
+        false
+    ],
+    "COIL-1.0": [
+        "Copyfree Open Innovation License",
+        false,
+        false
+    ],
+    "Community-Spec-1.0": [
+        "Community Specification License 1.0",
         false,
         false
     ],
@@ -699,6 +819,11 @@
         false,
         false
     ],
+    "DL-DE-BY-2.0": [
+        "Data licence Germany \u2013 attribution \u2013 version 2.0",
+        false,
+        false
+    ],
     "DOC": [
         "DOC License",
         false,
@@ -706,6 +831,11 @@
     ],
     "Dotseqn": [
         "Dotseqn License",
+        false,
+        false
+    ],
+    "DRL-1.0": [
+        "Detection Rule License 1.0",
         false,
         false
     ],
@@ -746,6 +876,11 @@
     ],
     "eGenix": [
         "eGenix.com Public License 1.1.0",
+        false,
+        false
+    ],
+    "Elastic-2.0": [
+        "Elastic License 2.0",
         false,
         false
     ],
@@ -809,9 +944,19 @@
         true,
         false
     ],
+    "FDK-AAC": [
+        "Fraunhofer FDK AAC Codec Library",
+        false,
+        false
+    ],
     "Frameworx-1.0": [
         "Frameworx Open License 1.0",
         true,
+        false
+    ],
+    "FreeBSD-DOC": [
+        "FreeBSD Documentation License",
+        false,
         false
     ],
     "FreeImage": [
@@ -836,6 +981,11 @@
     ],
     "FTL": [
         "Freetype Project License",
+        false,
+        false
+    ],
+    "GD": [
+        "GD License",
         false,
         false
     ],
@@ -1164,6 +1314,11 @@
         true,
         false
     ],
+    "Jam": [
+        "Jam License",
+        true,
+        false
+    ],
     "JasPer-2.0": [
         "JasPer License",
         false,
@@ -1176,6 +1331,11 @@
     ],
     "JSON": [
         "JSON License",
+        false,
+        false
+    ],
+    "KiCad-libraries-exception": [
+        "KiCad Libraries Exception",
         false,
         false
     ],
@@ -1299,6 +1459,11 @@
         true,
         false
     ],
+    "Linux-man-pages-copyleft": [
+        "Linux man-pages Copyleft",
+        false,
+        false
+    ],
     "Linux-OpenIB": [
         "Linux Kernel Variant of OpenIB.org license",
         false,
@@ -1379,6 +1544,11 @@
         false,
         false
     ],
+    "MIT-Modern-Variant": [
+        "MIT License Modern Variant",
+        true,
+        false
+    ],
     "MIT-open-group": [
         "MIT Open Group variant",
         false,
@@ -1419,6 +1589,11 @@
         true,
         false
     ],
+    "mplus": [
+        "mplus Font License",
+        false,
+        false
+    ],
     "MS-PL": [
         "Microsoft Public License",
         true,
@@ -1451,6 +1626,11 @@
     ],
     "Mup": [
         "Mup License",
+        false,
+        false
+    ],
+    "NAIST-2003": [
+        "Nara Institute of Science and Technology License (2003)",
         false,
         false
     ],
@@ -1510,7 +1690,12 @@
         false
     ],
     "NLOD-1.0": [
-        "Norwegian Licence for Open Government Data",
+        "Norwegian Licence for Open Government Data (NLOD) 1.0",
+        false,
+        false
+    ],
+    "NLOD-2.0": [
+        "Norwegian Licence for Open Government Data (NLOD) 2.0",
         false,
         false
     ],
@@ -1585,7 +1770,7 @@
         false
     ],
     "ODbL-1.0": [
-        "ODC Open Database License v1.0",
+        "Open Data Commons Open Database License v1.0",
         false,
         false
     ],
@@ -1626,6 +1811,11 @@
     ],
     "OGC-1.0": [
         "OGC Software License, Version 1.0",
+        false,
+        false
+    ],
+    "OGDL-Taiwan-1.0": [
+        "Taiwan Open Government Data License, version 1.0",
         false,
         false
     ],
@@ -1749,6 +1939,11 @@
         false,
         false
     ],
+    "OPUBL-1.0": [
+        "Open Publication License v1.0",
+        false,
+        false
+    ],
     "OSET-PL-2.1": [
         "OSET Public License version 2.1",
         true,
@@ -1790,7 +1985,7 @@
         false
     ],
     "PDDL-1.0": [
-        "ODC Public Domain Dedication & License 1.0",
+        "Open Data Commons Public Domain Dedication & License 1.0",
         false,
         false
     ],
@@ -1906,6 +2101,11 @@
     ],
     "SCEA": [
         "SCEA Shared Source License",
+        false,
+        false
+    ],
+    "SchemeReport": [
+        "Scheme Language Report License",
         false,
         false
     ],
@@ -2146,11 +2346,16 @@
     ],
     "wxWindows": [
         "wxWindows Library License",
-        false,
+        true,
         true
     ],
     "X11": [
         "X11 License",
+        false,
+        false
+    ],
+    "X11-distribute-modifications-variant": [
+        "X11 License Distribution Modification Variant",
         false,
         false
     ],
@@ -2236,7 +2441,7 @@
     ],
     "ZPL-2.1": [
         "Zope Public License 2.1",
-        false,
+        true,
         false
     ]
 }

@@ -60,8 +60,8 @@ class WebformEntityConditionsManager implements WebformEntityConditionsManagerIn
       'collapsed' => $this->t('collapsed'),
       'required' => $this->t('required'),
       'optional' => $this->t('optional'),
-      'checked' => $this->t('checked'),
-      'unchecked' => $this->t('unchecked'),
+      'checked' => $this->t('checked', [], ['context' => 'Add check mark']),
+      'unchecked' => $this->t('unchecked', [], ['context' => 'Remove check mark']),
     ];
     $options['triggers'] += [
       'empty' => $this->t('is empty'),
@@ -89,7 +89,7 @@ class WebformEntityConditionsManager implements WebformEntityConditionsManagerIn
     foreach ($states as $state => $conditions) {
       $t_args = [
         '@name' => $options['name'],
-        '@state' => (isset($options['states'][$state])) ? $options['states'][$state] : $state,
+        '@state' => $options['states'][$state] ?? $state,
       ];
       $build[$state] = [
         'state' => [
@@ -281,7 +281,7 @@ class WebformEntityConditionsManager implements WebformEntityConditionsManagerIn
         ];
 
       default:
-        $t_args['@value'] = isset($element_options[$trigger_value]) ? $element_options[$trigger_value] : $trigger_value;
+        $t_args['@value'] = $element_options[$trigger_value] ?? $trigger_value;
         return [
           '#markup' => $this->t('<strong>@name</strong> @trigger <strong>@value</strong>.', $t_args),
         ];

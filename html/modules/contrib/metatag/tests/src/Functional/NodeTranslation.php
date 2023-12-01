@@ -17,7 +17,7 @@ class NodeTranslation extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     // Modules for core functionality.
     'language',
     'node',
@@ -37,7 +37,12 @@ class NodeTranslation extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     // Login.
@@ -45,20 +50,20 @@ class NodeTranslation extends BrowserTestBase {
 
     // Add language.
     $this->drupalGet('/admin/config/regional/language/add');
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $edit = [
       'predefined_langcode' => 'hu',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Add language');
+    $this->submitForm($edit, 'Add language');
 
     // Set up a content type.
     $this->drupalCreateContentType(['type' => 'article']);
     $this->drupalGet('/admin/structure/types/manage/article');
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $edit = [
       'language_configuration[content_translation]' => TRUE,
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save content type');
+    $this->submitForm($edit, 'Save content type');
   }
 
   /**
@@ -66,11 +71,11 @@ class NodeTranslation extends BrowserTestBase {
    */
   public function testContentTranslationForm() {
     $this->drupalGet('/admin/config/regional/content-language');
-    $this->assertResponse(200);
-    $this->assertText('Content language');
-    $this->drupalPostForm(NULL, [], 'Save configuration');
-    $this->assertResponse(200);
-    $this->assertText('Settings successfully updated.');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains('Content language');
+    $this->submitForm([], 'Save configuration');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains('Settings successfully updated.');
   }
 
 }

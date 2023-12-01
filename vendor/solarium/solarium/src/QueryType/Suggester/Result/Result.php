@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
 namespace Solarium\QueryType\Suggester\Result;
 
 use Solarium\Core\Query\Result\QueryType as BaseResult;
@@ -9,23 +16,6 @@ use Solarium\Core\Query\Result\QueryType as BaseResult;
  */
 class Result extends BaseResult implements \IteratorAggregate, \Countable
 {
-    /**
-     * Status code returned by Solr.
-     *
-     * @var int
-     */
-    protected $status;
-
-    /**
-     * Solr index queryTime.
-     *
-     * This doesn't include things like the HTTP responsetime. Purely the Solr
-     * query execution time.
-     *
-     * @var int
-     */
-    protected $queryTime;
-
     /**
      * Suggester results.
      *
@@ -41,36 +31,9 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     protected $all;
 
     /**
-     * Get Solr status code.
-     *
-     * This is not the HTTP status code! The normal value for success is 0.
-     *
-     * @return int
-     */
-    public function getStatus(): int
-    {
-        $this->parseResponse();
-
-        return $this->status;
-    }
-
-    /**
-     * Get Solr query time.
-     *
-     * This doesn't include things like the HTTP responsetime. Purely the Solr
-     * query execution time.
-     *
-     * @return int
-     */
-    public function getQueryTime(): int
-    {
-        $this->parseResponse();
-
-        return $this->queryTime;
-    }
-
-    /**
      * Get all results.
+     *
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return array
      */
@@ -83,6 +46,8 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
 
     /**
      * Get flat results.
+     *
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return array
      */
@@ -98,6 +63,8 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
      *
      * @param string $dictionary
      *
+     * @throws \Solarium\Exception\UnexpectedValueException
+     *
      * @return Dictionary|null
      */
     public function getDictionary($dictionary): ?Dictionary
@@ -109,6 +76,8 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
 
     /**
      * IteratorAggregate implementation.
+     *
+     * @throws \Solarium\Exception\UnexpectedValueException
      *
      * @return \ArrayIterator
      */
@@ -122,12 +91,14 @@ class Result extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Countable implementation.
      *
+     * @throws \Solarium\Exception\UnexpectedValueException
+     *
      * @return int
      */
     public function count(): int
     {
         $this->parseResponse();
 
-        return count($this->results);
+        return \count($this->results);
     }
 }

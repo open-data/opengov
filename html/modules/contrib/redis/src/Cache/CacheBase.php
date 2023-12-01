@@ -313,7 +313,7 @@ abstract class CacheBase implements CacheBackendInterface {
     // Check expire time, allow to have a cache invalidated explicitly, don't
     // check if already invalid.
     if ($cache->valid) {
-      $cache->valid = $cache->expire == Cache::PERMANENT || $cache->expire >= REQUEST_TIME;
+      $cache->valid = $cache->expire == Cache::PERMANENT || $cache->expire >= \Drupal::time()->getRequestTime();
 
       // Check if invalidateTags() has been called with any of the items's tags.
       if ($cache->valid && !$this->checksumProvider->isValid($cache->checksum, $cache->tags)) {
@@ -357,7 +357,7 @@ abstract class CacheBase implements CacheBackendInterface {
    *
    * @return array
    */
-  protected function createEntryHash($cid, $data, $expire = Cache::PERMANENT, array $tags) {
+  protected function createEntryHash($cid, $data, $expire, array $tags) {
     // Always add a cache tag for the current bin, so that we can use that for
     // invalidateAll().
     $tags[] = $this->getTagForBin();

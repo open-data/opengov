@@ -3,7 +3,7 @@
  * Facets views Link widgets handling.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
   'use strict';
 
   /**
@@ -11,8 +11,7 @@
    */
   Drupal.behaviors.facetsLinkWidget = {
     attach: function (context) {
-      var $linkFacets = $('.js-facets-links', context)
-        .once('js-facets-link-on-click');
+      var $linkFacets = $(once('js-facets-link-on-click', '.js-facets-links', context));
 
       // We are using list wrapper element for Facet JS API.
       if ($linkFacets.length > 0) {
@@ -34,13 +33,13 @@
 
             // Add handler for clicks on widget links.
             $widgetLinks.on('click', clickHandler);
-          });
 
-        // We have to trigger attaching of behaviours, so that Facets JS API can
-        // register handlers on link widgets.
-        Drupal.attachBehaviors(context, Drupal.settings);
+            // We have to trigger attaching of behaviours, so that Facets JS API can
+            // register handlers on link widgets.
+            Drupal.attachBehaviors(this.parentNode, Drupal.settings);
+          });
       }
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

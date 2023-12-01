@@ -11,8 +11,12 @@ process:
   dest_nid:
     -
       plugin: migration_lookup
-      migration: d6_node_translation
+      migration:
+        - d6_node_complete
+        - d6_node_translation
       source: nid
+    -
+      plugin: node_complete_node_translation_lookup
     -
       plugin: skip_on_empty
       method: row
@@ -43,3 +47,4 @@ migration_dependencies:
     - d6_vocabulary_entity_form_display
     - d6_node
     - d6_node_translation
+    - language

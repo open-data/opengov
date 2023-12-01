@@ -15,6 +15,27 @@ include_once __DIR__ . '/includes/webform.install.requirements.inc';
 include_once __DIR__ . '/includes/webform.install.update.inc';
 
 /**
+ * Implements hook_install().
+ */
+function webform_install() {
+  // Automatically install sub-modules to improve the UX via SimplyTest.me.
+  $tugboat_project = $_ENV['TUGBOAT_PROJECT'] ?? '';
+  if ($tugboat_project === 'SimplyTest.me') {
+    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $module_installer */
+    $module_installer = \Drupal::service('module_installer');
+    $module_installer->install([
+      'webform_ui',
+      'webform_templates',
+      'webform_examples',
+      'webform_image_select',
+      'webform_node',
+      'webform_share',
+      'webform_submission_log',
+    ]);
+  }
+}
+
+/**
  * Implements hook_uninstall().
  */
 function webform_uninstall() {

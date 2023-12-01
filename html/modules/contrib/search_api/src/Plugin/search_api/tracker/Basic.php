@@ -209,7 +209,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function trackItemsInserted(array $ids) {
-    $transaction = $this->getDatabaseConnection()->startTransaction();
     try {
       $index_id = $this->getIndex()->id();
       // Process the IDs in chunks so we don't create an overly large INSERT
@@ -245,7 +244,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $transaction->rollBack();
     }
   }
 
@@ -253,7 +251,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function trackItemsUpdated(array $ids = NULL) {
-    $transaction = $this->getDatabaseConnection()->startTransaction();
     try {
       // Process the IDs in chunks so we don't create an overly large UPDATE
       // statement.
@@ -278,7 +275,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $transaction->rollBack();
     }
   }
 
@@ -286,7 +282,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function trackAllItemsUpdated($datasource_id = NULL) {
-    $transaction = $this->getDatabaseConnection()->startTransaction();
     try {
       $update = $this->createUpdateStatement();
       $update->fields([
@@ -300,7 +295,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $transaction->rollBack();
     }
   }
 
@@ -308,7 +302,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function trackItemsIndexed(array $ids) {
-    $transaction = $this->getDatabaseConnection()->startTransaction();
     try {
       // Process the IDs in chunks so we don't create an overly large UPDATE
       // statement.
@@ -322,7 +315,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $transaction->rollBack();
     }
   }
 
@@ -330,7 +322,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function trackItemsDeleted(array $ids = NULL) {
-    $transaction = $this->getDatabaseConnection()->startTransaction();
     try {
       // Process the IDs in chunks so we don't create an overly large DELETE
       // statement.
@@ -345,7 +336,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $transaction->rollBack();
     }
   }
 
@@ -353,7 +343,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
    * {@inheritdoc}
    */
   public function trackAllItemsDeleted($datasource_id = NULL) {
-    $transaction = $this->getDatabaseConnection()->startTransaction();
     try {
       $delete = $this->createDeleteStatement();
       if ($datasource_id) {
@@ -363,7 +352,6 @@ class Basic extends TrackerPluginBase implements PluginFormInterface {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $transaction->rollBack();
     }
   }
 

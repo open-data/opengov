@@ -17,7 +17,7 @@ class WizardFormController extends FormController {
   /**
    * The class resolver.
    *
-   * @var \Drupal\Core\DependencyInjection\ClassResolverInterface;
+   * @var \Drupal\Core\DependencyInjection\ClassResolverInterface
    */
   protected $classResolver;
 
@@ -34,6 +34,13 @@ class WizardFormController extends FormController {
    * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
   protected $dispatcher;
+
+  /**
+   * The wizard factory.
+   *
+   * @var \Drupal\ctools\Wizard\WizardFactoryInterface
+   */
+  protected $wizardFactory;
 
   /**
    * @param \Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface $argument_resolver

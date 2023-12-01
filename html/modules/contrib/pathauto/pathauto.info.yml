@@ -1,12 +1,10 @@
 name : 'Pathauto'
 description : 'Provides a mechanism for modules to automatically generate aliases for the content they manage.'
-core: 8.x
+core_version_requirement: ^9.3 || ^10
 type: module
 
 dependencies:
-- ctools:ctools
 - drupal:path
-- drupal:system (>=8.6)
 - token:token
 
 configure: entity.pathauto_pattern.collection
@@ -14,7 +12,7 @@ configure: entity.pathauto_pattern.collection
 recommends:
 - redirect:redirect
 
-# Information added by Drupal.org packaging script on 2019-12-04
-version: '8.x-1.6'
+# Information added by Drupal.org packaging script on 2022-08-02
+version: '8.x-1.11'
 project: 'pathauto'
-datestamp: 1575467315
+datestamp: 1659472551

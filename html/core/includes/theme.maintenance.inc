@@ -14,7 +14,7 @@ use Drupal\Core\Site\Settings;
  * Used for site installs, updates and when the site is in maintenance mode.
  * It also applies when the database is unavailable or bootstrap was not
  * complete. Seven is always used for the initial install and update
- * operations. In other cases, Bartik is used, but this can be overridden by
+ * operations. In other cases, Claro is used, but this can be overridden by
  * setting a "maintenance_theme" key in the $settings variable in settings.php.
  */
 function _drupal_maintenance_theme() {
@@ -25,10 +25,8 @@ function _drupal_maintenance_theme() {
 
   require_once __DIR__ . '/theme.inc';
   require_once __DIR__ . '/common.inc';
-  require_once __DIR__ . '/unicode.inc';
   require_once __DIR__ . '/file.inc';
   require_once __DIR__ . '/module.inc';
-  require_once __DIR__ . '/database.inc';
 
   // Install and update pages are treated differently to prevent theming overrides.
   if (defined('MAINTENANCE_MODE') && (MAINTENANCE_MODE == 'install' || MAINTENANCE_MODE == 'update')) {
@@ -36,7 +34,7 @@ function _drupal_maintenance_theme() {
       $custom_theme = $GLOBALS['install_state']['theme'];
     }
     else {
-      $custom_theme = Settings::get('maintenance_theme', 'seven');
+      $custom_theme = Settings::get('maintenance_theme', 'claro');
     }
   }
   else {
@@ -56,8 +54,8 @@ function _drupal_maintenance_theme() {
     }
     if (!$custom_theme) {
       // We have been unable to identify the configured theme, so fall back to
-      // a safe default. Bartik is reasonably user friendly and fairly generic.
-      $custom_theme = 'bartik';
+      // a safe default. Claro is reasonably user friendly and fairly generic.
+      $custom_theme = 'claro';
     }
   }
 

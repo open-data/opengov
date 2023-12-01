@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\metatag\Functional;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+
 /**
  * Ensures that the Metatag field works correctly on taxonomy terms.
  *
@@ -9,10 +11,12 @@ namespace Drupal\Tests\metatag\Functional;
  */
 class MetatagFieldTermTest extends MetatagFieldTestBase {
 
+  use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     // Needed for token handling.
     'token',
 
@@ -78,7 +82,7 @@ class MetatagFieldTermTest extends MetatagFieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpEntityType() {
+  protected function setUpEntityType(): void {
     $new_perms = [
       // From Taxonomy.
       'administer taxonomy',
@@ -87,12 +91,12 @@ class MetatagFieldTermTest extends MetatagFieldTestBase {
     $this->adminUser = $this->drupalCreateUser($all_perms);
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('admin/structure/taxonomy/add');
-    $this->assertResponse(200);
+    $this->assertSession()->statusCodeEquals(200);
     $edit = [
       'name' => 'Tags',
       'vid' => 'tags',
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->submitForm($edit, $this->t('Save'));
     $this->drupalLogout();
   }
 

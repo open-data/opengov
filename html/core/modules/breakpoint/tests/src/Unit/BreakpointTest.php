@@ -42,7 +42,10 @@ class BreakpointTest extends UnitTestCase {
    */
   protected $stringTranslation;
 
-  protected function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     $this->stringTranslation = $this->createMock('Drupal\Core\StringTranslation\TranslationInterface');

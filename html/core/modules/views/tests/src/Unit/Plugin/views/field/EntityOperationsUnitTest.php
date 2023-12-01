@@ -47,7 +47,7 @@ class EntityOperationsUnitTest extends UnitTestCase {
    *
    * @covers ::__construct
    */
-  protected function setUp() {
+  protected function setUp(): void {
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->entityRepository = $this->createMock(EntityRepositoryInterface::class);
     $this->languageManager = $this->createMock('\Drupal\Core\Language\LanguageManagerInterface');
@@ -87,7 +87,7 @@ class EntityOperationsUnitTest extends UnitTestCase {
    */
   public function testDefineOptions() {
     $options = $this->plugin->defineOptions();
-    $this->assertInternalType('array', $options);
+    $this->assertIsArray($options);
     $this->assertArrayHasKey('destination', $options);
   }
 
@@ -101,7 +101,7 @@ class EntityOperationsUnitTest extends UnitTestCase {
       ->getMock();
     $entity->expects($this->any())
       ->method('getEntityTypeId')
-      ->will($this->returnValue($entity_type_id));
+      ->willReturn($entity_type_id);
 
     $operations = [
       'foo' => [
@@ -112,12 +112,12 @@ class EntityOperationsUnitTest extends UnitTestCase {
     $list_builder->expects($this->once())
       ->method('getOperations')
       ->with($entity)
-      ->will($this->returnValue($operations));
+      ->willReturn($operations);
 
     $this->entityTypeManager->expects($this->once())
       ->method('getListBuilder')
       ->with($entity_type_id)
-      ->will($this->returnValue($list_builder));
+      ->willReturn($list_builder);
 
     $this->plugin->options['destination'] = TRUE;
 
@@ -143,7 +143,7 @@ class EntityOperationsUnitTest extends UnitTestCase {
       ->getMock();
     $entity->expects($this->any())
       ->method('getEntityTypeId')
-      ->will($this->returnValue($entity_type_id));
+      ->willReturn($entity_type_id);
 
     $operations = [
       'foo' => [
@@ -154,12 +154,12 @@ class EntityOperationsUnitTest extends UnitTestCase {
     $list_builder->expects($this->once())
       ->method('getOperations')
       ->with($entity)
-      ->will($this->returnValue($operations));
+      ->willReturn($operations);
 
     $this->entityTypeManager->expects($this->once())
       ->method('getListBuilder')
       ->with($entity_type_id)
-      ->will($this->returnValue($list_builder));
+      ->willReturn($list_builder);
 
     $this->plugin->options['destination'] = FALSE;
 
