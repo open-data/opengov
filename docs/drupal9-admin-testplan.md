@@ -328,11 +328,6 @@ Drupal 9 Test Plan for Administrators
               <li>
                 - [ ]
                 <input type="checkbox" class="task-list-item-checkbox">
-                Specify the "Notification email address" 
-              </li>
-              <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
                 Edit the notification email content - <i>Test each scenario, such as "Welcome (new user created by admin), Welcome (no approval required), etc.</i>
               </li>
             </ul>
