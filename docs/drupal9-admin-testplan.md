@@ -348,11 +348,6 @@ Drupal 9 Test Plan for Administrators
               <li>
                 - [ ]
                 <input type="checkbox" class="task-list-item-checkbox">
-                Select a "View mode" you would like to manage - <i>Select the "Default" or "Compact" tab along the top of the "Manage display" page</i>
-              </li>
-              <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
                 Activate or Deactivae a "Field" - <i>Click and drag a Field into or out of the "Disabled" list</i>
               </li>
               <li>
