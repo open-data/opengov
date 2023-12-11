@@ -325,11 +325,6 @@ Drupal 9 Test Plan for Administrators
                 <input type="checkbox" class="task-list-item-checkbox">
                 Specify how content is handled "When cancelling a user account" - <i>Test to make sure each setting behaves as they are described</i>
               </li>
-              <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
-                Edit the notification email content - <i>Test each scenario, such as "Welcome (new user created by admin), Welcome (no approval required), etc.</i>
-              </li>
             </ul>
           </li>
           <li>
