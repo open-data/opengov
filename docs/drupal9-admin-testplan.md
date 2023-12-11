@@ -323,16 +323,6 @@ Drupal 9 Test Plan for Administrators
               <li>
                 - [ ]
                 <input type="checkbox" class="task-list-item-checkbox">
-                Change Permission for "Who can register accounts?" - <i>Test to make sure each setting behaves as they are described. Test this alongisde the "Require email verficiation" and "notification email content" features below.</i> 🟡
-              </li>
-              <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
-                Toggle the "Require email verification when a visitor creates an account" option - <i>Test this alongside the "Who can register accounts?" permission above and the "notification email content" feature below</i> 🟡
-              </li>
-              <li>
-                - [ ]
-                <input type="checkbox" class="task-list-item-checkbox">
                 Specify how content is handled "When cancelling a user account" - <i>Test to make sure each setting behaves as they are described</i>
               </li>
               <li>
@@ -343,7 +333,7 @@ Drupal 9 Test Plan for Administrators
               <li>
                 - [ ]
                 <input type="checkbox" class="task-list-item-checkbox">
-                Edit the notification email content - <i>Test each scenario, such as "Welcome (new user created by admin), Welcome (no approval required), etc. Test this alongside the "Require email verification" and "Who can register accounts?" features above.</i> 🟡
+                Edit the notification email content - <i>Test each scenario, such as "Welcome (new user created by admin), Welcome (no approval required), etc.</i>
               </li>
             </ul>
           </li>
