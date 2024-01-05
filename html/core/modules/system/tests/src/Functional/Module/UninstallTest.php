@@ -8,6 +8,8 @@ use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\user\Entity\Role;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests the uninstallation of modules.
@@ -37,7 +39,8 @@ class UninstallTest extends BrowserTestBase {
     $this->container->get('module_installer')->uninstall(['module_test']);
 
     // Are the perms defined by module_test removed?
-    $this->assertEmpty(user_roles(FALSE, 'module_test perm'), 'Permissions were all removed.');
+    $roles = array_filter(Role::loadMultiple(), fn(RoleInterface $role) => $role->hasPermission('module_test perm'));
+    $this->assertEmpty($roles, 'Permissions were all removed.');
   }
 
   /**
@@ -81,6 +84,20 @@ class UninstallTest extends BrowserTestBase {
     // Check that the obsolete module link was rendered correctly.
     $this->assertSession()->elementExists('xpath', "//a[contains(@aria-label, 'View information on the Obsolete status of the module System obsolete status test')]");
     $this->assertSession()->elementExists('xpath', "//a[contains(@href, 'https://example.com/obsolete')]");
+
+    $form = $this->assertSession()->elementExists('xpath', "//form[@id='system-modules-uninstall']");
+    $form_html = $form->getOuterHtml();
+
+    // Select the first stable module on the uninstall list.
+    $module_stable = $this->assertSession()->elementExists('xpath', "//label[contains(@class, 'module-name') and not(./a[contains(@class, 'module-link--non-stable')])]")->getOuterHtml();
+
+    // Select the unstable modules (deprecated, and obsolete).
+    $module_unstable_1 = $this->assertSession()->elementExists('xpath', "//label[./a[contains(@aria-label, 'View information on the Deprecated status of the module Deprecated module')]]")->getOuterHtml();
+    $module_unstable_2 = $this->assertSession()->elementExists('xpath', "//label[./a[contains(@aria-label, 'View information on the Obsolete status of the module System obsolete status test')]]")->getOuterHtml();
+
+    // Check that all unstable modules appear before the first stable module.
+    $this->assertGreaterThan(strpos($form_html, $module_unstable_1), strpos($form_html, $module_stable));
+    $this->assertGreaterThan(strpos($form_html, $module_unstable_2), strpos($form_html, $module_stable));
 
     foreach (\Drupal::service('extension.list.module')->getAllInstalledInfo() as $module => $info) {
       $field_name = "uninstall[$module]";
@@ -154,7 +171,7 @@ class UninstallTest extends BrowserTestBase {
     // Make sure we get an error message when we try to confirm uninstallation
     // of an empty list of modules.
     $this->drupalGet('admin/modules/uninstall/confirm');
-    $this->assertSession()->pageTextContains('The selected modules could not be uninstalled, either due to a website problem or due to the uninstall confirmation form timing out. Please try again.');
+    $this->assertSession()->pageTextContains('The selected modules could not be uninstalled, either due to a website problem or due to the uninstall confirmation form timing out.');
 
     // Make sure confirmation page is accessible only during uninstall process.
     $this->drupalGet('admin/modules/uninstall/confirm');

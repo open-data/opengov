@@ -14,7 +14,8 @@ archive: false
 id: test_handler_remote_post_cast
 title: 'Test: Handler: Remote post cast'
 description: 'Test remote post cast handler.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   checkbox:
     '#title': checkbox
@@ -39,7 +40,6 @@ elements: |
       number:
         '#type': number
         '#title': number
-  
 css: ''
 javascript: ''
 settings:
@@ -129,6 +129,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -148,7 +150,6 @@ settings:
   confirmation_title: ''
   confirmation_message: |
     <p>Your confirmation number is [webform_submission:values:confirmation_number].</p>
-    
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -261,7 +262,6 @@ handlers:
         boolean_true: '(boolean) true'
         integer: '(integer) 100'
         float: '(float) 100.01'
-        
       custom_options: ''
       completed_url: 'http://webform-test-handler-remote-post/completed'
       completed_custom_data: ''

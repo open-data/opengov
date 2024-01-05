@@ -3,8 +3,8 @@
 namespace Drupal\Tests\webform\Unit\Utility;
 
 use Drupal\Core\Render\Markup;
-use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\Tests\UnitTestCase;
+use Drupal\webform\Utility\WebformElementHelper;
 
 /**
  * Tests webform element utility.

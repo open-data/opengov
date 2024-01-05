@@ -14,7 +14,8 @@ archive: false
 id: test_element_submission_views_r
 title: 'Test: Element: Webform Submission Views replace'
 description: 'Test the webform submission views replace.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   global:
     '#type': details
@@ -41,7 +42,6 @@ elements: |
           - entity.webform.results_submissions
         node_routes:
           - entity.node.webform.results_submissions
-  
 css: ''
 javascript: ''
 settings:
@@ -129,6 +129,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

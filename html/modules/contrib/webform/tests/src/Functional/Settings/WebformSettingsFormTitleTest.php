@@ -3,8 +3,8 @@
 namespace Drupal\Tests\webform\Functional\Settings;
 
 use Drupal\Core\Serialization\Yaml;
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformInterface;
 
 /**
@@ -19,7 +19,7 @@ class WebformSettingsFormTitleTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'node'];
+  protected static $modules = ['webform', 'node'];
 
   /**
    * Tests form title.

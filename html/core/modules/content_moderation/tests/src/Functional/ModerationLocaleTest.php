@@ -86,7 +86,7 @@ class ModerationLocaleTest extends ModerationStateTestBase {
     ];
     $this->submitForm($edit, 'Save (this translation)');
     // Here the error has occurred "The website encountered an unexpected error.
-    // Please try again later."
+    // Try again later."
     // If the translation has got lost.
     $this->assertSession()->pageTextContains('Article French node Draft has been updated.');
 
@@ -462,7 +462,7 @@ class ModerationLocaleTest extends ModerationStateTestBase {
    *   A node object if a new one is being created, NULL otherwise.
    */
   protected function submitNodeForm($title, $moderation_state, $default_translation = FALSE, $langcode = 'en') {
-    $is_new = strpos($this->getSession()->getCurrentUrl(), '/node/add/') !== FALSE;
+    $is_new = str_contains($this->getSession()->getCurrentUrl(), '/node/add/');
     $edit = [
       'title[0][value]' => $title,
       'moderation_state[0][state]' => $moderation_state,

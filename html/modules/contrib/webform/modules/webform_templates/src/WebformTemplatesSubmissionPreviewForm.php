@@ -4,8 +4,8 @@ namespace Drupal\webform_templates;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Form\WebformDialogFormTrait;
+use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\WebformSubmissionForm;
 
 /**

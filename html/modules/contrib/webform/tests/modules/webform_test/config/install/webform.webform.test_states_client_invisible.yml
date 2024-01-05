@@ -14,7 +14,8 @@ archive: false
 id: test_states_client_invisible
 title: 'Test: Form API #states invisible and not required'
 description: 'Test Drupal''s #states API invisible states.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   trigger:
     '#type': checkbox
@@ -480,25 +481,6 @@ elements: |
       invisible:
         ':input[name="trigger"]':
           checked: true
-  webform_location_places:
-    '#type': webform_location_places
-    '#title': 'Location (Algolia Places)'
-    '#default_value':
-      value: '1600 Pennsylvania Avenue, Washington, District of Columbia, United States of America'
-      lat: '38.8635'
-      lng: '-76.946'
-      name: '1600 Pennsylvania Avenue'
-      city: Washington
-      country: 'United States of America'
-      country_code: us
-      administrative: 'District of Columbia'
-      county: 'Prince George''s County'
-      suburb: ''
-      postcode: '20020'
-    '#states':
-      invisible:
-        ':input[name="trigger"]':
-          checked: true
   webform_mapping:
     '#type': webform_mapping
     '#title': Mapping
@@ -830,7 +812,6 @@ elements: |
       invisible:
         ':input[name="trigger"]':
           checked: true
-  
 css: ''
 javascript: ''
 settings:
@@ -918,6 +899,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -14,7 +14,8 @@ archive: false
 id: test_element_excluded_elements
 title: 'Test: Element: Excluded elements'
 description: 'Test the excluded elements element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   textfield:
     '#type': textfield
@@ -48,7 +49,6 @@ elements: |
     '#default_value':
       telephone__phone: telephone__phone
       telephone__ext: telephone__ext
-
 css: ''
 javascript: ''
 settings:
@@ -136,6 +136,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

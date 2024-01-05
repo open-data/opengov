@@ -5,6 +5,8 @@ namespace Drupal\Tests\locale\Functional;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Tests\BrowserTestBase;
 
+// cspell:ignore janvier lundi
+
 /**
  * Tests the exportation of locale files.
  *
@@ -157,8 +159,7 @@ EOF;
   }
 
   /**
-   * Helper function that returns a .po file which strings will be marked
-   * as customized.
+   * Returns a .po file that will be marked as customized.
    */
   public function getCustomPoFile() {
     return <<< EOF

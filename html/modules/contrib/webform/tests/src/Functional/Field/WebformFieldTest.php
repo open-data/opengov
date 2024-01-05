@@ -17,7 +17,7 @@ class WebformFieldTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['node', 'field_ui'];
+  protected static $modules = ['node', 'field_ui'];
 
   /**
    * Tests the webform (entity reference) field.
@@ -61,7 +61,7 @@ class WebformFieldTest extends WebformBrowserTestBase {
     // Add category to 'contact' webform.
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('contact');
-    $webform->set('category', '{Some category}');
+    $webform->set('categories', ['{Some category}']);
     $webform->save();
 
     // Check that webform select menu included optgroup.

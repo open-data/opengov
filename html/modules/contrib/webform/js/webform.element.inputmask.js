@@ -3,7 +3,7 @@
  * JavaScript behaviors for jquery.inputmask integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -55,8 +55,8 @@
         return;
       }
 
-      $(context).find('input.js-webform-input-mask').once('webform-input-mask').inputmask();
+      $(once('webform-input-mask', 'input.js-webform-input-mask', context)).inputmask();
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

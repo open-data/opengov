@@ -16,7 +16,7 @@ class WebformResultsExportOptionsTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'locale', 'webform', 'webform_test_submissions'];
+  protected static $modules = ['node', 'locale', 'webform', 'webform_test_submissions'];
 
   /**
    * Webforms to load.
@@ -165,6 +165,13 @@ class WebformResultsExportOptionsTest extends WebformBrowserTestBase {
     $submissions[0]->setOwner($admin_submission_user)->save();
     $this->getExport($webform, ['uid' => $admin_submission_user->id()]);
     $assert_session->responseContains('George,Washington');
+    $assert_session->responseNotContains('Abraham,Lincoln');
+    $assert_session->responseNotContains('Hillary,Clinton');
+
+    // Check langcode.
+    $submissions[0]->setOwner($admin_submission_user)->save();
+    $this->getExport($webform, ['langcode' => 'es']);
+    $assert_session->responseNotContains('George,Washington');
     $assert_session->responseNotContains('Abraham,Lincoln');
     $assert_session->responseNotContains('Hillary,Clinton');
 

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\Core\Authentication\AuthenticationManagerTest.
- */
-
 namespace Drupal\Tests\Core\Authentication;
 
 use Drupal\Core\Authentication\AuthenticationCollector;
@@ -49,7 +44,7 @@ class AuthenticationManagerTest extends UnitTestCase {
   /**
    * @covers ::applyFilter
    */
-  public function testApplyFilterWithFilterprovider() {
+  public function testApplyFilterWithFilterProvider() {
     $auth_provider = $this->createMock('Drupal\Tests\Core\Authentication\TestAuthenticationProviderInterface');
     $auth_provider->expects($this->once())
       ->method('appliesToRoutedRequest')

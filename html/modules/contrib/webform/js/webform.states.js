@@ -3,7 +3,7 @@
  * JavaScript behaviors for custom webform #states.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -228,7 +228,7 @@
       // Fix #required for fieldsets.
       // @see Issue #2977569: Hidden fieldsets that become visible with conditional logic cannot be made required.
       if ($target.is('.js-webform-type-radios, .js-webform-type-checkboxes, fieldset')) {
-        $target.find('legend span.fieldset-legend:not(.visually-hidden)').toggleClass('js-form-required form-required', e.value);
+        $target.find('legend span.fieldset-legend:not(.visually-hidden),legend span.fieldset__label:not(.visually-hidden)').toggleClass('js-form-required form-required', e.value);
       }
 
       // Issue #2986017: Fieldsets shouldn't have required attribute.
@@ -323,8 +323,7 @@
    */
   Drupal.behaviors.webformCheckboxesRequired = {
     attach: function (context) {
-      $('.js-form-type-checkboxes.required, .js-form-type-webform-checkboxes-other.required, .js-webform-type-checkboxes.required, .js-webform-type-webform-checkboxes-other.required, .js-webform-type-webform-radios-other.checkboxes', context)
-        .once('webform-checkboxes-required')
+      $(once('webform-checkboxes-required', '.js-form-type-checkboxes.required, .js-form-type-webform-checkboxes-other.required, .js-webform-type-checkboxes.required, .js-webform-type-webform-checkboxes-other.required, .js-webform-type-webform-radios-other.checkboxes', context))
         .each(function () {
           var $element = $(this);
           $element.find('input[type="checkbox"]').on('click', statesCheckboxesRequiredEventHandler);
@@ -342,8 +341,7 @@
    */
   Drupal.behaviors.webformRadiosRequired = {
     attach: function (context) {
-      $('.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other, .js-webform-type-webform-entity-radios, .js-webform-type-webform-scale', context)
-        .once('webform-radios-required')
+      $(once('webform-radios-required', '.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other, .js-webform-type-webform-entity-radios, .js-webform-type-webform-scale', context))
         .each(function () {
           var $element = $(this);
           setTimeout(function () {radiosRequired($element);});
@@ -360,8 +358,7 @@
    */
   Drupal.behaviors.webformTableSelectRequired = {
     attach: function (context) {
-      $('.js-webform-tableselect.required', context)
-        .once('webform-tableselect-required')
+      $(once('webform-tableselect-required','.js-webform-tableselect.required', context))
         .each(function () {
           var $element = $(this);
           var $tbody = $element.find('tbody');
@@ -644,4 +641,4 @@
     }
   }
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

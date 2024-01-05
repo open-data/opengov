@@ -3,7 +3,7 @@
  * Attaches behaviors for the Clientside Validation jQuery module.
  */
 
-(function ($, drupalSettings) {
+(function ($, drupalSettings, once) {
 
   'use strict';
 
@@ -19,8 +19,7 @@
    */
   Drupal.behaviors.webformClientSideValidationAjax = {
     attach: function (context) {
-      $('form.webform-submission-form .form-actions :submit:not([formnovalidate])')
-        .once('webform-clientside-validation-ajax')
+      $(once('webform-clientside-validation-ajax', 'form.webform-submission-form .form-actions input[type="submit"]:not([formnovalidate])'))
         .addClass('cv-validate-before-ajax');
     }
   };
@@ -41,7 +40,19 @@
     }
   };
 
-  $(document).once('webform_cvjquery').on('cv-jquery-validate-options-update', function (event, options) {
+  // Trigger 'cvjquery' once to prevent the cv.jquery.ife.js from initializing.
+  // The webform_clientside_validation.module loads before the
+  // clientside_validation_jquery.module.
+  // @see clientside_validation/clientside_validation_jquery/js/cv.jquery.ife.js
+  // @see https://www.drupal.org/project/clientside_validation/issues/3322946
+  // @see https://www.drupal.org/node/3158256
+  //
+  // Drupal 10: Using once can not use `window` or `document` directly.
+  once('cvjquery', 'html');
+  // Drupal 9: Use jQuery once plugin.
+  $(document).once && $(document).once('cvjquery');
+
+  $(document).on('cv-jquery-validate-options-update', function (event, options) {
     options.errorElement = 'strong';
     options.showErrors = function (errorMap, errorList) {
       // Show errors using defaultShowErrors().
@@ -52,7 +63,16 @@
 
       // Move all radios, checkboxes, and datelist errors to appear after
       // the parent container.
-      $(this.currentForm).find('.form-checkboxes, .form-radios, .form-type-datelist .container-inline, .form-type-tel, .webform-type-webform-height .form--inline, .js-webform-tableselect').each(function () {
+      var selectors = [
+        '.form-checkboxes',
+        '.form-radios',
+        '.form-boolean-group',
+        '.form-type-datelist .container-inline',
+        '.form-type-tel',
+        '.webform-type-webform-height .form--inline',
+        '.js-webform-tableselect'
+      ];
+      $(this.currentForm).find(selectors.join(', ')).each(function () {
         var $container = $(this);
         var $errorMessages = $container.find('strong.error.form-item--error-message');
         $errorMessages.insertAfter($container);
@@ -75,7 +95,7 @@
 
       // Move checkbox errors to appear as the last item in the
       // parent container.
-      $(this.currentForm).find('.form-type-checkbox').each(function () {
+      $(this.currentForm).find('.js-form-type-checkbox').each(function () {
         var $container = $(this);
         var $errorMessages = $container.find('strong.error.form-item--error-message');
         $container.append($errorMessages);
@@ -97,7 +117,7 @@
 
       // Add custom clear error handling to checkboxes to remove the
       // error message, when any checkbox is checked.
-      $(this.currentForm).find('.form-checkboxes').once('webform-clientside-validation-form-checkboxes').each(function () {
+      $(once('webform-clientside-validation-form-checkboxes', '.form-checkboxes', this.currentForm)).each(function () {
         var $container = $(this);
         $container.find('input:checkbox').click( function () {
           var state = $container.find('input:checkbox:checked').length ? 'hide' : 'show';
@@ -113,4 +133,4 @@
     };
   });
 
-})(jQuery, drupalSettings);
+})(jQuery, drupalSettings, once);

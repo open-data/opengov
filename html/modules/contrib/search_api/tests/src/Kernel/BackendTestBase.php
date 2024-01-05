@@ -322,7 +322,7 @@ abstract class BackendTestBase extends KernelTestBase {
     $this->assertResults([], $results, 'Query with languages');
 
     $query = $this->buildSearch();
-    $conditions = $query->createAndAddConditionGroup('OR')
+    $query->createAndAddConditionGroup('OR')
       ->addCondition('search_api_language', 'und')
       ->addCondition('width', ['0.9', '1.5'], 'BETWEEN');
     $results = $query->execute();
@@ -393,7 +393,7 @@ abstract class BackendTestBase extends KernelTestBase {
    */
   protected function checkFacets() {
     $query = $this->buildSearch();
-    $conditions = $query->createAndAddConditionGroup('OR', ['facet:' . 'category']);
+    $conditions = $query->createAndAddConditionGroup('OR', ['facet:category']);
     $conditions->addCondition('category', 'article_category');
     $facets['category'] = [
       'field' => 'category',
@@ -412,10 +412,10 @@ abstract class BackendTestBase extends KernelTestBase {
     ];
     $category_facets = $results->getExtraData('search_api_facets')['category'];
     usort($category_facets, [$this, 'facetCompare']);
-    $this->assertEquals($expected, $category_facets, 'Correct OR facets were returned');
+    $this->assertEquals($expected, $category_facets, 'Incorrect OR facets were returned');
 
     $query = $this->buildSearch();
-    $conditions = $query->createAndAddConditionGroup('OR', ['facet:' . 'category']);
+    $conditions = $query->createAndAddConditionGroup('OR', ['facet:category']);
     $conditions->addCondition('category', 'article_category');
     $conditions = $query->createAndAddConditionGroup();
     $conditions->addCondition('category', NULL, '<>');
@@ -435,7 +435,27 @@ abstract class BackendTestBase extends KernelTestBase {
     ];
     $category_facets = $results->getExtraData('search_api_facets')['category'];
     usort($category_facets, [$this, 'facetCompare']);
-    $this->assertEquals($expected, $category_facets, 'Correct OR facets were returned');
+    $this->assertEquals($expected, $category_facets, 'Incorrect OR facets were returned');
+
+    $query = $this->buildSearch();
+    $query->createAndAddConditionGroup('OR', ['facet:category'])
+      ->addCondition('category', 'article_category');
+    $facets['category'] = [
+      'field' => 'category',
+      'limit' => 0,
+      'min_count' => 1,
+      'missing' => TRUE,
+      'operator' => 'and',
+    ];
+    $query->setOption('search_api_facets', $facets);
+    $results = $query->execute();
+    $this->assertResults([4, 5], $results, 'AND facets query');
+    $expected = [
+      ['count' => 2, 'filter' => '"article_category"'],
+    ];
+    $category_facets = $results->getExtraData('search_api_facets')['category'];
+    usort($category_facets, [$this, 'facetCompare']);
+    $this->assertEquals($expected, $category_facets, 'Incorrect AND facets were returned');
   }
 
   /**

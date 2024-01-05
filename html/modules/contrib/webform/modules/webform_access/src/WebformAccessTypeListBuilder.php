@@ -61,7 +61,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
    *   A render array representing the information summary.
    */
   protected function buildInfo() {
-    $total = $this->getStorage()->getQuery()->count()->execute();
+    $total = $this->getStorage()->getQuery()->accessCheck(FALSE)->count()->execute();
     if (!$total) {
       return [];
     }
@@ -97,6 +97,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
 
     // Groups.
     $entity_ids = $this->getEntityStorage('webform_access_group')->getQuery()
+      ->accessCheck(FALSE)
       ->condition('type', $entity->id())
       ->execute();
     $items = [];

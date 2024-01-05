@@ -69,10 +69,24 @@ class LinkFieldTest extends BrowserTestBase {
   }
 
   /**
+   * Tests the functionality and rendering of the link field.
+   *
+   * This is being as one to avoid multiple Drupal install.
+   */
+  public function testLinkField() {
+    $this->doTestURLValidation();
+    $this->doTestLinkTitle();
+    $this->doTestLinkFormatter();
+    $this->doTestLinkSeparateFormatter();
+    $this->doTestEditNonNodeEntityLink();
+    $this->doTestLinkTypeOnLinkWidget();
+  }
+
+  /**
    * Tests link field URL validation.
    */
-  public function testURLValidation() {
-    $field_name = mb_strtolower($this->randomMachineName());
+  protected function doTestURLValidation() {
+    $field_name = $this->randomMachineName();
     // Create a field with settings to validate.
     $this->fieldStorage = FieldStorageConfig::create([
       'field_name' => $field_name,
@@ -255,8 +269,8 @@ class LinkFieldTest extends BrowserTestBase {
   /**
    * Tests the link title settings of a link field.
    */
-  public function testLinkTitle() {
-    $field_name = mb_strtolower($this->randomMachineName());
+  protected function doTestLinkTitle() {
+    $field_name = $this->randomMachineName();
     // Create a field with settings to validate.
     $this->fieldStorage = FieldStorageConfig::create([
       'field_name' => $field_name,
@@ -380,8 +394,8 @@ class LinkFieldTest extends BrowserTestBase {
   /**
    * Tests the default 'link' formatter.
    */
-  public function testLinkFormatter() {
-    $field_name = mb_strtolower($this->randomMachineName());
+  protected function doTestLinkFormatter() {
+    $field_name = $this->randomMachineName();
     // Create a field with settings to validate.
     $this->fieldStorage = FieldStorageConfig::create([
       'field_name' => $field_name,
@@ -537,8 +551,8 @@ class LinkFieldTest extends BrowserTestBase {
    * This test is mostly the same as testLinkFormatter(), but they cannot be
    * merged, since they involve different configuration and output.
    */
-  public function testLinkSeparateFormatter() {
-    $field_name = mb_strtolower($this->randomMachineName());
+  protected function doTestLinkSeparateFormatter() {
+    $field_name = $this->randomMachineName();
     // Create a field with settings to validate.
     $this->fieldStorage = FieldStorageConfig::create([
       'field_name' => $field_name,
@@ -664,10 +678,10 @@ class LinkFieldTest extends BrowserTestBase {
    * a link and also which LinkItemInterface::LINK_* is (EXTERNAL, GENERIC,
    * INTERNAL).
    */
-  public function testLinkTypeOnLinkWidget() {
+  protected function doTestLinkTypeOnLinkWidget() {
 
     $link_type = LinkItemInterface::LINK_EXTERNAL;
-    $field_name = mb_strtolower($this->randomMachineName());
+    $field_name = $this->randomMachineName();
 
     // Create a field with settings to validate.
     $this->fieldStorage = FieldStorageConfig::create([
@@ -702,7 +716,7 @@ class LinkFieldTest extends BrowserTestBase {
   /**
    * Tests editing a link to a non-node entity.
    */
-  public function testEditNonNodeEntityLink() {
+  protected function doTestEditNonNodeEntityLink() {
 
     $entity_type_manager = \Drupal::entityTypeManager();
     $entity_test_storage = $entity_type_manager->getStorage('entity_test');
@@ -765,7 +779,7 @@ class LinkFieldTest extends BrowserTestBase {
    * Tests <nolink> and <none> as link uri.
    */
   public function testNoLinkUri() {
-    $field_name = mb_strtolower($this->randomMachineName());
+    $field_name = $this->randomMachineName();
     $this->fieldStorage = FieldStorageConfig::create([
       'field_name' => $field_name,
       'entity_type' => 'entity_test',

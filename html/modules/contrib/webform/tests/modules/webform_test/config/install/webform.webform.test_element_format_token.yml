@@ -14,7 +14,8 @@ archive: false
 id: test_element_format_token
 title: 'Test: Element: Format: Token'
 description: 'Test element formatting using tokens.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   checkboxes:
     '#type': checkboxes
@@ -27,7 +28,6 @@ elements: |
       - 1
       - 2
       - 3
-  
 css: ''
 javascript: ''
 settings:
@@ -115,6 +115,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -239,7 +241,6 @@ handlers:
         <h3>ul:</h3>[webform_submission:values:checkboxes:value:ul]<hr />
         <h3>ol:</h3>[webform_submission:values:checkboxes:value:ol]<hr />
         <h3>raw:</h3>[webform_submission:values:checkboxes:raw]<hr />
-        
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
@@ -279,25 +280,24 @@ handlers:
       body: |
         default:
         [webform_submission:values:checkboxes]
-        
+
         comma:
         [webform_submission:values:checkboxes:value:comma]
-        
+
         semicolon:
         [webform_submission:values:checkboxes:value:semicolon]
-        
+
         and:
         [webform_submission:values:checkboxes:value:and]
-        
+
         ul:
         [webform_submission:values:checkboxes:value:ul]
-        
+
         ol:
         [webform_submission:values:checkboxes:value:ol]
-        
+
         raw:
         [webform_submission:values:checkboxes:raw]
-        
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true

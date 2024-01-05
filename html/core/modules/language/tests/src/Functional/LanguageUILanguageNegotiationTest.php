@@ -43,6 +43,15 @@ use Drupal\block\Entity\Block;
 class LanguageUILanguageNegotiationTest extends BrowserTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected static $configSchemaCheckerExclusions = [
+    // Necessary to allow setting `selected_langcode` to NULL.
+    // @see testUILanguageNegotiation()
+    'language.negotiation',
+  ];
+
+  /**
    * The admin user for testing.
    *
    * @var \Drupal\user\Entity\User
@@ -466,7 +475,7 @@ class LanguageUILanguageNegotiationTest extends BrowserTestBase {
     // Place a site branding block in the header region.
     $this->drupalPlaceBlock('system_branding_block', [
       'region' => 'header',
-      'id' => 'site-branding',
+      'id' => 'site_branding',
     ]);
 
     // Access the front page without specifying any valid URL language prefix

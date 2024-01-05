@@ -661,7 +661,7 @@ class SimplesitemapTest extends SimplesitemapTestBase {
     $this->assertSession()->responseNotContains('node/' . $this->node->id());
 
     $this->generator->entityManager()->setBundleSettings('node', 'page');
-    $this->generator->setVariants('test')->generate(QueueWorker::GENERATE_TYPE_BACKEND);
+    $this->generator->setSitemaps('test')->generate(QueueWorker::GENERATE_TYPE_BACKEND);
 
     // Test if bundle settings have been set for correct variant.
     $this->drupalGet($this->defaultSitemapUrl);

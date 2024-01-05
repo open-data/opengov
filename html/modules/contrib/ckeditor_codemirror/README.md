@@ -1,87 +1,62 @@
-CONTENTS OF THIS FILE
----------------------
+# CKEditor CodeMirror
 
- * Introduction
- * Requirements
- * Installation
- * Configuration
- * Documentation
- * Maintainers
+CKEditor CodeMirror adds syntax highlighting for "Source View" in
+CKEditor WYSIWYG editor.
 
-INTRODUCTION
-------------
+For a full description of the module, visit the
+[project page](https://www.drupal.org/project/ckeditor_codemirror).
 
-CKEditor CodeMirror module adds syntax highlighting for "Source View" in
-CKEditor WYSIWYG editor using the CKEditor CodeMirror Plugin.
+Submit bug reports and feature suggestions, or track changes in the
+[issue queue](https://www.drupal.org/project/issues/ckeditor_codemirror).
 
- * For a full description of the module, visit the project page:
-   https://www.drupal.org/project/ckeditor_codemirror
 
- * To submit bug reports and feature suggestions, or to track changes:
-   https://www.drupal.org/project/issues/ckeditor_codemirror?version=8.x
+## Table of contents
 
-REQUIREMENTS
-------------
+- Requirements
+- Installation
+- Configuration
+- Maintainers
 
- * [CKEditor-CodeMirror-Plugin library](https://github.com/w8tcha/CKEditor-CodeMirror-Plugin)
 
-INSTALLATION
-------------
+## Requirements
 
- 1. Download and install CKEditor CodeMirror module.
- 2. Install the [CKEditor-CodeMirror-Plugin library](https://github.com/w8tcha/CKEditor-CodeMirror-Plugin)
-    
-    For Composer-managed Drupal installations, the recommended method is to use
-    the [Composer Merge Plugin](https://github.com/wikimedia/composer-merge-plugin)
-    and this module's `composer.libraries.json` file. From a Composer project 
-    root:
-    
-    1. Execute `composer require wikimedia/composer-merge-plugin`.
-    2. Add the following to the `extra` section of the root `composer.json` 
-       file:
-    
-        ```
-        "merge-plugin": {
-            "include": [
-                "{DOCROOT}/modules/contrib/ckeditor_codemirror/composer.libraries.json"
-            ]
-        },
-        ```
-    
-        Note: Remember to replace `{DOCROOT}` with the appropriate root folder 
-        for the Drupal installation -- this is likely `web` or `docroot`.
-    3. Execute `composer install` (or, in some cases, `composer update --lock`).
-    
-    That's it! Composer should install the CKEditor CodeMirror plugin in the 
-    appropriate place (`/libraries/ckeditor_codemirror`).
+This module requires the following modules:
 
-CONFIGURATION
--------------
+- [CodeMirror v5](https://www.npmjs.com/package/codemirror/v/version5)
+  (CodeMirror v6 is **not supported**.)
+- [CKEditor 5 CodeMirror plugin](https://www.npmjs.com/package/@cdubz/ckeditor5-source-editing-codemirror)
 
- 1. Go to **Administration » Configuration » Content authoring » Text formats
-    and editors** (admin/config/content/formats).
- 2. Click *Configure* for any text format using CKEditor as the text editor.
- 3. Under *CKEditor plugin settings*, click *CodeMirror* and check **Enable
-    CodeMirror source view syntax highlighting**. Make sure that the current
-    toolbar has the "Source" button. Adjust other settings as desired.
- 4. Scroll down and click **Save configuration**.
- 5. Go to node create/edit page, choose the text format with CodeMirror plugin.
-    Press the "Source" button.
+These requirements must be located in the `libraries` directory of the Drupal
+installation:
 
-DOCUMENTATION
--------------
+- `/libraries/codemirror`
+- `/libraries/ckeditor5-source-editing-codemirror`
 
-Additional documentation of CKEditor CodeMirror's features can be found at:
+A `composer.libraries.json` file is provided for use with the
+[Composer Merge Plugin](https://github.com/wikimedia/composer-merge-plugin).
 
- * The project's documentation pages on drupal.org:
-   https://www.drupal.org/docs/8/modules/ckeditor-codemirror
 
- * CKEditor CodeMirror's official website:
-   https://w8tcha.github.io/CKEditor-CodeMirror-Plugin/
+## Installation
 
-MAINTAINERS
------------
+Install as you would normally install a contributed Drupal module. For further
+information, see
+[Installing Drupal Modules](https://www.drupal.org/docs/extending-drupal/installing-drupal-modules).
 
-Current maintainers:
- * Christopher Charbonenau Wells (wells) - https://www.drupal.org/u/wells
- * Plazik - https://www.drupal.org/u/plazik
+
+# Configuration
+
+1. Go to **Administration » Configuration » Content authoring » Text formats
+   and editors** (`admin/config/content/formats`).
+2. Click **Configure** for any text format using CKEditor as the text editor.
+3. Under **CKEditor plugin settings**, click **CodeMirror** and check **Enable
+   CodeMirror source view syntax highlighting**. Make sure that the current
+   toolbar has the `"Source"` button. Adjust other settings as desired.
+4. Scroll down and click **Save configuration**.
+5. Go to node create/edit page, choose the text format with CodeMirror plugin.
+   Press the "Source" button.
+
+
+## Maintainers
+
+- Plazik - [Plazik](https://www.drupal.org/u/plazik)
+- Christopher C. Wells - [wells](https://www.drupal.org/u/wells)

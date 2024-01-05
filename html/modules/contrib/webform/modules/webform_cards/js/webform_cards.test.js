@@ -3,7 +3,7 @@
  * JavaScript behaviors for webform cards.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,7 +14,7 @@
    */
   Drupal.behaviors.webformCardsTest = {
     attach: function (context) {
-      $('.js-webform-card-test-submit-form', context).once('webform-card-test-submit-form').on('click', function () {
+      $(once('webform-card-test-submit-form', '.js-webform-card-test-submit-form', context)).on('click', function () {
         var selector = $(this).attr('href').replace('#', '.') + ' .webform-button--submit';
         $(selector).trigger('click');
         return false;
@@ -22,4 +22,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

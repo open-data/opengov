@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api\Plugin\views\filter;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\ParseMode\ParseModePluginManager;
@@ -135,6 +136,7 @@ class SearchApiFulltext extends FilterPluginBase {
     $options['expose']['contains']['placeholder'] = ['default' => ''];
     $options['expose']['contains']['expose_fields'] = ['default' => FALSE];
     $options['expose']['contains']['searched_fields_id'] = ['default' => ''];
+    $options['expose']['contains']['value_maxlength'] = ['default' => 128];
 
     return $options;
   }
@@ -222,6 +224,14 @@ class SearchApiFulltext extends FilterPluginBase {
       '#description' => $this->t('Hint text that appears inside the field when empty.'),
     ];
 
+    $form['expose']['value_maxlength'] = [
+      '#title' => $this->t('Search field character limit'),
+      '#description' => $this->t('Maximum number of characters to allow as keywords input.'),
+      '#type' => 'number',
+      '#min' => 1,
+      '#default_value' => $this->options['expose']['value_maxlength'],
+    ];
+
     $form['expose']['expose_fields'] = [
       '#type' => 'checkbox',
       '#default_value' => $this->options['expose']['expose_fields'],
@@ -281,11 +291,17 @@ class SearchApiFulltext extends FilterPluginBase {
   protected function valueForm(&$form, FormStateInterface $form_state) {
     parent::valueForm($form, $form_state);
 
+    $exposed = (bool) $form_state->get('exposed');
+    $max_length = NULL;
+    if ($exposed && $this->options['expose']['value_maxlength']) {
+      $max_length = $this->options['expose']['value_maxlength'];
+    }
     $form['value'] = [
       '#type' => 'textfield',
-      '#title' => !$form_state->get('exposed') ? $this->t('Value') : '',
+      '#title' => !$exposed ? $this->t('Value') : '',
       '#size' => 30,
       '#default_value' => $this->value,
+      '#maxlength' => $max_length,
     ];
     if (!empty($this->options['expose']['placeholder'])) {
       $form['value']['#attributes']['placeholder'] = $this->options['expose']['placeholder'];
@@ -347,20 +363,24 @@ class SearchApiFulltext extends FilterPluginBase {
       return;
     }
 
+    if (!Unicode::validateUtf8($input)) {
+      $msg = $this->t('Invalid input.');
+      $form_state->setErrorByName($identifier, $msg);
+    }
+
     // Only continue if there is a minimum word length set.
     if ($this->options['min_length'] < 2) {
       return;
     }
 
-    $words = preg_split('/\s+/', $input);
+    $words = preg_split('/\s+/', $input) ?: [];
     foreach ($words as $i => $word) {
       if (mb_strlen($word) < $this->options['min_length']) {
         unset($words[$i]);
       }
     }
     if (!$words) {
-      $vars['@count'] = $this->options['min_length'];
-      $msg = $this->t('You must include at least one positive keyword with @count characters or more.', $vars);
+      $msg = $this->formatPlural($this->options['min_length'], 'You must include at least one keyword to match in the content, and punctuation is ignored.', 'You must include at least one keyword to match in the content. Keywords must be at least @count characters, and punctuation is ignored.');
       $form_state->setErrorByName($identifier, $msg);
     }
     $input = implode(' ', $words);
@@ -456,7 +476,7 @@ class SearchApiFulltext extends FilterPluginBase {
           // new ones.
           else {
             foreach ($old as $key => $value) {
-              if (substr($key, 0, 1) === '#') {
+              if (str_starts_with($key, '#')) {
                 continue;
               }
               $keys[] = $value;

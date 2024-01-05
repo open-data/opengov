@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\Core\Form;
 
+use Drupal\Core\Form\ConfigFormBaseTrait;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -15,7 +16,7 @@ class ConfigFormBaseTraitTest extends UnitTestCase {
    */
   public function testConfig() {
 
-    $trait = $this->getMockForTrait('Drupal\Core\Form\ConfigFormBaseTrait');
+    $trait = $this->createPartialMock(ConfiguredTrait::class, ['getEditableConfigNames']);
     // Set up some configuration in a mocked config factory.
     $trait->configFactory = $this->getConfigFactoryStub([
       'editable.config' => [],
@@ -27,7 +28,6 @@ class ConfigFormBaseTraitTest extends UnitTestCase {
       ->willReturn(['editable.config']);
 
     $config_method = new \ReflectionMethod($trait, 'config');
-    $config_method->setAccessible(TRUE);
 
     // Ensure that configuration that is expected to be mutable is.
     $result = $config_method->invoke($trait, 'editable.config');
@@ -45,7 +45,6 @@ class ConfigFormBaseTraitTest extends UnitTestCase {
   public function testConfigFactoryException() {
     $trait = $this->getMockForTrait('Drupal\Core\Form\ConfigFormBaseTrait');
     $config_method = new \ReflectionMethod($trait, 'config');
-    $config_method->setAccessible(TRUE);
 
     // There is no config factory available this should result in an exception.
     $this->expectException(\LogicException::class);
@@ -58,14 +57,20 @@ class ConfigFormBaseTraitTest extends UnitTestCase {
    */
   public function testConfigFactoryExceptionInvalidProperty() {
     $trait = $this->getMockForTrait('Drupal\Core\Form\ConfigFormBaseTrait');
-    $trait->configFactory = TRUE;
     $config_method = new \ReflectionMethod($trait, 'config');
-    $config_method->setAccessible(TRUE);
 
     // There is no config factory available this should result in an exception.
     $this->expectException(\LogicException::class);
     $this->expectExceptionMessage('No config factory available for ConfigFormBaseTrait');
     $config_method->invoke($trait, 'editable.config');
   }
+
+}
+
+class ConfiguredTrait {
+  use ConfigFormBaseTrait;
+  public $configFactory;
+
+  protected function getEditableConfigNames() {}
 
 }

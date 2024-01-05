@@ -6,6 +6,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\editor\Entity\Editor;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\user\UserInterface;
 
 /**
  * Test enabling the module and adding source highlighting to a text format.
@@ -21,38 +22,33 @@ class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'filter',
     'node',
     'editor',
-    'ckeditor',
+    'ckeditor5',
     'ckeditor_codemirror',
   ];
 
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'stable';
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $profile = 'minimal';
+  protected $defaultTheme = 'stark';
 
   /**
    * The user for tests.
    *
    * @var \Drupal\user\UserInterface
    */
-  protected $privilegedUser;
+  protected UserInterface $privilegedUser;
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
-    // Create text format, associate CKEditor.
+    // Create text format, associate CKEditor 5.
     $full_html_format = FilterFormat::create([
       'format' => 'full_html',
       'name' => 'Full HTML',
@@ -62,15 +58,12 @@ class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
     $full_html_format->save();
     $editor = Editor::create([
       'format' => 'full_html',
-      'editor' => 'ckeditor',
+      'editor' => 'ckeditor5',
     ]);
     $editor->save();
 
     // Create node type.
-    $this->drupalCreateContentType([
-      'type' => 'article',
-      'name' => 'Article',
-    ]);
+    $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
 
     $this->privilegedUser = $this->drupalCreateUser([
       'administer site configuration',
@@ -86,23 +79,23 @@ class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
    * Check the library status on "Status report" page.
    */
   public function testCheckStatusReportPage() {
-    module_load_include('install', 'ckeditor_codemirror');
+    $this->container->get('module_handler')->loadInclude('install', 'ckeditor_codemirror');
 
     $this->drupalLogin($this->privilegedUser);
     $this->drupalGet('admin/reports/status');
 
-    $library_path = _ckeditor_codemirror_get_library_path();
-    if (file_exists(DRUPAL_ROOT . '/' . $library_path . '/codemirror/plugin.js')) {
+    $library_path = _ckeditor_codemirror_get_library_path('codemirror');
+    if (file_exists("$library_path/package.json")) {
       $this->assertSession()->responseContains(
-        $this->t('CKEditor CodeMirror plugin version %version installed at %path.',
+        $this->t('CodeMirror version %version installed at %path.',
           [
             '%path' => base_path() . $library_path,
-            '%version' => _ckeditor_codemirror_get_version(),
+            '%version' => _ckeditor_codemirror_get_library_version('codemirror'),
           ])
       );
     }
     else {
-      $this->assertSession()->pageTextContains('CKEditor CodeMirror plugin was not found.');
+      $this->assertSession()->pageTextContains($this->t('CodeMirror was not found.'));
     }
   }
 
@@ -112,21 +105,25 @@ class CkeditorCodeMirrorBasicTest extends BrowserTestBase {
   public function testEnableCkeditorCodeMirrorPlugin() {
     $this->drupalLogin($this->privilegedUser);
     $this->drupalGet('admin/config/content/formats/manage/full_html');
-    $this->assertSession()->pageTextContains('Enable CodeMirror source view syntax highlighting.');
-    $this->assertSession()->checkboxNotChecked('edit-editor-settings-plugins-codemirror-enable');
+    $this->assertSession()->pageTextContains($this->t('Enable CodeMirror source view syntax highlighting.'));
+    $this->assertSession()->checkboxNotChecked('edit-editor-settings-plugins-ckeditor-codemirror-source-editing-enable');
 
     // Enable the plugin.
-    $edit = ['editor[settings][plugins][codemirror][enable]' => '1'];
-    $this->submitForm($edit, 'Save configuration');
-    $this->assertSession()->pageTextContains('The text format Full HTML has been updated.');
+    $edit = ['editor[settings][plugins][ckeditor_codemirror_source_editing][enable]' => '1'];
+    $this->submitForm($edit, $this->t('Save configuration'));
+    $this->assertSession()->pageTextContains($this->t('The text format Full HTML has been updated.'));
 
     // Check for the plugin on node add page.
     $this->drupalGet('node/add/article');
     $editor_settings = $this->getDrupalSettings()['editor']['formats']['full_html']['editorSettings'];
 
-    $library_path = _ckeditor_codemirror_get_library_path();
-    if (file_exists(DRUPAL_ROOT . '/' . $library_path . '/codemirror/plugin.js')) {
-      $ckeditor_enabled = $editor_settings['codemirror']['enable'];
+    // Ensure the plugin is loaded.
+    $this->assertContains('sourceEditingCodemirror.SourceEditingCodeMirror', $editor_settings['plugins']);
+
+    // Ensure the plugin is enabled.
+    $library_path = _ckeditor_codemirror_get_library_path('codemirror');
+    if (file_exists("$library_path/package.json")) {
+      $ckeditor_enabled = $editor_settings['config']['sourceEditingCodemirror.SourceEditingCodeMirror']['enable'];
       $this->assertTrue($ckeditor_enabled);
     }
   }

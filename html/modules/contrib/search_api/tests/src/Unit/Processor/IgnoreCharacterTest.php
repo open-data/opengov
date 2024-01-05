@@ -137,6 +137,7 @@ class IgnoreCharacterTest extends UnitTestCase {
       [['abcde', 'abcdef'], ['ace', 'ace'], '[bdf]'],
       ["ab.c'de", "a.'de", '[b-c]'],
       ['foo 13$%& (bar)[93]', 'foo $%& (bar)[]', '\d'],
+      ["foo.com n'd bar. baz.gv. bla.net.", 'foo.com nd bar baz.gv bla.net', '[\'¿¡!?,:;]|\.(?= |$)'],
     ];
   }
 

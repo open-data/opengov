@@ -2,6 +2,8 @@
 
 namespace Drupal\search_api\Utility;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\DestructableInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\search_api\LoggerTrait;
@@ -58,9 +60,7 @@ class PostRequestIndexing implements PostRequestIndexingInterface, DestructableI
       try {
         $storage = $this->entityTypeManager->getStorage('search_api_index');
       }
-      // @todo Replace with multi-catch for InvalidPluginDefinitionException and
-      //   PluginNotFoundException once we depend on PHP 7.1+.
-      catch (\Exception $e) {
+      catch (InvalidPluginDefinitionException | PluginNotFoundException) {
         // It might be possible that the module got uninstalled during the rest
         // of the page request, or something else happened. To be on the safe
         // side, catch the exception in case the entity type isn't found.

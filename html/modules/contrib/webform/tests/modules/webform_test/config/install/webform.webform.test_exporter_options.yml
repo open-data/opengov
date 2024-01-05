@@ -14,7 +14,8 @@ archive: false
 id: test_exporter_options
 title: 'Test: Exporter: Options'
 description: 'Test exporting options element.'
-category: 'Test: Exporter'
+categories:
+  - 'Test: Exporter'
 elements: |
   select_single:
     '#type': select
@@ -44,7 +45,6 @@ elements: |
       one: One
       two: Two
       three: Three
-  
 css: ''
 javascript: ''
 settings:
@@ -132,6 +132,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

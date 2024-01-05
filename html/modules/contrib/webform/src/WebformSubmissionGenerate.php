@@ -2,9 +2,9 @@
 
 namespace Drupal\webform;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Serialization\Yaml;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 
 /**

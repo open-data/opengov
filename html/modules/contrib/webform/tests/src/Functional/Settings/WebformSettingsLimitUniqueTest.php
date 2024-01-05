@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Settings;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform_node\Functional\WebformNodeBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform submission form unique limit.
@@ -17,7 +17,7 @@ class WebformSettingsLimitUniqueTest extends WebformNodeBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_node'];
+  protected static $modules = ['webform', 'webform_node'];
 
   /**
    * Webforms to load.

@@ -27,6 +27,7 @@ use Drupal\search_api\Processor\ConfigurablePropertyInterface;
 use Drupal\search_api\Processor\ProcessorInterface;
 use Drupal\search_api\Processor\ProcessorPropertyInterface;
 use Drupal\search_api\SearchApiException;
+use Drupal\text\TextProcessed;
 use Symfony\Component\DependencyInjection\Container;
 
 /**
@@ -63,22 +64,11 @@ class FieldsHelper implements FieldsHelperInterface {
   protected $dataTypeHelper;
 
   /**
-   * Cache for the field type mapping.
+   * The theme switcher.
    *
-   * @var array|null
-   *
-   * @see getFieldTypeMapping()
+   * @var \Drupal\search_api\Utility\ThemeSwitcherInterface
    */
-  protected $fieldTypeMapping;
-
-  /**
-   * Cache for the fallback data type mapping per index.
-   *
-   * @var array
-   *
-   * @see getDataTypeFallbackMapping()
-   */
-  protected $dataTypeFallbackMapping = [];
+  protected $themeSwitcher;
 
   /**
    * Constructs a FieldsHelper object.
@@ -91,12 +81,26 @@ class FieldsHelper implements FieldsHelperInterface {
    *   The entity type bundle info service.
    * @param \Drupal\search_api\Utility\DataTypeHelperInterface $dataTypeHelper
    *   The data type helper service.
+   * @param \Drupal\search_api\Utility\ThemeSwitcherInterface|null $themeSwitcher
+   *   (optional) The theme switcher service.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, EntityFieldManagerInterface $entityFieldManager, EntityTypeBundleInfoInterface $entityBundleInfo, DataTypeHelperInterface $dataTypeHelper) {
+  public function __construct(
+    EntityTypeManagerInterface $entityTypeManager,
+    EntityFieldManagerInterface $entityFieldManager,
+    EntityTypeBundleInfoInterface $entityBundleInfo,
+    DataTypeHelperInterface $dataTypeHelper,
+    ?ThemeSwitcherInterface $themeSwitcher = NULL,
+  ) {
+    if (!$themeSwitcher) {
+      @trigger_error('Constructing \Drupal\search_api\Utility\FieldsHelper without the $themeSwitcher parameter is deprecated in search_api:8.x-1.31 and it will be required in search_api:2.0.0. See https://www.drupal.org/node/3320841',
+        E_USER_DEPRECATED);
+      $themeSwitcher = \Drupal::service('search_api.theme_switcher');
+    }
     $this->entityTypeManager = $entityTypeManager;
     $this->entityFieldManager = $entityFieldManager;
     $this->entityBundleInfo = $entityBundleInfo;
     $this->dataTypeHelper = $dataTypeHelper;
+    $this->themeSwitcher = $themeSwitcher;
   }
 
   /**
@@ -125,8 +129,8 @@ class FieldsHelper implements FieldsHelperInterface {
     $directFields = [];
     $nestedFields = [];
     foreach (array_keys($fields) as $key) {
-      if (strpos($key, ':') !== FALSE) {
-        list($direct, $nested) = explode(':', $key, 2);
+      if (str_contains($key, ':')) {
+        [$direct, $nested] = explode(':', $key, 2);
         $nestedFields[$direct][$nested] = $fields[$key];
       }
       else {
@@ -173,12 +177,23 @@ class FieldsHelper implements FieldsHelperInterface {
    * {@inheritdoc}
    */
   public function extractField(TypedDataInterface $data, FieldInterface $field) {
+    // Switch to the default theme for TextProcessed rendering.
+    $active_theme = NULL;
+    if ($data instanceof TextProcessed) {
+      $active_theme = $this->themeSwitcher->switchToDefault();
+    }
+
     $values = $this->extractFieldValues($data);
 
-    foreach ($values as $i => $value) {
+    foreach ($values as $value) {
       $field->addValue($value);
     }
     $field->setOriginalType($data->getDataDefinition()->getDataType());
+
+    // Restore the original theme if themes got switched before.
+    if ($active_theme) {
+      $this->themeSwitcher->switchBack($active_theme);
+    }
   }
 
   /**
@@ -352,7 +367,7 @@ class FieldsHelper implements FieldsHelperInterface {
    * {@inheritdoc}
    */
   public function retrieveNestedProperty(array $properties, $propertyPath) {
-    list($key, $nestedPath) = Utility::splitPropertyPath($propertyPath, FALSE);
+    [$key, $nestedPath] = Utility::splitPropertyPath($propertyPath, FALSE);
     if (!isset($properties[$key])) {
       return NULL;
     }
@@ -390,7 +405,7 @@ class FieldsHelper implements FieldsHelperInterface {
       $definition = $this->entityTypeManager->getDefinition($entity_type_id);
       return $definition->entityClassImplements(ContentEntityInterface::class);
     }
-    catch (PluginNotFoundException $e) {
+    catch (PluginNotFoundException) {
       return FALSE;
     }
   }
@@ -399,7 +414,7 @@ class FieldsHelper implements FieldsHelperInterface {
    * {@inheritdoc}
    */
   public function isFieldIdReserved($fieldId) {
-    return substr($fieldId, 0, 11) == 'search_api_';
+    return str_starts_with($fieldId, 'search_api_');
   }
 
   /**
@@ -475,7 +490,7 @@ class FieldsHelper implements FieldsHelperInterface {
    * {@inheritdoc}
    */
   public function getNewFieldId(IndexInterface $index, $propertyPath) {
-    list(, $suggestedId) = Utility::splitPropertyPath($propertyPath);
+    [, $suggestedId] = Utility::splitPropertyPath($propertyPath);
 
     // Avoid clashes with reserved IDs by removing the reserved "search_api_"
     // from our suggested ID.

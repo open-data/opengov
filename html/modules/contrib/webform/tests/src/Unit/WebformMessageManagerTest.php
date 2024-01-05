@@ -28,9 +28,7 @@ class WebformMessageManagerTest extends UnitTestCase {
    */
   public function testMessageManager() {
     // Mock webform.
-    $webform = $this->getMockBuilder(WebformInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $webform = $this->createMock(WebformInterface::class);
     $webform->method('getSettings')
       ->will($this->returnCallback(function () {
         return [
@@ -40,18 +38,14 @@ class WebformMessageManagerTest extends UnitTestCase {
       }));
 
     // Mock url.
-    $url = $this->getMockBuilder('\Drupal\Core\Url')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $url = $this->createMock('\Drupal\Core\Url');
     $url->method('toString')
       ->willReturn('http://example.com/');
 
     /* ********************************************************************** */
 
     // Mock current user.
-    $current_user = $this->getMockBuilder(AccountInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $current_user = $this->createMock(AccountInterface::class);
 
     // Mock config factory.
     $config_factory = $this->getConfigFactoryStub(
@@ -65,43 +59,31 @@ class WebformMessageManagerTest extends UnitTestCase {
     );
 
     // Mock webform submission storage.
-    $webform_submission_storage = $this->getMockBuilder(WebformSubmissionStorageInterface::class)
-      ->getMock();
+    $webform_submission_storage = $this->createMock(WebformSubmissionStorageInterface::class);
 
     // Mock entity type manager.
-    $entity_type_manager = $this->getMockBuilder(EntityTypeManagerInterface::class)
-      ->getMock();
+    $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $entity_type_manager->method('getStorage')
       ->willReturnMap([
         ['webform_submission', $webform_submission_storage],
       ]);
 
     // Mock logger.
-    $logger = $this->getMockBuilder(LoggerInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $logger = $this->createMock(LoggerInterface::class);
 
     // Mock renderer.
-    $renderer = $this->getMockBuilder(RendererInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $renderer = $this->createMock(RendererInterface::class);
 
     // Mock messenger.
-    $messenger = $this->getMockBuilder(MessengerInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $messenger = $this->createMock(MessengerInterface::class);
 
     // Mock webform request handler.
-    $request_handler = $this->getMockBuilder(WebformRequestInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $request_handler = $this->createMock(WebformRequestInterface::class);
     $request_handler->method('getUrl')
       ->willReturn($url);
 
     // Mock webform token manager.
-    $token_manager = $this->getMockBuilder(WebformTokenManagerInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $token_manager = $this->createMock(WebformTokenManagerInterface::class);
     $token_manager->method('replace')
       ->will($this->returnCallback(function ($text) {
         return $text;

@@ -3,8 +3,8 @@
 namespace Drupal\Tests\webform\Functional\Handler;
 
 use Drupal\Core\Test\AssertMailTrait;
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for email webform handler rendering functionality.
@@ -18,15 +18,15 @@ class WebformHandlerEmailRenderingTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Make sure we are using distinct default and administrative themes for
     // the duration of these tests.
-    \Drupal::service('theme_installer')->install(['webform_test_bartik', 'seven']);
+    \Drupal::service('theme_installer')->install(['webform_test_olivero', 'claro']);
     $this->config('system.theme')
-      ->set('default', 'webform_test_bartik')
-      ->set('admin', 'seven')
+      ->set('default', 'webform_test_olivero')
+      ->set('admin', 'claro')
       ->save();
   }
 
@@ -41,9 +41,9 @@ class WebformHandlerEmailRenderingTest extends WebformBrowserTestBase {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('contact');
 
-    // Check that we are currently using the bartik.theme.
+    // Check that we are currently using the olivero.theme.
     $this->drupalGet('/webform/contact');
-    $assert_session->responseContains('core/themes/bartik/css/base/elements.css');
+    $assert_session->responseContains('core/themes/olivero/css/base/fonts.css');
 
     // Post submission and send emails.
     $edit = [
@@ -55,7 +55,7 @@ class WebformHandlerEmailRenderingTest extends WebformBrowserTestBase {
     $this->postSubmission($webform, $edit);
 
     // Check submitting contact form and sending emails using the
-    // default bartik.theme.
+    // default olivero.theme.
     $sent_emails = $this->getMails();
     $this->assertStringContainsStringIgnoringCase('HEADER 1 (CONTACT_EMAIL_CONFIRMATION)', $sent_emails[0]['body']);
     $this->assertStringContainsString('Please ignore this email.', $sent_emails[0]['body']);
@@ -72,14 +72,14 @@ class WebformHandlerEmailRenderingTest extends WebformBrowserTestBase {
 
     // Check that we are now using the seven.theme.
     $this->drupalGet('/webform/contact');
-    $assert_session->responseNotContains('core/themes/bartik/css/base/elements.css');
+    $assert_session->responseNotContains('core/themes/olivero/css/base/fonts.css');
 
     // Post submission and send emails.
     $this->postSubmission($webform, $edit);
 
     // Check submitting contact form and sending emails using the
     // seven.theme but the rendered the emails still use the default
-    // bartik.theme.
+    // olivero.theme.
     // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::getMessage
     $sent_emails = $this->getMails();
     $this->assertStringContainsStringIgnoringCase('HEADER 1 (CONTACT_EMAIL_CONFIRMATION)', $sent_emails[2]['body']);

@@ -5,8 +5,8 @@
  * Provides development tools Webform module.
  */
 
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\webform\Utility\WebformYaml;
 
 /**
@@ -14,16 +14,6 @@ use Drupal\webform\Utility\WebformYaml;
  */
 function webform_devel_webform_help_info() {
   $help = [];
-  $help['webform_devel_schema'] = [
-    'group' => 'development',
-    'title' => t('Devel: Webform Schema'),
-    'content' => t("The <strong>Schema</strong> page displays an overview of a webform's elements and specified data types, which can be used to map webform submissions to an external API."),
-    'video_id' => 'development',
-    'routes' => [
-      // @see /admin/structure/webform/manage/{webform}/schema
-      'entity.webform.schema_form',
-    ],
-  ];
   $help['webform_devel_form_api_export'] = [
     'group' => 'forms',
     'title' => t('Form API Export'),
@@ -44,7 +34,6 @@ function webform_devel_entity_type_alter(array &$entity_types) {
     /** @var \Drupal\Core\Entity\ContentEntityTypeInterface $entity_type */
     $entity_type = $entity_types['webform'];
     $handlers = $entity_type->getHandlerClasses();
-    $handlers['form']['schema'] = 'Drupal\webform_devel\Form\WebformDevelEntitySchemaForm';
     $handlers['form']['fapi_export'] = 'Drupal\webform_devel\Form\WebformDevelEntityFormApiExportForm';
     $handlers['form']['fapi_test'] = 'Drupal\webform_devel\Form\WebformDevelEntityFormApiTestForm';
     $entity_type->setHandlerClass('form', $handlers['form']);

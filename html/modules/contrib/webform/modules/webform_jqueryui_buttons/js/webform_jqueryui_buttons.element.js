@@ -3,7 +3,7 @@
  * JavaScript behaviors for jQuery UI buttons (checkboxradio) element integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -23,7 +23,7 @@
    */
   Drupal.behaviors.webformButtons = {
     attach: function (context) {
-      $(context).find(Drupal.webform.buttons.selector).once('webform-buttons').each(function () {
+      $(once('webform-buttons', Drupal.webform.buttons.selector, context)).each(function () {
         var $buttons = $(this);
 
         // Remove classes around radios and labels and move to main element.
@@ -64,4 +64,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

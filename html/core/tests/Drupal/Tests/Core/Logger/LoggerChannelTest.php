@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\Core\Logger\LoggerChannelTest.
- */
-
 namespace Drupal\Tests\Core\Logger;
 
 use Drupal\Core\Logger\LoggerChannel;
@@ -192,7 +187,7 @@ class NaughtyRecursiveLogger implements LoggerInterface {
     $this->channel = $channel;
   }
 
-  public function log($level, $message, array $context = []) {
+  public function log($level, string|\Stringable $message, array $context = []): void {
     $this->channel->log(rand(0, 7), $message, $context);
   }
 

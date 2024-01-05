@@ -200,8 +200,6 @@ class LinkFormatter extends FormatterBase {
           // Piggyback on the metadata attributes, which will be placed in the
           // field template wrapper, and set the URL value in a content
           // attribute.
-          // @todo Does RDF need a URL rather than an internal URI here?
-          // @see \Drupal\Tests\rdf\Kernel\Field\LinkFieldRdfaTest.
           $content = str_replace('internal:/', '', $item->uri);
           $item->_attributes += ['content' => $content];
         }
@@ -237,7 +235,13 @@ class LinkFormatter extends FormatterBase {
    *   A Url object.
    */
   protected function buildUrl(LinkItemInterface $item) {
-    $url = $item->getUrl() ?: Url::fromRoute('<none>');
+    try {
+      $url = $item->getUrl();
+    }
+    catch (\InvalidArgumentException $e) {
+      // @todo Add logging here in https://www.drupal.org/project/drupal/issues/3348020
+      $url = Url::fromRoute('<none>');
+    }
 
     $settings = $this->getSettings();
     $options = $item->options;

@@ -287,6 +287,9 @@ views.filter.search_api_fulltext:
         searched_fields_id:
           type: string
           label: 'Searched fields identifier'
+        value_maxlength:
+          type: integer
+          label: 'Search field character limit'
 
 views.filter.search_api_language:
   type: views.filter.language

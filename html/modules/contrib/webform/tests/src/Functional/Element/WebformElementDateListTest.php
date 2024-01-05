@@ -38,6 +38,8 @@ datelist_min_max: '2009-08-18T00:00:00+1000'
 datelist_min_max_time: '2009-01-01T09:00:00+1100'
 datelist_date_year_range_reverse: ''
 datelist_required_error: '2009-08-18T16:00:00+1000'
+datelist_conditional: 0
+datelist_conditional_required: ''
 datelist_multiple:
   - '2009-08-18T16:00:00+1000'
 datelist_custom_composite:
@@ -115,6 +117,10 @@ datelist_custom_composite:
     ];
     $this->submitForm($edit, 'Submit');
     $assert_session->responseContains('Custom required error');
+
+    // Check that the datelist element's states is copied to the child inputs.
+    $this->drupalGet('/webform/test_element_datelist');
+    $assert_session->responseContains('<select data-drupal-selector="edit-datelist-conditional-required-year" title="Year" id="edit-datelist-conditional-required-year" name="datelist_conditional_required[year]" class="form-select" data-drupal-states="{&quot;required&quot;:{&quot;.webform-submission-test-element-datelist-add-form :input[name=\u0022datelist_conditional\u0022]&quot;:{&quot;checked&quot;:true}}}">');
   }
 
 }

@@ -31,6 +31,7 @@ class FieldDateTest extends ViewsKernelTestBase {
       'unsigned' => TRUE,
       'not null' => FALSE,
       'default' => 0,
+      'size' => 'big',
     ];
     return $schema;
   }
@@ -56,11 +57,11 @@ class FieldDateTest extends ViewsKernelTestBase {
    * {@inheritdoc}
    */
   public function dataSet() {
-    $datas = parent::dataSet();
-    foreach ($datas as $i => $data) {
-      $datas[$i]['destroyed'] = gmmktime(0, 0, 0, 1, 1, 2050);
+    $data_set = parent::dataSet();
+    foreach ($data_set as $i => $data) {
+      $data_set[$i]['destroyed'] = gmmktime(0, 0, 0, 1, 1, 2050);
     }
-    return $datas;
+    return $data_set;
   }
 
   /**

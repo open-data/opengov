@@ -94,7 +94,7 @@ class WebformWizardConditionalTest extends WebformWizardTestBase {
     $this->submitForm($edit, 'Next >');
 
     // Assert the progress bar no longer includes page 5.
-    $assert_session->responseNotMatches('|<li data-webform-page="5" class="webform-progress-bar__page">\s+<b>Page 5</b>|');
+    $assert_session->responseNotMatches('|<li data-webform-page="5" class="webform-progress-bar__page">\s+<b class="webform-progress-bar__page-title">Page 5</b>|');
   }
 
 }

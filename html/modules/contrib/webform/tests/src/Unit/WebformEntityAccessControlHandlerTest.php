@@ -10,8 +10,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Tests\UnitTestCase;
-use Drupal\webform\WebformAccessRulesManagerInterface;
 use Drupal\webform\Plugin\WebformSourceEntityManagerInterface;
+use Drupal\webform\WebformAccessRulesManagerInterface;
 use Drupal\webform\WebformEntityAccessControlHandler;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
@@ -40,7 +40,7 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->container = new ContainerBuilder();
@@ -48,9 +48,7 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
 
     // Mock cache context manager and set container.
     // @copied from \Drupal\Tests\Core\Access\AccessResultTest::setUp
-    $cache_contexts_manager = $this->getMockBuilder('Drupal\Core\Cache\Context\CacheContextsManager')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $cache_contexts_manager = $this->createMock('Drupal\Core\Cache\Context\CacheContextsManager');
 
     $cache_contexts_manager->method('assertValidTokens')->willReturn(TRUE);
     $this->container->set('cache_contexts_manager', $cache_contexts_manager);
@@ -114,35 +112,29 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
     $entity_type = new ConfigEntityType(['id' => 'webform']);
 
     // Mock request stack.
-    $request_stack = $this->getMockBuilder(RequestStack::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $request_stack = $this->createMock(RequestStack::class);
     $request_stack->method('getCurrentRequest')
       ->willReturn(new Request(['token' => $token], [], ['_format' => $options['request_format']]));
 
     // Mock webform submission storage.
-    $webform_submission_storage = $this->getMockBuilder(WebformSubmissionStorageInterface::class)
-      ->getMock();
+    $webform_submission_storage = $this->createMock(WebformSubmissionStorageInterface::class);
 
     // Mock entity type manager.
-    $entity_type_manager = $this->getMockBuilder(EntityTypeManagerInterface::class)
-      ->getMock();
+    $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $entity_type_manager->method('getStorage')
       ->willReturnMap([
         ['webform_submission', $webform_submission_storage],
       ]);
 
     // Mock webform source entity manager.
-    $webform_source_entity_manager = $this->getMockBuilder(WebformSourceEntityManagerInterface::class)
-      ->getMock();
+    $webform_source_entity_manager = $this->createMock(WebformSourceEntityManagerInterface::class);
     $webform_source_entity_manager->method('getSourceEntity')
       ->willReturn(NULL);
 
     // Mock account.
     $permissions = $options['permissions'];
     $account_id = 2;
-    $account = $this->getMockBuilder(AccountInterface::class)
-      ->getMock();
+    $account = $this->createMock(AccountInterface::class);
     $account->method('hasPermission')
       ->willReturnCallback(function ($permission) use ($permissions) {
         return in_array($permission, $permissions);
@@ -153,8 +145,7 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
       ->willReturn($account->id() > 0);
 
     // Mock webform.
-    $webform = $this->getMockBuilder(WebformInterface::class)
-      ->getMock();
+    $webform = $this->createMock(WebformInterface::class);
     $webform->method('getOwnerId')
       ->willReturn($account_id);
     $webform->method('isTemplate')
@@ -176,8 +167,7 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
       ->willReturn(['webform_cache_tag']);
 
     // Mock webform submissions.
-    $webform_submission = $this->getMockBuilder(WebformSubmissionInterface::class)
-      ->getMock();
+    $webform_submission = $this->createMock(WebformSubmissionInterface::class);
     $webform_submission->method('getCacheContexts')
       ->willReturn(['webform_submission_cache_context']);
     $webform_submission->method('getCacheTags')
@@ -192,8 +182,7 @@ class WebformEntityAccessControlHandlerTest extends UnitTestCase {
       ]);
 
     // Mock access rules manager.
-    $access_rules_manager = $this->getMockBuilder(WebformAccessRulesManagerInterface::class)
-      ->getMock();
+    $access_rules_manager = $this->createMock(WebformAccessRulesManagerInterface::class);
     $access_rules_manager->method('checkWebformAccess')
       ->will(
         $this->returnCallback(

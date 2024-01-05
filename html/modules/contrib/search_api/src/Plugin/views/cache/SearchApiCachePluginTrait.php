@@ -188,7 +188,7 @@ trait SearchApiCachePluginTrait {
         try {
           $this->getQuery()->setSearchApiQuery($results->getQuery());
         }
-        catch (SearchApiException $e) {
+        catch (SearchApiException) {
           // Ignore.
         }
 
@@ -203,7 +203,7 @@ trait SearchApiCachePluginTrait {
    */
   public function generateResultsKey() {
     if (!isset($this->resultsKey)) {
-      $this->getQuery()->getSearchApiQuery()->preExecute();
+      $this->getQuery()->getSearchApiQuery()?->preExecute();
 
       $view = $this->getView();
       $build_info = $view->build_info;
@@ -284,6 +284,11 @@ trait SearchApiCachePluginTrait {
     // every single cacheable display in the view, thus we are resetting the
     // query to its original unprocessed state.
     $query = $this->getQuery(TRUE)->getSearchApiQuery();
+    // In case the search index is disabled, or the query couldn't be created
+    // for some other reason, there is nothing to do here.
+    if (!$query) {
+      return;
+    }
     // Add a tag to the query to indicate that this is not a real search but the
     // save process of a view. Modules like facets can use this information to
     // not perform their normal search time tasks on this query. This is

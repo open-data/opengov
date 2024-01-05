@@ -7,6 +7,8 @@ use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\User;
 
+// cspell:ignore hola usuario
+
 /**
  * Runs UpdatePathTestBaseTest with a dump filled with content.
  *
@@ -25,13 +27,15 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
    */
   protected function setDatabaseDumpFiles() {
     parent::setDatabaseDumpFiles();
-    $this->databaseDumpFiles[0] = __DIR__ . '/../../../../tests/fixtures/update/drupal-9.0.0.filled.standard.php.gz';
+    $this->databaseDumpFiles[0] = __DIR__ . '/../../../../tests/fixtures/update/drupal-9.4.0.filled.standard.php.gz';
   }
 
   /**
    * Tests that the content and configuration were properly updated.
    */
   public function testUpdatedSite() {
+    $assert_session = $this->assertSession();
+
     $this->runUpdates();
 
     $spanish = \Drupal::languageManager()->getLanguage('es');
@@ -39,7 +43,6 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
     $expected_node_data = [
       [1, 'article', 'en', 'Test Article - New title'],
       [2, 'book', 'en', 'Book page'],
-      [3, 'forum', 'en', 'Forum topic'],
       [4, 'page', 'en', 'Test page'],
       [8, 'test_content_type', 'en', 'Test title'],
     ];
@@ -84,10 +87,7 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
       }
     }
 
-    // Make sure the translated slogan appears.
-    $this->assertSession()->pageTextContains('drupal Spanish');
-
-    // Make sure the custom block appears.
+    // Make sure the content block appears.
     $this->drupalGet('<front>');
     // Block title.
     $this->assertSession()->pageTextContains('Another block');
@@ -168,11 +168,11 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
     $this->drupalGet('admin/content');
     $this->assertSession()->pageTextContains('Test title');
 
-    // Make sure our custom blocks show up.
+    // Make sure our content blocks show up.
     $this->drupalGet('admin/structure/block');
     $this->assertSession()->pageTextContains('Another block');
     $this->assertSession()->pageTextContains('Test block');
-    $this->drupalGet('admin/structure/block/block-content');
+    $this->drupalGet('admin/content/block');
     $this->assertSession()->pageTextContains('Another block');
     $this->assertSession()->pageTextContains('Test block');
 
@@ -193,20 +193,10 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
     $this->drupalGet('admin/config/content/formats/manage/test_text_format');
     $this->assertSession()->statusCodeEquals(200);
 
-    // Make sure our feed still exists.
-    $this->drupalGet('admin/config/services/aggregator');
-    $this->assertSession()->pageTextContains('Test feed');
-    $this->drupalGet('admin/config/services/aggregator/fields');
-    $this->assertSession()->pageTextContains('field_test');
-
     // Make sure our view appears in the overview.
     $this->drupalGet('admin/structure/views');
     $this->assertSession()->pageTextContains('test_view');
     $this->assertSession()->pageTextContains('Test view');
-
-    // Make sure our custom forum exists.
-    $this->drupalGet('admin/structure/forum');
-    $this->assertSession()->pageTextContains('Test forum');
 
     // Make sure our custom menu exists.
     $this->drupalGet('admin/structure/menu');
@@ -236,24 +226,24 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
     $this->drupalGet('admin/structure/types/manage/test_content_type/fields');
 
     // Make sure fields are the right type.
-    $this->assertSession()->linkExists('Text (formatted, long, with summary)');
-    $this->assertSession()->linkExists('Boolean');
-    $this->assertSession()->linkExists('Comments');
-    $this->assertSession()->linkExists('Date');
-    $this->assertSession()->linkExists('Email');
-    $this->assertSession()->linkExists('Link');
-    $this->assertSession()->linkExists('List (float)');
-    $this->assertSession()->linkExists('Telephone number');
-    $this->assertSession()->linkExists('Entity reference');
-    $this->assertSession()->linkExists('File');
-    $this->assertSession()->linkExists('Image');
-    $this->assertSession()->linkExists('Text (plain, long)');
-    $this->assertSession()->linkExists('List (text)');
-    $this->assertSession()->linkExists('Text (formatted, long)');
-    $this->assertSession()->linkExists('Text (plain)');
-    $this->assertSession()->linkExists('List (integer)');
-    $this->assertSession()->linkExists('Number (integer)');
-    $this->assertSession()->linkExists('Number (float)');
+    $assert_session->elementContains('css', '#body', 'Text (formatted, long, with summary)');
+    $assert_session->elementContains('css', '#field-test-1', 'Boolean');
+    $assert_session->elementContains('css', '#field-test-2', 'Comments');
+    $assert_session->elementContains('css', '#field-test-3', 'Date');
+    $assert_session->elementContains('css', '#field-test-4', 'Email');
+    $assert_session->elementContains('css', '#field-test-5', 'Link');
+    $assert_session->elementContains('css', '#field-test-6', 'List (float)');
+    $assert_session->elementContains('css', '#field-test-7', 'Telephone number');
+    $assert_session->elementContains('css', '#field-test-8', 'Entity reference');
+    $assert_session->elementContains('css', '#field-test-9', 'File');
+    $assert_session->elementContains('css', '#field-test-10', 'Image');
+    $assert_session->elementContains('css', '#field-test-15', 'Text (plain, long)');
+    $assert_session->elementContains('css', '#field-test-16', 'List (text)');
+    $assert_session->elementContains('css', '#field-test-17', 'Text (formatted)');
+    $assert_session->elementContains('css', '#field-test-18', 'Text (formatted, long)');
+    $assert_session->elementContains('css', '#field-test-20', 'List (integer)');
+    $assert_session->elementContains('css', '#field-test-22', 'Number (float)');
+    $assert_session->elementContains('css', '#field-test-23', 'Number (integer)');
 
     // Make sure our form mode exists.
     $this->drupalGet('admin/structure/display-modes/form');
@@ -346,15 +336,13 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
     // Make sure our modules are still enabled.
     $expected_enabled_modules = [
       'action',
-      'aggregator',
       'ban',
       'basic_auth',
       'block',
       'block_content',
       'book',
       'breakpoint',
-      'ckeditor',
-      'color',
+      'ckeditor5',
       'comment',
       'config',
       'config_translation',
@@ -368,7 +356,6 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
       'field_ui',
       'file',
       'filter',
-      'hal',
       'help',
       'history',
       'image',
@@ -382,14 +369,12 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
       'options',
       'page_cache',
       'path',
-      'quickedit',
-      'rdf',
+      'phpass',
       'responsive_image',
       'rest',
       'search',
       'serialization',
       'shortcut',
-      'statistics',
       'syslog',
       'system',
       'taxonomy',
@@ -401,7 +386,6 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
       'update',
       'user',
       'views_ui',
-      'forum',
       'menu_link_content',
       'views',
       'standard',
@@ -412,8 +396,8 @@ class UpdatePathTestBaseFilledTest extends UpdatePathTestBaseTest {
 
     // Make sure our themes are still enabled.
     $expected_enabled_themes = [
-      'bartik',
-      'seven',
+      'olivero',
+      'claro',
       'stark',
     ];
     foreach ($expected_enabled_themes as $theme) {

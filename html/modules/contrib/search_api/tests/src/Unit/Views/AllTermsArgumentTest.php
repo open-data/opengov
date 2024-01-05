@@ -7,7 +7,6 @@ use Drupal\search_api\Plugin\views\argument\SearchApiAllTerms;
 use Drupal\search_api\Plugin\views\query\SearchApiQuery;
 use Drupal\search_api\Query\Condition;
 use Drupal\search_api\Query\ConditionGroup;
-use Drupal\search_api\Query\ConditionGroupInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\Assert;
@@ -108,18 +107,19 @@ class AllTermsArgumentTest extends UnitTestCase {
    */
   public function testConditionalFilter() {
     $query = $this->createMock(SearchApiQuery::class);
-    $query->method('createConditionGroup')
+    $query->method('createAndAddConditionGroup')
       ->willReturnCallback(function (string $conjunction, array $tags) {
         Assert::assertEmpty($tags);
-        if (isset($this->conditionGroup)) {
-          return new ConditionGroup($conjunction);
-        }
+        Assert::assertEmpty($this->conditionGroup);
         return $this->conditionGroup = new ConditionGroup($conjunction);
       });
     $query->method('addConditionGroup')
-      ->willReturnCallback(function (ConditionGroupInterface $added_condition_group, $group = NULL) {
-        Assert::assertEquals(0, $group);
-        Assert::assertSame($this->conditionGroup, $added_condition_group);
+      ->willThrowException(new \Exception('Unexpected call to addConditionGroup().'));
+    $query->method('createConditionGroup')
+      ->willReturnCallback(function (string $conjunction, array $tags) {
+        Assert::assertEmpty($tags);
+        Assert::assertLessThan(3, func_num_args());
+        return new ConditionGroup($conjunction);
       });
     $query->method('abort')
       ->willReturnCallback(function ($message = NULL) {

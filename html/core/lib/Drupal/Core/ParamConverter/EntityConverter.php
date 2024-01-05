@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Route;
  *         type: entity:node
  * @endcode
  *
- * If you want to have the entity type itself dynamic in the url you can
+ * If you want to have the entity type itself dynamic in the URL you can
  * specify it like the following:
  * @code
  * example.route:
@@ -120,11 +120,20 @@ class EntityConverter implements ParamConverterInterface {
     // If the entity type is revisionable and the parameter has the
     // "load_latest_revision" flag, load the active variant.
     if (!empty($definition['load_latest_revision'])) {
-      return $this->entityRepository->getActive($entity_type_id, $value);
+      $entity = $this->entityRepository->getActive($entity_type_id, $value);
+
+      if (
+        !empty($definition['bundle']) &&
+        $entity instanceof EntityInterface &&
+        !in_array($entity->bundle(), $definition['bundle'], TRUE)
+      ) {
+        return NULL;
+      }
+      return $entity;
     }
 
     // Do not inject the context repository as it is not an actual dependency:
-    // it will be removed once both the TODOs below are fixed.
+    // it will be removed once both the todo items below are fixed.
     /** @var \Drupal\Core\Plugin\Context\ContextRepositoryInterface $contexts_repository */
     $contexts_repository = \Drupal::service('context.repository');
     // @todo Consider deprecating the legacy context operation altogether in
@@ -160,7 +169,7 @@ class EntityConverter implements ParamConverterInterface {
   public function applies($definition, $name, Route $route) {
     if (!empty($definition['type']) && strpos($definition['type'], 'entity:') === 0) {
       $entity_type_id = substr($definition['type'], strlen('entity:'));
-      if (strpos($definition['type'], '{') !== FALSE) {
+      if (str_contains($definition['type'], '{')) {
         $entity_type_slug = substr($entity_type_id, 1, -1);
         return $name != $entity_type_slug && in_array($entity_type_slug, $route->compile()->getVariables(), TRUE);
       }

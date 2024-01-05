@@ -185,8 +185,6 @@
       'data-toggle': 'tooltip'
     }));
 
-    self.$toggleWeightButton = $('[data-drupal-selector="tabledrag-toggle-weight"]');
-
     self.$toggleWeightButton
       .on('click', $.proxy(function (e) {
         e.preventDefault();

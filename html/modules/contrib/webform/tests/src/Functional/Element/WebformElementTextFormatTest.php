@@ -21,7 +21,7 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'file', 'webform'];
+  protected static $modules = ['file', 'webform'];
 
   /**
    * Webforms to load.
@@ -40,7 +40,7 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->fileUsage = $this->container->get('file.usage');
@@ -56,8 +56,8 @@ class WebformElementTextFormatTest extends WebformElementBrowserTestBase {
 
     // Check that formats and tips are removed and/or hidden.
     $this->drupalGet('/webform/test_element_text_format');
-    $assert_session->responseContains('<div class="js-filter-wrapper filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" data-webform-states-no-clear id="edit-text-format-format">');
-    $assert_session->responseContains('<div class="filter-help js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format-help" style="display: none" id="edit-text-format-format-help">');
+    $assert_session->responseContains('<div class="js-filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-text-format-format" style="display: none" data-webform-states-no-clear id="edit-text-format-format">');
+    $assert_session->responseContains('<div data-drupal-selector="edit-text-format-format-help" style="display: none" id="edit-text-format-format-help" class="js-form-wrapper form-wrapper">');
 
     // Check description + more.
     $assert_session->responseContains('<div data-drupal-selector="edit-text-format-description-more" id="edit-text-format-description-more--description"><div class="webform-element-description">This is a description</div>');

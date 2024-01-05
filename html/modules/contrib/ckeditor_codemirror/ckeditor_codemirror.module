@@ -5,54 +5,29 @@
  * Main code for CKEditor CodeMirror module.
  */
 
-use Drupal\Core\Routing\RouteMatchInterface;
-
 /**
- * Implements hook_help().
- */
-function ckeditor_codemirror_help($route_name, RouteMatchInterface $route_match) {
-  switch ($route_name) {
-    case 'help.page.ckeditor_codemirror':
-      $text = file_get_contents(dirname(__FILE__) . '/README.md');
-      if (!\Drupal::moduleHandler()->moduleExists('markdown')) {
-        return '<pre>' . $text . '</pre>';
-      }
-      else {
-        // Use the Markdown filter to render the README.
-        $filter_manager = \Drupal::service('plugin.manager.filter');
-        $settings = \Drupal::configFactory()
-          ->get('markdown.settings')
-          ->getRawData();
-        $config = ['settings' => $settings];
-        $filter = $filter_manager->createInstance('markdown', $config);
-        return $filter->process($text, 'en');
-      }
-  }
-  return NULL;
-}
-
-/**
- * Gets the path of a CKEditor CodeMirror library.
+ * Gets the path of a library.
  *
  * @return bool|string
  *   The path to the specified library or FALSE if the library wasn't found.
  */
-function _ckeditor_codemirror_get_library_path() {
-  $library_names = [
-    // README.txt say to use 'ckeditor_codemirror'.
-    'ckeditor_codemirror',
-    // Path used by Asset Packagist.
-    // @see https://asset-packagist.org/package/npm-asset/ckeditor-codemirror-plugin
-    'ckeditor-codemirror-plugin',
-    // Old README.txt used 'ckeditor-codemirror'.
-    'ckeditor-codemirror',
-    // The Webform module is using 'ckeditor.codemirror'.
-    'ckeditor.codemirror',
-  ];
-  foreach ($library_names as $library_name) {
-    if (file_exists('libraries/' . $library_name)) {
-      return 'libraries/' . $library_name;
-    }
+function _ckeditor_codemirror_get_library_path(string $library): bool|string {
+  $path = "libraries/$library";
+  if (file_exists($path)) {
+    return DRUPAL_ROOT . "/$path";
   }
   return FALSE;
+}
+
+/**
+ * Gets the version information for a library.
+ *
+ * @return string
+ *   A string containing the version of the library or empty if the version
+ *   cannot be found.
+ */
+function _ckeditor_codemirror_get_library_version(string $library): string {
+  $library_path = _ckeditor_codemirror_get_library_path($library);
+  $data = json_decode(file_get_contents("$library_path/package.json"));
+  return $data?->version ?? '';
 }

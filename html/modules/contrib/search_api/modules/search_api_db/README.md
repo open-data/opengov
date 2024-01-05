@@ -7,9 +7,8 @@ when creating a new server.
 All Search API data types are supported by using appropriate SQL data types for
 their respective columns.
 
-The "direct" parse mode for queries will result in a simple splitting of the
-query string into keys. Additionally, search keys containing whitespace will be
-split for all parse modes, as searching for phrases is currently not supported.
+Simple 2-word phrase searching is supported by surrounding the keywords in
+double quotes.
 
 ## Supported optional features
 

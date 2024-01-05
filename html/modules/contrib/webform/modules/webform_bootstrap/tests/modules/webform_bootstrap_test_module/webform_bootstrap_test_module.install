@@ -111,7 +111,7 @@ function webform_bootstrap_test_module_uninstall() {
 
   // Set default theme to bartik.
   \Drupal::configFactory()->getEditable('system.theme')
-    ->set('default', 'bartik')
+    ->set('default', 'olivero')
     ->save();
 
   // Uninstall bootstrap theme.

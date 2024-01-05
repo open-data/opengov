@@ -14,7 +14,8 @@ archive: false
 id: test_clientside_validation_state
 title: 'Test: Clientside Validation #states'
 description: 'Test webform clientside validation with conditional logic (#states).'
-category: 'Test: Clientside Validation'
+categories:
+  - 'Test: Clientside Validation'
 elements: |
   trigger:
     '#type': checkbox
@@ -217,7 +218,6 @@ elements: |
         '#type': webform_signature
         '#title': signature
         '#required': true
-  
 css: ''
 javascript: ''
 settings:
@@ -305,6 +305,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

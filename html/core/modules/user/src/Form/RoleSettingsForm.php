@@ -58,8 +58,10 @@ class RoleSettingsForm extends FormBase {
     ];
     // Do not allow users to set the anonymous or authenticated user roles as
     // the administrator role.
-    $roles = user_role_names(TRUE);
+    $roles = $this->roleStorage->loadMultiple();
+    unset($roles[RoleInterface::ANONYMOUS_ID]);
     unset($roles[RoleInterface::AUTHENTICATED_ID]);
+    $roles = array_map(fn(RoleInterface $role) => $role->label(), $roles);
     $admin_roles = $this->roleStorage->getQuery()
       ->condition('is_admin', TRUE)
       ->execute();
@@ -70,7 +72,7 @@ class RoleSettingsForm extends FormBase {
       '#empty_value' => '',
       '#default_value' => $default_value,
       '#options' => $roles,
-      '#description' => $this->t('This role will be automatically assigned new permissions whenever a module is enabled. Changing this setting will not affect existing permissions.'),
+      '#description' => $this->t('This role will be automatically granted all permissions.'),
       // Don't allow to select a single admin role in case multiple roles got
       // marked as admin role already.
       '#access' => count($admin_roles) <= 1,

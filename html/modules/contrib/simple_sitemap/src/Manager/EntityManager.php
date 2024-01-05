@@ -2,19 +2,21 @@
 
 namespace Drupal\simple_sitemap\Manager;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\simple_sitemap\Entity\EntityHelper;
+use Drupal\simple_sitemap\Entity\SimpleSitemap;
+use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGeneratorBase;
 use Drupal\simple_sitemap\Settings;
 
 /**
  * The simple_sitemap.entity_manager service.
  */
-class EntityManager {
+class EntityManager implements SitemapGetterInterface {
 
-  use VariantSetterTrait;
+  use SitemapGetterTrait;
   use LinkSettingsTrait;
 
   /**
@@ -171,7 +173,7 @@ class EntityManager {
     }
 
     // Deleting entity overrides.
-    $this->setVariants()->removeEntityInstanceSettings($entity_type_id);
+    $this->setSitemaps()->removeEntityInstanceSettings($entity_type_id);
 
     return $this;
   }
@@ -198,7 +200,7 @@ class EntityManager {
    * @todo Throw exception on non-existing entity type/bundle.
    */
   public function setBundleSettings(string $entity_type_id, ?string $bundle_name = NULL, array $settings = ['index' => TRUE]): EntityManager {
-    if (empty($variants = $this->getVariants())) {
+    if (empty($variants = array_keys($this->getSitemaps()))) {
       return $this;
     }
     if (!isset($this->entityHelper->getSupportedEntityTypes()[$entity_type_id])) {
@@ -254,7 +256,7 @@ class EntityManager {
       $delete_instances = [];
       foreach ($query->execute()->fetchAll() as $result) {
         $delete = TRUE;
-        $instance_settings = unserialize($result->inclusion_settings);
+        $instance_settings = unserialize($result->inclusion_settings, ['allowed_classes' => FALSE]);
         foreach ($instance_settings as $setting_key => $instance_setting) {
           if ($instance_setting != $settings[$setting_key]) {
             $delete = FALSE;
@@ -305,7 +307,7 @@ class EntityManager {
     $bundle_name = $bundle_name ?? $entity_type_id;
     $all_bundle_settings = [];
 
-    foreach ($this->getVariants() as $variant) {
+    foreach (array_keys($this->getSitemaps()) as $variant) {
       $bundle_settings = $this->configFactory
         ->get("simple_sitemap.bundle_settings.$variant.$entity_type_id.$bundle_name")
         ->get();
@@ -329,7 +331,7 @@ class EntityManager {
    */
   public function getAllBundleSettings() {
     $all_bundle_settings = [];
-    foreach ($this->getVariants() as $variant) {
+    foreach (array_keys($this->getSitemaps()) as $variant) {
       $config_names = $this->configFactory->listAll("simple_sitemap.bundle_settings.$variant.");
       $bundle_settings = [];
       foreach ($config_names as $config_name) {
@@ -368,7 +370,7 @@ class EntityManager {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function removeBundleSettings(?string $entity_type_id = NULL, ?string $bundle_name = NULL): EntityManager {
-    if (empty($variants = $this->getVariants())) {
+    if (empty($variants = array_keys($this->getSitemaps()))) {
       return $this;
     }
 
@@ -415,7 +417,7 @@ class EntityManager {
    * @todo Pass entity object instead of id and entity type?
    */
   public function setEntityInstanceSettings(string $entity_type_id, string $id, array $settings): EntityManager {
-    if (empty($variants = $this->getVariants())) {
+    if (empty($variants = array_keys($this->getSitemaps()))) {
       return $this;
     }
 
@@ -432,7 +434,7 @@ class EntityManager {
       if (!empty($bundle_settings)) {
 
         // Only one variant at a time.
-        $this->setVariants($variant);
+        $this->setSitemaps($variant);
 
         // Check if overrides are different from bundle setting before saving.
         $override = FALSE;
@@ -467,7 +469,7 @@ class EntityManager {
     }
 
     // Restore original variants.
-    $this->setVariants($variants);
+    $this->setSitemaps($variants);
 
     return $this;
   }
@@ -496,7 +498,7 @@ class EntityManager {
    * @todo Pass entity object instead of id and entity type?
    */
   public function getEntityInstanceSettings(string $entity_type_id, string $id) {
-    if (empty($variants = $this->getVariants())) {
+    if (empty($variants = array_keys($this->getSitemaps()))) {
       return FALSE;
     }
     $variant = reset($variants);
@@ -510,7 +512,7 @@ class EntityManager {
       ->fetchField();
 
     if (!empty($results)) {
-      return [$variant => unserialize($results)];
+      return [$variant => unserialize($results, ['allowed_classes' => FALSE])];
     }
 
     if (($entity = $this->entityTypeManager->getStorage($entity_type_id)->load($id)) === NULL) {
@@ -538,7 +540,7 @@ class EntityManager {
    * @return $this
    */
   public function removeEntityInstanceSettings(?string $entity_type_id = NULL, $entity_ids = NULL): EntityManager {
-    if (empty($variants = $this->getVariants())) {
+    if (empty($variants = array_keys($this->getSitemaps()))) {
       return $this;
     }
 
@@ -593,6 +595,30 @@ class EntityManager {
    */
   public function entityTypeIsEnabled(string $entity_type_id): bool {
     return in_array($entity_type_id, $this->settings->get('enabled_entity_types', []), TRUE);
+  }
+
+  /**
+   * Gets all compatible sitemaps.
+   *
+   * @return \Drupal\simple_sitemap\Entity\SimpleSitemap[]
+   *   Array of sitemaps of a type that uses a URL generator which
+   *   extends EntityUrlGeneratorBase. Keyed by variant.
+   *
+   * @todo This is not ideal as it shows only-menu-link-sitemaps on all bundle
+   * setting pages and vice versa. It also shows only-custom-link-sitemaps on
+   * all bundle setting pages and vice versa.
+   */
+  protected function getCompatibleSitemaps(): array {
+    foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
+      foreach ($sitemap->getType()->getUrlGenerators() as $url_generator) {
+        if ($url_generator instanceof EntityUrlGeneratorBase) {
+          $sitemaps[$variant] = $sitemap;
+          break;
+        }
+      }
+    }
+
+    return $sitemaps ?? [];
   }
 
 }

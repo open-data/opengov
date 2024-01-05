@@ -1,44 +1,42 @@
 {
-  "name": "drupal/ckeditor_codemirror",
-  "description": "Adds the CKEditor CodeMirror source syntax highlighter plugin.",
-  "type": "drupal-module",
-  "keywords": ["Drupal"],
-  "license": "GPL-2.0-or-later",
-  "homepage": "https://drupal.org/project/ckeditor_codemirror",
-  "support": {
-    "issues": "https://www.drupal.org/project/issues/ckeditor_codemirror?version=8.x",
-    "source": "https://git.drupalcode.org/project/ckeditor_codemirror"
-  },
-  "authors": [
-    {
-      "name": "Nickolay Leshchev (Plazik)",
-      "homepage": "https://www.drupal.org/u/plazik",
-      "role": "Maintainer"
+    "name": "drupal/ckeditor_codemirror",
+    "description": "CodeMirror source syntax highlighting for CKEditor 5.",
+    "type": "drupal-module",
+    "keywords": [
+        "Drupal"
+    ],
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://drupal.org/project/ckeditor_codemirror",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/ckeditor_codemirror",
+        "source": "https://git.drupalcode.org/project/ckeditor_codemirror"
     },
-    {
-      "name": "Christopher C. Wells (wells)",
-      "homepage": "https://www.drupal.org/u/wells",
-      "role": "Co-maintainer"
+    "authors": [
+        {
+            "name": "Christopher C. Wells (wells)",
+            "homepage": "https://www.drupal.org/u/wells",
+            "role": "Maintainer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "drupal/core": "^9.4 || ^10"
+    },
+    "require-dev": {
+        "drupal/coder": "^8.3",
+        "phpcompatibility/php-compatibility": "^9.3"
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
-  ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://packages.drupal.org/8"
-    }
-  ],
-  "require": {
-    "drupal/core": "^8.8 || ^9.0"
-  },
-  "require-dev": {
-    "drupal/coder": "^8.3",
-    "phpcompatibility/php-compatibility": "10.x-dev"
-  },
-  "minimum-stability": "dev",
-  "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true
-    }
-  }
 }

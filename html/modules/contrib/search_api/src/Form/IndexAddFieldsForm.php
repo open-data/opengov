@@ -227,7 +227,7 @@ class IndexAddFieldsForm extends EntityForm {
    *   attached properties.
    */
   protected function getDatasourceListItem(DatasourceInterface $datasource = NULL) {
-    $datasource_id = $datasource ? $datasource->getPluginId() : NULL;
+    $datasource_id = $datasource?->getPluginId();
     $datasource_id_param = $datasource_id ?: '';
     $properties = $this->entity->getPropertyDefinitions($datasource_id);
     if ($properties) {
@@ -359,8 +359,8 @@ class IndexAddFieldsForm extends EntityForm {
 
       $nested_list = [];
       if ($nested_properties) {
+        $link_url = clone $base_url;
         if ($key == $active_item) {
-          $link_url = clone $base_url;
           $query_base['property_path'] = $parent_path;
           $link_url->setOption('query', $query_base);
           $item['expand_link'] = [
@@ -376,7 +376,6 @@ class IndexAddFieldsForm extends EntityForm {
           $nested_list = $this->getPropertiesList($nested_properties, $active_property_path, $base_url, $datasource_id, $this_path, $label_prefix . $label . ' » ');
         }
         else {
-          $link_url = clone $base_url;
           $query_base['property_path'] = $this_path;
           $link_url->setOption('query', $query_base);
           $item['expand_link'] = [

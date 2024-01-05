@@ -14,7 +14,8 @@ archive: false
 id: example_remote_post
 title: 'Example: Remote post'
 description: 'An example of a webform submission posted to a remote server.'
-category: Example
+categories:
+  - Example
 elements: |
   first_name:
     '#title': 'First name'
@@ -40,7 +41,6 @@ elements: |
     '#title': 'Confirmation number'
     '#type': value
     '#value': '[webform:handler:remote_post:completed:confirmation_number]'
-  
 css: ''
 javascript: ''
 settings:
@@ -128,6 +128,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -147,7 +149,6 @@ settings:
   confirmation_title: ''
   confirmation_message: |
     <p>Your confirmation number is [webform_submission:values:confirmation_number].</p>
-    
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -258,7 +259,6 @@ handlers:
         confirmation_number: confirmation_number
       custom_data: |
         custom_all: true
-        
       custom_options: ''
       file_data: true
       cast: false
@@ -266,15 +266,12 @@ handlers:
       completed_url: '[site:url]webform_example_remote_post/completed'
       completed_custom_data: |
         custom_completed: true
-        
       updated_url: '[site:url]webform_example_remote_post/updated'
       updated_custom_data: |
         custom_updated: true
-        
       deleted_url: '[site:url]webform_example_remote_post/deleted'
       deleted_custom_data: |
         custom_deleted: true
-        
       draft_created_url: ''
       draft_created_custom_data: ''
       draft_updated_url: ''

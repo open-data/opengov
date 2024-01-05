@@ -26,7 +26,7 @@ class WebformHandlerSettingsTest extends WebformBrowserTestBase {
 
     // NOTE: Using message indentation to make sure the message is matched
     // and not the input value.
-    $message_indentation = '                    ';
+    $message_indentation = '              ';
 
     // Check custom save draft message.
     $this->drupalGet('/webform/test_handler_settings');

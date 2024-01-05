@@ -14,7 +14,8 @@ archive: false
 id: test_element_email_confirm
 title: 'Test: Element: Email confirm'
 description: 'Tests email_confirm elements.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   email_confirm_basic:
     '#type': webform_email_confirm
@@ -47,7 +48,6 @@ elements: |
     '#type': webform_email_confirm
     '#title': email_confirm_inline
     '#title_display': inline
-
 css: ''
 javascript: ''
 settings:
@@ -135,6 +135,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

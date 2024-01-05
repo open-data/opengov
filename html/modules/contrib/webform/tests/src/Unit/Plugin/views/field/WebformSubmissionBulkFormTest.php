@@ -21,7 +21,7 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     $container = new ContainerBuilder();
     \Drupal::setContainer($container);
@@ -68,9 +68,7 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
 
     $messenger = $this->createMock('\Drupal\Core\Messenger\MessengerInterface');
 
-    $views_data = $this->getMockBuilder('Drupal\views\ViewsData')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $views_data = $this->createMock('Drupal\views\ViewsData');
     $views_data->expects($this->any())
       ->method('get')
       ->with('webform_submission')
@@ -86,14 +84,10 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
       ->with('base_table')
       ->will($this->returnValue('webform_submission'));
 
-    $executable = $this->getMockBuilder('Drupal\views\ViewExecutable')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $executable = $this->createMock('Drupal\views\ViewExecutable');
     $executable->storage = $storage;
 
-    $display = $this->getMockBuilder('Drupal\views\Plugin\views\display\DisplayPluginBase')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $display = $this->createMock('Drupal\views\Plugin\views\display\DisplayPluginBase');
 
     $definition['title'] = '';
     $options = [];

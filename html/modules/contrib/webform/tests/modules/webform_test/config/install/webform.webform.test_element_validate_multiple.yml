@@ -14,7 +14,8 @@ archive: false
 id: test_element_validate_multiple
 title: 'Test: Element: Validate Multiple'
 description: 'Test #multiple element validation support.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   textfield:
     '#type': details
@@ -79,7 +80,6 @@ elements: |
       '#title': webform_element_multiple_managed_file_two
       '#select2': true
       '#multiple': 2
-  
 css: ''
 javascript: ''
 settings:
@@ -167,6 +167,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

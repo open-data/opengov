@@ -51,7 +51,7 @@ class BookMultilingualTest extends KernelTestBase {
     parent::setUp();
     // Create the translation language.
     $this->installConfig(['language']);
-    ConfigurableLanguage::create(['id' => self::LANGCODE])->save();
+    ConfigurableLanguage::createFromLangcode(self::LANGCODE)->save();
     // Set up language negotiation.
     $config = $this->config('language.types');
     $config->set('configurable', [
@@ -85,7 +85,6 @@ class BookMultilingualTest extends KernelTestBase {
     $this->installEntitySchema('user');
     $this->installSchema('book', ['book']);
     $this->installSchema('node', ['node_access']);
-    $this->installSchema('system', ['sequences']);
     $this->installConfig(['node', 'book', 'field']);
     $node_type = NodeType::create([
       'type' => $this->randomMachineName(),

@@ -14,7 +14,8 @@ archive: false
 id: example_input_masks
 title: 'Example: Input Masks'
 description: 'Examples of elements with <a href="https://github.com/RobinHerbots/jquery.inputmask">input masks</a>.'
-category: Example
+categories:
+  - Example
 elements: |
   masks:
     '#type': details
@@ -86,7 +87,6 @@ elements: |
       '#type': textfield
       '#title': lowercase
       '#input_mask': '''casing'': ''lower'''
-  
 css: ''
 javascript: ''
 settings:
@@ -174,6 +174,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -51,7 +51,7 @@ class EntityType extends ProcessorPluginBase {
     try {
       $entity = $item->getOriginalObject()->getValue();
     }
-    catch (SearchApiException $e) {
+    catch (SearchApiException) {
       return;
     }
     if (!($entity instanceof EntityInterface)) {

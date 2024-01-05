@@ -3,8 +3,8 @@
 namespace Drupal\Tests\webform\Functional\Settings;
 
 use Drupal\Core\Url;
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformInterface;
 
 /**
@@ -19,7 +19,7 @@ class WebformSettingsAccessDeniedTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['block', 'webform'];
+  protected static $modules = ['block', 'webform'];
 
   /**
    * Webforms to load.
@@ -31,7 +31,7 @@ class WebformSettingsAccessDeniedTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Place blocks.

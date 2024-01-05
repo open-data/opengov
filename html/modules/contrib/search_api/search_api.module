@@ -345,6 +345,11 @@ function search_api_theme() {
         'table' => NULL,
       ],
     ],
+    'search_api_excerpt' => [
+      'variables' => [
+        'excerpt' => NULL,
+      ],
+    ],
   ];
 }
 
@@ -656,8 +661,11 @@ function search_api_entity_view(array &$build, EntityInterface $entity, EntityVi
   $excerpt_component = $display->getComponent('search_api_excerpt');
   if ($excerpt_component !== NULL && isset($build['#search_api_excerpt'])) {
     $build['search_api_excerpt'] = [
-      '#type' => 'markup',
-      '#markup' => $build['#search_api_excerpt'],
+      '#theme' => 'search_api_excerpt',
+      '#excerpt' => [
+        '#type' => 'markup',
+        '#markup' => $build['#search_api_excerpt'],
+      ],
       '#cache' => [
         'contexts' => ['url.query_args'],
       ],

@@ -9,7 +9,6 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\simple_sitemap\Manager\EntityManager;
 use Drupal\simple_sitemap\Manager\Generator;
-use Drupal\simple_sitemap\Entity\SimpleSitemap;
 use Drupal\simple_sitemap\Entity\EntityHelper;
 use Drupal\simple_sitemap\Settings;
 
@@ -155,9 +154,8 @@ class EntityBundlesForm extends SimpleSitemapFormBase {
     $entity_type_id = $form_state->getValue('entity_type_id');
     $bundles = $form_state->getValue('bundles');
 
-    // @todo No need to load all sitemaps here.
-    foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
-      $this->entityManager->setVariants($variant);
+    foreach ($this->entityManager->getSitemaps() as $variant => $sitemap) {
+      $this->entityManager->setSitemaps($sitemap);
 
       foreach ($bundles as $bundle_name => $settings) {
         if (isset($settings[$variant])) {

@@ -14,7 +14,8 @@ archive: false
 id: test_element_entity_reference_vs
 title: 'Test: Element: Entity reference views'
 description: 'Test entity reference views elements.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   entity_autocomplete:
     '#type': entity_autocomplete
@@ -66,17 +67,16 @@ elements: |
     '#wrapper_attributes':
       class:
         - webform-entity-reference-options
-  
 css: |
   /* Autocomplete */
-  
+
   .ui-autocomplete {
     display: flex;
     flex-wrap: wrap !important;
     align-self: flex-start !important;
     max-width: 540px !important;
   }
-  
+
   .ui-autocomplete .ui-menu-item-wrapper {
     display: block !important;
     border: 1px solid #ccc !important;
@@ -85,34 +85,34 @@ css: |
     margin: 10px 0 0 10px !important;
     padding: 10px !important;
   }
-  
+
   .ui-autocomplete .ui-menu-item-wrapper.ui-state-active {
     background-color: blue !important;
   }
-  
+
   .ui-autocomplete .views-field views-field-field-image {
     display: block;
     margin: 0 0 5px 0;
   }
-  
+
   /* Checkboex and radios */
-  
+
   .webform-entity-reference-options .fieldset-wrapper > div {
     display: flex;
     flex-wrap: wrap;
     align-self: flex-start;
   }
-  
+
   .webform-entity-reference-options .form-item {
     position: relative;
   }
-  
+
   .webform-entity-reference-options .form-item input {
     position: absolute;
     top: 20px;
     left: 20px;
   }
-  
+
   .webform-entity-reference-options .form-item label {
     display: block;
     border: 1px solid #ccc;
@@ -121,7 +121,7 @@ css: |
     margin: 0 10px 10px 0;
     padding: 10px;
   }
-  
+
   .webform-entity-reference-options .form-item input:checked + label {
     display: block;
     border: 1px solid #ccc;
@@ -130,12 +130,11 @@ css: |
     margin: 0 10px 10px 0;
     padding: 10px;
   }
-  
+
   .webform-entity-reference-options label.option img {
     display: block;
     margin: 0 0 5px 0;
   }
-  
 javascript: ''
 settings:
   ajax: false
@@ -222,6 +221,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

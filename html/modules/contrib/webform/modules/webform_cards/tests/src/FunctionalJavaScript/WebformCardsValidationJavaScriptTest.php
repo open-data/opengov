@@ -16,7 +16,7 @@ class WebformCardsValidationJavaScriptTest extends WebformWebDriverTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_cards', 'webform_cards_test'];
+  protected static $modules = ['webform', 'webform_cards', 'webform_cards_test'];
 
   /**
    * Test webform cards validation.
@@ -44,7 +44,7 @@ class WebformCardsValidationJavaScriptTest extends WebformWebDriverTestBase {
     $this->assertElementNotVisible('#edit-cards-prev');
     $this->assertElementNotVisible('#edit-cards-next');
     $this->assertElementVisible('#edit-submit');
-    $assert_session->responseContains('<strong>The email address <em class="placeholder">{email_multiple not valid}</em> is not valid.</strong>');
+    $assert_session->responseContains('The email address <em class="placeholder">{email_multiple not valid}</em> is not valid.');
   }
 
 }

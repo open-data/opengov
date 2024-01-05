@@ -14,7 +14,8 @@ archive: false
 id: test_element_loc_geocomplete
 title: 'Test: Element: Location Geocomplete'
 description: 'Test (geo)location elements with Geocomplete.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   location_default_element:
     '#type': details
@@ -95,7 +96,6 @@ elements: |
     '#title': 'Location with geolocation and hidden'
     '#geolocation': true
     '#hidden': true
-  
 css: ''
 javascript: ''
 settings:
@@ -183,6 +183,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

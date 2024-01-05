@@ -96,7 +96,7 @@ class SearchApiAllTerms extends SearchApiTerm {
       $terms = $this->getEntityTypeManager()->getStorage('taxonomy_term')
         ->loadMultiple($this->value);
     }
-    catch (PluginException $e) {
+    catch (PluginException) {
       $this->query->abort($this->t('Could not load taxonomy terms.'));
       return;
     }
@@ -123,7 +123,7 @@ class SearchApiAllTerms extends SearchApiTerm {
     // present (to simplify the code below a bit).
     $vocabulary_fields += ['' => []];
     $values = $multi_field_values = [];
-    $term_conditions = $this->query->createConditionGroup($conjunction, [], TRUE);
+    $term_conditions = $this->query->createAndAddConditionGroup($conjunction);
     foreach ($terms as $term) {
       // Set filters for all term reference fields which don't specify a
       // vocabulary, as well as for all fields specifying the term's vocabulary.
@@ -181,7 +181,7 @@ class SearchApiAllTerms extends SearchApiTerm {
     }
     foreach ($multi_field_values as $value => $fields) {
       $flipped_conjunction = $conjunction === 'AND' ? 'OR' : 'AND';
-      $group = $this->query->createConditionGroup($flipped_conjunction, [], FALSE);
+      $group = $this->query->createConditionGroup($flipped_conjunction);
       $term_conditions->addConditionGroup($group);
       foreach ($fields as $field) {
         $group->addCondition($field, $value, $not_negated ? '=' : '<>');

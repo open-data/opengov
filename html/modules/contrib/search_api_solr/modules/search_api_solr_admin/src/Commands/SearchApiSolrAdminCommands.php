@@ -60,7 +60,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    */
   public function reload(string $server_id): void {
     $this->commandHelper->reload($server_id);
-    $this->logger()->success('Solr core/collection of %server_id reloaded.', ['%server_id' => $server_id]);
+    $this->logger()->success(dt('Solr core/collection of %server_id reloaded.', ['%server_id' => $server_id]));
   }
 
   /**
@@ -81,7 +81,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    */
   public function deleteCollection(string $server_id): void {
     $this->commandHelper->deleteCollection($server_id);
-    $this->logger()->success('Solr collection of %server_id deleted.', ['%server_id' => $server_id]);
+    $this->logger()->success(dt('Solr collection of %server_id deleted.', ['%server_id' => $server_id]));
   }
 
   /**
@@ -89,8 +89,6 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    *
    * @param string $server_id
    *   The ID of the server.
-   * @param int $num_shards
-   *   This parameter is deprecated. Use the numShards option instead.
    * @param array $options
    *   Additional options for the command.
    *
@@ -175,7 +173,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    * @throws \ZipStream\Exception\FileNotReadableException
    * @throws \ZipStream\Exception\OverflowException
    */
-  public function uploadConfigset(string $server_id, int $num_shards = 0, array $options = [
+  public function uploadConfigset(string $server_id, array $options = [
     'numShards' => 3,
     'maxShardsPerNode' => 1,
     'replicationFactor' => 1,
@@ -187,12 +185,8 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
     'waitForFinalState' => FALSE,
     'createNodeSet' => '',
   ]): void {
-    if ($num_shards) {
-      @trigger_error('Parameter num_shards is deprecated in 4.2.8 and is removed from 4.3.0. Use the --numShards option instead.', E_USER_DEPRECATED);
-      $options['numShards'] = $num_shards;
-    }
     $this->commandHelper->uploadConfigset($server_id, $options, $this->output()->isVerbose());
-    $this->logger()->success('Solr configset for %server_id uploaded.', ['%server_id' => $server_id]);
+    $this->logger()->success(dt('Solr configset for %server_id uploaded.', ['%server_id' => $server_id]));
   }
 
 }

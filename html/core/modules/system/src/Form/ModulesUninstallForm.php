@@ -83,15 +83,11 @@ class ModulesUninstallForm extends FormBase {
    * @param \Drupal\Core\Update\UpdateHookRegistry|null $versioning_update_registry
    *   Versioning update registry service.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, ModuleInstallerInterface $module_installer, KeyValueStoreExpirableInterface $key_value_expirable, ModuleExtensionList $extension_list_module, UpdateHookRegistry $versioning_update_registry = NULL) {
+  public function __construct(ModuleHandlerInterface $module_handler, ModuleInstallerInterface $module_installer, KeyValueStoreExpirableInterface $key_value_expirable, ModuleExtensionList $extension_list_module, UpdateHookRegistry $versioning_update_registry) {
     $this->moduleExtensionList = $extension_list_module;
     $this->moduleHandler = $module_handler;
     $this->moduleInstaller = $module_installer;
     $this->keyValueExpirable = $key_value_expirable;
-    if ($versioning_update_registry === NULL) {
-      @trigger_error('The update.update_hook_registry service must be passed to ' . __NAMESPACE__ . '\ModulesUninstallForm::__construct(). It was added in drupal:9.3.0 and will be required before drupal:10.0.0.', E_USER_DEPRECATED);
-      $versioning_update_registry = \Drupal::service('update.update_hook_registry');
-    }
     $this->updateRegistry = $versioning_update_registry;
   }
 
@@ -146,8 +142,22 @@ class ModulesUninstallForm extends FormBase {
       return $form;
     }
 
-    // Sort all modules by their name.
-    uasort($uninstallable, [ModuleExtensionList::class, 'sortByName']);
+    // Deprecated and obsolete modules should appear at the top of the
+    // uninstallation list.
+    $unstable_lifecycle = array_flip([
+      ExtensionLifecycle::DEPRECATED,
+      ExtensionLifecycle::OBSOLETE,
+    ]);
+
+    // Sort all modules by their lifecycle identifier and name.
+    uasort($uninstallable, function ($a, $b) use ($unstable_lifecycle) {
+      $lifecycle_a = isset($unstable_lifecycle[$a->info[ExtensionLifecycle::LIFECYCLE_IDENTIFIER]]) ? -1 : 1;
+      $lifecycle_b = isset($unstable_lifecycle[$b->info[ExtensionLifecycle::LIFECYCLE_IDENTIFIER]]) ? -1 : 1;
+      if ($lifecycle_a === $lifecycle_b) {
+        return ModuleExtensionList::sortByName($a, $b);
+      }
+      return $lifecycle_a <=> $lifecycle_b;
+    });
     $validation_reasons = $this->moduleInstaller->validateUninstall(array_keys($uninstallable));
 
     $form['uninstall'] = ['#tree' => TRUE];

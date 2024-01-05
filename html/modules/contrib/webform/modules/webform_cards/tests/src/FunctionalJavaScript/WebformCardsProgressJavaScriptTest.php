@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform_cards\FunctionalJavaScript;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\FunctionalJavascript\WebformWebDriverTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform cards progress.
@@ -17,7 +17,7 @@ class WebformCardsProgressJavaScriptTest extends WebformWebDriverTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_cards', 'webform_cards_test'];
+  protected static $modules = ['webform', 'webform_cards', 'webform_cards_test'];
 
   /**
    * Test webform cards progress.

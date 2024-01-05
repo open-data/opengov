@@ -14,7 +14,8 @@ archive: false
 id: example_computed_elements
 title: 'Example: Computed'
 description: 'Examples of a computed elements.'
-category: Example
+categories:
+  - Example
 elements: |
   information:
     '#title': 'Your Information'
@@ -47,7 +48,6 @@ elements: |
           Hello {{ data.first_name }} {{ data.last_name }}!!!
         </h2>
         <p>You are {{ ('now'|date('Y')) - (data.date_of_birth|date('Y'))  }} years old.</p>
-  
 css: ''
 javascript: ''
 settings:
@@ -135,6 +135,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

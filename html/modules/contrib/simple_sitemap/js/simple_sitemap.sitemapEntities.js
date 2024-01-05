@@ -2,13 +2,13 @@
  * @file
  * Attaches simple_sitemap behaviors to the sitemap entities form.
  */
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   "use strict";
 
   Drupal.behaviors.simpleSitemapEntities = {
     attach: function () {
-      let $checkboxes = $('table tr input:checkbox:checked').once('simple-sitemap-entities');
+      let $checkboxes = $(once('simple-sitemap-entities', 'table tr input[type=checkbox][checked]'));
 
       if ($checkboxes.length) {
         $checkboxes.on('change', function () {
@@ -37,4 +37,4 @@
     }
   });
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

@@ -60,7 +60,7 @@ class WebformLink extends WebformCompositeBase {
     return [
       'link' => [
         '#type' => 'link',
-        '#title' => $value['title'],
+        '#title' => $value['title'] ?: $value['url'],
         '#url' => $this->pathValidator->getUrlIfValid($value['url']),
       ],
     ];

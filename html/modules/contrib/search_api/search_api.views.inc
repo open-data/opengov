@@ -198,8 +198,11 @@ function _search_api_views_get_handlers(FieldInterface $field) {
   try {
     $types = [];
 
-    $definition = $field->getDataDefinition();
-    $entity_type_id = $definition->getSetting('target_type');
+    $definition = NULL;
+    if ($field->getPropertyPath() !== NULL) {
+      $definition = $field->getDataDefinition();
+    }
+    $entity_type_id = $definition?->getSetting('target_type');
     if ($entity_type_id) {
       $entity_type = \Drupal::entityTypeManager()
         ->getDefinition($entity_type_id);
@@ -215,11 +218,11 @@ function _search_api_views_get_handlers(FieldInterface $field) {
 
     // Special treatment for languages (as we have no specific Search API data
     // type for those).
-    if ($definition->getSetting('views_type') === 'language') {
+    if ($definition?->getSetting('views_type') === 'language') {
       $types[] = 'language';
     }
 
-    if ($definition->getSetting('allowed_values')) {
+    if ($definition?->getSetting('allowed_values')) {
       $types[] = 'options';
     }
 
@@ -241,7 +244,6 @@ function _search_api_views_get_handlers(FieldInterface $field) {
       }
     }
   }
-  // @todo Replace with multi-catch once we depend on PHP 7.1+.
   catch (SearchApiException | PluginNotFoundException $e) {
     $vars['%index'] = $field->getIndex()->label();
     $vars['%field'] = $field->getPrefixedLabel();
@@ -594,12 +596,17 @@ function _search_api_views_data_special_fields(array &$table, IndexInterface $in
   $vocabulary_fields = [];
   /** @var \Drupal\search_api\Item\Field $field */
   foreach ($index->getFields() as $field_id => $field) {
+    // This can only work if the field is directly on the indexed entity.
+    if (str_contains($field->getPropertyPath(), IndexInterface::PROPERTY_PATH_SEPARATOR)) {
+      continue;
+    }
+
     // Search for taxonomy term reference fields, and catch problems early on.
     try {
       $property = $field->getDataDefinition();
       $datasource = $field->getDatasource();
     }
-    catch (SearchApiException $e) {
+    catch (SearchApiException) {
       // Will probably cause other problems elsewhere, but here we can just
       // ignore it.
       continue;
@@ -615,6 +622,9 @@ function _search_api_views_data_special_fields(array &$table, IndexInterface $in
       continue;
     }
     $entity_type_id = $datasource->getEntityTypeId();
+    if (!$entity_type_id) {
+      continue;
+    }
     // Field instances per bundle can reference different vocabularies, make
     // sure we add them all.
     $bundles = \Drupal::getContainer()->get('entity_type.bundle.info')
@@ -623,9 +633,9 @@ function _search_api_views_data_special_fields(array &$table, IndexInterface $in
       $bundle_fields = \Drupal::getContainer()->get('entity_field.manager')
         ->getFieldDefinitions($entity_type_id, $bundle_id);
       // Check if this bundle has the taxonomy entity reference field.
-      if (array_key_exists($field->getFieldIdentifier(), $bundle_fields)) {
+      if (array_key_exists($field->getPropertyPath(), $bundle_fields)) {
         /** @var \Drupal\Core\Field\FieldDefinitionInterface $field_definition */
-        $field_definition = $bundle_fields[$field->getFieldIdentifier()];
+        $field_definition = $bundle_fields[$field->getPropertyPath()];
         $bundle_settings = $field_definition->getSettings();
         if (!empty($bundle_settings['handler_settings']['target_bundles'])) {
           foreach ($bundle_settings['handler_settings']['target_bundles'] as $vocabulary_id) {
@@ -1006,7 +1016,7 @@ function _search_api_views_get_field_handler_mapping() {
       if ($type == '*') {
         $mappings['default'] = $definition;
       }
-      elseif (strpos($type, '*') === FALSE) {
+      elseif (!str_contains($type, '*')) {
         $mappings['simple'][$type] = $definition;
       }
       else {

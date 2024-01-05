@@ -2,6 +2,7 @@
 
 namespace Drupal\webform\Element;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\Element\RenderElement;
@@ -17,6 +18,19 @@ use Drupal\webform\WebformInterface;
 class Webform extends RenderElement {
 
   /**
+   * Webform element default properties.
+   *
+   * @var array
+   */
+  protected static $defaultProperties = [
+    '#webform' => NULL,
+    '#default_data' => [],
+    '#action' => NULL,
+    '#sid' => NULL,
+    '#information' => NULL,
+  ];
+
+  /**
    * {@inheritdoc}
    */
   public function getInfo() {
@@ -25,18 +39,37 @@ class Webform extends RenderElement {
       '#pre_render' => [
         [$class, 'preRenderWebformElement'],
       ],
-      '#webform' => NULL,
-      '#default_data' => [],
-      '#action' => NULL,
-      '#sid' => NULL,
-      '#information' => NULL,
-    ];
+      '#lazy' => FALSE,
+    ] + static::$defaultProperties;
   }
 
   /**
    * Webform element pre render callback.
    */
   public static function preRenderWebformElement($element) {
+    // If #lazy, then return a lazy builder placeholder.
+    if (!empty($element['#lazy'])) {
+      $webform = $element['#webform'] ?? NULL;
+      if ($webform instanceof WebformInterface) {
+        $element['#webform'] = $webform->id();
+      }
+      $lazy_args = array_intersect_key($element, static::$defaultProperties);
+      // In lazy mode, set the entity reference in the callback argument.
+      // Otherwise, the source entity relationship is disconnected.
+      $entity = $element['#entity'] ?? NULL;
+      if ($entity instanceof EntityInterface) {
+        $lazy_args['#entity_type'] = $entity->getEntityTypeId();
+        $lazy_args['#entity_id'] = $entity->id();
+      }
+      $serialized_args = Json::encode($lazy_args);
+      return [
+        'lazy_builder' => [
+          '#lazy_builder' => ['\Drupal\webform\Element\Webform::lazyBuilder', [$serialized_args]],
+          '#create_placeholder' => TRUE,
+        ],
+      ];
+    }
+
     $webform = ($element['#webform'] instanceof WebformInterface) ? $element['#webform'] : WebformEntity::load($element['#webform']);
     if (!$webform) {
       return $element;
@@ -178,6 +211,21 @@ class Webform extends RenderElement {
     $renderer->addCacheableDependency($elements, $webform);
 
     return $elements;
+  }
+
+  /**
+   * #lazy_builder callback; renders a webform.
+   *
+   * @return array
+   *   A renderable array representing the webform.
+   */
+  public static function lazyBuilder($serialized_element) {
+    return [
+      'webform' => [
+        '#type' => 'webform',
+        '#lazy' => FALSE,
+      ] + Json::decode($serialized_element),
+    ];
   }
 
 }

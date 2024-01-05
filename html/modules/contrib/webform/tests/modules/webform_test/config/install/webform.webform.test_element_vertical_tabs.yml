@@ -14,7 +14,8 @@ archive: false
 id: test_element_vertical_tabs
 title: 'Test: Element: Vertical tabs'
 description: 'Test Vertical tabs support'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   vertical_tabs:
     '#type': vertical_tabs
@@ -91,7 +92,6 @@ elements: |
     textfield_03:
       '#type': textfield
       '#title': textfield_03
-  
 css: ''
 javascript: ''
 settings:
@@ -179,6 +179,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -14,7 +14,8 @@ archive: false
 id: test_states_server_wizard
 title: 'Test: Form API #states server-side wizard pages'
 description: 'Test Drupal''s #states API for wizard pages via server-side.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   page_01:
     '#type': webform_wizard_page
@@ -234,7 +235,6 @@ elements: |
       '#default_value': '{default_value}'
       '#required': '{default_value}'
       '#description': '<b>Required:</b> page_01_trigger_checkbox:checked'
-  
 css: ''
 javascript: ''
 settings:
@@ -322,6 +322,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

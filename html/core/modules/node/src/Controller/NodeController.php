@@ -13,7 +13,6 @@ use Drupal\Core\Url;
 use Drupal\node\NodeStorageInterface;
 use Drupal\node\NodeTypeInterface;
 use Drupal\node\NodeInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Returns responses for Node routes.
@@ -55,17 +54,6 @@ class NodeController extends ControllerBase implements ContainerInjectionInterfa
     $this->dateFormatter = $date_formatter;
     $this->renderer = $renderer;
     $this->entityRepository = $entity_repository;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('date.formatter'),
-      $container->get('renderer'),
-      $container->get('entity.repository')
-    );
   }
 
   /**
@@ -155,12 +143,12 @@ class NodeController extends ControllerBase implements ContainerInjectionInterfa
    */
   public function revisionOverview(NodeInterface $node) {
     $langcode = $node->language()->getId();
-    $langname = $node->language()->getName();
+    $language_name = $node->language()->getName();
     $languages = $node->getTranslationLanguages();
     $has_translations = (count($languages) > 1);
     $node_storage = $this->entityTypeManager()->getStorage('node');
 
-    $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $node->label()]) : $this->t('Revisions for %title', ['%title' => $node->label()]);
+    $build['#title'] = $has_translations ? $this->t('@language_name revisions for %title', ['@language_name' => $language_name, '%title' => $node->label()]) : $this->t('Revisions for %title', ['%title' => $node->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
 
     $rows = [];
@@ -261,7 +249,7 @@ class NodeController extends ControllerBase implements ContainerInjectionInterfa
       '#attached' => [
         'library' => ['node/drupal.node.admin'],
       ],
-      '#attributes' => ['class' => 'node-revision-table'],
+      '#attributes' => ['class' => ['node-revision-table']],
     ];
 
     $build['pager'] = ['#type' => 'pager'];

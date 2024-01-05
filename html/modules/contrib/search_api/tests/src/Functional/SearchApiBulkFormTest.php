@@ -254,7 +254,7 @@ class SearchApiBulkFormTest extends BrowserTestBase {
     $found = FALSE;
     /** @var \Behat\Mink\Element\NodeElement $row */
     foreach ($rows as $row) {
-      if (strpos($row->getText(), $text) !== FALSE) {
+      if (str_contains($row->getText(), $text)) {
         $found = TRUE;
         break;
       }

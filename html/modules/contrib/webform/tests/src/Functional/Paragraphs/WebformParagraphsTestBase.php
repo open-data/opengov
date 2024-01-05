@@ -16,7 +16,7 @@ abstract class WebformParagraphsTestBase extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_test_paragraphs'];
+  protected static $modules = ['webform_test_paragraphs'];
 
   /**
    * Cache paragraphs nodes.

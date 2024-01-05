@@ -14,7 +14,8 @@ archive: false
 id: test_element_flexbox
 title: 'Test: Element: Flexbox'
 description: 'Test flexbox layout.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   flexbox_container:
     '#type': webform_flexbox
@@ -560,14 +561,6 @@ elements: |
     flex_webform_link_right:
       '#type': webform_link
       '#title': 'Link 02'
-  flexbox_webform_location_places:
-    '#type': webform_flexbox
-    flex_webform_location_places_left:
-      '#type': webform_location_places
-      '#title': 'Location (Algolia Places) 01'
-    flex_webform_location_places_right:
-      '#type': webform_location_places
-      '#title': 'Location (Algolia Places) 02'
   flexbox_machine_name:
     '#type': webform_flexbox
     flex_machine_name_left:
@@ -979,7 +972,6 @@ elements: |
     toggle_rating:
       '#type': rating
       '#title': rating
-  
 css: ''
 javascript: ''
 settings:
@@ -1067,6 +1059,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -18,12 +18,12 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['block', 'filter', 'webform', 'webform_ui', 'webform_test_translation'];
+  protected static $modules = ['block', 'webform', 'webform_ui', 'webform_test_translation'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Place blocks.
@@ -47,7 +47,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     // Check custom HTML source and translation.
     $mail_default_body_html = \Drupal::config('webform.settings')->get('mail.default_body_html');
     $assert_session->responseContains('<span lang="en">' . $mail_default_body_html . '</span>');
-    $this->assertCssSelect('textarea.js-html-editor[name="translation[config_names][webform.settings][settings][default_form_open_message][value]"]');
+    $this->assertCssSelect('textarea[name="translation[config_names][webform.settings][settings][default_form_open_message][value][value]"]');
 
     // Check custom YAML source and translation.
     $this->assertCssSelect('#edit-source-config-names-webformsettings-test-types textarea.js-webform-codemirror.yaml');
@@ -122,7 +122,7 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     $assert_session->fieldValueEquals('translation[config_names][webform.webform.test_translation][elements][details][title]', 'Detalles');
 
     // Check markup translation.
-    $assert_session->fieldValueEquals('translation[config_names][webform.webform.test_translation][elements][markup][markup][value]', 'Esto es un poco de marcado HTML.');
+    $assert_session->fieldValueEquals('translation[config_names][webform.webform.test_translation][elements][markup][markup][value][value]', 'Esto es un poco de marcado HTML.');
 
     // Check custom composite translation.
     $assert_session->fieldValueEquals('translation[config_names][webform.webform.test_translation][elements][composite][title]', 'Compuesto');
@@ -205,18 +205,33 @@ class WebformEntityTranslationTest extends WebformBrowserTestBase {
     // Check default elements.
     $this->drupalGet('/admin/structure/webform/manage/test_translation/translate/fr/add');
 
+    // Check email body's default textfield.
+    $this->assertCssSelect('textarea[name="translation[config_names][webform.webform.test_translation][handlers][email_confirmation][settings][body]"]');
+
+    // Enable set body to custom HTML.
+    $handler = $webform->getHandler('email_confirmation');
+    $configuration = $handler->getConfiguration();
+    $configuration['settings']['body'] = '<strong>some HTML</strong>';
+    $handler->setConfiguration($configuration);
+    $webform->save();
+
+    // Check default elements with HTML.
+    $this->drupalGet('/admin/structure/webform/manage/test_translation/translate/fr/add');
+
     // Check custom HTML Editor.
-    $this->assertCssSelect('textarea.js-html-editor[name="translation[config_names][webform.webform.test_translation][description][value]"]');
+    $this->assertCssSelect('textarea[name="translation[config_names][webform.webform.test_translation][description][value][value]"]');
 
     // Check email body's HTML Editor.
-    $this->assertCssSelect('textarea.js-html-editor[name="translation[config_names][webform.webform.test_translation][handlers][email_confirmation][settings][body][value]"]');
+    $this->assertCssSelect('textarea[name="translation[config_names][webform.webform.test_translation][handlers][email_confirmation][settings][body][value][value]"]');
 
-    // Check email body's Twig Editor.
+    // Enable twig.
     $handler = $webform->getHandler('email_confirmation');
     $configuration = $handler->getConfiguration();
     $configuration['settings']['twig'] = TRUE;
     $handler->setConfiguration($configuration);
     $webform->save();
+
+    // Check email body's Twig Editor.
     $this->drupalGet('/admin/structure/webform/manage/test_translation/translate/fr/add');
     $this->assertCssSelect('textarea.js-webform-codemirror.twig[name="translation[config_names][webform.webform.test_translation][handlers][email_confirmation][settings][body]"]');
 

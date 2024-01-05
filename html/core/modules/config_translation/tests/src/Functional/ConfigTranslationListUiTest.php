@@ -62,6 +62,9 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
     $permissions = [
       'access site-wide contact form',
       'administer blocks',
+      'administer block content',
+      'administer block types',
+      'access block library',
       'administer contact forms',
       'administer content types',
       'administer block_content fields',
@@ -101,7 +104,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
   protected function doBlockListTest() {
     // Add a test block, any block will do.
     // Set the machine name so the translate link can be built later.
-    $id = mb_strtolower($this->randomMachineName(16));
+    $id = $this->randomMachineName(16);
     $this->drupalPlaceBlock('system_powered_by_block', ['id' => $id]);
 
     // Get the Block listing.
@@ -124,7 +127,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
     // this does not test more than necessary.
     $this->drupalGet('admin/structure/menu/add');
     // Lowercase the machine name.
-    $menu_name = mb_strtolower($this->randomMachineName(16));
+    $menu_name = $this->randomMachineName(16);
     $label = $this->randomMachineName(16);
     $edit = [
       'id' => $menu_name,
@@ -173,7 +176,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
     $vocabulary = Vocabulary::create([
       'name' => $this->randomMachineName(),
       'description' => $this->randomMachineName(),
-      'vid' => mb_strtolower($this->randomMachineName()),
+      'vid' => $this->randomMachineName(),
     ]);
     $vocabulary->save();
 
@@ -190,23 +193,23 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the custom block listing for the translate operation.
+   * Tests the content block listing for the translate operation.
    */
   public function doCustomContentTypeListTest() {
-    // Create a test custom block type to decouple looking for translate
+    // Create a test block type to decouple looking for translate
     // operations link so this does not test more than necessary.
     $block_content_type = BlockContentType::create([
-      'id' => mb_strtolower($this->randomMachineName(16)),
+      'id' => $this->randomMachineName(16),
       'label' => $this->randomMachineName(),
       'revision' => FALSE,
     ]);
     $block_content_type->save();
 
-    // Get the custom block type listing.
-    $this->drupalGet('admin/structure/block/block-content/types');
+    // Get the block type listing.
+    $this->drupalGet('admin/structure/block-content');
 
-    $translate_link = 'admin/structure/block/block-content/manage/' . $block_content_type->id() . '/translate';
-    // Test if the link to translate the custom block type is on the page.
+    $translate_link = 'admin/structure/block-content/manage/' . $block_content_type->id() . '/translate';
+    // Test if the link to translate the block type is on the page.
     $this->assertSession()->linkByHrefExists($translate_link);
 
     // Test if the link to translate actually goes to the translate page.
@@ -221,7 +224,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
     // Create a test contact form to decouple looking for translate operations
     // link so this does not test more than necessary.
     $contact_form = ContactForm::create([
-      'id' => mb_strtolower($this->randomMachineName(16)),
+      'id' => $this->randomMachineName(16),
       'label' => $this->randomMachineName(),
     ]);
     $contact_form->save();
@@ -245,7 +248,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
     // Create a test content type to decouple looking for translate operations
     // link so this does not test more than necessary.
     $content_type = $this->drupalCreateContentType([
-      'type' => mb_strtolower($this->randomMachineName(16)),
+      'type' => $this->randomMachineName(16),
       'name' => $this->randomMachineName(),
     ]);
 
@@ -268,7 +271,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
     // Create a test format to decouple looking for translate operations
     // link so this does not test more than necessary.
     $filter_format = FilterFormat::create([
-      'format' => mb_strtolower($this->randomMachineName(16)),
+      'format' => $this->randomMachineName(16),
       'name' => $this->randomMachineName(),
     ]);
     $filter_format->save();
@@ -292,7 +295,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
     // Create a test shortcut to decouple looking for translate operations
     // link so this does not test more than necessary.
     $shortcut = ShortcutSet::create([
-      'id' => mb_strtolower($this->randomMachineName(16)),
+      'id' => $this->randomMachineName(16),
       'label' => $this->randomString(),
     ]);
     $shortcut->save();
@@ -315,7 +318,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
   public function doUserRoleListTest() {
     // Create a test role to decouple looking for translate operations
     // link so this does not test more than necessary.
-    $role_id = mb_strtolower($this->randomMachineName(16));
+    $role_id = $this->randomMachineName(16);
     $this->drupalCreateRole([], $role_id);
 
     // Get the role listing.
@@ -397,7 +400,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
   public function doFieldListTest() {
     // Create a base content type.
     $content_type = $this->drupalCreateContentType([
-      'type' => mb_strtolower($this->randomMachineName(16)),
+      'type' => $this->randomMachineName(16),
       'name' => $this->randomMachineName(),
     ]);
 
@@ -414,7 +417,10 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
       'field_storage' => FieldStorageConfig::loadByName('block_content', 'body'),
       'bundle' => $block_content_type->id(),
       'label' => 'Body',
-      'settings' => ['display_summary' => FALSE],
+      'settings' => [
+        'display_summary' => FALSE,
+        'allowed_formats' => [],
+      ],
     ]);
     $field->save();
 
@@ -425,7 +431,7 @@ class ConfigTranslationListUiTest extends BrowserTestBase {
         'field' => 'node.' . $content_type->id() . '.body',
       ],
       [
-        'list' => 'admin/structure/block/block-content/manage/basic/fields',
+        'list' => 'admin/structure/block-content/manage/basic/fields',
         'field' => 'block_content.basic.body',
       ],
     ];

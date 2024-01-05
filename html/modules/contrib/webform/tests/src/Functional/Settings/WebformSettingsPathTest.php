@@ -3,8 +3,8 @@
 namespace Drupal\Tests\webform\Functional\Settings;
 
 use Drupal\Core\Serialization\Yaml;
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformInterface;
 
 /**
@@ -19,7 +19,7 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['path', 'webform', 'node'];
+  protected static $modules = ['path', 'webform', 'node'];
 
   /**
    * Tests YAML page and title.
@@ -190,22 +190,22 @@ class WebformSettingsPathTest extends WebformBrowserTestBase {
 
     // Check that admin theme is not applied.
     $this->drupalGet('/webform/test_admin_theme');
-    $assert_session->responseNotContains('seven');
+    $assert_session->responseNotContains('claro');
 
     // Install Seven and set it as the default admin theme.
-    \Drupal::service('theme_installer')->install(['seven']);
+    \Drupal::service('theme_installer')->install(['claro']);
 
     $this->drupalGet('/admin/appearance');
     $edit = [
-      'admin_theme' => 'seven',
+      'admin_theme' => 'claro',
       'use_admin_theme' => TRUE,
     ];
     $this->submitForm($edit, 'Save configuration');
-    $webform->setSetting('page_theme_name', 'seven')->save();
+    $webform->setSetting('page_theme_name', 'claro')->save();
 
     // Check that admin theme is applied.
     $this->drupalGet('/webform/test_admin_theme');
-    $assert_session->responseContains('seven');
+    $assert_session->responseContains('claro');
   }
 
 }

@@ -2,8 +2,8 @@
 
 namespace Drupal\webform\Plugin\Mail;
 
-use Drupal\Core\Mail\Plugin\Mail\PhpMail;
 use Drupal\Core\Mail\MailFormatHelper;
+use Drupal\Core\Mail\Plugin\Mail\PhpMail;
 
 /**
  * Extend's the default Drupal mail backend to support HTML email.

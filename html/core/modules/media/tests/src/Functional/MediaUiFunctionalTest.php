@@ -7,13 +7,17 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
 
 /**
  * Ensures that media UI works correctly.
  *
  * @group media
+ * @group #slow
  */
 class MediaUiFunctionalTest extends MediaFunctionalTestBase {
+
+  use FieldUiTestTrait;
 
   /**
    * Modules to enable.
@@ -23,6 +27,7 @@ class MediaUiFunctionalTest extends MediaFunctionalTestBase {
   protected static $modules = [
     'block',
     'media_test_source',
+    'media',
   ];
 
   /**
@@ -189,15 +194,11 @@ class MediaUiFunctionalTest extends MediaFunctionalTestBase {
    * Tests that media in ER fields use the Rendered Entity formatter by default.
    */
   public function testRenderedEntityReferencedMedia() {
-    $page = $this->getSession()->getPage();
     $assert_session = $this->assertSession();
 
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Page']);
-    $this->drupalGet('/admin/structure/types/manage/page/fields/add-field');
-    $page->selectFieldOption('new_storage_type', 'field_ui:entity_reference:media');
-    $page->fillField('label', 'Foo field');
-    $page->fillField('field_name', 'foo_field');
-    $page->pressButton('Save and continue');
+    $this->createMediaType('image', ['id' => 'image', 'new_revision' => TRUE]);
+    $this->fieldUIAddNewField('/admin/structure/types/manage/page', 'foo_field', 'Foo field', 'field_ui:entity_reference:media', [], ['settings[handler_settings][target_bundles][image]' => TRUE]);
     $this->drupalGet('/admin/structure/types/manage/page/display');
     $assert_session->fieldValueEquals('fields[field_foo_field][type]', 'entity_reference_entity_view');
   }
@@ -341,19 +342,11 @@ class MediaUiFunctionalTest extends MediaFunctionalTestBase {
     // settings form.
     // Using submitForm() to avoid dealing with JavaScript on the previous
     // page in the field creation.
-    $edit = [
-      'new_storage_type' => 'field_ui:entity_reference:media',
-      'label' => "Media (cardinality $cardinality)",
-      'field_name' => 'media_reference',
-    ];
-    $this->drupalGet("admin/structure/types/manage/{$content_type->id()}/fields/add-field");
-    $this->submitForm($edit, 'Save and continue');
-    $edit = [];
+    $field_edit = [];
     foreach ($media_types as $type) {
-      $edit["settings[handler_settings][target_bundles][$type]"] = TRUE;
+      $field_edit["settings[handler_settings][target_bundles][$type]"] = TRUE;
     }
-    $this->drupalGet("admin/structure/types/manage/{$content_type->id()}/fields/node.{$content_type->id()}.field_media_reference");
-    $this->submitForm($edit, "Save settings");
+    $this->fieldUIAddNewField("admin/structure/types/manage/{$content_type->id()}", 'media_reference', "Media (cardinality $cardinality)", 'field_ui:entity_reference:media', [], $field_edit);
     \Drupal::entityTypeManager()
       ->getStorage('entity_form_display')
       ->load('node.' . $content_type->id() . '.default')

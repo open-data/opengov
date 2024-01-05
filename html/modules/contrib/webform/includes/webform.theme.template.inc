@@ -5,22 +5,22 @@
  * Preprocessors and helper functions to make theming easier.
  */
 
-use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Crypt;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Markup;
-use Drupal\Core\Url;
 use Drupal\Core\Render\Element\RenderElement;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\Attribute;
+use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\webform\Element\WebformCodeMirror;
 use Drupal\webform\Element\WebformHtmlEditor;
-use Drupal\webform\WebformMessageManagerInterface;
-use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\Utility\WebformDateHelper;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\WebformMessageManagerInterface;
+use Drupal\webform\WebformSubmissionInterface;
 
 /**
  * Prepares variables for webform help templates.
@@ -942,7 +942,7 @@ function template_preprocess_webform_element_managed_file(array &$variables) {
     $file = $variables['file'];
     $variables['uri'] = $file->createFileUrl(FALSE);
     $variables['extension'] = strtolower(pathinfo($variables['uri'], PATHINFO_EXTENSION));
-    $variables['type'] = \Drupal::service('file.mime_type.guesser')->guess($variables['uri']);
+    $variables['type'] = \Drupal::service('file.mime_type.guesser')->guessMimeType($variables['uri']);
     $variables['file_link'] = [
       '#theme' => 'file_link',
       '#file' => $file,

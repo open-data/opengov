@@ -77,7 +77,7 @@ class PluginHelper implements PluginHelperInterface {
       $configuration['#index'] = $index;
       return $this->{$type . "PluginManager"}->createInstance($plugin_id, $configuration);
     }
-    catch (PluginException $e) {
+    catch (PluginException) {
       throw new SearchApiException("Unknown $type plugin with ID '$plugin_id'");
     }
   }

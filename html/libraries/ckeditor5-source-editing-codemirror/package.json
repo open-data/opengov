@@ -1,0 +1,72 @@
+{
+  "name": "@cdubz/ckeditor5-source-editing-codemirror",
+  "version": "35.1.0",
+  "description": "CodeMirror 5 syntax highlighting in CKEditor 5 source editing mode.",
+  "keywords": [
+    "ckeditor5",
+    "ckeditor5-feature",
+    "ckeditor5-plugin",
+    "ckeditor5-dll",
+    "ckeditor5-package-generator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cdubz/ckeditor5-source-editing-codemirror"
+  },
+  "main": "src/index.js",
+  "license": "GPL-2.0-or-later",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=5.7.1"
+  },
+  "files": [
+    "lang",
+    "src",
+    "theme",
+    "build",
+    "ckeditor5-metadata.json"
+  ],
+  "dependencies": {
+    "ckeditor5": ">=35.1.0"
+  },
+  "devDependencies": {
+    "@ckeditor/ckeditor5-autoformat": ">=35.1.0",
+    "@ckeditor/ckeditor5-basic-styles": ">=35.1.0",
+    "@ckeditor/ckeditor5-block-quote": ">=35.1.0",
+    "@ckeditor/ckeditor5-code-block": ">=35.1.0",
+    "@ckeditor/ckeditor5-core": ">=35.1.0",
+    "@ckeditor/ckeditor5-editor-classic": ">=35.1.0",
+    "@ckeditor/ckeditor5-essentials": ">=35.1.0",
+    "@ckeditor/ckeditor5-heading": ">=35.1.0",
+    "@ckeditor/ckeditor5-image": ">=35.1.0",
+    "@ckeditor/ckeditor5-indent": ">=35.1.0",
+    "@ckeditor/ckeditor5-inspector": ">=4.1.0",
+    "@ckeditor/ckeditor5-link": ">=35.1.0",
+    "@ckeditor/ckeditor5-list": ">=35.1.0",
+    "@ckeditor/ckeditor5-media-embed": ">=35.1.0",
+    "@ckeditor/ckeditor5-package-tools": "^1.0.0-beta.6",
+    "@ckeditor/ckeditor5-paragraph": ">=35.1.0",
+    "@ckeditor/ckeditor5-source-editing": ">=35.1.0",
+    "@ckeditor/ckeditor5-table": ">=35.1.0",
+    "@ckeditor/ckeditor5-theme-lark": ">=35.1.0",
+    "@ckeditor/ckeditor5-upload": ">=35.1.0",
+    "codemirror": "^5.65.8",
+    "eslint": "^7.32.0",
+    "eslint-config-ckeditor5": ">=4.0.1",
+    "http-server": "^14.1.1",
+    "stylelint": "^13.13.1",
+    "stylelint-config-ckeditor5": ">=4.0.1"
+  },
+  "scripts": {
+    "dll:build": "ckeditor5-package-tools dll:build",
+    "dll:serve": "http-server ./ -o sample/dll.html",
+    "lint": "eslint \"**/*.js\" --quiet --ignore-pattern \"build/\"",
+    "start": "ckeditor5-package-tools start",
+    "stylelint": "stylelint --quiet --allow-empty-input 'theme/**/*.css'",
+    "test": "ckeditor5-package-tools test",
+    "prepare": "npm run dll:build",
+    "translations:collect": "ckeditor5-package-tools translations:collect",
+    "translations:download": "ckeditor5-package-tools translations:download",
+    "translations:upload": "ckeditor5-package-tools translations:upload"
+  }
+}

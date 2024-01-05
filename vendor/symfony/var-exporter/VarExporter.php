@@ -32,8 +32,8 @@ final class VarExporter
     /**
      * Exports a serializable PHP value to PHP code.
      *
-     * @param bool &$isStaticValue Set to true after execution if the provided value is static, false otherwise
-     * @param bool &$classes       Classes found in the value are added to this list as both keys and values
+     * @param bool  &$isStaticValue Set to true after execution if the provided value is static, false otherwise
+     * @param array &$foundClasses  Classes found in the value are added to this list as both keys and values
      *
      * @throws ExceptionInterface When the provided value cannot be serialized
      */
@@ -82,7 +82,7 @@ final class VarExporter
         ksort($states);
 
         $wakeups = [null];
-        foreach ($states as $k => $v) {
+        foreach ($states as $v) {
             if (\is_array($v)) {
                 $wakeups[-$v[0]] = $v[1];
             } else {

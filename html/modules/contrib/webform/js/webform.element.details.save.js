@@ -3,7 +3,7 @@
  * JavaScript behaviors for details element.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -33,7 +33,7 @@
       }
 
       // Summary click event handler.
-      $('details > summary', context).once('webform-details-summary-save').on('click', function () {
+      $(once('webform-details-summary-save', 'details > summary', context)).on('click', function () {
         var $details = $(this).parent();
 
         // @see https://css-tricks.com/snippets/jquery/make-an-jquery-hasattr/
@@ -51,7 +51,7 @@
       });
 
       // Initialize details open state via local storage.
-      $('details', context).once('webform-details-save').each(function () {
+      $(once('webform-details-save', 'details', context)).each(function () {
         var $details = $(this);
 
         var name = Drupal.webformDetailsSaveGetName($details);
@@ -123,4 +123,4 @@
     return 'Drupal.webform.' + formId + '.' + detailsId;
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

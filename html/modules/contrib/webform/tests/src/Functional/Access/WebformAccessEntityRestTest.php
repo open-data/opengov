@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Access;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform entity REST access.
@@ -17,7 +17,7 @@ class WebformAccessEntityRestTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_test_rest'];
+  protected static $modules = ['webform', 'webform_test_rest'];
 
   /**
    * Tests webform entity REST acces.

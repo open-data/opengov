@@ -126,7 +126,7 @@ class CustomUrlGenerator extends EntityUrlGeneratorBase {
   public function getDataSets(): array {
     $this->includeImages = $this->settings->get('custom_links_include_images', FALSE);
 
-    $custom_link_settings = $this->customLinks->setVariants($this->sitemap->id())->get();
+    $custom_link_settings = $this->customLinks->setSitemaps($this->sitemap)->get();
     $custom_link_settings = $custom_link_settings ? reset($custom_link_settings) : [];
 
     return array_values($custom_link_settings);

@@ -3,7 +3,7 @@
  * JavaScript behaviors for RateIt integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -17,9 +17,7 @@
    */
   Drupal.behaviors.webformRating = {
     attach: function (context) {
-      $(context)
-        .find('[data-rateit-backingfld]')
-        .once('webform-rating')
+      $(once('webform-rating', '[data-rateit-backingfld]', context))
         .each(function () {
           var $rateit = $(this);
           var $input = $($rateit.attr('data-rateit-backingfld'));
@@ -52,4 +50,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

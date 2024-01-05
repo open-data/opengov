@@ -19,12 +19,12 @@ class WebformSubmissionStorageTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'user', 'path', 'path_alias', 'field', 'webform'];
+  protected static $modules = ['system', 'user', 'path', 'path_alias', 'field', 'webform'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('path_alias');
     $this->installSchema('webform', ['webform']);

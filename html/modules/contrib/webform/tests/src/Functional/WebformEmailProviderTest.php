@@ -75,7 +75,7 @@ class WebformEmailProviderTest extends WebformBrowserTestBase {
     // Turn on the smtp.module via the UI.
     // @see webform_form_smtp_admin_settings_alter()
     $this->drupalGet('/admin/config/system/smtp');
-    $edit = ['smtp_on' => TRUE];
+    $edit = ['smtp_on' => 'on'];
     $this->submitForm($edit, 'Save configuration');
 
     // Check SMTP: Default PHP mailer after smtp.module turned on.

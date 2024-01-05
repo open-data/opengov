@@ -2,9 +2,9 @@
 
 namespace Drupal\simple_sitemap\Queue;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Queue\DatabaseQueue;
-use Drupal\Component\Datetime\TimeInterface;
 
 /**
  * Defines a Simple XML Sitemap queue handler.
@@ -44,7 +44,7 @@ class SimpleSitemapQueue extends DatabaseQueue {
     try {
       $item = $this->connection->queryRange('SELECT data, item_id FROM {queue} q WHERE name = :name ORDER BY item_id ASC', 0, 1, [':name' => $this->name])->fetchObject();
       if ($item) {
-        $item->data = unserialize($item->data);
+        $item->data = unserialize($item->data, ['allowed_classes' => FALSE]);
         return $item;
       }
     }
@@ -72,7 +72,7 @@ class SimpleSitemapQueue extends DatabaseQueue {
     try {
       $query = $this->connection->query('SELECT data, item_id FROM {queue} q WHERE name = :name ORDER BY item_id ASC', [':name' => $this->name]);
       while ($item = $query->fetchObject()) {
-        $item->data = unserialize($item->data);
+        $item->data = unserialize($item->data, ['allowed_classes' => FALSE]);
         yield $item;
       }
     }

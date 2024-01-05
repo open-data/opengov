@@ -14,7 +14,8 @@ archive: false
 id: test_element_checkboxes
 title: 'Test: Element: Checkboxes'
 description: 'Test the checkboxes.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   checkbox_example:
     '#type': details
@@ -209,7 +210,6 @@ elements: |
           '#disabled': true
         three:
           '#disabled': true
-  
 css: ''
 javascript: ''
 settings:
@@ -297,6 +297,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

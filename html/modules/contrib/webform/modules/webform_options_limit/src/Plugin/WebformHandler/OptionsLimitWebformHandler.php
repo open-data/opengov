@@ -1342,7 +1342,7 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
         $query->condition('s.uid', $this->currentUser->id());
       }
       else {
-        $sids = $this->submissionStorage->getAnonymousSubmissionIds($this->currentUser);
+        $sids = $this->entityTypeManager->getStorage('webform_submission')->getAnonymousSubmissionIds($this->currentUser);
         if ($sids) {
           $query->condition('s.sid', $sids, 'IN');
           $query->condition('s.uid', 0);

@@ -14,7 +14,8 @@ archive: false
 id: test_states_server_clear
 title: 'Test: Form API #states save hide/show element without clearing default value'
 description: 'Test Drupal&#39;s #states API hide/show element without clearing default value.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   trigger_checkbox:
     '#type': checkbox
@@ -103,7 +104,6 @@ elements: |
       '#type': textfield
       '#title': dependent_details_textfield
       '#default_value': '{dependent_details_textfield}'
-  
 css: ''
 javascript: ''
 settings:
@@ -191,6 +191,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

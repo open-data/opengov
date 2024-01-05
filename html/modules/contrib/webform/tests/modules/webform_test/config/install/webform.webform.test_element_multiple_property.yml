@@ -14,7 +14,8 @@ archive: false
 id: test_element_multiple_property
 title: 'Test: Element: Multiple property'
 description: 'Test #multiple element property.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_element_multiple:
     '#type': webform_element_multiple
@@ -51,7 +52,6 @@ elements: |
     '#title': webform_element_multiple_custom_access
     '#default_value': 5
     '#access': false
-  
 css: ''
 javascript: ''
 settings:
@@ -139,6 +139,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

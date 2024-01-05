@@ -14,11 +14,11 @@ archive: false
 id: test_handler_email_states
 title: 'Test: Handler: Email states'
 description: 'Test sending email during each submission state.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   message:
     '#markup': 'Click ''Save Draft'' and ''Submit'' to send emails triggered by submissions  state.'
-  
 css: ''
 javascript: ''
 settings:
@@ -106,6 +106,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -14,7 +14,8 @@ archive: false
 id: test_form_wizard_conditional
 title: 'Test: Webform: Wizard conditional'
 description: 'Test a multiple step wizard with conditional pages'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   start:
     '#title': Start
@@ -99,7 +100,6 @@ elements: |
           unchecked: true
     page_5_markup:
       '#markup': 'This is page 5.'
-  
 css: ''
 javascript: ''
 settings:
@@ -187,6 +187,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

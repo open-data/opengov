@@ -18,7 +18,7 @@ class WebformScheduledEmailTest extends WebformNodeBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_scheduled_email', 'webform_scheduled_email_test', 'webform_node'];
+  protected static $modules = ['webform', 'webform_scheduled_email', 'webform_scheduled_email_test', 'webform_node'];
 
   /**
    * Tests webform schedule email handler.

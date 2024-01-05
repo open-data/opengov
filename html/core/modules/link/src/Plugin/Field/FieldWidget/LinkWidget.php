@@ -72,7 +72,7 @@ class LinkWidget extends WidgetBase {
       $displayable_string = $uri_reference;
     }
     elseif ($scheme === 'entity') {
-      list($entity_type, $entity_id) = explode('/', substr($uri, 7), 2);
+      [$entity_type, $entity_id] = explode('/', substr($uri, 7), 2);
       // Show the 'entity:' URI as the entity autocomplete would.
       // @todo Support entity types other than 'node'. Will be fixed in
       //   https://www.drupal.org/node/2423093.
@@ -125,7 +125,7 @@ class LinkWidget extends WidgetBase {
       //   https://www.drupal.org/node/2421941
       // - '<front>' -> '/'
       // - '<front>#foo' -> '/#foo'
-      if (strpos($string, '<front>') === 0) {
+      if (str_starts_with($string, '<front>')) {
         $string = '/' . substr($string, strlen('<front>'));
       }
       $uri = 'internal:' . $string;

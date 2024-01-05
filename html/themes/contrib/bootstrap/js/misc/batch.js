@@ -3,7 +3,7 @@
  * Drupal's batch API.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
   'use strict';
 
   /**
@@ -14,7 +14,7 @@
   Drupal.behaviors.batch = {
     attach: function (context, settings) {
       var batch = settings.batch;
-      var $progress = $('[data-drupal-progress]').once('batch');
+      var $progress = $(once('batch', '[data-drupal-progress]', context));
       var progressBar;
 
       // Success: redirect to the summary.
@@ -40,4 +40,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

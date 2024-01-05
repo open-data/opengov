@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\system\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
@@ -74,6 +76,33 @@ class ModalRendererTest extends WebDriverTestBase {
     // Tabbable should focus the item with autofocus inside button pane.
     $this->assertJsCondition('document.activeElement === tabbable.tabbable(document.querySelector(".ui-dialog .ui-dialog-content"))[1]');
     $this->assertJsCondition('document.activeElement === document.querySelector(".ui-dialog .form-text")');
+  }
+
+  /**
+   * Confirm focus management of a dialog openers in a dropbutton.
+   */
+  public function testOpenerInDropbutton() {
+    $assert_session = $this->assertSession();
+    $page = $this->getSession()->getPage();
+
+    $this->drupalGet('dialog_renderer-collapsed-opener');
+
+    // Open a modal using a link inside a dropbutton.
+    $page->find('css', '.dropbutton-toggle button')->click();
+    $modal_link = $assert_session->waitForElementVisible('css', '.secondary-action a');
+    $modal_link->click();
+    $assert_session->waitForElementVisible('css', '.ui-dialog');
+    $assert_session->assertVisibleInViewport('css', '.ui-dialog .ui-dialog-content');
+    $page->pressButton('Close');
+
+    // When the dialog "closes" it is still present, so wait on it switching to
+    // `display: none;`.
+    $assert_session->waitForElement('css', '.ui-dialog[style*="display: none;"]');
+
+    // Confirm that when the modal closes, focus is moved to the first visible
+    // and focusable item in the contextual link container, because the original
+    // opener is not available.
+    $this->assertJsCondition('document.activeElement === document.querySelector(".dropbutton-action a")');
   }
 
 }

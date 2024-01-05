@@ -42,8 +42,9 @@ function file_test_reset() {
 }
 
 /**
- * Get the arguments passed to invocation of a given hook since
- * file_test_reset() was last called.
+ * Gets the arguments passed to a given hook invocation.
+ *
+ * Arguments are gathered since file_test_reset() was last called.
  *
  * @param string $op
  *   One of the hook_file_* operations: 'load', 'validate', 'download',
@@ -136,14 +137,6 @@ function file_test_file_load($files) {
     // by reference.
     $file->file_test['loaded'] = TRUE;
   }
-}
-
-/**
- * Implements hook_file_validate().
- */
-function file_test_file_validate(File $file) {
-  _file_test_log_call('validate', [$file->id()]);
-  return _file_test_get_return('validate');
 }
 
 /**
@@ -296,9 +289,9 @@ function file_test_file_url_alter(&$uri) {
  */
 function file_test_file_mimetype_mapping_alter(&$mapping) {
   // Add new mappings.
-  $mapping['mimetypes']['file_test_mimetype_1'] = 'madeup/file_test_1';
-  $mapping['mimetypes']['file_test_mimetype_2'] = 'madeup/file_test_2';
-  $mapping['mimetypes']['file_test_mimetype_3'] = 'madeup/doc';
+  $mapping['mimetypes']['file_test_mimetype_1'] = 'made_up/file_test_1';
+  $mapping['mimetypes']['file_test_mimetype_2'] = 'made_up/file_test_2';
+  $mapping['mimetypes']['file_test_mimetype_3'] = 'made_up/doc';
   $mapping['extensions']['file_test_1'] = 'file_test_mimetype_1';
   $mapping['extensions']['file_test_2'] = 'file_test_mimetype_2';
   $mapping['extensions']['file_test_3'] = 'file_test_mimetype_2';

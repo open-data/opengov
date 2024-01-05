@@ -12,6 +12,7 @@ use Drupal\Core\PageCache\ResponsePolicyInterface;
 use Drupal\Core\Site\Settings;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -51,10 +52,8 @@ class FinishResponseSubscriber implements EventSubscriberInterface {
 
   /**
    * The cache contexts manager service.
-   *
-   * @var \Drupal\Core\Cache\Context\CacheContextsManager
    */
-  protected $cacheContextsManager;
+  protected CacheContextsManager $cacheContextsManager;
 
   /**
    * Whether to send cacheability headers for debugging purposes.
@@ -117,17 +116,13 @@ class FinishResponseSubscriber implements EventSubscriberInterface {
     $request = $event->getRequest();
     $response = $event->getResponse();
 
-    // Set the X-UA-Compatible HTTP header to force IE to use the most recent
-    // rendering engine.
-    $response->headers->set('X-UA-Compatible', 'IE=edge', FALSE);
-
     // Set the Content-language header.
     $response->headers->set('Content-language', $this->languageManager->getCurrentLanguage()->getId());
 
     // Prevent browsers from sniffing a response and picking a MIME type
     // different from the declared content-type, since that can lead to
     // XSS and other vulnerabilities.
-    // https://www.owasp.org/index.php/List_of_useful_HTTP_headers
+    // https://owasp.org/www-project-secure-headers
     $response->headers->set('X-Content-Type-Options', 'nosniff', FALSE);
     $response->headers->set('X-Frame-Options', 'SAMEORIGIN', FALSE);
 
@@ -305,16 +300,35 @@ class FinishResponseSubscriber implements EventSubscriberInterface {
   }
 
   /**
+   * Sets the Content-Length header on the response.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\ResponseEvent $event
+   *   The event to process.
+   */
+  public function setContentLengthHeader(ResponseEvent $event): void {
+    $response = $event->getResponse();
+    if ($response instanceof StreamedResponse) {
+      return;
+    }
+
+    $response->headers->set('Content-Length', strlen($response->getContent()), TRUE);
+  }
+
+  /**
    * Registers the methods in this class that should be listeners.
    *
    * @return array
    *   An array of event listener definitions.
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events[KernelEvents::RESPONSE][] = ['onRespond'];
     // There is no specific reason for choosing 16 beside it should be executed
     // before ::onRespond().
     $events[KernelEvents::RESPONSE][] = ['onAllResponds', 16];
+    // Run very late, after all other response subscribers have run. However,
+    // any response subscribers that convert a response to a streamed response
+    // must run after this and undo what this does.
+    $events[KernelEvents::RESPONSE][] = ['setContentLengthHeader', -1024];
     return $events;
   }
 

@@ -1,0 +1,13 @@
+{
+	"plugins": [
+		{
+			"name": "Source Editing CodeMirror",
+		  	"description": "CodeMirror syntax highlighting to source editing mode.",
+			"path": "src/sourceeditingcodemirror.js",
+		  	"className": "SourceEditingCodeMirror",
+			"requires": [
+			  	"SourceEditing"
+			]
+		}
+	]
+}

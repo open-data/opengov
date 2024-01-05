@@ -16,7 +16,7 @@ class WebformUiElementActionsTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'webform', 'webform_ui'];
+  protected static $modules = ['webform', 'webform_ui'];
 
   /**
    * Tests actions element.

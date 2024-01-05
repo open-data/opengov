@@ -5,7 +5,7 @@ configure: entity.simple_sitemap.collection
 package: SEO
 core_version_requirement: ^9.3 || ^10
 
-# Information added by Drupal.org packaging script on 2023-06-09
-version: '4.1.6'
+# Information added by Drupal.org packaging script on 2023-12-18
+version: '4.1.8'
 project: 'simple_sitemap'
-datestamp: 1686288645
+datestamp: 1702898356

@@ -14,7 +14,7 @@ archive: false
 id: template_issue
 title: Issue
 description: 'An issue webform template.'
-category: ''
+categories: {  }
 elements: |
   meta_data_details:
     '#title': 'Issue Meta Data'
@@ -124,7 +124,6 @@ elements: |
       '#type': managed_file
       '#title': Files
       '#multiple': true
-  
 css: ''
 javascript: ''
 settings:
@@ -212,6 +211,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

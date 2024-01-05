@@ -14,7 +14,8 @@ archive: false
 id: test_element_media_file
 title: 'Test: Element: Media type file upload'
 description: 'Test file uploads using media accepts and capture file element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   managed_file_elements:
     '#type': details
@@ -72,7 +73,6 @@ elements: |
       '#type': webform_video_file
       '#title': 'video_file (mp4)'
       '#file_extensions': mp4
-  
 css: ''
 javascript: ''
 settings:
@@ -160,6 +160,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

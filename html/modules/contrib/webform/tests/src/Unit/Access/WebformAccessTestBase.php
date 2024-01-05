@@ -20,7 +20,7 @@ abstract class WebformAccessTestBase extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->container = new ContainerBuilder();
@@ -28,9 +28,7 @@ abstract class WebformAccessTestBase extends UnitTestCase {
 
     // Mock cache context manager and set container.
     // @copied from \Drupal\Tests\Core\Access\AccessResultTest::setUp
-    $cache_contexts_manager = $this->getMockBuilder('Drupal\Core\Cache\Context\CacheContextsManager')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $cache_contexts_manager = $this->createMock('Drupal\Core\Cache\Context\CacheContextsManager');
 
     $cache_contexts_manager->method('assertValidTokens')->willReturn(TRUE);
     $this->container->set('cache_contexts_manager', $cache_contexts_manager);

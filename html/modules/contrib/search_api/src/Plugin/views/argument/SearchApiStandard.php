@@ -84,20 +84,22 @@ class SearchApiStandard extends ArgumentPluginBase {
     // Let the plugins do validation.
     if (!empty($option_values['default_argument_type'])) {
       $default_id = $option_values['default_argument_type'];
-      $plugin = $this->getPlugin('argument_default', $default_id);
-      if ($plugin) {
-        $plugin->validateOptionsForm($form['argument_default'][$default_id], $form_state, $option_values['argument_default'][$default_id]);
-      }
+      $this->getPlugin('argument_default', $default_id)?->validateOptionsForm(
+        $form['argument_default'][$default_id],
+        $form_state,
+        $option_values['argument_default'][$default_id],
+      );
     }
 
     if (!empty($option_values['validate']['type'])) {
       $sanitized_id = $option_values['validate']['type'];
       // Correct ID for js sanitized version.
       $validate_id = static::decodeValidatorId($sanitized_id);
-      $plugin = $this->getPlugin('argument_validator', $validate_id);
-      if ($plugin) {
-        $plugin->validateOptionsForm($form['validate']['options'][$sanitized_id], $form_state, $option_values['validate']['options'][$sanitized_id]);
-      }
+      $this->getPlugin('argument_validator', $validate_id)?->validateOptionsForm(
+        $form['validate']['options'][$sanitized_id],
+        $form_state,
+        $option_values['validate']['options'][$sanitized_id],
+      );
     }
   }
 

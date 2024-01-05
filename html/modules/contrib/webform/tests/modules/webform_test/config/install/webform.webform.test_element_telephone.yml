@@ -14,7 +14,8 @@ archive: false
 id: test_element_telephone
 title: 'Test: Element: Telephone'
 description: 'Test telephone element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   tel_default:
     '#type': tel
@@ -45,7 +46,6 @@ elements: |
     '#international': true
     '#international_preferred_countries':
       - ZW
-  
 css: ''
 javascript: ''
 settings:
@@ -133,6 +133,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

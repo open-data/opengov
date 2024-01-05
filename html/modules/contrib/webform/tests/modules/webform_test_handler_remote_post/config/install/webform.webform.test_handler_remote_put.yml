@@ -14,7 +14,8 @@ archive: false
 id: test_handler_remote_put
 title: 'Test: Handler: Remote HTTP PUT'
 description: 'Test remote post handler using HTTP PUT method.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   response_type:
     '#title': 'Response type'
@@ -38,7 +39,6 @@ elements: |
     '#title': 'Confirmation number'
     '#type': value
     '#value': '[webform:handler:remote_post:completed:confirmation_number]'
-  
 css: ''
 javascript: ''
 settings:
@@ -126,6 +126,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -145,7 +147,6 @@ settings:
   confirmation_title: ''
   confirmation_message: |
     <p>Your confirmation number is [webform_submission:values:confirmation_number].</p>
-    
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
@@ -257,38 +258,30 @@ handlers:
         confirmation_number: confirmation_number
       custom_data: |
         custom_data: true
-        
       custom_options: |
         headers:
           custom_header: 'true'
-        
       cast: false
       file_data: true
       debug: true
       completed_url: 'http://webform-test-handler-remote-post/completed'
       completed_custom_data: |
         custom_completed: true
-        
       updated_url: 'http://webform-test-handler-remote-post/updated'
       updated_custom_data: |
         custom_updated: true
-        
       deleted_url: 'http://webform-test-handler-remote-post/deleted'
       deleted_custom_data: |
         custom_deleted: true
-        
       draft_created_url: 'http://webform-test-handler-remote-post/draft_created'
       draft_created_custom_data: |
         custom_draft_created: true
-        
       draft_updated_url: 'http://webform-test-handler-remote-post/draft_updated'
       draft_updated_custom_data: |
         custom_draft_updated: true
-        
       converted_url: 'http://webform-test-handler-remote-post/converted'
       converted_custom_data: |
         custom_converted: true
-        
       message: ''
       messages: {  }
       error_url: ''

@@ -14,7 +14,8 @@ archive: false
 id: test_form_disable_back
 title: 'Test: Webform: Disabled back button'
 description: 'Test disabling the ability to navigate back using the back button.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   wizard_1:
     '#type': webform_wizard_page
@@ -346,7 +347,6 @@ elements: |
     element_100:
       '#type': textfield
       '#title': 'Element #100'
-  
 css: ''
 javascript: ''
 settings:
@@ -434,6 +434,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

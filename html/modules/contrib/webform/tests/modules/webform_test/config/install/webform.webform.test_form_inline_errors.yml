@@ -14,7 +14,8 @@ archive: false
 id: test_form_inline_errors
 title: 'Test: Webform: Inline Form Errors'
 description: 'Test inline form errors.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   input_core:
     '#type': fieldset
@@ -127,7 +128,6 @@ elements: |
         1: 'Option 1'
         2: 'Option 2'
         3: 'Option 3'
-  
 css: ''
 javascript: ''
 settings:
@@ -215,6 +215,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

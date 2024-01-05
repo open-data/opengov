@@ -14,7 +14,7 @@ class SessionConfigurationTest extends UnitTestCase {
   /**
    * Constructs a partially mocked SUT.
    *
-   * @returns \Drupal\Core\Session\SessionConfiguration|\PHPUnit\Framework\MockObject\MockObject
+   * @return \Drupal\Core\Session\SessionConfiguration|\PHPUnit\Framework\MockObject\MockObject
    */
   protected function createSessionConfiguration($options = []) {
     return $this->getMockBuilder('Drupal\Core\Session\SessionConfiguration')
@@ -42,7 +42,7 @@ class SessionConfigurationTest extends UnitTestCase {
   /**
    * Data provider for the cookie domain test.
    *
-   * @returns array
+   * @return array
    *   Test data
    */
   public function providerTestGeneratedCookieDomain() {
@@ -81,7 +81,7 @@ class SessionConfigurationTest extends UnitTestCase {
   /**
    * Data provider for the cookie domain test.
    *
-   * @returns array
+   * @return array
    *   Test data
    */
   public function providerTestEnforcedCookieDomain() {
@@ -117,6 +117,17 @@ class SessionConfigurationTest extends UnitTestCase {
   }
 
   /**
+   * Test that session.cookie_samesite is configured correctly.
+   */
+  public function testSameSiteCookie() {
+    $request = Request::create('https://example.com');
+
+    $config = $this->createSessionConfiguration(['cookie_samesite' => 'Strict']);
+    $options = $config->getOptions($request);
+    $this->assertEquals('Strict', $options['cookie_samesite']);
+  }
+
+  /**
    * Tests that session.cookie_secure ini settings cannot be overridden.
    *
    * @covers ::__construct
@@ -136,7 +147,7 @@ class SessionConfigurationTest extends UnitTestCase {
   /**
    * Data provider for the cookie secure test.
    *
-   * @returns array
+   * @return array
    *   Test data
    */
   public function providerTestCookieSecure() {
@@ -169,7 +180,7 @@ class SessionConfigurationTest extends UnitTestCase {
   /**
    * Data provider for the cookie name test.
    *
-   * @returns array
+   * @return array
    *   Test data
    */
   public function providerTestGeneratedSessionName() {
@@ -217,7 +228,7 @@ class SessionConfigurationTest extends UnitTestCase {
   /**
    * Data provider for the cookie name test.
    *
-   * @returns array
+   * @return array
    *   Test data
    */
   public function providerTestEnforcedSessionName() {
@@ -263,7 +274,7 @@ class SessionConfigurationTest extends UnitTestCase {
   /**
    * Data provider for the constructor test.
    *
-   * @returns array
+   * @return array
    *   Test data
    */
   public function providerTestConstructorDefaultSettings() {

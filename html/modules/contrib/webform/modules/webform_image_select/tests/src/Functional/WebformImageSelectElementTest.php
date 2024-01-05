@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform_image_select\Functional;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\Element\WebformElementBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform image select element.
@@ -17,7 +17,7 @@ class WebformImageSelectElementTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_image_select', 'webform_image_select_test'];
+  protected static $modules = ['webform', 'webform_image_select', 'webform_image_select_test'];
 
   /**
    * Test webform image select element.
@@ -48,13 +48,7 @@ class WebformImageSelectElementTest extends WebformElementBrowserTestBase {
       'image_select_default' => 'kitten_1',
     ];
     $this->postSubmission($webform, $edit, 'Preview');
-    // @todo Remove once Drupal 9.1.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 9.1) {
-      $assert_session->responseContains('<figure style="display: inline-block; margin: 0 6px 6px 0; padding: 6px; border: 1px solid #ddd;width: 220px"><img src="http://placekitten.com/220/200" width="220" height="200" alt="Cute Kitten 1" title="Cute Kitten 1" loading="lazy" />');
-    }
-    else {
-      $assert_session->responseContains('<figure style="display: inline-block; margin: 0 6px 6px 0; padding: 6px; border: 1px solid #ddd;width: 220px"><img src="http://placekitten.com/220/200" width="220" height="200" alt="Cute Kitten 1" title="Cute Kitten 1" />');
-    }
+    $assert_session->responseContains('<figure style="display: inline-block; margin: 0 6px 6px 0; padding: 6px; border: 1px solid #ddd;width: 220px"><img src="http://placekitten.com/220/200" width="220" height="200" alt="Cute Kitten 1" title="Cute Kitten 1" loading="lazy" />');
   }
 
 }

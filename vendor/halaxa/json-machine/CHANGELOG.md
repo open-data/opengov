@@ -12,6 +12,16 @@ Nothing yet
 
 <br>
 
+## 1.1.4 - 2023-11-28
+- Minor fixes and added some tests.
+### Added
+- Support for PHP 8.3
+- Added PHPStan to build pipeline
+### Fixed
+- Fixed the case when non-intersecting pointers were considered intersecting (#106). Thanks @XedinUnknown
+
+<br>
+
 ## 1.1.3 - 2022-10-12
 ### Fixed
 - Fix the parsing of nested sub-trees that use wildcards (#83). Thanks @cerbero90

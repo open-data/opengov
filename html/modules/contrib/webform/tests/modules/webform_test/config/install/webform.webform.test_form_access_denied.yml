@@ -14,12 +14,12 @@ archive: false
 id: test_form_access_denied
 title: 'Test: Webform: Access Denied'
 description: 'Test access denied to form or submission.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   textfield:
     '#type': textfield
     '#title': textfield
-  
 css: ''
 javascript: ''
 settings:
@@ -107,6 +107,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

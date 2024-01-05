@@ -5,15 +5,13 @@
  * Allows webforms to be shared on other websites using an iframe.
  */
 
-use Drupal\block\Entity\Block;
-use Drupal\Core\Access\AccessResult;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\Markup;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\webform\WebformInterface;
-use Drupal\webform_share\WebformSharePreRender;
 use Drupal\webform_share\WebformShareHelper;
+use Drupal\webform_share\WebformSharePreRender;
 
 /**
  * Implements hook_webform_help_info().
@@ -136,23 +134,6 @@ function webform_share_entity_operation(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_block_access().
- */
-function webform_share_block_access(Block $block, $operation, AccountInterface $account) {
-  if (!WebformShareHelper::isPage()) {
-    return AccessResult::neutral();
-  }
-
-  // Only adjust block view access.
-  if ($operation !== 'view') {
-    return AccessResult::neutral();
-  }
-
-  // Hide all blocks to improve the webform share page's performance.
-  return AccessResult::forbidden();
-}
-
-/**
  * Implements hook_page_top().
  */
 function webform_share_page_top(array &$page_top) {
@@ -244,20 +225,9 @@ function template_preprocess_html__webform_share(&$variables) {
     $variables['attributes']['class'] = array_values($variables['attributes']['class']);
   }
 
-  // Prepend page title to the content because all blocks are hidden.
-  // @see webform_share_block_access()
-  // @see https://drupal.stackexchange.com/questions/112757/how-can-i-get-the-page-title/112758
-  if ($webform->getSetting('share_title')) {
-    $request = \Drupal::request();
-    $route_match = \Drupal::routeMatch();
-    $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
-    $variables['page']['content']['page_title'] = [
-      '#type' => 'page_title',
-      '#title' => $title,
-      // Move page title before the message block (weight: 1000)
-      // @see \Drupal\block\Plugin\DisplayVariant\BlockPageVariant::build
-      '#weight' => -1001,
-    ];
+  // Remove the page title.
+  if (!$webform->getSetting('share_title')) {
+    NestedArray::unsetValue($variables, ['page', 'content', 'page_title']);
   }
 }
 

@@ -339,7 +339,7 @@ function hook_search_api_query_alter(\Drupal\search_api\Query\QueryInterface $qu
   }
   // Otherwise, exclude the node with ID 10 from the search results.
   $fields = $query->getIndex()->getFields();
-  foreach ($query->getIndex()->getDatasources() as $datasource_id => $datasource) {
+  foreach ($query->getIndex()->getDatasources() as $datasource) {
     if ($datasource->getEntityTypeId() == 'node') {
       if (isset($fields['nid'])) {
         $query->addCondition('nid', 10, '<>');
@@ -364,7 +364,7 @@ function hook_search_api_query_alter(\Drupal\search_api\Query\QueryInterface $qu
 function hook_search_api_query_TAG_alter(\Drupal\search_api\Query\QueryInterface $query) {
   // Exclude the node with ID 10 from the search results.
   $fields = $query->getIndex()->getFields();
-  foreach ($query->getIndex()->getDatasources() as $datasource_id => $datasource) {
+  foreach ($query->getIndex()->getDatasources() as $datasource) {
     if ($datasource->getEntityTypeId() == 'node') {
       if (isset($fields['nid'])) {
         $query->addCondition('nid', 10, '<>');

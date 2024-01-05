@@ -14,7 +14,8 @@ archive: false
 id: test_element_checkbox_value
 title: 'Test: Element: Checkbox value'
 description: 'Test the checkbox value element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   checkbox_value_empty:
     '#type': webform_checkbox_value
@@ -35,7 +36,6 @@ elements: |
         One: One
         Two: Two
         Three: Three
-  
 css: ''
 javascript: ''
 settings:
@@ -123,6 +123,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

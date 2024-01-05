@@ -14,7 +14,8 @@ archive: false
 id: test_rendering
 title: 'Test: Rendering'
 description: 'Test Webform and Webform Submission rendering'
-category: 'Test: Rendering'
+categories:
+  - 'Test: Rendering'
 elements: |
   submission_label:
     '#type': textfield
@@ -50,7 +51,6 @@ elements: |
     '#default_value':
       value: '<p><em>{default_value}</em></p>'
       format: basic_html
-  
 css: ''
 javascript: ''
 settings:
@@ -138,6 +138,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

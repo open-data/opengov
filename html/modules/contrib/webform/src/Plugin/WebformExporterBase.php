@@ -56,6 +56,13 @@ abstract class WebformExporterBase extends PluginBase implements WebformExporter
   protected $archive;
 
   /**
+   * The configuration array.
+   *
+   * @var array
+   */
+  protected $configuration;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {

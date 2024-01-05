@@ -78,10 +78,10 @@ class BanMiddlewareTest extends UnitTestCase {
 
     $request = Request::create('/test-path');
     $request->server->set('REMOTE_ADDR', $unbanned_ip);
-    $expected_response = new Response(200);
+    $expected_response = new Response(status: 200);
     $this->kernel->expects($this->once())
       ->method('handle')
-      ->with($request, HttpKernelInterface::MASTER_REQUEST, TRUE)
+      ->with($request, HttpKernelInterface::MAIN_REQUEST, TRUE)
       ->willReturn($expected_response);
 
     $response = $this->banMiddleware->handle($request);

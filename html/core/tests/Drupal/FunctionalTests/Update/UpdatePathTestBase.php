@@ -4,7 +4,6 @@ namespace Drupal\FunctionalTests\Update;
 
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Site\Settings;
-use Drupal\Core\Test\TestRunnerKernel;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
@@ -54,52 +53,17 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
   /**
    * The file path(s) to the dumped database(s) to load into the child site.
    *
-   * The file system/tests/fixtures/update/drupal-8.8.0.bare.standard.php.gz is
+   * The file system/tests/fixtures/update/drupal-9.4.0.bare.standard.php.gz is
    * normally included first -- this sets up the base database from a bare
    * standard Drupal installation.
    *
-   * The file system/tests/fixtures/update/drupal-8.8.0.filled.standard.php.gz
+   * The file system/tests/fixtures/update/drupal-9.4.0.filled.standard.php.gz
    * can also be used in case we want to test with a database filled with
    * content, and with all core modules enabled.
    *
    * @var array
    */
   protected $databaseDumpFiles = [];
-
-  /**
-   * Flag that indicates whether the child site has been updated.
-   *
-   * @var bool
-   */
-  protected $upgradedSite = FALSE;
-
-  /**
-   * Array of errors triggered during the update process.
-   *
-   * @var array
-   */
-  protected $upgradeErrors = [];
-
-  /**
-   * Array of modules loaded when the test starts.
-   *
-   * @var array
-   */
-  protected $loadedModules = [];
-
-  /**
-   * Flag to indicate whether zlib is installed or not.
-   *
-   * @var bool
-   */
-  protected $zlibInstalled = TRUE;
-
-  /**
-   * Flag to indicate whether there are pending updates or not.
-   *
-   * @var bool
-   */
-  protected $pendingUpdates = TRUE;
 
   /**
    * The update URL.
@@ -118,47 +82,40 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
   protected $strictConfigSchema = FALSE;
 
   /**
-   * Overrides BrowserTestBase::setUp() for update testing.
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    if (!extension_loaded('zlib')) {
+      $this->markTestSkipped('The zlib extension is not available.');
+    }
+
+    parent::setUp();
+  }
+
+  /**
+   * Overrides BrowserTestBase::installDrupal() for update testing.
    *
    * The main difference in this method is that rather than performing the
    * installation via the installer, a database is loaded. Additional work is
    * then needed to set various things such as the config directories and the
    * container that would normally be done via the installer.
    */
-  protected function setUp() {
-    parent::setUpAppRoot();
-    $this->zlibInstalled = function_exists('gzopen');
-
-    $request = Request::createFromGlobals();
-
-    // Boot up Drupal into a state where calling the database API is possible.
-    // This is used to initialize the database system, so we can load the dump
-    // files.
-    $autoloader = require $this->root . '/autoload.php';
-    $kernel = TestRunnerKernel::createFromRequest($request, $autoloader);
-    $kernel->loadLegacyIncludes();
-
-    // Set the update url. This must be set here rather than in
+  public function installDrupal() {
+    // Set the update URL. This must be set here rather than in
     // self::__construct() or the old URL generator will leak additional test
     // sites. Additionally, we need to prevent the path alias processor from
     // running because we might not have a working alias system before running
     // the updates.
     $this->updateUrl = Url::fromRoute('system.db_update', [], ['path_processing' => FALSE]);
 
-    $this->setupBaseUrl();
+    $this->initUserSession();
+    $this->prepareSettings();
+    $this->doInstall();
+    $this->initSettings();
 
-    // Install Drupal test site.
-    $this->prepareEnvironment();
-    $this->runDbTasks();
-
-    // We are going to set a missing zlib requirement property for usage
-    // during the performUpgrade() and tearDown() methods. Also set that the
-    // tests failed.
-    if (!$this->zlibInstalled) {
-      parent::setUp();
-      return;
-    }
-    $this->installDrupal();
+    $request = Request::createFromGlobals();
+    $container = $this->initKernel($request);
+    $this->initConfig($container);
 
     // Add the config directories to settings.php.
     $sync_directory = Settings::get('config_sync_directory');
@@ -175,26 +132,6 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
     $this->replaceUser1();
 
     require_once $this->root . '/core/includes/update.inc';
-
-    // Setup Mink.
-    $this->initMink();
-
-    // Set up the browser test output file.
-    $this->initBrowserOutputFile();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function installDrupal() {
-    $this->initUserSession();
-    $this->prepareSettings();
-    $this->doInstall();
-    $this->initSettings();
-
-    $request = Request::createFromGlobals();
-    $container = $this->initKernel($request);
-    $this->initConfig($container);
   }
 
   /**
@@ -245,7 +182,7 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
     ];
 
     // Force every update hook to only run one entity per batch.
-    $settings['entity_update_batch_size'] = (object) [
+    $settings['settings']['entity_update_batch_size'] = (object) [
       'value' => 1,
       'required' => TRUE,
     ];
@@ -263,10 +200,6 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
    * Helper function to run pending database updates.
    */
   protected function runUpdates() {
-    if (!$this->zlibInstalled) {
-      $this->fail('Missing zlib requirement for update tests.');
-      return FALSE;
-    }
     $this->doRunUpdates($this->updateUrl);
   }
 
@@ -286,11 +219,9 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
       ->addArgument(new Reference('language.default'));
     \Drupal::setContainer($container);
 
-    require_once __DIR__ . '/../../../../includes/install.inc';
-    $connection_info = Database::getConnectionInfo();
-    $driver = $connection_info['default']['driver'];
-    $namespace = $connection_info['default']['namespace'] ?? NULL;
-    $errors = db_installer_object($driver, $namespace)->runTasks();
+    // Run database tasks and check for errors.
+    $installer_class = Database::getConnectionInfo()['default']['namespace'] . "\\Install\\Tasks";
+    $errors = (new $installer_class())->runTasks();
     if (!empty($errors)) {
       $this->fail('Failed to run installer database tasks: ' . implode(', ', $errors));
     }

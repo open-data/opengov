@@ -14,7 +14,8 @@ archive: false
 id: test_states_server_custom
 title: 'Test: Form API #states custom pattern, less, greater, and between condition validation'
 description: 'Test Drupal''s #states API custom pattern, less, greater, and between condition validation.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   trigger_pattern:
     '#type': textfield
@@ -150,7 +151,6 @@ elements: |
       visible-slide:
         ':input[name="trigger_visible_slide"]':
           checked: true
-  
 css: ''
 javascript: ''
 settings:
@@ -238,6 +238,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

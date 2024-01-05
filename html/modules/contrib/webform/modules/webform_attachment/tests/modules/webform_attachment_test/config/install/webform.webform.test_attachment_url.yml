@@ -14,7 +14,8 @@ archive: false
 id: test_attachment_url
 title: 'Test: Webform Attachment URL'
 description: 'Test Webform attachment URL element.'
-category: 'Test: Attachment'
+categories:
+  - 'Test: Attachment'
 elements: |
   textfield:
     '#type': textfield
@@ -38,7 +39,6 @@ elements: |
     '#url': ''
     '#download': true
     '#display_on': both
-  
 css: ''
 javascript: ''
 settings:
@@ -126,6 +126,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

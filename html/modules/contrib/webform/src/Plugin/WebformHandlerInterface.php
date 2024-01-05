@@ -486,7 +486,7 @@ interface WebformHandlerInterface extends PluginInspectionInterface, Configurabl
    * @param \Drupal\webform\WebformSubmissionInterface[] $webform_submissions
    *   The webform submissions to be purged.
    */
-  public function prePurge(array $webform_submissions);
+  public function prePurge(array &$webform_submissions);
 
   /**
    * Acts on webform submissions after they are purged.

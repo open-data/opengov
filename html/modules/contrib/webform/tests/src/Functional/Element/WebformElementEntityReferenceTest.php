@@ -16,7 +16,7 @@ class WebformElementEntityReferenceTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'user', 'node', 'webform'];
+  protected static $modules = ['user', 'node', 'webform'];
 
   /**
    * Webforms to load.

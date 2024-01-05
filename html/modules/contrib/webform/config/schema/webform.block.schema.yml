@@ -12,6 +12,9 @@ block.settings.webform_block:
     redirect:
       type: boolean
       label: 'Redirect to the webform'
+    lazy:
+      type: boolean
+      label: 'Use lazy builder'
 block.settings.webform_submission_limit_block:
   type: block_settings
   label: 'Webform submission limits block'

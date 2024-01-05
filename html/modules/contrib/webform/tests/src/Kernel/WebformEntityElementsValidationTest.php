@@ -17,7 +17,7 @@ class WebformEntityElementsValidationTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'webform', 'user'];
+  protected static $modules = ['system', 'webform', 'user'];
 
   /**
    * The webform elements validator.
@@ -29,7 +29,7 @@ class WebformEntityElementsValidationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->validator = \Drupal::service('webform.elements_validator');
   }

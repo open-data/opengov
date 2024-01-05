@@ -14,7 +14,8 @@ archive: false
 id: example_accessibility_wizard
 title: 'Example: Accessibility Wizard'
 description: 'Wizard webform accessibility example.'
-category: 'Example: Accessibility'
+categories:
+  - 'Example: Accessibility'
 elements: |
   '#attributes':
     data-current-page: '[webform_submission:current-page]'
@@ -56,7 +57,6 @@ elements: |
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': Apply
-  
 css: ''
 javascript: ''
 settings:
@@ -144,6 +144,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 2
   preview_label: ''
   preview_title: ''

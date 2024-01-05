@@ -14,26 +14,24 @@ archive: false
 id: test_form_assets
 title: 'Test: Webform: Assets (CSS/JS)'
 description: 'Test custom CSS and JS webform assets.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   test:
     '#type': textfield
     '#title': 'Text field'
-  
 css: |
   .webform-submission-form {
     background-color: #cccccc;
     display: none;
     padding: 20px;
   }
-  
 javascript: |
   (function ($) {
     $(function() {
       $('.webform-submission-form').fadeIn(3000);
     });
   })(jQuery);
-  
 settings:
   ajax: false
   ajax_scroll_top: form
@@ -119,6 +117,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

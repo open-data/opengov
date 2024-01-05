@@ -206,20 +206,46 @@ class OverviewPageTest extends SearchApiBrowserTestBase {
 
     $this->drupalGet($this->overviewPageUrl);
     $basic_url = $this->urlGenerator->generateFromRoute('entity.search_api_server.canonical', ['search_api_server' => $server->id()]);
+    $basic_url = preg_quote($basic_url, '#');
     $destination = "?destination=" . $this->urlGenerator->generateFromRoute('search_api.overview');
-    $this->assertSession()->responseContains("<a href=\"$basic_url/edit$destination\">Edit</a>");
-    $this->assertSession()->responseContains("<a href=\"$basic_url/disable$destination\">Disable</a>");
-    $this->assertSession()->responseContains("<a href=\"$basic_url/delete$destination\">Delete</a>");
-    $this->assertSession()->responseNotContains("<a href=\"$basic_url/enable$destination\">Enable</a>");
+    $destination = preg_quote($destination, '#');
+    $optional_attributes = "(?:\\s++[-:\\w]++\\s*+=\\s*+(?:\"[^\"]++\"|'[^']++'))*";
+    $this->assertResponseMatchesRegularExpression("#<a href=\"$basic_url/edit$destination\"$optional_attributes>Edit</a>#");
+    $this->assertResponseMatchesRegularExpression("#<a href=\"$basic_url/disable$destination\"$optional_attributes>Disable</a>#");
+    $this->assertResponseMatchesRegularExpression("#<a href=\"$basic_url/delete$destination\"$optional_attributes>Delete</a>#");
+    $this->assertResponseNotMatchesRegularExpression("#<a href=\"$basic_url/enable$destination(?:&amp;token=[-\\w]+)?\"$optional_attributes>Enable</a>#");
 
     $server->setStatus(FALSE)->save();
     $this->drupalGet($this->overviewPageUrl);
 
     // Since \Drupal\Core\Access\CsrfTokenGenerator uses the current session ID,
     // we cannot verify the validity of the token from here.
-    $params = $destination ? "$destination&amp;token=" : '?token=';
-    $this->assertSession()->responseContains("<a href=\"$basic_url/enable$params");
-    $this->assertSession()->responseNotContains("<a href=\"$basic_url/disable$destination\">Disable</a>");
+    $this->assertResponseMatchesRegularExpression("#<a href=\"$basic_url/enable$destination&amp;token=[-\\w]+\"$optional_attributes>Enable</a>#");
+    $this->assertResponseNotMatchesRegularExpression("#<a href=\"$basic_url/disable$destination\"$optional_attributes>Disable</a>#");
+  }
+
+  /**
+   * Asserts that the current response matches the given regular expression.
+   *
+   * @param string $regex
+   *   The regular expression.
+   */
+  protected function assertResponseMatchesRegularExpression(string $regex): void {
+    $html = $this->getSession()->getPage()->getContent();
+    $message = sprintf('The regular expression "%s" did not match anywhere in the HTML response of the current page.', $regex);
+    $this->assertTrue((bool) preg_match($regex, $html), $message);
+  }
+
+  /**
+   * Asserts that the current response does not match a regular expression.
+   *
+   * @param string $regex
+   *   The regular expression.
+   */
+  protected function assertResponseNotMatchesRegularExpression(string $regex): void {
+    $html = $this->getSession()->getPage()->getContent();
+    $message = sprintf('The regular expression "%s" matched in the HTML response of the current page.', $regex);
+    $this->assertFalse((bool) preg_match($regex, $html), $message);
   }
 
   /**
@@ -250,7 +276,7 @@ class OverviewPageTest extends SearchApiBrowserTestBase {
     $index = 0;
     foreach ($actions as $action) {
       /** @var \Drupal\Core\Url $url */
-      list($url, $title) = $action;
+      [$url, $title] = $action;
       // SimpleXML gives us the unescaped text, not the actual escaped markup,
       // so use a pattern instead to check the raw content.
       // This behaviour is a bug in libxml, see

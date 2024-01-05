@@ -159,12 +159,37 @@ interface FormStateInterface {
   public function getRedirect();
 
   /**
+   * Determines whether the redirect respects the destination query parameter.
+   *
+   * @param bool $status
+   *   (optional) TRUE if the redirect should take precedence over the
+   *   destination query parameter. FALSE if not. Defaults to TRUE.
+   *
+   * @return $this
+   */
+  public function setIgnoreDestination(bool $status = TRUE);
+
+  /**
+   * Gets whether the redirect respects the destination query parameter.
+   *
+   * @return bool
+   *   TRUE if the redirect should take precedence over the destination query
+   *   parameter.
+   */
+  public function getIgnoreDestination(): bool;
+
+  /**
    * Sets the entire set of arbitrary data.
    *
    * @param array $storage
    *   The entire set of arbitrary data to store for this form.
    *
    * @return $this
+   *
+   * @see \Drupal\Core\Form\FormStateInterface::get()
+   * @see \Drupal\Core\Form\FormStateInterface::set()
+   * @see \Drupal\Core\Form\FormStateInterface::has()
+   * @see \Drupal\Core\Form\FormStateInterface::getStorage()
    */
   public function setStorage(array $storage);
 
@@ -173,11 +198,16 @@ interface FormStateInterface {
    *
    * @return array
    *   The entire set of arbitrary data to store for this form.
+   *
+   * @see \Drupal\Core\Form\FormStateInterface::get()
+   * @see \Drupal\Core\Form\FormStateInterface::set()
+   * @see \Drupal\Core\Form\FormStateInterface::has()
+   * @see \Drupal\Core\Form\FormStateInterface::setStorage()
    */
   public function &getStorage();
 
   /**
-   * Gets any arbitrary property.
+   * Gets the value for a property in the form state storage.
    *
    * @param string|array $property
    *   Properties are often stored as multi-dimensional associative arrays. If
@@ -188,11 +218,16 @@ interface FormStateInterface {
    * @return mixed
    *   A reference to the value for that property, or NULL if the property does
    *   not exist.
+   *
+   * @see \Drupal\Core\Form\FormStateInterface::set()
+   * @see \Drupal\Core\Form\FormStateInterface::has()
+   * @see \Drupal\Core\Form\FormStateInterface::getStorage()
+   * @see \Drupal\Core\Form\FormStateInterface::setStorage()
    */
   public function &get($property);
 
   /**
-   * Sets a value to an arbitrary property.
+   * Sets the value for a property in the form state storage.
    *
    * @param string|array $property
    *   Properties are often stored as multi-dimensional associative arrays. If
@@ -204,11 +239,16 @@ interface FormStateInterface {
    *   The value to set.
    *
    * @return $this
+   *
+   * @see \Drupal\Core\Form\FormStateInterface::get()
+   * @see \Drupal\Core\Form\FormStateInterface::has()
+   * @see \Drupal\Core\Form\FormStateInterface::getStorage()
+   * @see \Drupal\Core\Form\FormStateInterface::setStorage()
    */
   public function set($property, $value);
 
   /**
-   * Determines if an arbitrary property is present.
+   * Determines if a property is present in the form state storage.
    *
    * @param string|array $property
    *   Properties are often stored as multi-dimensional associative arrays. If
@@ -216,6 +256,11 @@ interface FormStateInterface {
    *   $property is an array, each element of the array will be used as a nested
    *   key. If $property = ['foo', 'bar'] it will return
    *   isset($storage['foo']['bar']).
+   *
+   * @see \Drupal\Core\Form\FormStateInterface::get()
+   * @see \Drupal\Core\Form\FormStateInterface::set()
+   * @see \Drupal\Core\Form\FormStateInterface::getStorage()
+   * @see \Drupal\Core\Form\FormStateInterface::setStorage()
    */
   public function has($property);
 

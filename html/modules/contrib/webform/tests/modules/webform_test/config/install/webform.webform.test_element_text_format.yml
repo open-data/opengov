@@ -14,7 +14,8 @@ archive: false
 id: test_element_text_format
 title: 'Test: Element: Text format'
 description: 'Test text webform element support.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   text_format:
     '#type': text_format
@@ -31,7 +32,6 @@ elements: |
     '#title': text_format_description_more
     '#description': 'This is a description'
     '#more': 'This is more'
-  
 css: ''
 javascript: ''
 settings:
@@ -119,6 +119,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

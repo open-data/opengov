@@ -13,11 +13,49 @@
  * Below functions are copied from editor.module.
  */
 
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Serialization\Yaml;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\file\FileInterface;
+use Drupal\filter\FilterFormatInterface;
+use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\WebformInterface;
-use Drupal\Component\Utility\Html;
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function webform_filter_format_access(FilterFormatInterface $filter_format, $operation, AccountInterface $account) {
+  if ($filter_format->id() === WebformHtmlEditor::DEFAULT_FILTER_FORMAT
+    && $operation !== 'use') {
+    return AccessResult::forbidden('This text format can only be managed by the Webform module.');
+  }
+
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_load().
+ */
+function webform_filter_format_load($entities) {
+  foreach ($entities as $entity) {
+    // Hide the default webform filter format on the filter admin overview page.
+    if ($entity->id() === WebformHtmlEditor::DEFAULT_FILTER_FORMAT
+      && \Drupal::routeMatch()->getRouteName() === 'filter.admin_overview') {
+      // Set status to FALSE which hides the default webform filter format.
+      $entity->set('status', FALSE);
+    }
+  }
+}
+
+/**
+ * Implements hook_editor_js_settings_alter().
+ */
+function webform_editor_js_settings_alter(array &$settings) {
+  $settings['editor']['formats'][WebformHtmlEditor::DEFAULT_FILTER_FORMAT]['editorSettings']['autoGrow_minHeight'] = '80';
+}
 
 /* ************************************************************************** */
 // Webform entity hooks.
@@ -172,8 +210,8 @@ function _webform_record_file_usage(array $uuids, $type, $id) {
 
   foreach ($uuids as $uuid) {
     if ($file = $entity_repository->loadEntityByUuid('file', $uuid)) {
-      if ($file->status !== FILE_STATUS_PERMANENT) {
-        $file->status = FILE_STATUS_PERMANENT;
+      if ($file->status !== FileInterface::STATUS_PERMANENT) {
+        $file->status = FileInterface::STATUS_PERMANENT;
         $file->save();
       }
       $file_usage->add($file, 'editor', $type, $id);

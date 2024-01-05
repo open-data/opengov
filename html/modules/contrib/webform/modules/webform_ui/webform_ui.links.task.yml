@@ -10,6 +10,7 @@ entity.webform.source_form:
   title: 'Source'
   route_name: entity.webform.source_form
   parent_id: entity.webform.edit_form
+  weight: 10
 
 # Webform Options
 

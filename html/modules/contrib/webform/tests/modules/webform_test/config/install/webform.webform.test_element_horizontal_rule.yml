@@ -14,7 +14,8 @@ archive: false
 id: test_element_horizontal_rule
 title: 'Test: Element: Horizontal rule'
 description: 'Test the horizontal rule element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   horizontal_rule:
     '#type': webform_horizontal_rule
@@ -102,7 +103,6 @@ elements: |
     '#attributes':
       class:
         - webform-horizontal-rule--glyph
-  
 css: ''
 javascript: ''
 settings:
@@ -190,6 +190,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

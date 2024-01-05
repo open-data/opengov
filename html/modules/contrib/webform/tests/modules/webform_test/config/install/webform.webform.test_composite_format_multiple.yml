@@ -14,7 +14,8 @@ archive: false
 id: test_composite_format_multiple
 title: 'Test: Composite: Format composite multiple values'
 description: 'Test composite element formatting with multiple value.'
-category: 'Test: Composite'
+categories:
+  - 'Test: Composite'
 elements: |
   composite_elements:
     '#type': details
@@ -479,77 +480,6 @@ elements: |
           - title: Loremipsum
             url: 'http://example.com'
         '#format_items': table
-    webform_location_places:
-      '#type': details
-      '#title': 'Location (Algolia Places)'
-      webform_location_places_ol:
-        '#type': webform_location_places
-        '#title': 'Location (Algolia Places) (Ordered list)'
-        '#multiple': true
-        '#default_value':
-          - value: '1600 Pennsylvania Avenue, Washington, District of Columbia, United States of America'
-            lat: '38.8635'
-            lng: '-76.946'
-            name: '1600 Pennsylvania Avenue'
-            city: Washington
-            country: 'United States of America'
-            country_code: us
-            administrative: 'District of Columbia'
-            county: 'Prince George''s County'
-            suburb: ''
-            postcode: '20020'
-        '#format_items': ol
-      webform_location_places_ul:
-        '#type': webform_location_places
-        '#title': 'Location (Algolia Places) (Unordered list)'
-        '#multiple': true
-        '#default_value':
-          - value: '1600 Pennsylvania Avenue, Washington, District of Columbia, United States of America'
-            lat: '38.8635'
-            lng: '-76.946'
-            name: '1600 Pennsylvania Avenue'
-            city: Washington
-            country: 'United States of America'
-            country_code: us
-            administrative: 'District of Columbia'
-            county: 'Prince George''s County'
-            suburb: ''
-            postcode: '20020'
-        '#format_items': ul
-      webform_location_places_hr:
-        '#type': webform_location_places
-        '#title': 'Location (Algolia Places) (Horizontal rule)'
-        '#multiple': true
-        '#default_value':
-          - value: '1600 Pennsylvania Avenue, Washington, District of Columbia, United States of America'
-            lat: '38.8635'
-            lng: '-76.946'
-            name: '1600 Pennsylvania Avenue'
-            city: Washington
-            country: 'United States of America'
-            country_code: us
-            administrative: 'District of Columbia'
-            county: 'Prince George''s County'
-            suburb: ''
-            postcode: '20020'
-        '#format_items': hr
-      webform_location_places_table:
-        '#type': webform_location_places
-        '#title': 'Location (Algolia Places) (Table)'
-        '#multiple': true
-        '#default_value':
-          - value: '1600 Pennsylvania Avenue, Washington, District of Columbia, United States of America'
-            lat: '38.8635'
-            lng: '-76.946'
-            name: '1600 Pennsylvania Avenue'
-            city: Washington
-            country: 'United States of America'
-            country_code: us
-            administrative: 'District of Columbia'
-            county: 'Prince George''s County'
-            suburb: ''
-            postcode: '20020'
-        '#format_items': table
     webform_name:
       '#type': details
       '#title': Name
@@ -712,7 +642,6 @@ elements: |
             phone: '+1 212-333-4444'
             ext: 0
         '#format_items': table
-  
 css: ''
 javascript: ''
 settings:
@@ -800,6 +729,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

@@ -1,0 +1,14 @@
+token_filter_token_browser:
+  ckeditor5:
+    plugins:
+      - tokenBrowser.TokenBrowser
+  drupal:
+    label: Token browser
+    class: \Drupal\token_filter\Plugin\CKEditor5Plugin\TokenBrowser
+    library: token_filter/token_browser
+    admin_library: token_filter/admin.token_browser
+    toolbar_items:
+      tokenBrowser:
+        label: Token browser
+    elements: false
+

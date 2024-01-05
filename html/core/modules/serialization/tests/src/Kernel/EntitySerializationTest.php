@@ -76,9 +76,6 @@ class EntitySerializationTest extends NormalizerTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    // User create needs sequence table.
-    $this->installSchema('system', ['sequences']);
-
     FilterFormat::create([
       'format' => 'my_text_format',
       'name' => 'My Text Format',
@@ -190,8 +187,9 @@ class EntitySerializationTest extends NormalizerTestBase {
   }
 
   /**
-   * Tests user normalization, using the entity_serialization_test module to
-   * override some default access controls.
+   * Tests user normalization with some default access controls overridden.
+   *
+   * @see entity_serialization_test.module
    */
   public function testUserNormalize() {
     // Test password isn't available.

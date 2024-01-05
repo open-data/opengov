@@ -122,7 +122,7 @@ class WebformTelephone extends WebformCompositeBase {
     $form['composite']['phone__international'] = [
       '#title' => $this->t('Enhance support for international phone numbers'),
       '#type' => 'checkbox',
-      '#description' => $this->t('Enhance the telephone element\'s international support using the jQuery <a href=":href">International Telephone Input</a> plugin.', [':href' => 'http://intl-tel-input.com/']),
+      '#description' => $this->t('Enhance the telephone element\'s international support using the jQuery <a href=":href">International Telephone Input</a> plugin.', [':href' => 'https://intl-tel-input.com/']),
       '#return_value' => TRUE,
     ];
     $form['composite']['phone__international_initial_country'] = [

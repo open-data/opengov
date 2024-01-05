@@ -17,7 +17,7 @@ class WebformStatesRequiredJavaScriptTest extends WebformWebDriverTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_clientside_validation', 'file'];
+  protected static $modules = ['webform', 'webform_clientside_validation', 'file'];
 
   /**
    * Webforms to load.

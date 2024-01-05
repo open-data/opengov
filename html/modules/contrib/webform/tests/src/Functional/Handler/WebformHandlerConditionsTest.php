@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Handler;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform handler plugin conditions.
@@ -17,7 +17,7 @@ class WebformHandlerConditionsTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_test_handler'];
+  protected static $modules = ['webform', 'webform_test_handler'];
 
   /**
    * Webforms to load.

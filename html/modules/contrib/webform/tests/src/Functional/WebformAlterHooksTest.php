@@ -16,7 +16,7 @@ class WebformAlterHooksTest extends WebformNodeBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_node', 'webform_test_alter_hooks'];
+  protected static $modules = ['webform_node', 'webform_test_alter_hooks'];
 
   /**
    * Tests webform alter hooks.

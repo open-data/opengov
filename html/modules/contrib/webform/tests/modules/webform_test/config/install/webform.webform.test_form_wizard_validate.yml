@@ -14,7 +14,8 @@ archive: false
 id: test_form_wizard_validate
 title: 'Test: Webform: Wizard element validation'
 description: 'Test a multiple step ''wizard'' webform element validation.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   wizard_1:
     '#type': webform_wizard_page
@@ -59,7 +60,6 @@ elements: |
   wizard_3:
     '#type': webform_wizard_page
     '#title': 'Wizard page #3'
-  
 css: ''
 javascript: ''
 settings:
@@ -147,6 +147,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

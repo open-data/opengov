@@ -14,7 +14,7 @@ archive: false
 id: template_medical_appointment
 title: 'Request a Medical Appointment'
 description: 'A medical appointment request webform template.'
-category: ''
+categories: {  }
 elements: |
   introduction:
     '#markup': 'After you submit the form, a care specialist will call you back within XX hours to schedule an appointment.'
@@ -208,7 +208,6 @@ elements: |
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': 'Send Request'
-  
 css: ''
 javascript: ''
 settings:
@@ -296,6 +295,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

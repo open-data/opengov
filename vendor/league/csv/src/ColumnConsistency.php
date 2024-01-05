@@ -20,18 +20,15 @@ use function count;
  */
 class ColumnConsistency
 {
-    protected int $columns_count;
-
     /**
-     * @throws InvalidArgument if the column count is lesser than -1
+     * @throws InvalidArgument if the column count is less than -1
      */
-    public function __construct(int $columns_count = -1)
-    {
-        if ($columns_count < -1) {
-            throw InvalidArgument::dueToInvalidColumnCount($columns_count, __METHOD__);
+    public function __construct(
+        protected int $columns_count = -1
+    ) {
+        if ($this->columns_count < -1) {
+            throw InvalidArgument::dueToInvalidColumnCount($this->columns_count, __METHOD__);
         }
-
-        $this->columns_count = $columns_count;
     }
 
     /**
@@ -43,7 +40,7 @@ class ColumnConsistency
     }
 
     /**
-     * Tell whether the submitted record is valid.
+     * Tells whether the submitted record is valid.
      */
     public function __invoke(array $record): bool
     {

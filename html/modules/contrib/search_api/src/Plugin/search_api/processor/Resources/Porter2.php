@@ -500,7 +500,7 @@ class Porter2 {
       if ($prefix_5 === 'gener' || $prefix_5 === 'arsen') {
         return 5;
       }
-      if ($this->length() > 6 && substr($this->word, 0, 6) === 'commun') {
+      if ($this->length() > 6 && str_starts_with($this->word, 'commun')) {
         return 6;
       }
     }
@@ -533,7 +533,7 @@ class Porter2 {
    */
   protected function inR1($string) {
     $r1 = substr($this->word, $this->r1);
-    return strpos($r1, $string) !== FALSE;
+    return str_contains($r1, $string);
   }
 
   /**
@@ -547,7 +547,7 @@ class Porter2 {
    */
   protected function inR2($string) {
     $r2 = substr($this->word, $this->r2);
-    return strpos($r2, $string) !== FALSE;
+    return str_contains($r2, $string);
   }
 
   /**

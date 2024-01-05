@@ -8,69 +8,58 @@
 /**
  * Implements hook_requirements().
  */
-function ckeditor_codemirror_requirements($phase) {
+function ckeditor_codemirror_requirements($phase): array {
   $return = [];
 
   if ($phase != 'runtime') {
     return $return;
   }
 
-  // If the library is installed.
-  $library_path = _ckeditor_codemirror_get_library_path();
-  if (file_exists(DRUPAL_ROOT . '/' . $library_path . '/codemirror/plugin.js')) {
-    $return['ckeditor_codemirror_library'] = [
-      'title' => t('CKEditor CodeMirror'),
+  // Check for CodeMirror library.
+  $library_path = _ckeditor_codemirror_get_library_path('codemirror');
+  if (file_exists("/$library_path/lib/codemirror.js") && file_exists("/$library_path/package.json")) {
+    $return['codemirror_library'] = [
+      'title' => t('CodeMirror'),
       'severity' => REQUIREMENT_OK,
-      'value' => t('CKEditor CodeMirror plugin version %version installed at %path.',
+      'value' => t('CodeMirror version %version installed at %path.',
         [
-          '%path' => base_path() . $library_path,
-          '%version' => _ckeditor_codemirror_get_version(),
+          '%path' => $library_path,
+          '%version' => _ckeditor_codemirror_get_library_version('codemirror'),
         ]),
     ];
   }
   else {
-    $return['ckeditor_codemirror_library'] = [
-      'title' => t('CKEditor CodeMirror'),
+    $return['codemirror_library'] = [
+      'title' => t('CodeMirror'),
       'severity' => REQUIREMENT_ERROR,
-      'value' => t('CKEditor CodeMirror plugin was not found. Download <a href=":link">the latest version of library</a>
-        and place it in the libraries directory (/libraries/ckeditor.codemirror).',
+      'value' => t('CodeMirror was not found. Download <a href=":link">the latest version 5 of library</a> and place it in the libraries directory (/libraries/codemirror).',
+        [':link' => 'https://www.npmjs.com/package/codemirror']
+      ),
+    ];
+  }
+
+  // Check for CKEditor 5 CodeMirror plugin library.
+  $library_path = _ckeditor_codemirror_get_library_path('ckeditor5-source-editing-codemirror');
+  if (file_exists("/$library_path/build/source-editing-codemirror.js") && file_exists("/$library_path/package.json")) {
+    $return['ckeditor5_source_editing_codemirror_library'] = [
+      'title' => t('CKEditor 5 CodeMirror plugin'),
+      'severity' => REQUIREMENT_OK,
+      'value' => t('CKEditor 5 CodeMirror plugin version %version installed at %path.',
         [
-          ':link' => 'https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/releases',
+          '%path' => $library_path,
+          '%version' => _ckeditor_codemirror_get_library_version('ckeditor5-source-editing-codemirror'),
         ]),
+    ];
+  }
+  else {
+    $return['ckeditor5_source_editing_codemirror_library'] = [
+      'title' => t('CKEditor 5 CodeMirror plugin'),
+      'severity' => REQUIREMENT_ERROR,
+      'value' => t('CKEditor 5 CodeMirror plugin was not found. Download <a href=":link">the latest version of library</a> and place it in the libraries directory (/libraries/ckeditor5-source-editing-codemirror).',
+        [':link' => 'https://www.npmjs.com/package/@cdubz/ckeditor5-source-editing-codemirror']
+      ),
     ];
   }
 
   return $return;
-}
-
-/**
- * Gets the version information for the ckeditor_codemirror library.
- *
- * @return string
- *   A string containing the version of the library or empty if the version
- *   cannot be found.
- */
-function _ckeditor_codemirror_get_version() {
-  // Provide defaults.
-  $options = [
-    'file' => 'plugin.js',
-    'pattern' => '@version:\s*[\'\"]?([0-9a-zA-Z\.-]+)[\'\"]?@',
-    'lines' => 20,
-    'cols' => 200,
-  ];
-
-  $version = '';
-  $library_path = _ckeditor_codemirror_get_library_path();
-  $file = DRUPAL_ROOT . '/' . $library_path . '/codemirror/' . $options['file'];
-  if (!empty($options['file']) && file_exists($file)) {
-    $file = fopen($file, 'r');
-    while ($options['lines'] && $line = fgets($file, $options['cols'])) {
-      if (preg_match($options['pattern'], $line, $version)) {
-        break;
-      }
-      $options['lines']--;
-    }
-    fclose($file);
-  }
-  return $version[1];
 }

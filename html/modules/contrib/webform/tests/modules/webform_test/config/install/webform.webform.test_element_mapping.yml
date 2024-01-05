@@ -14,7 +14,8 @@ archive: false
 id: test_element_mapping
 title: 'Test: Element: Mapping'
 description: 'Test the mapping element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_mapping_elements:
     '#type': details
@@ -131,7 +132,6 @@ elements: |
         two: Two
         three: Three
       '#destination__type': webform_email_multiple
-  
 css: ''
 javascript: ''
 settings:
@@ -219,6 +219,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

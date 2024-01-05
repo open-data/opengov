@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\Core\StringTranslation\TranslationManagerTest.
- */
-
 namespace Drupal\Tests\Core\StringTranslation;
 
 use Drupal\Component\Render\MarkupInterface;
@@ -28,6 +23,8 @@ class TranslationManagerTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    parent::setUp();
+
     $this->translationManager = new TestTranslationManager();
   }
 

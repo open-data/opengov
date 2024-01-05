@@ -1,25 +1,44 @@
 {
-  "repositories": [
-    {
-      "type": "package",
-      "package": {
-        "name": "w8tcha/ckeditor_codemirror",
-        "version": "v1.17.8",
-        "type": "drupal-library",
-        "extra": {
-          "installer-name": "ckeditor_codemirror"
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "cdubz/ckeditor5-source-editing-codemirror",
+                "version": "35.1.0",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "ckeditor5-source-editing-codemirror"
+                },
+                "dist": {
+                    "url": "https://registry.npmjs.org/@cdubz/ckeditor5-source-editing-codemirror/-/ckeditor5-source-editing-codemirror-35.1.0.tgz",
+                    "type": "tar"
+                },
+                "require": {
+                    "composer/installers": "^1.0 || ^2.0"
+                }
+            }
         },
-        "dist": {
-          "url": "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/releases/download/untagged-f790a6bee2e01b538b13/CKEditor-CodeMirror-Plugin.zip",
-          "type": "zip"
-        },
-        "require": {
-          "composer/installers": "~1.0"
+        {
+            "type": "package",
+            "package": {
+                "name": "codemirror/codemirror",
+                "version": "5.65.8",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "codemirror"
+                },
+                "dist": {
+                    "url": "https://registry.npmjs.org/codemirror/-/codemirror-5.65.8.tgz",
+                    "type": "tar"
+                },
+                "require": {
+                    "composer/installers": "^1.0 || ^2.0"
+                }
+            }
         }
-      }
+    ],
+    "require": {
+        "cdubz/ckeditor5-source-editing-codemirror": "*",
+        "codemirror/codemirror": "*"
     }
-  ],
-  "require": {
-    "w8tcha/ckeditor_codemirror": "v1.17.8"
-  }
 }

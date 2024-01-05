@@ -68,7 +68,6 @@ Steps for creating a new release
     yarn run spellcheck ../modules/sandbox/webform/**/* > ~/webform-spell-check.txt
     cat ~/webform-spell-check.txt
 
-
 [File Permissions](https://www.drupal.org/comment/reply/2690335#comment-form)
 
     # Files should be 644 or -rw-r--r--
@@ -97,6 +96,20 @@ Run PHPStan with level 2 to catch all deprecations.
     cd ~/Sites/drupal_webform
     ./vendor/bin/phpstan --level=2 analyse web/modules/sandbox/webform > ~/webform-deprecated.txt
     cat ~/webform-deprecated.txt
+
+[Drupal Rector](https://github.com/palantirnet/drupal-rector)
+
+Install Drupal Rector
+
+    cd ~/Sites/drupal_webform
+    composer require palantirnet/drupal-rector --dev
+    cp vendor/palantirnet/drupal-rector/rector.php .
+
+Run Drupal Rector
+
+    cd ~/Sites/drupal_webform
+    ./vendor/bin/rector process web/modules/sandbox/webform --dry-run
+    ./vendor/bin/rector process web/modules/sandbox/webform
 
 3. Review accessibility
 -----------------------
@@ -162,6 +175,7 @@ References
 - [Issue #2870145: Set printerClass in phpunit.xml.dist](https://www.drupal.org/node/2870145)
 - [Lesson 10.2 - Unit testing](https://docs.acquia.com/article/lesson-102-unit-testing)
 
+
     # Export database and base URL.
     export SIMPLETEST_DB=mysql://drupal_d8_webform:drupal.@dm1n@localhost/drupal_d8_webform;
     export SIMPLETEST_BASE_URL='http://localhost/wf';
@@ -189,8 +203,11 @@ References
 -------------------------
 
 [Git Release Notes for Drush](https://www.drupal.org/project/grn)
+[Generate release notes](https://drupal-mrn.dev/)
 
-    drush release-notes --nouser 6.1.0-VERSION 6.1.x
+
+    drush release-notes --nouser 6.2.x 6.2.x
+    drush release-notes --nouser 6.1.x 6.2.x
 
 
 6. Tag and create a new release
@@ -198,11 +215,12 @@ References
 
 [Tag a release](https://www.drupal.org/node/1066342)
 
-    git checkout 6.1.x
+    git checkout 6.2.x
     git up
-    git tag 6.1.0-VERSION
+    git tag 6.2.x-VERSION
     git push --tags
-    git push origin tag 6.1.0-VERSION
+    git push origin tag 6.2.x-VERSION
+
 
 [Create new release](https://www.drupal.org/node/add/project-release/2640714)
 
@@ -211,9 +229,9 @@ References
 ----------------------------------
 
     # Creete hotfix branch
-    git checkout 6.0.LATEST-VERSION
-    git checkout -b 6.0.NEXT-VERSION-hotfix
-    git push -u origin 6.0.NEXT-VERSION-hotfix
+    git checkout 6.2.LATEST-VERSION
+    git checkout -b 6.2.NEXT-VERSION-hotfix
+    git push -u origin 6.2.NEXT-VERSION-hotfix
 
     # Apply and commit remote patch
     curl https://www.drupal.org/files/issues/[project_name]-[issue-description]-[issue-number]-00.patch | git apply -
@@ -221,14 +239,14 @@ References
     git push
 
     # Tag hotfix release.
-    git tag 6.0.NEXT-VERSION
+    git tag 6.2.NEXT-VERSION
     git push --tags
-    git push origin tag 6.0.NEXT-VERSION
+    git push origin tag 6.2.NEXT-VERSION
 
     # Merge hotfix release with HEAD.
-    git checkout 6.x
-    git merge 6.0.NEXT-VERSION-hotfix
+    git checkout 6.2.x
+    git merge 6.2.NEXT-VERSION-hotfix
 
     # Delete hotfix release.
-    git branch -D 6.0.NEXT-VERSION-hotfix
-    git push origin :6.0.NEXT-VERSION-hotfix
+    git branch -D 6.2.NEXT-VERSION-hotfix
+    git push origin :6.2.NEXT-VERSION-hotfix

@@ -14,7 +14,7 @@ class WebformElementManagedFilePreviewTest extends WebformElementManagedFileTest
    *
    * @var array
    */
-  public static $modules = ['file', 'image', 'webform'];
+  protected static $modules = ['file', 'image', 'webform'];
 
   /**
    * Webforms to load.

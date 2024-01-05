@@ -17,7 +17,7 @@ class WebformScheduledEmailTranslationTest extends WebformNodeBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_scheduled_email', 'webform_scheduled_email_test_translation'];
+  protected static $modules = ['webform', 'webform_scheduled_email', 'webform_scheduled_email_test_translation'];
 
   /**
    * Tests webform schedule email handler translation.

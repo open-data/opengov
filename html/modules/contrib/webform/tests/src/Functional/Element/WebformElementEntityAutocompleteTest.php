@@ -18,7 +18,7 @@ class WebformElementEntityAutocompleteTest extends WebformElementBrowserTestBase
    *
    * @var array
    */
-  public static $modules = ['filter', 'user', 'node', 'taxonomy', 'webform'];
+  protected static $modules = ['user', 'node', 'taxonomy', 'webform'];
 
   /**
    * Webforms to load.

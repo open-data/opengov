@@ -46,7 +46,7 @@ class ViewsBlock extends ViewsDisplayBase {
   protected $eventDispatcher;
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $plugin = parent::create($container, $configuration, $plugin_id, $plugin_definition);

@@ -3,7 +3,6 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Component\Utility\Crypt;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
@@ -16,6 +15,7 @@ use Drupal\webform\Plugin\WebformElementFileDownloadAccessInterface;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 /**
  * Provides a 'signature' element.
@@ -408,7 +408,7 @@ class WebformSignature extends WebformElementBase implements WebformElementFileD
         'Content-Type' => 'image/png',
         'Content-Length' => $filesize,
         'Cache-Control' => 'private',
-        'Content-Disposition' => 'inline; filename="' . Unicode::mimeHeaderEncode($filename) . '"',
+        'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_INLINE, (string) $filename),
       ];
     }
     elseif ($access === FALSE) {

@@ -17,6 +17,7 @@ use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
  * Create and delete nodes and check for their display in the tracker listings.
  *
  * @group tracker
+ * @group legacy
  */
 class TrackerTest extends BrowserTestBase {
 
@@ -100,12 +101,6 @@ class TrackerTest extends BrowserTestBase {
     // Assert cache tags for the action/tabs blocks, visible node, and node list
     // cache tag.
     $expected_tags = Cache::mergeTags($published->getCacheTags(), $published->getOwner()->getCacheTags());
-    // Because the 'user.permissions' cache context is being optimized away.
-    $role_tags = [];
-    foreach ($this->user->getRoles() as $rid) {
-      $role_tags[] = "config:user.role.$rid";
-    }
-    $expected_tags = Cache::mergeTags($expected_tags, $role_tags);
     $block_tags = [
       'block_view',
       'local_task',
@@ -188,12 +183,6 @@ class TrackerTest extends BrowserTestBase {
     $expected_tags = Cache::mergeTags($my_published->getCacheTags(), $my_published->getOwner()->getCacheTags());
     $expected_tags = Cache::mergeTags($expected_tags, $other_published_my_comment->getCacheTags());
     $expected_tags = Cache::mergeTags($expected_tags, $other_published_my_comment->getOwner()->getCacheTags());
-    // Because the 'user.permissions' cache context is being optimized away.
-    $role_tags = [];
-    foreach ($this->user->getRoles() as $rid) {
-      $role_tags[] = "config:user.role.$rid";
-    }
-    $expected_tags = Cache::mergeTags($expected_tags, $role_tags);
     $block_tags = [
       'block_view',
       'local_task',

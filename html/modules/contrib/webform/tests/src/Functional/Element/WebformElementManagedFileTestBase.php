@@ -17,7 +17,7 @@ abstract class WebformElementManagedFileTestBase extends WebformElementBrowserTe
    *
    * @var array
    */
-  public static $modules = ['file', 'webform'];
+  protected static $modules = ['file', 'webform'];
 
   /**
    * The file usage service.
@@ -36,7 +36,7 @@ abstract class WebformElementManagedFileTestBase extends WebformElementBrowserTe
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->fileUsage = $this->container->get('file.usage');

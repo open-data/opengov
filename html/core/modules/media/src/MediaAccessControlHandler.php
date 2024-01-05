@@ -28,15 +28,11 @@ class MediaAccessControlHandler extends EntityAccessControlHandler implements En
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityTypeManagerInterface $entity_type_manager = NULL) {
+  public function __construct(EntityTypeInterface $entity_type, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($entity_type);
-    if (!isset($entity_type_manager)) {
-      @trigger_error('Calling ' . __METHOD__ . '() without the $entity_type_manager argument is deprecated in drupal:9.3.0 and will be required in drupal:10.0.0. See https://www.drupal.org/node/3214171', E_USER_DEPRECATED);
-      $entity_type_manager = \Drupal::entityTypeManager();
-    }
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -54,7 +50,6 @@ class MediaAccessControlHandler extends EntityAccessControlHandler implements En
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\media\MediaInterface $entity */
     // Allow admin permission to override all operations.
     if ($account->hasPermission($this->entityType->getAdminPermission())) {
       return AccessResult::allowed()->cachePerPermissions();
@@ -124,9 +119,9 @@ class MediaAccessControlHandler extends EntityAccessControlHandler implements En
         return AccessResult::neutral("The following permissions are required: 'delete any media' OR 'delete own media' OR '$type: delete any media' OR '$type: delete own media'.")->cachePerPermissions();
 
       case 'view all revisions':
-        // Perform basic permission checks first.
-        if (!$account->hasPermission('view all media revisions')) {
-          return AccessResult::neutral("The 'view all media revisions' permission is required.")->cachePerPermissions();
+      case 'view revision':
+        if ($account->hasPermission('view any ' . $type . ' media revisions') || $account->hasPermission("view all media revisions")) {
+          return AccessResult::allowed()->cachePerPermissions();
         }
 
         // First check the access to the default revision and finally, if the
@@ -138,6 +133,14 @@ class MediaAccessControlHandler extends EntityAccessControlHandler implements En
           $access = $access->andIf($this->access($entity, 'view', $account, TRUE));
         }
         return $access->cachePerPermissions()->addCacheableDependency($entity);
+
+      case 'revert':
+        return AccessResult::allowedIfHasPermission($account, 'revert any ' . $type . ' media revisions')
+          ->cachePerPermissions()->addCacheableDependency($entity);
+
+      case 'delete revision':
+        return AccessResult::allowedIfHasPermission($account, 'delete any ' . $type . ' media revisions')
+          ->cachePerPermissions()->addCacheableDependency($entity);
 
       default:
         return AccessResult::neutral()->cachePerPermissions();

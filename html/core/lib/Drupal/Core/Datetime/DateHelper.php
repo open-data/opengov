@@ -81,7 +81,7 @@ class DateHelper {
   public static function monthNames($required = FALSE) {
     // Force the key to use the correct month value, rather than
     // starting with zero.
-    $monthnames = [
+    $month_names = [
       1  => t('January', [], ['context' => 'Long month name']),
       2  => t('February', [], ['context' => 'Long month name']),
       3  => t('March', [], ['context' => 'Long month name']),
@@ -96,7 +96,7 @@ class DateHelper {
       12 => t('December', [], ['context' => 'Long month name']),
     ];
     $none = ['' => ''];
-    return !$required ? $none + $monthnames : $monthnames;
+    return !$required ? $none + $month_names : $month_names;
   }
 
   /**
@@ -112,7 +112,7 @@ class DateHelper {
   public static function monthNamesAbbr($required = FALSE) {
     // Force the key to use the correct month value, rather than
     // starting with zero.
-    $monthnames = [
+    $month_names = [
       1  => t('Jan', [], ['context' => 'Abbreviated month name']),
       2  => t('Feb', [], ['context' => 'Abbreviated month name']),
       3  => t('Mar', [], ['context' => 'Abbreviated month name']),
@@ -127,7 +127,7 @@ class DateHelper {
       12 => t('Dec', [], ['context' => 'Abbreviated month name']),
     ];
     $none = ['' => ''];
-    return !$required ? $none + $monthnames : $monthnames;
+    return !$required ? $none + $month_names : $month_names;
   }
 
   /**
@@ -450,9 +450,10 @@ class DateHelper {
    *   Defaults to NULL, which means to use the current date.
    *
    * @return int
-   *   The number of days in the month.
+   *   The number of days in the month, or null if the $date has errors.
    */
   public static function daysInMonth($date = NULL) {
+    $date = $date ?? 'now';
     if (!$date instanceof DrupalDateTime) {
       $date = new DrupalDateTime($date);
     }
@@ -469,10 +470,11 @@ class DateHelper {
    *   (optional) A DrupalDateTime object or a date string.
    *   Defaults to NULL, which means to use the current date.
    *
-   * @return int
-   *   The number of days in the year.
+   * @return int|null
+   *   The number of days in the year, or null if the $date has errors.
    */
   public static function daysInYear($date = NULL) {
+    $date = $date ?? 'now';
     if (!$date instanceof DrupalDateTime) {
       $date = new DrupalDateTime($date);
     }
@@ -494,10 +496,11 @@ class DateHelper {
    *   (optional) A DrupalDateTime object or a date string.
    *   Defaults to NULL, which means use the current date.
    *
-   * @return int
-   *   The number of the day in the week.
+   * @return int|null
+   *   The number of the day in the week, or null if the $date has errors.
    */
   public static function dayOfWeek($date = NULL) {
+    $date = $date ?? 'now';
     if (!$date instanceof DrupalDateTime) {
       $date = new DrupalDateTime($date);
     }
@@ -517,16 +520,21 @@ class DateHelper {
    *   (optional) Whether to return the abbreviated name for that day.
    *   Defaults to TRUE.
    *
-   * @return string
-   *   The name of the day in the week for that date.
+   * @return string|null
+   *   The name of the day in the week for that date, or null if the $date has
+   *   errors.
    */
   public static function dayOfWeekName($date = NULL, $abbr = TRUE) {
+    $date = $date ?? 'now';
     if (!$date instanceof DrupalDateTime) {
       $date = new DrupalDateTime($date);
     }
-    $dow = self::dayOfWeek($date);
-    $days = $abbr ? self::weekDaysAbbr() : self::weekDays();
-    return $days[$dow];
+    if (!$date->hasErrors()) {
+      $dow = self::dayOfWeek($date);
+      $days = $abbr ? self::weekDaysAbbr() : self::weekDays();
+      return $days[$dow]->getUntranslatedString();
+    }
+    return NULL;
   }
 
 }

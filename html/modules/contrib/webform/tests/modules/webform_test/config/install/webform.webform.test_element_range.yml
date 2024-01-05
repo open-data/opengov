@@ -14,7 +14,8 @@ archive: false
 id: test_element_range
 title: 'Test: Element: Range'
 description: 'Test the range element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   range:
     '#type': range
@@ -71,7 +72,6 @@ elements: |
     '#output': right
     '#output__field_prefix': $
     '#output__field_suffix': '.00'
-  
 css: ''
 javascript: ''
 settings:
@@ -159,6 +159,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

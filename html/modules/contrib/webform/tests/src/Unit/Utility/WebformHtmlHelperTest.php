@@ -3,8 +3,8 @@
 namespace Drupal\Tests\webform\Unit\Utility;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
-use Drupal\webform\Utility\WebformHtmlHelper;
 use Drupal\Tests\UnitTestCase;
+use Drupal\webform\Utility\WebformHtmlHelper;
 
 /**
  * Tests webform HTML helper.

@@ -1,8 +1,6 @@
-# Schema for the configuration files of the CKEditor CodeMirror module.
-
-ckeditor.plugin.codemirror:
+ckeditor5.plugin.ckeditor_codemirror_source_editing:
   type: config_object
-  label: 'CKEditor CodeMirror settings'
+  label: 'CodeMirror Code Editor settings'
   mapping:
     enable:
       type: boolean
@@ -10,16 +8,19 @@ ckeditor.plugin.codemirror:
     mode:
       type: string
       label: 'Mode'
-    theme:
-      type: string
-      label: 'Theme'
-    startupMode:
-      type: string
-      label: 'Editor startup mode.'
     options:
       type: config_object
       label: 'CodeMirror options'
       mapping:
+        autoCloseBrackets:
+          type: boolean
+          label: 'Close brackets automatically.'
+        autoCloseTags:
+          type: boolean
+          label: 'Close tags automatically.'
+        folding:
+          type: boolean
+          label: 'Enable code folding.'
         lineNumbers:
           type: boolean
           label: 'Show line numbers.'
@@ -29,27 +30,12 @@ ckeditor.plugin.codemirror:
         matchBrackets:
           type: boolean
           label: 'Highlight matching brackets.'
-        autoCloseTags:
+        matchTags:
           type: boolean
-          label: 'Close tags automatically.'
-        autoCloseBrackets:
+          label: 'Highlight matching tags.'
+        searchBottom:
           type: boolean
-          label: 'Close brackets automatically.'
-        enableSearchTools:
+          label: 'Display search bar at bottom.'
+        styleActiveLine:
           type: boolean
-          label: 'Enable search tools.'
-        enableCodeFolding:
-          type: boolean
-          label: 'Enable code folding.'
-        enableCodeFormatting:
-          type: boolean
-          label: 'Enable code formatting.'
-        autoFormatOnStart:
-          type: boolean
-          label: 'Format code on start.'
-        autoFormatOnModeChange:
-          type: boolean
-          label: 'Format code each time source is opened.'
-        autoFormatOnUncomment:
-          type: boolean
-          label: 'Format code when a line is uncommented.'
+          label: 'Highlight active line.'

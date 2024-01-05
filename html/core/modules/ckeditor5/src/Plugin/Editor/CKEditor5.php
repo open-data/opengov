@@ -12,7 +12,6 @@ use Drupal\ckeditor5\Plugin\CKEditor5PluginManagerInterface;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\Schema\SchemaCheckTrait;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
@@ -49,8 +48,6 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  *   Plugin classes are internal.
  */
 class CKEditor5 extends EditorBase implements ContainerFactoryPluginInterface {
-
-  use SchemaCheckTrait;
 
   /**
    * The CKEditor plugin manager.
@@ -393,7 +390,11 @@ class CKEditor5 extends EditorBase implements ContainerFactoryPluginInterface {
     $form['plugin_settings'] = [
       '#type' => 'vertical_tabs',
       '#title' => $this->t('CKEditor 5 plugin settings'),
-      '#id' => 'ckeditor5-plugin-settings',
+      // Add an ID to the editor settings vertical tabs wrapper so it can be
+      // easily targeted by JavaScript.
+      '#wrapper_attributes' => [
+        'id' => 'plugin-settings-wrapper',
+      ],
     ];
 
     $this->injectPluginSettingsForm($form, $form_state, $editor);
@@ -683,7 +684,7 @@ class CKEditor5 extends EditorBase implements ContainerFactoryPluginInterface {
 
       // Special case: AJAX updates that do not submit the form (that cannot
       // result in configuration being saved).
-      if ($form_state->getSubmitHandlers() === ['editor_form_filter_admin_format_editor_configure']) {
+      if (in_array('editor_form_filter_admin_format_editor_configure', $form_state->getSubmitHandlers(), TRUE)) {
         // Ensure that plugins' validation constraints do not immediately
         // trigger a validation error: the user may choose to configure other
         // CKEditor 5 aspects first.
@@ -725,8 +726,6 @@ class CKEditor5 extends EditorBase implements ContainerFactoryPluginInterface {
     // ::getGeneratedAllowedHtmlValue(), to update filter_html's
     // "allowed_html".
     $form_state->set('ckeditor5_validated_pair', $eventual_editor_and_format);
-
-    assert(TRUE === $this->checkConfigSchema(\Drupal::getContainer()->get('config.typed'), 'editor.editor.id_does_not_matter', $submitted_editor->toArray()), 'Schema errors: ' . print_r($this->checkConfigSchema(\Drupal::getContainer()->get('config.typed'), 'editor.editor.id_does_not_matter', $submitted_editor->toArray()), TRUE));
   }
 
   /**
@@ -855,7 +854,6 @@ class CKEditor5 extends EditorBase implements ContainerFactoryPluginInterface {
     $paired_editor->enforceIsNew(TRUE);
     $reflector = new \ReflectionObject($paired_editor);
     $property = $reflector->getProperty('filterFormat');
-    $property->setAccessible(TRUE);
     $property->setValue($paired_editor, clone $filter_format);
     return $paired_editor;
   }

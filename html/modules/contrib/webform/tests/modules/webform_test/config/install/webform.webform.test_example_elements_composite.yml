@@ -14,7 +14,8 @@ archive: false
 id: test_example_elements_composite
 title: 'Test: Example: Elements: Composite'
 description: 'Examples of composite elements, includes address, and contact.'
-category: 'Test: Example'
+categories:
+  - 'Test: Example'
 elements: |
   webform_address_example:
     '#type': details
@@ -111,17 +112,6 @@ elements: |
       '#title': 'Link multiple'
       '#multiple': true
       '#multiple__header': true
-  webform_location_places_example:
-    '#type': details
-    '#title': 'Location (Algolia Places)'
-    '#open': true
-    webform_location_places:
-      '#type': webform_location_places
-      '#title': 'Location (Algolia Places)'
-    webform_location_places_multiple:
-      '#type': webform_location_places
-      '#title': 'Location (Algolia Places) multiple'
-      '#multiple': true
   webform_mapping_example:
     '#type': details
     '#title': Mapping
@@ -169,7 +159,6 @@ elements: |
       '#type': text_format
       '#title': 'Text format'
       '#description': '<b>Known Issues:</b><br /><a href="https://www.drupal.org/node/997826">Issue #997826: #states doesn''t work correctly with type text_format</a><br /><a href="https://www.drupal.org/node/2625128">Issue #2625128: Text format selection stays visible when using editor and a hidden webform state</a><br /><a href="https://www.drupal.org/node/1954968">Issue #1954968: Required CKEditor fields always fail HTML5 validation</a>'
-  
 css: ''
 javascript: ''
 settings:
@@ -257,6 +246,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

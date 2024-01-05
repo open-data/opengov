@@ -17,7 +17,7 @@ class WebformElementTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_test_element'];
+  protected static $modules = ['webform_test_element'];
 
   /**
    * Tests webform element.
@@ -29,6 +29,13 @@ class WebformElementTest extends WebformElementBrowserTestBase {
 
     // Check webform render.
     $this->drupalGet('/webform_test_element');
+    $assert_session->fieldValueEquals('email', '');
+    $assert_session->fieldValueEquals('name', '');
+    $assert_session->fieldValueEquals('subject', '');
+    $assert_session->fieldValueEquals('message', '');
+
+    // Check webform lazy render.
+    $this->drupalGet('/webform_test_element', ['query' => ['lazy' => TRUE]]);
     $assert_session->fieldValueEquals('email', '');
     $assert_session->fieldValueEquals('name', '');
     $assert_session->fieldValueEquals('subject', '');

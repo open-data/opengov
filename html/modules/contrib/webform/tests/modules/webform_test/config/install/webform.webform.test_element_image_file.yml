@@ -14,7 +14,8 @@ archive: false
 id: test_element_image_file
 title: 'Test: Element: Image file upload'
 description: 'Tests image file upload element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_image_file:
     '#type': webform_image_file
@@ -23,7 +24,6 @@ elements: |
     '#type': webform_image_file
     '#title': 'webform_image_file_advanced (max: 20x20)'
     '#max_resolution': 20x20
-  
 css: ''
 javascript: ''
 settings:
@@ -111,6 +111,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

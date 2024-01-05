@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Handler;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for the webform handler plugin.
@@ -17,7 +17,7 @@ class WebformHandlerPluginTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_test_handler'];
+  protected static $modules = ['webform', 'webform_test_handler'];
 
   /**
    * Tests webform handler plugin dependencies.

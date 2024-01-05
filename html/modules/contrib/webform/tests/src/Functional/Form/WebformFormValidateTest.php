@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Form;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform form validation.
@@ -17,7 +17,7 @@ class WebformFormValidateTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_test_validate'];
+  protected static $modules = ['webform', 'webform_test_validate'];
 
   /**
    * Webforms to load.

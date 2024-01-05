@@ -14,7 +14,8 @@ archive: false
 id: test_token
 title: 'Test: Token'
 description: 'Test Webform and Webform Submission tokens'
-category: 'Test: Token'
+categories:
+  - 'Test: Token'
 elements: |
   webform_tokens:
     '#type': webform_codemirror
@@ -126,7 +127,6 @@ elements: |
       Summary: [webform_submission:node:summary]
       Title: [webform_submission:node:title]
       URL: [webform_submission:node:url]
-  
 css: ''
 javascript: ''
 settings:
@@ -214,6 +214,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

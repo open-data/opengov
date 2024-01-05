@@ -9,6 +9,8 @@ use Drupal\file\Entity\File;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Component\Render\FormattableMarkup;
 
+// cspell:ignore februar januar juni marz
+
 /**
  * Base class for testing updates to string translations.
  */
@@ -52,7 +54,7 @@ abstract class LocaleUpdateBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Setup timestamps to identify old and new translation sources.
@@ -209,8 +211,7 @@ EOF;
   }
 
   /**
-   * Setup existing translations in the database and set up the status of
-   * existing translations.
+   * Sets up existing translations and their statuses in the database.
    */
   protected function setCurrentTranslations() {
     // Add non customized translations to the database.

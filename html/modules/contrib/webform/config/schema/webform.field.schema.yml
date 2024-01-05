@@ -85,6 +85,9 @@ field.formatter.settings.webform_entity_reference_entity_view:
     source_entity:
       type: boolean
       label: 'Source entity'
+    lazy:
+      type: boolean
+      label: 'Use lazy builder'
 
 field.formatter.settings.webform_entity_reference_link:
   type: mapping

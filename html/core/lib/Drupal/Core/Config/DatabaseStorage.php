@@ -72,8 +72,11 @@ class DatabaseStorage implements StorageInterface {
       ], $this->options)->fetchField();
     }
     catch (\Exception $e) {
-      // If we attempt a read without actually having the database or the table
-      // available, just return FALSE so the caller can handle it.
+      if ($this->connection->schema()->tableExists($this->table)) {
+        throw $e;
+      }
+      // If we attempt a read without actually having the table available,
+      // return false so the caller can handle it.
       return FALSE;
     }
   }
@@ -90,8 +93,11 @@ class DatabaseStorage implements StorageInterface {
       }
     }
     catch (\Exception $e) {
-      // If we attempt a read without actually having the database or the table
-      // available, just return FALSE so the caller can handle it.
+      if ($this->connection->schema()->tableExists($this->table)) {
+        throw $e;
+      }
+      // If we attempt a read without actually having the table available,
+      // return false so the caller can handle it.
     }
     return $data;
   }
@@ -108,8 +114,11 @@ class DatabaseStorage implements StorageInterface {
       }
     }
     catch (\Exception $e) {
-      // If we attempt a read without actually having the database or the table
-      // available, just return an empty array so the caller can handle it.
+      if ($this->connection->schema()->tableExists($this->table)) {
+        throw $e;
+      }
+      // If we attempt a read without actually having the table available,
+      // return an empty array so the caller can handle it.
     }
     return $list;
   }
@@ -215,7 +224,7 @@ class DatabaseStorage implements StorageInterface {
   /**
    * Implements Drupal\Core\Config\StorageInterface::delete().
    *
-   * @throws PDOException
+   * @throws \PDOException
    *
    * @todo Ignore replica targets for data manipulation operations.
    */
@@ -232,7 +241,7 @@ class DatabaseStorage implements StorageInterface {
   /**
    * Implements Drupal\Core\Config\StorageInterface::rename().
    *
-   * @throws PDOException
+   * @throws \PDOException
    */
   public function rename($name, $new_name) {
     // @todo Remove the 'return' option in Drupal 11.
@@ -255,7 +264,7 @@ class DatabaseStorage implements StorageInterface {
   /**
    * Implements Drupal\Core\Config\StorageInterface::decode().
    *
-   * @throws ErrorException
+   * @throws \ErrorException
    *   The unserialize() call will trigger E_NOTICE if the string cannot
    *   be unserialized.
    */
@@ -277,6 +286,11 @@ class DatabaseStorage implements StorageInterface {
       return $query->execute()->fetchCol();
     }
     catch (\Exception $e) {
+      if ($this->connection->schema()->tableExists($this->table)) {
+        throw $e;
+      }
+      // If we attempt a read without actually having the table available,
+      // return an empty array so the caller can handle it.
       return [];
     }
   }
@@ -295,6 +309,11 @@ class DatabaseStorage implements StorageInterface {
         ->execute();
     }
     catch (\Exception $e) {
+      if ($this->connection->schema()->tableExists($this->table)) {
+        throw $e;
+      }
+      // If we attempt a delete without actually having the table available,
+      // return false so the caller can handle it.
       return FALSE;
     }
   }
@@ -328,6 +347,11 @@ class DatabaseStorage implements StorageInterface {
       ])->fetchCol();
     }
     catch (\Exception $e) {
+      if ($this->connection->schema()->tableExists($this->table)) {
+        throw $e;
+      }
+      // If we attempt a read without actually having the table available,
+      // return an empty array so the caller can handle it.
       return [];
     }
   }

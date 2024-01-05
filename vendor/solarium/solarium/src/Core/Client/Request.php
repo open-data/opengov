@@ -278,7 +278,7 @@ class Request extends Configurable implements RequestParamsInterface
     /**
      * Set the file to upload via "multipart/form-data" POST request.
      *
-     * @param string|resource $file Name of file or file pointer resource to upload
+     * @param string|resource $file Name of file or stream resource to upload
      *
      * @throws RuntimeException
      *
@@ -289,8 +289,8 @@ class Request extends Configurable implements RequestParamsInterface
         if (\is_resource($file)) {
             $meta = stream_get_meta_data($file);
 
-            if (false === strpos($meta['mode'], 'r') && false === strpos($meta['mode'], '+')) {
-                throw new RuntimeException(sprintf("Unable to read stream '%s' for upload", $meta['uri']));
+            if (!str_contains($meta['mode'], 'r') && !str_contains($meta['mode'], '+')) {
+                throw new RuntimeException(sprintf("Unable to read stream '%s' for upload", $meta['uri'] ?? $meta['stream_type']));
             }
         } elseif (!is_file($file) || !is_readable($file)) {
             throw new RuntimeException(sprintf("Unable to read file '%s' for upload", $file));

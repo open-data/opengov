@@ -3,10 +3,10 @@
 namespace Drupal\Tests\webform\Functional\Settings;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\user\Entity\User;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 
 /**
  * Tests for webform submission form draft.

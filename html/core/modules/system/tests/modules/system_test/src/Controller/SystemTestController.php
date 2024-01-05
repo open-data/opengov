@@ -11,11 +11,11 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Drupal\Core\Lock\LockBackendInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller routines for system_test routes.
@@ -71,25 +71,20 @@ class SystemTestController extends ControllerBase implements TrustedCallbackInte
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
    */
-  public function __construct(LockBackendInterface $lock, LockBackendInterface $persistent_lock, AccountInterface $current_user, RendererInterface $renderer, MessengerInterface $messenger) {
+  public function __construct(
+    #[Autowire(service: 'lock')]
+    LockBackendInterface $lock,
+    #[Autowire(service: 'lock.persistent')]
+    LockBackendInterface $persistent_lock,
+    AccountInterface $current_user,
+    RendererInterface $renderer,
+    MessengerInterface $messenger,
+  ) {
     $this->lock = $lock;
     $this->persistentLock = $persistent_lock;
     $this->currentUser = $current_user;
     $this->renderer = $renderer;
     $this->messenger = $messenger;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('lock'),
-      $container->get('lock.persistent'),
-      $container->get('current_user'),
-      $container->get('renderer'),
-      $container->get('messenger')
-    );
   }
 
   /**
@@ -332,8 +327,8 @@ class SystemTestController extends ControllerBase implements TrustedCallbackInte
     // the exception message can not be tested.
     // @see _drupal_shutdown_function()
     // @see \Drupal\system\Tests\System\ShutdownFunctionsTest
-    if (function_exists('fastcgi_finish_request')) {
-      return ['#markup' => 'The function fastcgi_finish_request exists when serving the request.'];
+    if (function_exists('fastcgi_finish_request') || ob_get_status()) {
+      return ['#markup' => 'The response will flush before shutdown functions are called.'];
     }
     return [];
   }

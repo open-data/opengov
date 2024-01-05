@@ -14,7 +14,7 @@ archive: false
 id: test_translation
 title: 'Test: Translations'
 description: 'Test translating a webform.'
-category: null
+categories: {  }
 elements: |
   variant:
     '#type': webform_variant
@@ -97,7 +97,6 @@ elements: |
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': 'Send message'
-  
 css: ''
 javascript: ''
 settings:
@@ -185,6 +184,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -332,6 +333,5 @@ variants:
         textfield:
           '#title': 'Text field - Variant'
           '#type': textarea
-        
       handlers: {  }
       debug: false

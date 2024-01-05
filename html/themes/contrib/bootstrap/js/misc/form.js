@@ -3,7 +3,7 @@
  * Extends methods from core/misc/form.js.
  */
 
-(function ($, window, Drupal, drupalSettings) {
+(function ($, window, Drupal, drupalSettings, once) {
 
   /**
    * Behavior for "forms_has_error_value_toggle" theme setting.
@@ -12,7 +12,7 @@
     attach: function (context) {
       if (drupalSettings.bootstrap && drupalSettings.bootstrap.forms_has_error_value_toggle) {
         var $context = $(context);
-        $context.find('.form-item.has-error:not(.form-type-password.has-feedback)').once('error').each(function () {
+        $(once('error', '.form-item.has-error:not(.form-type-password.has-feedback)', context)).each(function () {
           var $formItem = $(this);
           var $input = $formItem.find(':input');
           $input.on('keyup focus blur', function () {
@@ -27,4 +27,4 @@
   };
 
 
-})(jQuery, this, Drupal, drupalSettings);
+})(jQuery, this, Drupal, drupalSettings, once);

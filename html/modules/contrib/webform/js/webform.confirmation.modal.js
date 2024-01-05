@@ -3,7 +3,7 @@
  * JavaScript behaviors for confirmation modal.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -19,7 +19,7 @@
    */
   Drupal.behaviors.webformConfirmationModal = {
     attach: function (context) {
-      $('.js-webform-confirmation-modal', context).once('webform-confirmation-modal').each(function () {
+      $(once('webform-confirmation-modal', '.js-webform-confirmation-modal', context)).each(function () {
         var $element = $(this);
 
         var $dialog = $element.find('.webform-confirmation-modal--content');
@@ -55,4 +55,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

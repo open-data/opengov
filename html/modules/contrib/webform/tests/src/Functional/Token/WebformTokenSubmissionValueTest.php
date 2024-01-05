@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Token;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform token submission value.
@@ -17,7 +17,7 @@ class WebformTokenSubmissionValueTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['taxonomy'];
+  protected static $modules = ['taxonomy'];
 
   /**
    * Webforms to load.
@@ -29,7 +29,7 @@ class WebformTokenSubmissionValueTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create 'tags' vocabulary.

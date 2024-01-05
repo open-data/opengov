@@ -14,7 +14,8 @@ archive: false
 id: test_element_section
 title: 'Test: Element: Section'
 description: 'Test the section element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_section:
     '#type': webform_section
@@ -63,7 +64,6 @@ elements: |
     '#title': webform_section_description_display_invisible
     '#description': 'Display invisible description.'
     '#description_display': invisible
-  
 css: ''
 javascript: ''
 settings:
@@ -151,6 +151,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

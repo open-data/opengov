@@ -14,7 +14,8 @@ archive: false
 id: test_element_ignored_properties
 title: 'Test: Element: Ignore properties'
 description: 'Test ignored element properties and callbacks.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   textfield:
     '#type': textfield
@@ -70,7 +71,6 @@ elements: |
         '#title': custom_composite_textfield
         '#pre_render':
           - webform_test_ignored_element_callback
-  
 css: ''
 javascript: ''
 settings:
@@ -158,6 +158,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

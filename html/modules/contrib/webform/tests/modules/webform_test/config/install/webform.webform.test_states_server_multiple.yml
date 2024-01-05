@@ -14,7 +14,8 @@ archive: false
 id: test_states_server_multiple
 title: 'Test: Form API #states server-side multiple elements'
 description: 'Test Drupal''s #states API for multiple elements via server-side.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   trigger_required:
     '#type': checkbox
@@ -28,7 +29,6 @@ elements: |
       required:
         ':input[name="trigger_required"]':
           checked: true
-  
 css: ''
 javascript: ''
 settings:
@@ -116,6 +116,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

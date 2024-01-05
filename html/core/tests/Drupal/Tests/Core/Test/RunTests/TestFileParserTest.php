@@ -71,7 +71,6 @@ COMPOUND
     $parser = new TestFileParser();
 
     $ref_parse = new \ReflectionMethod($parser, 'parseContents');
-    $ref_parse->setAccessible(TRUE);
 
     $this->assertSame($expected, $ref_parse->invoke($parser, $contents));
   }
@@ -88,10 +87,6 @@ COMPOUND
     $this->assertEquals(
       ['Drupal\KernelTests\Core\Datetime\Element\TimezoneTest'],
       $parser->getTestListFromFile(__DIR__ . '/../../../../KernelTests/Core/Datetime/Element/TimezoneTest.php')
-    );
-    // Not a test.
-    $this->assertEmpty(
-      $parser->getTestListFromFile(__DIR__ . '/../../../AssertHelperTrait.php')
     );
   }
 

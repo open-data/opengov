@@ -3,7 +3,7 @@
  * JavaScript behaviors for other elements.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -74,7 +74,7 @@
    */
   Drupal.behaviors.webformSelectOther = {
     attach: function (context) {
-      $(context).find('.js-webform-select-other').once('webform-select-other').each(function () {
+      $(once('webform-select-other', '.js-webform-select-other', context)).each(function () {
         var $element = $(this);
 
         var $select = $element.find('select');
@@ -102,7 +102,7 @@
    */
   Drupal.behaviors.webformCheckboxesOther = {
     attach: function (context) {
-      $(context).find('.js-webform-checkboxes-other').once('webform-checkboxes-other').each(function () {
+      $(once('webform-checkboxes-other', '.js-webform-checkboxes-other', context)).each(function () {
         var $element = $(this);
         var $checkbox = $element.find('input[value="_other_"]');
         var $input = $element.find('.js-webform-checkboxes-other-input');
@@ -123,7 +123,7 @@
    */
   Drupal.behaviors.webformRadiosOther = {
     attach: function (context) {
-      $(context).find('.js-webform-radios-other').once('webform-radios-other').each(function () {
+      $(once('webform-radios-other', '.js-webform-radios-other', context)).each(function () {
         var $element = $(this);
 
         var $radios = $element.find('input[type="radio"]');
@@ -145,7 +145,7 @@
    */
   Drupal.behaviors.webformButtonsOther = {
     attach: function (context) {
-      $(context).find('.js-webform-buttons-other').once('webform-buttons-other').each(function () {
+      $(once('webform-buttons-other', '.js-webform-buttons-other', context)).each(function () {
         var $element = $(this);
 
         var $buttons = $element.find('input[type="radio"]');
@@ -162,4 +162,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

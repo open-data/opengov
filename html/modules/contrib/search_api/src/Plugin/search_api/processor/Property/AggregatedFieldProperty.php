@@ -25,6 +25,7 @@ class AggregatedFieldProperty extends ConfigurablePropertyBase {
   public function defaultConfiguration() {
     return [
       'type' => 'union',
+      'separator' => "\n\n",
       'fields' => [],
     ];
   }
@@ -34,7 +35,7 @@ class AggregatedFieldProperty extends ConfigurablePropertyBase {
    */
   public function buildConfigurationForm(FieldInterface $field, array $form, FormStateInterface $form_state) {
     $index = $field->getIndex();
-    $configuration = $field->getConfiguration();
+    $configuration = $field->getConfiguration() + $this->defaultConfiguration();
 
     $form['#attached']['library'][] = 'search_api/drupal.search_api.admin_css';
     $form['#tree'] = TRUE;
@@ -51,6 +52,20 @@ class AggregatedFieldProperty extends ConfigurablePropertyBase {
     foreach ($this->getTypes('description') as $type => $description) {
       $form['type'][$type]['#description'] = $description;
     }
+
+    $form['separator'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Value separator'),
+      '#description' => $this->t('The text to insert between multiple values when aggregating them with the "@type" aggregation type. Can contain escape sequences like "\n" for a newline or "\t" for a horizontal tab.', ['@type' => $this->t('Concatenation')]),
+      '#size' => 30,
+      '#maxlength' => 64,
+      '#default_value' => addcslashes($configuration['separator'], "\0..\37\\"),
+      '#states' => [
+        'visible' => [
+          'input[name="type"]' => ['value' => 'concat'],
+        ],
+      ],
+    ];
 
     $form['fields'] = [
       '#type' => 'checkboxes',
@@ -114,6 +129,7 @@ class AggregatedFieldProperty extends ConfigurablePropertyBase {
   public function submitConfigurationForm(FieldInterface $field, array &$form, FormStateInterface $form_state) {
     $values = [
       'type' => $form_state->getValue('type'),
+      'separator' => stripcslashes($form_state->getValue('separator')),
       'fields' => array_keys(array_filter($form_state->getValue('fields'))),
     ];
     $field->setConfiguration($values);
@@ -156,35 +172,31 @@ class AggregatedFieldProperty extends ConfigurablePropertyBase {
    *   on $info, their labels, their data types or their descriptions.
    */
   protected function getTypes($info = 'label') {
-    switch ($info) {
-      case 'label':
-        return [
-          'union' => $this->t('Union'),
-          'concat' => $this->t('Concatenation'),
-          'sum' => $this->t('Sum'),
-          'count' => $this->t('Count'),
-          'max' => $this->t('Maximum'),
-          'min' => $this->t('Minimum'),
-          'first' => $this->t('First'),
-          'last' => $this->t('Last'),
-          'first_char' => $this->t('First letter'),
-        ];
-
-      case 'description':
-        return [
-          'union' => $this->t('The Union aggregation does an union operation of all the values of the field. 2 fields with 2 values each become 1 field with 4 values.'),
-          'concat' => $this->t('The Concatenation aggregation concatenates the text data of all contained fields.'),
-          'sum' => $this->t('The Sum aggregation adds the values of all contained fields numerically.'),
-          'count' => $this->t('The Count aggregation takes the total number of contained field values as the aggregated field value.'),
-          'max' => $this->t('The Maximum aggregation computes the numerically largest contained field value.'),
-          'min' => $this->t('The Minimum aggregation computes the numerically smallest contained field value.'),
-          'first' => $this->t('The First aggregation will simply keep the first encountered field value.'),
-          'last' => $this->t('The Last aggregation will keep the last encountered field value.'),
-          'first_char' => $this->t('The “First letter” aggregation uses just the first letter of the first encountered field value as the aggregated value. This can, for example, be used to build a Glossary view.'),
-        ];
-
-    }
-    return [];
+    return match ($info) {
+      'label' => [
+        'union' => $this->t('Union'),
+        'concat' => $this->t('Concatenation'),
+        'sum' => $this->t('Sum'),
+        'count' => $this->t('Count'),
+        'max' => $this->t('Maximum'),
+        'min' => $this->t('Minimum'),
+        'first' => $this->t('First'),
+        'last' => $this->t('Last'),
+        'first_char' => $this->t('First letter'),
+      ],
+      'description' => [
+        'union' => $this->t('The Union aggregation does an union operation of all the values of the field. 2 fields with 2 values each become 1 field with 4 values.'),
+        'concat' => $this->t('The Concatenation aggregation concatenates the text data of all contained fields.'),
+        'sum' => $this->t('The Sum aggregation adds the values of all contained fields numerically.'),
+        'count' => $this->t('The Count aggregation takes the total number of contained field values as the aggregated field value.'),
+        'max' => $this->t('The Maximum aggregation computes the numerically largest contained field value.'),
+        'min' => $this->t('The Minimum aggregation computes the numerically smallest contained field value.'),
+        'first' => $this->t('The First aggregation will simply keep the first encountered field value.'),
+        'last' => $this->t('The Last aggregation will keep the last encountered field value.'),
+        'first_char' => $this->t('The “First letter” aggregation uses just the first letter of the first encountered field value as the aggregated value. This can, for example, be used to build a Glossary view.'),
+      ],
+      default => [],
+    };
   }
 
   /**

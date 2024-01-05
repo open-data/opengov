@@ -14,7 +14,8 @@ archive: false
 id: test_element_scale
 title: 'Test: Element: Scale'
 description: 'Test the scale element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   scale:
     '#type': webform_scale
@@ -60,7 +61,6 @@ elements: |
     '#scale_type': flexbox
     '#min_text': '1 = disagree'
     '#max_text': 'agree = 5'
-  
 css: ''
 javascript: ''
 settings:
@@ -148,6 +148,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

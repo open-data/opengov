@@ -14,12 +14,12 @@ class WebformHelpTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['block', 'help', 'webform_test_message_custom'];
+  protected static $modules = ['block', 'help', 'webform_test_message_custom'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->drupalPlaceBlock('help_block');

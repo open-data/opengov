@@ -14,7 +14,8 @@ archive: false
 id: test_element_submitted_value
 title: 'Test: Element: Submitted value'
 description: 'Test submitted value handling for options element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   select:
     '#type': select
@@ -55,7 +56,6 @@ elements: |
       - one
       - two
       - three
-  
 css: ''
 javascript: ''
 settings:
@@ -143,6 +143,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

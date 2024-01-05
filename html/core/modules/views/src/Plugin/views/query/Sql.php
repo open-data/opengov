@@ -136,6 +136,11 @@ class Sql extends QueryPluginBase {
   protected $messenger;
 
   /**
+   * The count field definition.
+   */
+  public array $count_field;
+
+  /**
    * Constructs a Sql object.
    *
    * @param array $configuration
@@ -339,6 +344,8 @@ class Sql extends QueryPluginBase {
   }
 
   /**
+   * Adds a relationship to the query.
+   *
    * A relationship is an alternative endpoint to a series of table
    * joins. Relationships must be aliases of the primary table and
    * they must join either to the primary table or to a pre-existing
@@ -567,9 +574,11 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Ensure a table exists in the queue; if it already exists it won't
-   * do anything, but if it doesn't it will add the table queue. It will ensure
-   * a path leads back to the relationship table.
+   * Ensures a table exists in the queue.
+   *
+   * If it already exists it won't do anything, but if it doesn't it will add
+   * the table queue. It will ensure a path leads back to the relationship
+   * table.
    *
    * @param $table
    *   The unaliased name of the table to ensure.
@@ -657,11 +666,11 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Make sure that the specified table can be properly linked to the primary
-   * table in the JOINs. This function uses recursion. If the tables
-   * needed to complete the path back to the primary table are not in the
-   * query they will be added, but additional copies will NOT be added
-   * if the table is already there.
+   * Ensures the given table can be linked to the primary table in the JOINs.
+   *
+   * This function uses recursion. If the tables needed to complete the path
+   * back to the primary table are not in the query they will be added, but
+   * additional copies will NOT be added if the table is already there.
    */
   protected function ensurePath($table, $relationship = NULL, $join = NULL, $traced = [], $add = []) {
     if (!isset($relationship)) {
@@ -712,8 +721,10 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Fix a join to adhere to the proper relationship; the left table can vary
-   * based upon what relationship items are joined in on.
+   * Fixes a join to adhere to the proper relationship.
+   *
+   * The left table can vary based upon what relationship items are joined in
+   * on.
    */
   protected function adjustJoin($join, $relationship) {
     if (!empty($join->adjusted)) {
@@ -798,8 +809,9 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Add a field to the query table, possibly with an alias. This will
-   * automatically call ensureTable to make sure the required table
+   * Adds a field to the query table, possibly with an alias.
+   *
+   * This will automatically call ensureTable to make sure the required table
    * exists, *unless* $table is unset.
    *
    * @param $table
@@ -874,17 +886,20 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Remove all fields that may have been added; primarily used for summary mode
-   * where we're changing the query because we didn't get data we needed.
+   * Removes all fields that may have been added.
+   *
+   * Primarily used for summary mode where we're changing the query because
+   * we didn't get data we needed.
    */
   public function clearFields() {
     $this->fields = [];
   }
 
   /**
-   * Add a simple WHERE clause to the query. The caller is responsible for
-   * ensuring that all fields are fully qualified (TABLE.FIELD) and that
-   * the table already exists in the query.
+   * Adds a simple WHERE clause to the query.
+   *
+   * The caller is responsible for ensuring that all fields are fully qualified
+   * (TABLE.FIELD) and that the table already exists in the query.
    *
    * The $field, $value and $operator arguments can also be passed in with a
    * single DatabaseCondition object, like this:
@@ -935,7 +950,7 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Add a complex WHERE clause to the query.
+   * Adds a complex WHERE clause to the query.
    *
    * The caller is responsible for ensuring that all fields are fully qualified
    * (TABLE.FIELD) and that the table already exists in the query.
@@ -1057,9 +1072,10 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Add a simple GROUP BY clause to the query. The caller is responsible
-   * for ensuring that the fields are fully qualified and the table is properly
-   * added.
+   * Add a simple GROUP BY clause to the query.
+   *
+   * The caller is responsible for ensuring that the fields are fully qualified
+   * and the table is properly added.
    */
   public function addGroupBy($clause) {
     // Only add it if it's not already in there.
@@ -1277,8 +1293,7 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Generate a query and a countquery from all of the information supplied
-   * to the object.
+   * Generates a query and a countquery from all of the information supplied.
    *
    * @param $get_count
    *   Provide a countquery if this is true, otherwise provide a normal query.
@@ -1424,7 +1439,7 @@ class Sql extends QueryPluginBase {
    * Get the arguments attached to the WHERE and HAVING clauses of this query.
    */
   public function getWhereArgs() {
-    return array_merge([], ...array_column($this->where, 'args'), ...array_column($this->having, 'args'));
+    return array_merge(...array_column($this->where, 'args'), ...array_column($this->having, 'args'));
   }
 
   /**
@@ -1456,8 +1471,7 @@ class Sql extends QueryPluginBase {
   }
 
   /**
-   * Executes the query and fills the associated view object with according
-   * values.
+   * Executes the query and fills associated view object with according values.
    *
    * Values to set: $view->result, $view->total_rows, $view->execute_time,
    * $view->current_page.
@@ -1619,6 +1633,7 @@ class Sql extends QueryPluginBase {
 
     // Now load all revisions.
     foreach ($revision_ids_by_type as $entity_type => $revision_ids) {
+      /** @var \Drupal\Core\Entity\RevisionableStorageInterface $entity_storage */
       $entity_storage = $this->entityTypeManager->getStorage($entity_type);
       $entities = [];
 

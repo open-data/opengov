@@ -2,6 +2,8 @@
 
 namespace Drupal\search_api\Plugin\views\field;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -82,7 +84,7 @@ class SearchApiBulkForm extends BulkForm {
     try {
       $value = $values->_item->getOriginalObject()->getValue();
     }
-    catch (SearchApiException $e) {
+    catch (SearchApiException) {
       return NULL;
     }
     return $value instanceof EntityInterface ? $value : NULL;
@@ -201,9 +203,7 @@ class SearchApiBulkForm extends BulkForm {
         try {
           $entity = $this->loadEntityFromBulkFormKey($bulk_form_key);
         }
-        // @todo Replace with multi-catch for InvalidPluginDefinitionException
-        //   and PluginNotFoundException once we depend on PHP 7.1+.
-        catch (\Exception $e) {
+        catch (InvalidPluginDefinitionException | PluginNotFoundException) {
           $entity = NULL;
         }
         if (!$entity || $entity->getEntityTypeId() !== $action->getType()) {

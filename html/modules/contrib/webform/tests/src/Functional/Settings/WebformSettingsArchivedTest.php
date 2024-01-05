@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Settings;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform archived.
@@ -17,7 +17,7 @@ class WebformSettingsArchivedTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_node', 'webform_templates', 'webform'];
+  protected static $modules = ['webform_node', 'webform_templates', 'webform'];
 
   /**
    * Webforms to load.

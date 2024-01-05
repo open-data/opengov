@@ -8,17 +8,17 @@
 use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Site\Settings;
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 /**
  * The name of the query parameter for webform entity print image tokens.
@@ -93,7 +93,7 @@ function webform_entity_print_file_download($uri) {
         'Content-Type' => 'image/png',
         'Content-Length' => $filesize,
         'Cache-Control' => 'private',
-        'Content-Disposition' => 'inline; filename="' . Unicode::mimeHeaderEncode($filename) . '"',
+        'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_INLINE, (string) $filename),
       ];
     }
   }

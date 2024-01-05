@@ -8,7 +8,7 @@ webform_image_select.element:
   dependencies:
     - core/drupal
     - core/jquery
-    - core/jquery.once
+    - core/once
     - webform_image_select/libraries.jquery.image-picker
 
 # External libraries.

@@ -7,7 +7,8 @@ libraries:
   - umami/classy.base
   - core/normalize
   - umami/global
-  - umami/messages
+dependencies:
+  - drupal:sdc
 
 libraries-override:
   layout_builder/twocol_section:
@@ -24,8 +25,8 @@ libraries-override:
         layouts/fourcol_section/fourcol_section.css: layouts/fourcol_section/fourcol_section.css
 
 libraries-extend:
-  tour/tour-styling:
-    - umami/demo-umami-tour
+  core/drupal.message:
+    - umami/messages
   core/drupal.dialog:
     - umami/classy.dialog
   core/drupal.dropbutton:
@@ -46,6 +47,8 @@ libraries-extend:
     - umami/classy.media_library
   user/drupal.user:
     - umami/user
+  node/drupal.node.preview:
+    - umami/drupal.node.preview
 
 regions:
   pre_header: Pre-header

@@ -167,21 +167,16 @@ class QueueWorker {
   }
 
   /**
-   * Queues links from variants.
+   * Queues links from sitemaps.
    *
-   * @param string[]|string|null $variants
-   *   The sitemap variants.
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap[] $sitemaps
+   *   The sitemaps.
    *
    * @return $this
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function queue($variants = NULL): QueueWorker {
-    $variants = $variants !== NULL ? (array) $variants : NULL;
-
-    /** @var \Drupal\simple_sitemap\Entity\SimpleSitemap[] $sitemaps */
-    $sitemaps = $this->entityTypeManager->getStorage('simple_sitemap')->loadMultiple($variants);
-
+  public function queue($sitemaps = []): QueueWorker {
     $empty_variants = array_fill_keys(array_keys($sitemaps), TRUE);
     $all_data_sets = [];
 
@@ -221,21 +216,21 @@ class QueueWorker {
   }
 
   /**
-   * Deletes the queue and queues links from variants.
+   * Deletes the queue and queues links from sitemaps.
    *
-   * @param string[]|string|null $variants
-   *   The sitemap variants.
+   * @param \Drupal\simple_sitemap\Entity\SimpleSitemap[] $sitemaps
+   *   The sitemaps.
    *
    * @return $this
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function rebuildQueue($variants = NULL): QueueWorker {
+  public function rebuildQueue($sitemaps = []): QueueWorker {
     if (!$this->lock->acquire(static::LOCK_ID)) {
       throw new \RuntimeException('Unable to acquire a lock for sitemap queue rebuilding');
     }
     $this->deleteQueue();
-    $this->queue($variants);
+    $this->queue($sitemaps);
     $this->lock->release(static::LOCK_ID);
 
     return $this;
@@ -283,7 +278,7 @@ class QueueWorker {
     $this->unstashResults();
 
     if (!$this->generationInProgress()) {
-      $this->rebuildQueue();
+      $this->rebuildQueue(SimpleSitemap::loadMultiple());
     }
 
     // Acquire a lock for max execution time + 5 seconds. If max_execution time

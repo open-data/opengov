@@ -26,7 +26,8 @@ class WebformAttachmentToken extends WebformAttachmentBase {
   public static function getFileContent(array $element, WebformSubmissionInterface $webform_submission) {
     /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
     $token_manager = \Drupal::service('webform.token_manager');
-    $content = $token_manager->replace($element['#template'], $webform_submission);
+    $template = $element['#template'] ?? '';
+    $content = $token_manager->replace($template, $webform_submission);
     return (!empty($element['#trim'])) ? trim($content) : $content;
   }
 

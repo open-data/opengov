@@ -14,7 +14,8 @@ archive: false
 id: test_variant_multiple
 title: 'Test: Variant multiple'
 description: 'Test variant multiple.'
-category: 'Test: Variants'
+categories:
+  - 'Test: Variants'
 elements: |
   letter:
     '#type': webform_variant
@@ -34,7 +35,6 @@ elements: |
     '#wrapper_attributes':
       style: 'display: inline-block; margin: 0; padding: 0 20px; font-size: 100px; '
     '#markup': '{0}'
-  
 css: ''
 javascript: ''
 settings:
@@ -122,6 +122,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -242,7 +244,6 @@ variants:
       elements: |
         letter_markup:
           '#markup': '[A]'
-        
       handlers: {  }
       debug: false
   b:
@@ -258,7 +259,6 @@ variants:
       elements: |
         letter_markup:
           '#markup': '[B]'
-        
       handlers: {  }
       debug: false
   1:
@@ -274,7 +274,6 @@ variants:
       elements: |
         number_markup:
           '#markup': '[1]'
-        
       handlers: {  }
       debug: false
   2:
@@ -290,7 +289,6 @@ variants:
       elements: |
         number_markup:
           '#markup': '[2]'
-        
       handlers: {  }
       debug: false
   3:
@@ -306,6 +304,5 @@ variants:
       elements: |
         number_markup:
           '#markup': '[3]'
-        
       handlers: {  }
       debug: false

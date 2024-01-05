@@ -3,8 +3,7 @@
 namespace Drupal\Tests\node\Functional;
 
 /**
- * Tests that the post information (submitted by Username on date) text displays
- * appropriately.
+ * Tests the node setting for displaying author and date information.
  *
  * @group node
  */
@@ -38,7 +37,7 @@ class NodePostSettingsTest extends NodeTestBase {
     $edit = [];
     $edit['display_submitted'] = TRUE;
     $this->drupalGet('admin/structure/types/manage/page');
-    $this->submitForm($edit, 'Save content type');
+    $this->submitForm($edit, 'Save');
 
     // Create a node.
     $edit = [];
@@ -56,7 +55,7 @@ class NodePostSettingsTest extends NodeTestBase {
     $edit = [];
     $edit['display_submitted'] = FALSE;
     $this->drupalGet('admin/structure/types/manage/page');
-    $this->submitForm($edit, 'Save content type');
+    $this->submitForm($edit, 'Save');
 
     // Create a node.
     $edit = [];

@@ -14,7 +14,7 @@ archive: false
 id: template_feedback
 title: Feedback
 description: 'A basic feedback template.'
-category: ''
+categories: {  }
 elements: |
   type:
     '#title': 'Type of Feedback'
@@ -41,7 +41,6 @@ elements: |
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': 'Submit feedback'
-  
 css: ''
 javascript: ''
 settings:
@@ -129,6 +128,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

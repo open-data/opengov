@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\BuildTests\Composer\Template;
 
 use Composer\Json\JsonFile;
@@ -22,8 +24,6 @@ use Drupal\Composer\Composer;
  *
  * @group #slow
  * @group Template
- *
- * @requires externalCommand composer
  */
 class ComposerProjectTemplatesTest extends ComposerBuildTestBase {
 

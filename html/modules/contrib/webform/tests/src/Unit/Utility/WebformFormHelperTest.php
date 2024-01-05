@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Unit\Utility;
 
-use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\Tests\UnitTestCase;
+use Drupal\webform\Utility\WebformFormHelper;
 
 /**
  * Tests webform helper utility.

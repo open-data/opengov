@@ -41,11 +41,11 @@ class FieldCrudTest extends FieldKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp(): void {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->fieldStorageDefinition = [
-      'field_name' => mb_strtolower($this->randomMachineName()),
+      'field_name' => $this->randomMachineName(),
       'entity_type' => 'entity_test',
       'type' => 'test_field',
     ];
@@ -186,7 +186,7 @@ class FieldCrudTest extends FieldKernelTestBase {
     $this->assertEquals(t('%name does not accept the value @value.', ['%name' => $field_name, '@value' => -2]), $violations[0]->getMessage());
 
     $this->assertEquals($field_name . '.0.value', $violations[1]->getPropertyPath());
-    $this->assertEquals(t('This value should be %limit or more.', ['%limit' => 0]), $violations[1]->getMessage());
+    $this->assertEquals(t('This value should be between %min and %max.', ['%min' => 0, '%max' => 32]), $violations[1]->getMessage());
 
     // Check that a value that is not specifically restricted but outside the
     // range triggers the expected violation.
@@ -194,14 +194,14 @@ class FieldCrudTest extends FieldKernelTestBase {
     $violations = $entity->validate();
     $this->assertCount(1, $violations, 'Violations found when using value outside the range.');
     $this->assertEquals($field_name . '.0.value', $violations[0]->getPropertyPath());
-    $this->assertEquals(t('This value should be %limit or less.', ['%limit' => 32]), $violations[0]->getMessage());
+    $this->assertEquals(t('This value should be between %min and %max.', ['%min' => 0, '%max' => 32]), $violations[0]->getMessage());
   }
 
   /**
    * Tests creating a field with custom storage set.
    */
   public function testCreateFieldCustomStorage() {
-    $field_name = mb_strtolower($this->randomMachineName());
+    $field_name = $this->randomMachineName();
     \Drupal::state()->set('field_test_custom_storage', $field_name);
 
     $field_storage = FieldStorageConfig::create([

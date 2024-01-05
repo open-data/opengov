@@ -5,8 +5,8 @@ namespace Drupal\Tests\webform\Unit\Plugin\WebformSourceEntity;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\webform\Plugin\WebformSourceEntity\RouteParametersWebformSourceEntity;
 use Drupal\Tests\UnitTestCase;
+use Drupal\webform\Plugin\WebformSourceEntity\RouteParametersWebformSourceEntity;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -39,20 +39,16 @@ class RouteParametersWebformSourceEntityTest extends UnitTestCase {
    * @dataProvider providerGetCurrentSourceEntity
    */
   public function testGetCurrentSourceEntity(array $route_parameters, array $ignored_types, $expect_source_entity, $assert_message = '') {
-    $route_match = $this->getMockBuilder(RouteMatchInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $route_match = $this->createMock(RouteMatchInterface::class);
 
-    $source_entity = $this->getMockBuilder(EntityInterface::class)
-      ->getMock();
+    $source_entity = $this->createMock(EntityInterface::class);
 
     // Process $route_parameters to unwrap it with real objects.
     if (isset($route_parameters['source_entity'])) {
       $route_parameters['source_entity'] = $source_entity;
     }
     if (isset($route_parameters['another_entity'])) {
-      $route_parameters['another_entity'] = $this->getMockBuilder(EntityInterface::class)
-        ->getMock();
+      $route_parameters['another_entity'] = $this->createMock(EntityInterface::class);
     }
 
     $route_match->method('getParameters')

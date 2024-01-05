@@ -14,14 +14,14 @@ archive: false
 id: test_confirmation_none
 title: 'Test: Confirmation: None'
 description: 'Test no confirmation message.'
-category: 'Test: Confirmation'
+categories:
+  - 'Test: Confirmation'
 elements: |
   description:
     '#markup': 'This webform will not display a confirmation when submitted.'
   test:
     '#type': textfield
     '#title': test
-  
 css: ''
 javascript: ''
 settings:
@@ -109,6 +109,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

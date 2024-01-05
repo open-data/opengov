@@ -722,7 +722,7 @@ trait SearchApiFieldTrait {
               }
             }
           }
-          catch (\InvalidArgumentException $e) {
+          catch (\InvalidArgumentException) {
             // This can easily happen, for example, when requesting a field
             // that only exists on a different bundle. Unfortunately, there
             // is no ComplexDataInterface::hasProperty() method, so we can
@@ -1299,7 +1299,7 @@ trait SearchApiFieldTrait {
           ->getDatasource($row->search_api_datasource)
           ->getItemUrl($row->_relationship_objects[NULL][0]);
       }
-      catch (SearchApiException $e) {
+      catch (SearchApiException) {
       }
     }
 

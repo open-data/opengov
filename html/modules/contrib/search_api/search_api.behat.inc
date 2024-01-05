@@ -6,6 +6,7 @@
  */
 
 use Behat\Behat\Hook\Scope\AfterStepScope;
+use Behat\Gherkin\Node\FeatureNode;
 use Drupal\DrupalExtension\Context\DrupalSubContextBase;
 
 /**
@@ -14,6 +15,15 @@ use Drupal\DrupalExtension\Context\DrupalSubContextBase;
  * @see https://behat-drupal-extension.readthedocs.io/en/v4.0.1/subcontexts.html
  */
 class SearchApiSubContext extends DrupalSubContextBase {
+
+  /**
+   * Cached tags lists of features, keyed by feature hash.
+   *
+   * @var string[][]
+   *
+   * @see \SearchApiSubContext::getTagsFromFeature()
+   */
+  protected static $tags;
 
   /**
    * Triggers all queued indexing operations for this page request.
@@ -39,13 +49,35 @@ class SearchApiSubContext extends DrupalSubContextBase {
    * @AfterStep
    */
   public function indexEntities(AfterStepScope $event) {
-    $tags = $event->getFeature()->getTags();
+    $tags = static::getTagsFromFeature($event->getFeature());
     if (!in_array('search_api', $tags)) {
       return;
     }
 
     \Drupal::getContainer()->get('search_api.post_request_indexing')
       ->destruct();
+  }
+
+  /**
+   * Extracts tags from a feature.
+   *
+   * @param \Behat\Gherkin\Node\FeatureNode $feature
+   *   Feature node from which to extract the tags.
+   *
+   * @return string[]
+   *   The tags list of the feature.
+   */
+  public static function getTagsFromFeature(FeatureNode $feature): array {
+    $feature_hash = md5($feature->getFile());
+    if (!isset(static::$tags[$feature_hash])) {
+      $tags = [];
+      foreach ($feature->getScenarios() as $scenario) {
+        $scenario_tags = $scenario->getTags();
+        $tags = array_unique(array_merge($tags, $scenario_tags), SORT_REGULAR);
+      }
+      static::$tags[$feature_hash] = $tags;
+    }
+    return static::$tags[$feature_hash];
   }
 
 }

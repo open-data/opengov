@@ -5,11 +5,11 @@
   <config name="drupal_core_version" value="8"/>
   <file>.</file>
 
-  <rule ref="Drupal"/>
-  <rule ref="DrupalPractice">
-    <!-- unserialize() is already used in many places. -->
-    <exclude name="DrupalPractice.FunctionCalls.InsecureUnserialize"/>
+  <rule ref="Drupal">
+    <!-- Present in many places, ignore for now. -->
+    <exclude name="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
   </rule>
+  <rule ref="DrupalPractice"/>
   <!-- Update hooks may have long descriptions. -->
   <rule ref="Drupal.Files.LineLength.TooLong">
     <exclude-pattern>\.install</exclude-pattern>

@@ -8,6 +8,7 @@ use Drupal\webform\Entity\Webform;
 /**
  * Tests for webform HTML editor element.
  *
+ * @see \Drupal\Tests\webform\Functional\Access\WebformAccessFilterFormatTest
  * @group webform
  */
 class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
@@ -17,7 +18,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'webform'];
+  protected static $modules = ['editor', 'ckeditor', 'webform'];
 
   /**
    * Webforms to load.
@@ -29,7 +30,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create filters.
@@ -50,27 +51,26 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
 
     // Check required validation.
     $edit = [
-      'webform_html_editor[value]' => '',
-      'webform_html_editor_disable[value]' => '',
+      'webform_html_editor[value][value]' => '',
       'webform_html_editor_format[value][value]' => '',
       'webform_html_editor_codemirror[value]' => '',
     ];
     $this->postSubmission($webform, $edit);
     $assert_session->responseContains('webform_html_editor (default) field is required.');
-    $assert_session->responseContains('webform_html_editor (disable) field is required.');
     $assert_session->responseContains('webform_html_editor (format) field is required.');
     $assert_session->responseContains('webform_html_editor_codemirror (none) field is required.');
 
     $this->drupalGet('/webform/test_element_html_editor');
 
     // Check that HTML editor is enabled.
-    $assert_session->responseContains('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-html-editor form-textarea required" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
-
-    // Check that HTML editor is disabled.
-    $assert_session->responseContains('<textarea class="custom-disabled js-html-editor form-textarea required" data-drupal-selector="edit-webform-html-editor-disable-value" id="edit-webform-html-editor-disable-value" name="webform_html_editor_disable[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $assert_session->responseContains('<textarea data-drupal-selector="edit-webform-html-editor-value-value" class="webform-html-editor-default-filter-format form-textarea required" id="edit-webform-html-editor-value-value" name="webform_html_editor[value][value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
 
     // Check that CodeMirror is displayed when #format: FALSE.
     $assert_session->responseContains('<textarea data-drupal-selector="edit-webform-html-editor-codemirror-value" class="js-webform-codemirror webform-codemirror html required form-textarea" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-codemirror-value" name="webform_html_editor_codemirror[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+
+    // Check that attributes are support by the default 'webform' filter format.
+    $build = WebformHtmlEditor::checkMarkup('<p class="other">Some text</p>');
+    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p class="other">Some text</p>');
 
     // Disable HTML editor.
     $this->drupalGet('/admin/structure/webform/config/elements');
@@ -79,8 +79,12 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
 
     // Check that HTML editor is removed and replaced by CodeMirror HTML editor.
     $this->drupalGet('/webform/test_element_html_editor');
-    $assert_session->responseNotContains('<textarea class="js-html-editor form-textarea required" data-drupal-selector="edit-webform-html-editor-value" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+    $assert_session->responseNotContains('<textarea data-drupal-selector="edit-webform-html-editor-value-value" id="edit-webform-html-editor-value-value" name="webform_html_editor[value][value]" rows="5" cols="60" class="form-textarea required" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
     $assert_session->responseContains('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-webform-codemirror webform-codemirror html required form-textarea" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
+
+    // Check that attributes are support when the HTML editor is disabled.
+    $build = WebformHtmlEditor::checkMarkup('<p class="other">Some text</p>');
+    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p class="other">Some text</p>');
 
     // Enable HTML editor and element text format.
     $this->drupalGet('/admin/structure/webform/config/elements');
@@ -95,19 +99,14 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
     $assert_session->responseNotContains('<textarea class="js-html-editor form-textarea" data-drupal-selector="edit-webform-html-editor-value" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
     $assert_session->responseNotContains('<textarea data-drupal-selector="edit-webform-html-editor-value" class="js-webform-codemirror webform-codemirror html required form-textarea" required="required" aria-required="true" data-webform-codemirror-mode="text/html" id="edit-webform-html-editor-value" name="webform_html_editor[value]" rows="5" cols="60">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
     $assert_session->responseContains('<textarea data-drupal-selector="edit-webform-html-editor-value-value" id="edit-webform-html-editor-value-value" name="webform_html_editor[value][value]" rows="5" cols="60" class="form-textarea required" required="required" aria-required="true">Hello &lt;b&gt;World!!!&lt;/b&gt;</textarea>');
-    $assert_session->responseContains('<h4>Basic HTML</h4>');
 
-    // Disable element text format.
-    $this->drupalGet('/admin/structure/webform/config/elements');
-    $edit = ['html_editor[element_format]' => ''];
-    $this->submitForm($edit, 'Save configuration');
+    // Check that attributes are NOT support by the basic_html filter format.
+    $build = WebformHtmlEditor::checkMarkup('<p class="other">Some text</p>');
+    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p>Some text</p>');
 
     // Check that tidy removed <p> tags.
     $build = WebformHtmlEditor::checkMarkup('<p>Some text</p>');
     $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), 'Some text');
-
-    $build = WebformHtmlEditor::checkMarkup('<p class="other">Some text</p>');
-    $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p class="other">Some text</p>');
 
     $build = WebformHtmlEditor::checkMarkup('<p>Some text</p><p>More text</p>');
     $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p>Some text</p><p>More text</p>');
@@ -121,23 +120,13 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
     $this->assertEquals(\Drupal::service('renderer')->renderPlain($build), '<p>Some text</p>');
 
     /* Email text format */
-    // Disable HTML editor.
-    $edit = [
-      'html_editor[disabled]' => FALSE,
-      'html_editor[element_format]' => '',
-      'html_editor[mail_format]' => '',
-    ];
-    $this->drupalGet('/admin/structure/webform/config/elements');
-    $this->submitForm($edit, 'Save configuration');
 
     // Check that HTML editor is used.
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers/email_confirmation/edit');
-    $assert_session->responseContains('<textarea data-drupal-selector="edit-settings-body-custom-html-value" class="js-html-editor form-textarea" id="edit-settings-body-custom-html-value" name="settings[body_custom_html][value]" rows="5" cols="60">');
+    $assert_session->responseContains('<textarea data-drupal-selector="edit-settings-body-custom-html-value-value" class="webform-html-editor-default-filter-format form-textarea" id="edit-settings-body-custom-html-value-value" name="settings[body_custom_html][value][value]" rows="5" cols="60">');
 
     // Enable mail text format.
-    $edit = [
-      'html_editor[mail_format]' => 'basic_html',
-    ];
+    $edit = ['html_editor[mail_format]' => 'basic_html'];
     $this->drupalGet('/admin/structure/webform/config/elements');
     $this->submitForm($edit, 'Save configuration');
 
@@ -145,7 +134,7 @@ class WebformElementHtmlEditorTest extends WebformElementBrowserTestBase {
     $this->drupalGet('/admin/structure/webform/manage/contact/handlers/email_confirmation/edit');
     $assert_session->responseNotContains('<textarea data-drupal-selector="edit-settings-body-custom-html-value" class="js-html-editor form-textarea" id="edit-settings-body-custom-html-value" name="settings[body_custom_html][value]" rows="5" cols="60">');
     $assert_session->responseContains('<textarea data-drupal-selector="edit-settings-body-custom-html-value-value" id="edit-settings-body-custom-html-value-value" name="settings[body_custom_html][value][value]" rows="5" cols="60" class="form-textarea">');
-    $assert_session->responseContains('<div class="js-filter-wrapper filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-settings-body-custom-html-value-format" id="edit-settings-body-custom-html-value-format">');
+    $assert_session->responseContains('<div class="js-filter-wrapper js-form-wrapper form-wrapper" data-drupal-selector="edit-settings-body-custom-html-value-format" id="edit-settings-body-custom-html-value-format">');
   }
 
 }

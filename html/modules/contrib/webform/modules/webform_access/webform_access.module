@@ -304,9 +304,9 @@ function webform_access_webform_submission_query_access_alter(AlterableInterface
 /* ************************************************************************** */
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function webform_access_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function webform_access_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   /** @var \Drupal\Core\Field\FieldItemListInterface $items */
   $items = $context['items'];
   $field_definition = $items->getFieldDefinition();

@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\webform_attachment\Functional;
 
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform_attachment\Element\WebformAttachmentToken;
 
 /**
@@ -19,7 +19,7 @@ class WebformAttachmentTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['token', 'webform_attachment', 'webform_attachment_test'];
+  protected static $modules = ['token', 'webform_attachment', 'webform_attachment_test'];
 
   /**
    * Tests webform attachment.
@@ -250,12 +250,12 @@ class WebformAttachmentTest extends WebformBrowserTestBase {
     // Check that attachment is enabled.
     $this->postSubmission($webform_attachment_states, ['attach' => TRUE]);
     $sent_email = $this->getLastEmail();
-    $this->assert(isset($sent_email['params']['attachments'][0]), 'Attachment enabled via #states');
+    $this->assertTrue(isset($sent_email['params']['attachments'][0]), 'Attachment enabled via #states');
 
     // Check that attachment is disabled.
     $this->postSubmission($webform_attachment_states, ['attach' => FALSE]);
     $sent_email = $this->getLastEmail();
-    $this->assert(!isset($sent_email['params']['attachments'][0]), 'Attachment disabled via #states');
+    $this->assertFalse(isset($sent_email['params']['attachments'][0]), 'Attachment disabled via #states');
   }
 
 }

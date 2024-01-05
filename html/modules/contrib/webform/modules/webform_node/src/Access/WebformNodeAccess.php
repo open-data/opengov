@@ -196,8 +196,15 @@ class WebformNodeAccess {
     }
 
     // Determine if this is a group node.
-    $is_group_node = \Drupal::moduleHandler()->moduleExists('webform_group')
-      && \Drupal::entityTypeManager()->getStorage('group_content')->loadByEntity($node);
+    $is_group_node = FALSE;
+    if (\Drupal::moduleHandler()->moduleExists('webform_group')) {
+      if (\Drupal::entityTypeManager()->hasDefinition('group_content')) {
+        $is_group_node = \Drupal::entityTypeManager()->getStorage('group_content')->loadByEntity($node);
+      }
+      elseif (\Drupal::entityTypeManager()->hasDefinition('group_relation')) {
+        $is_group_node = \Drupal::entityTypeManager()->getStorage('group_relation')->loadByEntity($node);
+      }
+    }
 
     // Check the node operation.
     if (!$operation) {

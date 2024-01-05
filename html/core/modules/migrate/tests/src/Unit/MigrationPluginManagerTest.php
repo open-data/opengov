@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\migrate\Unit;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\migrate\Plugin\Migration;
 use Drupal\migrate\Plugin\MigrationPluginManager;
 use Drupal\Tests\UnitTestCase;
@@ -22,7 +23,7 @@ class MigrationPluginManagerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp(): void {
+  protected function setUp(): void {
     parent::setUp();
 
     // Get a plugin manager for testing.
@@ -40,7 +41,7 @@ class MigrationPluginManagerTest extends UnitTestCase {
   public function testDependencyBuilding($migrations_data, $result_ids) {
     $migrations = [];
     foreach ($migrations_data as $migration_id => $migration_data) {
-      $migrations[$migration_id] = new TestMigrationMock($migration_id, $migration_data['dependencies']);
+      $migrations[$migration_id] = new TestMigrationMock($migration_id, $migration_data['migration_dependencies']);
     }
 
     $ordered_migrations = $this->pluginManager->buildDependencyMigration($migrations, []);
@@ -66,6 +67,25 @@ class MigrationPluginManagerTest extends UnitTestCase {
   }
 
   /**
+   * Tests that expandPluginIds returns all derivatives.
+   */
+  public function testExpandPluginIds() {
+    $backend = $this->prophesize(CacheBackendInterface::class);
+    $cache = new \stdClass();
+    $cache->data = [
+      'a:a' => ['provider' => 'core'],
+      'a:b' => ['provider' => 'core'],
+      'b' => ['provider' => 'core'],
+    ];
+    $backend->get('migration_plugins')->willReturn($cache);
+    $this->pluginManager->setCacheBackend($backend->reveal(), 'migration_plugins');
+    $plugin_ids = $this->pluginManager->expandPluginIds(['b', 'a']);
+    $this->assertContains('a:a', $plugin_ids);
+    $this->assertContains('a:b', $plugin_ids);
+    $this->assertContains('b', $plugin_ids);
+  }
+
+  /**
    * Provide dependency data for testing.
    */
   public function dependencyProvider() {
@@ -74,7 +94,7 @@ class MigrationPluginManagerTest extends UnitTestCase {
       [
         [
           'm1' => [
-            'dependencies' => [],
+            'migration_dependencies' => [],
             'result_requirements' => [],
           ],
         ],
@@ -85,7 +105,7 @@ class MigrationPluginManagerTest extends UnitTestCase {
       [
         [
           'm1' => [
-            'dependencies' => [
+            'migration_dependencies' => [
               'required' => ['required1', 'required2'],
             ],
             'result_requirements' => ['required1', 'required2'],
@@ -98,7 +118,7 @@ class MigrationPluginManagerTest extends UnitTestCase {
       [
         [
           'm1' => [
-            'dependencies' => [
+            'migration_dependencies' => [
               'optional' => ['optional1'],
             ],
             'result_requirements' => [],
@@ -111,13 +131,13 @@ class MigrationPluginManagerTest extends UnitTestCase {
       [
         [
           'm1' => [
-            'dependencies' => [
+            'migration_dependencies' => [
               'required' => ['required1', 'required2'],
             ],
             'result_requirements' => ['required1', 'required2'],
           ],
           'm2' => [
-            'dependencies' => [
+            'migration_dependencies' => [
               'optional' => ['optional1'],
             ],
             'result_requirements' => [],
@@ -130,13 +150,13 @@ class MigrationPluginManagerTest extends UnitTestCase {
       [
         [
           'm1' => [
-            'dependencies' => [
+            'migration_dependencies' => [
               'optional' => ['m2'],
             ],
             'result_requirements' => [],
           ],
           'm2' => [
-            'dependencies' => [
+            'migration_dependencies' => [
               'optional' => ['optional1'],
             ],
             'result_requirements' => [],
@@ -150,13 +170,13 @@ class MigrationPluginManagerTest extends UnitTestCase {
       [
         [
           'm1' => [
-            'dependencies' => [
+            'migration_dependencies' => [
               'optional' => ['m2'],
             ],
             'result_requirements' => [],
           ],
           'm2' => [
-            'dependencies' => [],
+            'migration_dependencies' => [],
             'result_requirements' => [],
           ],
         ],
@@ -190,10 +210,10 @@ class TestMigrationMock extends Migration {
   /**
    * TestMigrationMock constructor.
    */
-  public function __construct($id, $dependencies) {
+  public function __construct($id, $migration_dependencies) {
     // Intentionally ignore parent constructor.
     $this->id = $id;
-    $this->dependencies = $dependencies;
+    $this->migration_dependencies = $migration_dependencies;
   }
 
   /**
@@ -206,8 +226,9 @@ class TestMigrationMock extends Migration {
   /**
    * {@inheritdoc}
    */
-  public function getMigrationDependencies() {
-    return $this->dependencies;
+  public function getMigrationDependencies(bool $expand = FALSE) {
+    // For the purpose of testing, do not expand dependencies.
+    return $this->migration_dependencies;
   }
 
   /**

@@ -649,6 +649,7 @@ class ProviderBase extends PluginBase implements ProviderInterface {
         $fileSystem->prepareDirectory($provider_path, $options);
       }
       else {
+        // @noRector
         file_prepare_directory($provider_path, $options);
       }
 

@@ -54,7 +54,12 @@ services:
 
   search_api.fields_helper:
     class: Drupal\search_api\Utility\FieldsHelper
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@entity_type.bundle.info', '@search_api.data_type_helper']
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_field.manager'
+      - '@entity_type.bundle.info'
+      - '@search_api.data_type_helper'
+      - '@search_api.theme_switcher'
 
   search_api.index_task_manager:
     class: Drupal\search_api\Task\IndexTaskManager
@@ -85,6 +90,10 @@ services:
   search_api.task_manager:
     class: Drupal\search_api\Task\TaskManager
     arguments: ['@entity_type.manager', '@event_dispatcher', '@string_translation', '@messenger']
+
+  search_api.theme_switcher:
+    class: Drupal\search_api\Utility\ThemeSwitcher
+    arguments: ['@theme.manager', '@theme.initialization', '@config.factory']
 
   search_api.tracking_helper:
     class: Drupal\search_api\Utility\TrackingHelper

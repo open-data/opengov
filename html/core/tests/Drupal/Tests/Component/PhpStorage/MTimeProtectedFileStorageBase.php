@@ -37,12 +37,12 @@ abstract class MTimeProtectedFileStorageBase extends PhpStorageTestBase {
   /**
    * The expected test results for the security test.
    */
-  protected $expected;
+  protected array $expected;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Random generator.
@@ -59,11 +59,6 @@ abstract class MTimeProtectedFileStorageBase extends PhpStorageTestBase {
 
   /**
    * Tests basic load/save/delete operations.
-   *
-   * @covers ::load
-   * @covers ::save
-   * @covers ::delete
-   * @covers ::exists
    */
   public function testCRUD() {
     $php = new $this->storageClass($this->settings);
@@ -81,7 +76,7 @@ abstract class MTimeProtectedFileStorageBase extends PhpStorageTestBase {
    */
   public function testSecurity() {
     $php = new $this->storageClass($this->settings);
-    $name = 'simpletest.php';
+    $name = 'test.php';
     $php->save($name, '<?php');
     $expected_root_directory = $this->directory . '/test';
     if (substr($name, -4) === '.php') {

@@ -134,8 +134,8 @@ class TaskManager implements TaskManagerInterface {
    * {@inheritdoc}
    */
   public function addTask($type, ServerInterface $server = NULL, IndexInterface $index = NULL, $data = NULL) {
-    $server_id = $server ? $server->id() : NULL;
-    $index_id = $index ? $index->id() : NULL;
+    $server_id = $server?->id();
+    $index_id = $index?->id();
     if (isset($data)) {
       if ($data instanceof EntityInterface) {
         $data = [
@@ -181,10 +181,7 @@ class TaskManager implements TaskManagerInterface {
    * {@inheritdoc}
    */
   public function deleteTask($task_id) {
-    $task = $this->getTaskStorage()->load($task_id);
-    if ($task) {
-      $task->delete();
-    }
+    $this->getTaskStorage()->load($task_id)?->delete();
   }
 
   /**

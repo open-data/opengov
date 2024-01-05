@@ -5,6 +5,7 @@
  * Defines simple link field types.
  */
 
+use Drupal\Core\Field\FieldTypeCategoryManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -64,4 +65,13 @@ function link_theme() {
  */
 function template_preprocess_link_formatter_link_separate(&$variables) {
   $variables['link'] = Link::fromTextAndUrl($variables['url_title'], $variables['url'])->toString();
+}
+
+/**
+ * Implements hook_field_type_category_info_alter().
+ */
+function link_field_type_category_info_alter(&$definitions) {
+  // The `link` field type belongs in the `general` category, so the libraries
+  // need to be attached using an alter hook.
+  $definitions[FieldTypeCategoryManagerInterface::FALLBACK_CATEGORY]['libraries'][] = 'link/drupal.link-icon';
 }

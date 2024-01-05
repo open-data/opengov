@@ -35,6 +35,15 @@ class StemmerTest extends UnitTestCase {
     $this->setUpMockContainer();
 
     $this->processor = new Stemmer([], 'string', []);
+    $language_manager = $this->createMock(LanguageManagerInterface::class);
+    $language_manager->method('getLanguages')->willReturn([
+      'de' => 'de',
+      'en' => 'en',
+      'en-GB' => 'en-GB',
+      'fr' => 'fr',
+      'it' => 'it',
+    ]);
+    $this->processor->setLanguageManager($language_manager);
   }
 
   /**
@@ -99,6 +108,17 @@ class StemmerTest extends UnitTestCase {
     ]);
     $item_en->method('getFields')->willReturn(['foo' => $field_en]);
 
+    $item_en_gb = $this->getMockBuilder(ItemInterface::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $item_en_gb->method('getLanguage')->willReturn('en-GB');
+    $field_en_gb = new Field($index, 'foo');
+    $field_en_gb->setType('text');
+    $field_en_gb->setValues([
+      new TextValue('ties'),
+    ]);
+    $item_en_gb->method('getFields')->willReturn(['foo' => $field_en_gb]);
+
     $item_de = $this->getMockBuilder(ItemInterface::class)
       ->disableOriginalConstructor()
       ->getMock();
@@ -110,11 +130,13 @@ class StemmerTest extends UnitTestCase {
     ]);
     $item_de->method('getFields')->willReturn(['foo' => $field_de]);
 
-    $items = [$item_en, $item_de];
+    $items = [$item_en, $item_en_gb, $item_de];
     $this->processor->preprocessIndexItems($items);
 
     /** @var \Drupal\search_api\Plugin\search_api\data_type\value\TextValueInterface $value */
     $value = $field_en->getValues()[0];
+    $this->assertEquals('tie', $value->toText());
+    $value = $field_en_gb->getValues()[0];
     $this->assertEquals('tie', $value->toText());
     $value = $field_de->getValues()[0];
     $this->assertEquals('ties', $value->toText());
@@ -146,7 +168,7 @@ class StemmerTest extends UnitTestCase {
       $this->processor->preprocessSearchQuery($query);
       $this->assertFalse($should_process, "Keys weren't processed but should have been.");
     }
-    catch (\RuntimeException $e) {
+    catch (\RuntimeException) {
       $this->assertTrue($should_process, "Keys were processed but shouldn't have been.");
     }
   }
@@ -161,8 +183,10 @@ class StemmerTest extends UnitTestCase {
     return [
       'language-less query' => [NULL, TRUE],
       'English query' => [['en'], TRUE],
+      'British English query' => [['en-GB'], TRUE],
       'Non-English query' => [['de'], FALSE],
       'Multilingual query (including English)' => [['en', 'fr', 'es'], TRUE],
+      'Multilingual query (including British English)' => [['en-GB', 'fr', 'es'], TRUE],
       'Multilingual query (not including English)' => [['de', 'it'], FALSE],
     ];
   }

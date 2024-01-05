@@ -191,7 +191,7 @@ class FieldsProcessorPluginBaseTest extends UnitTestCase {
   public function testProcessFieldValueOverride() {
     $override = function (&$value, &$type) {
       // Check whether the passed $type matches the one included in the value.
-      if (strpos($value, "{$type}_field") !== FALSE) {
+      if (str_contains($value, "{$type}_field")) {
         $value = "&$value";
       }
       else {

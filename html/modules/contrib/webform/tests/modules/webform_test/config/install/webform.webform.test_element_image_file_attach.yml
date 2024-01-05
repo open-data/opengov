@@ -14,14 +14,14 @@ archive: false
 id: test_element_image_file_attach
 title: 'Test: Element: Image file attachment'
 description: 'Test file attachment using image file element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_image_file_attachment:
     '#type': webform_image_file
     '#title': webform_image_file_attachment
     '#file_extensions': gif
     '#attachment_image_style': thumbnail
-  
 css: ''
 javascript: ''
 settings:
@@ -109,6 +109,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
