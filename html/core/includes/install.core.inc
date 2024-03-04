@@ -970,7 +970,7 @@ function install_get_form($form_id, array &$install_state) {
     $install_form_id = $form_builder->getFormId($form_id, $form_state);
     if (!empty($install_state['forms'][$install_form_id])) {
       $values = $install_state['forms'][$install_form_id];
-      if ($install_form_id === 'install_settings_form' && !str_contains($values['driver'], "\\")) {
+      if ($install_form_id === 'install_settings_form' && isset($values['driver']) && !str_contains($values['driver'], "\\")) {
         @trigger_error("Passing a database driver name '{$values['driver']}' to " . __FUNCTION__ . '() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Pass a database driver namespace instead. See https://www.drupal.org/node/3258175', E_USER_DEPRECATED);
         $driverExtension = Database::getDriverList()->getFromDriverName($values['driver']);
         $tmp = [];
@@ -1792,8 +1792,9 @@ function _install_prepare_import($langcodes, $server_pattern) {
     if (is_object($file)) {
       $filename = $file->filename;
       preg_match('/drupal-([0-9a-z\.-]+)\.' . $langcode . '\.po/', $filename, $matches);
-      // Get the version information.
-      if ($version = $matches[1]) {
+      // Get the version information. Custom translation files may not have a
+      // version number.
+      if (isset($matches[1]) && $version = $matches[1]) {
         $info = _install_get_version_info($version);
         // Picking the first file does not necessarily result in the right file. So
         // we check if at least the major version number is available.

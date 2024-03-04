@@ -371,7 +371,7 @@ class CommentForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $comment = $this->entity;
-    $entity = $this->entityRepository->getTranslationFromContext($comment->getCommentedEntity());
+    $entity = $comment->getCommentedEntity();
     $field_name = $comment->getFieldName();
     $uri = $entity->toUrl();
     $logger = $this->logger('comment');

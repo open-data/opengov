@@ -6,6 +6,7 @@ use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
+use Drupal\Tests\language\Traits\LanguageTestTrait;
 
 /**
  * Tests the untranslatable fields behaviors.
@@ -13,6 +14,8 @@ use Drupal\language\Entity\ConfigurableLanguage;
  * @group content_translation
  */
 class ContentTranslationUntranslatableFieldsTest extends ContentTranslationPendingRevisionTestBase {
+
+  use LanguageTestTrait;
 
   /**
    * {@inheritdoc}
@@ -29,12 +32,11 @@ class ContentTranslationUntranslatableFieldsTest extends ContentTranslationPendi
    */
   protected function setUp(): void {
     parent::setUp();
+    $this->doSetup();
 
     // Configure one field as untranslatable.
     $this->drupalLogin($this->administrator);
-
-    $field = FieldConfig::loadByName($this->entityTypeId, $this->bundle, $this->fieldName);
-    $field->setTranslatable(FALSE)->save();
+    static::setFieldTranslatable($this->entityTypeId, $this->bundle, $this->fieldName, FALSE);
 
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager */
     $entity_field_manager = $this->container->get('entity_field.manager');

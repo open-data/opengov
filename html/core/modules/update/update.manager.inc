@@ -6,7 +6,7 @@
  *
  * This allows site administrators with the 'administer software updates'
  * permission to either upgrade existing projects, or download and install new
- * ones, so long as the killswitch setting ('allow_authorize_operations') is
+ * ones, so long as the kill switch setting ('allow_authorize_operations') is
  * not FALSE.
  *
  * To install new code, the administrator is prompted for either the URL of an
@@ -193,7 +193,7 @@ function update_manager_archive_extract($file, $directory) {
  * @param string $project
  *   The short name of the project to download.
  * @param string $archive_file
- *   The filename of the unextracted archive.
+ *   The filename of the un-extracted archive.
  * @param string $directory
  *   The directory that the archive was extracted into.
  *

@@ -37,9 +37,9 @@ function user_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.user':
       $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<h2>' . t('About') . '</h2>';
       $output .= '<p>' . t('The User module allows users to register, log in, and log out. It also allows users with proper permissions to manage user roles and permissions. For more information, see the <a href=":user_docs">online documentation for the User module</a>.', [':user_docs' => 'https://www.drupal.org/documentation/modules/user']) . '</p>';
-      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<h2>' . t('Uses') . '</h2>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Creating and managing users') . '</dt>';
       $output .= '<dd>' . t('Through the <a href=":people">People administration page</a> you can add and cancel user accounts and assign users to roles. By editing one particular user you can change their username, email address, password, and information in other fields.', [':people' => Url::fromRoute('entity.user.collection')->toString()]) . '</dd>';
@@ -382,7 +382,7 @@ function template_preprocess_username(&$variables) {
   }
 
   // Set the name to a formatted name that is safe for printing and
-  // that won't break tables by being too long. Keep an unshortened,
+  // that won't break tables by being too long. Keep an un-shortened,
   // unsanitized version, in case other preprocess functions want to implement
   // their own shortening logic or add markup. If they do so, they must ensure
   // that $variables['name'] is safe for printing.
@@ -580,9 +580,9 @@ function user_cancel_url(UserInterface $account, $options = []) {
  */
 function user_pass_rehash(UserInterface $account, $timestamp) {
   $data = $timestamp;
-  $data .= $account->getLastLoginTime();
-  $data .= $account->id();
-  $data .= $account->getEmail();
+  $data .= ':' . $account->getLastLoginTime();
+  $data .= ':' . $account->id();
+  $data .= ':' . $account->getEmail();
   return Crypt::hmacBase64($data, Settings::getHashSalt() . $account->getPassword());
 }
 

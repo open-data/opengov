@@ -19,7 +19,7 @@ class ClosingDeclarationCommentSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -110,7 +110,7 @@ class ClosingDeclarationCommentSniff implements Sniff
             } else {
                 $fix = $phpcsFile->addFixableError('Expected %s', $closingBracket, 'Missing', $data);
                 if ($fix === true) {
-                    $phpcsFile->fixer->replaceToken($closingBracket, '}'.$comment.$phpcsFile->eolChar);
+                    $phpcsFile->fixer->replaceToken($closingBracket, '}'.$comment);
                 }
             }
 

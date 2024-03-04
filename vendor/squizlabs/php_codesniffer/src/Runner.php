@@ -194,7 +194,15 @@ class Runner
             $this->config->showSources  = false;
             $this->config->recordErrors = false;
             $this->config->reportFile   = null;
-            $this->config->reports      = ['cbf' => null];
+
+            // Only use the "Cbf" report, but allow for the Performance report as well.
+            $originalReports = array_change_key_case($this->config->reports, CASE_LOWER);
+            $newReports      = ['cbf' => null];
+            if (array_key_exists('performance', $originalReports) === true) {
+                $newReports['performance'] = $originalReports['performance'];
+            }
+
+            $this->config->reports = $newReports;
 
             // If a standard tries to set command line arguments itself, some
             // may be blocked because PHPCBF is running, so stop the script
@@ -334,6 +342,10 @@ class Runner
         // should be checked and/or fixed.
         try {
             $this->ruleset = new Ruleset($this->config);
+
+            if ($this->ruleset->hasSniffDeprecations() === true) {
+                $this->ruleset->showSniffDeprecations();
+            }
         } catch (RuntimeException $e) {
             $error  = 'ERROR: '.$e->getMessage().PHP_EOL.PHP_EOL;
             $error .= $this->config->printShortUsage(true);
@@ -688,7 +700,7 @@ class Runner
             $file->addErrorOnLine($error, 1, 'Internal.Exception');
         }//end try
 
-        $this->reporter->cacheFileReport($file, $this->config);
+        $this->reporter->cacheFileReport($file);
 
         if ($this->config->interactive === true) {
             /*
@@ -723,7 +735,7 @@ class Runner
                     $file->ruleset->populateTokenListeners();
                     $file->reloadContent();
                     $file->process();
-                    $this->reporter->cacheFileReport($file, $this->config);
+                    $this->reporter->cacheFileReport($file);
                     break;
                 }
             }//end while

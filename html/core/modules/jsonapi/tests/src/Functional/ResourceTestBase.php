@@ -1965,7 +1965,7 @@ abstract class ResourceTestBase extends BrowserTestBase {
     }
 
     // Try with all of the following request bodies.
-    $unparseable_request_body = '!{>}<';
+    $not_parseable_request_body = '!{>}<';
     $parseable_valid_request_body = Json::encode($this->getPostDocument());
     $parseable_invalid_request_body_missing_type = Json::encode($this->removeResourceTypeFromDocument($this->getPostDocument()));
     if ($this->entity->getEntityType()->hasKey('label')) {
@@ -2014,9 +2014,9 @@ abstract class ResourceTestBase extends BrowserTestBase {
     $response = $this->request('POST', $url, $request_options);
     $this->assertResourceErrorResponse(400, 'Empty request body.', $url, $response, FALSE);
 
-    $request_options[RequestOptions::BODY] = $unparseable_request_body;
+    $request_options[RequestOptions::BODY] = $not_parseable_request_body;
 
-    // DX: 400 when unparseable request body.
+    // DX: 400 when un-parseable request body.
     $response = $this->request('POST', $url, $request_options);
     $this->assertResourceErrorResponse(400, 'Syntax error', $url, $response, FALSE);
 
@@ -2185,7 +2185,7 @@ abstract class ResourceTestBase extends BrowserTestBase {
     $this->anotherEntity = $this->createAnotherEntity('dupe');
 
     // Try with all of the following request bodies.
-    $unparseable_request_body = '!{>}<';
+    $not_parseable_request_body = '!{>}<';
     $parseable_valid_request_body = Json::encode($this->getPatchDocument());
     if ($this->entity->getEntityType()->hasKey('label')) {
       $parseable_invalid_request_body = Json::encode($this->makeNormalizationInvalid($this->getPatchDocument(), 'label'));
@@ -2200,6 +2200,10 @@ abstract class ResourceTestBase extends BrowserTestBase {
     if ($this->entity instanceof FieldableEntityInterface && $this->entity->hasField('field_jsonapi_test_entity_ref')) {
       $parseable_invalid_request_body_5 = Json::encode(NestedArray::mergeDeep(['data' => ['attributes' => ['field_jsonapi_test_entity_ref' => ['target_id' => $this->randomString()]]]], $this->getPostDocument()));
     }
+    // Invalid PATCH request with missing id key.
+    $parseable_invalid_request_body_6 = $this->getPatchDocument();
+    unset($parseable_invalid_request_body_6['data']['id']);
+    $parseable_invalid_request_body_6 = Json::encode($parseable_invalid_request_body_6);
 
     // The URL and Guzzle request options that will be used in this test. The
     // request options will be modified/expanded throughout this test:
@@ -2237,9 +2241,9 @@ abstract class ResourceTestBase extends BrowserTestBase {
     $response = $this->request('PATCH', $url, $request_options);
     $this->assertResourceErrorResponse(400, 'Empty request body.', $url, $response, FALSE);
 
-    $request_options[RequestOptions::BODY] = $unparseable_request_body;
+    $request_options[RequestOptions::BODY] = $not_parseable_request_body;
 
-    // DX: 400 when unparseable request body.
+    // DX: 400 when un-parseable request body.
     $response = $this->request('PATCH', $url, $request_options);
     $this->assertResourceErrorResponse(400, 'Syntax error', $url, $response, FALSE);
 
@@ -2303,6 +2307,12 @@ abstract class ResourceTestBase extends BrowserTestBase {
       $response = $this->request('PATCH', $url, $request_options);
       $this->assertResourceErrorResponse(422, "The following relationship fields were provided as attributes: [ field_jsonapi_test_entity_ref ]", $url, $response, FALSE);
     }
+
+    // DX: 400 when request document doesn't contain id.
+    // This also tests that no PHP warnings raised due to non-existent key.
+    $request_options[RequestOptions::BODY] = $parseable_invalid_request_body_6;
+    $response = $this->request('PATCH', $url, $request_options);
+    $this->assertResourceResponse(400, FALSE, $response);
 
     // 200 for well-formed PATCH request that sends all fields (even including
     // read-only ones, but with unchanged values).

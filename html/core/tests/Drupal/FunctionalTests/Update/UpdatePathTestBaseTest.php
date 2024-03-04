@@ -2,8 +2,6 @@
 
 namespace Drupal\FunctionalTests\Update;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Site\Settings;
 
@@ -11,6 +9,7 @@ use Drupal\Core\Site\Settings;
  * Tests the update path base class.
  *
  * @group Update
+ * @group #slow
  */
 class UpdatePathTestBaseTest extends UpdatePathTestBase {
 
@@ -31,55 +30,8 @@ class UpdatePathTestBaseTest extends UpdatePathTestBase {
   /**
    * Tests that the database was properly loaded.
    */
-  public function testDatabaseLoaded() {
-    // Set a value in the cache to prove caches are cleared.
-    \Drupal::service('cache.default')->set(__CLASS__, 'Test');
-
-    /** @var \Drupal\Core\Update\UpdateHookRegistry $update_registry */
-    $update_registry = \Drupal::service('update.update_hook_registry');
-    foreach (['user' => 9301, 'node' => 8700, 'system' => 8901, 'update_test_schema' => 8000] as $module => $schema) {
-      $this->assertEquals($schema, $update_registry->getInstalledVersion($module), new FormattableMarkup('Module @module schema is @schema', ['@module' => $module, '@schema' => $schema]));
-    }
-
-    // Ensure that all {router} entries can be unserialized. If they cannot be
-    // unserialized a notice will be thrown by PHP.
-
-    $result = \Drupal::database()->select('router', 'r')
-      ->fields('r', ['name', 'route'])
-      ->execute()
-      ->fetchAllKeyed(0, 1);
-    // For the purpose of fetching the notices and displaying more helpful error
-    // messages, let's override the error handler temporarily.
-    set_error_handler(function ($severity, $message, $filename, $lineno) {
-      throw new \ErrorException($message, 0, $severity, $filename, $lineno);
-    });
-    foreach ($result as $route_name => $route) {
-      try {
-        unserialize($route);
-      }
-      catch (\Exception $e) {
-        $this->fail(sprintf('Error "%s" while unserializing route %s', $e->getMessage(), Html::escape($route_name)));
-      }
-    }
-    restore_error_handler();
-
-    // Before accessing the site we need to run updates first or the site might
-    // be broken.
-    $this->runUpdates();
-    $this->assertEquals('standard', \Drupal::config('core.extension')->get('profile'));
-    $this->assertEquals('Site-Install', \Drupal::config('system.site')->get('name'));
-    $this->drupalGet('<front>');
-    $this->assertSession()->pageTextContains('Site-Install');
-
-    // Ensure that the database tasks have been run during set up. Neither MySQL
-    // nor SQLite make changes that are testable.
-    $database = $this->container->get('database');
-    if ($database->driver() == 'pgsql') {
-      $this->assertEquals('on', $database->query("SHOW standard_conforming_strings")->fetchField());
-      $this->assertEquals('escape', $database->query("SHOW bytea_output")->fetchField());
-    }
-    // Ensure the test runners cache has been cleared.
-    $this->assertFalse(\Drupal::service('cache.default')->get(__CLASS__));
+  public function testDatabaseProperlyLoaded() {
+    $this->testDatabaseLoaded();
   }
 
   /**
@@ -224,16 +176,10 @@ class UpdatePathTestBaseTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests the database fixtures are setup correctly.
+   * Tests that setup is done correctly.
    */
-  public function testFixturesSetup() {
+  public function testSetup() {
     $this->assertCount(3, $this->databaseDumpFiles);
-  }
-
-  /**
-   * Tests that settings are prepared correctly.
-   */
-  public function testPrepareSettings(): void {
     $this->assertSame(1, Settings::get('entity_update_batch_size'));
   }
 

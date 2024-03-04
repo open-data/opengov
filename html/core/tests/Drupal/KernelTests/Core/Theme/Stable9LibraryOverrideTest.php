@@ -26,7 +26,6 @@ class Stable9LibraryOverrideTest extends StableLibraryOverrideTestBase {
     'media/drupal.media-icon',
     'options/drupal.options-icon',
     'telephone/drupal.telephone-icon',
-    'datetime_range/drupal.datetime_range-icon',
   ];
 
   /**
@@ -72,7 +71,7 @@ class Stable9LibraryOverrideTest extends StableLibraryOverrideTestBase {
           continue;
         }
         // Skip internal libraries.
-        if (substr($library_name, 0, 9) === 'internal.') {
+        if (str_starts_with($library_name, 'internal.')) {
           continue;
         }
         $library_after = $libraries_after[$extension][$library_name];

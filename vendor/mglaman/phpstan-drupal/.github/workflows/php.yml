@@ -2,14 +2,8 @@ name: Tests
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'playground-runner/**'
-      - 'playground-api/**'
   pull_request:
     branches: [main]
-    paths-ignore:
-      - 'playground-runner/**'
-      - 'playground-api/**'
   schedule:
     - cron: 0 0 * * *
 
@@ -58,6 +52,9 @@ jobs:
           - php-version: "8.1"
             drupal: "^10.0"
             experimental: false
+          - php-version: "8.1"
+            drupal: "~10.1.0"
+            experimental: false
           - php-version: "8.2"
             drupal: "^10.0"
             experimental: false
@@ -102,6 +99,9 @@ jobs:
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: false
+          - php-version: "8.1"
+            drupal: "^10.0"
+            experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
@@ -116,7 +116,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.4
+        uses: bluehorndigital/setup-drupal@v1.1.0
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -174,6 +174,9 @@ jobs:
         drupal:
           - "^9.0"
         include:
+          - php-version: "8.1"
+            drupal: "^10.0"
+            experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
@@ -188,7 +191,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.4
+        uses: bluehorndigital/setup-drupal@v1.1.0
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -232,7 +235,7 @@ jobs:
         run: echo PHPSTAN_TMP_DIR=$(php -r "print sys_get_temp_dir() . '/phpstan';") >> $GITHUB_OUTPUT
         id: phpstan_tmp_dir
       - name: cache phpstan
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.phpstan_tmp_dir.outputs.PHPSTAN_TMP_DIR }}
           key: ${{ runner.os }}-phpstan-core-baseline

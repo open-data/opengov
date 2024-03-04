@@ -7,9 +7,11 @@ namespace Opentelemetry\Proto\Logs\V1;
 use UnexpectedValueException;
 
 /**
- * LogRecordFlags is defined as a protobuf 'uint32' type and is to be used as
- * bit-fields. Each non-zero value defined in this enum is a bit-mask.
- * To extract the bit-field, for example, use an expression like:
+ * LogRecordFlags represents constants used to interpret the
+ * LogRecord.flags field, which is protobuf 'fixed32' type and is to
+ * be used as bit-fields. Each non-zero value defined in this enum is
+ * a bit-mask.  To extract the bit-field, for example, use an
+ * expression like:
  *   (logRecord.flags & LOG_RECORD_FLAGS_TRACE_FLAGS_MASK)
  *
  * Protobuf type <code>opentelemetry.proto.logs.v1.LogRecordFlags</code>

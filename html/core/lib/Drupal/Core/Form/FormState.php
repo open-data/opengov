@@ -258,7 +258,7 @@ class FormState implements FormStateInterface {
   /**
    * The array of values as they were submitted by the user.
    *
-   * These are raw and unvalidated, so should not be used without a thorough
+   * These are raw and non validated, so should not be used without a thorough
    * understanding of security implications. In almost all cases, code should
    * use the data in the 'values' array exclusively. The most common use of this
    * key is for multi-step forms that need to clear some of the user input when
@@ -1192,7 +1192,7 @@ class FormState implements FormStateInterface {
    * {@inheritdoc}
    */
   public function prepareCallback($callback) {
-    if (is_string($callback) && substr($callback, 0, 2) == '::') {
+    if (is_string($callback) && str_starts_with($callback, '::')) {
       $callback = [$this->getFormObject(), substr($callback, 2)];
     }
     return $callback;

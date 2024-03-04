@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\comment\Functional;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\field\Entity\FieldConfig;
@@ -57,7 +56,7 @@ class CommentFieldsTest extends CommentTestBase {
     $field_storage = FieldStorageConfig::loadByName('comment', 'comment_body');
     $this->assertInstanceOf(FieldStorageConfig::class, $field_storage);
     $field = FieldConfig::loadByName('comment', 'comment', 'comment_body');
-    $this->assertTrue(isset($field), new FormattableMarkup('The comment_body field is present for comments on type @type', ['@type' => $type_name]));
+    $this->assertTrue(isset($field), "The comment_body field is present for comments on type $type_name");
 
     // Test adding a field that defaults to CommentItemInterface::CLOSED.
     $this->addDefaultCommentField('node', 'test_node_type', 'who_likes_ponies', CommentItemInterface::CLOSED, 'who_likes_ponies');
@@ -192,69 +191,6 @@ class CommentFieldsTest extends CommentTestBase {
     $this->drupalGet('admin/config/people/accounts/add-field/user/field_user_comment');
     $this->submitForm($edit, 'Save settings');
     $this->assertSession()->statusMessageContains('Saved User comment configuration.', 'status');
-  }
-
-  /**
-   * Tests that comment module works when installed after a content module.
-   */
-  public function testCommentInstallAfterContentModule() {
-    // Create a user to do module administration.
-    $this->adminUser = $this->drupalCreateUser([
-      'access administration pages',
-      'administer modules',
-    ]);
-    $this->drupalLogin($this->adminUser);
-
-    // Drop default comment field added in CommentTestBase::setUp().
-    FieldStorageConfig::loadByName('node', 'comment')->delete();
-    if ($field_storage = FieldStorageConfig::loadByName('node', 'comment_forum')) {
-      $field_storage->delete();
-    }
-
-    // Purge field data now to allow comment module to be uninstalled once the
-    // field has been deleted.
-    field_purge_batch(10);
-
-    // Uninstall the comment module.
-    $edit = [];
-    $edit['uninstall[comment]'] = TRUE;
-    $this->drupalGet('admin/modules/uninstall');
-    $this->submitForm($edit, 'Uninstall');
-    $this->submitForm([], 'Uninstall');
-    $this->rebuildContainer();
-    $this->assertFalse($this->container->get('module_handler')->moduleExists('comment'), 'Comment module uninstalled.');
-
-    // Install core content type module (book).
-    $edit = [];
-    $edit['modules[book][enable]'] = 'book';
-    $this->drupalGet('admin/modules');
-    $this->submitForm($edit, 'Install');
-
-    // Now install the comment module.
-    $edit = [];
-    $edit['modules[comment][enable]'] = 'comment';
-    $this->drupalGet('admin/modules');
-    $this->submitForm($edit, 'Install');
-    $this->rebuildContainer();
-    $this->assertTrue($this->container->get('module_handler')->moduleExists('comment'), 'Comment module enabled.');
-
-    // Create nodes of each type.
-    $this->addDefaultCommentField('node', 'book');
-    $book_node = $this->drupalCreateNode(['type' => 'book']);
-
-    $this->drupalLogout();
-
-    // Try to post a comment on each node. A failure will be triggered if the
-    // comment body is missing on one of these forms, due to postComment()
-    // asserting that the body is actually posted correctly.
-    $this->webUser = $this->drupalCreateUser([
-      'access content',
-      'access comments',
-      'post comments',
-      'skip comment approval',
-    ]);
-    $this->drupalLogin($this->webUser);
-    $this->postComment($book_node, $this->randomMachineName(), $this->randomMachineName());
   }
 
 }

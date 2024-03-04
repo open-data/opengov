@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Database;
 
 use Composer\Autoload\ClassLoader;
@@ -558,7 +560,7 @@ class ConnectionTest extends UnitTestCase {
     return [
       ['/name/', 'name', ['/', '/']],
       ['`backtick`', 'backtick', ['`', '`']],
-      ['testname', 'test.name', ['', '']],
+      ['anything', 'any.thing', ['', '']],
       ['"name"', 'name'],
       ['[name]', 'name', ['[', ']']],
     ];
@@ -747,7 +749,7 @@ class ConnectionTest extends UnitTestCase {
         ],
       ],
       [
-        'file' => '/var/www/libraries/drudbal/lib/Statement.php',
+        'file' => '/var/www/libraries/test/lib/Statement.php',
         'line' => 264,
         'function' => 'log',
         'class' => 'Drupal\\Core\\Database\\Log',
@@ -758,7 +760,7 @@ class ConnectionTest extends UnitTestCase {
         ],
       ],
       [
-        'file' => '/var/www/libraries/drudbal/lib/Connection.php',
+        'file' => '/var/www/libraries/test/lib/Connection.php',
         'line' => 213,
         'function' => 'execute',
         'class' => 'Drupal\\Driver\\Database\\dbal\\Statement',
@@ -870,7 +872,7 @@ class ConnectionTest extends UnitTestCase {
         [
           'class' => 'Drupal\\Driver\\Database\\dbal\\Statement',
           'function' => 'execute',
-          'file' => '/var/www/libraries/drudbal/lib/Statement.php',
+          'file' => '/var/www/libraries/test/lib/Statement.php',
           'line' => 264,
           'type' => '->',
           'args' => [

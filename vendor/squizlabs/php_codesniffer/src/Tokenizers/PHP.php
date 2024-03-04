@@ -526,8 +526,9 @@ class PHP extends Tokenizer
         $numTokens         = count($tokens);
         $lastNotEmptyToken = 0;
 
-        $insideInlineIf = [];
-        $insideUseGroup = false;
+        $insideInlineIf         = [];
+        $insideUseGroup         = false;
+        $insideConstDeclaration = false;
 
         $commentTokenizer = new Comment();
 
@@ -608,7 +609,8 @@ class PHP extends Tokenizer
             if ($tokenIsArray === true
                 && isset(Util\Tokens::$contextSensitiveKeywords[$token[0]]) === true
                 && (isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === true
-                || $finalTokens[$lastNotEmptyToken]['content'] === '&')
+                || $finalTokens[$lastNotEmptyToken]['content'] === '&'
+                || $insideConstDeclaration === true)
             ) {
                 if (isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === true) {
                     $preserveKeyword = false;
@@ -619,6 +621,23 @@ class PHP extends Tokenizer
                         || $token[0] === T_STATIC)
                     ) {
                         $preserveKeyword = true;
+                    }
+
+                    // `new readonly class` should be preserved.
+                    if ($finalTokens[$lastNotEmptyToken]['code'] === T_NEW
+                        && strtolower($token[1]) === 'readonly'
+                    ) {
+                        for ($i = ($stackPtr + 1); $i < $numTokens; $i++) {
+                            if (is_array($tokens[$i]) === false
+                                || isset(Util\Tokens::$emptyTokens[$tokens[$i][0]]) === false
+                            ) {
+                                break;
+                            }
+                        }
+
+                        if (is_array($tokens[$i]) === true && $tokens[$i][0] === T_CLASS) {
+                            $preserveKeyword = true;
+                        }
                     }
 
                     // `new class extends` `new class implements` should be preserved
@@ -645,6 +664,30 @@ class PHP extends Tokenizer
 
                             break;
                         }
+                    }
+                }//end if
+
+                // Types in typed constants should not be touched, but the constant name should be.
+                if ((isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === true
+                    && $finalTokens[$lastNotEmptyToken]['code'] === T_CONST)
+                    || $insideConstDeclaration === true
+                ) {
+                    $preserveKeyword = true;
+
+                    // Find the next non-empty token.
+                    for ($i = ($stackPtr + 1); $i < $numTokens; $i++) {
+                        if (is_array($tokens[$i]) === true
+                            && isset(Util\Tokens::$emptyTokens[$tokens[$i][0]]) === true
+                        ) {
+                            continue;
+                        }
+
+                        break;
+                    }
+
+                    if ($tokens[$i] === '=' || $tokens[$i] === ';') {
+                        $preserveKeyword        = false;
+                        $insideConstDeclaration = false;
                     }
                 }//end if
 
@@ -680,6 +723,26 @@ class PHP extends Tokenizer
                     continue;
                 }
             }//end if
+
+            /*
+                Mark the start of a constant declaration to allow for handling keyword to T_STRING
+                convertion for constant names using reserved keywords.
+            */
+
+            if ($tokenIsArray === true && $token[0] === T_CONST) {
+                $insideConstDeclaration = true;
+            }
+
+            /*
+                Close an open "inside constant declaration" marker when no keyword convertion was needed.
+            */
+
+            if ($insideConstDeclaration === true
+                && $tokenIsArray === false
+                && ($token[0] === '=' || $token[0] === ';')
+            ) {
+                $insideConstDeclaration = false;
+            }
 
             /*
                 Special case for `static` used as a function name, i.e. `static()`.
@@ -1315,7 +1378,8 @@ class PHP extends Tokenizer
 
             if ($tokenIsArray === true
                 && strtolower($token[1]) === 'readonly'
-                && isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === false
+                && (isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === false
+                || $finalTokens[$lastNotEmptyToken]['code'] === T_NEW)
             ) {
                 // Get the next non-whitespace token.
                 for ($i = ($stackPtr + 1); $i < $numTokens; $i++) {
@@ -1709,7 +1773,7 @@ class PHP extends Tokenizer
                     || (stripos($newContent, '0b') === 0 && bindec(str_replace('_', '', $newContent)) > PHP_INT_MAX)
                     || (stripos($newContent, '0o') === 0 && octdec(str_replace('_', '', $newContent)) > PHP_INT_MAX)
                     || (stripos($newContent, '0x') !== 0
-                    && stripos($newContent, 'e') !== false || strpos($newContent, '.') !== false)
+                    && (stripos($newContent, 'e') !== false || strpos($newContent, '.') !== false))
                     || (strpos($newContent, '0') === 0 && stripos($newContent, '0x') !== 0
                     && stripos($newContent, '0b') !== 0 && octdec(str_replace('_', '', $newContent)) > PHP_INT_MAX)
                     || (strpos($newContent, '0') !== 0 && str_replace('_', '', $newContent) > PHP_INT_MAX))
@@ -1850,6 +1914,20 @@ class PHP extends Tokenizer
             if ($tokenIsArray === false && $token[0] === '?') {
                 $newToken            = [];
                 $newToken['content'] = '?';
+
+                // For typed constants, we only need to check the token before the ? to be sure.
+                if ($finalTokens[$lastNotEmptyToken]['code'] === T_CONST) {
+                    $newToken['code'] = T_NULLABLE;
+                    $newToken['type'] = 'T_NULLABLE';
+
+                    if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                        echo "\t\t* token $stackPtr changed from ? to T_NULLABLE".PHP_EOL;
+                    }
+
+                    $finalTokens[$newStackPtr] = $newToken;
+                    $newStackPtr++;
+                    continue;
+                }
 
                 /*
                  * Check if the next non-empty token is one of the tokens which can be used
@@ -2218,7 +2296,30 @@ class PHP extends Tokenizer
                 if ($tokenIsArray === true && $token[0] === T_STRING) {
                     $preserveTstring = false;
 
-                    if (isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === true) {
+                    // True/false/parent/self/static in typed constants should be fixed to their own token,
+                    // but the constant name should not be.
+                    if ((isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === true
+                        && $finalTokens[$lastNotEmptyToken]['code'] === T_CONST)
+                        || $insideConstDeclaration === true
+                    ) {
+                        // Find the next non-empty token.
+                        for ($i = ($stackPtr + 1); $i < $numTokens; $i++) {
+                            if (is_array($tokens[$i]) === true
+                                && isset(Util\Tokens::$emptyTokens[$tokens[$i][0]]) === true
+                            ) {
+                                continue;
+                            }
+
+                            break;
+                        }
+
+                        if ($tokens[$i] === '=') {
+                            $preserveTstring        = true;
+                            $insideConstDeclaration = false;
+                        }
+                    } else if (isset($this->tstringContexts[$finalTokens[$lastNotEmptyToken]['code']]) === true
+                        && $finalTokens[$lastNotEmptyToken]['code'] !== T_CONST
+                    ) {
                         $preserveTstring = true;
 
                         // Special case for syntax like: return new self/new parent
@@ -2990,6 +3091,12 @@ class PHP extends Tokenizer
                         $suspectedType = 'return';
                     }
 
+                    if ($this->tokens[$x]['code'] === T_EQUAL) {
+                        // Possible constant declaration, the `T_STRING` name will have been skipped over already.
+                        $suspectedType = 'constant';
+                        break;
+                    }
+
                     break;
                 }//end for
 
@@ -2999,7 +3106,7 @@ class PHP extends Tokenizer
                 }
 
                 if ($suspectedType === 'property or parameter') {
-                    unset($allowed[\T_STATIC]);
+                    unset($allowed[T_STATIC]);
                 }
 
                 $typeTokenCount = 0;
@@ -3027,6 +3134,11 @@ class PHP extends Tokenizer
                     }
 
                     if ($suspectedType === 'return' && $this->tokens[$x]['code'] === T_COLON) {
+                        $confirmed = true;
+                        break;
+                    }
+
+                    if ($suspectedType === 'constant' && $this->tokens[$x]['code'] === T_CONST) {
                         $confirmed = true;
                         break;
                     }
