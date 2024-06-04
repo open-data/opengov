@@ -138,7 +138,7 @@ trait BlockPluginTrait {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user session for which to check access.
    *
-   * @return \Drupal\Core\Access\AccessResult
+   * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    *
    * @see self::access()
@@ -255,6 +255,9 @@ trait BlockPluginTrait {
     $transliterated = mb_strtolower($transliterated);
 
     $transliterated = preg_replace('@[^a-z0-9_.]+@', '', $transliterated);
+    // Furthermore remove any characters that are not alphanumerical from the
+    // beginning and end of the transliterated string.
+    $transliterated = preg_replace('@^([^a-z0-9]+)|([^a-z0-9]+)$@', '', $transliterated);
 
     return $transliterated;
   }

@@ -3,7 +3,7 @@
  * JavaScript behaviors for form tabs using Tabby.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -28,7 +28,7 @@
         return;
       }
 
-      $(context).find('div.webform-tabs').once('webform-tabs').each(function () {
+      $(once('webform-tabs', 'div.webform-tabs', context)).each(function () {
         // Set active tab and clear the location hash once it is set.
         var tabIndex = 0;
         if (location.hash) {
@@ -47,4 +47,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

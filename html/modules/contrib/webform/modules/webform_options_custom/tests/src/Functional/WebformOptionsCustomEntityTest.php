@@ -16,7 +16,7 @@ class WebformOptionsCustomEntityTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'node',
     'webform',
     'webform_options_custom',

@@ -40,10 +40,15 @@ class DelimitedWebformExporter extends TabularBaseWebformExporter {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
+    $t_args = [
+      '%type' => $this->label(),
+      ':injection_href' => 'https://www.google.com/search?q=spreadsheet+formula+injection',
+      ':excel_href' => 'https://www.drupal.org/project/webform_xlsx_export',
+    ];
     $form['warning'] = [
       '#type' => 'webform_message',
       '#message_type' => 'warning',
-      '#message_message' => $this->t('<strong>Warning:</strong> Opening delimited text files with spreadsheet applications may expose you to <a href=":href">formula injection</a> or other security vulnerabilities. When the submissions contain data from untrusted users and the downloaded file will be used with Microsoft Excel, use \'HTML table\' format.', [':href' => 'https://www.google.com/search?q=spreadsheet+formula+injection']),
+      '#message_message' => $this->t('<strong>Warning:</strong> Opening %type files with spreadsheet applications may expose you to <a href=":injection_href">formula injection</a> or other security vulnerabilities. When the submissions contain data from untrusted users and the downloaded file will be used with Microsoft Excel, use the <a href=":excel_href">Webform XLSX export</a> module.', $t_args),
     ];
     $form['delimiter'] = [
       '#type' => 'select',

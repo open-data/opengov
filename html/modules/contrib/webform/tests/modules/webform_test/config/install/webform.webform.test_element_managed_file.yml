@@ -14,7 +14,8 @@ archive: false
 id: test_element_managed_file
 title: 'Test: Element: Managed file'
 description: 'Test file uploads using managed file element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   managed_file_single:
     '#type': managed_file
@@ -69,7 +70,6 @@ elements: |
     '#type': managed_file
     '#title': managed_file_extensions
     '#file_extensions': 'txt, text'
-  
 css: ''
 javascript: ''
 settings:
@@ -157,6 +157,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

@@ -16,7 +16,7 @@ class WebformIcheckElementTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_icheck', 'webform_icheck_test'];
+  protected static $modules = ['webform_icheck', 'webform_icheck_test'];
 
   /**
    * Test iCheck element.

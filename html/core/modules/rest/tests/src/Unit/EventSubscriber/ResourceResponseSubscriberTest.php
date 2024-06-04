@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rest\Unit\EventSubscriber;
 
 use Drupal\Component\Serialization\Json;
@@ -42,7 +44,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
     $event = new ResponseEvent(
       $this->prophesize(HttpKernelInterface::class)->reveal(),
       $request,
-      HttpKernelInterface::MASTER_REQUEST,
+      HttpKernelInterface::MAIN_REQUEST,
       $handler_response
     );
     $resource_response_subscriber->onResponse($event);
@@ -64,9 +66,6 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
       'associative array' => [['test' => 'foobar']],
       'boolean true' => [TRUE],
       'boolean false' => [FALSE],
-      // @todo Not supported. https://www.drupal.org/node/2427811
-      // [new \stdClass()],
-      // [(object) ['test' => 'foobar']],
     ];
   }
 
@@ -136,7 +135,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
       $route_match = new RouteMatch('test', new Route('/rest/test', ['_rest_resource_config' => $this->randomMachineName()], $route_requirements));
 
       // The RequestHandler must return a ResourceResponseInterface object.
-      $handler_response = new ResourceResponse($method !== 'DELETE' ? ['REST' => 'Drupal'] : NULL);
+      $handler_response = new ResourceResponse(['REST' => 'Drupal']);
       $this->assertInstanceOf(ResourceResponseInterface::class, $handler_response);
       $this->assertInstanceOf(CacheableResponseInterface::class, $handler_response);
 
@@ -146,7 +145,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
       $event = new ResponseEvent(
         $this->prophesize(HttpKernelInterface::class)->reveal(),
         $request,
-        HttpKernelInterface::MASTER_REQUEST,
+        HttpKernelInterface::MAIN_REQUEST,
         $handler_response
       );
       $resource_response_subscriber->onResponse($event);
@@ -186,7 +185,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
       $route_match = new RouteMatch('test', new Route('/rest/test', ['_rest_resource_config' => $this->randomMachineName()], $route_requirements));
 
       // The RequestHandler must return a ResourceResponseInterface object.
-      $handler_response = new ModifiedResourceResponse($method !== 'DELETE' ? ['REST' => 'Drupal'] : NULL);
+      $handler_response = new ModifiedResourceResponse(['REST' => 'Drupal']);
       $this->assertInstanceOf(ResourceResponseInterface::class, $handler_response);
       $this->assertNotInstanceOf(CacheableResponseInterface::class, $handler_response);
 
@@ -196,7 +195,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
       $event = new ResponseEvent(
         $this->prophesize(HttpKernelInterface::class)->reveal(),
         $request,
-        HttpKernelInterface::MASTER_REQUEST,
+        HttpKernelInterface::MAIN_REQUEST,
         $handler_response
       );
       $resource_response_subscriber->onResponse($event);
@@ -225,8 +224,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
 
     $safe_method_test_cases = [
       'safe methods: client requested format (JSON)' => [
-        // @todo add 'HEAD' in https://www.drupal.org/node/2752325
-        ['GET'],
+        ['GET', 'HEAD'],
         ['xml', 'json'],
         [],
         'json',
@@ -237,8 +235,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
         $json_encoded,
       ],
       'safe methods: client requested format (XML)' => [
-        // @todo add 'HEAD' in https://www.drupal.org/node/2752325
-        ['GET'],
+        ['GET', 'HEAD'],
         ['xml', 'json'],
         [],
         'xml',
@@ -249,8 +246,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
         $xml_encoded,
       ],
       'safe methods: client requested no format: response should use the first configured format (JSON)' => [
-        // @todo add 'HEAD' in https://www.drupal.org/node/2752325
-        ['GET'],
+        ['GET', 'HEAD'],
         ['json', 'xml'],
         [],
         FALSE,
@@ -261,8 +257,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
         $json_encoded,
       ],
       'safe methods: client requested no format: response should use the first configured format (XML)' => [
-        // @todo add 'HEAD' in https://www.drupal.org/node/2752325
-        ['GET'],
+        ['GET', 'HEAD'],
         ['xml', 'json'],
         [],
         FALSE,
@@ -344,7 +339,7 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
     ];
 
     $unsafe_method_bodyless_test_cases = [
-      'unsafe methods without response bodies (DELETE): client requested no format, response should have no format' => [
+      'unsafe methods without request bodies (DELETE): client requested no format, response should have the first acceptable format' => [
         ['DELETE'],
         ['xml', 'json'],
         ['xml', 'json'],
@@ -352,10 +347,10 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
         ['Content-Type' => 'application/json'],
         NULL,
         'xml',
-        NULL,
-        '',
+        'text/xml',
+        $xml_encoded,
       ],
-      'unsafe methods without response bodies (DELETE): client requested format (XML), response should have no format' => [
+      'unsafe methods without request bodies (DELETE): client requested format (XML), response should have xml format' => [
         ['DELETE'],
         ['xml', 'json'],
         ['xml', 'json'],
@@ -363,10 +358,10 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
         ['Content-Type' => 'application/json'],
         NULL,
         'xml',
-        NULL,
-        '',
+        'text/xml',
+        $xml_encoded,
       ],
-      'unsafe methods without response bodies (DELETE): client requested format (JSON), response should have no format' => [
+      'unsafe methods without request bodies (DELETE): client requested format (JSON), response should have json format' => [
         ['DELETE'],
         ['xml', 'json'],
         ['xml', 'json'],
@@ -374,8 +369,8 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
         ['Content-Type' => 'application/json'],
         NULL,
         'json',
-        NULL,
-        '',
+        'application/json',
+        $json_encoded,
       ],
     ];
 

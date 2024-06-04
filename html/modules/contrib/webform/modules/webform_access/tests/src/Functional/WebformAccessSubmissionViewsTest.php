@@ -18,7 +18,7 @@ class WebformAccessSubmissionViewsTest extends WebformAccessBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['views', 'webform_test_views'];
+  protected static $modules = ['views', 'webform_test_views'];
 
   /**
    * Tests webform access submission views.

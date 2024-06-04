@@ -21,11 +21,20 @@
     }
   },
   "require": {
-    "drupal/core": "^8 || ^9",
     "league/csv": "^9.1"
   },
   "require-dev": {
-    "drupal/coder": "^8.3",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0"
+    "drupal/coder": "^8.3"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "phpcs": "vendor/bin/phpcs",
+    "test": [
+      "@phpcs"
+    ]
   }
 }

@@ -100,6 +100,7 @@ class ProcessorIntegrationTest extends SearchApiBrowserTestBase {
     $enabled = [
       'add_url',
       'aggregated_field',
+      'custom_value',
       'entity_type',
       'language_with_fallback',
       'rendered_item',
@@ -229,6 +230,10 @@ class ProcessorIntegrationTest extends SearchApiBrowserTestBase {
     // The 'add_url' processor is not available to be removed because it's
     // locked.
     $this->checkUrlFieldIntegration();
+
+    // The 'custom_value' processor is not available to be removed because it's
+    // locked.
+    $this->checkCustomValueIntegration();
 
     // Check the order of the displayed processors.
     $stages = [
@@ -743,6 +748,17 @@ TAGS
     $index->save();
 
     $this->assertTrue($this->loadIndex()->isValidProcessor('add_url'), 'The "Add URL" processor cannot be disabled.');
+  }
+
+  /**
+   * Tests the integration of the "Custom value" processor.
+   */
+  public function checkCustomValueIntegration() {
+    $index = $this->loadIndex();
+    $index->removeProcessor('custom_value');
+    $index->save();
+
+    $this->assertTrue($this->loadIndex()->isValidProcessor('custom_value'), 'The "Custom value" processor cannot be disabled.');
   }
 
   /**

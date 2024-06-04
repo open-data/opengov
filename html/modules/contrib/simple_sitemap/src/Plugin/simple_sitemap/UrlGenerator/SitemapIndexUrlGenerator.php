@@ -32,6 +32,10 @@ class SitemapIndexUrlGenerator extends UrlGeneratorBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo May need to implement a way of saving which sitemaps to index with
+   * each sitemap index. Right now all sitemaps that are not of a type that
+   * implements the sitemap index generator are indexed.
    */
   protected function processDataSet($data_set): array {
     if (($sitemap = SimpleSitemap::load($data_set))

@@ -16,7 +16,7 @@ class WebformClientSideValidationJavaScriptTest extends WebformWebDriverTestBase
    *
    * @var array
    */
-  public static $modules = ['webform', 'file', 'webform_clientside_validation_test', 'webform_clientside_validation'];
+  protected static $modules = ['webform', 'file', 'webform_clientside_validation_test', 'webform_clientside_validation'];
 
   /**
    * Webforms to load.

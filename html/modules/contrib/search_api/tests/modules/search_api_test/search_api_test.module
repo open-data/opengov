@@ -55,7 +55,7 @@ function search_api_test_entity_access(EntityInterface $entity, $operation, Acco
   // roles the user has access to, grant access, otherwise deny access.
   if (\Drupal::state()->get('search_api_test_add_role_access_control', FALSE)) {
     foreach ($account->getRoles() as $role) {
-      if (strpos($entity->label(), $role) !== FALSE) {
+      if (str_contains($entity->label(), $role)) {
         return AccessResult::allowed();
       }
     }

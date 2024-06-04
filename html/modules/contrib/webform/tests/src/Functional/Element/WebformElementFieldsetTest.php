@@ -33,6 +33,7 @@ class WebformElementFieldsetTest extends WebformElementBrowserTestBase {
     $assert_session->responseContains('<span class="field-suffix">suffix</span>');
     $assert_session->responseContains('<div class="description">');
     $assert_session->responseContains('<div id="edit-fieldset--description" data-drupal-field-elements="description" class="webform-element-description">This is a description.</div>');
+    $assert_session->responseContains('<div id="edit-fieldset--more" class="js-webform-element-more webform-element-more">');
 
     // Check fieldset title_display: invisible.
     $assert_session->responseContains('<span class="visually-hidden fieldset-legend">fieldset_title_invisible</span>');

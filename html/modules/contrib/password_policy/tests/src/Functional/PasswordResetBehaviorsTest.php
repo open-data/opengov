@@ -2,9 +2,10 @@
 
 namespace Drupal\Tests\password_policy\Functional;
 
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\Traits\Core\CronRunTrait;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 
 /**
@@ -26,19 +27,17 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'system',
     'user',
     'node',
     'dblog',
-    'ctools',
     'config',
     'field',
     'datetime',
     'file',
     'image',
     'options',
-    'entity_reference',
     'text',
     'field_ui',
     'password_policy',
@@ -52,7 +51,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Set module install date far in the past so it does not affect regular
@@ -109,6 +108,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
 
     // Grab the user info.
     $user_array = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => 'testuser1']);
+    /** @var \Drupal\user\UserInterface $user2 */
     $user2 = array_shift($user_array);
 
     // Edit the user password reset date.
@@ -126,14 +126,12 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
       'password_reset' => '1',
     ];
     // Set reset and policy info.
-    $this->submitForm($edit, 'Next');
-    // No constraints needed for reset, continue.
-    $this->submitForm([], 'Next');
+    $this->submitForm($edit, 'Save');
     // Set the roles for the policy.
     $edit = [
       'roles[' . $rid . ']' => $rid,
     ];
-    $this->submitForm($edit, 'Finish');
+    $this->submitForm($edit, 'Save');
 
     // Time to kick this popsicle stand.
     $this->drupalLogout();
@@ -144,7 +142,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     // User should be redirected to the user entity edit page after login.
     $this->drupalGet('user/login');
     $this->submitForm(['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
-    $this->assertUrl($user2->toUrl('edit-form'), [], 'User should be sent to their account form after expiration');
+    $this->assertSession()->addressEquals($user2->toUrl('edit-form'));
     $this->drupalLogout();
 
     // Create a new node type.
@@ -164,15 +162,7 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
     $this->drupalGet('user/login');
     $this->submitForm(['name' => 'testuser1', 'pass' => 'pass'], 'Log in');
     $this->drupalGet($node->toUrl()->toString());
-    // Workaround for webtest sometimes returning an extra leading value in the
-    // route base path.  Does not seem to ever happen on local testing, only on
-    // Jenkins simpletest runner. E.g. /checkout/user, not /user.
-    $current_url = urldecode($this->getUrl());
-    $pos = strpos($current_url, '/user');
-    if ($pos !== 0) {
-      $current_url = substr($current_url, $pos);
-    }
-    self::assertEquals($current_url, '/user/' . $user2->id() . '/edit', 'User should be sent back to their account form instead of the node');
+    $this->assertSession()->addressEquals($user2->toUrl('edit-form')->setAbsolute()->toString());
 
     // Change password.
     $this->drupalGet('user/' . $user2->id() . '/edit');
@@ -188,16 +178,24 @@ class PasswordResetBehaviorsTest extends BrowserTestBase {
 
     // Verify if user tries to go to node, they are allowed.
     $this->drupalGet($node->toUrl()->toString());
-    // Workaround for webtest sometimes returning an extra leading value in the
-    // route base path.  Does not seem to ever happen on local testing, only on
-    // Jenkins simpletest runner.  E.g. /checkout/node, not /node.
-    $current_url = urldecode($this->getUrl());
-    $pos = strpos($current_url, '/node');
-    if ($pos !== 0) {
-      $current_url = substr($current_url, $pos);
-    }
-    self::assertEquals($current_url, '/node/' . $node->id(), 'User should have access to the node now');
-    $this->drupalLogout();
+    $this->assertSession()->addressEquals($node->toUrl()->setAbsolute(TRUE)->toString());
+
+    // Test submitting a node form while expired.
+    $this->grantPermissions(Role::load($rid), [
+      'create ' . $type1->id() . ' content',
+    ]);
+    $this->drupalGet('node/add/' . $type1->id());
+    $this->assertSession()->statusCodeEquals(200);
+
+    // Simulate the user being expired via cron.
+    $user2->set('field_password_expiration', 1)->save();
+
+    $this->submitForm([
+      'title[0][value]' => 'Test creating content while expired',
+    ], 'Save');
+    $this->assertSession()->pageTextContains($type1->label() . ' Test creating content while expired has been created.');
+    // User will still be redirected, but not during the POST request.
+    $this->assertSession()->addressEquals($user2->toUrl('edit-form')->setAbsolute()->toString());
   }
 
 }

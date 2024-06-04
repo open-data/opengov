@@ -67,7 +67,7 @@ class WebformTemplatesFilterForm extends FormBase {
       '#button_type' => 'primary',
       '#value' => $this->t('Filter'),
     ];
-    if (!empty($search)) {
+    if (!empty($search) || !empty($category)) {
       $form['filter']['reset'] = [
         '#type' => 'submit',
         '#submit' => ['::resetForm'],

@@ -57,11 +57,6 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       'date_time_step' => '',
       'date_time_placeholder' => '',
     ] + parent::defineDefaultProperties();
-    if ($this->datePickerExists()) {
-      $properties += [
-        'date_date_datepicker_button' => FALSE,
-      ];
-    }
     return $properties;
   }
 
@@ -90,14 +85,6 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
 
     /* Date */
 
-    $date_element = $element['#date_date_element'] ?? 'date';
-
-    // Unset unsupported date format for date elements that are not
-    // text or datepicker.
-    if (!in_array($date_element, ['text', 'datepicker'])) {
-      unset($element['#date_date_format']);
-    }
-
     // Set date year range.
     $element += ['#date_year_range' => ''];
     if (empty($element['#date_year_range'])) {
@@ -114,7 +101,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     }
 
     // Add date callback.
-    $element['#date_date_callbacks'][] = floatval(\Drupal::VERSION) >= 9.3 ? [DateTime::class, 'dateCallback'] : '_webform_datetime_date';
+    $element['#date_date_callbacks'][] = [DateTime::class, 'dateCallback'];
 
     /* Time */
 
@@ -124,10 +111,28 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     }
 
     // Add time callback.
-    $element['#date_time_callbacks'][] = floatval(\Drupal::VERSION) >= 9.3 ? [DateTime::class, 'timeCallback'] : '_webform_datetime_time';
+    $element['#date_time_callbacks'][] = [DateTime::class, 'timeCallback'];
 
     // Prepare element after date/time formats have been updated.
     parent::prepare($element, $webform_submission);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function validateDate(&$element, FormStateInterface $form_state, &$complete_form) {
+    parent::validateDate($element, $form_state, $complete_form);
+
+    // Move inline time element errors to the date/time element.
+    // @see https://www.drupal.org/project/webform/issues/3371639
+    // @see \Drupal\Core\Datetime\Element\Datetime::processDatetime
+    if (\Drupal::moduleHandler()->moduleExists('inline_form_errors')
+      && empty($form_state->getError($element))
+      && isset($element['time'])
+      && !empty($form_state->getError($element['time']))
+    ) {
+      $form_state->setError($element, $form_state->getError($element['time']));
+    }
   }
 
   /**
@@ -177,26 +182,9 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
         'datetime-local' => $this->t('HTML datetime input (localized) - Use the HTML5 datetime-local element type.'),
         'date' => $this->t('HTML date input - Use the HTML5 date element type.'),
         'text' => $this->t('Text input - No HTML5 element, use a normal text field.'),
-        'datepicker' => $this->t('Date picker input - Use jQuery date picker with custom date format'),
         'none' => $this->t('None - Do not display a date element'),
       ],
     ];
-    if (!$this->datePickerExists()) {
-      unset($form['date']['date_date_element']['#options']['datepicker']);
-    }
-    if ($this->datePickerExists()) {
-      $form['date']['date_date_datepicker_button'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Show date picker button'),
-        '#description' => $this->t('If checked, date picker will include a calendar button'),
-        '#return_value' => TRUE,
-        '#states' => [
-          'visible' => [
-            [':input[name="properties[date_date_element]"]' => ['value' => 'datepicker']],
-          ],
-        ],
-      ];
-    }
     $form['date']['date_date_element_datetime_warning'] = [
       '#type' => 'webform_message',
       '#message_type' => 'warning',
@@ -227,9 +215,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       '#description' => $this->t('The placeholder will be shown in the element until the user starts entering a value.'),
       '#states' => [
         'visible' => [
-          [':input[name="properties[date_date_element]"]' => ['value' => 'text']],
-          'or',
-          [':input[name="properties[date_date_element]"]' => ['value' => 'datepicker']],
+          ':input[name="properties[date_date_element]"]' => ['value' => 'text'],
         ],
       ],
     ];
@@ -246,11 +232,10 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       '#other__option_label' => $this->t('Custom…'),
       '#other__placeholder' => $this->t('Custom date format…'),
       '#other__description' => $this->t('Enter date format using <a href="http://php.net/manual/en/function.date.php">Date Input Format</a>.'),
+      '#attributes' => ['data-webform-states-no-clear' => TRUE],
       '#states' => [
         'visible' => [
-          [':input[name="properties[date_date_element]"]' => ['value' => 'text']],
-          'or',
-          [':input[name="properties[date_date_element]"]' => ['value' => 'datepicker']],
+          ':input[name="properties[date_date_element]"]' => ['value' => 'text'],
         ],
       ],
     ];
@@ -258,9 +243,9 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       '#type' => 'textfield',
       '#title' => $this->t('Date year range'),
       '#description' => $this->t("A description of the range of years to allow, like '1900:2050', '-3:+3' or '2000:+3', where the first value describes the earliest year and the second the latest year in the range.") . ' ' .
-      $this->t('A year in either position means that specific year.') . ' ' .
-      $this->t('A +/- value describes a dynamic value that is that many years earlier or later than the current year at the time the webform is displayed.') . ' ' .
-      $this->t('Use min/max validation to define a more specific date range.'),
+        $this->t('A year in either position means that specific year.') . ' ' .
+        $this->t('A +/- value describes a dynamic value that is that many years earlier or later than the current year at the time the webform is displayed.') . ' ' .
+        $this->t('Use min/max validation to define a more specific date range.'),
       '#states' => [
         'invisible' => [
           ':input[name="properties[date_date_element]"]' => ['value' => 'none'],
@@ -315,6 +300,7 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
       '#other__option_label' => $this->t('Custom…'),
       '#other__placeholder' => $this->t('Custom time format…'),
       '#other__description' => $this->t('Enter time format using <a href="http://php.net/manual/en/function.date.php">Time Input Format</a>.'),
+      '#attributes' => ['data-webform-states-no-clear' => TRUE],
       '#states' => [
         'invisible' => [
           [':input[name="properties[date_date_element]"]' => ['value' => 'datetime']],
@@ -479,9 +465,6 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     foreach (['min', 'max'] as $property) {
       if (!empty($element["#date_time_$property"])) {
         $value = $element["#date_time_$property"];
-      }
-      elseif (!empty($element["#date_$property"])) {
-        $value = date('H:i:s', strtotime($element["#date_$property"]));
       }
       else {
         $value = NULL;

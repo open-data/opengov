@@ -16,7 +16,7 @@ class WebformLocationGeocompleteTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_location_geocomplete', 'webform_location_geocomplete_test'];
+  protected static $modules = ['webform_location_geocomplete', 'webform_location_geocomplete_test'];
 
   /**
    * Test locatin geocomplete element.

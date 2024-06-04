@@ -14,7 +14,8 @@ archive: false
 id: test_element_other
 title: 'Test: Element: Other'
 description: 'Test the webform other elements, includes select_other, checkboxes_other and radios_other.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   select_other:
     '#type': details
@@ -176,7 +177,6 @@ elements: |
         Two: Two
         Three: Three
       '#wrapper_type': container
-
 css: ''
 javascript: ''
 settings:
@@ -264,6 +264,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Settings;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform submission form preview.
@@ -22,7 +22,7 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Exclude Progress tracker so that the default progress bar is displayed.
@@ -54,7 +54,7 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
 
     $assert_session->responseContains('<h1>Test: Webform: Preview: Preview</h1>');
 
-    $assert_session->responseContains('<b>Preview</b></li>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">Preview</b></li>');
 
     $assert_session->responseContains('Please review your submission. Your submission is not complete until you press the "Submit" button!');
 
@@ -177,7 +177,7 @@ class WebformSettingsPreviewTest extends WebformBrowserTestBase {
     $edit = ['name' => 'test'];
     $this->submitForm($edit, '{Preview}');
     $assert_session->responseContains('<h1>{Title}</h1>');
-    $assert_session->responseContains('<b>{Label}</b></li>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">{Label}</b></li>');
     $assert_session->responseContains('{Message}');
     $assert_session->buttonExists('Submit');
     $assert_session->buttonExists('{Back}');

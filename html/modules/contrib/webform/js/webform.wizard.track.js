@@ -3,7 +3,7 @@
  * JavaScript behaviors for webform wizard.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -38,7 +38,7 @@
       // NOTE: If conditional wizard page logic is configured the
       // expected page name or index may not be accurate but the above code
       // uses window.history.replaceState to update the browser's URL.
-      $(':button[data-webform-wizard-page], :submit[data-webform-wizard-page]', context).once('webform-wizard-page').on('click', function () {
+      $(once('webform-wizard-page', $(':button[data-webform-wizard-page], :submit[data-webform-wizard-page]', context))).on('click', function () {
         var page = $(this).attr('data-webform-wizard-page');
         this.form.action = setUrlPageParameter(this.form.action, page);
       });
@@ -67,4 +67,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

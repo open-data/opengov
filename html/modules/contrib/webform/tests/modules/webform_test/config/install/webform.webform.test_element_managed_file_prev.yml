@@ -14,7 +14,8 @@ archive: false
 id: test_element_managed_file_prev
 title: 'Test: Element: Managed file preview'
 description: 'Test file upload previews using managed file element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_image_file:
     '#type': webform_image_file
@@ -60,7 +61,6 @@ elements: |
     '#file_preview': url
     '#file_extensions': txt
     '#multiple': true
-  
 css: ''
 javascript: ''
 settings:
@@ -148,6 +148,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

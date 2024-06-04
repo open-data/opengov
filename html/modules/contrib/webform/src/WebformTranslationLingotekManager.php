@@ -42,8 +42,8 @@ class WebformTranslationLingotekManager implements WebformTranslationLingotekMan
                 $field_settings[$setting_name] = Yaml::decode($field_settings[$setting_name]);
               }
             }
+            $this->encodeTokens($field_settings);
           }
-          $this->encodeTokens($field_settings);
         }
         break;
 

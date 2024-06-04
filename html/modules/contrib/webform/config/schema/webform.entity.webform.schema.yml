@@ -33,9 +33,12 @@
       type: text
       label: 'Administrative description'
       webform_type: html
-    category:
-      type: label
-      label: Category
+    categories:
+      type: sequence
+      label: Categories
+      sequence:
+        type: label
+        label: Category
     elements:
       type: text
       label: 'Elements (YAML)'

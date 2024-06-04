@@ -18,6 +18,11 @@ class Input extends PreprocessBase implements PreprocessInterface {
    * {@inheritdoc}
    */
   public function preprocessElement(Element $element, Variables $variables) {
+    // Remove name attribute if empty, for W3C compliance.
+    // @see template_preprocess_input().
+    if (isset($element['#attributes']['name']) && empty((string) $element['#attributes']['name'])) {
+      unset($element['#attributes']['name']);
+    }
     // Autocomplete.
     if ($route = $element->getProperty('autocomplete_route_name')) {
       $variables['autocomplete'] = TRUE;

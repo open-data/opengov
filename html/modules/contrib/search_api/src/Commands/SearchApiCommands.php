@@ -221,8 +221,10 @@ class SearchApiCommands extends DrushCommands {
    *   The maximum number of items to index. Set to 0 to index all items.
    *   Defaults to 0 (index all).
    * @option batch-size
-   *   The maximum number of items to index per batch run. Set to 0 to index all
-   *   items at once. Defaults to the "Cron batch size" setting of the index.
+   *   The maximum number of items to index per batch run. Defaults to the "Cron
+   *   batch size" setting of the index if omitted or explicitly set to 0. Set
+   *   to a negative value to index all items in a single batch (not
+   *   recommended).
    *
    * @usage drush search-api:index
    *   Index all items for all enabled indexes.

@@ -2,9 +2,8 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
-use Drupal\webform\WebformInterface;
-
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\WebformInterface;
 
 /**
  * Provides a 'hidden' element.

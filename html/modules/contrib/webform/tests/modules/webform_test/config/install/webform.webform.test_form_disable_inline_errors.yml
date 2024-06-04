@@ -14,13 +14,13 @@ archive: false
 id: test_form_disable_inline_errors
 title: 'Test: Webform: Disable inline form errors'
 description: 'Test disabling inline form errors.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   textfield:
     '#type': textfield
     '#title': textfield
     '#required': true
-  
 css: ''
 javascript: ''
 settings:
@@ -108,6 +108,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -14,7 +14,8 @@ archive: false
 id: test_form_preview
 title: 'Test: Webform: Preview'
 description: 'Test submission preview.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   fieldset:
     '#type': fieldset
@@ -52,13 +53,11 @@ elements: |
       '#format_attributes':
         class:
           - format-attributes-class
-  
 css: |
   .format-attributes-class {
     border: 1px dashed #ccc;
     padding: 10px;
   }
-  
 javascript: ''
 settings:
   ajax: false
@@ -145,6 +144,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

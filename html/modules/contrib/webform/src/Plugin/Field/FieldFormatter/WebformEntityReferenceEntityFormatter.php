@@ -70,6 +70,7 @@ class WebformEntityReferenceEntityFormatter extends WebformEntityReferenceFormat
   public static function defaultSettings() {
     return [
       'source_entity' => TRUE,
+      'lazy' => FALSE,
     ] + parent::defaultSettings();
   }
 
@@ -79,6 +80,9 @@ class WebformEntityReferenceEntityFormatter extends WebformEntityReferenceFormat
   public function settingsSummary() {
     $summary = parent::settingsSummary();
     $summary[] = $this->t('Set submission source entity: @source_entity', ['@source_entity' => $this->getSetting('source_entity') ? $this->t('Yes') : $this->t('No')]);
+    if ($this->getSetting('lazy')) {
+      $summary[] = $this->t('Use lazy builder');
+    }
     return $summary;
   }
 
@@ -86,6 +90,9 @@ class WebformEntityReferenceEntityFormatter extends WebformEntityReferenceFormat
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
+    $form = parent::settingsForm($form, $form_state);
+
+    // Source entity.
     if ($this->fieldDefinition->getTargetEntityTypeId() === 'paragraph') {
       $title = $this->t("Use this paragraph field's main entity as the webform submission's source entity.");
       $description = $this->t("If unchecked, the current page's entity will be used as the webform submission's source entity.");
@@ -95,8 +102,6 @@ class WebformEntityReferenceEntityFormatter extends WebformEntityReferenceFormat
       $title = $this->t("Use this field's %entity_type entity as the webform submission's source entity.", ['%entity_type' => $entity_type_definition->getLabel()]);
       $description = $this->t("If unchecked, the current page's entity will be used as the webform submission's source entity. For example, if this webform was displayed on a node's page, the current node would be used as the webform submission's source entity.", ['%entity_type' => $entity_type_definition->getLabel()]);
     }
-
-    $form = parent::settingsForm($form, $form_state);
     $form['source_entity'] = [
       '#title' => $title,
       '#description' => $description,
@@ -104,6 +109,16 @@ class WebformEntityReferenceEntityFormatter extends WebformEntityReferenceFormat
       '#return_type' => TRUE,
       '#default_value' => $this->getSetting('source_entity'),
     ];
+
+    // Lazy builder.
+    $form['lazy'] = [
+      '#title' => $this->t('Use a lazy builder to render the form after the page is built/loaded.'),
+      '#description' => $this->t('If checked, the form will be loaded after the page has been built and cached. Lazy builders work best when using the <a href=":href">BigPipe</a> module.', [':href' => 'https://www.drupal.org/docs/8/core/modules/big-pipe/overview']),
+      '#type' => 'checkbox',
+      '#return_type' => TRUE,
+      '#default_value' => $this->getSetting('lazy'),
+    ];
+
     return $form;
   }
 
@@ -125,12 +140,12 @@ class WebformEntityReferenceEntityFormatter extends WebformEntityReferenceFormat
     // Determine if webform is previewed within a Paragraph on
     // entity edit forms (via *.edit_form or .content_translation_add routes).
     $route_name = $this->routeMatch->getRouteName();
-    $is_entity_edit_form = (preg_match('/\.edit_form$/', $route_name)
+    $is_entity_edit_form = $route_name && (preg_match('/\.edit_form$/', $route_name)
       || preg_match('/\.content_translation_add$/', $route_name)
       || in_array($route_name, ['entity.block_content.canonical']));
 
     // Same goes for entity add forms.
-    $is_entity_add_form = preg_match('/\.add$/', $route_name);
+    $is_entity_add_form = $route_name && preg_match('/\.add$/', $route_name);
 
     $is_paragraph = ($items_entity && $items_entity->getEntityTypeId() === 'paragraph');
 
@@ -159,6 +174,7 @@ class WebformEntityReferenceEntityFormatter extends WebformEntityReferenceFormat
           '#webform' => $entity,
           '#default_data' => (!empty($items[$delta]->default_data)) ? Yaml::decode($items[$delta]->default_data) : [],
           '#entity' => ($this->getSetting('source_entity')) ? $items_entity : NULL,
+          '#lazy' => $this->getSetting('lazy'),
         ];
       }
       $this->setCacheContext($elements[$delta], $entity, $items[$delta]);

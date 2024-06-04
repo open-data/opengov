@@ -11,6 +11,7 @@ use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api\Utility\FieldsHelper;
+use Drupal\search_api\Utility\ThemeSwitcherInterface;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -39,7 +40,14 @@ class FieldsHelperTest extends UnitTestCase {
     $entity_field_manager = $this->createMock(EntityFieldManagerInterface::class);
     $entity_type_info = $this->createMock(EntityTypeBundleInfoInterface::class);
     $data_type_helper = $this->createMock(DataTypeHelperInterface::class);
-    $this->fieldsHelper = new FieldsHelper($entity_type_manager, $entity_field_manager, $entity_type_info, $data_type_helper);
+    $theme_switcher = $this->createMock(ThemeSwitcherInterface::class);
+    $this->fieldsHelper = new FieldsHelper(
+      $entity_type_manager,
+      $entity_field_manager,
+      $entity_type_info,
+      $data_type_helper,
+      $theme_switcher,
+    );
   }
 
   /**

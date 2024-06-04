@@ -14,7 +14,8 @@ archive: false
 id: test_element_computed_debug
 title: 'Test: Element: Computed debug'
 description: 'Test computed debug element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   page_01:
     '#type': webform_wizard_page
@@ -154,7 +155,6 @@ elements: |
         <pre>{{ webform_debug(data|without('computed_twig_data_01', 'computed_twig_data_ajax_01', 'computed_twig_data_02', 'computed_twig_data_ajax_02', 'computed_twig_data_03', 'computed_twig_data_ajax_03') ) }}</pre>
         
       '#ajax': true
-  
 css: ''
 javascript: ''
 settings:
@@ -242,6 +242,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

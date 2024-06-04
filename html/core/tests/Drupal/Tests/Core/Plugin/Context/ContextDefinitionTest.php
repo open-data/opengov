@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Plugin\Context;
 
+use Drupal\Component\Plugin\Context\ContextDefinitionInterface;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\Core\TypedData\TypedDataManagerInterface;
 use Drupal\Tests\UnitTestCase;
@@ -32,11 +35,9 @@ class ContextDefinitionTest extends UnitTestCase {
    */
   public function testGetDataDefinition($is_multiple) {
     $data_type = 'valid';
-    $mock_data_definition = $this->getMockBuilder('\Drupal\Core\TypedData\ListDataDefinitionInterface')
+    $mock_data_definition = $this->getMockBuilder(ContextDefinitionInterface::class)
       ->onlyMethods([
         'getConstraints',
-      ])
-      ->addMethods([
         'setLabel',
         'setDescription',
         'setRequired',

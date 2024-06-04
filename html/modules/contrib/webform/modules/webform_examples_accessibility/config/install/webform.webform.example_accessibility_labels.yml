@@ -14,7 +14,8 @@ archive: false
 id: example_accessibility_labels
 title: 'Example: Accessibility Labels & Descriptions'
 description: 'Example of webform label and description accessibility.'
-category: 'Example: Accessibility'
+categories:
+  - 'Example: Accessibility'
 elements: |
   form_elements:
     '#type': details
@@ -181,7 +182,6 @@ elements: |
       '#help': 'This is help text'
       '#required': true
       '#description': 'This is a description'
-  
 css: ''
 javascript: ''
 settings:
@@ -269,6 +269,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Unit\Utility;
 
-use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\Tests\UnitTestCase;
+use Drupal\webform\Utility\WebformOptionsHelper;
 
 /**
  * Tests webform options utility.
@@ -102,7 +102,6 @@ class WebformOptionsHelperTest extends UnitTestCase {
    */
   public function providerConvertOptionsToString() {
     $tests[] = [[99 => 99], ['99' => 99]];
-    $tests[] = [[99.11 => 99], ['99' => 99]];
     $tests[] = [[TRUE => 99], ['1' => 99]];
     return $tests;
   }

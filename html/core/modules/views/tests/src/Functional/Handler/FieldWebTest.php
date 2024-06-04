@@ -177,8 +177,7 @@ class FieldWebTest extends ViewTestBase {
    *   An array containing simplexml objects.
    */
   protected function parseContent($content) {
-    $htmlDom = new \DOMDocument();
-    @$htmlDom->loadHTML('<?xml encoding="UTF-8">' . $content);
+    $htmlDom = Html::load($content);
     $elements = simplexml_import_dom($htmlDom);
 
     return $elements;
@@ -311,25 +310,25 @@ class FieldWebTest extends ViewTestBase {
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($id_field, $row) {
       return $id_field->theme($row);
     });
-    // The url has a space in it, so to check we have to decode the url output.
+    // The URL has a space in it, so to check we have to decode the URL output.
     $this->assertSubString(urldecode($output), $path);
 
     // Tests the external flag.
-    // Switch on the external flag should output an external url as well.
+    // Switch on the external flag should output an external URL as well.
     $id_field->options['alter']['external'] = TRUE;
-    $id_field->options['alter']['path'] = $path = 'www.drupal.org';
+    $id_field->options['alter']['path'] = $path = 'www.example.com';
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($id_field, $row) {
       return $id_field->theme($row);
     });
-    $this->assertSubString($output, 'http://www.drupal.org');
+    $this->assertSubString($output, 'http://www.example.com');
 
-    // Setup a not external url, which shouldn't lead to an external url.
+    // Setup a not external URL, which shouldn't lead to an external URL.
     $id_field->options['alter']['external'] = FALSE;
-    $id_field->options['alter']['path'] = $path = 'www.drupal.org';
+    $id_field->options['alter']['path'] = $path = 'www.example.com';
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($id_field, $row) {
       return $id_field->theme($row);
     });
-    $this->assertNotSubString($output, 'http://www.drupal.org');
+    $this->assertNotSubString($output, 'http://www.example.com');
 
     // Tests the transforming of the case setting.
     $id_field->options['alter']['path'] = $path = $this->randomMachineName();
@@ -587,14 +586,14 @@ class FieldWebTest extends ViewTestBase {
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($name_field, $row) {
       return $name_field->advancedRender($row);
     });
-    $this->assertSubString($output, $trimmed_name, new FormattableMarkup('Make sure the trimmed output (@trimmed) appears in the rendered output (@output).', ['@trimmed' => $trimmed_name, '@output' => $output]));
-    $this->assertNotSubString($output, $row->views_test_data_name, new FormattableMarkup("Make sure the untrimmed value (@untrimmed) shouldn't appear in the rendered output (@output).", ['@untrimmed' => $row->views_test_data_name, '@output' => $output]));
+    $this->assertSubString($output, $trimmed_name, "Make sure the trimmed output ($trimmed_name) appears in the rendered output ($output).");
+    $this->assertNotSubString($output, $row->views_test_data_name, "Make sure the untrimmed value ($row->views_test_data_name) shouldn't appear in the rendered output ($output).");
 
     $name_field->options['alter']['max_length'] = 9;
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($name_field, $row) {
       return $name_field->advancedRender($row);
     });
-    $this->assertSubString($output, $trimmed_name, new FormattableMarkup('Make sure the untrimmed (@untrimmed) output appears in the rendered output  (@output).', ['@trimmed' => $trimmed_name, '@output' => $output]));
+    $this->assertSubString($output, $trimmed_name, "Make sure the untrimmed ($trimmed_name) output appears in the rendered output  ($output).");
 
     // Take word_boundary into account for the tests.
     $name_field->options['alter']['max_length'] = 5;

@@ -14,7 +14,8 @@ archive: false
 id: test_states_server_file
 title: 'Test: Form API #states file validation'
 description: 'Test Drupal''s #states API file validation.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   trigger_file:
     '#type': managed_file
@@ -26,7 +27,6 @@ elements: |
       required:
         ':input[name="files[trigger_file]"]':
           filled: true
-  
 css: ''
 javascript: ''
 settings:
@@ -114,6 +114,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

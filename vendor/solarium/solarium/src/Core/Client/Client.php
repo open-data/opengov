@@ -36,6 +36,7 @@ use Solarium\Plugin\BufferedDelete\BufferedDeleteLite;
 use Solarium\Plugin\CustomizeRequest\CustomizeRequest;
 use Solarium\Plugin\Loadbalancer\Loadbalancer;
 use Solarium\Plugin\MinimumScoreFilter\MinimumScoreFilter;
+use Solarium\Plugin\NoWaitForResponseRequest;
 use Solarium\Plugin\ParallelExecution\ParallelExecution;
 use Solarium\Plugin\PostBigExtractRequest;
 use Solarium\Plugin\PostBigRequest;
@@ -243,6 +244,7 @@ class Client extends Configurable implements ClientInterface
      */
     protected $pluginTypes = [
         'loadbalancer' => Loadbalancer::class,
+        'nowaitforresponserequest' => NoWaitForResponseRequest::class,
         'postbigrequest' => PostBigRequest::class,
         'postbigextractrequest' => PostBigExtractRequest::class,
         'customizerequest' => CustomizeRequest::class,
@@ -352,7 +354,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function addEndpoint($endpoint): ClientInterface
+    public function addEndpoint($endpoint): self
     {
         if (\is_array($endpoint)) {
             $endpoint = new Endpoint($endpoint);
@@ -386,7 +388,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function addEndpoints(array $endpoints): ClientInterface
+    public function addEndpoints(array $endpoints): self
     {
         foreach ($endpoints as $key => $endpoint) {
             // in case of a config array: add key to config
@@ -441,7 +443,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function removeEndpoint($endpoint): ClientInterface
+    public function removeEndpoint($endpoint): self
     {
         if (\is_object($endpoint)) {
             $endpoint = $endpoint->getKey();
@@ -459,7 +461,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function clearEndpoints(): ClientInterface
+    public function clearEndpoints(): self
     {
         $this->endpoints = [];
         $this->defaultEndpoint = null;
@@ -476,7 +478,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function setEndpoints(array $endpoints): ClientInterface
+    public function setEndpoints(array $endpoints): self
     {
         $this->clearEndpoints();
         $this->addEndpoints($endpoints);
@@ -495,7 +497,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function setDefaultEndpoint($endpoint): ClientInterface
+    public function setDefaultEndpoint($endpoint): self
     {
         if (\is_object($endpoint)) {
             $endpoint = $endpoint->getKey();
@@ -517,7 +519,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function setAdapter(AdapterInterface $adapter): ClientInterface
+    public function setAdapter(AdapterInterface $adapter): self
     {
         $this->adapter = $adapter;
 
@@ -546,7 +548,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function registerQueryType(string $type, string $queryClass): ClientInterface
+    public function registerQueryType(string $type, string $queryClass): self
     {
         $this->queryTypes[$type] = $queryClass;
 
@@ -560,7 +562,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function registerQueryTypes(array $queryTypes): ClientInterface
+    public function registerQueryTypes(array $queryTypes): self
     {
         foreach ($queryTypes as $type => $class) {
             // support both "key=>value" and "(no-key) => array(key=>x,query=>y)" formats
@@ -604,7 +606,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): ClientInterface
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): self
     {
         $this->eventDispatcher = $eventDispatcher;
 
@@ -626,7 +628,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function registerPlugin(string $key, $plugin, array $options = []): ClientInterface
+    public function registerPlugin(string $key, $plugin, array $options = []): self
     {
         if (\is_string($plugin)) {
             $plugin = class_exists($plugin) ? $plugin : $plugin.strrchr($plugin, '\\');
@@ -651,7 +653,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function registerPlugins(array $plugins): ClientInterface
+    public function registerPlugins(array $plugins): self
     {
         foreach ($plugins as $key => $plugin) {
             if (!isset($plugin['key'])) {
@@ -716,7 +718,7 @@ class Client extends Configurable implements ClientInterface
      *
      * @return self Provides fluent interface
      */
-    public function removePlugin($plugin): ClientInterface
+    public function removePlugin($plugin): self
     {
         if (\is_object($plugin)) {
             foreach ($this->pluginInstances as $key => $instance) {

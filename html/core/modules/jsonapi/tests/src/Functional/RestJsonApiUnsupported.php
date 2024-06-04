@@ -62,8 +62,10 @@ class RestJsonApiUnsupported extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp(): void {
+  protected function setUp(): void {
     parent::setUp();
+
+    $this->config('system.logging')->set('error_level', ERROR_REPORTING_HIDE)->save();
 
     // Create a "Camelids" node type.
     NodeType::create([
@@ -99,7 +101,7 @@ class RestJsonApiUnsupported extends ResourceTestBase {
       400,
       FALSE,
       $response,
-      ['4xx-response', 'config:user.role.anonymous', 'http_response', 'node:1'],
+      ['4xx-response', 'config:system.logging', 'config:user.role.anonymous', 'http_response', 'node:1'],
       ['url.query_args:_format', 'url.site', 'user.permissions'],
       'MISS',
       'MISS'

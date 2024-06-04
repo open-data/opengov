@@ -6,12 +6,12 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Render\Markup;
-use Drupal\webform\Utility\WebformArrayHelper;
-use Drupal\webform\Utility\WebformElementHelper;
-use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\Plugin\WebformElementBase;
 use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
 use Drupal\webform\Plugin\WebformElementOtherInterface;
+use Drupal\webform\Utility\WebformArrayHelper;
+use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformSubmissionInterface;
 
@@ -327,21 +327,24 @@ abstract class OptionsBase extends WebformElementBase {
     $value = $this->getValue($element, $webform_submission, $options);
 
     $format = $this->getItemFormat($element);
+    $options = OptGroup::flattenOptions($element['#options'] ?? []);
     switch ($format) {
       case 'raw':
         return $value;
 
       case 'text_description':
-        if (isset($element['#options'])) {
+        if ($options && isset($options[$value])) {
           $options_description = $this->hasProperty('options_description_display');
           $text = WebformOptionsHelper::getOptionText($value, $element['#options'], $options_description);
           $description = WebformOptionsHelper::getOptionDescription($value, $element['#options'], $options_description);
           return ['#markup' => $text . ($description ? PHP_EOL . '<div class="description">' . $description . '</div>' : '')];
         }
-        return '';
+        else {
+          return $value;
+        }
 
       case 'description':
-        if (isset($element['#options'])) {
+        if ($options && isset($options[$value])) {
           $options_description = $this->hasProperty('options_description_display');
           if ($options_description) {
             $description = WebformOptionsHelper::getOptionDescription($value, $element['#options'], $options_description);
@@ -352,12 +355,17 @@ abstract class OptionsBase extends WebformElementBase {
 
       case 'value':
       default:
-        if (isset($element['#options'])) {
+        if ($options && isset($options[$value])) {
           $options_description = $this->hasProperty('options_description_display');
-          $value = WebformOptionsHelper::getOptionText($value, $element['#options'], $options_description);
+          $build = [
+            '#markup' => WebformOptionsHelper::getOptionText($value, $options, $options_description),
+          ];
         }
-
-        $build = ['#markup' => $value];
+        else {
+          $build = [
+            '#plain_text' => $value,
+          ];
+        }
 
         $options += ['prefixing' => TRUE];
         if ($options['prefixing']) {

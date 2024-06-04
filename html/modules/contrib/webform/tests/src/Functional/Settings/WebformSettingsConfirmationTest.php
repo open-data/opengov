@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\webform\Functional\Settings;
 
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 
 /**
  * Tests for webform submission form confirmation.
@@ -32,7 +32,7 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Set page.front (aka <front>) to /node instead of /user/login.
@@ -60,7 +60,7 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
 
     // Check confirmation page with custom query parameters.
     $sid = $this->postSubmission($webform_confirmation_message, [], NULL, ['query' => ['custom' => 'param']]);
-    $assert_session->addressEquals('webform/test_confirmation_message', ['query' => ['custom' => 'param']]);
+    $assert_session->addressEquals('webform/test_confirmation_message?custom=param');
 
     // Sleep for 1 second to ensure the submission's timestamp indicates
     // it was update.
@@ -124,7 +124,7 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
     $this->drupalGet('/webform/test_confirmation_inline', $options);
     $this->submitForm([], 'Submit');
     $assert_session->responseContains('<a href="' . $webform_confirmation_inline->toUrl('canonical', ['absolute' => TRUE, 'query' => ['custom' => 'param']])->toString() . '" rel="prev">Back to form</a>');
-    $assert_session->addressEquals('webform/test_confirmation_inline', ['query' => ['custom' => 'param']]);
+    $assert_session->addressEquals('webform/test_confirmation_inline?custom=param');
 
     /* Test confirmation page (confirmation_type=page) */
 
@@ -135,7 +135,7 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
     $webform_submission = WebformSubmission::load($sid);
     $assert_session->responseContains('This is a custom confirmation page.');
     $assert_session->responseContains('<a href="' . $webform_confirmation_page->toUrl('canonical', ['absolute' => TRUE])->toString() . '" rel="prev">Back to form</a>');
-    $assert_session->addressEquals('webform/test_confirmation_page/confirmation', ['query' => ['token' => $webform_submission->getToken()]]);
+    $assert_session->addressEquals('webform/test_confirmation_page/confirmation?token=' . urlencode($webform_submission->getToken()));
 
     // Check that the confirmation page's 'Back to form 'link includes custom
     // query parameters.
@@ -144,19 +144,47 @@ class WebformSettingsConfirmationTest extends WebformBrowserTestBase {
     // Check confirmation page with custom query parameters.
     $sid = $this->postSubmission($webform_confirmation_page, [], NULL, ['query' => ['custom' => 'param']]);
     $webform_submission = WebformSubmission::load($sid);
-    $assert_session->addressEquals('webform/test_confirmation_page/confirmation', ['query' => ['custom' => 'param', 'token' => $webform_submission->getToken()]]);
+    $assert_session->addressEquals('webform/test_confirmation_page/confirmation?custom=param&token=' . urlencode($webform_submission->getToken()));
 
     // Check confirmation page with token excluded.
     $webform_confirmation_page->setSetting('confirmation_exclude_token', TRUE);
     $webform_confirmation_page->save();
     $this->postSubmission($webform_confirmation_page, [], NULL, ['query' => ['custom' => 'param']]);
-    $assert_session->addressEquals('webform/test_confirmation_page/confirmation', ['query' => ['custom' => 'param']]);
+    $assert_session->addressEquals('webform/test_confirmation_page/confirmation?custom=param');
 
     // Check confirmation page with token and query excluded.
     $webform_confirmation_page->setSetting('confirmation_exclude_query', TRUE);
     $webform_confirmation_page->save();
     $this->postSubmission($webform_confirmation_page);
     $assert_session->addressEquals('webform/test_confirmation_page/confirmation');
+
+    // Check confirmation page with default noindex rule.
+    $this->drupalGet('/webform/test_confirmation_page/confirmation');
+    $assert_session->responseContains('<meta name="robots" content="noindex" />');
+
+    // Check confirmation page without noindex rule.
+    \Drupal::configFactory()->getEditable('webform.settings')
+      ->set('settings.default_confirmation_noindex', FALSE)
+      ->save();
+    $this->drupalGet('/webform/test_confirmation_page/confirmation');
+    $assert_session->responseNotContains('<meta name="robots" content="noindex" />');
+
+    // Install the metatag.module to handle robots noindex.
+    \Drupal::service('module_installer')->install(['metatag']);
+
+    // Check confirmation page with default noindex rule with metatag.module.
+    \Drupal::configFactory()->getEditable('webform.settings')
+      ->set('settings.default_confirmation_noindex', TRUE)
+      ->save();
+    $this->drupalGet('/webform/test_confirmation_page/confirmation');
+    $assert_session->responseContains('<meta name="robots" content="noindex" />');
+
+    // Check confirmation page without noindex rule with metatag.module.
+    $config = \Drupal::configFactory()->getEditable('webform.settings');
+    $config->set('settings.default_confirmation_noindex', FALSE);
+    $config->save();
+    $this->drupalGet('/webform/test_confirmation_page/confirmation');
+    $assert_session->responseNotContains('<meta name="robots" content="noindex" />');
 
     // phpcs:disable
     // @todo (TESTING) Figure out why the inline confirmation link is not including the query string parameters.

@@ -231,7 +231,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
       'multiple__add_more_input' => TRUE,
       'multiple__add_more_input_label' => (string) $this->t('more items'),
       'multiple__item_label' => (string) $this->t('item'),
-      'multiple__no_items_message' => (string) $this->t('No items entered. Please add items below.'),
+      'multiple__no_items_message' => '<p>' . $this->t('No items entered. Please add items below.') . '</p>',
       'multiple__sorting' => TRUE,
       'multiple__operations' => TRUE,
       'multiple__add' => TRUE,
@@ -912,13 +912,10 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
       'webform' => $webform,
       'webform_submission' => $webform_submission,
     ];
-    $modules = \Drupal::moduleHandler()
-      ->getImplementations('webform_element_access');
-    foreach ($modules as $module) {
-      $hook = $module . '_webform_element_access';
+    \Drupal::moduleHandler()->invokeAllWith('webform_element_access', function (callable $hook, string $module) use (&$access_result, $operation, $element, $account, $context) {
       $hook_result = $hook($operation, $element, $account, $context);
       $access_result = $access_result->orIf($hook_result);
-    }
+    });
 
     // Grant access as provided by webform, webform handler(s) and/or
     // hook_webform_element_access() implementation.
@@ -1402,11 +1399,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     $value = $this->getValue($element, $webform_submission, $options);
 
     // Get items.
-    $items = [];
-    $item_function = 'format' . $type . 'Item';
-    foreach (array_keys($value) as $delta) {
-      $items[] = $this->$item_function($element, $webform_submission, ['delta' => $delta] + $options);
-    }
+    $items = $this->getItems($type, $element, $webform_submission, $options);
 
     // Get template.
     $template = trim($element['#format_items_' . $name]);
@@ -1435,17 +1428,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
    *   The element's items as HTML.
    */
   protected function formatHtmlItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
-    $value = $this->getValue($element, $webform_submission, $options);
-
-    // Get items.
-    $items = [];
-    foreach (array_keys($value) as $delta) {
-      $item = $this->formatHtmlItem($element, $webform_submission, ['delta' => $delta] + $options);
-      if ($item) {
-        $items[] = $item;
-      }
-    }
-
+    $items = $this->getItems('Html', $element, $webform_submission, $options);
     if (empty($items)) {
       return [];
     }
@@ -1468,7 +1451,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
         }
 
         $build = [];
-        foreach ($items as $index => &$item) {
+        foreach ($items as $index => $item) {
           $build[] = (is_array($item)) ? $item : ['#markup' => $item];
           if ($total === 2 && $index === 0) {
             $build[] = ['#markup' => ' ' . $this->t('and') . ' '];
@@ -1502,7 +1485,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
         $total = count($items);
 
         $build = [];
-        foreach ($items as $index => &$item) {
+        foreach ($items as $index => $item) {
           $build[] = (is_array($item)) ? $item : ['#markup' => $item];
           if ($index !== ($total - 1)) {
             $build[] = ['#markup' => $delimiter];
@@ -1526,17 +1509,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
    *   The element's items as text.
    */
   protected function formatTextItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
-    $value = $this->getValue($element, $webform_submission, $options);
-
-    // Get items.
-    $items = [];
-    foreach (array_keys($value) as $delta) {
-      $item = $this->formatTextItem($element, $webform_submission, ['delta' => $delta] + $options);
-      if ($item) {
-        $items[] = $item;
-      }
-    }
-
+    $items = $this->getItems('Text', $element, $webform_submission, $options);
     if (empty($items)) {
       return '';
     }
@@ -1698,6 +1671,44 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     }
 
     return $value;
+  }
+
+  /**
+   * Get element's submission value items.
+   *
+   * @param string $type
+   *   The format type, HTML or Text.
+   * @param array $element
+   *   An element.
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   * @param array $options
+   *   An array of options.
+   *
+   * @return array
+   *   The element's submission value items.
+   */
+  protected function getItems($type, array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    $name = strtolower($type);
+
+    $value = $this->getValue($element, $webform_submission, $options);
+
+    $item_function = 'format' . $type . 'Item';
+
+    $items = [];
+    foreach (array_keys($value) as $delta) {
+      if ($this->getItemFormat($element) === 'custom' && !empty($element['#format_' . $name])) {
+        $item = $this->formatCustomItem($type, $element, $webform_submission, ['delta' => $delta] + $options);
+      }
+      else {
+        $item = $this->$item_function($element, $webform_submission, ['delta' => $delta] + $options);
+      }
+      if ($item) {
+        $items[] = $item;
+      }
+    }
+
+    return $items;
   }
 
   /**
@@ -2026,9 +2037,18 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     if ($sid = $webform_submission->id()) {
       $query->condition('ws.sid', $sid, '<>');
     }
+    // Get duplicate values to account for case-insensitivity.
+    $duplicate_values = $query->execute()->fetchCol();
+    if (empty($duplicate_values)) {
+      return;
+    }
+    // Determine the duplicate values.
+    $duplicate_values = array_intersect((array) $value, $duplicate_values);
+    if (empty($duplicate_values)) {
+      return;
+    }
     // Get single duplicate value.
-    $query->range(0, 1);
-    $duplicate_value = $query->execute()->fetchField();
+    $duplicate_value = reset($duplicate_values);
 
     // Skip NULL or empty string value.
     if ($duplicate_value === FALSE || $duplicate_value === '') {

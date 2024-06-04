@@ -201,7 +201,6 @@ class ViewsPropertyExtractionTest extends KernelTestBase {
     // Check that $field->propertyReplacements was set correctly (if
     // applicable).
     $property_replacements = new \ReflectionProperty($field, 'propertyReplacements');
-    $property_replacements->setAccessible(TRUE);
     $property_replacements = $property_replacements->getValue($field);
     if (isset($original_property_path)) {
       $this->assertArrayHasKey($original_property_path, $property_replacements);

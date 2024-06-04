@@ -18,7 +18,7 @@ class WebformResultsExportDownloadTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'locale', 'webform', 'token', 'webform_attachment'];
+  protected static $modules = ['node', 'locale', 'webform', 'token', 'webform_attachment'];
 
   /**
    * Webforms to load.

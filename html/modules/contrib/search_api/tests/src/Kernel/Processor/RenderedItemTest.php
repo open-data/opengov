@@ -17,6 +17,7 @@ use Drupal\node\NodeInterface;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValueInterface;
 use Drupal\search_api\Utility\Utility;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -28,6 +29,8 @@ use Drupal\user\UserInterface;
  * @see \Drupal\search_api\Plugin\search_api\processor\RenderedItem
  */
 class RenderedItemTest extends ProcessorTestBase {
+
+  use UserCreationTrait;
 
   /**
    * List of nodes which are published.
@@ -161,6 +164,10 @@ class RenderedItemTest extends ProcessorTestBase {
       ->get('search_api.fields_helper')
       ->createField($this->index, 'rendered_item', $field_info);
     $this->index->addField($field);
+    $field_1 = \Drupal::getContainer()
+      ->get('search_api.fields_helper')
+      ->createField($this->index, 'rendered_item_1', $field_info);
+    $this->index->addField($field_1);
     $datasources = \Drupal::getContainer()
       ->get('search_api.plugin_helper')
       ->createDatasourcePlugins($this->index);
@@ -227,9 +234,14 @@ class RenderedItemTest extends ProcessorTestBase {
     $items = $this->generateItems($items);
 
     // Add the processor's field values to the items.
+    $admin_account = $this->setUpCurrentUser([], [], TRUE);
     foreach ($items as $item) {
+      $this->assertEquals($admin_account->id(), \Drupal::currentUser()->id());
       $this->processor->addFieldValues($item);
+      $this->assertEquals($admin_account->id(), \Drupal::currentUser()->id());
     }
+    \Drupal::currentUser()->setAccount(User::load(0));
+    $this->assertEquals(0, \Drupal::currentUser()->id());
 
     foreach ($items as $key => $item) {
       list($datasource_id, $entity_id) = Utility::splitCombinedId($key);
@@ -242,7 +254,7 @@ class RenderedItemTest extends ProcessorTestBase {
       // Test that the value is properly wrapped in a
       // \Drupal\search_api\Plugin\search_api\data_type\value\TextValueInterface
       // object, which contains a string (not, for example, some markup object).
-      $this->assertInstanceOf('Drupal\search_api\Plugin\search_api\data_type\value\TextValueInterface', $values[0], "$type item $entity_id rendered value is properly wrapped in a text value object.");
+      $this->assertInstanceOf(TextValueInterface::class, $values[0], "$type item $entity_id rendered value is properly wrapped in a text value object.");
       $field_value = $values[0]->getText();
       $this->assertIsString($field_value, "$type item $entity_id rendered value is a string.");
       $this->assertEquals(1, count($values), "$type item $entity_id rendered value is a single value.");
@@ -261,7 +273,7 @@ class RenderedItemTest extends ProcessorTestBase {
           break;
 
         default:
-          $this->assertTrue(FALSE);
+          $this->fail();
       }
     }
   }
@@ -281,7 +293,11 @@ class RenderedItemTest extends ProcessorTestBase {
     // when the processor was broken, because the schema metadata was also
     // adding it to the output.
     $nid = $node->id();
-    $this->assertStringContainsString('<article role="article">', $field_value, 'Node item ' . $nid . ' not rendered in theme Stable.');
+    // The role="article" ARIA attribute was removed in Drupal 10.1. To be able
+    // to run this test both against earlier and later versions of Drupal Core,
+    // we need to use a regular expression.
+    // @todo Change to check only for "<article>" once we depend on Drupal 10.1.
+    $this->assertMatchesRegularExpression('#<article(?: role="article")?>#', $field_value, 'Node item ' . $nid . ' not rendered in theme Stable.');
     if ($node->bundle() === 'page') {
       $this->assertStringNotContainsString('>Read more<', $field_value, 'Node item ' . $nid . " rendered in view-mode \"full\".");
       $this->assertStringContainsString('>' . $node->get('body')->getValue()[0]['value'] . '<', $field_value, 'Node item ' . $nid . ' does not have rendered body inside HTML-Tags.');
@@ -352,7 +368,7 @@ class RenderedItemTest extends ProcessorTestBase {
     }
 
     // Verify that no field values were added.
-    foreach ($items as $key => $item) {
+    foreach ($items as $item) {
       $rendered_item = $item->getField('rendered_item');
       $this->assertEmpty($rendered_item->getValues(), 'No rendered_item field value added when disabled for content type.');
     }

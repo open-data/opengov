@@ -3,8 +3,8 @@
 namespace Drupal\webform_image_select\Element;
 
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element\FormElement;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Utility\WebformElementHelper;
 

@@ -14,7 +14,8 @@ archive: false
 id: test_states_disabled
 title: 'Test: Form API #states disabled states'
 description: 'Test Drupal''s #states disabled states.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   disabled:
     '#type': checkbox
@@ -60,7 +61,6 @@ elements: |
       disabled:
         ':input[name="disabled"]':
           checked: true
-  
 css: ''
 javascript: ''
 settings:
@@ -148,6 +148,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

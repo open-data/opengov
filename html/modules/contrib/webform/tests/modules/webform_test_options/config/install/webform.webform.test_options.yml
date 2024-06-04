@@ -14,7 +14,8 @@ archive: false
 id: test_options
 title: 'Test: Options'
 description: 'Test webform options.'
-category: 'Test: Options'
+categories:
+  - 'Test: Options'
 elements: |
   general_options:
     '#type': details
@@ -224,7 +225,6 @@ elements: |
       '#options': range
       '#min': a
       '#max': z
-  
 css: ''
 javascript: ''
 settings:
@@ -312,6 +312,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

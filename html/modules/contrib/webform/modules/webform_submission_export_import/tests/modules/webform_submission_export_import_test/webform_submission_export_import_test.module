@@ -5,8 +5,8 @@
  * Support module for webform submission export/import.
  */
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
 
 /**
@@ -47,7 +47,7 @@ function webform_submission_export_import_test_form_webform_submission_export_im
 
       // Copy CSV file from module to public:// uri.
       $csv_file_path = "$files_path/test_submission_export_import-$file_name.csv";
-      $destination = file_build_uri($file_system->basename($csv_file_path));
+      $destination = 'public://' . $file_system->basename($csv_file_path);
       $file_system->copy($csv_file_path, $destination, FileSystemInterface::EXISTS_REPLACE);
 
       $contents = file_get_contents($csv_uri);

@@ -14,7 +14,8 @@ archive: false
 id: test_element_flexbox_flex
 title: 'Test: Element: Flexbox flex '
 description: 'Test flexbox flex containers.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   row_0:
     '#type': webform_flexbox
@@ -806,7 +807,6 @@ elements: |
         style: 'padding: 30px; background: #ccc; text-align: center'
       flex:
         '#markup': 1
-  
 css: ''
 javascript: ''
 settings:
@@ -894,6 +894,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

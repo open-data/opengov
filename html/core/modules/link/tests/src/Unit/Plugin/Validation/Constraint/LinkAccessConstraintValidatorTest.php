@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\link\Unit\Plugin\Validation\Constraint;
 
 use Drupal\link\Plugin\Validation\Constraint\LinkAccessConstraint;
@@ -16,8 +18,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class LinkAccessConstraintValidatorTest extends UnitTestCase {
 
   /**
-   * Tests the \Drupal\link\Plugin\Validation\Constraint\LinkAccessConstraintValidator::validate()
-   * method.
+   * Tests the access validation constraint for links.
    *
    * @param \Drupal\link\LinkItemInterface $value
    *   The link item.

@@ -3,7 +3,7 @@
  * JavaScript behaviors for webform dialogs.
  */
 
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, drupalSettings, once) {
 
   'use strict';
 
@@ -24,7 +24,7 @@
     // Create a div with link but don't attach it to the page.
     var $div = $('<div><a href="' + url + '" class="webform-dialog ' + type + '"></a></div>');
     // Init the webform dialog behavior.
-    Drupal.behaviors.webformDialog.attach($div);
+    Drupal.behaviors.webformDialog.attach($div.get(0));
     // Trigger the link.
     $div.find('a').trigger('click');
   };
@@ -36,7 +36,7 @@
    */
   Drupal.behaviors.webformDialog = {
     attach: function (context) {
-      $('a.webform-dialog', context).once('webform-dialog').each(function () {
+      $(once('webform-dialog', 'a.webform-dialog', context)).each(function () {
         var $a = $(this);
 
         // Get default options.
@@ -94,4 +94,4 @@
     }
   };
 
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, drupalSettings, once);

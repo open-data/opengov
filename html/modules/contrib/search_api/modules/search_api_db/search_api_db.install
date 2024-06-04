@@ -7,6 +7,7 @@
 
 use Drupal\Core\Database\Database;
 use Drupal\Core\Database\SchemaObjectExistsException;
+use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
 use Drupal\Core\Utility\UpdateException;
 
 /**
@@ -65,7 +66,7 @@ function search_api_db_update_8102() {
     try {
       $schema->addPrimaryKey($table, ['item_id']);
     }
-    catch (SchemaObjectExistsException $e) {
+    catch (SchemaObjectExistsException) {
       // Primary key was already added, maybe by a conscientious site admin.
       // Nothing to do here in that case.
     }
@@ -95,6 +96,36 @@ function search_api_db_update_8103() {
     $config = $server->get('backend_config') ?: [];
     $config['matching'] = empty($config['partial_matches']) ? 'words' : 'partial';
     unset($config['partial_matches']);
+    $server->set('backend_config', $config);
+    // Mark the resulting configuration as trusted data. This avoids issues
+    // with future schema changes.
+    $server->save(TRUE);
+  }
+
+  if ($count) {
+    return \Drupal::translation()
+      ->formatPlural($count, 'Updated 1 server.', 'Updated @count servers.');
+  }
+  return NULL;
+}
+
+/**
+ * Ensures phrase indexing is disabled for existing installations.
+ */
+function search_api_db_update_8104(): ?PluralTranslatableMarkup {
+  // @see https://www.drupal.org/project/search_api/issues/3345999
+
+  $config_factory = \Drupal::configFactory();
+  $count = 0;
+  foreach ($config_factory->listAll('search_api.server.') as $server_id) {
+    $server = $config_factory->getEditable($server_id);
+    if ($server->get('backend') !== 'search_api_db') {
+      continue;
+    }
+
+    ++$count;
+    $config = $server->get('backend_config') ?: [];
+    $config['phrase'] = 'disabled';
     $server->set('backend_config', $config);
     // Mark the resulting configuration as trusted data. This avoids issues
     // with future schema changes.

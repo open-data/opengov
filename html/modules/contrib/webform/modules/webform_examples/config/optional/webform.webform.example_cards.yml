@@ -15,7 +15,8 @@ archive: false
 id: example_cards
 title: 'Example: Cards'
 description: 'Example of a multiple step &#39;cards&#39; webform.'
-category: Example
+categories:
+  - Example
 elements: |
   first_name_card:
     '#type': webform_card
@@ -83,7 +84,6 @@ elements: |
     comments:
       '#title': Comments
       '#type': textarea
-  
 css: ''
 javascript: ''
 settings:
@@ -171,6 +171,8 @@ settings:
   wizard_toggle: true
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

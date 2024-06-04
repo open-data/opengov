@@ -70,22 +70,27 @@ class SimpleSitemapCommands extends DrushCommands {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function rebuildQueue(array $options = ['variants' => '']): void {
-    // @todo No need to load all sitemaps here.
     $variants = array_keys(SimpleSitemap::loadMultiple());
     if (isset($options['variants']) && (string) $options['variants'] !== '') {
       $chosen_variants = array_map('trim', array_filter(explode(',', (string) $options['variants'])));
       if (!empty($erroneous_variants = array_diff($chosen_variants, $variants))) {
-        $message = 'The following variants do not exist: ' . implode(', ', $erroneous_variants)
-          . '. Available variants are: ' . implode(', ', $variants) . '.';
+        $message = 'The following sitemaps do not exist: ' . implode(', ', $erroneous_variants) . '.'
+          . ($variants
+            ? (' Available variants are: ' . implode(', ', $variants))
+            : '')
+          . '.';
         $this->logger()->log('error', $message);
         return;
       }
       $variants = $chosen_variants;
     }
 
-    $this->generator->setVariants($variants)->rebuildQueue();
+    $this->generator->setSitemaps($variants)->rebuildQueue();
 
-    $this->logger()->log('notice', 'The following variants have been queued for regeneration: ' . implode(', ', $variants) . '.');
+    $message = $variants
+      ? 'The following sitemaps have been queued for regeneration: ' . implode(', ', $variants) . '.'
+      : 'No sitemaps have been queued for regeneration.';
+    $this->logger()->log('notice', $message);
   }
 
 }

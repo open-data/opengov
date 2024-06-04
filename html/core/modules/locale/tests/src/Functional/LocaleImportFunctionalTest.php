@@ -8,6 +8,8 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Core\Language\LanguageInterface;
 
+// cspell:ignore chien chiens januari lundi moutons műveletek svibanj
+
 /**
  * Tests the import of locale files.
  *
@@ -505,8 +507,7 @@ EOF;
   }
 
   /**
-   * Helper function that returns a .po file which strings will be marked
-   * as customized.
+   * Returns a .po file that will be marked as customized.
    */
   public function getCustomPoFile() {
     return <<< EOF

@@ -157,9 +157,11 @@ abstract class AbstractWebDriver
             );
         }
 
-        $value   = $this->offsetGet('value', $result);
-        $message = $this->offsetGet('message', $result) ?: $this->offsetGet('message', $value);
-        $error   = $this->offsetGet('error', $result)   ?: $this->offsetGet('error', $value);
+        $value = $this->offsetGet('value', $result);
+
+        if (($message = $this->offsetGet('message', $result)) === null) {
+            $message = $this->offsetGet('message', $value);
+        }
 
         // if not success, throw exception
         if (isset($result['status']) && (int) $result['status'] !== 0) {
@@ -167,6 +169,10 @@ abstract class AbstractWebDriver
                 $result['status'],
                 $message
             );
+        }
+
+        if (($error = $this->offsetGet('error', $result)) === null) {
+            $error = $this->offsetGet('error', $value);
         }
 
         if (isset($error)) {

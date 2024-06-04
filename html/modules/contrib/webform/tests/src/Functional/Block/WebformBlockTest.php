@@ -16,7 +16,7 @@ class WebformBlockTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['block', 'webform'];
+  protected static $modules = ['block', 'webform'];
 
   /**
    * Webforms to load.
@@ -46,6 +46,22 @@ class WebformBlockTest extends WebformBrowserTestBase {
     $this->drupalGet('<front>');
     $assert_session->responseContains('webform-submission-contact-add-form');
     $assert_session->fieldValueEquals('edit-name--2', 'John Smith');
+
+    // Check contact webform with lazy rendering.
+    $block->getPlugin()->setConfigurationValue('default_data', NULL);
+    $block->getPlugin()->setConfigurationValue('lazy', TRUE);
+    $block->save();
+    $this->drupalGet('<front>');
+    $assert_session->responseContains('webform-submission-contact-add-form');
+
+    // Check contact webform lazy rendering with default data.
+    $block->getPlugin()->setConfigurationValue('lazy', TRUE);
+    $block->getPlugin()->setConfigurationValue('default_data', "name: 'John Smith'");
+    $block->save();
+    $this->drupalGet('<front>');
+    $assert_session->responseContains('webform-submission-contact-add-form');
+    $assert_session->fieldValueEquals('edit-name--2', 'John Smith');
+    $block->getPlugin()->setConfigurationValue('lazy', FALSE);
 
     // Check confirmation inline webform.
     $block->getPlugin()->setConfigurationValue('webform_id', 'test_confirmation_inline');

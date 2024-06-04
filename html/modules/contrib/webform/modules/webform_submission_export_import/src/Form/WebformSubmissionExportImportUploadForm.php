@@ -275,9 +275,8 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
         file_put_contents($file_path, file_get_contents($import_url));
 
         $form_field_name = $this->t('Submission CSV (Comma Separated Values) file');
-        $file_size = filesize($file_path);
         // Mimic Symfony and Drupal's upload file handling.
-        $file_info = new UploadedFile($file_path, basename($file_path), NULL, $file_size);
+        $file_info = new UploadedFile($file_path, basename($file_path));
         $file = _webform_submission_export_import_file_save_upload_single($file_info, $form_field_name, $validators);
         break;
     }

@@ -18,7 +18,7 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_example_element'];
+  protected static $modules = ['webform_ui', 'webform_example_element'];
 
   /**
    * Tests webform example element.
@@ -46,6 +46,22 @@ class WebformExampleElementTest extends WebformBrowserTestBase {
     $webform_submission = WebformSubmission::load($sid);
     $this->assertEquals($webform_submission->getElementData('webform_example_element'), '{Test}');
     $this->assertEquals($webform_submission->getElementData('webform_example_element_multiple'), ['{Test 01}']);
+  }
+
+  /**
+   * Tests webform example element config form.
+   */
+  public function testWebformExampleElementConfigForm() {
+    $assert_session = $this->assertSession();
+    $webform = Webform::load('webform_example_element');
+    // Login as admin.
+    $this->drupalLogin($this->rootUser);
+    // Navigate to webform settings.
+    $this->drupalGet('/admin/structure/webform/manage/' . $webform->id() . '/element/webform_example_element/edit');
+    // Check fieldset is there.
+    $assert_session->elementExists('css', '#edit-example-element-fieldset');
+    // Check if the Example textarea is there.
+    $assert_session->fieldExists('Example textarea');
   }
 
 }

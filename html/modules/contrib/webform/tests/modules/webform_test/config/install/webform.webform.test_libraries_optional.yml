@@ -14,7 +14,8 @@ archive: false
 id: test_libraries_optional
 title: 'Test: Libraries: Optional'
 description: 'Test optional libraries.'
-category: 'Test: Libraries'
+categories:
+  - 'Test: Libraries'
 elements: |
   libraries:
     '#type': details
@@ -76,16 +77,12 @@ elements: |
         kitten_3:
           text: 'Cute Kitten 3'
           src: 'http://placekitten.com/130/200'
-    location:
-      '#type': webform_location_places
-      '#title': Location
     rating:
       '#type': webform_rating
       '#title': Rating
     signature:
       '#type': webform_signature
       '#title': Signature
-  
 css: ''
 javascript: ''
 settings:
@@ -173,6 +170,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

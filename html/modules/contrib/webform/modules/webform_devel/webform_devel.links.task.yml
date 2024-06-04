@@ -1,9 +1,3 @@
-entity.webform.schema_form:
-  title: 'Webform'
-  route_name: entity.webform.schema_form
-  parent_id: devel.entities:webform.devel_tab
-  weight: 100
-
 entity.webform.fapi_export_form:
   title: 'Form API'
   route_name: entity.webform.fapi_export_form

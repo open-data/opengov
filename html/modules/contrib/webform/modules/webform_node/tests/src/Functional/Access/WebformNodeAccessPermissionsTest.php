@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform_node\Functional\Access;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform_node\Functional\WebformNodeBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform node access permissions.
@@ -17,7 +17,7 @@ class WebformNodeAccessPermissionsTest extends WebformNodeBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_node'];
+  protected static $modules = ['webform', 'webform_node'];
 
   /**
    * Webforms to load.
@@ -265,8 +265,9 @@ class WebformNodeAccessPermissionsTest extends WebformNodeBrowserTestBase {
 
     // Create a wizard submission.
     $this->drupalLogin($submission_own_account);
-    $this->drupalPostForm('/node/' . $wizard_nid, [], 'Next >');
-    $this->drupalPostForm(NULL, [], 'Submit');
+    $this->drupalGet('/node/' . $wizard_nid);
+    $this->submitForm([], 'Next >');
+    $this->submitForm([], 'Submit');
     $wizard_sid = $this->getLastSubmissionId($wizard_webform);
     $this->drupalLogout();
 

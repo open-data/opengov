@@ -14,7 +14,8 @@ archive: false
 id: test_element_rating
 title: 'Test: Element: Rating'
 description: 'Test the rating element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   rating_elements:
     '#type': details
@@ -34,7 +35,6 @@ elements: |
       '#type': webform_rating
       '#title': rating_required
       '#required': true
-  
 css: ''
 javascript: ''
 settings:
@@ -122,6 +122,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

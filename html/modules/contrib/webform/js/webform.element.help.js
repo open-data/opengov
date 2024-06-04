@@ -3,7 +3,7 @@
  * JavaScript behaviors for element help text (tooltip).
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -52,7 +52,7 @@
         }
       };
 
-      $(context).find('.js-webform-element-help').once('webform-element-help').each(function () {
+      $(once('webform-element-help', '.js-webform-element-help', context)).each(function () {
         var $link = $(this);
 
         $link.on('click', function (event) {
@@ -73,4 +73,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

@@ -14,7 +14,8 @@ archive: false
 id: example_options_custom
 title: 'Example: Custom Options'
 description: 'Example of a custom options element.'
-category: Example
+categories:
+  - Example
 elements: |
   states:
     '#type': 'webform_options_custom:us_states'
@@ -28,7 +29,6 @@ elements: |
       one: One -- This is the number 1.
       two: Two -- This is the number 2.
       three:  Three -- This is the number 3.
-  
 css: ''
 javascript: ''
 settings:
@@ -116,6 +116,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

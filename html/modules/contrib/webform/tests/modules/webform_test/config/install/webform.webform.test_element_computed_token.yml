@@ -14,7 +14,8 @@ archive: false
 id: test_element_computed_token
 title: 'Test: Element: Computed token'
 description: 'Test computed token element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   simple_string:
     '#type': textfield
@@ -71,7 +72,6 @@ elements: |
     '#display_on': none
     '#store': true
     '#template': 'sid: [webform_submission:sid]'
-  
 css: ''
 javascript: ''
 settings:
@@ -159,6 +159,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

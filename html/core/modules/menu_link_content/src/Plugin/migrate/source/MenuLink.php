@@ -6,6 +6,8 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
 use Drupal\migrate\Row;
 
+// cspell:ignore objectid tsid
+
 /**
  * Drupal 6/7 menu link source from database.
  *
@@ -50,7 +52,11 @@ class MenuLink extends DrupalSqlBase {
    */
   public function query() {
     $query = $this->select('menu_links', 'ml')
-      ->fields('ml');
+      ->fields('ml')
+      // Shortcut set links are migrated by the d7_shortcut migration.
+      // Shortcuts are not used in Drupal 6.
+      // @see Drupal\shortcut\Plugin\migrate\source\d7\Shortcut::query()
+      ->condition('ml.menu_name', 'shortcut-set-%', 'NOT LIKE');
     $and = $query->andConditionGroup()
       ->condition('ml.module', 'menu')
       ->condition('ml.router_path', ['admin/build/menu-customize/%', 'admin/structure/menu/manage/%'], 'NOT IN');

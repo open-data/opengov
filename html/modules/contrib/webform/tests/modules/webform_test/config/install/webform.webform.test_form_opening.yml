@@ -14,11 +14,11 @@ archive: false
 id: test_form_opening
 title: 'Test: Webform: Opening'
 description: 'Test message being displayed when a webform is scheduled to open.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   description:
     '#markup': 'This message should not be displayed'
-  
 css: ''
 javascript: ''
 settings:
@@ -106,6 +106,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

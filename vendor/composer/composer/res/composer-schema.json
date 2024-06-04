@@ -111,6 +111,11 @@
                     "type": "string",
                     "description": "URL to the RSS feed.",
                     "format": "uri"
+                },
+                "security": {
+                    "type": "string",
+                    "description": "URL to the vulnerability disclosure policy (VDP).",
+                    "format": "uri"
                 }
             }
         },
@@ -289,7 +294,7 @@
             "properties": {
                 "platform": {
                     "type": "object",
-                    "description": "This is an object of package name (keys) and version (values) that will be used to mock the platform packages on this machine.",
+                    "description": "This is an object of package name (keys) and version (values) that will be used to mock the platform packages on this machine, the version can be set to false to make it appear like the package is not present.",
                     "additionalProperties": {
                         "type": ["string", "boolean"]
                     }
@@ -320,13 +325,41 @@
                         "type": ["string"]
                     }
                 },
+                "audit": {
+                    "type": "object",
+                    "description": "Security audit configuration options",
+                    "properties": {
+                        "ignore": {
+                            "anyOf": [
+                                {
+                                    "type": "object",
+                                    "description": "A list of advisory ids, remote ids or CVE ids (keys) and the explanations (values) for why they're being ignored. The listed items are reported but let the audit command pass.",
+                                    "additionalProperties": {
+                                        "type": ["string", "string"]
+                                    }
+                                },
+                                {
+                                    "type": "array",
+                                    "description": "A set of advisory ids, remote ids or CVE ids that are reported but let the audit command pass.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
+                        },
+                        "abandoned": {
+                            "enum": ["ignore", "report", "fail"],
+                            "description": "Whether abandoned packages should be ignored, reported as problems or cause an audit failure."
+                        }
+                    }
+                },
                 "notify-on-install": {
                     "type": "boolean",
                     "description": "Composer allows repositories to define a notification URL, so that they get notified whenever a package from that repository is installed. This option allows you to disable that behaviour, defaults to true."
                 },
                 "github-protocols": {
                     "type": "array",
-                    "description": "A list of protocols to use for github.com clones, in priority order, defaults to [\"git\", \"https\", \"http\"].",
+                    "description": "A list of protocols to use for github.com clones, in priority order, defaults to [\"https\", \"ssh\", \"git\"].",
                     "items": {
                         "type": "string"
                     }
@@ -340,14 +373,29 @@
                 },
                 "gitlab-oauth": {
                     "type": "object",
-                    "description": "An object of domain name => gitlab API oauth tokens, typically {\"gitlab.com\":\"<token>\"}.",
+                    "description": "An object of domain name => gitlab API oauth tokens, typically {\"gitlab.com\":{\"expires-at\":\"<expiration date>\", \"refresh-token\":\"<refresh token>\", \"token\":\"<token>\"}}.",
                     "additionalProperties": {
-                        "type": "string"
+                        "type": ["string", "object"],
+                        "required": [ "token"],
+                        "properties": {
+                            "expires-at": {
+                                "type": "integer",
+                                "description": "The expiration date for this GitLab token"
+                            },
+                            "refresh-token": {
+                                "type": "string",
+                                "description": "The refresh token used for GitLab authentication"
+                            },
+                            "token": {
+                                "type": "string",
+                                "description": "The token used for GitLab authentication"
+                            }
+                        }
                     }
                 },
                 "gitlab-token": {
                     "type": "object",
-                    "description": "An object of domain name => gitlab private tokens, typically {\"gitlab.com\":\"<token>\"}.",
+                    "description": "An object of domain name => gitlab private tokens, typically {\"gitlab.com\":\"<token>\"}, or an object with username and token keys.",
                     "additionalProperties": {
                         "type": ["string", "object"],
                         "required": ["username", "token"],
@@ -523,6 +571,14 @@
                             "consumer-secret": {
                                 "type": "string",
                                 "description": "The consumer-secret used for OAuth authentication"
+                            },
+                            "access-token": {
+                                "type": "string",
+                                "description": "The OAuth token retrieved from Bitbucket's API, this is written by Composer and you should not set it nor modify it."
+                            },
+                            "access-token-expiration": {
+                                "type": "integer",
+                                "description": "The generated token's expiration timestamp, this is written by Composer and you should not set it nor modify it."
                             }
                         }
                     }
@@ -637,6 +693,13 @@
             "description": "Descriptions for custom commands, shown in console help.",
             "additionalProperties": {
                 "type": "string"
+            }
+        },
+        "scripts-aliases": {
+            "type": ["object"],
+            "description": "Aliases for custom commands.",
+            "additionalProperties": {
+                "type": "array"
             }
         }
     },

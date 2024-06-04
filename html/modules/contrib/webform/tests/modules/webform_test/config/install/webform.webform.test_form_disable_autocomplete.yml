@@ -14,14 +14,14 @@ archive: false
 id: test_form_disable_autocomplete
 title: 'Test: Webform: Disable autocomplete'
 description: 'Test disabling autocompletion for all elements.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   description:
     '#markup': 'Form tag should include autocomplete=off attribute.'
   test:
     '#type': email
     '#title': 'Test autocompletion is disabled.'
-  
 css: ''
 javascript: ''
 settings:
@@ -109,6 +109,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

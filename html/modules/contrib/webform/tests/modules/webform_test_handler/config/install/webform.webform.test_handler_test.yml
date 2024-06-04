@@ -16,13 +16,13 @@ archive: false
 id: test_handler_test
 title: 'Test: Handler: Test invoke methods'
 description: 'Test invoking of webform handler methods.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   element:
     '#type': textfield
     '#title': 'Empty element'
     '#description': 'Entering any value will throw an error'
-  
 css: ''
 javascript: ''
 settings:
@@ -110,6 +110,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

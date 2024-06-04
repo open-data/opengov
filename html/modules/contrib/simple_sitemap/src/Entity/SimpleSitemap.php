@@ -294,7 +294,10 @@ class SimpleSitemap extends ConfigEntityBase implements SimpleSitemapInterface {
       $options['base_url'] = $settings->get('base_url') ?: $GLOBALS['base_url'];
     }
 
-    $options['language'] = $this->languageManager()->getLanguage(LanguageInterface::LANGCODE_NOT_APPLICABLE);
+    // Instead of setting the $options['language'] to LanguageInterface::LANGCODE_NOT_APPLICABLE, we disable path
+    // processing because of a core change introduced in https://www.drupal.org/project/drupal/issues/2883450.
+    // See https://www.drupal.org/project/simple_sitemap/issues/3369919.
+    $options['path_processing'] = FALSE;
 
     return $this->isDefault()
       ? Url::fromRoute(

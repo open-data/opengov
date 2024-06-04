@@ -20,7 +20,8 @@ class TestPurgeHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function prePurge(array $webform_submissions) {
+  public function prePurge(array &$webform_submissions) {
+    array_shift($webform_submissions);
     \Drupal::state()->set('webform_test_purge_handler_pre', array_map(function (WebformSubmissionInterface $submission) {
       return $submission->id();
     }, $webform_submissions));

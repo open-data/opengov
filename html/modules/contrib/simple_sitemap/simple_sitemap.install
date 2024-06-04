@@ -5,8 +5,8 @@
  * Module install and update procedures.
  */
 
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\simple_sitemap\Entity\SimpleSitemap;
 
 /**
@@ -418,7 +418,7 @@ function simple_sitemap_update_8208() {
     ->execute()->fetchAll(\PDO::FETCH_OBJ);
 
   foreach ($results as $row) {
-    $settings = unserialize($row->inclusion_settings);
+    $settings = unserialize($row->inclusion_settings, ['allowed_classes' => FALSE]);
     if (!isset($settings['changefreq'])) {
       \Drupal::database()->update('simple_sitemap_entity_overrides')
         ->fields(['inclusion_settings' => serialize($settings + ['changefreq' => ''])])
@@ -454,7 +454,7 @@ function simple_sitemap_update_8209() {
     ->execute()->fetchAll(\PDO::FETCH_OBJ);
 
   foreach ($results as $row) {
-    $settings = unserialize($row->inclusion_settings);
+    $settings = unserialize($row->inclusion_settings, ['allowed_classes' => FALSE]);
     if (!isset($settings['include_images'])) {
       \Drupal::database()->update('simple_sitemap_entity_overrides')
         ->fields(['inclusion_settings' => serialize($settings + ['include_images' => 0])])
@@ -557,7 +557,7 @@ function simple_sitemap_update_8212() {
     ->execute()->fetchAll(\PDO::FETCH_OBJ);
 
   foreach ($results as $row) {
-    $settings = unserialize($row->inclusion_settings);
+    $settings = unserialize($row->inclusion_settings, ['allowed_classes' => FALSE]);
 
     if (isset($settings['index'])) {
       $settings['index'] = (bool) $settings['index'];
@@ -925,4 +925,13 @@ function simple_sitemap_update_8406() {
   }
 
   return t('A sitemap index which lists all other sitemaps is now available and can be enabled.');
+}
+
+/**
+ * Delete the sitemap queue.
+ */
+function simple_sitemap_update_8407() {
+  \Drupal::service('simple_sitemap.queue_worker')->deleteQueue();
+
+  return t('The sitemaps need to be regenerated.');
 }

@@ -39,9 +39,6 @@ services:
   webform.addons_manager:
     class: Drupal\webform\WebformAddonsManager
 
-  webform.cli_service:
-    class: Drupal\webform\Commands\WebformCliService
-
   webform.conditions_manager:
     class: Drupal\webform\WebformEntityConditionsManager
     arguments: ['@plugin.manager.webform.element']
@@ -92,7 +89,7 @@ services:
 
   webform_submission.exporter:
     class: Drupal\webform\WebformSubmissionExporter
-    arguments: ['@config.factory', '@file_system', '@entity_type.manager', '@stream_wrapper_manager', '@plugin.manager.archiver', '@plugin.manager.webform.element', '@plugin.manager.webform.exporter']
+    arguments: ['@config.factory', '@file_system', '@entity_type.manager', '@stream_wrapper_manager', '@plugin.manager.archiver', '@plugin.manager.webform.element', '@plugin.manager.webform.exporter', '@language_manager']
 
   webform.third_party_settings_manager:
     class: Drupal\webform\WebformThirdPartySettingsManager
@@ -125,7 +122,7 @@ services:
   # Event subscriber.
 
   webform.exception_html_subscriber:
-    class: Drupal\webform\EventSubscriber\WebformExceptionHtmlSubscriber
+    class: Drupal\webform\EventSubscriber\WebformDefaultExceptionHtmlSubscriber
     arguments: ['@http_kernel', '@logger.channel.php', '@redirect.destination', '@router.no_access_checks', '@current_user', '@config.factory', '@renderer', '@messenger', '@webform.token_manager']
     tags:
       - { name: event_subscriber }

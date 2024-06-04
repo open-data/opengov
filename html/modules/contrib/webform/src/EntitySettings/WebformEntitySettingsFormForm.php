@@ -126,7 +126,7 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
       '#options' => [
         WebformInterface::TITLE_SOURCE_ENTITY_WEBFORM => $this->t('Source entity: Webform'),
         WebformInterface::TITLE_WEBFORM_SOURCE_ENTITY => $this->t('Webform: Source entity'),
-        WebformInterface::TITLE_WEBFORM => $this->t('Webform'),
+        WebformInterface::TITLE_WEBFORM => $this->t('Webform', [], ['context' => 'form']),
         WebformInterface::TITLE_SOURCE_ENTITY => $this->t('Source entity'),
       ],
       '#required' => TRUE,

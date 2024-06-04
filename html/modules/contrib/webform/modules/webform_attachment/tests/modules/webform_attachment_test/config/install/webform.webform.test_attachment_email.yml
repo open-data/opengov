@@ -14,7 +14,8 @@ archive: false
 id: test_attachment_email
 title: 'Test: Webform Attachment Email'
 description: 'Test Webform attachment element email.'
-category: 'Test: Attachment'
+categories:
+  - 'Test: Attachment'
 elements: |
   email:
     '#type': email
@@ -62,13 +63,12 @@ elements: |
             </SOURCE>
          </asx:values>
       </asx:abap>
-  
+
   attachment_twig:
     '#type': webform_attachment_twig
     '#title': attachment_twig
     '#filename': 'attachment_twig-[current-date:html_date].xml'
     '#template': "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<asx:abap xmlns:asx=\"http://www.sap.com/abapxml\" version=\"1.0\">\n   <asx:values>\n      <VERSION>1.0</VERSION>\n      <SENDER>{{ webform_id }}</SENDER>\n      <WEBFORM_ID>{{ data.email }}</WEBFORM_ID>\n      <SOURCE>\n        {% for key, value in data %}\n         <o2PARAVALU>\n            <NAME>{{ (elements_flattened[key]['#xml_name']) ? elements_flattened[key]['#xml_name'] : key }}</NAME>\n            <VALUE>{{ value }}</VALUE>\n         </o2PARAVALU>\n        {% endfor %}      \n      </SOURCE>\n   </asx:values>\n</asx:abap>"
-  
 css: ''
 javascript: ''
 settings:
@@ -156,6 +156,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

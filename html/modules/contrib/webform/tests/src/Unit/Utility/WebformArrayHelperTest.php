@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Unit\Utility;
 
-use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\Tests\UnitTestCase;
+use Drupal\webform\Utility\WebformArrayHelper;
 
 /**
  * Tests webform array utility.

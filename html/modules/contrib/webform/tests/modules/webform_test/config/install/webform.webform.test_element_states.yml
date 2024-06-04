@@ -14,7 +14,8 @@ archive: false
 id: test_element_states
 title: 'Test: Element: #States API'
 description: 'Test Drupal''s #states API states (visible, required, disabled, checked, and expanded).'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   states_basic:
     '#type': webform_element_states
@@ -124,7 +125,6 @@ elements: |
         custom_selector:
           value:
             pattern: '[a-z0-9]+'
-  
 css: ''
 javascript: ''
 settings:
@@ -212,6 +212,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

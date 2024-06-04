@@ -5,6 +5,8 @@ namespace Drupal\webform\Element;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Security\TrustedCallbackInterface;
+use Drupal\filter\Entity\FilterFormat;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\Utility\WebformXss;
@@ -14,7 +16,12 @@ use Drupal\webform\Utility\WebformXss;
  *
  * @FormElement("webform_html_editor")
  */
-class WebformHtmlEditor extends FormElement {
+class WebformHtmlEditor extends FormElement implements TrustedCallbackInterface {
+
+  /**
+   * Default webform filter format.
+   */
+  const DEFAULT_FILTER_FORMAT = 'webform_default';
 
   /**
    * {@inheritdoc}
@@ -99,11 +106,12 @@ class WebformHtmlEditor extends FormElement {
     // If #format or 'webform.settings.html_editor.element_format' is defined return
     // a 'text_format' element.
     $format = $element['#format'] ?: \Drupal::config('webform.settings')->get('html_editor.element_format');
-    if ($format) {
+    if ($format && FilterFormat::load($format)) {
       $element['value'] += [
         '#type' => 'text_format',
         '#format' => $format,
         '#allowed_formats' => [$format],
+        '#webform_html_editor' => TRUE,
         // Do not allow the text format value to be cleared when the text format
         // is hidden via #states. We must use a wrapper <div> because
         // The TextFormat element does not support #attributes.
@@ -112,44 +120,18 @@ class WebformHtmlEditor extends FormElement {
         '#prefix' => '<div data-webform-states-no-clear>',
         '#suffix' => '</div>',
       ];
+      if ($format === static::DEFAULT_FILTER_FORMAT) {
+        $element['value']['#attributes']['class'][] = 'webform-html-editor-default-filter-format';
+      }
       WebformElementHelper::fixStatesWrapper($element);
+      $element['#attached']['library'][] = 'webform/webform.element.html_editor';
       return $element;
     }
 
-    // Else use textarea with completely custom HTML Editor.
+    // Else use a textarea.
     $element['value'] += [
       '#type' => 'textarea',
     ];
-    $element['value']['#attributes']['class'][] = 'js-html-editor';
-
-    $element['#attached']['library'][] = 'webform/webform.element.html_editor';
-    $element['#attached']['drupalSettings']['webform']['html_editor']['allowedContent'] = static::getAllowedContent();
-
-    /** @var \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager */
-    $libraries_manager = \Drupal::service('webform.libraries_manager');
-    $libraries = $libraries_manager->getLibraries(TRUE);
-    $element['#attached']['drupalSettings']['webform']['html_editor']['plugins'] = [];
-    foreach ($libraries as $library_name => $library) {
-      if (strpos($library_name, 'ckeditor.') === FALSE) {
-        continue;
-      }
-
-      $plugin_name = str_replace('ckeditor.', '', $library_name);
-      $plugin_path = $library['plugin_path'];
-      $plugin_url = $library['plugin_url'];
-      if (file_exists($plugin_path)) {
-        $element['#attached']['drupalSettings']['webform']['html_editor']['plugins'][$plugin_name] = base_path() . $plugin_path;
-      }
-      else {
-        $element['#attached']['drupalSettings']['webform']['html_editor']['plugins'][$plugin_name] = $plugin_url;
-      }
-    }
-
-    // phpcs:ignore Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing
-    if (\Drupal::moduleHandler()->moduleExists('imce') && \Drupal\imce\Imce::access()) {
-      $element['#attached']['library'][] = 'imce/drupal.imce.ckeditor';
-      $element['#attached']['drupalSettings']['webform']['html_editor']['ImceImageIcon'] = \Drupal::service('file_url_generator')->generateAbsoluteString(\Drupal::service('extension.list.module')->getPath('imce') . '/js/plugins/ckeditor/icons/imceimage.png');
-    }
 
     if (!empty($element['#states'])) {
       WebformFormHelper::processStates($element, '#wrapper_attributes');
@@ -178,7 +160,7 @@ class WebformHtmlEditor extends FormElement {
   /**
    * Get allowed content.
    *
-   * @return array
+   * @return string
    *   Allowed content (tags) for CKEditor.
    */
   public static function getAllowedContent() {
@@ -250,7 +232,8 @@ class WebformHtmlEditor extends FormElement {
       }
     }
 
-    if ($format = \Drupal::config('webform.settings')->get('html_editor.element_format')) {
+    $format = \Drupal::config('webform.settings')->get('html_editor.element_format');
+    if ($format && $format !== static::DEFAULT_FILTER_FORMAT) {
       return [
         '#type' => 'processed_text',
         '#text' => $text,
@@ -277,6 +260,91 @@ class WebformHtmlEditor extends FormElement {
    */
   public static function stripTags($text) {
     return Xss::filter($text, static::getAllowedTags());
+  }
+
+  /* ************************************************************************ */
+  // Text format and processed text callbacks.
+  // @see \webform_element_info_alter()
+  /* ************************************************************************ */
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function trustedCallbacks() {
+    return ['preRenderTextFormat', 'preRenderProcessedText'];
+  }
+
+  /**
+   * Process text format.
+   *
+   * @param array $element
+   *   An associative array containing the properties and children of the
+   *   radios or checkboxes element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param array $complete_form
+   *   The complete webform structure.
+   *
+   * @return array
+   *   The processed element.
+   */
+  public static function processTextFormat($element, FormStateInterface $form_state, &$complete_form) {
+    if ($element['format']['format']['#default_value'] !== static::DEFAULT_FILTER_FORMAT) {
+      unset(
+        $element['format']['format']['#options'][static::DEFAULT_FILTER_FORMAT],
+        $element['format']['guidelines'][static::DEFAULT_FILTER_FORMAT]
+      );
+    }
+    return $element;
+  }
+
+  /**
+   * Prepares a #type 'text_format'.
+   *
+   * @param array $element
+   *   An associative array containing the properties of the element.
+   *
+   * @return array
+   *   The $element with prepared variables ready for theme_element().
+   */
+  public static function preRenderTextFormat(array $element) {
+    // Remove guidelines and help from the 'webform_html_editor'.
+    // @see \Drupal\webform\Element\WebformHtmlEditor::processWebformHtmlEditor
+    if (!empty($element['#webform_html_editor'])) {
+      unset(
+        $element['format']['guidelines'],
+        $element['format']['help']
+      );
+    }
+    return $element;
+  }
+
+  /**
+   * Pre-render callback: Renders a processed text element into #markup.
+   *
+   * @param array $element
+   *   An element with the filtered text in '#markup'.
+   *
+   * @return array
+   *   The passed-in element with the filtered text in '#markup'.
+   */
+  public static function preRenderProcessedText($element) {
+    $format_id = $element['#format'] ?? NULL;
+    if ($format_id === static::DEFAULT_FILTER_FORMAT) {
+      // Determine if this is a CKEditor(4) test format tags to be processed.
+      // (i.e, <h1>TEST</h1>)
+      // @see \Drupal\ckeditor\Plugin\CKEditorPlugin\Internal::generateFormatTagsSetting
+      // @see https://www.drupal.org/project/webform/issues/3331164
+      $is_ckeditor_test = preg_match('#^<([a-z0-9]+)>TEST</\1>$#', $element['#markup'] ?? '');
+      // Log issue, except for CKEditor(4) test format tags.
+      if (!$is_ckeditor_test) {
+        $message = "Disabled text format: %format. This text format can not be used outside of the Webform module's HTML editor.";
+        \Drupal::logger('webform')->alert($message, ['%format' => $format_id]);
+      }
+      $element['#markup'] = '';
+      return $element;
+    }
+    return $element;
   }
 
 }

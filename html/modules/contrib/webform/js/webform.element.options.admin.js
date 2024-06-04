@@ -3,7 +3,7 @@
  * JavaScript behaviors for options (admin) elements.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,7 +14,7 @@
    */
   Drupal.behaviors.webformOptionsAdmin = {
     attach: function (context) {
-      $(context).find('.js-webform-options-sync').once('webform-options-sync').each(function () {
+      $(once('webform-options-sync', '.js-webform-options-sync', context)).each(function () {
         // Target input name and not id because the id will be changing via
         // Ajax callbacks.
         var name = this.name;
@@ -50,4 +50,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

@@ -14,7 +14,8 @@ archive: false
 id: test_element_message
 title: 'Test: Element: Message'
 description: 'Test the message element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   message_types:
     '#type': details
@@ -92,7 +93,6 @@ elements: |
       '#message_close': true
       '#message_id': webform_test_message_custom
       '#message_storage': custom
-  
 css: ''
 javascript: ''
 settings:
@@ -180,6 +180,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

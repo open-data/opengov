@@ -3,7 +3,7 @@
  * JavaScript behaviors for jQuery Text Counter integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -23,7 +23,7 @@
         return;
       }
 
-      $(context).find('.js-webform-counter').once('webform-counter').each(function () {
+      $(once('webform-counter', '.js-webform-counter', context)).each(function () {
         var options = {
           type: $(this).data('counter-type'),
           max: $(this).data('counter-maximum'),
@@ -57,4 +57,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

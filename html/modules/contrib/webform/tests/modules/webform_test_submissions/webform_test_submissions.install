@@ -5,9 +5,9 @@
  * Install, update and uninstall functions for the Webform Test Exporter module.
  */
 
-use Drupal\node\NodeInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
+use Drupal\node\NodeInterface;
 use Drupal\webform\Entity\WebformSubmission;
 
 /**

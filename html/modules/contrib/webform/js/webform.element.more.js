@@ -3,7 +3,7 @@
  * JavaScript behaviors for element (read) more.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,7 +14,7 @@
    */
   Drupal.behaviors.webformElementMore = {
     attach: function (context) {
-      $(context).find('.js-webform-element-more').once('webform-element-more').each(function (event) {
+      $(once('webform-element-more', '.js-webform-element-more', context)).each(function (event) {
         var $more = $(this);
         var $a = $more.find('a').first();
         var $content = $more.find('.webform-element-more--content');
@@ -56,4 +56,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

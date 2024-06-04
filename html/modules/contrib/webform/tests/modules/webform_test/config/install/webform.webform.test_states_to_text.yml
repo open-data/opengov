@@ -14,7 +14,8 @@ archive: false
 id: test_states_to_text
 title: 'Test: Form API #states to text'
 description: 'Test Drupal''s converting #states API to human readable text.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   some_trigger:
     '#type': checkbox
@@ -69,7 +70,6 @@ elements: |
           - ':input[name="some_number"]':
               value:
                 between: '1:10'
-  
 css: ''
 javascript: ''
 settings:
@@ -157,6 +157,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

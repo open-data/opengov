@@ -3,7 +3,6 @@
 namespace Drupal\simple_sitemap\Form\Handler;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\simple_sitemap\Entity\SimpleSitemap;
 
 /**
  * Defines the handler for bundle entity forms.
@@ -23,7 +22,7 @@ class BundleEntityFormHandler extends EntityFormHandlerBase {
         ->getBundleLabel($this->entityTypeId, $this->bundleName);
     }
 
-    foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
+    foreach ($this->generator->entityManager()->getSitemaps() as $variant => $sitemap) {
       $variant_form = &$form[$variant];
 
       if (isset($bundle_label)) {
@@ -52,15 +51,14 @@ class BundleEntityFormHandler extends EntityFormHandlerBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    // @todo No need to load all sitemaps here.
-    foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
+    $entity_manager = $this->generator->entityManager();
+    foreach ($entity_manager->getSitemaps() as $variant => $sitemap) {
       $settings = $form_state->getValue(['simple_sitemap', $variant]);
 
       // Variants may have changed since form load.
       if ($settings) {
-        $this->generator
-          ->setVariants($variant)
-          ->entityManager()
+        $entity_manager
+          ->setSitemaps($sitemap)
           ->setBundleSettings($this->entityTypeId, $this->bundleName, $settings);
       }
     }

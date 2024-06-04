@@ -14,7 +14,8 @@ archive: false
 id: test_cards_titles
 title: 'Test: Webform: Cards titles'
 description: 'Test cards title customization.'
-category: 'Test: Cards'
+categories:
+  - 'Test: Cards'
 elements: |
   card_1:
     '#type': webform_card
@@ -33,7 +34,6 @@ elements: |
       '#type': textfield
       '#title': 'Element 2'
       '#default_value': '{element_2}'
-  
 css: ''
 javascript: ''
 settings:
@@ -121,6 +121,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

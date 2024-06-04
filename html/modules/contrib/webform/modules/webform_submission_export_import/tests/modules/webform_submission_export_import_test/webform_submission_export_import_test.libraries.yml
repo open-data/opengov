@@ -5,4 +5,4 @@ webform_submission_export_import_test:
   dependencies:
     - core/drupal
     - core/jquery
-    - core/jquery.once
+    - core/once

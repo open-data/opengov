@@ -42,6 +42,13 @@ class SettingsWebformHandler extends WebformHandlerBase {
   protected $tokenManager;
 
   /**
+   * The configuration array.
+   *
+   * @var array
+   */
+  protected $configuration;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {

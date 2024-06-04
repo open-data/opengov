@@ -63,7 +63,7 @@ class WebformVariant extends Plugin {
    *
    * @var string
    */
-  public $machine_name_replace_pattern = '[^a-z0-9_]+';
+  public $machine_name_replace_pattern = '[^a-zA-Z0-9_-]+';
 
   /**
    * The machine name replacement character.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Entity;
 
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
@@ -50,7 +52,6 @@ class EntityTypeRepositoryTest extends UnitTestCase {
    *   (optional) An array of entity type definitions.
    */
   protected function setUpEntityTypeDefinitions($definitions = []) {
-    $class = $this->getMockClass(EntityInterface::class);
     foreach ($definitions as $key => $entity_type) {
       // \Drupal\Core\Entity\EntityTypeInterface::getLinkTemplates() is called
       // by \Drupal\Core\Entity\EntityTypeManager::processDefinition() so it must
@@ -58,7 +59,7 @@ class EntityTypeRepositoryTest extends UnitTestCase {
       $entity_type->getLinkTemplates()->willReturn([]);
 
       // Give the entity type a legitimate class to return.
-      $entity_type->getClass()->willReturn($class);
+      $entity_type->getClass()->willReturn(EntityInterface::class);
 
       $definitions[$key] = $entity_type->reveal();
     }
@@ -156,16 +157,16 @@ class EntityTypeRepositoryTest extends UnitTestCase {
    * @covers ::getEntityTypeFromClass
    */
   public function testGetEntityTypeFromClassAmbiguous() {
-    $boskoop = $this->prophesize(EntityTypeInterface::class);
-    $boskoop->getOriginalClass()->willReturn('\Drupal\apple\Entity\Apple');
-    $boskoop->id()->willReturn('boskop');
+    $jazz = $this->prophesize(EntityTypeInterface::class);
+    $jazz->getOriginalClass()->willReturn('\Drupal\apple\Entity\Apple');
+    $jazz->id()->willReturn('jazz');
 
     $gala = $this->prophesize(EntityTypeInterface::class);
     $gala->getOriginalClass()->willReturn('\Drupal\apple\Entity\Apple');
     $gala->id()->willReturn('gala');
 
     $this->setUpEntityTypeDefinitions([
-      'boskoop' => $boskoop,
+      'jazz' => $jazz,
       'gala' => $gala,
     ]);
 

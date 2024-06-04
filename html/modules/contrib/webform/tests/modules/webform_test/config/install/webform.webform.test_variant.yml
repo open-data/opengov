@@ -14,13 +14,13 @@ archive: false
 id: test_variant
 title: 'Test: Variant'
 description: 'Test variant.'
-category: 'Test: Variants'
+categories:
+  - 'Test: Variants'
 elements: |
   letter:
     '#type': webform_variant
     '#title': test_offcanvas_width
     '#variant': test_offcanvas_width
-  
 css: ''
 javascript: ''
 settings:
@@ -108,6 +108,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

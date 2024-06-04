@@ -4,9 +4,9 @@ namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElementBase;
+use Drupal\webform\Plugin\WebformElementDisplayOnInterface;
 use Drupal\webform\Plugin\WebformElementVariantInterface;
 use Drupal\webform\WebformInterface;
-use Drupal\webform\Plugin\WebformElementDisplayOnInterface;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**

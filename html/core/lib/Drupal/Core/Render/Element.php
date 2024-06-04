@@ -37,7 +37,7 @@ class Element {
    *   An array of property keys for the element.
    */
   public static function properties(array $element) {
-    return array_filter(array_keys($element), 'static::property');
+    return array_filter(array_keys($element), [static::class, 'property']);
   }
 
   /**
@@ -187,7 +187,7 @@ class Element {
   /**
    * Indicates whether the given element is empty.
    *
-   * An element that only has #cache, #weight, or #attached set is considered
+   * An element that only has #cache or #weight set is considered
    * empty, because it will render to the empty string.
    *
    * @param array $elements
@@ -197,7 +197,7 @@ class Element {
    *   Whether the given element is empty.
    */
   public static function isEmpty(array $elements) {
-    return \array_diff(\array_keys($elements), ['#cache', '#weight', '#attached']) === [];
+    return \array_diff(\array_keys($elements), ['#cache', '#weight']) === [];
   }
 
 }

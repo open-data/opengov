@@ -14,7 +14,8 @@ archive: false
 id: test_form_wizard_long_200
 title: 'Test: Wizard: Long - 200 elements'
 description: 'Test wizard with 200 elements'
-category: 'Test: Wizard'
+categories:
+  - 'Test: Wizard'
 elements: |
   wizard_1:
     '#type': webform_wizard_page
@@ -676,7 +677,6 @@ elements: |
     element_200:
       '#type': textfield
       '#title': 'Element #200'
-  
 css: ''
 javascript: ''
 settings:
@@ -764,6 +764,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

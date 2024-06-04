@@ -43,7 +43,7 @@ class WebformSubmissionLogLogger implements LoggerInterface {
   /**
    * {@inheritdoc}
    */
-  public function log($level, $message, array $context = []) {
+  public function log($level, $message, array $context = []): void {
     // Only log the 'webform_submission' channel.
     if ($context['channel'] !== 'webform_submission') {
       return;

@@ -22,6 +22,7 @@ Steps for updating libraries
 - Enable all external libraries (admin/structure/webform/config/libraries)
 
 - Manually check for new releases. Only update to stable releases.
+  - @see <https://stackoverflow.com/questions/15035786/download-source-from-npm-without-installing-it>
 
 - Add list of updated external libraries to issue on Drupal.org
 
@@ -57,14 +58,14 @@ Enable and download all libraries
 
     cd ~/Sites/drupal_webform
     drush php-eval "\Drupal::configFactory()->getEditable('webform.settings')->set('libraries.excluded_libraries', [])->save();"
-    drush en -y webform_image_select webform_toggles webform_location_geocomplete webform_icheck webform_options_custom
+    drush en -y webform_image_select webform_toggles webform_location_geocomplete webform_location_places webform_icheck webform_options_custom
     drush webform:libraries:download
 
 Update libraries.zip
 
     # Checkout branch
     cd ~/Sites/drupal_webform/web/modules/sandbox/webform_libraries/
-    git checkout 6.1.x
+    git checkout 6.2.x
 
     # Remove libraries.zip
     cd ~/Sites/drupal_webform/web/modules/sandbox/webform_libraries/
@@ -79,7 +80,7 @@ Commit changes
 
     # Commit changes.
     cd ~/Sites/drupal_webform/web/modules/sandbox/webform_libraries/
-    git checkout 6.1.x
+    git checkout 6.2.x
     git commit -am"Update webform_libraries"
     git push
 

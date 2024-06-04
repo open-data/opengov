@@ -91,6 +91,14 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
   const INDEXES_KEY_VALUE_STORE_ID = 'search_api_db.indexes';
 
   /**
+   * The maximum number of characters allowed in a token.
+   *
+   * For bigrams, this is the maximum length of the compound token (first word +
+   * space + second word).
+   */
+  protected const TOKEN_LENGTH_MAX = 50;
+
+  /**
    * The database connection to use for this server.
    *
    * @var \Drupal\Core\Database\Connection
@@ -440,6 +448,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
       'database' => NULL,
       'min_chars' => 1,
       'matching' => 'words',
+      'phrase' => 'bigram',
       'autocomplete' => [
         'suggest_suffix' => TRUE,
         'suggest_words' => TRUE,
@@ -516,6 +525,23 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
       ],
     ];
 
+    $form['phrase'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Phrase indexing'),
+      '#description' => $this->t('Choose how phrase queries (queries with double quotes) should be handled. Better matching comes at the price of slower indexing and larger database size.'),
+      '#default_value' => $this->configuration['phrase'],
+      '#options' => [
+        'disabled' => $this->t('Disabled'),
+        'bigram' => $this->t('Bigram'),
+      ],
+      'disabled' => [
+        '#description' => $this->t('Ignore quotes in searches and just look for the individual words separately. For instance, <em>"blue house"</em> matches any item that contains the words “blue” and “house” somewhere in its indexed text, no matter where and in what order.'),
+      ],
+      'bigram' => [
+        '#description' => $this->t('Treat a quoted phrase in a search like it is generally expected, matching only items that contain those words in the exact same order, consecutively. For instance, <em>"blue house"</em> would match only items that contain the word “blue” immediately followed by the word “house”. Please make sure that the associated increase in database size (about 5x) and indexing time (about 2x) is acceptable for your site.'),
+      ],
+    ];
+
     if ($this->getModuleHandler()->moduleExists('search_api_autocomplete')) {
       $form['autocomplete'] = [
         '#type' => 'details',
@@ -572,6 +598,13 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
       'info' => $labels[$this->configuration['matching']],
     ];
 
+    $info[] = [
+      'label' => $this->t('Phrase indexing'),
+      // Passing a variable expression to t() is fine here since those same
+      // values are passed as literals in buildConfigurationForm() above.
+      'info' => $this->t(ucfirst($this->configuration['phrase'])),
+    ];
+
     if (!empty($this->configuration['autocomplete'])) {
       $this->configuration['autocomplete'] += [
         'suggest_suffix' => TRUE,
@@ -624,7 +657,8 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
     }
     $original_config = $this->server->original->getBackendConfig();
     $original_config += $this->defaultConfiguration();
-    return $this->configuration['min_chars'] != $original_config['min_chars'];
+    return $this->configuration['min_chars'] != $original_config['min_chars']
+      || $this->configuration['phrase'] != $original_config['phrase'];
   }
 
   /**
@@ -940,7 +974,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
             }
           }
         }
-        catch (PluginException $e) {
+        catch (PluginException) {
           // Ignore.
         }
         throw new SearchApiException("Unknown field type '$type'.");
@@ -1121,7 +1155,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
             'word' => [
               'description' => 'The text of the indexed token',
               'type' => 'varchar',
-              'length' => 50,
+              'length' => static::TOKEN_LENGTH_MAX,
               'not null' => TRUE,
               'binary' => TRUE,
             ],
@@ -1244,6 +1278,137 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
   }
 
   /**
+   * Returns a score based on the position of the token.
+   *
+   * Words near the beginning of the text are weighted higher than words later
+   * in the text.
+   *
+   * @param int $prior_token_count
+   *   The number of tokens preceding the current token.
+   *
+   * @return float
+   *   The factor with which to multiply the token's score (between 0 and 1).
+   */
+  protected static function getPositionalScore(int $prior_token_count): float {
+    // Taken from Drupal Core's SearchIndex::index() method:
+    // Focus is a decaying value in terms of the amount of unique words up to
+    // this point. From 100 words and more, it decays, to (for example) 0.5 at
+    // 500 words and 0.3 at 1000 words.
+    return min(1, .01 + 3.5 / (2 + $prior_token_count * .015));
+  }
+
+  /**
+   * Removes the leading negative sign and leading zeroes from a number.
+   *
+   * @param string $numericString
+   *   The numeric string to clean.
+   *
+   * @return string
+   *   The cleaned numeric string.
+   */
+  protected static function cleanNumericString(string $numericString): string {
+    $numericString = ltrim($numericString, '-0');
+    if ($numericString === '') {
+      return '0';
+    }
+
+    return $numericString;
+  }
+
+  /**
+   * Produces a clean array of tokens and their scores.
+   *
+   * Used as a helper method in indexItem().
+   *
+   * @param \Drupal\search_api\Plugin\search_api\data_type\value\TextTokenInterface[] $values
+   *   An ordered array of text tokens.
+   * @param float $item_boost
+   *   The score boost for this index item.
+   * @param string &$denormalized_value
+   *   Outputs a truncated string representing these text tokens.
+   *
+   * @return array[]
+   *   Extracted tokens, keyed by the indexed token/bigram and represented by
+   *   associative arrays with keys "value" (the token/bigram) and "score".
+   */
+  protected function convertValuesToScoredTokens(array $values, float $item_boost, string &$denormalized_value): array {
+    // Build a deduplicated list of single-word tokens.
+    $unique_tokens = [];
+    $pos_in_text = 0;
+    $word = NULL;
+    $score = NULL;
+    foreach ($values as $token) {
+      $prev_word = $word;
+      $prev_score = $score;
+      $word = $token->getText();
+      $score = $token->getBoost();
+
+      // In rare cases, tokens with leading or trailing whitespace can
+      // slip through. Since this can lead to errors when such tokens are
+      // part of a primary key (as in this case), we trim such whitespace
+      // here.
+      $word = trim($word);
+
+      // Store the first 30 characters of the string as the denormalized
+      // value.
+      if (mb_strlen($denormalized_value) < 30) {
+        $denormalized_value .= $word . ' ';
+      }
+
+      // Skip words that are too short, except for numbers.
+      if (is_numeric($word)) {
+        $word = static::cleanNumericString($word);
+      }
+      elseif (mb_strlen($word) < $this->configuration['min_chars']) {
+        // To skip this token entirely, we set $word and $score back to the
+        // previous token, so bigrams will be correct.
+        $word = $prev_word;
+        $score = $prev_score;
+        continue;
+      }
+
+      // Only insert each canonical base form of a word once.
+      $word_base_form = $this->dbmsCompatibility->preprocessIndexValue($word);
+      $boost_factor = $item_boost * $this->getPositionalScore($pos_in_text);
+      if (!isset($unique_tokens[$word_base_form])) {
+        $unique_tokens[$word_base_form] = [
+          'value' => $word,
+          'score' => $score * $boost_factor,
+        ];
+        ++$pos_in_text;
+      }
+      else {
+        $unique_tokens[$word_base_form]['score'] += $score * $boost_factor;
+      }
+
+      if ($this->configuration['phrase'] === 'bigram') {
+        // Now add a bigram for this word and the last. In case this is the
+        // first word, or the bigram wouldn't fit into the maximum token length,
+        // there is no bigram to add.
+        if ($prev_word === NULL || mb_strlen($prev_word) + 1 >= static::TOKEN_LENGTH_MAX) {
+          continue;
+        }
+
+        $bigram = "$prev_word $word";
+        $bigram = mb_substr($bigram, 0, static::TOKEN_LENGTH_MAX);
+        $bigram_score = $boost_factor * ($prev_score + $score) / 2;
+        $bigram_base_form = $this->dbmsCompatibility->preprocessIndexValue($bigram);
+        if (!isset($unique_tokens[$bigram_base_form])) {
+          $unique_tokens[$bigram_base_form] = [
+            'value' => $bigram,
+            'score' => $bigram_score,
+          ];
+        }
+        else {
+          $unique_tokens[$bigram_base_form]['score'] += $bigram_score;
+        }
+      }
+    }
+
+    return $unique_tokens;
+  }
+
+  /**
    * Indexes a single item on the specified index.
    *
    * Used as a helper method in indexItems().
@@ -1258,10 +1423,10 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
    *   method.
    */
   protected function indexItem(IndexInterface $index, ItemInterface $item) {
-    $fields = $this->getFieldInfo($index);
     $fields_updated = FALSE;
     $field_errors = [];
     $db_info = $this->getIndexDbInfo($index);
+    $fields = $db_info['field_tables'];
     $denormalized_table = $db_info['index_table'];
     $item_id = $item->getId();
 
@@ -1285,6 +1450,8 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
           unset($db_info['field_tables'][$field_id]);
           $this->fieldsUpdated($index);
           $fields_updated = TRUE;
+          // Reload DB info because fieldsUpdated() may have changed it.
+          $db_info = $this->getIndexDbInfo($index);
           $fields = $db_info['field_tables'];
         }
         if (empty($fields[$field_id]['table']) && empty($field_errors[$field_id])) {
@@ -1335,53 +1502,9 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
             $text_table = $table;
           }
 
-          $unique_tokens = [];
           $denormalized_value = '';
-          /** @var \Drupal\search_api\Plugin\search_api\data_type\value\TextTokenInterface $token */
-          foreach ($values as $token) {
-            $word = $token->getText();
-            $score = $token->getBoost() * $item->getBoost();
+          $unique_tokens = $this->convertValuesToScoredTokens($values, $item->getBoost(), $denormalized_value);
 
-            // In rare cases, tokens with leading or trailing whitespace can
-            // slip through. Since this can lead to errors when such tokens are
-            // part of a primary key (as in this case), we trim such whitespace
-            // here.
-            $word = trim($word);
-
-            // Store the first 30 characters of the string as the denormalized
-            // value.
-            if (mb_strlen($denormalized_value) < 30) {
-              $denormalized_value .= $word . ' ';
-            }
-
-            // Skip words that are too short, except for numbers.
-            if (is_numeric($word)) {
-              $word = ltrim($word, '-0');
-            }
-            elseif (mb_strlen($word) < $this->configuration['min_chars']) {
-              continue;
-            }
-
-            // Taken from core search to reflect less importance of words later
-            // in the text.
-            // Focus is a decaying value in terms of the amount of unique words
-            // up to this point. From 100 words and more, it decays, to (for
-            // example) 0.5 at 500 words and 0.3 at 1000 words.
-            $score *= min(1, .01 + 3.5 / (2 + count($unique_tokens) * .015));
-
-            // Only insert each canonical base form of a word once.
-            $word_base_form = $this->dbmsCompatibility->preprocessIndexValue($word);
-
-            if (!isset($unique_tokens[$word_base_form])) {
-              $unique_tokens[$word_base_form] = [
-                'value' => $word,
-                'score' => $score,
-              ];
-            }
-            else {
-              $unique_tokens[$word_base_form]['score'] += $score;
-            }
-          }
           $denormalized_values[$column] = mb_substr(trim($denormalized_value), 0, 30);
           if ($unique_tokens) {
             $field_name = static::getTextFieldName($field_id);
@@ -1391,7 +1514,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
               $score = round($score);
               // Take care that the score doesn't exceed the maximum value for
               // the database column (2^32-1).
-              $score = min((int) $score, 4294967295);
+              $score = (int) min($score, 4294967295);
               $text_inserts[] = [
                 'item_id' => $item_id,
                 'field_name' => $field_name,
@@ -1508,9 +1631,13 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
           }
           foreach (static::splitIntoWords($text) as $word) {
             if ($word) {
-              if (mb_strlen($word) > 50) {
-                $this->getLogger()->warning('An overlong word (more than 50 characters) was encountered while indexing: %word.<br />Since database search servers currently cannot index words of more than 50 characters, the word was truncated for indexing. If this should not be a single word, please make sure the "Tokenizer" processor is enabled and configured correctly for index %index.', ['%word' => $word, '%index' => $index->label()]);
-                $word = mb_substr($word, 0, 50);
+              if (mb_strlen($word) > static::TOKEN_LENGTH_MAX) {
+                $this->getLogger()->warning('An overlong word (more than @token_length_max characters) was encountered while indexing: %word.<br />Since database search servers currently cannot index words of more than @token_length_max characters, the word was truncated for indexing. If this should not be a single word, please make sure the "Tokenizer" processor is enabled and configured correctly for index %index.', [
+                  '@token_length_max' => static::TOKEN_LENGTH_MAX,
+                  '%word' => $word,
+                  '%index' => $index->label(),
+                ]);
+                $word = mb_substr($word, 0, static::TOKEN_LENGTH_MAX);
               }
               $tokens[] = new TextToken($word);
             }
@@ -1522,12 +1649,16 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
               // Check for over-long tokens.
               $score = $token->getBoost();
               $word = $token->getText();
-              if (mb_strlen($word) > 50) {
+              if (mb_strlen($word) > static::TOKEN_LENGTH_MAX) {
                 $new_tokens = [];
                 foreach (static::splitIntoWords($word) as $word) {
-                  if (mb_strlen($word) > 50) {
-                    $this->getLogger()->warning('An overlong word (more than 50 characters) was encountered while indexing: %word.<br />Since database search servers currently cannot index words of more than 50 characters, the word was truncated for indexing. If this should not be a single word, please make sure the "Tokenizer" processor is enabled and configured correctly for index %index.', ['%word' => $word, '%index' => $index->label()]);
-                    $word = mb_substr($word, 0, 50);
+                  if (mb_strlen($word) > static::TOKEN_LENGTH_MAX) {
+                    $this->getLogger()->warning('An overlong word (more than @token_length_max characters) was encountered while indexing: %word.<br />Since database search servers currently cannot index words of more than @token_length_max characters, the word was truncated for indexing. If this should not be a single word, please make sure the "Tokenizer" processor is enabled and configured correctly for index %index.', [
+                      '@token_length_max' => static::TOKEN_LENGTH_MAX,
+                      '%word' => $word,
+                      '%index' => $index->label(),
+                    ]);
+                    $word = mb_substr($word, 0, static::TOKEN_LENGTH_MAX);
                   }
                   $new_tokens[] = new TextToken($word, $score);
                 }
@@ -1579,7 +1710,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
             }
           }
         }
-        catch (PluginException $e) {
+        catch (PluginException) {
           // Ignore.
         }
         throw new SearchApiException("Unknown field type '$type'.");
@@ -1846,13 +1977,8 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
 
     $condition_group = $query->getConditionGroup();
     $this->addLanguageConditions($condition_group, $query);
-    // @todo #2877319 Maybe, like addLanguageConditions(), add a method here
-    //   checking for the "search_api_location" option on the query and, if
-    //   present, add new conditions based on the option(s) to the query.
-    //   Or place the conditions directly on the query below this if block -
-    //   in that case, you might need to remove any conditions on those fields
-    //   from the query.
-    if ($this->dbmsCompatibility instanceof LocationAwareDatabaseInterface) {
+    if ($this->dbmsCompatibility instanceof LocationAwareDatabaseInterface
+        && $query->getOption('search_api_location', [])) {
       $index_table = $this->getIndexDbInfo($query->getIndex())['index_table'];
       $index_table_alias = $this->getTableAlias(['table' => $index_table], $db_query);
       $this->dbmsCompatibility->addLocationFilter($index_table_alias, $query, $db_query);
@@ -1884,7 +2010,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
   }
 
   /**
-   * Removes nested expressions and phrase groupings from the search keys.
+   * Removes nested expressions from the search keys.
    *
    * Used as a helper method in createDbQuery() and createDbCondition().
    *
@@ -1937,7 +2063,13 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
   }
 
   /**
-   * Splits a keyword expression into separate words.
+   * Splits phrase queries based on the current "Phrase indexing" setting.
+   *
+   * If "Phrase indexing" is "disabled", then phrases will simply be split into
+   * individual words.
+   *
+   * If "Phrase indexing" is set to "bigram", then phrases with more than two
+   * words are expanded into multiple ANDed two-word phrase groupings.
    *
    * Used as a helper method in prepareKeys().
    *
@@ -1954,7 +2086,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
     if (is_scalar($keys)) {
       $processed_keys = $this->dbmsCompatibility->preprocessIndexValue(trim($keys));
       if (is_numeric($processed_keys)) {
-        return ltrim($processed_keys, '-0');
+        return static::cleanNumericString($processed_keys);
       }
       elseif (mb_strlen($processed_keys) < $this->configuration['min_chars']) {
         $this->ignored[$keys] = 1;
@@ -1965,16 +2097,48 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
       }
       else {
         $words = static::splitIntoWords($processed_keys);
+        if ($this->configuration['min_chars'] > 1) {
+          $words = array_filter($words, function (string $word): bool {
+            return mb_strlen($word) >= $this->configuration['min_chars'];
+          });
+        }
       }
-      if (count($words) > 1) {
-        $processed_keys = $this->splitKeys($words, $tokenizer_active);
-        if ($processed_keys) {
+      if (count($words) <= 1) {
+        return mb_substr($processed_keys, 0, static::TOKEN_LENGTH_MAX);
+      }
+
+      if ($this->configuration['phrase'] === 'disabled') {
+        if (count($words) > 1) {
+          $processed_keys = $this->splitKeys($words, $tokenizer_active);
+          if ($processed_keys) {
+            $processed_keys['#conjunction'] = 'AND';
+          }
+          else {
+            $processed_keys = NULL;
+          }
+        }
+      }
+      elseif ($this->configuration['phrase'] === 'bigram') {
+        $processed_keys = [];
+        $words = array_values($words);
+        for ($i = 0; $i < count($words) - 1; ++$i) {
+          $key = $words[$i] . ' ' . $words[$i + 1];
+          // As we have no chance to match bigrams longer than our maximum token
+          // length, shorten the bigram accordingly.
+          $key = mb_substr($key, 0, static::TOKEN_LENGTH_MAX);
+          $processed_keys[] = $key;
+        }
+        if (count($processed_keys) > 1) {
           $processed_keys['#conjunction'] = 'AND';
+        }
+        elseif ($processed_keys) {
+          $processed_keys = reset($processed_keys);
         }
         else {
           $processed_keys = NULL;
         }
       }
+
       return $processed_keys;
     }
     foreach ($keys as $i => $key) {
@@ -2119,7 +2283,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
           $db_query->groupBy("{$column['table']}.{$column['field']}");
         }
 
-        foreach ($words as $i => $word) {
+        foreach ($words as $word) {
           $like = $this->database->escapeLike($word);
           $like = $prefix_search ? "$like%" : "%$like%";
           $db_or->condition('t.word', $like, 'LIKE');
@@ -2338,9 +2502,6 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
           }
           elseif (($field_info['type'] ?? '') === 'location'
               && $this->dbmsCompatibility instanceof LocationAwareDatabaseInterface) {
-            // @todo #2877319 Place filter on query, possibly also taking the
-            //   options into account. Or, if this is handled somewhere else,
-            //   simply ignore this condition.
             $this->dbmsCompatibility->addLocationDbCondition($field_info['column'], $value, $operator, $query, $db_query);
           }
           elseif ($not_between) {
@@ -2624,6 +2785,9 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
       $select->addField($alias, $is_text_type ? 'word' : 'value', 'value');
       if ($is_text_type) {
         $select->condition($alias . '.field_name', $this->getTextFieldName($facet['field']));
+
+        // Exclude bigrams.
+        $select->condition($alias . '.word', '% %', 'NOT LIKE');
       }
       if (!$facet['missing'] && !$is_text_type) {
         $select->isNotNull($alias . '.value');
@@ -2709,7 +2873,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
       return FALSE;
     }
     $expressions = &$db_query->getExpressions();
-    $expressions = [];
+    unset($expressions['score']);
 
     // Remove the ORDER BY clause, as it may refer to expressions that are
     // unset above.
@@ -2721,11 +2885,19 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
     $group_by = &$db_query->getGroupBy();
     $group_by = array_intersect_key($group_by, ['t.item_id' => TRUE]);
 
+    // In case there are any expressions left (like a computed distance column),
+    // we nest the query to get rid of them.
+    if ($expressions) {
+      $db_query = $this->database->select($db_query, 't')
+        ->fields('t', ['item_id']);
+    }
+
     $db_query->distinct();
     if (!$db_query->preExecute()) {
       return FALSE;
     }
     $args = $db_query->getArguments();
+
     try {
       $result = $this->database->queryTemporary((string) $db_query, $args);
     }
@@ -2875,6 +3047,8 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
       $db_query = $this->database->select($word_query, 't');
       $db_query->addExpression('COUNT(DISTINCT [t].[item_id])', 'results');
       $db_query->fields('t', ['word'])
+        // Exclude bigrams.
+        ->condition('t.word', '% %', 'NOT LIKE')
         ->groupBy('t.word')
         ->having('COUNT(DISTINCT [t].[item_id]) <= :max', [':max' => $max_occurrences])
         ->orderBy('results', 'DESC')
@@ -2950,7 +3124,7 @@ class Database extends BackendPluginBase implements AutocompleteBackendInterface
         try {
           $distance_field->setType('decimal');
         }
-        catch (SearchApiException $e) {
+        catch (SearchApiException) {
           // Cannot happen.
         }
         $distance_field->setDatasourceId($field->getDatasourceId());

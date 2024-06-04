@@ -14,7 +14,8 @@ archive: false
 id: test_handler_remote_post_file
 title: 'Test: Handler: Remote post file'
 description: 'Test remote post handler file.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   file:
     '#title': file
@@ -27,7 +28,6 @@ elements: |
     '#required': true
     '#multiple': true
     '#file_extensions': txt
-  
 css: ''
 javascript: ''
 settings:
@@ -115,6 +115,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -134,7 +136,6 @@ settings:
   confirmation_title: ''
   confirmation_message: |
     <p>Your confirmation number is [webform_submission:values:confirmation_number].</p>
-    
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true

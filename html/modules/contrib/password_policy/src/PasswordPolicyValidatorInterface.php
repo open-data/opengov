@@ -21,8 +21,8 @@ interface PasswordPolicyValidatorInterface {
    * @param array $edited_user_roles
    *   An optional array containing the edited user roles.
    *
-   * @return \Drupal\password_policy\PasswordPolicyValidationReport
-   *   Validation report object.
+   * @return \Drupal\password_policy\PasswordPolicyValidationReport|bool
+   *   A validation report object or TRUE if the password exceeds max length.
    */
   public function validatePassword(string $password, UserInterface $user, array $edited_user_roles = []): PasswordPolicyValidationReport;
 

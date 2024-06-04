@@ -16,7 +16,8 @@ archive: false
 id: test_element_options_custom_ent
 title: 'Test: Element: Custom Options Entity Reference'
 description: 'Test custom options entity reference element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_options_custom_entity:
     '#type': 'webform_options_custom_entity:test_entity_rooms'
@@ -28,7 +29,6 @@ elements: |
     '#selection_settings':
       target_bundles:
         page: page
-  
 css: ''
 javascript: ''
 settings:
@@ -116,6 +116,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

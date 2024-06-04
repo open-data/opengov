@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rest\Unit;
 
 use Drupal\Core\Entity\EntityConstraintViolationList;
@@ -23,7 +25,6 @@ class EntityResourceValidationTraitTest extends UnitTestCase {
     $trait = new EntityResourceValidationTraitTestClass();
 
     $method = new \ReflectionMethod($trait, 'validate');
-    $method->setAccessible(TRUE);
 
     $violations = $this->prophesize(EntityConstraintViolationList::class);
     $violations->filterByFieldAccess()->shouldBeCalled()->willReturn([]);
@@ -63,7 +64,6 @@ class EntityResourceValidationTraitTest extends UnitTestCase {
     $trait = new EntityResourceValidationTraitTestClass();
 
     $method = new \ReflectionMethod($trait, 'validate');
-    $method->setAccessible(TRUE);
 
     $this->expectException(UnprocessableEntityHttpException::class);
 

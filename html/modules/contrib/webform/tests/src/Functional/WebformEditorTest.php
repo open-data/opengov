@@ -19,7 +19,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['file', 'filter', 'webform', 'webform_ui'];
+  protected static $modules = ['file', 'webform', 'webform_ui'];
 
   /**
    * The file usage service.
@@ -31,7 +31,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create filters.
@@ -64,7 +64,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     // Upload the first image.
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
     $edit = [
-      'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
+      'description[value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save');
     $this->reloadImages($images);
@@ -81,7 +81,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     // Upload the second image.
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
     $edit = [
-      'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/><img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
+      'description[value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/><img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save');
     $this->reloadImages($images);
@@ -99,7 +99,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     // Remove the first image.
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
     $edit = [
-      'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
+      'description[value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save');
     $this->reloadImages($images);
@@ -144,7 +144,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     $this->assertTrue($images[0]->isTemporary());
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
     $edit = [
-      'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
+      'description[value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save');
     $this->reloadImages($images);
@@ -152,7 +152,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
 
     // Check unused file is NOT temporary.
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
-    $edit = ['description[value]' => ''];
+    $edit = ['description[value][value]' => ''];
     $this->submitForm($edit, 'Save');
     $this->reloadImages($images);
     $this->assertFalse($images[0]->isTemporary());
@@ -164,7 +164,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
 
     $this->drupalGet('/admin/structure/webform/manage/contact/settings');
     $edit = [
-      'description[value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
+      'description[value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save');
     $this->reloadImages($images);
@@ -203,7 +203,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     // Upload the first image.
     $this->drupalGet('/admin/structure/webform/config');
     $edit = [
-      'form_settings[default_form_open_message][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
+      'form_settings[default_form_open_message][value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save configuration');
     $this->reloadImages($images);
@@ -219,7 +219,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     // Upload the second image.
     $this->drupalGet('/admin/structure/webform/config');
     $edit = [
-      'form_settings[default_form_open_message][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/><img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
+      'form_settings[default_form_open_message][value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[0]->uuid() . '"/><img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save configuration');
     $this->reloadImages($images);
@@ -236,7 +236,7 @@ class WebformEditorTest extends WebformBrowserTestBase {
     // Remove the first image.
     $this->drupalGet('/admin/structure/webform/config');
     $edit = [
-      'form_settings[default_form_open_message][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
+      'form_settings[default_form_open_message][value][value]' => '<img data-entity-type="file" data-entity-uuid="' . $images[1]->uuid() . '"/>',
     ];
     $this->submitForm($edit, 'Save configuration');
     $this->reloadImages($images);

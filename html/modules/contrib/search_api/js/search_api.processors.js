@@ -3,7 +3,7 @@
  * Attaches show/hide functionality to checkboxes in the "Processor" tab.
  */
 
-($ => {
+(($) => {
   Drupal.behaviors.searchApiProcessor = {
     attach(context) {
       const selector = '.search-api-status-wrapper input.form-checkbox';

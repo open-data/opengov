@@ -79,11 +79,11 @@ class WebformElementManagedFilePrivateTest extends WebformElementManagedFileTest
         'file' => 'webform/test_element_managed_file/' . $sid . '/' . $this->files[0]->filename,
       ],
     ]);
-    $assert_session->addressEquals('user/login', [
+    $assert_session->addressEquals(Url::fromRoute('user.login', [], [
       'query' => [
         'destination' => $destination_url->toString(),
       ],
-    ]);
+    ]));
 
     // Upload private file and preview as anonymous user.
     $this->drupalGet('/webform/' . $webform->id());

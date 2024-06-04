@@ -10,9 +10,10 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\webform\Entity\WebformSubmission;
-use Drupal\webform\WebformInterface;
 use Drupal\webform\Entity\Webform;
+use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Utility\WebformYaml;
+use Drupal\webform\WebformInterface;
 
 /**
  * Provides convenience methods for webform assertions in browser tests.
@@ -487,6 +488,18 @@ trait WebformBrowserTestTrait {
    */
   protected function assertElementNotVisible($css_selector, $message = ''): void {
     $this->assertFalse($this->getSession()->getDriver()->isVisible($this->cssSelectToXpath($css_selector)), $message);
+  }
+
+  /**
+   * Checks that page HTML (response content) contains Yaml text.
+   *
+   * @param string|object $yaml
+   *   Yaml text value.
+   */
+  protected function assertWebformYaml($yaml): void {
+    // Re encode the Webform Yaml to ensure it is the right format.
+    $yaml = WebformYaml::encode(WebformYaml::decode($yaml));
+    $this->assertSession()->responseContains($yaml);
   }
 
   /* ************************************************************************ */

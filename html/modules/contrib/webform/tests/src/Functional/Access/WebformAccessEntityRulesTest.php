@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Access;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform entity access rules.
@@ -17,7 +17,7 @@ class WebformAccessEntityRulesTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'webform', 'webform_test_submissions'];
+  protected static $modules = ['node', 'webform', 'webform_test_submissions'];
 
   /**
    * Webforms to load.

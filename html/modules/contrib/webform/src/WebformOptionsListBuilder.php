@@ -5,6 +5,7 @@ namespace Drupal\webform;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Url;
 use Drupal\webform\Entity\WebformOptions;
@@ -35,6 +36,13 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
    * @var string
    */
   protected $category;
+
+  /**
+   * Query request.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $request;
 
   /**
    * {@inheritdoc}
@@ -104,7 +112,7 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
    *   A render array representing the information summary.
    */
   protected function buildInfo() {
-    $total = $this->getQuery($this->keys, $this->category)->count()->execute();
+    $total = $this->getQuery($this->keys, $this->category)->accessCheck(FALSE)->count()->execute();
     if (!$total) {
       return [];
     }
@@ -247,7 +255,7 @@ class WebformOptionsListBuilder extends ConfigEntityListBuilder {
    * @return \Drupal\Core\Entity\Query\QueryInterface
    *   An entity query.
    */
-  protected function getQuery($keys = '', $category = '') {
+  protected function getQuery($keys = '', $category = ''): QueryInterface {
     $query = $this->getStorage()->getQuery();
 
     // Filter by key(word).

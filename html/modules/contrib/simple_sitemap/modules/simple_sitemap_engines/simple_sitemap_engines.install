@@ -120,7 +120,7 @@ function simple_sitemap_engines_update_8402() {
       $entity_manager = \Drupal::service('simple_sitemap.entity_manager');
 
       $all_bundle_settings = $entity_manager
-        ->setVariants($default_variant)
+        ->setSitemaps($default_variant)
         ->getAllBundleSettings();
       if (!empty($all_bundle_settings[$default_variant])) {
         foreach ($all_bundle_settings[$default_variant] as $entity_type_name => $bundle_settings) {

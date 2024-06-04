@@ -24,13 +24,34 @@ class WebformName extends WebformCompositeBase {
    * {@inheritdoc}
    */
   protected function formatHtmlItemValue(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
-    return $this->formatTextItemValue($element, $webform_submission, $options);
+    return [
+      'name' => ['#plain_text' => $this->formtaFullName($element, $webform_submission, $options)],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function formatTextItemValue(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    return [
+      'name' => $this->formtaFullName($element, $webform_submission, $options),
+    ];
+  }
+
+  /**
+   * Format full name.
+   *
+   * @param array $element
+   *   An element.
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   * @param array $options
+   *   An array of options.
+   *
+   * @return string
+   *   The full name.
+   */
+  protected function formtaFullName(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $value = $this->getValue($element, $webform_submission, $options);
 
     $name_parts = [];
@@ -42,9 +63,7 @@ class WebformName extends WebformCompositeBase {
       }
     }
 
-    return [
-      'name' => trim(implode('', $name_parts)),
-    ];
+    return trim(implode('', $name_parts));
   }
 
 }

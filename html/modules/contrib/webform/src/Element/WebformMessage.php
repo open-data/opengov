@@ -2,8 +2,8 @@
 
 namespace Drupal\webform\Element;
 
-use Drupal\Core\Render\Element\RenderElement;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Element\RenderElement;
 use Drupal\Core\Url;
 
 /**

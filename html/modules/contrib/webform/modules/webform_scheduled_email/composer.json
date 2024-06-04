@@ -2,7 +2,7 @@
   "name": "drupal/webform_scheduled_email",
   "description": "Extends the Webform email handler to allow emails to be scheduled.",
   "type": "drupal-module",
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "minimum-stability": "dev",
   "homepage": "https://drupal.org/project/webform",
   "authors": [
@@ -21,7 +21,7 @@
   "extra": {
     "drush": {
       "services": {
-        "drush.services.yml": "^9"
+        "drush.services.yml": ">=9"
       }
     }
   }

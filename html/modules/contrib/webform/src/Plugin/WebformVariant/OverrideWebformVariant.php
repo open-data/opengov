@@ -30,6 +30,13 @@ class OverrideWebformVariant extends WebformVariantBase {
   protected $currentUser;
 
   /**
+   * The configuration array.
+   *
+   * @var array
+   */
+  protected $configuration;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {

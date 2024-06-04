@@ -3,7 +3,7 @@
  * JavaScript behaviors for webform cards admin.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -19,7 +19,7 @@
         ? $(context)
         : $('form.webform-edit-form', context);
 
-      $forms.once('webform-cards-admin').each(function () {
+      $(once('webform-cards-admin', $forms)).each(function () {
         var $form = $(this);
         if ($form.find('[data-webform-type="webform_wizard_page"]').length) {
           $('#webform-ui-add-page').parent('li').show();
@@ -37,4 +37,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

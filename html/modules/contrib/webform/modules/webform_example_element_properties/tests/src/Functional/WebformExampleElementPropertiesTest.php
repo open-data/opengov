@@ -16,7 +16,7 @@ class WebformExampleElementPropertiesTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'webform',
     'webform_ui',
     'webform_example_element_properties',

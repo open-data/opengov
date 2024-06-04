@@ -2,7 +2,7 @@
 
 namespace Drupal\search_api\Plugin\search_api\datasource;
 
-@trigger_error('\Drupal\search_api\Plugin\search_api\datasource\EntityDatasourceInterface is deprecated in search_api:8.x-1.16 and is removed from search_api:2.0.0. There is no replacement. See https://www.drupal.org/node/3103584.', E_USER_DEPRECATED);
+@trigger_error('\Drupal\search_api\Plugin\search_api\datasource\EntityDatasourceInterface is deprecated in search_api:8.x-1.16 and is removed from search_api:2.0.0. There is no replacement. See https://www.drupal.org/node/3103584', E_USER_DEPRECATED);
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\search_api\Datasource\DatasourceInterface;

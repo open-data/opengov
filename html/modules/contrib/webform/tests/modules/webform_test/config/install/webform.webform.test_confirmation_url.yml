@@ -14,11 +14,11 @@ archive: false
 id: test_confirmation_url
 title: 'Test: Confirmation: URL'
 description: 'Test redirecting to an internal URL.'
-category: 'Test: Confirmation'
+categories:
+  - 'Test: Confirmation'
 elements: |
   description:
     '#markup': 'This webform will redirect to the homepage when submitted.'
-  
 css: ''
 javascript: ''
 settings:
@@ -106,6 +106,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

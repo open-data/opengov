@@ -4,10 +4,58 @@ All notable changes to the Solarium library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.5]
+### Added
+- Option `buildAll` for Suggesters
+- NoWaitForResponseRequest Plugin
+
+### Fixed
+- PHP 8.2 deprecations for Solarium\QueryType\Server\Collections results
+
+
+## [6.3.4]
+### Added
+- PHP 8.3 support
+- Solarium\QueryType\Server\Api\Result::getWarning()
+- Term Vector Component
+
+### Fixed
+- ParallelExecution adds a HttpException instead of an empty Result in case of an endpoint failure
+- Facet pivot stats contain all fields (previously only the last field was present in the result)
+- Facet pivot stats return `NAN` for a mean value that's NaN
+- Facet pivot stats return an associative array for percentiles
+- PHP 8.2 deprecation for V1 Config/V2 Introspect API results
+
+### Changed
+- Facet pivot stats results use the field name instead of `'stats_fields'` as array key
+
+
+## [6.3.3]
+### Changed
+- Spatial component distance type changed from int to float
+- Revert return type for Solarium\Component\QueryTrait::setQuery() from `self` to `QueryInterface` for backward compatibility with custom query classes that override this method
+
+
+## [6.3.2]
+### Added
+- Solarium\Component\ReRankQuery::setOperator()
+- Solarium\Component\ReRankQuery::setScale() and setMainScale()
+
+### Fixed
+- MinimumScoreFilter can have a null value in a ValueGroupResult
+- Warning when building an Extract request from a stream resource without an associated URI/filename
+
+### Changed
+- LoadBalancer plugin blocks Extract queries from load balancing by default
+
+### Removed
+- PHP 7 support
+
+
 ## [6.3.1]
 ### Added
 - Loadbalancer plugin can failover on an optional list of HTTP status codes
-- Solarium\QueryType\Extract\Query::setFile() now supports file pointer resources
+- Solarium\QueryType\Extract\Query::setFile() now supports stream resources
 - Solarium\QueryType\Extract\Result::getFile() and getFileMetadata() to access the retrieved data for `extractOnly=true`
 
 ### Fixed

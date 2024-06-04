@@ -13,6 +13,7 @@ use Drupal\views_test_data\Plugin\views\filter\FilterTest as FilterPlugin;
  * Tests pluggable caching for views.
  *
  * @group views
+ * @group #slow
  * @see views_plugin_cache
  */
 class CacheTest extends ViewsKernelTestBase {
@@ -366,7 +367,7 @@ class CacheTest extends ViewsKernelTestBase {
     // Update the entry in the DB to ensure that result caching works.
     \Drupal::database()->update('views_test_data')
       ->condition('name', 'George')
-      ->fields(['name' => 'egroeG'])
+      ->fields(['name' => 'notGeorge'])
       ->execute();
 
     $view = Views::getView('test_cache');

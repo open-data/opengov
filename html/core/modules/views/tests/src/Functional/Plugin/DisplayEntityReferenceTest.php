@@ -5,7 +5,7 @@ namespace Drupal\Tests\views\Functional\Plugin;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\Tests\views\Functional\ViewTestBase;
 use Drupal\views\Views;
 
@@ -18,7 +18,7 @@ use Drupal\views\Views;
  */
 class DisplayEntityReferenceTest extends ViewTestBase {
 
-  use EntityReferenceTestTrait;
+  use EntityReferenceFieldCreationTrait;
 
   /**
    * Views used by this test.
@@ -275,6 +275,23 @@ class DisplayEntityReferenceTest extends ViewTestBase {
     $view->setDisplay('entity_reference_1');
     $render = $view->display_handler->render();
     $this->assertSame([], $render, 'Render returned empty array');
+
+    // Execute the View without setting the 'entity_reference_options'.
+    // This is equivalent to using the following as entity_reference_options.
+    // @code
+    // $options = [
+    //   'match' => NULL,
+    //   'match_operator' => 'CONTAINS',
+    //   'limit' => 0,
+    //   'ids' => NULL,
+    // ];
+    // @endcode
+    // Assert that this view returns a row for each test entity.
+    $view->destroy();
+    $view = Views::getView('test_display_entity_reference');
+    $view->setDisplay('entity_reference_1');
+    $this->executeView($view);
+    $this->assertCount(13, $view->result, 'Search returned thirteen rows');
   }
 
 }

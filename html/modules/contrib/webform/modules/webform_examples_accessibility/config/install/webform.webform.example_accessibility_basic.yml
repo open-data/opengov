@@ -14,7 +14,8 @@ archive: false
 id: example_accessibility_basic
 title: 'Example: Accessibility Basic'
 description: 'Basic webform accessibility example.'
-category: 'Example: Accessibility'
+categories:
+  - 'Example: Accessibility'
 elements: |
   text_elements:
     '#type': details
@@ -87,11 +88,6 @@ elements: |
     datelist:
       '#type': datelist
       '#title': 'Date list'
-    date_datepicker:
-      '#type': date
-      '#title': 'Date picker'
-      '#datepicker': true
-      '#date_date_format': 'D, m/d/Y'
     webform_time:
       '#type': webform_time
       '#title': Time
@@ -126,7 +122,6 @@ elements: |
       '#output': right
       '#output__field_prefix': $
       '#output__field_suffix': '.00'
-  
 css: ''
 javascript: ''
 settings:
@@ -214,6 +209,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

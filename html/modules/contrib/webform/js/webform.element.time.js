@@ -3,7 +3,7 @@
  * JavaScript behaviors for time integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -26,7 +26,7 @@
         return;
       }
 
-      $(context).find('input[data-webform-time-format]').once('webformTimePicker').each(function () {
+      $(once('webformTimePicker', 'input[data-webform-time-format]', context)).each(function () {
         var $input = $(this);
 
         // Skip if time inputs are supported by the browser and input is not a text field.
@@ -69,4 +69,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

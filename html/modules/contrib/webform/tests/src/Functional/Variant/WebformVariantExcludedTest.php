@@ -16,7 +16,7 @@ class WebformVariantExcludedTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_ui', 'webform_test_variant'];
+  protected static $modules = ['webform', 'webform_ui', 'webform_test_variant'];
 
   /**
    * Webforms to load.

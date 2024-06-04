@@ -2,17 +2,19 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 
+use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Menu\MenuLinkManagerInterface;
+use Drupal\Core\Menu\MenuLinkTreeInterface;
+use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\simple_sitemap\Entity\EntityHelper;
 use Drupal\simple_sitemap\Exception\SkipElementException;
 use Drupal\simple_sitemap\Logger;
 use Drupal\simple_sitemap\Manager\EntityManager;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Menu\MenuLinkTreeInterface;
 
 /**
  * Provides the menu link URL generator.
@@ -25,8 +27,6 @@ use Drupal\Core\Menu\MenuLinkTreeInterface;
  *     "overrides_entity_type" = "menu_link_content",
  *   },
  * )
- *
- * @todo Find way of adding just a menu link item pointer to the queue instead of whole object.
  */
 class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
 
@@ -43,6 +43,13 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
    * @var \Drupal\simple_sitemap\Manager\EntityManager
    */
   protected $entitiesManager;
+
+  /**
+   * The menu link plugin manager.
+   *
+   * @var \Drupal\Core\Menu\MenuLinkManagerInterface
+   */
+  protected $menuLinkManager;
 
   /**
    * EntityMenuLinkContentUrlGenerator constructor.
@@ -67,6 +74,8 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
    *   The simple_sitemap.entity_manager service.
    * @param \Drupal\Core\Menu\MenuLinkTreeInterface $menu_link_tree
    *   The menu tree service.
+   * @param \Drupal\Core\Menu\MenuLinkManagerInterface $menu_link_manager
+   *   The menu link plugin manager.
    */
   public function __construct(
     array $configuration,
@@ -78,7 +87,8 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
     EntityTypeManagerInterface $entity_type_manager,
     EntityHelper $entity_helper,
     EntityManager $entities_manager,
-    MenuLinkTreeInterface $menu_link_tree
+    MenuLinkTreeInterface $menu_link_tree,
+    MenuLinkManagerInterface $menu_link_manager
   ) {
     parent::__construct(
       $configuration,
@@ -92,6 +102,7 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
     );
     $this->entitiesManager = $entities_manager;
     $this->menuLinkTree = $menu_link_tree;
+    $this->menuLinkManager = $menu_link_manager;
   }
 
   /**
@@ -112,7 +123,8 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
       $container->get('entity_type.manager'),
       $container->get('simple_sitemap.entity_helper'),
       $container->get('simple_sitemap.entity_manager'),
-      $container->get('menu.link_tree')
+      $container->get('menu.link_tree'),
+      $container->get('plugin.manager.menu.link')
     );
   }
 
@@ -122,7 +134,7 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
   public function getDataSets(): array {
     $data_sets = [];
     $bundle_settings = $this->entitiesManager
-      ->setVariants($this->sitemap->id())
+      ->setSitemaps($this->sitemap)
       ->getAllBundleSettings();
     if (!empty($bundle_settings[$this->sitemap->id()]['menu_link_content'])) {
       foreach ($bundle_settings[$this->sitemap->id()]['menu_link_content'] as $bundle_name => $settings) {
@@ -136,7 +148,7 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
           ]);
 
           foreach ($tree as $item) {
-            $data_sets[] = $item->link;
+            $data_sets[] = $item->link->getPluginId();
           }
         }
       }
@@ -147,10 +159,14 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @todo Find a way to be able to check if a menu link still exists. This is difficult as we don't operate on MenuLinkContent entities, but on Link entities directly (as some menu links are not MenuLinkContent entities).
    */
   protected function processDataSet($data_set): array {
+    try {
+      $data_set = $this->menuLinkManager->createInstance($data_set);
+    }
+    catch (PluginException $e) {
+      throw new SkipElementException();
+    }
 
     /** @var \Drupal\Core\Menu\MenuLinkInterface $data_set */
     if (!$data_set->isEnabled()) {
@@ -168,7 +184,7 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
     $meta_data = $data_set->getMetaData();
     if (empty($meta_data['entity_id'])) {
       $entity_settings = $this->entitiesManager
-        ->setVariants($this->sitemap->id())
+        ->setSitemaps($this->sitemap)
         ->getBundleSettings('menu_link_content', $data_set->getMenuName());
     }
 
@@ -176,7 +192,7 @@ class EntityMenuLinkContentUrlGenerator extends EntityUrlGeneratorBase {
     // entity override.
     else {
       $entity_settings = $this->entitiesManager
-        ->setVariants($this->sitemap->id())
+        ->setSitemaps($this->sitemap)
         ->getEntityInstanceSettings('menu_link_content', $meta_data['entity_id']);
     }
     if (empty($entity_settings[$this->sitemap->id()]['index'])) {

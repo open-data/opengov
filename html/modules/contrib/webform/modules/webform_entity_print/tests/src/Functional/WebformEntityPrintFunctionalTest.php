@@ -19,7 +19,7 @@ class WebformEntityPrintFunctionalTest extends WebformEntityPrintFunctionalTestB
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['image', 'webform_entity_print_test'];
+  protected static $modules = ['image', 'webform_entity_print_test'];
 
   /**
    * Test entity print.
@@ -79,12 +79,12 @@ body {
     $assert_session->responseContains('&' . UrlHelper::buildQuery($image_style_token_query));
 
     // Check signature private image.
-    $this->assertRaw('<label>signature_private</label>');
-    $this->assertRaw("/webform/test_entity_print/signature_private/$sid/signature-");
+    $assert_session->responseContains('<label>signature_private</label>');
+    $assert_session->responseContains("/webform/test_entity_print/signature_private/$sid/signature-");
 
     // Check signature public image.
-    $this->assertRaw('<label>signature_public</label>');
-    $this->assertRaw("/webform/test_entity_print/signature_public/$sid/signature-");
+    $assert_session->responseContains('<label>signature_public</label>');
+    $assert_session->responseContains("/webform/test_entity_print/signature_public/$sid/signature-");
 
     // Check image access.
     $this->drupalLogout();

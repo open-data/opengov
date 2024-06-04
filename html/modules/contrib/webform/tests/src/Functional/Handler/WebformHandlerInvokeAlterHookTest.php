@@ -16,7 +16,7 @@ class WebformHandlerInvokeAlterHookTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_test_handler_invoke_alter'];
+  protected static $modules = ['webform', 'webform_test_handler_invoke_alter'];
 
   /**
    * Tests webform handler invoke alter hook.

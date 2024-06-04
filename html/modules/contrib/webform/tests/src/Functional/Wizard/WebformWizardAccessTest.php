@@ -28,10 +28,10 @@ class WebformWizardAccessTest extends WebformWizardTestBase {
 
     // Check anonymous user can access 'All' and 'Anonymous' form pages.
     $this->drupalGet('/webform/test_form_wizard_access');
-    $assert_session->responseContains('<b>All</b>');
-    $assert_session->responseContains('<b>Anonymous</b>');
-    $assert_session->responseNotContains('<b>Authenticated</b>');
-    $assert_session->responseNotContains('<b>Private</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">All</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">Anonymous</b>');
+    $assert_session->responseNotContains('<b class="webform-progress-bar__page-title">Authenticated</b>');
+    $assert_session->responseNotContains('<b class="webform-progress-bar__page-title">Private</b>');
 
     // Generate an anonymous submission.
     $this->drupalGet('/webform/test_form_wizard_access');
@@ -48,20 +48,20 @@ class WebformWizardAccessTest extends WebformWizardTestBase {
 
     // Check anonymous user can only update 'All' and 'Anonymous' submission data.
     $this->drupalGet("webform/test_form_wizard_access/submissions/$sid/edit");
-    $assert_session->responseContains('<b>All</b>');
-    $assert_session->responseContains('<b>Anonymous</b>');
-    $assert_session->responseNotContains('<b>Authenticated</b>');
-    $assert_session->responseNotContains('<b>Private</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">All</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">Anonymous</b>');
+    $assert_session->responseNotContains('<b class="webform-progress-bar__page-title">Authenticated</b>');
+    $assert_session->responseNotContains('<b class="webform-progress-bar__page-title">Private</b>');
 
     // Login authenticated user.
     $this->drupalLogin($this->rootUser);
 
     // Check authenticated user can access 'All', 'Authenticated', and 'Private' form pages.
     $this->drupalGet('/webform/test_form_wizard_access');
-    $assert_session->responseContains('<b>All</b>');
-    $assert_session->responseNotContains('<b>Anonymous</b>');
-    $assert_session->responseContains('<b>Authenticated</b>');
-    $assert_session->responseContains('<b>Private</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">All</b>');
+    $assert_session->responseNotContains('<b class="webform-progress-bar__page-title">Anonymous</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">Authenticated</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">Private</b>');
 
     // Generate an authenticated submission.
     $this->drupalGet('/webform/test_form_wizard_access');
@@ -79,10 +79,10 @@ class WebformWizardAccessTest extends WebformWizardTestBase {
 
     // Check anonymous user can only update 'All' and 'Anonymous' submission data.
     $this->drupalGet("webform/test_form_wizard_access/submissions/$sid/edit");
-    $assert_session->responseContains('<b>All</b>');
-    $assert_session->responseNotContains('<b>Anonymous</b>');
-    $assert_session->responseContains('<b>Authenticated</b>');
-    $assert_session->responseContains('<b>Private</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">All</b>');
+    $assert_session->responseNotContains('<b class="webform-progress-bar__page-title">Anonymous</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">Authenticated</b>');
+    $assert_session->responseContains('<b class="webform-progress-bar__page-title">Private</b>');
   }
 
 }

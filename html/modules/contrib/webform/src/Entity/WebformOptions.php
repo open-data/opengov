@@ -2,8 +2,8 @@
 
 namespace Drupal\webform\Entity;
 
-use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -162,8 +162,7 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
    */
   public function hasAlterHooks() {
     $hook_name = 'webform_options_' . $this->id() . '_alter';
-    $alter_hooks = \Drupal::moduleHandler()->getImplementations($hook_name);
-    return (count($alter_hooks)) ? TRUE : FALSE;
+    return \Drupal::moduleHandler()->hasImplementations($hook_name);
   }
 
   /**

@@ -5,8 +5,6 @@
  * Replaces the styles provided by the views_ui module.
  */
 
-@import "../base/variables.pcss.css";
-
 .views-admin .links {
   margin: 0;
   list-style: none outside none;
@@ -265,7 +263,8 @@ td.group-title {
   border-bottom: 1px solid var(--color-gray-200-o-80);
   background-color: var(--color-gray-050);
 }
-.form-edit .form-actions {
+.form-edit .form-actions,
+.form-edit .field-actions {
   margin-top: 0;
   padding: var(--space-s) var(--space-m);
   border-right: 1px solid var(--color-gray-200-o-80);
@@ -298,8 +297,12 @@ td.group-title {
   margin-top: 0;
 }
 .view-preview-form .form-item--view-args,
-.view-preview-form .form-actions {
+.view-preview-form .form-actions,
+.view-preview-form .field-actions {
   margin-top: 5px;
+}
+.view-preview-form .views-bulk-actions__item {
+  margin-block-start: 0;
 }
 .view-preview-form .arguments-preview {
   font-size: 1em;
@@ -316,7 +319,8 @@ td.group-title {
   display: inline-block;
 }
 .form-item--live-preview,
-.view-preview-form .form-actions {
+.view-preview-form .form-actions,
+.view-preview-form .field-actions {
   vertical-align: top;
 }
 
@@ -471,7 +475,7 @@ td.group-title {
   padding: var(--space-s) var(--space-m) var(--space-xs);
   background-color: var(--color-gray-050);
 }
-.views-ui-dialog .views-offset-top:not(:empty):after {
+.views-ui-dialog .views-offset-top:not(:empty)::after {
   position: absolute;
   bottom: 0;
   left: 0;

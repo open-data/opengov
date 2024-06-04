@@ -42,7 +42,7 @@ class WebformEntityPrintAttachment extends WebformAttachmentBase {
     // @see webform_entity_print_attachment_webform_submission_view_alter()
     $view_mode = $element['#view_mode'] ?? 'html';
     if ($view_mode === 'twig') {
-      $webform_submission->_webform_view_mode_twig = $element['#template'];
+      $webform_submission->webformViewModeTwig = $element['#template'];
     }
     \Drupal::request()->request->set('_webform_submissions_view_mode', $view_mode);
 

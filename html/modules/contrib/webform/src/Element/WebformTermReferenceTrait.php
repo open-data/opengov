@@ -17,15 +17,16 @@ trait WebformTermReferenceTrait {
    */
   public static function setOptions(array &$element) {
     $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
-
-    // Only intialize the term options once by checking the cache tags.
-    $cache_tags = NestedArray::getValue($element, ['#cache', 'tags']) ?? [];
-    if (in_array('taxonomy_term_list', $cache_tags)) {
+    $vocabulary_id = $element['#vocabulary'];
+    if (empty($vocabulary_id) || !\Drupal::moduleHandler()->moduleExists('taxonomy')) {
+      $element['#options'] = [];
       return;
     }
 
-    if (!\Drupal::moduleHandler()->moduleExists('taxonomy') || empty($element['#vocabulary'])) {
-      $element['#options'] = [];
+    $vocabulary_list_cache_tag = "taxonomy_term_list:{$vocabulary_id}";
+    // Only initialize the term options once by checking the cache tags.
+    $cache_tags = NestedArray::getValue($element, ['#cache', 'tags']) ?? [];
+    if (in_array($vocabulary_list_cache_tag, $cache_tags)) {
       return;
     }
 
@@ -38,11 +39,8 @@ trait WebformTermReferenceTrait {
       $element['#options'] = static::getOptionsTree($element, $language) + $element['#options'];
     }
 
-    // Add the vocabulary to the cache tags.
-    // Issue #2920913: The taxonomy_term_list cache should be invalidated
-    // on a vocabulary-by-vocabulary basis.
-    // @see https://www.drupal.org/project/drupal/issues/2920913
-    $element['#cache']['tags'][] = 'taxonomy_term_list';
+    // Add vocabulary-specific cache tag for targeted cache invalidation.
+    $element['#cache']['tags'][] = $vocabulary_list_cache_tag;
   }
 
   /**

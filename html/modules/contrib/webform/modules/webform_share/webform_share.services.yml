@@ -4,6 +4,11 @@ services:
     arguments: ['@current_route_match']
     tags:
       - { name: event_subscriber }
+  webform_share.page_display_variant_subscriber:
+    class: Drupal\webform_share\EventSubscriber\WebformShareDisplayVariantSubscriber
+    arguments: ['@current_route_match']
+    tags:
+      - { name: event_subscriber }
   webform_share.route_subscriber:
     class: Drupal\webform_share\Routing\WebformShareRouteSubscriber
     arguments: ['@module_handler']

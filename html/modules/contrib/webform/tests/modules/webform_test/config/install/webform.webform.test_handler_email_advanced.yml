@@ -14,7 +14,8 @@ archive: false
 id: test_handler_email_advanced
 title: 'Test: Handler: Email advanced'
 description: 'Test email HTML handler.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   first_name:
     '#title': 'First name'
@@ -56,7 +57,6 @@ elements: |
     '#title': Notes
     '#private': true
     '#default_value': 'These notes are private.'
-  
 css: ''
 javascript: ''
 settings:
@@ -144,6 +144,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -267,7 +269,6 @@ handlers:
         [webform_submission:values]
         <hr />
         <p style="color:yellow"><em>Custom styled HTML markup</em></p>
-        
       excluded_elements: {  }
       ignore_access: true
       exclude_empty: true

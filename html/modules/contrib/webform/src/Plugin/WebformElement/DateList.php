@@ -59,7 +59,7 @@ class DateList extends DateBase implements TrustedCallbackInterface {
     // Remove month abbreviation.
     // @see \Drupal\Core\Datetime\Element\Datelist::processDatelist
     if (isset($element['#date_abbreviate']) && $element['#date_abbreviate'] === FALSE) {
-      $element['#date_date_callbacks'][] = floatval(\Drupal::VERSION) >= 9.3 ? [DateList::class, 'dateListCallback'] : '_webform_datelist_date_date_callback';
+      $element['#date_date_callbacks'][] = [DateList::class, 'dateListCallback'];
     }
 
     // Remove 'for' from the element's label.
@@ -255,6 +255,14 @@ class DateList extends DateBase implements TrustedCallbackInterface {
         $validate_callback[0] = DateList::class;
       }
     }
+
+    // Copy the datelist element's states to child inputs.
+    if (isset($element['#states'])) {
+      foreach (Element::children($element) as $key) {
+        $element[$key]['#states'] = $element['#states'];
+      }
+    }
+
     return $element;
   }
 

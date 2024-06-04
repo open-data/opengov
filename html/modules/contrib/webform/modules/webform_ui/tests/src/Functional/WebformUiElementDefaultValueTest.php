@@ -16,7 +16,7 @@ class WebformUiElementDefaultValueTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_ui'];
+  protected static $modules = ['webform', 'webform_ui'];
 
   /**
    * Tests element.

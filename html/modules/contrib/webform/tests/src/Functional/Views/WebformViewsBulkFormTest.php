@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Views;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests a webform submission bulk form.
@@ -18,7 +18,7 @@ class WebformViewsBulkFormTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_test_views'];
+  protected static $modules = ['webform', 'webform_test_views'];
 
   /**
    * Tests the webform views bulk form.

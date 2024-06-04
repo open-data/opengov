@@ -3,7 +3,7 @@
  * JavaScript behaviors for webform custom options.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -38,7 +38,7 @@
    */
   Drupal.behaviors.webformOptionsCustom = {
     attach: function (context) {
-      $('.js-webform-options-custom', context).once('webform-options-custom').each(function () {
+      $(once('webform-options-custom', '.js-webform-options-custom', context)).each(function () {
         var $element = $(this);
         var $select = $element.find('select');
         var $template = $element.find('.webform-options-custom-template');
@@ -355,4 +355,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

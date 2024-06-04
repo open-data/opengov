@@ -14,7 +14,8 @@ archive: false
 id: test_states_autocomplete
 title: 'Test: Form API #states autocomplete'
 description: 'Test Drupal''s #states autocomplete.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   select:
     '#type': select
@@ -160,7 +161,6 @@ elements: |
       kitten_3:
         text: 'Cute Kitten 3'
         src: 'http://placekitten.com/130/200'
-  
 css: ''
 javascript: ''
 settings:
@@ -248,6 +248,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

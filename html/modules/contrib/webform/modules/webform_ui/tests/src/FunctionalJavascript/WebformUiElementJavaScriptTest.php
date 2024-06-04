@@ -14,7 +14,7 @@ class WebformUiElementJavaScriptTest extends WebformWebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['webform', 'webform_ui'];
+  protected static $modules = ['webform', 'webform_ui'];
 
   /**
    * Webforms to load.

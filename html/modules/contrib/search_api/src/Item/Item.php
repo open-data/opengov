@@ -223,8 +223,7 @@ class Item implements \IteratorAggregate, ItemInterface {
     if (isset($this->fields[$field_id])) {
       return $this->fields[$field_id];
     }
-    $fields = $this->getFields($extract);
-    return isset($fields[$field_id]) ? $fields[$field_id] : NULL;
+    return $this->getFields($extract)[$field_id] ?? NULL;
   }
 
   /**
@@ -444,7 +443,7 @@ class Item implements \IteratorAggregate, ItemInterface {
         $this->accessResults[$uid] = $this->getDatasource()
           ->getItemAccessResult($this->getOriginalObject(), $account);
       }
-      catch (SearchApiException $e) {
+      catch (SearchApiException) {
         $this->accessResults[$uid] = AccessResult::neutral('Item could not be loaded, so cannot check access');
       }
     }

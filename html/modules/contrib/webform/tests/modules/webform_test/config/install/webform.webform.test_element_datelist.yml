@@ -14,7 +14,8 @@ archive: false
 id: test_element_datelist
 title: 'Test: Element: Date list'
 description: 'Test date list element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   datelist_default:
     '#type': datelist
@@ -82,6 +83,16 @@ elements: |
     '#default_value': '2009-08-18T01:00:00-05:00'
     '#required': 'Custom required error'
     '#required_error': 'Custom required error'
+  datelist_conditional:
+    '#type': checkbox
+    '#title': datelist_conditional
+  datelist_conditional_required:
+    '#type': datelist
+    '#title': datelist_conditional_required
+    '#states':
+      required:
+        ':input[name="datelist_conditional"]':
+          checked: true
   datelist_multiple:
     '#type': datelist
     '#title': datelist_multiple
@@ -96,7 +107,6 @@ elements: |
         '#title': datelist
     '#default_value':
       - datelist: '2009-08-18T01:00:00-05:00'
-  
 css: ''
 javascript: ''
 settings:
@@ -184,6 +194,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

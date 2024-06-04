@@ -180,7 +180,7 @@ class WebformSubmissionLimitBlock extends BlockBase implements ContainerFactoryP
       '#open' => $this->configuration['webform_id'] || $this->configuration['entity_type'],
     ];
     $form['advanced']['webform_id'] = [
-      '#title' => $this->t('Webform'),
+      '#title' => $this->t('Webform', [], ['context' => 'form']),
       '#type' => 'entity_autocomplete',
       '#target_type' => 'webform',
       '#default_value' => ($this->configuration['webform_id']) ? $this->entityTypeManager->getStorage('webform')->load($this->configuration['webform_id']) : NULL,

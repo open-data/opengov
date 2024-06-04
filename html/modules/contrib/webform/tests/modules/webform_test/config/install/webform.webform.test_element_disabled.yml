@@ -14,7 +14,8 @@ archive: false
 id: test_element_disabled
 title: 'Test: Element disabled'
 description: 'Test disabling element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_address:
     '#type': webform_address
@@ -185,10 +186,6 @@ elements: |
   webform_link:
     '#type': webform_link
     '#title': Link
-    '#disabled': true
-  webform_location_places:
-    '#type': webform_location_places
-    '#title': 'Location (Algolia Places)'
     '#disabled': true
   machine_name:
     '#type': machine_name
@@ -366,7 +363,6 @@ elements: |
     '#type': webform_video_file
     '#title': 'Video file'
     '#disabled': true
-  
 css: ''
 javascript: ''
 settings:
@@ -454,6 +450,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

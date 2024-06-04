@@ -14,7 +14,8 @@ archive: false
 id: test_composite_custom_file
 title: 'Test: Composite: Custom composite file'
 description: 'Test custom composite file element.'
-category: 'Test: Composite'
+categories:
+  - 'Test: Composite'
 elements: |
   webform_custom_composite_file:
     '#type': webform_custom_composite
@@ -37,7 +38,6 @@ elements: |
       managed_file:
         '#type': managed_file
         '#title': managed_file
-  
 css: ''
 javascript: ''
 settings:
@@ -125,6 +125,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

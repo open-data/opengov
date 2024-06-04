@@ -12,7 +12,7 @@ abstract class WebformWizardTestBase extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Exclude Progress tracker so that the default progress bar is displayed.
@@ -31,7 +31,7 @@ abstract class WebformWizardTestBase extends WebformBrowserTestBase {
    *   The name (key) of the current page.
    */
   protected function assertCurrentPage($title, $page): void {
-    $this->assertSession()->responseMatches('|<li data-webform-page="' . $page . '" class="webform-progress-bar__page webform-progress-bar__page--current"><b>' . $title . '</b>|');
+    $this->assertSession()->responseMatches('|<li data-webform-page="' . $page . '" class="webform-progress-bar__page webform-progress-bar__page--current"><b class="webform-progress-bar__page-title">' . $title . '</b>|');
   }
 
 }

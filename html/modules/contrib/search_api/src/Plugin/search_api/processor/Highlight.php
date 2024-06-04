@@ -657,7 +657,25 @@ class Highlight extends ProcessorPluginBase implements PluginFormInterface {
   protected function highlightField($text, array $keys, $html = TRUE) {
     $text = "$text";
     if ($html) {
-      $texts = preg_split('#(\s*(?:</?[[:alpha:]](?:[^>"\']*+|"[^"]*+"|\'[^\']*+\')*+>)+\s*)#i', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+      $regex = <<<'REGEX'
+%
+  (                # Capturing group around the whole expression, so
+                   # PREG_SPLIT_DELIM_CAPTURE works correctly
+    \s*+           # Optional leading whitespace (possessive since backtracking
+                   # would make no sense here)
+    (?:            # One or more HTML tags
+      <            # Start of HTML tag
+      /?           # Could be a closing tag
+      [[:alpha:]]  # Tag names always start with a letter
+      [^>]*        # Anything except the angle bracket closing the tag
+      >            # End of HTML tag
+    )+             # End: One or more HTML tags
+    \s*            # Optional trailing whitespace
+  )                # End: Capturing group
+%ix
+REGEX;
+
+      $texts = preg_split($regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE);
       if ($texts === FALSE) {
         $args = [
           '%error_num' => preg_last_error(),

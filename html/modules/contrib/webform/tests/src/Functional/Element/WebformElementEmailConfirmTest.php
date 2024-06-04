@@ -25,7 +25,7 @@ class WebformElementEmailConfirmTest extends WebformElementBrowserTestBase {
     $this->drupalGet('/webform/test_element_email_confirm');
 
     // Check basic email confirm.
-    $assert_session->responseContains('<fieldset id="edit-email-confirm-basic--wrapper" class="webform-email-confirm--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-webform-email-confirm webform-type-webform-email-confirm js-form-item form-item js-form-wrapper form-wrapper">');
+    $assert_session->responseContains('<fieldset id="edit-email-confirm-basic" class="webform-email-confirm--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-webform-email-confirm webform-type-webform-email-confirm js-form-item form-item js-form-wrapper form-wrapper">');
     $assert_session->responseContains('<span class="visually-hidden fieldset-legend">email_confirm_basic</span>');
     $assert_session->responseContains('<div class="js-form-item form-item js-form-type-email form-item-email-confirm-basic-mail-1 js-form-item-email-confirm-basic-mail-1">');
     $assert_session->responseContains('<label for="edit-email-confirm-basic-mail-1">email_confirm_basic</label>');
@@ -35,7 +35,7 @@ class WebformElementEmailConfirmTest extends WebformElementBrowserTestBase {
     $assert_session->responseContains('<input data-drupal-selector="edit-email-confirm-basic-mail-2" class="webform-email-confirm form-email" type="email" id="edit-email-confirm-basic-mail-2" name="email_confirm_basic[mail_2]" value="" size="60" maxlength="254" />');
 
     // Check advanced email confirm w/ custom label.
-    $assert_session->responseContains('<fieldset id="edit-email-confirm-advanced--wrapper" class="webform-email-confirm--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-webform-email-confirm webform-type-webform-email-confirm js-form-item form-item js-form-wrapper form-wrapper">');
+    $assert_session->responseContains('<fieldset id="edit-email-confirm-advanced" class="webform-email-confirm--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-webform-email-confirm webform-type-webform-email-confirm js-form-item form-item js-form-wrapper form-wrapper">');
     $assert_session->responseContains('<span class="visually-hidden fieldset-legend">Email address</span>');
     $assert_session->responseContains('<div class="js-form-item form-item js-form-type-email form-item-email-confirm-advanced-mail-1 js-form-item-email-confirm-advanced-mail-1">');
     $assert_session->responseContains('<label for="edit-email-confirm-advanced-mail-1">Email address</label>');
@@ -50,7 +50,7 @@ class WebformElementEmailConfirmTest extends WebformElementBrowserTestBase {
     $assert_session->responseContains('<div data-drupal-selector="edit-email-confirm-flexbox-flexbox" class="webform-flexbox js-webform-flexbox js-form-wrapper form-wrapper" id="edit-email-confirm-flexbox-flexbox"><div class="webform-flex webform-flex--1"><div class="webform-flex--container">');
 
     // Check inline title.
-    $assert_session->responseContains('<fieldset id="edit-email-confirm-inline--wrapper" class="webform-email-confirm--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-webform-email-confirm webform-type-webform-email-confirm js-form-item form-item js-form-wrapper form-wrapper">');
+    $assert_session->responseContains('<fieldset id="edit-email-confirm-inline" class="webform-email-confirm--wrapper fieldgroup form-composite webform-composite-hidden-title js-webform-type-webform-email-confirm webform-type-webform-email-confirm js-form-item form-item js-form-wrapper form-wrapper">');
     $assert_session->responseContains('<div class="webform-element--title-inline js-form-item form-item js-form-type-email form-item-email-confirm-inline-mail-1 js-form-item-email-confirm-inline-mail-1">');
     $assert_session->responseContains('<div class="webform-element--title-inline js-form-item form-item js-form-type-email form-item-email-confirm-inline-mail-2 js-form-item-email-confirm-inline-mail-2">');
 

@@ -3,7 +3,6 @@
 namespace Drupal\Core;
 
 use Composer\Autoload\ClassLoader;
-use Drupal\Component\Assertion\Handle;
 use Drupal\Component\EventDispatcher\Event;
 use Drupal\Component\FileCache\FileCacheFactory;
 use Drupal\Component\Utility\UrlHelper;
@@ -11,17 +10,16 @@ use Drupal\Core\Cache\DatabaseBackend;
 use Drupal\Core\Config\BootstrapConfigStorageFactory;
 use Drupal\Core\Config\NullStorage;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Component\DependencyInjection\ReverseContainer;
 use Drupal\Core\DependencyInjection\ServiceModifierInterface;
 use Drupal\Core\DependencyInjection\ServiceProviderInterface;
 use Drupal\Core\DependencyInjection\YamlFileLoader;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Extension\ExtensionDiscovery;
-use Drupal\Core\File\MimeType\MimeTypeGuesser;
 use Drupal\Core\Http\TrustedHostsRequestFactory;
 use Drupal\Core\Installer\InstallerKernel;
 use Drupal\Core\Installer\InstallerRedirectTrait;
 use Drupal\Core\Language\Language;
-use Drupal\Core\Security\PharExtensionInterceptor;
 use Drupal\Core\Security\RequestSanitizer;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Test\TestDatabase;
@@ -33,9 +31,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\TerminableInterface;
-use TYPO3\PharStreamWrapper\Manager as PharStreamWrapperManager;
-use TYPO3\PharStreamWrapper\Behavior as PharStreamWrapperBehavior;
-use TYPO3\PharStreamWrapper\PharStreamWrapper;
 
 /**
  * The DrupalKernel class is the core of Drupal itself.
@@ -229,7 +224,12 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
   protected static $isEnvironmentInitialized = FALSE;
 
   /**
-   * The site directory.
+   * The site path directory.
+   *
+   * Site path is relative to the app root directory.
+   * Usually defined as "sites/default".
+   *
+   * By default, Drupal uses sites/default.
    *
    * @var string
    */
@@ -244,6 +244,11 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
 
   /**
    * A mapping from service classes to service IDs.
+   *
+   * @deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the
+   *   'Drupal\Component\DependencyInjection\ReverseContainer' service instead.
+   *
+   * @see https://www.drupal.org/node/3327942
    */
   protected $serviceIdMapping = [];
 
@@ -341,11 +346,11 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
    * The sites.php file in the sites directory can define aliases in an
    * associative array named $sites. The array is written in the format
    * '<port>.<domain>.<path>' => 'directory'. As an example, to create a
-   * directory alias for https://www.drupal.org:8080/mysite/test whose
+   * directory alias for https://www.drupal.org:8080/my-site/test whose
    * configuration file is in sites/example.com, the array should be defined as:
    * @code
    * $sites = array(
-   *   '8080.www.drupal.org.mysite.test' => 'example.com',
+   *   '8080.www.drupal.org.my-site.test' => 'example.com',
    * );
    * @endcode
    *
@@ -380,18 +385,20 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
       $app_root = static::guessApplicationRoot();
     }
 
-    // Check for a simpletest override.
+    // Check for a test override.
     if ($test_prefix = drupal_valid_test_ua()) {
       $test_db = new TestDatabase($test_prefix);
       return $test_db->getTestSitePath();
     }
 
-    // Determine whether multi-site functionality is enabled.
+    // Determine whether multi-site functionality is enabled. If not, return
+    // the default directory.
     if (!file_exists($app_root . '/sites/sites.php')) {
       return 'sites/default';
     }
 
-    // Otherwise, use find the site path using the request.
+    // Pre-populate host and script variables, then include sites.php which may
+    // populate $sites with a site-directory mapping.
     $script_name = $request->server->get('SCRIPT_NAME');
     if (!$script_name) {
       $script_name = $request->server->get('SCRIPT_FILENAME');
@@ -401,16 +408,27 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     $sites = [];
     include $app_root . '/sites/sites.php';
 
-    $uri = explode('/', $script_name);
-    $server = explode('.', implode('.', array_reverse(explode(':', rtrim($http_host, '.')))));
-    for ($i = count($uri) - 1; $i > 0; $i--) {
-      for ($j = count($server); $j > 0; $j--) {
-        $dir = implode('.', array_slice($server, -$j)) . implode('.', array_slice($uri, 0, $i));
-        if (isset($sites[$dir]) && file_exists($app_root . '/sites/' . $sites[$dir])) {
-          $dir = $sites[$dir];
+    // Construct an identifier from pieces of the (port plus) host plus script
+    // path (excluding the filename). Loop over all possibilities starting from
+    // most specific, then dropping pieces from the start of the port/hostname
+    // while keeping the full path, then gradually dropping pieces from the end
+    // of the path... until we find a directory corresponding to the identifier.
+    $path_parts = explode('/', $script_name);
+    $host_parts = explode('.', implode('.', array_reverse(explode(':', rtrim($http_host, '.')))));
+    for ($i = count($path_parts) - 1; $i > 0; $i--) {
+      for ($j = count($host_parts); $j > 0; $j--) {
+        // Assume the path has a leading slash, so the imploded path parts are
+        // either a path identifier with leading dot, or an empty string.
+        $site_id = implode('.', array_slice($host_parts, -$j)) . implode('.', array_slice($path_parts, 0, $i));
+
+        // If the identifier is a key in $sites, check for a directory matching
+        // the corresponding value. Otherwise, check for a directory matching
+        // the identifier.
+        if (isset($sites[$site_id]) && file_exists($app_root . '/sites/' . $sites[$site_id])) {
+          $site_id = $sites[$site_id];
         }
-        if (file_exists($app_root . '/sites/' . $dir . '/settings.php') || (!$require_settings && file_exists($app_root . '/sites/' . $dir))) {
-          return "sites/$dir";
+        if (file_exists($app_root . '/sites/' . $site_id . '/settings.php') || (!$require_settings && file_exists($app_root . '/sites/' . $site_id))) {
+          return "sites/$site_id";
         }
       }
     }
@@ -484,27 +502,6 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
       $this->classLoader->setApcuPrefix($prefix);
     }
 
-    // @todo clean-up for PHP 8.0+ https://www.drupal.org/node/3210486
-    if (PHP_VERSION_ID < 80000 && in_array('phar', stream_get_wrappers(), TRUE)) {
-      // Set up a stream wrapper to handle insecurities due to PHP's builtin
-      // phar stream wrapper. This is not registered as a regular stream wrapper
-      // to prevent \Drupal\Core\File\FileSystem::validScheme() treating "phar"
-      // as a valid scheme.
-      try {
-        $behavior = new PharStreamWrapperBehavior();
-        PharStreamWrapperManager::initialize(
-          $behavior->withAssertion(new PharExtensionInterceptor())
-        );
-      }
-      catch (\LogicException $e) {
-        // Continue if the PharStreamWrapperManager is already initialized. For
-        // example, this occurs during a module install.
-        // @see \Drupal\Core\Extension\ModuleInstaller::install()
-      }
-      stream_wrapper_unregister('phar');
-      stream_wrapper_register('phar', PharStreamWrapper::class);
-    }
-
     $this->booted = TRUE;
 
     return $this;
@@ -534,6 +531,9 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.VoidReturn
+   * @return void
    */
   public function setContainer(ContainerInterface $container = NULL) {
     if (isset($this->container)) {
@@ -567,11 +567,8 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     require_once $this->root . '/core/includes/common.inc';
     require_once $this->root . '/core/includes/module.inc';
     require_once $this->root . '/core/includes/theme.inc';
-    require_once $this->root . '/core/includes/menu.inc';
-    require_once $this->root . '/core/includes/file.inc';
     require_once $this->root . '/core/includes/form.inc';
     require_once $this->root . '/core/includes/errors.inc';
-    require_once $this->root . '/core/includes/schema.inc';
   }
 
   /**
@@ -601,9 +598,6 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
 
     // Set the allowed protocols.
     UrlHelper::setAllowedProtocols($this->container->getParameter('filter_protocols'));
-
-    // Override of Symfony's MIME type guesser singleton.
-    MimeTypeGuesser::registerWithSymfonyGuesser($this->container);
 
     $this->prepared = TRUE;
   }
@@ -679,6 +673,9 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.VoidReturn
+   * @return void
    */
   public function terminate(Request $request, Response $response) {
     // Only run terminate() when essential services have been set up properly
@@ -695,7 +692,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
   /**
    * {@inheritdoc}
    */
-  public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = TRUE): Response {
+  public function handle(Request $request, $type = self::MAIN_REQUEST, $catch = TRUE): Response {
     // Ensure sane PHP environment variables.
     static::bootEnvironment();
 
@@ -728,7 +725,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   A Request instance
    * @param int $type
-   *   The type of the request (one of HttpKernelInterface::MASTER_REQUEST or
+   *   The type of the request (one of HttpKernelInterface::MAIN_REQUEST or
    *   HttpKernelInterface::SUB_REQUEST)
    *
    * @return \Symfony\Component\HttpFoundation\Response
@@ -828,8 +825,14 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
    *
    * @return string
    *   A unique hash value.
+   *
+   * @deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the
+   *   'Drupal\Component\DependencyInjection\ReverseContainer' service instead.
+   *
+   * @see https://www.drupal.org/node/3327942
    */
   public static function generateServiceIdHash($object) {
+    @trigger_error(__METHOD__ . "() is deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the 'Drupal\Component\DependencyInjection\ReverseContainer' service instead. See https://www.drupal.org/node/3327942", E_USER_DEPRECATED);
     // Include class name as an additional namespace for the hash since
     // spl_object_hash's return can be recycled. This still is not a 100%
     // guarantee to be unique but makes collisions incredibly difficult and even
@@ -842,6 +845,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
    * {@inheritdoc}
    */
   public function getServiceIdMapping() {
+    @trigger_error(__METHOD__ . "() is deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the 'Drupal\Component\DependencyInjection\ReverseContainer' service instead. See https://www.drupal.org/node/3327942", E_USER_DEPRECATED);
     $this->collectServiceIdMapping();
     return $this->serviceIdMapping;
   }
@@ -891,8 +895,12 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
       if ($this->container->initialized('current_user')) {
         $current_user_id = $this->container->get('current_user')->id();
       }
-      // Save the current services.
-      $this->collectServiceIdMapping();
+      // After rebuilding the container some objects will have stale services.
+      // Record a map of objects to service IDs prior to rebuilding the
+      // container in order to ensure
+      // \Drupal\Core\DependencyInjection\DependencySerializationTrait works as
+      // expected.
+      $this->container->get(ReverseContainer::class)->recordContainer();
 
       // If there is a session, close and save it.
       if ($this->container->initialized('session')) {
@@ -954,7 +962,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
       $this->container->get('session')->start();
     }
 
-    // The request stack is preserved across container rebuilds. Reinject the
+    // The request stack is preserved across container rebuilds. Re-inject the
     // new session into the main request if one was present before.
     if (($request_stack = $this->container->get('request_stack', ContainerInterface::NULL_ON_INVALID_REFERENCE))) {
       if ($request = $request_stack->getMainRequest()) {
@@ -1047,12 +1055,8 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
         // Only code that interfaces directly with tests should rely on this
         // constant; e.g., the error/exception handler conditionally adds further
         // error information into HTTP response headers that are consumed by
-        // Simpletest's internal browser.
+        // the internal browser.
         define('DRUPAL_TEST_IN_CHILD_SITE', TRUE);
-
-        // Web tests are to be conducted with runtime assertions active.
-        assert_options(ASSERT_ACTIVE, TRUE);
-        Handle::register();
 
         // Log fatal errors to the test site directory.
         ini_set('log_errors', 1);
@@ -1281,6 +1285,10 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     $container->register('class_loader')->setSynthetic(TRUE);
     $container->register('kernel', 'Symfony\Component\HttpKernel\KernelInterface')->setSynthetic(TRUE);
     $container->register('service_container', 'Symfony\Component\DependencyInjection\ContainerInterface')->setSynthetic(TRUE);
+
+    // Register aliases of synthetic services for autowiring.
+    $container->setAlias(DrupalKernelInterface::class, 'kernel');
+    $container->setAlias(ContainerInterface::class, 'service_container');
 
     // Register application services.
     $yaml_loader = new YamlFileLoader($container);
@@ -1567,7 +1575,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
    * @see \Drupal\Core\Http\TrustedHostsRequestFactory
    */
   protected static function setupTrustedHosts(Request $request, $host_patterns) {
-    $request->setTrustedHosts($host_patterns);
+    Request::setTrustedHosts($host_patterns);
 
     // Get the host, which will validate the current request.
     try {
@@ -1602,8 +1610,14 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
 
   /**
    * Collect a mapping between service to ids.
+   *
+   * @deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the
+   *   'Drupal\Component\DependencyInjection\ReverseContainer' service instead.
+   *
+   * @see https://www.drupal.org/node/3327942
    */
   protected function collectServiceIdMapping() {
+    @trigger_error(__METHOD__ . "() is deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the 'Drupal\Component\DependencyInjection\ReverseContainer' service instead. See https://www.drupal.org/node/3327942", E_USER_DEPRECATED);
     if (isset($this->container)) {
       foreach ($this->container->getServiceIdMappings() as $hash => $service_id) {
         $this->serviceIdMapping[$hash] = $service_id;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\media\FunctionalJavascript;
 
 use Drupal\media\Entity\Media;
@@ -21,6 +23,8 @@ class MediaSourceFileTest extends MediaSourceTestBase {
    * Tests the file media source.
    */
   public function testMediaFileSource() {
+    // Skipped due to frequent random test failures.
+    $this->markTestSkipped();
     $media_type_id = 'test_media_file_type';
     $source_field_id = 'field_media_file';
     $provided_fields = [

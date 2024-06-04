@@ -14,7 +14,8 @@ archive: false
 id: test_element_actions
 title: 'Test: Element: Actions'
 description: 'Test Actions (aka Submit button(s)) element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   page_1:
     '#type': webform_wizard_page
@@ -158,7 +159,6 @@ elements: |
     '#draft_hide': true
     '#wizard_prev_hide': true
     '#wizard_next_hide': true
-  
 css: ''
 javascript: ''
 settings:
@@ -246,6 +246,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

@@ -14,7 +14,8 @@ archive: false
 id: test_element_plugin
 title: 'Test: Element: Test (plugin)'
 description: 'Test the webform element plugin integration and method invoking.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   description:
     '#markup': |
@@ -24,7 +25,6 @@ elements: |
     '#type': webform_test_element
     '#title': 'This is a test element'
     '#default_value': '{default_value}'
-  
 css: ''
 javascript: ''
 settings:
@@ -112,6 +112,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

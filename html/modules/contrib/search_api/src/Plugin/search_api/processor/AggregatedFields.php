@@ -79,7 +79,8 @@ class AggregatedFields extends ProcessorPluginBase {
 
       switch ($configuration['type']) {
         case 'concat':
-          $values = [implode("\n\n", $values)];
+          $separator = $configuration['separator'] ?? "\n\n";
+          $values = [implode($separator, $values)];
           break;
 
         case 'sum':

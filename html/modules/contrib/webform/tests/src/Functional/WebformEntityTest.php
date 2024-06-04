@@ -16,7 +16,7 @@ class WebformEntityTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'webform', 'webform_test_submissions'];
+  protected static $modules = ['node', 'webform', 'webform_test_submissions'];
 
   /**
    * Webforms to load.
@@ -35,7 +35,7 @@ class WebformEntityTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Storage.
@@ -58,7 +58,7 @@ class WebformEntityTest extends WebformBrowserTestBase {
 
     // Check get elements.
     $elements = $webform_test_submissions->getElementsInitialized();
-    $this->assert(is_array($elements));
+    $this->assertIsArray($elements);
 
     // Check getElements.
     $columns = $webform_test_submissions->getElementsInitializedFlattenedAndHasValue();

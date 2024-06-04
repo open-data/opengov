@@ -12,6 +12,7 @@ use Drupal\search_api\Utility\FieldsHelper;
 use Drupal\search_api\Item\Item;
 use Drupal\search_api\Query\Query;
 use Drupal\search_api\Utility\QueryHelperInterface;
+use Drupal\search_api\Utility\ThemeSwitcherInterface;
 use Drupal\search_api\Utility\Utility;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -94,7 +95,7 @@ trait TestItemsTrait {
         $item->setOriginalObject($object);
       }
       foreach ($fields as $combined_property_path => $field_info) {
-        list($field_info['datasource_id'], $field_info['property_path']) = Utility::splitCombinedId($combined_property_path);
+        [$field_info['datasource_id'], $field_info['property_path']] = Utility::splitCombinedId($combined_property_path);
         // Only add fields of the right datasource.
         if (!in_array($field_info['datasource_id'], [NULL, $datasource_id], TRUE)) {
           continue;
@@ -138,7 +139,14 @@ trait TestItemsTrait {
     $entityBundleInfo = $this->getMockBuilder('Drupal\Core\Entity\EntityTypeBundleInfoInterface')
       ->disableOriginalConstructor()
       ->getMock();
-    $fieldsHelper = new FieldsHelper($entityTypeManager, $entityFieldManager, $entityBundleInfo, $dataTypeHelper);
+    $themeSwitcher = $this->createMock(ThemeSwitcherInterface::class);
+    $fieldsHelper = new FieldsHelper(
+      $entityTypeManager,
+      $entityFieldManager,
+      $entityBundleInfo,
+      $dataTypeHelper,
+      $themeSwitcher
+    );
 
     $queryHelper = $this->createMock(QueryHelperInterface::class);
     $queryHelper->method('createQuery')

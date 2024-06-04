@@ -14,7 +14,8 @@ archive: false
 id: test_element_images
 title: 'Test: Element: Images'
 description: 'Test webform image select images element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_images_elements:
     '#type': details
@@ -65,7 +66,6 @@ elements: |
         kitten_4:
           text: 'Cute Kitten 4'
           src: 'http://placekitten.com/270/200'
-  
 css: ''
 javascript: ''
 settings:
@@ -153,6 +153,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

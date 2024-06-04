@@ -17,10 +17,17 @@ use ArrayIterator;
 use CallbackFilterIterator;
 use Iterator;
 use LimitIterator;
+
+use OutOfBoundsException;
+
+use function array_key_exists;
 use function array_reduce;
+use function array_search;
+use function array_values;
+use function is_string;
 
 /**
- * Criteria to filter a {@link Reader} object.
+ * Criteria to filter a {@link TabularDataReader} object.
  */
 class Statement
 {
@@ -32,6 +39,8 @@ class Statement
     protected int $offset = 0;
     /** iterator maximum length. */
     protected int $limit = -1;
+    /** @var array<string|int> */
+    protected array $select = [];
 
     /**
      * @throws Exception
@@ -47,7 +56,22 @@ class Statement
     }
 
     /**
-     * Set the Iterator filter method.
+     * Sets the Iterator element columns.
+     */
+    public function select(string|int ...$columns): self
+    {
+        if ($columns === $this->select) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->select = $columns;
+
+        return $clone;
+    }
+
+    /**
+     * Sets the Iterator filter method.
      */
     public function where(callable $where): self
     {
@@ -58,7 +82,7 @@ class Statement
     }
 
     /**
-     * Set an Iterator sorting callable function.
+     * Sets an Iterator sorting callable function.
      */
     public function orderBy(callable $order_by): self
     {
@@ -69,9 +93,9 @@ class Statement
     }
 
     /**
-     * Set LimitIterator Offset.
+     * Sets LimitIterator Offset.
      *
-     * @throws Exception if the offset is lesser than 0
+     * @throws Exception if the offset is less than 0
      */
     public function offset(int $offset): self
     {
@@ -90,9 +114,9 @@ class Statement
     }
 
     /**
-     * Set LimitIterator Count.
+     * Sets LimitIterator Count.
      *
-     * @throws Exception if the limit is lesser than -1
+     * @throws Exception if the limit is less than -1
      */
     public function limit(int $limit): self
     {
@@ -111,9 +135,12 @@ class Statement
     }
 
     /**
-     * Execute the prepared Statement on the {@link Reader} object.
+     * Executes the prepared Statement on the {@link Reader} object.
      *
      * @param array<string> $header an optional header to use instead of the CSV document header
+     *
+     * @throws InvalidArgument
+     * @throws SyntaxError
      */
     public function process(TabularDataReader $tabular_data, array $header = []): TabularDataReader
     {
@@ -122,22 +149,33 @@ class Statement
         }
 
         $iterator = $tabular_data->getRecords($header);
-        $iterator = array_reduce($this->where, [$this, 'filter'], $iterator);
+        $iterator = $this->applyFilter($iterator);
         $iterator = $this->buildOrderBy($iterator);
+        $iterator = new LimitIterator($iterator, $this->offset, $this->limit);
 
-        return new ResultSet(new LimitIterator($iterator, $this->offset, $this->limit), $header);
+        return $this->applySelect($iterator, $header);
     }
 
     /**
      * Filters elements of an Iterator using a callback function.
      */
-    protected function filter(Iterator $iterator, callable $callable): CallbackFilterIterator
+    protected function applyFilter(Iterator $iterator): Iterator
     {
-        return new CallbackFilterIterator($iterator, $callable);
+        $filter = function (array $record, string|int $key): bool {
+            foreach ($this->where as $where) {
+                if (true !== $where($record, $key)) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        return new CallbackFilterIterator($iterator, $filter);
     }
 
     /**
-     * Sort the Iterator.
+     * Sorts the Iterator.
      */
     protected function buildOrderBy(Iterator $iterator): Iterator
     {
@@ -155,12 +193,84 @@ class Statement
             return $cmp ?? 0;
         };
 
-        $it = new ArrayIterator();
-        foreach ($iterator as $offset => $value) {
-            $it[$offset] = $value;
-        }
+
+        $class = new class () extends ArrayIterator {
+            public function seek(int $offset): void
+            {
+                try {
+                    parent::seek($offset);
+                } catch (OutOfBoundsException) {
+                    return;
+                }
+            }
+        };
+
+        /** @var ArrayIterator<array-key, array<string|null>> $it */
+        $it = new $class([...$iterator]);
         $it->uasort($compare);
 
         return $it;
+    }
+
+    /**
+     *
+     * @throws InvalidArgument
+     * @throws SyntaxError
+     */
+    protected function applySelect(Iterator $records, array $recordsHeader): TabularDataReader
+    {
+        if ([] === $this->select) {
+            return new ResultSet($records, $recordsHeader);
+        }
+
+        $hasHeader = [] !== $recordsHeader;
+        $selectColumn = function (array $header, string|int $field) use ($recordsHeader, $hasHeader): array {
+            if (is_string($field)) {
+                $index = array_search($field, $recordsHeader, true);
+                if (false === $index) {
+                    throw InvalidArgument::dueToInvalidColumnIndex($field, 'offset', __METHOD__);
+                }
+
+                $header[$index] = $field;
+
+                return $header;
+            }
+
+            if ($hasHeader && !array_key_exists($field, $recordsHeader)) {
+                throw InvalidArgument::dueToInvalidColumnIndex($field, 'offset', __METHOD__);
+            }
+
+            $header[$field] = $recordsHeader[$field] ?? $field;
+
+            return $header;
+        };
+
+        /** @var array<string> $header */
+        $header = array_reduce($this->select, $selectColumn, []);
+        $records = new MapIterator($records, function (array $record) use ($header): array {
+            $element = [];
+            $row = array_values($record);
+            foreach ($header as $offset => $headerName) {
+                $element[$headerName] = $row[$offset] ?? null;
+            }
+
+            return $element;
+        });
+
+        return new ResultSet($records, $hasHeader ? $header : []);
+    }
+
+    /**
+     * Filters elements of an Iterator using a callback function.
+     *
+     * DEPRECATION WARNING! This method will be removed in the next major point release.
+     *
+     * @see Statement::applyFilter()
+     * @deprecated Since version 9.15.0
+     * @codeCoverageIgnore
+     */
+    protected function filter(Iterator $iterator, callable $callable): CallbackFilterIterator
+    {
+        return new CallbackFilterIterator($iterator, $callable);
     }
 }

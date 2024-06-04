@@ -5,8 +5,12 @@
  * @see /webform/test_element_html_editor
  */
 
-/* Add html tag to make this selector more specific */
-html .cke_reset_all .cke_dialog_body {
-  border-radius: 5px;
-  background-color: #f5f5f2;
+div.webform-html-editor-default-filter-format.form-item,
+div.webform-html-editor-default-filter-format .form-item {
+  margin: 0;
+}
+
+div.webform-html-editor-default-filter-format > .filter-wrapper,
+div.webform-html-editor-default-filter-format .cke_bottom {
+  display: none;
 }

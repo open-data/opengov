@@ -16,6 +16,7 @@ use function array_keys;
 use function assert;
 use function class_exists;
 use function copy;
+use function explode;
 use function extension_loaded;
 use function fgets;
 use function file_get_contents;
@@ -598,17 +599,31 @@ class Command
     {
         $this->printVersionString();
 
-        $latestVersion = file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit');
-        $isOutdated    = version_compare($latestVersion, Version::id(), '>');
+        $latestVersion           = file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit');
+        $latestCompatibleVersion = file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit-' . explode('.', Version::series())[0]);
 
-        if ($isOutdated) {
+        $notLatest           = version_compare($latestVersion, Version::id(), '>');
+        $notLatestCompatible = version_compare($latestCompatibleVersion, Version::id(), '>');
+
+        if ($notLatest || $notLatestCompatible) {
+            print 'You are not using the latest version of PHPUnit.' . PHP_EOL;
+        } else {
+            print 'You are using the latest version of PHPUnit.' . PHP_EOL;
+        }
+
+        if ($notLatestCompatible) {
             printf(
-                'You are not using the latest version of PHPUnit.' . PHP_EOL .
+                'The latest version compatible with PHPUnit %s is PHPUnit %s.' . PHP_EOL,
+                Version::id(),
+                $latestCompatibleVersion,
+            );
+        }
+
+        if ($notLatest) {
+            printf(
                 'The latest version is PHPUnit %s.' . PHP_EOL,
                 $latestVersion,
             );
-        } else {
-            print 'You are using the latest version of PHPUnit.' . PHP_EOL;
         }
 
         exit(TestRunner::SUCCESS_EXIT);
@@ -689,7 +704,7 @@ class Command
 
     /**
      * @throws \PHPUnit\Framework\Exception
-     * @throws \PHPUnit\TextUI\XmlConfiguration\Exception
+     * @throws XmlConfiguration\Exception
      */
     private function handleListSuites(bool $exit): int
     {
@@ -840,7 +855,16 @@ class Command
     {
         $this->printVersionString();
 
-        if (!(new SchemaDetector)->detect($filename)->detected()) {
+        $result = (new SchemaDetector)->detect($filename);
+
+        if (!$result->detected()) {
+            print $filename . ' does not validate against any known schema.' . PHP_EOL;
+
+            exit(TestRunner::EXCEPTION_EXIT);
+        }
+
+        /** @psalm-suppress MissingThrowsDocblock */
+        if ($result->version() === Version::series()) {
             print $filename . ' does not need to be migrated.' . PHP_EOL;
 
             exit(TestRunner::EXCEPTION_EXIT);

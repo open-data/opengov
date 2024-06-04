@@ -11,11 +11,13 @@ use Drupal\webform\Utility\WebformLogicHelper;
 use Drupal\webform\Utility\WebformXss;
 use Drupal\webform\Utility\WebformYaml;
 use Drupal\webform\WebformSubmissionInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Twig extension with some useful functions and filters.
  */
-class WebformTwigExtension extends \Twig_Extension {
+class WebformTwigExtension extends AbstractExtension {
 
   /**
    * Twig options.
@@ -32,9 +34,9 @@ class WebformTwigExtension extends \Twig_Extension {
    */
   public function getFunctions() {
     return [
-      new \Twig_SimpleFunction('webform_html_editor_check_markup', [$this, 'webformHtmlEditorCheckMarkup']),
-      new \Twig_SimpleFunction('webform_debug', [$this, 'webformDebug']),
-      new \Twig_SimpleFunction('webform_token', [$this, 'webformToken']),
+      new TwigFunction('webform_html_editor_check_markup', [$this, 'webformHtmlEditorCheckMarkup']),
+      new TwigFunction('webform_debug', [$this, 'webformDebug']),
+      new TwigFunction('webform_token', [$this, 'webformToken']),
     ];
   }
 
@@ -310,6 +312,7 @@ class WebformTwigExtension extends \Twig_Extension {
       'elements' => $webform_submission->getWebform()->getElementsDecoded(),
       'elements_flattened' => $webform_submission->getWebform()->getElementsDecodedAndFlattened(),
       'options' => $options,
+      'data' => $webform_submission->getData(),
       'original_data' => $webform_submission->getOriginalData(),
     ] + $webform_submission->toArray(TRUE);
 

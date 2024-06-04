@@ -140,7 +140,9 @@ class WebformSubmissionApiTest extends WebformBrowserTestBase {
     WebformElementHelper::convertRenderMarkupToStrings($errors);
     // $this->debug($errors);
     $this->assertEquals($errors, [
-      'sex' => 'An illegal choice has been detected. Please contact the site administrator.',
+      'sex' => (floatval(\Drupal::VERSION) >= 10.1)
+        ? 'The submitted value <em class="placeholder">INVALID</em> in the <em class="placeholder">Sex</em> element is not allowed.'
+        : 'An illegal choice has been detected. Please contact the site administrator.',
     ]);
 
     /* ********************************************************************** */

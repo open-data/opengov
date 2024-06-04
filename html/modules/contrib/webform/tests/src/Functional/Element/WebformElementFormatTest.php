@@ -20,7 +20,7 @@ class WebformElementFormatTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'taxonomy', 'file', 'webform', 'webform_ui', 'webform_image_select'];
+  protected static $modules = ['node', 'taxonomy', 'file', 'webform', 'webform_ui', 'webform_image_select'];
 
   /**
    * Webforms to load.
@@ -137,8 +137,8 @@ class WebformElementFormatTest extends WebformElementBrowserTestBase {
     $elements = [
       'File (Value)' => $this->getSubmissionFileUrl($submission, 'managed_file_value'),
       'File (Raw value)' => $this->getSubmissionFileUrl($submission, 'managed_file_raw'),
-      'File (File)' => '<div><span class="file file--mime-text-plain file--text"><a href="' . $this->getSubmissionFileUrl($submission, 'managed_file_file', floatval(\Drupal::VERSION) >= 9.3) . '" type="text/plain; length=43">managed_file_file.txt</a></span>',
-      'File (Link)' => '<span class="file file--mime-text-plain file--text"><a href="' . $this->getSubmissionFileUrl($submission, 'managed_file_link', floatval(\Drupal::VERSION) >= 9.3) . '" type="text/plain; length=43">managed_file_link.txt</a></span>',
+      'File (File)' => '<div><span class="file file--mime-text-plain file--text"><a href="' . $this->getSubmissionFileUrl($submission, 'managed_file_file', TRUE) . '" type="text/plain">managed_file_file.txt</a></span>',
+      'File (Link)' => '<span class="file file--mime-text-plain file--text"><a href="' . $this->getSubmissionFileUrl($submission, 'managed_file_link', TRUE) . '" type="text/plain">managed_file_link.txt</a></span>',
       'File (File ID)' => $submission->getElementData('managed_file_id'),
       'File (File name)' => 'managed_file_name.txt',
       'File (File base name (no extension))' => 'managed_file_basename',
@@ -147,10 +147,6 @@ class WebformElementFormatTest extends WebformElementBrowserTestBase {
     ];
 
     foreach ($elements as $label => $value) {
-      // @todo Remove once Drupal 9.1.x is only supported.
-      if (floatval(\Drupal::VERSION) >= 9.1) {
-        $value = str_replace('; length=43', '', $value);
-      }
       $this->assertStringContainsString('<b>' . $label . '</b><br />' . $value, $body, new FormattableMarkup('Found @label: @value', ['@label' => $label, '@value' => $value]));
     }
 

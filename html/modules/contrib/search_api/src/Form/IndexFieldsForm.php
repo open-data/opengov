@@ -357,7 +357,7 @@ class IndexFieldsForm extends EntityForm {
           ];
         }
       }
-      catch (SearchApiException $e) {
+      catch (SearchApiException) {
         // Could not retrieve data definition. Since this almost certainly means
         // that the property isn't configurable, we can just ignore it here.
       }
@@ -465,7 +465,7 @@ class IndexFieldsForm extends EntityForm {
       try {
         $field->setType($new_settings['type']);
       }
-      catch (SearchApiException $e) {
+      catch (SearchApiException) {
         $args = [
           '%field_id' => $field_id,
           '%field' => $field->getLabel(),

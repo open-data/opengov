@@ -4,13 +4,14 @@ namespace Drupal\simple_sitemap\Manager;
 
 use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\simple_sitemap\Entity\SimpleSitemap;
 
 /**
  * The simple_sitemap.custom_link_manager service.
  */
-class CustomLinkManager {
+class CustomLinkManager implements SitemapGetterInterface {
 
-  use VariantSetterTrait;
+  use SitemapGetterTrait;
   use LinkSettingsTrait;
 
   /**
@@ -68,11 +69,11 @@ class CustomLinkManager {
    * @todo Validate $settings.
    */
   public function add(string $path, array $settings = []): CustomLinkManager {
-    if (empty($variants = $this->getVariants())) {
+    if (empty($variants = array_keys($this->getSitemaps()))) {
       return $this;
     }
 
-    if (!(bool) $this->pathValidator->getUrlIfValidWithoutAccessCheck($path)) {
+    if (!$this->pathValidator->getUrlIfValidWithoutAccessCheck($path)) {
       throw new \InvalidArgumentException("The path '$path' must be local and known to Drupal.");
     }
     if ($path[0] !== '/') {
@@ -113,7 +114,7 @@ class CustomLinkManager {
    */
   public function get(?string $path = NULL): array {
     $all_custom_links = [];
-    foreach ($this->getVariants() as $variant) {
+    foreach (array_keys($this->getSitemaps()) as $variant) {
       $custom_links = $this->configFactory
         ->get("simple_sitemap.custom_links.$variant")
         ->get('links');
@@ -137,9 +138,7 @@ class CustomLinkManager {
         ? array_values($custom_links)[0]
         : array_values($custom_links);
 
-      if ($custom_links) {
-        $all_custom_links[$variant] = $custom_links;
-      }
+      $all_custom_links[$variant] = $custom_links;
     }
 
     return $all_custom_links;
@@ -154,7 +153,7 @@ class CustomLinkManager {
    * @return $this
    */
   public function remove($paths = NULL): CustomLinkManager {
-    if (empty($variants = $this->getVariants())) {
+    if (empty($variants = array_keys($this->getSitemaps()))) {
       return $this;
     }
 
@@ -186,6 +185,23 @@ class CustomLinkManager {
     }
 
     return $this;
+  }
+
+  /**
+   * Gets all compatible sitemaps.
+   *
+   * @return \Drupal\simple_sitemap\Entity\SimpleSitemap[]
+   *   Array of sitemaps of a type that implements a custom URL
+   *   generator.
+   */
+  protected function getCompatibleSitemaps(): array {
+    foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
+      if ($sitemap->getType()->hasUrlGenerator('custom')) {
+        $sitemaps[$variant] = $sitemap;
+      }
+    }
+
+    return $sitemaps ?? [];
   }
 
 }

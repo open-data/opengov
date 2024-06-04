@@ -14,11 +14,11 @@ archive: false
 id: test_form_results_disabled
 title: 'Test: Form: Results Disabled'
 description: 'Test the disabling of saving of results to the database.'
-category: 'Test: Form'
+categories:
+  - 'Test: Form'
 elements: |
   description:
     '#markup': 'This webform will not save any submissions.'
-  
 css: ''
 javascript: ''
 settings:
@@ -106,6 +106,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

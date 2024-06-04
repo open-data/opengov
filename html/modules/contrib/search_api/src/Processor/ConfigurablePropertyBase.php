@@ -57,7 +57,7 @@ abstract class ConfigurablePropertyBase extends ProcessorProperty implements Con
   /**
    * {@inheritdoc}
    */
-  public function setConfiguration(?array $configuration): self {
+  public function setConfiguration(?array $configuration): ConfigurablePropertyInterface {
     $this->configuration = $configuration;
     return $this;
   }

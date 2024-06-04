@@ -3,7 +3,7 @@
  * JavaScript behaviors for excluded elements.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,8 +14,7 @@
    */
   Drupal.behaviors.webformExcludedElementsComposite = {
     attach: function (context) {
-      $('.form-type-webform-excluded-elements [data-composite] input:checkbox')
-        .once('webform-excluded-elements')
+      $(once('webform-excluded-elements', '.form-type-webform-excluded-elements [data-composite] input[type="checkbox"]'))
         .on('click', function () {
           var checked = this.checked;
           var compositeKey = this.value;
@@ -36,4 +35,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

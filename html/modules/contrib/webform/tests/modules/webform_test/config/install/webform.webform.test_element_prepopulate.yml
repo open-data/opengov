@@ -14,7 +14,8 @@ archive: false
 id: test_element_prepopulate
 title: 'Test: Element: Prepopulate'
 description: 'Test prepopulating individual elements using query string parameters.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   page_01:
     '#type': webform_wizard_page
@@ -48,7 +49,6 @@ elements: |
       '#type': managed_file
       '#title': managed_file_prepopulate_02
       '#prepopulate': true
-  
 css: ''
 javascript: ''
 settings:
@@ -136,6 +136,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

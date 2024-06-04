@@ -14,7 +14,8 @@ archive: false
 id: test_element_terms_of_service
 title: 'Test: Element: Terms of Service'
 description: 'Test terms of service element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   terms_of_service_default:
     '#type': webform_terms_of_service
@@ -34,7 +35,6 @@ elements: |
     '#terms_type': slideout
     '#terms_title': terms_of_service_slideout
     '#terms_content': 'These are the terms of service.'
-  
 css: ''
 javascript: ''
 settings:
@@ -122,6 +122,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

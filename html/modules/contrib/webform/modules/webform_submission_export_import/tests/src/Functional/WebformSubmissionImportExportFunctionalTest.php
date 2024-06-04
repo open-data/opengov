@@ -18,7 +18,7 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'file',
     'webform',
     'webform_submission_export_import',
@@ -194,7 +194,13 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
     $assert_session->responseContains('<strong>Row #2:</strong> [file] Invalid file URL (/webform/plain/tests/files/sample.gif). URLS must begin with http:// or https://.');
     $assert_session->responseContains('<strong>Row #2:</strong> [composites] YAML is not valid.');
     $assert_session->responseContains('<strong>Row #3:</strong> The email address <em class="placeholder">not an email address</em> is not valid.');
-    $assert_session->responseContains('<strong>Row #3:</strong> An illegal choice has been detected. Please contact the site administrator.');
+    // @todo Remove once Drupal 10.1.x is only supported.
+    if (floatval(\Drupal::VERSION) >= 10.1) {
+      $assert_session->responseContains('<strong>Row #3:</strong> The submitted value <em class="placeholder">invalid</em> in the <em class="placeholder">checkboxes</em> element is not allowed');
+    }
+    else {
+      $assert_session->responseContains('<strong>Row #3:</strong> An illegal choice has been detected. Please contact the site administrator.');
+    }
 
     // Check the submission 1 (valid) record.
     $submission_1 = $this->loadSubmissionByProperty('notes', 'valid');
@@ -274,7 +280,9 @@ class WebformSubmissionImportExportFunctionalTest extends WebformBrowserTestBase
         3 => [
           0 => 'The email address <em class="placeholder">not an email address</em> is not valid.',
           1 => 'The email address <em class="placeholder">not an email address</em> is not valid.',
-          2 => 'An illegal choice has been detected. Please contact the site administrator.',
+          2 => (floatval(\Drupal::VERSION) >= 10.1)
+            ? 'The submitted value <em class="placeholder">invalid</em> in the <em class="placeholder">checkboxes</em> element is not allowed.'
+            : 'An illegal choice has been detected. Please contact the site administrator.',
         ],
       ],
     ];

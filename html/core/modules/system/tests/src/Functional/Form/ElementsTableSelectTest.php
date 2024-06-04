@@ -150,10 +150,9 @@ class ElementsTableSelectTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the whether the option checker gives an error on invalid
-   * tableselect values for checkboxes.
+   * Tests error handling for invalid tableselect values with checkboxes.
    */
-  public function testMultipleTrueOptionchecker() {
+  public function testMultipleTrueOptionChecker() {
 
     [$header, $options] = _form_test_tableselect_get_data();
 
@@ -174,10 +173,9 @@ class ElementsTableSelectTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the whether the option checker gives an error on invalid
-   * tableselect values for radios.
+   * Tests error handling for invalid tableselect values with radio buttons.
    */
-  public function testMultipleFalseOptionchecker() {
+  public function testMultipleFalseOptionChecker() {
 
     [$header, $options] = _form_test_tableselect_get_data();
 
@@ -240,7 +238,7 @@ class ElementsTableSelectTest extends BrowserTestBase {
     $form_state->clearErrors();
 
     // Return the processed form together with form_state and errors
-    // to allow the caller lowlevel access to the form.
+    // to allow the caller low-level access to the form.
     return [$form, $form_state, $errors];
   }
 

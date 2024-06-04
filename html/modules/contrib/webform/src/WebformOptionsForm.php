@@ -2,9 +2,9 @@
 
 namespace Drupal\webform;
 
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
 use Drupal\webform\Entity\WebformOptions;
 use Drupal\webform\Utility\WebformArrayHelper;
@@ -178,13 +178,11 @@ class WebformOptionsForm extends EntityForm {
     }
 
     $hook_name = 'webform_options_' . $webform_options->id() . '_alter';
-    $alter_hooks = $this->moduleHandler->getImplementations($hook_name);
     $module_info = $this->moduleExtensionList->getAllInstalledInfo();
     $module_names = [];
-    foreach ($alter_hooks as $options_alter_hook) {
-      $module_name = str_replace($hook_name, '', $options_alter_hook);
+    $this->moduleHandler->invokeAllWith($hook_name, function (callable $hook, string $module_name) use (&$module_names, $module_info) {
       $module_names[] = $module_info[$module_name]['name'];
-    }
+    });
     return $module_names;
   }
 

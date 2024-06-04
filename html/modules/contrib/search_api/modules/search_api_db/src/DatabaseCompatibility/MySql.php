@@ -47,10 +47,7 @@ class MySql extends GenericDatabase implements LocationAwareDatabaseInterface {
     // As MySQL removes trailing whitespace when computing primary keys, we need
     // to do the same or pseudo-duplicates could cause an exception ("Integrity
     // constraint violation: Duplicate entry") during indexing.
-    if ($type !== 'text') {
-      $value = rtrim($value);
-    }
-    return $value;
+    return rtrim($value);
   }
 
   /**
@@ -82,7 +79,7 @@ class MySql extends GenericDatabase implements LocationAwareDatabaseInterface {
    * {@inheritdoc}
    */
   public function convertValue($value, string $original_type) {
-    if (!$value || !is_string($value) || strpos($value, ',') === FALSE) {
+    if (!$value || !is_string($value) || !str_contains($value, ',')) {
       return NULL;
     }
     [$lat, $lon] = explode(',', $value);
@@ -116,7 +113,7 @@ class MySql extends GenericDatabase implements LocationAwareDatabaseInterface {
       $distance_field_alias = "{$condition['field']}__distance";
 
       // MySQL's spatial functions use meter as distance unit whereas Solr uses
-      // kilometer by default.  To maintain compatibility with Solr, here we
+      // kilometer by default. To maintain compatibility with Solr, here we
       // divide the resultant distance by a thousand so that it is in kilometer.
       $distance_field_alias = $db_query->addExpression("ST_Distance_Sphere(Point(:centre_lon, :centre_lat), ST_PointFromText($location_field_name)) / 1000", $distance_field_alias, [
         ':centre_lat' => $condition['lat'],

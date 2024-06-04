@@ -53,7 +53,7 @@ class Webform extends ConditionPluginBase implements ContainerFactoryPluginInter
       $options[$webform->id()] = $webform->label();
     }
     $form['webforms'] = [
-      '#title' => $this->t('Webform'),
+      '#title' => $this->t('Webform', [], ['context' => 'form']),
       '#description' => $this->t('Select which webforms this block should be displayed on.'),
       '#type' => 'select',
       '#options' => $options,

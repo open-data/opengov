@@ -14,7 +14,8 @@ archive: false
 id: test_form_unsaved
 title: 'Test: Webform: Unsaved'
 description: 'Test displaying unsaved data warning.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   markup:
     '#markup': 'Enter some data and hit reload'
@@ -24,7 +25,6 @@ elements: |
   text_format:
     '#type': text_format
     '#title': text_format
-  
 css: ''
 javascript: ''
 settings:
@@ -112,6 +112,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

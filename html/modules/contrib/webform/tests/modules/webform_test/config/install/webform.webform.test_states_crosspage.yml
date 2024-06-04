@@ -14,7 +14,8 @@ archive: false
 id: test_states_crosspage
 title: 'Test: Form API #states cross page conditions'
 description: 'Test Drupal''s #states cross page conditions.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   page_1:
     '#type': webform_wizard_page
@@ -46,7 +47,6 @@ elements: |
             checked: true
           ':input[name="trigger_2"]':
             checked: true
-  
 css: ''
 javascript: ''
 settings:
@@ -134,6 +134,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

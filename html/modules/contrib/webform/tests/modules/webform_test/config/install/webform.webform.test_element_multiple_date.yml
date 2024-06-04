@@ -14,7 +14,8 @@ archive: false
 id: test_element_multiple_date
 title: 'Test: Element: Multiple: Date'
 description: 'Test multiple text Date elements.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   time:
     '#type': details
@@ -40,7 +41,6 @@ elements: |
       '#type': datelist
       '#title': datelist_basic
       '#multiple': true
-  
 css: ''
 javascript: ''
 settings:
@@ -128,6 +128,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

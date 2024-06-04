@@ -933,9 +933,9 @@ class IntegrationTest extends SearchApiBrowserTestBase {
       $fallback = $columns[3]->getText();
 
       // Make sure we display the right icon and fallback column.
-      if (strpos($label, 'Unsupported') === 0) {
+      if (str_starts_with($label, 'Unsupported')) {
         $this->assertEquals('error.svg', $icon, 'An error icon is shown for unsupported data types.');
-        $this->assertNotEquals($fallback, '', 'The fallback data type label is not empty for unsupported data types.');
+        $this->assertNotEquals('', $fallback, 'The fallback data type label is not empty for unsupported data types.');
       }
       else {
         $this->assertEquals('check.svg', $icon, 'A check icon is shown for supported data types.');
@@ -1203,7 +1203,7 @@ class IntegrationTest extends SearchApiBrowserTestBase {
       ];
       $this->assertEquals($expected, $configuration, 'Title field enabled for ignore case filter.');
     }
-    catch (SearchApiException $e) {
+    catch (SearchApiException) {
       $this->fail('"Ignore case" processor not enabled.');
     }
     $this->assertSession()

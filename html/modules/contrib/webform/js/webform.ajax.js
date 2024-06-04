@@ -3,7 +3,7 @@
  * JavaScript behaviors for Ajax.
  */
 
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, drupalSettings, once) {
 
   'use strict';
 
@@ -30,7 +30,7 @@
    */
   Drupal.behaviors.webformAjaxLink = {
     attach: function (context) {
-      $('.webform-ajax-link', context).once('webform-ajax-link').each(function () {
+      $(once('webform-ajax-link', '.webform-ajax-link', context)).each(function () {
         var element_settings = {};
         element_settings.progress = {type: 'fullscreen'};
 
@@ -71,7 +71,7 @@
    */
   Drupal.behaviors.webformAjaxHash = {
     attach: function (context) {
-      $('[data-hash]', context).once('webform-ajax-hash').each(function () {
+      $(once('webform-ajax-hash', '[data-hash]', context)).each(function () {
         var hash = $(this).data('hash');
         if (hash) {
           $(this).on('click', function () {
@@ -92,8 +92,7 @@
    */
   Drupal.behaviors.webformConfirmationBackAjax = {
     attach: function (context) {
-      $('.js-webform-confirmation-back-link-ajax', context)
-        .once('webform-confirmation-back-ajax')
+      $(once('webform-confirmation-back-ajax', '.js-webform-confirmation-back-link-ajax', context))
         .on('click', function (event) {
           var $form = $(this).parents('form');
 
@@ -334,4 +333,4 @@
     }
   };
 
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, drupalSettings, once);

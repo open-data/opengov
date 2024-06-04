@@ -14,7 +14,7 @@ archive: false
 id: template_session_evaluation
 title: 'Session Evaluation'
 description: 'A session evaluation webform template.'
-category: ''
+categories: {  }
 elements: |
   overall:
     '#type': radios
@@ -45,7 +45,6 @@ elements: |
     '#type': textarea
     '#title': Comments
     '#description': 'What did you like most? What would you change? Advice for the speaker to make this session better?'
-  
 css: ''
 javascript: ''
 settings:
@@ -133,6 +132,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

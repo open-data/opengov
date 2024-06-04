@@ -16,7 +16,7 @@ class WebformEntityTranslationApiTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_test_translation'];
+  protected static $modules = ['webform_test_translation'];
 
   /**
    * Tests webform translation API.

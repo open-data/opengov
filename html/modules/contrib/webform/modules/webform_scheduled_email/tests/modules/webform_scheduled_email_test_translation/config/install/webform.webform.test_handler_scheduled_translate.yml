@@ -16,12 +16,11 @@ archive: false
 id: test_handler_scheduled_translate
 title: 'Test: Handler: Test scheduled email translation'
 description: 'Test webform schedule email handler translation.'
-category: null
+categories: {  }
 elements: |
   value:
     '#type': textfield
     '#title': value
-  
 css: ''
 javascript: ''
 settings:
@@ -109,6 +108,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

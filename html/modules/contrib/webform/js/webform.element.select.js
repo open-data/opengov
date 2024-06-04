@@ -3,7 +3,7 @@
  * JavaScript behaviors for select menu.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,7 +14,7 @@
    */
   Drupal.behaviors.webformSelectOptionsDisabled = {
     attach: function (context) {
-      $('select[data-webform-select-options-disabled]', context).once('webform-select-options-disabled').each(function () {
+      $(once('webform-select-options-disabled', 'select[data-webform-select-options-disabled]', context)).each(function () {
         var $select = $(this);
         var disabled = $select.attr('data-webform-select-options-disabled').split(/\s*,\s*/);
         $select.find('option').filter(function isDisabled() {
@@ -24,4 +24,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

@@ -135,7 +135,7 @@ class ActionWebformHandler extends WebformHandlerBase {
     $form['actions']['locked'] = [
       '#type' => 'select',
       '#title' => $this->t('Change lock'),
-      '#description' => $this->t('Webform submissions can only be unlocked programatically.'),
+      '#description' => $this->t('Webform submissions can only be unlocked programmatically.'),
       '#empty_option' => $this->t('- None -'),
       '#options' => [
         '' => '',

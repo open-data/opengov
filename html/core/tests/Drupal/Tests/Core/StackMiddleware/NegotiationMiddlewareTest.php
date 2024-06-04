@@ -1,9 +1,6 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\Core\StackMiddleware\NegotiationMiddlewareTest.
- */
+declare(strict_types=1);
 
 namespace Drupal\Tests\Core\StackMiddleware;
 
@@ -36,7 +33,7 @@ class NegotiationMiddlewareTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->app = $this->prophesize(MockedHttpKernelInterface::class);
+    $this->app = $this->prophesize(HttpKernelInterface::class);
     $this->contentNegotiation = new StubNegotiationMiddleware($this->app->reveal());
   }
 
@@ -103,18 +100,24 @@ class NegotiationMiddlewareTest extends UnitTestCase {
 
     // Some getContentType calls we don't really care about but have to mock.
     $request_data = $this->prophesize(ParameterBag::class);
-    $request_data->get('ajax_iframe_upload', FALSE)->shouldBeCalled();
+    $request_data->get('ajax_iframe_upload', FALSE)->willReturn(FALSE)->shouldBeCalled();
     $request_mock = $request->reveal();
     $request_mock->query = new ParameterBag([]);
     $request_mock->request = $request_data->reveal();
 
     // Calling kernel app with default arguments.
-    $this->app->handle($request_mock, HttpKernelInterface::MASTER_REQUEST, TRUE)
-      ->shouldBeCalled();
+    $this->app->handle($request_mock, HttpKernelInterface::MAIN_REQUEST, TRUE)
+      ->shouldBeCalled()
+      ->willReturn(
+        $this->createMock(Response::class)
+      );
     $this->contentNegotiation->handle($request_mock);
     // Calling kernel app with specified arguments.
     $this->app->handle($request_mock, HttpKernelInterface::SUB_REQUEST, FALSE)
-      ->shouldBeCalled();
+      ->shouldBeCalled()
+      ->willReturn(
+        $this->createMock(Response::class)
+      );
     $this->contentNegotiation->handle($request_mock, HttpKernelInterface::SUB_REQUEST, FALSE);
   }
 
@@ -122,7 +125,7 @@ class NegotiationMiddlewareTest extends UnitTestCase {
    * @covers ::registerFormat
    */
   public function testSetFormat() {
-    $app = $this->createMock(MockedHttpKernelInterface::class);
+    $app = $this->createMock(HttpKernelInterface::class);
     $app->expects($this->once())
       ->method('handle')
       ->willReturn($this->createMock(Response::class));
@@ -137,7 +140,7 @@ class NegotiationMiddlewareTest extends UnitTestCase {
     // Some calls we don't care about.
     $request->setRequestFormat()->shouldNotBeCalled();
     $request_data = $this->prophesize(ParameterBag::class);
-    $request_data->get('ajax_iframe_upload', FALSE)->shouldBeCalled();
+    $request_data->get('ajax_iframe_upload', FALSE)->willReturn(FALSE)->shouldBeCalled();
     $request_mock = $request->reveal();
     $request_mock->query = new ParameterBag([]);
     $request_mock->request = $request_data->reveal();
@@ -154,16 +157,5 @@ class StubNegotiationMiddleware extends NegotiationMiddleware {
   public function getContentType(Request $request) {
     return parent::getContentType($request);
   }
-
-}
-
-/**
- * Helper interface for the Symfony 6 version of the HttpKernelInterface.
- *
- * @todo Remove this interface when the Symfony 6 is in core.
- */
-interface MockedHttpKernelInterface extends HttpKernelInterface {
-
-  public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = TRUE): Response;
 
 }

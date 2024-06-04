@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\EventSubscriber;
 
 use Drupal\Core\EventSubscriber\RssResponseRelativeUrlFilter;
@@ -30,7 +32,7 @@ Drupal is an open source content management platform powering millions of websit
   <item>
      <title>Drupal 8 turns one!</title>
      <link>https://www.drupal.org/blog/drupal-8-turns-one</link>
-     <description>&lt;a href=&quot;localhost/node/1&quot;&gt;Hello&lt;/a&gt;
+     <description>&lt;a href=&quot;localhost/node/1&quot;&gt;Hello&amp;nbsp;&lt;/a&gt;
     </description>
   </item>
   </channel>
@@ -49,7 +51,7 @@ Drupal is an open source content management platform powering millions of websit
   <item>
      <title>Drupal 8 turns one!</title>
      <link>https://www.drupal.org/blog/drupal-8-turns-one</link>
-     <description>&lt;a href="localhost/node/1"&gt;Hello&lt;/a&gt;
+     <description>&lt;a href="localhost/node/1"&gt;Hello&amp;nbsp;&lt;/a&gt;
     </description>
   </item>
   </channel>
@@ -116,7 +118,7 @@ RSS;
     $event = new ResponseEvent(
       $this->prophesize(HttpKernelInterface::class)->reveal(),
       Request::create('/'),
-      HttpKernelInterface::MASTER_REQUEST,
+      HttpKernelInterface::MAIN_REQUEST,
       new Response($content, 200, [
         'Content-Type' => 'application/rss+xml',
       ])

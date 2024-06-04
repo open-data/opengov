@@ -64,7 +64,7 @@ class SearchApiDataRow extends DataEntityRow {
         try {
           $row->_object = $row->_item->getOriginalObject(FALSE);
         }
-        catch (SearchApiException $e) {
+        catch (SearchApiException) {
           // Can never happen for getOriginalObject() with $load = FALSE. Catch
           // for sake of static analysis.
         }

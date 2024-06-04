@@ -531,6 +531,33 @@ class WebformElementHelper {
   }
 
   /**
+   * Merge element options.
+   *
+   * NOTE: This is a modified version of WebformElementHelper::merge(),
+   * designed to only run when dealing with an #options property. See issue #3320160
+   *
+   * @param array $options
+   *   An array of options.
+   * @param array $source_options
+   *   An array of options to be merged.
+   */
+  public static function mergeOptions(array &$options, array $source_options) {
+    foreach ($options as $key => &$option) {
+      if (isset($source_options[$key]) && is_scalar($option) && gettype($option) === gettype($source_options[$key])) {
+        $option = $source_options[$key];
+      }
+      elseif (is_array($option)) {
+        unset($options[$key]);
+      }
+    }
+    foreach ($source_options as $key => $option) {
+      if (is_array($option)) {
+        $options[$key] = $option;
+      }
+    }
+  }
+
+  /**
    * Merge element properties.
    *
    * @param array $elements
@@ -550,7 +577,12 @@ class WebformElementHelper {
       }
 
       if (is_array($element)) {
-        self::merge($element, $source_element);
+        if ($key === '#options') {
+          self::mergeOptions($element, $source_element);
+        }
+        else {
+          self::merge($element, $source_element);
+        }
       }
       elseif (is_scalar($element)) {
         $elements[$key] = $source_element;
@@ -587,7 +619,12 @@ class WebformElementHelper {
       }
 
       if (is_array($value)) {
-        self::merge($value, $translation_value);
+        if ($key === '#options') {
+          self::mergeOptions($value, $translation_value);
+        }
+        else {
+          self::merge($value, $translation_value);
+        }
       }
       elseif (is_scalar($value)) {
         $element[$key] = $translation_value;

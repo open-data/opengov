@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform_options_limit\Functional;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Webform options limit test.
@@ -15,7 +15,7 @@ class WebformOptionsLimitTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'webform',
     'webform_options_limit',
     'webform_options_limit_test',
@@ -90,11 +90,11 @@ class WebformOptionsLimitTest extends WebformBrowserTestBase {
     $assert_session->responseContains('<option value="O">O [0 remaining]</option>');
 
     // Check that table select multiple is NOT available.
-    $this->assertNoFieldById('edit-options-limit-tableselect-multiple-u', 'U');
+    $assert_session->fieldNotExists('edit-options-limit-tableselect-multiple-u');
     $assert_session->responseContains('<td>U [0 remaining]</td>');
 
     // Check that table select single is available.
-    $this->assertNoFieldById('edit-options-limit-tableselect-multiple-x', 'X');
+    $assert_session->fieldNotExists('edit-options-limit-tableselect-single-x');
     $assert_session->responseContains('<td>X</td>');
     $assert_session->responseContains('<td> [0 remaining]</td>');
 

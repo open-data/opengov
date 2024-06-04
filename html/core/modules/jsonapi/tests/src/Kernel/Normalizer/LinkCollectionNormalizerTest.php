@@ -46,9 +46,10 @@ class LinkCollectionNormalizerTest extends KernelTestBase {
   protected $testUsers;
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   protected static $modules = [
+    'file',
     'jsonapi',
     'serialization',
     'system',
@@ -56,14 +57,13 @@ class LinkCollectionNormalizerTest extends KernelTestBase {
   ];
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   protected function setUp(): void {
     parent::setUp();
     // Add the entity schemas.
     $this->installEntitySchema('user');
     // Add the additional table schemas.
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     // Set the user IDs to something higher than 1 so these users cannot be
     // mistaken for the site admin.

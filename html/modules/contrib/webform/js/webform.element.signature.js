@@ -3,7 +3,7 @@
  * JavaScript behaviors for signature pad integration.
  */
 
-(function ($, Drupal, debounce) {
+(function ($, Drupal, debounce, once) {
 
   'use strict';
 
@@ -23,7 +23,7 @@
         return;
       }
 
-      $(context).find('input.js-webform-signature').once('webform-signature').each(function () {
+      $(once('webform-signature', 'input.js-webform-signature', context)).each(function () {
         var $input = $(this);
         var value = $input.val();
         var $wrapper = $input.parent();
@@ -67,6 +67,8 @@
         // Set resize handler.
         $(window).on('resize', debounce(refresh, 10));
 
+        $input.closest('form').on('webform_cards:change', refresh);
+
         // Set reset handler.
         $button.on('click', function () {
           signaturePad.clear();
@@ -104,4 +106,4 @@
     }
   };
 
-})(jQuery, Drupal, Drupal.debounce);
+})(jQuery, Drupal, Drupal.debounce, once);

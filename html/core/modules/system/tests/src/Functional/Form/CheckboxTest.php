@@ -6,8 +6,9 @@ use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- * Tests form API checkbox handling of various combinations of #default_value
- * and #return_value.
+ * Tests the form API checkbox element.
+ *
+ * Various combinations of #default_value and #return_value are used.
  *
  * @group Form
  */
@@ -53,7 +54,7 @@ class CheckboxTest extends BrowserTestBase {
         elseif ($return_value === '1foobar') {
           $checked = ($default_value === '1foobar');
         }
-        $checked_in_html = strpos($form, 'checked') !== FALSE;
+        $checked_in_html = str_contains($form, 'checked');
         $message = new FormattableMarkup('#default_value is %default_value #return_value is %return_value.', ['%default_value' => var_export($default_value, TRUE), '%return_value' => var_export($return_value, TRUE)]);
         $this->assertSame($checked, $checked_in_html, $message);
       }
@@ -86,7 +87,7 @@ class CheckboxTest extends BrowserTestBase {
     foreach ($checkboxes as $checkbox) {
       $checked = $checkbox->isChecked();
       $name = $checkbox->getAttribute('name');
-      $this->assertSame($checked, $name == 'checkbox_zero_default[0]' || $name == 'checkbox_string_zero_default[0]', new FormattableMarkup('Checkbox %name correctly checked', ['%name' => $name]));
+      $this->assertSame($checked, $name == 'checkbox_zero_default[0]' || $name == 'checkbox_string_zero_default[0]', "Checkbox $name correctly checked");
     }
     // Due to Mink driver differences, we cannot submit an empty checkbox value
     // to submitForm(), even if that empty value is the 'true' value for
@@ -100,7 +101,7 @@ class CheckboxTest extends BrowserTestBase {
     foreach ($checkboxes as $checkbox) {
       $checked = $checkbox->isChecked();
       $name = (string) $checkbox->getAttribute('name');
-      $this->assertSame($checked, $name == 'checkbox_off[0]' || $name == 'checkbox_zero_default[0]' || $name == 'checkbox_string_zero_default[0]', new FormattableMarkup('Checkbox %name correctly checked', ['%name' => $name]));
+      $this->assertSame($checked, $name == 'checkbox_off[0]' || $name == 'checkbox_zero_default[0]' || $name == 'checkbox_string_zero_default[0]', "Checkbox $name correctly checked");
     }
   }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Entity;
 
 use Drupal\Tests\UnitTestCase;
@@ -160,7 +162,6 @@ class EntityStorageBaseTest extends UnitTestCase {
       ->willReturn(FALSE);
     // Add the EntityTypeInterface to the storage object.
     $ref_entity_type = new \ReflectionProperty($mock_base, 'entityType');
-    $ref_entity_type->setAccessible(TRUE);
     $ref_entity_type->setValue($mock_base, $mock_entity_type);
 
     // Set up expectations for postLoad(), which we only call if there are

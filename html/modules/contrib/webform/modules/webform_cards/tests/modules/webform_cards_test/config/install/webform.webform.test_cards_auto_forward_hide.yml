@@ -14,7 +14,8 @@ archive: false
 id: test_cards_auto_forward_hide
 title: 'Test: Webform: Cards auto-forward hide next button'
 description: 'Test cards progress with auto_forward and hiding the next button.'
-category: 'Test: Cards'
+categories:
+  - 'Test: Cards'
 elements: |
   radios_example:
     '#type': webform_card
@@ -67,7 +68,6 @@ elements: |
         kitten_3:
           text: 'Cute Kitten 3'
           src: 'http://placekitten.com/130/200'
-  
 css: ''
 javascript: ''
 settings:
@@ -155,6 +155,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

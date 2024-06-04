@@ -14,12 +14,12 @@ archive: false
 id: test_form_limit_wait
 title: 'Test: Form: Submission limit wait'
 description: 'Test submission and user limit wait.'
-category: 'Test: Form'
+categories:
+  - 'Test: Form'
 elements: |
   name:
     '#type': textfield
     '#title': Name
-  
 css: ''
 javascript: ''
 settings:
@@ -109,6 +109,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -140,7 +142,6 @@ settings:
   limit_total_message: |
     webform_submission:interval:webform:wait =&gt; [webform_submission:interval:webform:wait]<br />
     webform_submission:interval:webform:source_entity:wait =&gt; [webform_submission:interval:webform:source_entity:wait]
-    
   limit_total_unique: false
   limit_user: 1
   limit_user_interval: 15
@@ -148,7 +149,6 @@ settings:
     <pre>
     webform_submission:interval:user:wait =&gt; [webform_submission:interval:user:wait]
     webform_submission:interval:user:source_entity:wait =&gt; [webform_submission:interval:user:source_entity:wait]</pre>
-    
   limit_user_unique: false
   entity_limit_total: 2
   entity_limit_total_interval: 30

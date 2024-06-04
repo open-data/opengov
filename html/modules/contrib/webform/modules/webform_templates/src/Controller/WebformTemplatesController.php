@@ -5,6 +5,7 @@ namespace Drupal\webform_templates\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
+use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\EntityStorage\WebformEntityStorageTrait;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform\WebformInterface;
@@ -71,7 +72,7 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
     $header = [];
     $header['title'] = $this->t('Title');
     $header['description'] = ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]];
-    $header['category'] = ['data' => $this->t('Category'), 'class' => [RESPONSIVE_PRIORITY_LOW]];
+    $header['categories'] = ['data' => $this->t('Categories'), 'class' => [RESPONSIVE_PRIORITY_LOW]];
     if ($manage) {
       $header['owner'] = ['data' => $this->t('Author'), 'class' => [RESPONSIVE_PRIORITY_LOW]];
     }
@@ -83,8 +84,8 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
       $route_parameters = ['webform' => $webform->id()];
 
       $row['title'] = $webform->toLink();
-      $row['description']['data']['#markup'] = $webform->get('description');
-      $row['category']['data']['#markup'] = $webform->get('category');
+      $row['description']['data'] = WebformHtmlEditor::checkMarkup($webform->get('description'));
+      $row['categories']['data']['#markup'] = implode('; ', $webform->get('categories') ?: []);
 
       if ($manage) {
         $row['owner'] = ($owner = $webform->getOwner()) ? $owner->toLink() : '';
@@ -93,7 +94,7 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
         if ($webform->access('update')) {
           $operations['edit'] = [
             'title' => $this->t('Build'),
-            'url' => $this->ensureDestination($webform->toUrl('edit-form')),
+            'url' => $webform->toUrl('edit-form'),
           ];
         }
         if ($webform->access('submission_page')) {
@@ -148,7 +149,7 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
     }
 
     $build = [];
-    $build['filter_form'] = $this->formBuilder->getForm('\Drupal\webform_templates\Form\WebformTemplatesFilterForm', $keys);
+    $build['filter_form'] = $this->formBuilder->getForm('\Drupal\webform_templates\Form\WebformTemplatesFilterForm', $keys, $category);
 
     // Display info.
     if ($total = count($rows)) {
@@ -212,18 +213,20 @@ class WebformTemplatesController extends ControllerBase implements ContainerInje
     $query->condition('template', TRUE);
     $query->condition('archive', FALSE);
     // Filter by key(word).
-    if ($keys) {
+    if (in_array($keys, array_values($this->getWebformStorage()->getCategories()))) {
+      $query->condition('categories.*', $keys);
+    }
+    elseif ($keys) {
       $or = $query->orConditionGroup()
         ->condition('title', $keys, 'CONTAINS')
         ->condition('description', $keys, 'CONTAINS')
-        ->condition('category', $keys, 'CONTAINS')
         ->condition('elements', $keys, 'CONTAINS');
       $query->condition($or);
     }
 
     // Filter by category.
     if ($category) {
-      $query->condition('category', $category);
+      $query->condition('categories.*', $category);
     }
 
     $query->sort('title');

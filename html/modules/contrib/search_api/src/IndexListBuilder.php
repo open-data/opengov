@@ -117,7 +117,7 @@ class IndexListBuilder extends ConfigEntityListBuilder {
             break;
           }
         }
-        catch (PluginException $e) {
+        catch (PluginException) {
           // This can only happen for the view, if the Views module isn't
           // installed. Ignore.
         }

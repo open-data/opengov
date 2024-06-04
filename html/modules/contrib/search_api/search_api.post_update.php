@@ -30,7 +30,7 @@ function search_api_post_update_views_query_type() {
 
   foreach ($config_factory->listAll('views.view.') as $view_config_name) {
     $view = $config_factory->getEditable($view_config_name);
-    if (substr($view->get('base_table'), 0, 17) == 'search_api_index_') {
+    if (str_starts_with($view->get('base_table'), 'search_api_index_')) {
       $displays = $view->get('display');
 
       $update_query = $update_cache = FALSE;

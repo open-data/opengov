@@ -20,7 +20,7 @@ class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['file', 'webform'];
+  protected static $modules = ['file', 'webform'];
 
   /**
    * Webforms to load.
@@ -51,7 +51,6 @@ class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
     $fid = (int) \Drupal::database()->query('SELECT MAX(fid) FROM {file_managed}')->fetchField();
     $file = File::load($fid);
     $file_name = $file->getFilename();
-    $file_size = $file->getSize();
     $file_url = $file->createFileUrl(FALSE);
 
     /* ********************************************************************** */
@@ -75,13 +74,17 @@ class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
     $assert_session->responseContains('<em>EXCEPTION</em>');
 
     // Check multiple custom HTML format.
-    $assert_session->responseContains('<label>textfield_custom</label>');
+    $assert_session->responseContains('<label>textfield_custom_value</label>');
+    $assert_session->responseContains('<ul><li><em>One</em></li><li><em>Two</em></li><li><em>Three</em></li><li><em>Four</em></li><li><em>Five</em></li></ul>');
+
+    // Check multiple custom HTML format.
+    $assert_session->responseContains('<label>textfield_custom_value_multiple</label>');
     $assert_session->responseContains('<table>');
-    $assert_session->responseContains('<tr ><td>One</td></tr>');
-    $assert_session->responseContains('<tr style="background-color: #ffc"><td>Two</td></tr>');
-    $assert_session->responseContains('<tr ><td>Three</td></tr>');
-    $assert_session->responseContains('<tr style="background-color: #ffc"><td>Four</td></tr>');
-    $assert_session->responseContains('<tr ><td>Five</td></tr>');
+    $assert_session->responseContains('<tr ><td><em>One</em></td></tr>');
+    $assert_session->responseContains('<tr style="background-color: #ffc"><td><em>Two</em></td></tr>');
+    $assert_session->responseContains('<tr ><td><em>Three</em></td></tr>');
+    $assert_session->responseContains('<tr style="background-color: #ffc"><td><em>Four</em></td></tr>');
+    $assert_session->responseContains('<tr ><td><em>Five</em></td></tr>');
     $assert_session->responseContains('</table>');
 
     // Check image custom HTML format.
@@ -90,16 +93,7 @@ class WebformElementFormatCustomTest extends WebformElementBrowserTestBase {
     $assert_session->responseContains("item['value']: $file_url<br/>");
     $assert_session->responseContains("item['raw']: $file_url<br/>");
     $assert_session->responseContains("item['link']:");
-    // @todo Remove once Drupal 9.1.x is only supported.
-    if (floatval(\Drupal::VERSION) >= 9.3) {
-      $assert_session->responseContains('<span class="file file--mime-image-png file--image"><a href="' . $file->createFileUrl() . '" type="image/png">' . $file_name . '</a></span>');
-    }
-    elseif (floatval(\Drupal::VERSION) >= 9.1) {
-      $assert_session->responseContains('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png">' . $file_name . '</a></span>');
-    }
-    else {
-      $assert_session->responseContains('<span class="file file--mime-image-png file--image"><a href="' . $file_url . '" type="image/png; length=' . $file_size . '">' . $file_name . '</a></span>');
-    }
+    $assert_session->responseContains('<span class="file file--mime-image-png file--image"><a href="' . $file->createFileUrl() . '" type="image/png">' . $file_name . '</a></span>');
     $assert_session->responseContains('item[\'id\']: 1<br/>');
     $assert_session->responseContains("item['url']: $file_url<br/>");
     $assert_session->responseContains('<img class="webform-image-file" alt="' . $file_name . '" title="' . $file_name . '" src="' . $file_url . '" />');
@@ -139,12 +133,19 @@ element.country: {02-country}<br/>
     $assert_session->responseContains("textfield_custom: /{textfield_custom}/
 textfield_custom_token: /{textfield_custom_token}/
 textfield_custom_token_exception: /EXCEPTION/
-textfield_custom:
-⦿ One
-⦿ Two
-⦿ Three
-⦿ Four
-⦿ Five
+textfield_custom_value:
+- /One/
+- /Two/
+- /Three/
+- /Four/
+- /Five/
+
+textfield_custom_value_multiple:
+⦿ /One/
+⦿ /Two/
+⦿ /Three/
+⦿ /Four/
+⦿ /Five/
 
 
 image_custom:

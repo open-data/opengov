@@ -2,19 +2,22 @@
 
 namespace Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Session\AnonymousUserSession;
+use Drupal\Core\Url;
+use Drupal\file\FileInterface;
+use Drupal\media\MediaInterface;
+use Drupal\paragraphs\ParagraphInterface;
 use Drupal\simple_sitemap\Entity\EntityHelper;
 use Drupal\simple_sitemap\Exception\SkipElementException;
+use Drupal\simple_sitemap\Logger;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\SimpleSitemapPluginBase;
 use Drupal\simple_sitemap\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Url;
-use Drupal\file\Entity\File;
-use Drupal\simple_sitemap\Logger;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Session\AnonymousUserSession;
 
 /**
  * Provides a base class for entity UrlGenerator plugins.
@@ -260,6 +263,8 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
   /**
    * Gets the image data for specified entity.
    *
+   * Extracts from paragraph & media entities as well.
+   *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The entity to process.
    *
@@ -269,20 +274,21 @@ abstract class EntityUrlGeneratorBase extends UrlGeneratorBase {
   protected function getEntityImageData(ContentEntityInterface $entity): array {
     $image_data = [];
 
-    /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
-    $file_url_generator = \Drupal::service('file_url_generator');
-
-    foreach ($entity->getFieldDefinitions() as $field) {
-      if ($field->getType() === 'image') {
-        foreach ($entity->get($field->getName())->getValue() as $value) {
-          if (NULL !== ($file = File::load($value['target_id']))) {
-            $image_data[] = [
-              'path' => $this->replaceBaseUrlWithCustom(
-                $file_url_generator->generateAbsoluteString($file->getFileUri())
-              ),
-              'alt' => $value['alt'],
-              'title' => $value['title'],
-            ];
+    foreach ($entity->getFields(FALSE) as $field) {
+      if ($field instanceof EntityReferenceFieldItemListInterface && !$field->getFieldDefinition()->isReadOnly()) {
+        foreach ($field as $item) {
+          if ($item->entity instanceof FileInterface && strpos($item->entity->getMimeType(), 'image/') === 0) {
+            $path = $item->entity->createFileUrl(FALSE);
+            if ($path) {
+              $image_data[] = [
+                'path' => $this->replaceBaseUrlWithCustom($path),
+                'alt' => $item->alt,
+                'title' => $item->title,
+              ];
+            }
+          }
+          elseif ($item->entity instanceof MediaInterface || $item->entity instanceof ParagraphInterface) {
+            $image_data = array_merge($image_data, $this->getEntityImageData($item->entity));
           }
         }
       }

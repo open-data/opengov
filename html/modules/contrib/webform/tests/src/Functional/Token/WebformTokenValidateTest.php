@@ -16,7 +16,7 @@ class WebformTokenValidateTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['token'];
+  protected static $modules = ['token'];
 
   /**
    * Test webform token element validation.
@@ -28,14 +28,14 @@ class WebformTokenValidateTest extends WebformBrowserTestBase {
 
     // Check invalid token validation.
     $this->drupalGet('/admin/structure/webform/config');
-    $edit = ['form_settings[default_form_open_message][value]' => '[webform:invalid]'];
+    $edit = ['form_settings[default_form_open_message][value][value]' => '[webform:invalid]'];
     $this->submitForm($edit, 'Save configuration');
     $assert_session->responseContains('invalid tokens');
     $assert_session->responseContains('<em class="placeholder">Default open message</em> is using the following invalid tokens: [webform:invalid].');
 
     // Check valid token validation.
     $this->drupalGet('/admin/structure/webform/config');
-    $edit = ['form_settings[default_form_open_message][value]' => '[webform:title]'];
+    $edit = ['form_settings[default_form_open_message][value][value]' => '[webform:title]'];
     $this->submitForm($edit, 'Save configuration');
     $assert_session->responseNotContains('invalid tokens');
   }

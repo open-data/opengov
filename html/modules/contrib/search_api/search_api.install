@@ -325,7 +325,7 @@ function search_api_update_8106() {
       ->condition('name', 'search_api_views_taxonomy')
       ->execute();
   }
-  catch (DatabaseException $e) {
+  catch (DatabaseException) {
     // The admin might have done this already to get rid of the warning
     // themselves. It's not really important enough to fail on this, in any
     // case. In the worst case, the warning just remains. So, just ignore any

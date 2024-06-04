@@ -17,7 +17,7 @@ class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase 
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'address',
     'captcha',
     'image',
@@ -28,6 +28,7 @@ class WebformElementPluginDefinitionsTest extends WebformElementBrowserTestBase 
     'webform_entity_print_attachment',
     'webform_image_select',
     'webform_location_geocomplete',
+    'webform_location_places',
     'webform_options_custom',
     'webform_toggles',
   ];
@@ -1381,8 +1382,8 @@ webform_location_places:
   deprecated_message: ''
   id: webform_location_places
   label: 'Location (Algolia Places)'
-  class: Drupal\webform\Plugin\WebformElement\WebformLocationPlaces
-  provider: webform
+  class: Drupal\webform_location_places\Plugin\WebformElement\WebformLocationPlaces
+  provider: webform_location_places
   input: true
   container: false
   root: false

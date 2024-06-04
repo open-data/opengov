@@ -28,6 +28,8 @@ use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTextNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PropertyTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\RequireExtendsTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\RequireImplementsTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\ReturnTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\SelfOutTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\TemplateTagValueNode;
@@ -97,6 +99,7 @@ final class Printer
 		ArrayShapeNode::class . '->items' => ', ',
 		ObjectShapeNode::class . '->items' => ', ',
 		CallableTypeNode::class . '->parameters' => ', ',
+		CallableTypeNode::class . '->templateTypes' => ', ',
 		GenericTypeNode::class . '->genericTypes' => ', ',
 		ConstExprArrayNode::class . '->items' => ', ',
 		MethodTagValueNode::class . '->parameters' => ', ',
@@ -283,6 +286,14 @@ final class Printer
 			$type = $this->printType($node->type);
 			return trim("{$type} {$node->description}");
 		}
+		if ($node instanceof RequireExtendsTagValueNode) {
+			$type = $this->printType($node->type);
+			return trim("{$type} {$node->description}");
+		}
+		if ($node instanceof RequireImplementsTagValueNode) {
+			$type = $this->printType($node->type);
+			return trim("{$type} {$node->description}");
+		}
 		if ($node instanceof ParamOutTagValueNode) {
 			$type = $this->printType($node->type);
 			return trim("{$type} {$node->parameterName} {$node->description}");
@@ -370,10 +381,15 @@ final class Printer
 			} else {
 				$returnType = $this->printType($node->returnType);
 			}
+			$template = $node->templateTypes !== []
+				? '<' . implode(', ', array_map(function (TemplateTagValueNode $templateNode): string {
+					return $this->print($templateNode);
+				}, $node->templateTypes)) . '>'
+				: '';
 			$parameters = implode(', ', array_map(function (CallableTypeParameterNode $parameterNode): string {
 				return $this->print($parameterNode);
 			}, $node->parameters));
-			return "{$node->identifier}({$parameters}): {$returnType}";
+			return "{$node->identifier}{$template}({$parameters}): {$returnType}";
 		}
 		if ($node instanceof ConditionalTypeForParameterNode) {
 			return sprintf(
@@ -793,6 +809,10 @@ final class Printer
 			$subEndPos = $origSubNode->getAttribute(Attribute::END_INDEX);
 			if ($subStartPos < 0 || $subEndPos < 0) {
 				throw new LogicException();
+			}
+
+			if ($subEndPos < $subStartPos) {
+				return $this->print($node);
 			}
 
 			if ($subNode === null) {

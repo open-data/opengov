@@ -3,7 +3,7 @@
  * JavaScript behaviors for Select2 integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -25,9 +25,7 @@
         return;
       }
 
-      $(context)
-        .find('select.js-webform-select2, .js-webform-select2 select')
-        .once('webform-select2')
+      $(once('webform-select2', 'select.js-webform-select2, .js-webform-select2 select', context))
         .each(function () {
           var $select = $(this);
 
@@ -98,4 +96,4 @@
     }
   });
 
-})(jQuery, Drupal);
+})(jQuery, Drupal,  once);

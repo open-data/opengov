@@ -14,7 +14,7 @@ class WebformNodeTranslationTest extends WebformNodeBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_node', 'webform_node_test_translation'];
+  protected static $modules = ['webform', 'webform_node', 'webform_node_test_translation'];
 
   /**
    * Tests webform node translation.

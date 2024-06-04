@@ -3,7 +3,7 @@
  * JavaScript behaviors for range element integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,7 +14,7 @@
    */
   Drupal.behaviors.webformRangeOutputNumber = {
     attach: function (context) {
-      $(context).find('.js-form-type-range').once('webform-range-output-number').each(function () {
+      $(once('webform-range-output-number', '.js-form-type-range', context)).each(function () {
         // Handle browser that don't support the HTML5 range input.
         if (Modernizr.inputtypes.range === false) {
           return;
@@ -51,7 +51,7 @@
    */
   Drupal.behaviors.webformRangeOutputBubble = {
     attach: function (context) {
-      $(context).find('.js-form-type-range').once('webform-range-output-bubble').each(function () {
+      $(once('webform-range-output-bubble', '.js-form-type-range', context)).each(function () {
         // Handle browser that don't support the HTML5 range input.
         if (Modernizr.inputtypes.range === false) {
           return;
@@ -145,4 +145,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

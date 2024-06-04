@@ -14,7 +14,8 @@ archive: false
 id: test_element_details
 title: 'Test: Element: Details'
 description: 'Test the details element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   details:
     '#type': details
@@ -47,7 +48,6 @@ elements: |
     '#open': true
     details_help_markup:
       '#markup': '<p>This is some markup</p>'
-  
 css: ''
 javascript: ''
 settings:
@@ -135,6 +135,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

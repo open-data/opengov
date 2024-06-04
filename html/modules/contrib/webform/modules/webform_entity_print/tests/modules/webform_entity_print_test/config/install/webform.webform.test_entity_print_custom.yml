@@ -28,12 +28,12 @@ archive: false
 id: test_entity_print_custom
 title: 'Test: Submission: Entity Print Custom'
 description: 'Test webform entity print custom.'
-category: 'Test: Print'
+categories:
+  - 'Test: Print'
 elements: |
   textfield:
     '#type': textfield
     '#title': textfield
-  
 css: '/** custom webform css **/'
 javascript: ''
 settings:
@@ -121,6 +121,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

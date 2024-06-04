@@ -22,10 +22,6 @@ summary {
   padding: .5em .5em 0 .5em;
 }
 
-summary::marker {
-  display: none;
-}
-
 /**
  * Form.
  */
