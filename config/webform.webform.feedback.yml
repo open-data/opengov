@@ -4,14 +4,9 @@ status: open
 dependencies:
   module:
     - gcnotify
-    - honeypot
-third_party_settings:
-  honeypot:
-    honeypot: true
-    time_restriction: true
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 283
 template: false
 archive: false
@@ -19,7 +14,116 @@ id: feedback
 title: Feedback
 description: 'Feedback form to be integrated with external systems'
 category: ''
-elements: "intro:\n  '#type': processed_text\n  '#text': |\n    <h2>\n      Provide feedback on this dataset\n    </h2>\n    <details><summary class=\"bg-primary mrgn-bttm-md\">Privacy Statement</summary>\n    \n    <p>The collection and use of your personal information is authorized by the <em>Financial Administration Act</em>. Collection and use of your personal information for this site is in accordance with the federal <a href=\"http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html\"> <em>Privacy Act</em></a>. Your personal information is used to validate your use of GC datasets and for information on the development of the GC open data initiative, and may also be used to evaluate the effectiveness of the program in responding to client needs. In exceptional circumstances (e.g. network intrusion, or of individuals who make inappropriate remarks or threats, etc.), personal information may be disclosed without your consent pursuant to subsection 8(2) of the <em> Privacy Act</em>.</p>\n    \n    <p>Any personal information that may be collected is described in the Standard Personal Information Banks entitled <a href=\"http://www.infosource.gc.ca/emp/emp03-eng.asp#psu914\"> Public Communications, PSU 914</a>, and <a href=\"http://www.infosource.gc.ca/emp/emp03-eng.asp#psu938\"> Outreach Activities, PSU 938</a>, which can be found in the Treasury Board of Canada Secretariat (TBS) publication: <a href=\"http://www.infosource.gc.ca/index-eng.asp\"><em> InfoSource</em></a>.</p>\n    \n    <p>Under the <em>Privacy Act</em>, you have the right of access to, and correction of, your personal information, if you have provided any. Note however, that to exercise either of these rights; you must make a request for access to your personal information. For more information about your right of access, please read about the <a href=\"http://www.infosource.gc.ca/emp/emp01-eng.asp\">Access to Information Program</a>.</p>\n    \n    <p>Any questions, comments, concerns or complaints you may have regarding this Statement, your privacy rights and the <a href=\"http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html\"> <em>Privacy Act</em></a> may be directed to the TBS Access to Information and Privacy Coordinator by email at <a href=\"mailto:atip.aiprp@tbs-sct.gc.ca\"> atip.aiprp@tbs-sct.gc.ca</a> or by calling 613-946-6260 or 1-866-312-1511. If you are not satisfied with TBS' response to your privacy concern, you may wish to contact the Office of the Privacy Commissioner by email at <a href=\"mailto:info@priv.gc.ca\">info@priv.gc.ca</a> or by telephone at 1-800-282-1376. You have the right to complain to the Office of the Privacy Commissioner about TBS' handling of your personal information.</p>\n    </details>\n    \n  '#format': rich_text\nuser_name:\n  '#type': textfield\n  '#title': Name\nyour_e_mail_address:\n  '#type': email\n  '#title': 'Email address'\nuser:\n  '#type': select\n  '#title': 'I am a'\n  '#options':\n    student: Student\n    researcher: Researcher\n    teacher: 'Teacher / Professor'\n    journalist: 'Journalist / Media'\n    public: 'Member of public'\n    other: Other\n  '#empty_option': '- Select -'\n  '#other__option_label': ''\n  '#required': true\nreason:\n  '#type': select\n  '#title': 'Reason for feedback'\n  '#options':\n    broken_link: 'Broken link'\n    missing_data: 'Missing / incorrect data'\n    suggestion: 'Suggestion for improvement'\n    share_use: 'Share how this dataset was used'\n    other: Other\n  '#empty_option': '- Select -'\n  '#other__option_label': ''\n  '#required': true\nfeedback:\n  '#type': textarea\n  '#title': Feedback\n  '#field_suffix': (required)\n  '#required': true\nstatus:\n  '#type': select\n  '#title': Status\n  '#options':\n    outstanding: Outstanding\n    helpdesk: 'Forward to Helpdesk'\n  '#required': true\n  '#default_value': outstanding\n  '#private': true\n  '#access_create_roles': {  }\n  '#access_update_roles':\n    - administrator\n    - comment_moderator\n    - business_owner\n  '#access_view_roles':\n    - administrator\n    - comment_moderator\n    - business_owner\nfeedback_webpage:\n  '#type': url\n  '#title': 'Posted on'\n  '#disabled': true\n  '#readonly': true\n  '#prepopulate': true\n  '#required': true\n  '#default_value': 'https://open.canada.ca/data/[webform_submission:langcode]/dataset/[current-page:query:uuid]'\n  '#private': true\n  '#access_create_roles': {  }\n  '#access_update_roles': {  }\n  '#access_view_roles':\n    - administrator\n    - comment_moderator\n    - business_owner\nati_email:\n  '#type': email\n  '#title': 'Helpdesk Email address'\n  '#disabled': true\n  '#readonly': true\n  '#required': true\n  '#default_value': open-ouvert@tbs-sct.gc.ca\n  '#private': true\n  '#access_create_roles':\n    - administrator\n  '#access_update_roles':\n    - administrator\n  '#access_view_roles':\n    - administrator\n  '#access': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': Submit\n  '#submit__attributes':\n    class:\n      - btn-success"
+elements: |-
+  intro:
+    '#type': processed_text
+    '#text': |
+      <h2>
+        Provide feedback on this dataset
+      </h2>
+      <details><summary class="bg-primary mrgn-bttm-md">Privacy Statement</summary>
+      
+      <p>The collection and use of your personal information is authorized by the <em>Financial Administration Act</em>. Collection and use of your personal information for this site is in accordance with the federal <a href="http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html"> <em>Privacy Act</em></a>. Your personal information is used to validate your use of GC datasets and for information on the development of the GC open data initiative, and may also be used to evaluate the effectiveness of the program in responding to client needs. In exceptional circumstances (e.g. network intrusion, or of individuals who make inappropriate remarks or threats, etc.), personal information may be disclosed without your consent pursuant to subsection 8(2) of the <em> Privacy Act</em>.</p>
+      
+      <p>Any personal information that may be collected is described in the Standard Personal Information Banks entitled <a href="http://www.infosource.gc.ca/emp/emp03-eng.asp#psu914"> Public Communications, PSU 914</a>, and <a href="http://www.infosource.gc.ca/emp/emp03-eng.asp#psu938"> Outreach Activities, PSU 938</a>, which can be found in the Treasury Board of Canada Secretariat (TBS) publication: <a href="http://www.infosource.gc.ca/index-eng.asp"><em> InfoSource</em></a>.</p>
+      
+      <p>Under the <em>Privacy Act</em>, you have the right of access to, and correction of, your personal information, if you have provided any. Note however, that to exercise either of these rights; you must make a request for access to your personal information. For more information about your right of access, please read about the <a href="http://www.infosource.gc.ca/emp/emp01-eng.asp">Access to Information Program</a>.</p>
+      
+      <p>Any questions, comments, concerns or complaints you may have regarding this Statement, your privacy rights and the <a href="http://laws-lois.justice.gc.ca/eng/acts/P-21/index.html"> <em>Privacy Act</em></a> may be directed to the TBS Access to Information and Privacy Coordinator by email at <a href="mailto:atip.aiprp@tbs-sct.gc.ca"> atip.aiprp@tbs-sct.gc.ca</a> or by calling 613-946-6260 or 1-866-312-1511. If you are not satisfied with TBS' response to your privacy concern, you may wish to contact the Office of the Privacy Commissioner by email at <a href="mailto:info@priv.gc.ca">info@priv.gc.ca</a> or by telephone at 1-800-282-1376. You have the right to complain to the Office of the Privacy Commissioner about TBS' handling of your personal information.</p>
+      </details>
+      
+    '#format': rich_text
+  user_name:
+    '#type': textfield
+    '#title': Name
+  your_e_mail_address:
+    '#type': email
+    '#title': 'Email address'
+  user:
+    '#type': select
+    '#title': 'I am a'
+    '#options':
+      student: Student
+      researcher: Researcher
+      teacher: 'Teacher / Professor'
+      journalist: 'Journalist / Media'
+      public: 'Member of public'
+      other: Other
+    '#empty_option': '- Select -'
+    '#other__option_label': ''
+    '#required': true
+  reason:
+    '#type': select
+    '#title': 'Reason for feedback'
+    '#options':
+      broken_link: 'Broken link'
+      missing_data: 'Missing / incorrect data'
+      suggestion: 'Suggestion for improvement'
+      share_use: 'Share how this dataset was used'
+      other: Other
+    '#empty_option': '- Select -'
+    '#other__option_label': ''
+    '#required': true
+  feedback:
+    '#type': textarea
+    '#title': Feedback
+    '#field_suffix': (required)
+    '#required': true
+  status:
+    '#type': select
+    '#title': Status
+    '#options':
+      outstanding: Outstanding
+      helpdesk: 'Forward to Helpdesk'
+    '#required': true
+    '#default_value': outstanding
+    '#private': true
+    '#access_create_roles': {  }
+    '#access_update_roles':
+      - administrator
+      - comment_moderator
+      - business_owner
+    '#access_view_roles':
+      - administrator
+      - comment_moderator
+      - business_owner
+  feedback_webpage:
+    '#type': url
+    '#title': 'Posted on'
+    '#disabled': true
+    '#readonly': true
+    '#prepopulate': true
+    '#required': true
+    '#default_value': 'https://open.canada.ca/data/[webform_submission:langcode]/dataset/[current-page:query:uuid]'
+    '#private': true
+    '#access_create_roles': {  }
+    '#access_update_roles': {  }
+    '#access_view_roles':
+      - administrator
+      - comment_moderator
+      - business_owner
+  ati_email:
+    '#type': email
+    '#title': 'Helpdesk Email address'
+    '#disabled': true
+    '#readonly': true
+    '#required': true
+    '#default_value': open-ouvert@tbs-sct.gc.ca
+    '#private': true
+    '#access_create_roles':
+      - administrator
+    '#access_update_roles':
+      - administrator
+    '#access_view_roles':
+      - administrator
+    '#access': false
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#submit__label': Submit
+    '#submit__attributes':
+      class:
+        - btn-success
 css: ''
 javascript: ''
 settings:
@@ -108,6 +212,8 @@ settings:
   wizard_toggle: true
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -155,7 +261,6 @@ settings:
   token_update: false
   token_delete: false
   serial_disabled: false
-  form_remote_addr: true
 access:
   create:
     roles:
@@ -212,9 +317,9 @@ access:
 handlers:
   gc_notify_email_handler:
     id: gc_notify_email_handler
+    handler_id: gc_notify_email_handler
     label: 'GC Notify Email Handler'
     notes: ''
-    handler_id: gc_notify_email_handler
     status: true
     conditions:
       enabled:
@@ -224,9 +329,9 @@ handlers:
     settings: {  }
   notifications:
     id: email
+    handler_id: notifications
     label: Notifications
     notes: ''
-    handler_id: notifications
     status: false
     conditions: {  }
     weight: 0
@@ -247,7 +352,13 @@ handlers:
       sender_mail: ''
       sender_name: ''
       subject: 'New feedback #[webform_submission:sid] received from portal visitor '
-      body: "<p>The following feedback has been received on the Open Government Portal.</p>\r\n\r\n<p><strong>Submitted on: </strong>[webform_submission:created]</p>\r\n\r\n<hr />\r\n<p>[webform_submission:values]</p>"
+      body: |-
+        <p>The following feedback has been received on the Open Government Portal.</p>
+
+        <p><strong>Submitted on: </strong>[webform_submission:created]</p>
+
+        <hr />
+        <p>[webform_submission:values]</p>
       excluded_elements:
         intro: intro
         ati_email: ati_email

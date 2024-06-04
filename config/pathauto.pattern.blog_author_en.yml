@@ -13,20 +13,20 @@ pattern: 'author/[term:name]'
 selection_criteria:
   bd2db378-4a72-4da9-a847-5875b4973f30:
     id: 'entity_bundle:taxonomy_term'
-    bundles:
-      blog_author: blog_author
     negate: false
+    uuid: bd2db378-4a72-4da9-a847-5875b4973f30
     context_mapping:
       taxonomy_term: taxonomy_term
-    uuid: bd2db378-4a72-4da9-a847-5875b4973f30
+    bundles:
+      blog_author: blog_author
   80198249-6367-4111-96b5-71ab270eabe1:
     id: language
-    langcodes:
-      en: en
     negate: false
+    uuid: 80198249-6367-4111-96b5-71ab270eabe1
     context_mapping:
       language: 'taxonomy_term:langcode:language'
-    uuid: 80198249-6367-4111-96b5-71ab270eabe1
+    langcodes:
+      en: en
 selection_logic: and
 weight: -2
 relationships:

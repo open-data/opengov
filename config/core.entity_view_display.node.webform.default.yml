@@ -20,12 +20,14 @@ dependencies:
     - webform
 third_party_settings:
   layout_builder:
-    allow_custom: false
     enabled: true
+    allow_custom: false
     sections:
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -52,76 +54,78 @@ third_party_settings:
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
               label: 'Pillars - social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           01a50162-d3ae-439f-b3c1-5778f18792bf:
             uuid: 01a50162-d3ae-439f-b3c1-5778f18792bf
             region: left
             configuration:
+              id: 'extra_field_block:node:webform:content_moderation_control'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:webform:content_moderation_control'
-            additional: {  }
             weight: 0
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: layout_onecol
-        layout_settings: {  }
+        layout_settings:
+          label: ''
+          context_mapping: {  }
         components:
           529a4ee8-d761-4eb8-9e11-a8c2acd46753:
             uuid: 529a4ee8-d761-4eb8-9e11-a8c2acd46753
             region: content
             configuration:
+              id: 'field_block:node:webform:body'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:webform:body'
               formatter:
-                label: hidden
                 type: text_default
+                label: hidden
                 settings: {  }
                 third_party_settings: {  }
-            additional: {  }
             weight: -10
+            additional: {  }
           f93993c1-d3d4-4335-b50f-40c83590f234:
             uuid: f93993c1-d3d4-4335-b50f-40c83590f234
             region: content
             configuration:
               id: 'block_content:54ed5b8f-aa43-4de2-8b44-96d07d012a56'
               label: 'Privacy Notice'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: -9
+            additional: {  }
           cfc9e63c-567d-42ea-85ec-3fced657e9a7:
             uuid: cfc9e63c-567d-42ea-85ec-3fced657e9a7
             region: content
             configuration:
               id: 'field_block:node:webform:field_webform'
               label: Webform
-              provider: layout_builder
               label_display: '0'
+              provider: layout_builder
+              context_mapping:
+                entity: layout_builder.entity
               formatter:
-                label: hidden
                 type: webform_entity_reference_entity_view
+                label: hidden
                 settings:
                   source_entity: true
                 third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
             weight: -8
+            additional: {  }
         third_party_settings: {  }
 id: node.webform.default
 targetEntityType: node
@@ -129,30 +133,30 @@ bundle: webform
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 2
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 2
     region: content
   content_moderation_control:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
   field_webform:
-    weight: 3
+    type: webform_entity_reference_entity_view
     label: hidden
     settings:
       source_entity: true
     third_party_settings: {  }
-    type: webform_entity_reference_entity_view
+    weight: 3
     region: content
   links:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
 hidden:
   field_previousnodeid: true
   langcode: true

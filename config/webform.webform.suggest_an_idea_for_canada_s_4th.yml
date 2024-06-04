@@ -1,6 +1,6 @@
 uuid: fd41b73c-6d47-4da4-aa31-4f506134e453
 langcode: en
-status: open
+status: closed
 dependencies:
   module:
     - honeypot
@@ -8,9 +8,11 @@ third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
+_core:
+  default_config_hash: 33k2q3FXnjpm0ZB3acyZJgrHZw4_XwMlFgygEg9aw3g
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
@@ -18,7 +20,26 @@ id: suggest_an_idea_for_canada_s_4th
 title: 'Suggest an idea for Canada''s 4th Plan on Open Government'
 description: '&quot;Suggest an idea for Canada&#39;s 4th Plan on Open Government&quot; webform.'
 category: ''
-elements: "add_your_idea:\n  '#type': fieldset\n  '#title': 'Add your idea'\n  '#description': 'To add your idea, insert your name and outline your idea below.'\n  '#smart_description': false\n  your_name_optional:\n    '#type': textfield\n    '#title': 'Your name (optional)'\n  your_idea_label:\n    '#type': webform_markup\n    '#markup': '<p>Describe your idea. Be sure to include any milestones or key deliverables that could be accomplished within two years. You might also want to mention potential partners that could help implement the idea.</p>'\n  title:\n    '#type': textfield\n    '#title': 'Title of the idea'\n    '#required': true\n  your_idea:\n    '#type': textarea\n    '#title': 'Your Idea'\n    '#required': true\n"
+elements: |-
+  add_your_idea:
+    '#type': fieldset
+    '#title': 'Add your idea'
+    '#description': 'To add your idea, insert your name and outline your idea below.'
+    '#smart_description': false
+    your_name_optional:
+      '#type': textfield
+      '#title': 'Your name (optional)'
+    your_idea_label:
+      '#type': webform_markup
+      '#markup': '<p>Describe your idea. Be sure to include any milestones or key deliverables that could be accomplished within two years. You might also want to mention potential partners that could help implement the idea.</p>'
+    title:
+      '#type': textfield
+      '#title': 'Title of the idea'
+      '#required': true
+    your_idea:
+      '#type': textarea
+      '#title': 'Your Idea'
+      '#required': true
 css: ''
 javascript: ''
 settings:
@@ -31,42 +52,50 @@ settings:
   page_submit_path: ''
   page_confirm_path: ''
   page_theme_name: ''
-  form_title: both
+  form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_attributes: {  }
+  form_method: ''
+  form_action: ''
   share: false
   share_node: false
   share_theme_name: ''
   share_title: true
   share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -75,11 +104,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -90,19 +114,21 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
   wizard_prev_button_label: ''
   wizard_next_button_label: ''
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -119,9 +145,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: page
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: ''
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -209,9 +235,9 @@ access:
 handlers:
   email:
     id: email
+    handler_id: email
     label: Email
     notes: ''
-    handler_id: email
     status: true
     conditions: {  }
     weight: 0
@@ -220,15 +246,26 @@ handlers:
         - completed
       to_mail: open-ouvert@tbs-sct.gc.ca
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: _default
       from_options: {  }
       from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: 'Suggest a new idea for the Action Plan on Open Government'
-      body: "&lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />\n&lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />\n&lt;p&gt;Submitted values are:&lt;/p&gt;<br />\n[webform_submission:values]<br />\n<br />\nThe results of this submission may be viewed at:<br />\n[webform_submission:url]"
+      body: |-
+        &lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted values are:&lt;/p&gt;<br />
+        [webform_submission:values]<br />
+        <br />
+        The results of this submission may be viewed at:<br />
+        [webform_submission:url]
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
@@ -237,13 +274,7 @@ handlers:
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
+      debug: false
 variants: {  }
-_core:
-  default_config_hash: 33k2q3FXnjpm0ZB3acyZJgrHZw4_XwMlFgygEg9aw3g

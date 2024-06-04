@@ -18,8 +18,8 @@ required: false
 translatable: true
 default_value:
   -
-    weight: '0'
     target_uuid: 1adfedda-9fab-4d8a-bd3c-b683c7069187
+    weight: '0'
 default_value_callback: ''
 settings:
   handler: 'default:media'

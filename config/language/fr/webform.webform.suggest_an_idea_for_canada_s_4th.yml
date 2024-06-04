@@ -1,5 +1,16 @@
 title: 'Proposez une idée pour le quatrième Plan du Canada pour un gouvernement ouvert'
-elements: "add_your_idea:\n  '#title': 'Ajoutez votre idée'\n  '#description': 'Pour ajouter votre idée, indiquez votre nom et une description de celle ci dans les champs ci dessous.'\nyour_name_optional:\n  '#title': 'Votre nom (facultatif)'\nyour_idea_label:\n  '#markup': '<p>Décrivez votre idée. Assurez vous de mentionner tous les jalons ou les principaux produits livrables qui pourraient être concrétisés au cours des deux premières années. Vous voudrez sans doute mentionner aussi les partenaires potentiels qui pourraient contribuer à la mise en œuvre de votre idée.</p>'\ntitle:\n  '#title': 'Titre de l’idée'\nyour_idea:\n  '#title': 'Votre idée'\n"
+elements: |
+  add_your_idea:
+    '#title': 'Ajoutez votre idée'
+    '#description': 'Pour ajouter votre idée, indiquez votre nom et une description de celle ci dans les champs ci dessous.'
+  your_name_optional:
+    '#title': 'Votre nom (facultatif)'
+  your_idea_label:
+    '#markup': '<p>Décrivez votre idée. Assurez vous de mentionner tous les jalons ou les principaux produits livrables qui pourraient être concrétisés au cours des deux premières années. Vous voudrez sans doute mentionner aussi les partenaires potentiels qui pourraient contribuer à la mise en œuvre de votre idée.</p>'
+  title:
+    '#title': 'Titre de l’idée'
+  your_idea:
+    '#title': 'Votre idée'
 handlers:
   email:
     label: Courriel

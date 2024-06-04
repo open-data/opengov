@@ -11,21 +11,21 @@ type: 'canonical_entities:node'
 pattern: 'engagements/[node:title]'
 selection_criteria:
   9edd4572-3411-42f5-9fb8-dfce0f444c54:
-    id: node_type
-    bundles:
-      commitment: commitment
+    id: 'entity_bundle:node'
     negate: false
+    uuid: 9edd4572-3411-42f5-9fb8-dfce0f444c54
     context_mapping:
       node: node
-    uuid: 9edd4572-3411-42f5-9fb8-dfce0f444c54
+    bundles:
+      commitment: commitment
   ea37f702-0c49-4298-b162-8197d996ca92:
     id: language
-    langcodes:
-      fr: fr
     negate: false
+    uuid: ea37f702-0c49-4298-b162-8197d996ca92
     context_mapping:
       language: 'node:langcode:language'
-    uuid: ea37f702-0c49-4298-b162-8197d996ca92
+    langcodes:
+      fr: fr
 selection_logic: and
 weight: -9
 relationships:

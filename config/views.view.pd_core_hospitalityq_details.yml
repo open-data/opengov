@@ -15,46 +15,12 @@ base_table: search_api_index_pd_core_hospitalityq
 base_field: search_api_id
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: none
-        options: {  }
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: true
+      title: 'Government Hospitality Expense'
       fields:
         id:
           id: id
@@ -63,6 +29,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -108,7 +75,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         ref_number:
           id: ref_number
           table: search_api_index_pd_core_hospitalityq
@@ -116,6 +82,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Reference Number'
           exclude: false
           alter:
@@ -161,7 +128,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         disclosure_group_en:
           id: disclosure_group_en
           table: search_api_index_pd_core_hospitalityq
@@ -169,6 +135,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Disclosure Group'
           exclude: false
           alter:
@@ -214,7 +181,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         disclosure_group_fr:
           id: disclosure_group_fr
           table: search_api_index_pd_core_hospitalityq
@@ -222,6 +188,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Groupe de divulgation'
           exclude: false
           alter:
@@ -267,7 +234,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         title_en:
           id: title_en
           table: search_api_index_pd_core_hospitalityq
@@ -275,6 +241,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Title
           exclude: false
           alter:
@@ -320,7 +287,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         title_fr:
           id: title_fr
           table: search_api_index_pd_core_hospitalityq
@@ -328,6 +294,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Titre
           exclude: false
           alter:
@@ -373,7 +340,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         name:
           id: name
           table: search_api_index_pd_core_hospitalityq
@@ -381,6 +347,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Name
           exclude: false
           alter:
@@ -426,7 +393,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_en:
           id: org_name_en
           table: search_api_index_pd_core_hospitalityq
@@ -434,6 +400,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organization
           exclude: false
           alter:
@@ -479,7 +446,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_fr:
           id: org_name_fr
           table: search_api_index_pd_core_hospitalityq
@@ -487,6 +453,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organisation
           exclude: false
           alter:
@@ -532,7 +499,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         location_en:
           id: location_en
           table: search_api_index_pd_core_hospitalityq
@@ -540,6 +506,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Location
           exclude: false
           alter:
@@ -585,7 +552,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         location_fr:
           id: location_fr
           table: search_api_index_pd_core_hospitalityq
@@ -593,6 +559,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Emplacement
           exclude: false
           alter:
@@ -638,7 +605,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         total:
           id: total
           table: search_api_index_pd_core_hospitalityq
@@ -646,6 +612,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Total
           exclude: false
           alter:
@@ -691,7 +658,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_en:
           id: description_en
           table: search_api_index_pd_core_hospitalityq
@@ -699,6 +665,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Description
           exclude: false
           alter:
@@ -744,7 +711,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_fr:
           id: description_fr
           table: search_api_index_pd_core_hospitalityq
@@ -752,6 +718,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Description
           exclude: false
           alter:
@@ -797,7 +764,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         start_date:
           id: start_date
           table: search_api_index_pd_core_hospitalityq
@@ -805,6 +771,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Start Date'
           exclude: false
           alter:
@@ -850,7 +817,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         end_date:
           id: end_date
           table: search_api_index_pd_core_hospitalityq
@@ -858,6 +824,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'End Date'
           exclude: false
           alter:
@@ -903,7 +870,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         employee_attendees:
           id: employee_attendees
           table: search_api_index_pd_core_hospitalityq
@@ -911,6 +877,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Attendees (Government of Canada Employees)'
           exclude: false
           alter:
@@ -956,7 +923,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         guest_attendees:
           id: guest_attendees
           table: search_api_index_pd_core_hospitalityq
@@ -964,6 +930,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Attendees (Guests)'
           exclude: false
           alter:
@@ -1009,7 +976,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         vendor_en:
           id: vendor_en
           table: search_api_index_pd_core_hospitalityq
@@ -1017,6 +983,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Name of commercial establishment or vendor involved in the hospitality activity'
           exclude: false
           alter:
@@ -1062,7 +1029,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         vendor_fr:
           id: vendor_fr
           table: search_api_index_pd_core_hospitalityq
@@ -1070,6 +1036,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Nom des établissements commerciaux ou des fournisseurs concernés'
           exclude: false
           alter:
@@ -1115,7 +1082,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         additional_comments_en:
           id: additional_comments_en
           table: search_api_index_pd_core_hospitalityq
@@ -1123,6 +1089,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Additional comments'
           exclude: false
           alter:
@@ -1168,7 +1135,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         additional_comments_fr:
           id: additional_comments_fr
           table: search_api_index_pd_core_hospitalityq
@@ -1176,6 +1142,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Commentaires additionnels'
           exclude: false
           alter:
@@ -1221,25 +1188,28 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
-      filters: {  }
-      sorts: {  }
-      title: 'Government Hospitality Expense'
-      header: {  }
-      footer:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/hospitalityq">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
-          plugin_id: text_custom
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: none
+        options: {  }
       empty: {  }
-      relationships: {  }
+      sorts: {  }
       arguments:
         id:
           id: id
@@ -1248,6 +1218,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           default_action: default
           exception:
             value: all
@@ -1272,7 +1243,36 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          plugin_id: search_api
+      filters: {  }
+      style:
+        type: default
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: false
+      relationships: {  }
+      header: {  }
+      footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/hospitalityq">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
+          tokenize: false
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -1281,15 +1281,15 @@ display:
         - url
       tags: {  }
   details:
-    display_plugin: page
     id: details
     display_title: 'Proactive Disclosure: Hospitality (Q) Details'
+    display_plugin: page
     position: 1
     display_options:
+      display_description: ''
       display_extenders:
         metatag_display_extender: {  }
       path: search/hospitalityq/reference/%
-      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:

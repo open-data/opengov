@@ -2,6 +2,8 @@ uuid: 086694e3-5049-4069-b1f1-6b0db16cc273
 langcode: en
 status: true
 dependencies:
+  config:
+    - core.entity_view_mode.media.media_library
   module:
     - editor
     - media
@@ -40,13 +42,13 @@ filters:
     status: false
     weight: -50
     settings:
-      allowed_html: '<a href hreflang> <em> <strong> <cite> <blockquote cite> <code> <ul type> <ol start type> <li> <dl> <dt> <dd> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <img src alt data-entity-type data-entity-uuid data-align data-caption> <u> <sup> <sub> <s> <table> <caption> <tbody> <thead> <tfoot> <th> <td> <tr> <hr> <p> <h1> <pre>'
+      allowed_html: ''
       filter_html_help: true
       filter_html_nofollow: false
   filter_htmlcorrector:
     id: filter_htmlcorrector
     provider: filter
-    status: true
+    status: false
     weight: -44
     settings: {  }
   filter_html_escape:
@@ -81,8 +83,8 @@ filters:
     status: true
     weight: 100
     settings:
-      default_view_mode: default
+      default_view_mode: media_library
+      allowed_view_modes: {  }
       allowed_media_types:
         file: file
         image: image
-      allowed_view_modes: {  }

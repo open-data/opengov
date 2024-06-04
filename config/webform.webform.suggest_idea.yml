@@ -1,6 +1,6 @@
 uuid: cac60320-b8bc-4754-a1d0-4b5a1588a84a
 langcode: en
-status: open
+status: closed
 dependencies:
   module:
     - honeypot
@@ -8,9 +8,11 @@ third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
+_core:
+  default_config_hash: 0zeqHneO6AkBDZgGTtLBZwz0ZXCfFwrFohTpXqGvM98
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
@@ -18,7 +20,33 @@ id: suggest_idea
 title: 'Suggest a Idea'
 description: '&quot;Suggest a Idea&quot; webform.'
 category: ''
-elements: "submitted_by:\n  '#type': textfield\n  '#title': 'Submitted By'\n  '#smart_description': false\n  '#description': 'Please enter your name or alias if you want to be credited for your idea.'\n  '#default_value': '[current-user:account-name]'\norganization:\n  '#type': textfield\n  '#title': Organization\nidea_title:\n  '#type': textfield\n  '#title': 'Idea Title'\n  '#required': true\nidea_description:\n  '#type': textarea\n  '#title': 'Idea Description'\n  '#required': true\nsuggested_keywords:\n  '#type': textfield\n  '#title': 'Please enter commonly used keyword(s), formal word(s) or phases that can be used to describe your idea.'\nreference_consultation:\n  '#type': hidden\n  '#value': '[current-page:query:consultation]'\nreference_consultation_id:\n  '#type': hidden\n  '#value': '[current-page:query:consultation-id]'\n"
+elements: |-
+  submitted_by:
+    '#type': textfield
+    '#title': 'Submitted By'
+    '#smart_description': false
+    '#description': 'Please enter your name or alias if you want to be credited for your idea.'
+    '#default_value': '[current-user:account-name]'
+  organization:
+    '#type': textfield
+    '#title': Organization
+  idea_title:
+    '#type': textfield
+    '#title': 'Idea Title'
+    '#required': true
+  idea_description:
+    '#type': textarea
+    '#title': 'Idea Description'
+    '#required': true
+  suggested_keywords:
+    '#type': textfield
+    '#title': 'Please enter commonly used keyword(s), formal word(s) or phases that can be used to describe your idea.'
+  reference_consultation:
+    '#type': hidden
+    '#value': '[current-page:query:consultation]'
+  reference_consultation_id:
+    '#type': hidden
+    '#value': '[current-page:query:consultation-id]'
 css: ''
 javascript: ''
 settings:
@@ -31,42 +59,50 @@ settings:
   page_submit_path: ''
   page_confirm_path: ''
   page_theme_name: ''
-  form_title: both
+  form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_attributes: {  }
+  form_method: ''
+  form_action: ''
   share: false
   share_node: false
   share_theme_name: ''
   share_title: true
   share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -75,11 +111,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -90,19 +121,21 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
   wizard_prev_button_label: ''
   wizard_next_button_label: ''
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -119,9 +152,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: page
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: "<h2>Thank you for your participation!</h2>\r\n\r\n<p>Your idea or comment should appear within two business days.</p>"
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -209,9 +242,9 @@ access:
 handlers:
   email_1:
     id: email
+    handler_id: email_1
     label: Email
     notes: ''
-    handler_id: email_1
     status: true
     conditions: {  }
     weight: 1
@@ -220,15 +253,26 @@ handlers:
         - completed
       to_mail: open-ouvert@tbs-sct.gc.ca
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: _default
       from_options: {  }
       from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: 'Suggest an Idea for the Open Government Action Plan 2.0 Consultation'
-      body: "&lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />\n&lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />\n&lt;p&gt;Submitted values are:&lt;/p&gt;<br />\n[webform_submission:values]<br />\n<br />\nThe results of this submission may be viewed at:<br />\n[webform_submission:url]"
+      body: |-
+        &lt;p&gt;Submitted on [webform_submission:created]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted by: [webform_submission:user]&lt;/p&gt;<br />
+        &lt;p&gt;Submitted values are:&lt;/p&gt;<br />
+        [webform_submission:values]<br />
+        <br />
+        The results of this submission may be viewed at:<br />
+        [webform_submission:url]
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
@@ -237,13 +281,7 @@ handlers:
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
+      debug: false
 variants: {  }
-_core:
-  default_config_hash: 0zeqHneO6AkBDZgGTtLBZwz0ZXCfFwrFohTpXqGvM98

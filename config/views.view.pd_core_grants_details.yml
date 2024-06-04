@@ -15,50 +15,12 @@ base_table: search_api_index_pd_core_grants
 base_field: search_api_id
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: none
-        options: {  }
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-        options:
-          grouping: {  }
-          row_class: 'panel panel-default mrgn-tp-md'
-          default_row_class: true
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: true
+      title: 'Government Grants and Contributions'
       fields:
         amendment_number:
           id: amendment_number
@@ -67,6 +29,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -112,7 +75,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         nothing:
           id: nothing
           table: views
@@ -120,6 +82,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: custom
           label: ''
           exclude: false
           alter:
@@ -161,7 +124,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: custom
         partial_id:
           id: partial_id
           table: search_api_index_pd_core_grants
@@ -169,6 +131,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -214,7 +177,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         ref_number:
           id: ref_number
           table: search_api_index_pd_core_grants
@@ -222,6 +184,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Reference Number'
           exclude: false
           alter:
@@ -267,7 +230,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_en:
           id: org_name_en
           table: search_api_index_pd_core_grants
@@ -275,6 +237,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organization
           exclude: false
           alter:
@@ -320,7 +283,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_fr:
           id: org_name_fr
           table: search_api_index_pd_core_grants
@@ -328,6 +290,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organisation
           exclude: false
           alter:
@@ -373,7 +336,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         quarter_en:
           id: quarter_en
           table: search_api_index_pd_core_grants
@@ -381,6 +343,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Quarter
           exclude: false
           alter:
@@ -426,7 +389,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         quarter_fr:
           id: quarter_fr
           table: search_api_index_pd_core_grants
@@ -434,6 +396,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Trimestre
           exclude: false
           alter:
@@ -479,7 +442,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_type_en:
           id: agreement_type_en
           table: search_api_index_pd_core_grants
@@ -487,6 +449,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Agreement Type'
           exclude: false
           alter:
@@ -532,7 +495,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_type_fr:
           id: agreement_type_fr
           table: search_api_index_pd_core_grants
@@ -540,6 +502,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Type d’entente'
           exclude: false
           alter:
@@ -585,7 +548,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_business_number:
           id: recipient_business_number
           table: search_api_index_pd_core_grants
@@ -593,6 +555,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Recipient Business Number'
           exclude: false
           alter:
@@ -638,7 +601,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_legal_name:
           id: recipient_legal_name
           table: search_api_index_pd_core_grants
@@ -646,6 +608,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Recipient Legal Name'
           exclude: false
           alter:
@@ -691,7 +654,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_type_en:
           id: recipient_type_en
           table: search_api_index_pd_core_grants
@@ -699,6 +661,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Recipient Type'
           exclude: false
           alter:
@@ -744,7 +707,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_type_fr:
           id: recipient_type_fr
           table: search_api_index_pd_core_grants
@@ -752,6 +714,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Type de bénéficiaire'
           exclude: false
           alter:
@@ -797,7 +760,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_city:
           id: recipient_city
           table: search_api_index_pd_core_grants
@@ -805,6 +767,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: City
           exclude: false
           alter:
@@ -850,7 +813,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_province_en:
           id: recipient_province_en
           table: search_api_index_pd_core_grants
@@ -858,6 +820,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Recipient Province or Territory'
           exclude: false
           alter:
@@ -903,7 +866,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_province_fr:
           id: recipient_province_fr
           table: search_api_index_pd_core_grants
@@ -911,6 +873,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Province ou territoire du bénéficiaire'
           exclude: false
           alter:
@@ -956,7 +919,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_postal_code:
           id: recipient_postal_code
           table: search_api_index_pd_core_grants
@@ -964,6 +926,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Recipient Postal Code'
           exclude: false
           alter:
@@ -1009,7 +972,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_country_en:
           id: recipient_country_en
           table: search_api_index_pd_core_grants
@@ -1017,6 +979,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Country
           exclude: false
           alter:
@@ -1062,7 +1025,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         recipient_country_fr:
           id: recipient_country_fr
           table: search_api_index_pd_core_grants
@@ -1070,6 +1032,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Pays
           exclude: false
           alter:
@@ -1115,7 +1078,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         federal_riding_name_en:
           id: federal_riding_name_en
           table: search_api_index_pd_core_grants
@@ -1123,6 +1085,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Federal Riding Name'
           exclude: false
           alter:
@@ -1168,7 +1131,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         federal_riding_name_fr:
           id: federal_riding_name_fr
           table: search_api_index_pd_core_grants
@@ -1176,6 +1138,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Nom de la circonscription fédérale'
           exclude: false
           alter:
@@ -1221,7 +1184,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         federal_riding_number:
           id: federal_riding_number
           table: search_api_index_pd_core_grants
@@ -1229,6 +1191,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Federal Riding Number'
           exclude: false
           alter:
@@ -1274,7 +1237,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         naics_identifier:
           id: naics_identifier
           table: search_api_index_pd_core_grants
@@ -1282,6 +1244,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'NAICS Identifier'
           exclude: false
           alter:
@@ -1327,7 +1290,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         prog_name_en:
           id: prog_name_en
           table: search_api_index_pd_core_grants
@@ -1335,6 +1297,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Program Name'
           exclude: false
           alter:
@@ -1380,7 +1343,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         prog_name_fr:
           id: prog_name_fr
           table: search_api_index_pd_core_grants
@@ -1388,6 +1350,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Nom du programme'
           exclude: false
           alter:
@@ -1433,7 +1396,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         prog_purpose_en:
           id: prog_purpose_en
           table: search_api_index_pd_core_grants
@@ -1441,6 +1403,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Program Purpose'
           exclude: false
           alter:
@@ -1486,7 +1449,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         prog_purpose_fr:
           id: prog_purpose_fr
           table: search_api_index_pd_core_grants
@@ -1494,6 +1456,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'But du programme'
           exclude: false
           alter:
@@ -1539,7 +1502,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_title_en:
           id: agreement_title_en
           table: search_api_index_pd_core_grants
@@ -1547,6 +1509,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Agreement Title'
           exclude: false
           alter:
@@ -1592,7 +1555,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_title_fr:
           id: agreement_title_fr
           table: search_api_index_pd_core_grants
@@ -1600,6 +1562,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Titre de l’entente'
           exclude: false
           alter:
@@ -1645,7 +1608,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_number:
           id: agreement_number
           table: search_api_index_pd_core_grants
@@ -1653,6 +1615,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Agreement Number'
           exclude: false
           alter:
@@ -1698,7 +1661,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_value:
           id: agreement_value
           table: search_api_index_pd_core_grants
@@ -1706,6 +1668,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Agreement Value in CAD'
           exclude: false
           alter:
@@ -1751,7 +1714,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_start_date:
           id: agreement_start_date
           table: search_api_index_pd_core_grants
@@ -1759,6 +1721,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Agreement Start Date'
           exclude: false
           alter:
@@ -1804,7 +1767,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         agreement_end_date:
           id: agreement_end_date
           table: search_api_index_pd_core_grants
@@ -1812,6 +1774,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Projected Agreement End Date'
           exclude: false
           alter:
@@ -1857,7 +1820,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         amendment_date:
           id: amendment_date
           table: search_api_index_pd_core_grants
@@ -1865,6 +1827,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Amendment Date'
           exclude: false
           alter:
@@ -1910,7 +1873,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         coverage:
           id: coverage
           table: search_api_index_pd_core_grants
@@ -1918,6 +1880,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Coverage
           exclude: false
           alter:
@@ -1963,7 +1926,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         additional_information_en:
           id: additional_information_en
           table: search_api_index_pd_core_grants
@@ -1971,6 +1933,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Additional Information'
           exclude: false
           alter:
@@ -2016,7 +1979,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         additional_information_fr:
           id: additional_information_fr
           table: search_api_index_pd_core_grants
@@ -2024,6 +1986,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Renseignements supplémentaires'
           exclude: false
           alter:
@@ -2069,7 +2032,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_en:
           id: description_en
           table: search_api_index_pd_core_grants
@@ -2077,6 +2039,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Description of Work'
           exclude: false
           alter:
@@ -2122,7 +2085,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_fr:
           id: description_fr
           table: search_api_index_pd_core_grants
@@ -2130,6 +2092,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Description du travail'
           exclude: false
           alter:
@@ -2175,7 +2138,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         expected_results_en:
           id: expected_results_en
           table: search_api_index_pd_core_grants
@@ -2183,6 +2145,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Expected Results or Intended Outcome'
           exclude: false
           alter:
@@ -2228,7 +2191,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         expected_results_fr:
           id: expected_results_fr
           table: search_api_index_pd_core_grants
@@ -2236,6 +2198,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Résultats attendus ou visés'
           exclude: false
           alter:
@@ -2281,7 +2244,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         nothing_1:
           id: nothing_1
           table: views
@@ -2289,6 +2251,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: custom
           label: ''
           exclude: false
           alter:
@@ -2330,8 +2293,27 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: custom
-      filters: {  }
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: none
+        options: {  }
+      empty: {  }
       sorts:
         amendment_number:
           id: amendment_number
@@ -2340,27 +2322,12 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           order: DESC
-          exposed: false
           expose:
             label: ''
-          plugin_id: search_api
-      title: 'Government Grants and Contributions'
-      header: {  }
-      footer:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: "<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/search/grants\">Back to Search&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n"
-          plugin_id: text_custom
-      empty: {  }
-      relationships: {  }
+            field_identifier: amendment_number
+          exposed: false
       arguments:
         partial_id:
           id: partial_id
@@ -2369,6 +2336,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           default_action: default
           exception:
             value: all
@@ -2393,7 +2361,40 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          plugin_id: search_api
+      filters: {  }
+      style:
+        type: default
+        options:
+          grouping: {  }
+          row_class: 'panel panel-default mrgn-tp-md'
+          default_row_class: true
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: false
+      relationships: {  }
+      header: {  }
+      footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: "<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/search/grants\">Back to Search&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n"
+          tokenize: false
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -2402,15 +2403,15 @@ display:
         - url
       tags: {  }
   details:
-    display_plugin: page
     id: details
     display_title: 'Proactive Disclosure: Grants Details'
+    display_plugin: page
     position: 1
     display_options:
+      display_description: ''
       display_extenders:
         metatag_display_extender: {  }
       path: search/grants/reference/%
-      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:

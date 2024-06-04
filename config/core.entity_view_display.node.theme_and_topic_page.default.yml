@@ -24,13 +24,14 @@ dependencies:
     - user
 third_party_settings:
   layout_builder:
-    allow_custom: true
     enabled: true
+    allow_custom: true
     sections:
       -
         layout_id: bs_1col
         layout_settings:
           label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes: {  }
@@ -47,41 +48,42 @@ third_party_settings:
             uuid: 695581e7-42d6-4d58-a257-00e88b7ee4fb
             region: main
             configuration:
+              id: 'extra_field_block:node:theme_and_topic_page:links'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:theme_and_topic_page:links'
-            additional: {  }
             weight: 0
+            additional: {  }
           9635a099-2030-4d30-a95f-f73f5cf15987:
             uuid: 9635a099-2030-4d30-a95f-f73f5cf15987
             region: main
             configuration:
               id: local_actions_block
               label: 'Primary admin actions'
-              provider: core
               label_display: '0'
+              provider: core
               context_mapping: {  }
-            additional: {  }
             weight: 1
+            additional: {  }
           87407535-4a77-4cb2-999b-8afe0397c5ca:
             uuid: 87407535-4a77-4cb2-999b-8afe0397c5ca
             region: main
             configuration:
               id: local_tasks_block
               label: Tabs
-              provider: core
               label_display: '0'
+              provider: core
+              context_mapping: {  }
               primary: true
               secondary: true
-              context_mapping: {  }
-            additional: {  }
             weight: 2
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_2col
         layout_settings:
           label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes: {  }
@@ -105,72 +107,73 @@ third_party_settings:
             configuration:
               id: 'field_block:node:theme_and_topic_page:title'
               label: Title
-              provider: layout_builder
               label_display: '0'
-              formatter:
-                label: visually_hidden
-                type: string
-                settings:
-                  link_to_entity: false
-                third_party_settings: {  }
+              provider: layout_builder
               context_mapping:
                 entity: layout_builder.entity
                 view_mode: view_mode
-            additional: {  }
+              formatter:
+                type: string
+                label: visually_hidden
+                settings:
+                  link_to_entity: false
+                third_party_settings: {  }
             weight: -10
+            additional: {  }
           c041ec6a-72c8-4750-9087-f6a94850e4c3:
             uuid: c041ec6a-72c8-4750-9087-f6a94850e4c3
             region: right
             configuration:
               id: 'field_block:node:theme_and_topic_page:field_media'
               label: 'Topic Image'
-              provider: layout_builder
               label_display: '0'
-              formatter:
-                label: visually_hidden
-                type: entity_reference_entity_view
-                settings:
-                  view_mode: default
-                third_party_settings: {  }
+              provider: layout_builder
               context_mapping:
                 entity: layout_builder.entity
                 view_mode: view_mode
-            additional: {  }
+              formatter:
+                type: entity_reference_entity_view
+                label: visually_hidden
+                settings:
+                  view_mode: default
+                third_party_settings: {  }
             weight: 0
+            additional: {  }
           8edd4f31-8217-402b-b699-4c438a8eb1e9:
             uuid: 8edd4f31-8217-402b-b699-4c438a8eb1e9
             region: left
             configuration:
               id: 'block_content:ba7be731-2b4a-4460-96d0-c554eff3ad57'
               label: 'Technical notice'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: -9
+            additional: {  }
           af0bd20b-9e2d-42a5-a7de-a9630236099a:
             uuid: af0bd20b-9e2d-42a5-a7de-a9630236099a
             region: left
             configuration:
+              id: 'field_block:node:theme_and_topic_page:body'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:theme_and_topic_page:body'
               formatter:
-                label: hidden
                 type: text_default
+                label: hidden
                 settings: {  }
                 third_party_settings: {  }
-            additional: {  }
             weight: -8
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_1col
         layout_settings:
           label: ''
+          context_mapping: {  }
           layout:
             wrapper: section
             classes: {  }
@@ -189,19 +192,20 @@ third_party_settings:
             configuration:
               id: 'block_content:33e680ed-4338-4ee8-ae70-a09d043e356a'
               label: 'Placeholder-Most requested'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 1
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_3col
         layout_settings:
           label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes: {  }
@@ -230,89 +234,90 @@ third_party_settings:
             configuration:
               id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
               label: 'Placeholder doormat block'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 2
+            additional: {  }
           65943dd7-882f-44ff-88e3-05c7c8296aa5:
             uuid: 65943dd7-882f-44ff-88e3-05c7c8296aa5
             region: left
             configuration:
               id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
               label: 'Placeholder doormat block'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 3
+            additional: {  }
           5f64dec6-dd0a-458f-8c91-e4bd40ed94da:
             uuid: 5f64dec6-dd0a-458f-8c91-e4bd40ed94da
             region: middle
             configuration:
               id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
               label: 'Placeholder doormat block'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 2
+            additional: {  }
           467d99e3-3dd0-4595-b171-6e96bf460af2:
             uuid: 467d99e3-3dd0-4595-b171-6e96bf460af2
             region: middle
             configuration:
               id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
               label: 'Placeholder doormat block'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 3
+            additional: {  }
           c53b5e74-3459-4106-b820-8cb4c3aab76a:
             uuid: c53b5e74-3459-4106-b820-8cb4c3aab76a
             region: right
             configuration:
               id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
               label: 'Placeholder doormat block'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 2
+            additional: {  }
           16c61f56-1a43-48d9-9b01-012faab22abe:
             uuid: 16c61f56-1a43-48d9-9b01-012faab22abe
             region: right
             configuration:
               id: 'block_content:e4fa37b6-b447-4bf1-9829-497498dd8327'
               label: 'Placeholder doormat block'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 3
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_2col
         layout_settings:
           label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes: {  }
@@ -336,33 +341,34 @@ third_party_settings:
             configuration:
               id: 'block_content:f0445d0f-40ef-41a7-b496-aad01b39ebce'
               label: 'Placeholder feature'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 1
+            additional: {  }
           3cda7299-ba37-4b4c-8cec-b6ce8ff46e15:
             uuid: 3cda7299-ba37-4b4c-8cec-b6ce8ff46e15
             region: right
             configuration:
               id: 'block_content:e8479cb2-4e8b-4747-b5df-dbc3fb06254d'
               label: 'Social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 1
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_1col
         layout_settings:
           label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes: {  }
@@ -381,14 +387,14 @@ third_party_settings:
             configuration:
               id: 'block_content:ae1faf68-83e2-4433-89dd-9da4ac1c1d26'
               label: 'Placeholder Contributor'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 1
+            additional: {  }
         third_party_settings: {  }
 id: node.theme_and_topic_page.default
 targetEntityType: node
@@ -396,31 +402,31 @@ bundle: theme_and_topic_page
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 101
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 101
     region: content
   field_media:
-    weight: 103
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 103
     region: content
   field_meta_tags:
-    weight: 102
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 102
     region: content
   links:
-    weight: 100
     settings: {  }
     third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
   langcode: true

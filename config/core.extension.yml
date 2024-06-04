@@ -1,6 +1,10 @@
+_core:
+  default_config_hash: R4IF-ClDHXxblLcG0L7MgsLvfBIMAvi_skumNFQwkDc
 module:
+  action: 0
   admin_toolbar: 0
   admin_toolbar_links_access_filter: 0
+  admin_toolbar_search: 0
   admin_toolbar_tools: 0
   adobe_analytics: 0
   alter_block: 0
@@ -13,10 +17,8 @@ module:
   book: 0
   bootstrap_layouts: 0
   breakpoint: 0
-  ckeditor: 0
-  ckeditor_codemirror: 0
+  ckeditor5: 0
   comment: 0
-  comment_spam: 0
   config: 0
   config_translation: 0
   content_moderation: 0
@@ -27,7 +29,6 @@ module:
   datetime: 0
   dynamic_page_cache: 0
   editor: 0
-  external_comment: 0
   facets: 0
   facets_summary: 0
   field: 0
@@ -52,13 +53,11 @@ module:
   metatag: 0
   metatag_dc: 0
   node: 0
-  obd: 0
   og: 0
   og_ext_cron: 0
   og_ext_webform: 0
   options: 0
   page_cache: 0
-  password_policy: 0
   password_policy_character_types: 0
   password_policy_characters: 0
   password_policy_consecutive: 0
@@ -67,8 +66,7 @@ module:
   password_policy_username: 0
   path: 0
   path_alias: 0
-  quickedit: 0
-  rdf: 0
+  pgsql: 0
   redirect: 0
   redis: 0
   rest: 0
@@ -93,13 +91,10 @@ module:
   menu_link_content: 1
   pathauto: 1
   content_translation: 10
+  password_policy: 10
   views: 10
 theme:
-  stable: 0
-  classy: 0
-  seven: 0
   bootstrap: 0
   gcweb: 0
+  claro: 0
 profile: og
-_core:
-  default_config_hash: R4IF-ClDHXxblLcG0L7MgsLvfBIMAvi_skumNFQwkDc

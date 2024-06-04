@@ -1,89 +1,63 @@
-uuid: 55a08578-1c66-4f80-a4a6-d5f81bced090
+uuid: 29cc2df4-7058-4f90-b525-9c5eef4e87ab
 langcode: en
 status: true
 dependencies:
   config:
     - filter.format.rich_text
   module:
-    - ckeditor
+    - ckeditor5
 format: rich_text
-editor: ckeditor
+editor: ckeditor5
 settings:
   toolbar:
-    rows:
-      -
-        -
-          name: Formatting
-          items:
-            - Bold
-            - Strike
-            - Italic
-            - Underline
-            - Superscript
-            - Subscript
-            - RemoveFormat
-        -
-          name: Links
-          items:
-            - DrupalLink
-            - DrupalUnlink
-        -
-          name: Lists
-          items:
-            - BulletedList
-            - NumberedList
-        -
-          name: Media
-          items:
-            - Blockquote
-            - DrupalMediaLibrary
-            - Table
-            - HorizontalRule
-        -
-          name: Tools
-          items:
-            - ShowBlocks
-            - Source
-        -
-          name: 'Block Formatting'
-          items:
-            - Format
-        -
-          name: Alignment
-          items:
-            - JustifyLeft
-            - JustifyCenter
-            - JustifyRight
-            - JustifyBlock
-        -
-          name: Other
-          items:
-            - Maximize
-            - DrupalFontAwesome
+    items:
+      - heading
+      - bold
+      - strikethrough
+      - italic
+      - underline
+      - superscript
+      - subscript
+      - removeFormat
+      - bulletedList
+      - numberedList
+      - indent
+      - outdent
+      - alignment
+      - '|'
+      - blockQuote
+      - link
+      - drupalMedia
+      - insertTable
+      - horizontalLine
+      - '-'
+      - codeBlock
+      - code
+      - redo
+      - undo
+      - '|'
+      - sourceEditing
   plugins:
-    language:
-      language_list: un
-    stylescombo:
-      styles: 'h2 .h4|Look like Heading 4'
-    codemirror:
-      enable: true
-      startupMode: wysiwyg
-      mode: htmlmixed
-      theme: monokai
-      options:
-        lineNumbers: true
-        lineWrapping: true
-        matchBrackets: true
-        autoCloseTags: true
-        autoCloseBrackets: true
-        enableSearchTools: true
-        enableCodeFolding: true
-        enableCodeFormatting: true
-        autoFormatOnStart: true
-        autoFormatOnModeChange: true
-        autoFormatOnUncomment: true
-    tokenbrowser:
-      token_types: {  }
+    ckeditor5_heading:
+      enabled_headings:
+        - heading2
+        - heading3
+        - heading4
+        - heading5
+        - heading6
+    ckeditor5_sourceEditing:
+      allowed_tags: {  }
+    ckeditor5_list:
+      reversed: true
+      startIndex: true
+    ckeditor5_alignment:
+      enabled_alignments:
+        - left
+        - center
+        - right
+        - justify
+    media_media:
+      allow_view_mode_override: false
 image_upload:
   status: true
   scheme: public

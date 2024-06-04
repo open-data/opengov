@@ -7,9 +7,9 @@ dependencies:
 third_party_settings:
   honeypot:
     honeypot: true
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 283
 template: false
 archive: false
@@ -17,7 +17,49 @@ id: apply_msf
 title: 'MSF: Call for applicants'
 description: 'Form for users to apply for MSF'
 category: ''
-elements: "'#attributes':\n  style: 'padding-left: 30px;'\ncv:\n  '#type': textarea\n  '#title': 'A Curriculum Vitae (maximum 4 pages)  '\n  '#title_display': before\n  '#maxlength': 8000\n  '#size': 1000\n  '#rows': 20\n  '#autocomplete': 'off'\n  '#required': true\n  '#counter_type': character\n  '#counter_minimum': 1\n  '#counter_maximum': 8000\ncover_letter:\n  '#type': textarea\n  '#title': 'A cover letter explaining your interest, ideas, skills and experience.  '\n  '#title_display': before\n  '#maxlength': 8000\n  '#size': 1000\n  '#rows': 20\n  '#required': true\n  '#counter_type': character\n  '#counter_minimum': 1\n  '#counter_maximum': 8000\nprocess:\n  '#type': processed_text\n  '#text': |\n    <p>References may be requested at a later time.</p>\n    \n  '#format': rich_text\nconsent:\n  '#type': checkbox\n  '#title': 'I understand that the information I have supplied is being provided to a 3rd party, namely the Selection Committee, for review.'\n  '#required': true\n  '#wrapper_attributes':\n    class:\n      - 'mrgn-tp-lg mrgn-bttm-lg'\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': 'Submit your application '\n  '#submit__attributes':\n    class:\n      - btn-success"
+elements: |-
+  cv:
+    '#type': textarea
+    '#title': 'A Curriculum Vitae (maximum 4 pages)  '
+    '#title_display': before
+    '#maxlength': 8000
+    '#size': 1000
+    '#rows': 20
+    '#autocomplete': 'off'
+    '#required': true
+    '#counter_type': character
+    '#counter_minimum': 1
+    '#counter_maximum': 8000
+  cover_letter:
+    '#type': textarea
+    '#title': 'A cover letter explaining your interest, ideas, skills and experience.  '
+    '#title_display': before
+    '#maxlength': 8000
+    '#size': 1000
+    '#rows': 20
+    '#required': true
+    '#counter_type': character
+    '#counter_minimum': 1
+    '#counter_maximum': 8000
+  process:
+    '#type': processed_text
+    '#text': |
+      <p>References may be requested at a later time.</p>
+    '#format': rich_text
+  consent:
+    '#type': checkbox
+    '#title': 'I understand that the information I have supplied is being provided to a 3rd party, namely the Selection Committee, for review.'
+    '#required': true
+    '#wrapper_attributes':
+      class:
+        - 'mrgn-tp-lg mrgn-bttm-lg'
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#submit__label': 'Submit your application '
+    '#submit__attributes':
+      class:
+        - btn-success
 css: ''
 javascript: ''
 settings:
@@ -32,40 +74,49 @@ settings:
   page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: false
+  form_disable_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_attributes:
+    style: 'padding-left: 30px;'
+  form_method: ''
+  form_action: ''
   share: false
   share_node: false
   share_theme_name: ''
   share_title: true
   share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: true
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -74,11 +125,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -89,19 +135,21 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
   wizard_prev_button_label: ''
   wizard_next_button_label: ''
   wizard_toggle: true
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -118,9 +166,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: inline
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: 'Thank you for your application.'
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -199,9 +247,9 @@ access:
 handlers:
   email:
     id: email
+    handler_id: email
     label: Email
     notes: 'Forward application to MSF owned email address'
-    handler_id: email
     status: true
     conditions: {  }
     weight: 0
@@ -210,13 +258,17 @@ handlers:
         - completed
       to_mail: CanadaOpenGovMSF@gmail.com
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: _default
       from_options: {  }
       from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: _default
       body: _default
       excluded_elements: {  }
@@ -227,11 +279,7 @@ handlers:
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
+      debug: false
 variants: {  }

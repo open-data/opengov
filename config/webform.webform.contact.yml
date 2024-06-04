@@ -1,23 +1,22 @@
 uuid: d553f7a9-bebe-433e-a683-6185a3908d41
 langcode: en
-status: open
+status: closed
 dependencies:
+  module:
+    - honeypot
   enforced:
     module:
       - webform
       - webform
-  module:
-    - comment_spam
-    - honeypot
 third_party_settings:
   honeypot:
     honeypot: true
     time_restriction: true
 _core:
   default_config_hash: wn06eL40L0LLwBac3EprLc2EE3B93WlUg39fTOOmDdU
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
@@ -25,7 +24,55 @@ id: contact
 title: Contact
 description: '&quot;Contact&quot; webform.'
 category: ''
-elements: "subject:\n  '#title': Subject\n  '#type': textfield\n  '#required': true\n  '#test': 'Testing contact webform from [site:name]'\ncomments_and_feedback:\n  '#type': textarea\n  '#title': 'Comments and Feedback'\n  '#required': true\n  '#counter_type': character\n  '#counter_maximum': 2000\n  '#counter_message': 'character(s) left'\n  '#smart_description': false\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\ntitle:\n  '#type': textfield\n  '#title': Title\norganization:\n  '#type': textfield\n  '#title': Organization\ne_mail_address:\n  '#type': email\n  '#title': 'Your Email'\ntelephone:\n  '#type': tel\n  '#title': Telephone\n  '#pattern': '^\\+?\\d{0,}?(\\s|-|\\.){0,}?\\(?\\d{3}\\)?(\\s|-|\\.){0,}?\\d{3}(\\s|-|\\.){0,}?\\d{4}(\\s|-|\\.){0,}?(ex?t?|extension|x)?(\\s|-|\\.){0,}?\\d{0,}'\nconsent:\n  '#type': select\n  '#title': Consent\n  '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'\n  '#title_display': invisible\n  '#description_display': before\n  '#options': yes_no\n  '#smart_description': false\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#states':\n    visible:\n      ':input[name=\"consent\"]':\n        value:\n          pattern: (Yes|Oui)\nspam_flag:\n  '#type': checkbox\n  '#title': spam_flag\n  '#disabled': true\n  '#wrapper_attributes':\n    class:\n      - hidden"
+elements: |-
+  subject:
+    '#title': Subject
+    '#type': textfield
+    '#required': true
+    '#test': 'Testing contact webform from [site:name]'
+  comments_and_feedback:
+    '#type': textarea
+    '#title': 'Comments and Feedback'
+    '#required': true
+    '#counter_type': character
+    '#counter_maximum': 2000
+    '#counter_message': 'character(s) left'
+    '#smart_description': false
+  first_name:
+    '#type': textfield
+    '#title': 'First Name'
+  last_name:
+    '#type': textfield
+    '#title': 'Last Name'
+  title:
+    '#type': textfield
+    '#title': Title
+  organization:
+    '#type': textfield
+    '#title': Organization
+  e_mail_address:
+    '#type': email
+    '#title': 'Your Email'
+  telephone:
+    '#type': tel
+    '#title': Telephone
+    '#pattern': '^\+?\d{0,}?(\s|-|\.){0,}?\(?\d{3}\)?(\s|-|\.){0,}?\d{3}(\s|-|\.){0,}?\d{4}(\s|-|\.){0,}?(ex?t?|extension|x)?(\s|-|\.){0,}?\d{0,}'
+  consent:
+    '#type': select
+    '#title': Consent
+    '#description': '<strong>I consent to the sharing of my personal information between Government of Canada departments for the purpose of responding to my inquiry.</strong>'
+    '#title_display': invisible
+    '#description_display': before
+    '#options': yes_no
+    '#smart_description': false
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#states':
+      visible:
+        ':input[name="consent"]':
+          value:
+            pattern: (Yes|Oui)
 css: ''
 javascript: ''
 settings:
@@ -40,62 +87,49 @@ settings:
   page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  form_attributes: {  }
+  form_method: ''
+  form_action: ''
   share: false
   share_node: false
   share_theme_name: ''
   share_title: true
   share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
-  submission_views:
-    default_submissions:
-      view: 'webform_submissions:embed_review'
-      title: Default
-      webform_routes:
-        - entity.webform.results_submissions
-        - entity.webform.user.drafts
-        - entity.webform.user.submissions
-    validated_submissions:
-      view: 'webform_validated:embed_1'
-      title: Validated
-      webform_routes:
-        - entity.webform.results_submissions
-        - entity.webform.user.drafts
-        - entity.webform.user.submissions
-    spam_submissions:
-      view: 'webform_spam:embed_1'
-      title: Spam
-      webform_routes:
-        - entity.webform.results_submissions
-        - entity.webform.user.drafts
-        - entity.webform.user.submissions
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
+  submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
   submission_user_duplicate: false
@@ -103,11 +137,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -118,19 +147,21 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
   wizard_prev_button_label: ''
   wizard_next_button_label: ''
   wizard_toggle: true
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -147,9 +178,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: url_message
+  confirmation_url: '<front>'
   confirmation_title: ''
   confirmation_message: 'Your message has been sent.'
-  confirmation_url: '<front>'
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -247,9 +278,9 @@ access:
 handlers:
   email_confirmation:
     id: email
+    handler_id: email_confirmation
     label: 'Email confirmation'
     notes: ''
-    handler_id: email_confirmation
     status: true
     conditions:
       disabled:
@@ -261,13 +292,17 @@ handlers:
         - completed
       to_mail: '[webform_submission:values:e_mail_address:raw]'
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: _default
       from_options: {  }
       from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: '[webform_submission:values:subject:value]'
       body: '[webform_submission:values]'
       excluded_elements: {  }
@@ -278,36 +313,33 @@ handlers:
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
+      debug: false
   email_notification:
     id: email
+    handler_id: email_notification
     label: 'Email notification'
     notes: ''
-    handler_id: email_notification
     status: true
-    conditions:
-      disabled:
-        ':input[name="spam_flag"]':
-          checked: true
+    conditions: {  }
     weight: 1
     settings:
       states:
         - completed
       to_mail: open-ouvert@tbs-sct.gc.ca
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: _default
       from_options: {  }
       from_name: '[webform_submission:values:subject:value]'
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: '[webform_submission:values:subject:value]'
       body: '[webform_submission:values]'
       excluded_elements: {  }
@@ -318,20 +350,7 @@ handlers:
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
-  detect_spam_validation:
-    id: detect_spam_validator
-    label: 'Detect spam validation'
-    notes: ''
-    handler_id: detect_spam_validation
-    status: true
-    conditions: {  }
-    weight: 2
-    settings: {  }
+      debug: false
 variants: {  }

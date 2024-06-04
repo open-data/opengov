@@ -4,6 +4,7 @@ status: true
 dependencies:
   module:
     - editor
+    - media
     - token_filter
 _core:
   default_config_hash: hewPmBgni9jlDK_IjLxUx1HsTbinK-hdl0lOwjbteIY
@@ -22,12 +23,6 @@ filters:
     provider: filter
     status: true
     weight: 9
-    settings: {  }
-  filter_htmlcorrector:
-    id: filter_htmlcorrector
-    provider: filter
-    status: true
-    weight: 10
     settings: {  }
   editor_file_reference:
     id: editor_file_reference
@@ -51,3 +46,12 @@ filters:
     weight: 0
     settings:
       replace_empty: '0'
+  media_embed:
+    id: media_embed
+    provider: media
+    status: false
+    weight: 100
+    settings:
+      default_view_mode: default
+      allowed_view_modes: {  }
+      allowed_media_types: {  }

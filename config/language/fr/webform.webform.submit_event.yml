@@ -1,4 +1,17 @@
-elements: "event_name_in_full:\n  '#title': 'Nom de l''événement en entier'\nlocation:\n  '#title': Emplacement\nevent_website:\n  '#title': 'Site de l''événement'\nemail:\n  '#title': Courriel\nconsent_to_sharing_of_personal_information:\n  '#title': Consens\n  '#description': '<strong>Je consens à la communication de mes renseignements personnels entre les ministères du gouvernement du Canada dans le but de répondre à ma demande de renseignements.</strong>'\nactions:\n  '#title': 'Bouton(s) de soumission'\n"
+elements: |
+  event_name_in_full:
+    '#title': 'Nom de l''événement en entier'
+  location:
+    '#title': Emplacement
+  event_website:
+    '#title': 'Site de l''événement'
+  email:
+    '#title': Courriel
+  consent_to_sharing_of_personal_information:
+    '#title': Consens
+    '#description': '<strong>Je consens à la communication de mes renseignements personnels entre les ministères du gouvernement du Canada dans le but de répondre à ma demande de renseignements.</strong>'
+  actions:
+    '#title': 'Bouton(s) de soumission'
 handlers:
   email:
     label: Courriel

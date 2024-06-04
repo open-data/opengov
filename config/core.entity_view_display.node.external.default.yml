@@ -16,10 +16,10 @@ bundle: external
 mode: default
 content:
   content_moderation_control:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   comment: true
   field_type: true

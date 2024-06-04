@@ -9,79 +9,6 @@ dependencies:
     - search_api
 id: contracts_summary
 name: 'PD Contracts - Current Search'
-facets:
-  contracts_organization_en:
-    checked: true
-    label: Organization
-    separator: ', '
-    weight: -10
-    show_count: false
-  contracts_organization_fr:
-    checked: true
-    label: Organisation
-    separator: ', '
-    weight: -9
-    show_count: false
-  contracts_year_en:
-    checked: true
-    label: Year
-    separator: ', '
-    weight: -8
-    show_count: false
-  contracts_year_fr:
-    checked: true
-    label: Année
-    separator: ', '
-    weight: -7
-    show_count: false
-  contracts_commodity_type_en:
-    checked: true
-    label: 'Commodity Type'
-    separator: ', '
-    weight: -6
-    show_count: false
-  contracts_commodity_type_fr:
-    checked: true
-    label: 'Type de marchandises'
-    separator: ', '
-    weight: -5
-    show_count: false
-  contracts_country_of_origin_en:
-    checked: true
-    label: 'Country of Origin'
-    separator: ', '
-    weight: -4
-    show_count: false
-  contracts_country_of_origin_fr:
-    checked: true
-    label: 'Pays d''origine'
-    separator: ', '
-    weight: -3
-    show_count: false
-  pd_contracts_multi_agreement_type_en:
-    checked: true
-    label: 'Agreement Type'
-    separator: ', '
-    weight: -2
-    show_count: false
-  pd_contracts_multi_agreement_type_fr:
-    checked: true
-    label: 'Type de contrats'
-    separator: ', '
-    weight: -1
-    show_count: false
-  contracts_contract_value_en:
-    checked: true
-    label: 'Contract Value'
-    separator: ', '
-    weight: 0
-    show_count: false
-  contracts_contract_value_fr:
-    checked: true
-    label: 'Valeur du contrat '
-    separator: ', '
-    weight: 1
-    show_count: false
 facet_source_id: 'search_api:views_block__pd_core_contracts__block_1'
 processor_configs:
   reset_facets:
@@ -90,6 +17,7 @@ processor_configs:
       build: '30'
     settings:
       link_text: 'Clear all filters'
+      position: before
   show_text_when_empty:
     processor_id: show_text_when_empty
     weights:
@@ -98,3 +26,76 @@ processor_configs:
       text:
         value: 'There is no current search in progress.'
         format: plain_text
+facets:
+  contracts_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    show_count: false
+    weight: -10
+  contracts_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    show_count: false
+    weight: -9
+  contracts_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    show_count: false
+    weight: -8
+  contracts_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    show_count: false
+    weight: -7
+  contracts_commodity_type_en:
+    checked: true
+    label: 'Commodity Type'
+    separator: ', '
+    show_count: false
+    weight: -6
+  contracts_commodity_type_fr:
+    checked: true
+    label: 'Type de marchandises'
+    separator: ', '
+    show_count: false
+    weight: -5
+  contracts_country_of_origin_en:
+    checked: true
+    label: 'Country of Origin'
+    separator: ', '
+    show_count: false
+    weight: -4
+  contracts_country_of_origin_fr:
+    checked: true
+    label: 'Pays d''origine'
+    separator: ', '
+    show_count: false
+    weight: -3
+  pd_contracts_multi_agreement_type_en:
+    checked: true
+    label: 'Agreement Type'
+    separator: ', '
+    show_count: false
+    weight: -2
+  pd_contracts_multi_agreement_type_fr:
+    checked: true
+    label: 'Type de contrats'
+    separator: ', '
+    show_count: false
+    weight: -1
+  contracts_contract_value_en:
+    checked: true
+    label: 'Contract Value'
+    separator: ', '
+    show_count: false
+    weight: 0
+  contracts_contract_value_fr:
+    checked: true
+    label: 'Valeur du contrat '
+    separator: ', '
+    show_count: false
+    weight: 1

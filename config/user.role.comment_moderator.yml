@@ -1,7 +1,20 @@
 uuid: 340005d3-f197-4c31-9c41-16914a205bc4
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.rich_text
+    - node.type.suggested_dataset
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - content_translation
+    - contextual
+    - filter
+    - node
+    - system
+    - toolbar
+    - webform
 id: comment_moderator
 label: 'Comment Moderator'
 weight: 4

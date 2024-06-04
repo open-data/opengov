@@ -9,6 +9,23 @@ dependencies:
     - search_api
 id: sd_summary
 name: 'Suggested Dataset - Current Search'
+facet_source_id: 'search_api:views_block__suggested_dataset__block_1'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Clear all filters'
+      position: before
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '10'
+    settings:
+      text:
+        value: 'No results found.'
+        format: plain_text
 facets:
   sd_organisation_fr:
     checked: true
@@ -34,19 +51,3 @@ facets:
     separator: ', '
     show_count: true
     weight: 0
-facet_source_id: 'search_api:views_block__suggested_dataset__block_1'
-processor_configs:
-  reset_facets:
-    processor_id: reset_facets
-    weights:
-      build: '30'
-    settings:
-      link_text: 'Clear all filters'
-  show_text_when_empty:
-    processor_id: show_text_when_empty
-    weights:
-      build: '10'
-    settings:
-      text:
-        value: 'No results found.'
-        format: plain_text

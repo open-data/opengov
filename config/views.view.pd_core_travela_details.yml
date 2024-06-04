@@ -15,47 +15,12 @@ base_table: search_api_index_pd_core_travela
 base_field: search_api_id
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: none
-        options: {  }
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          items_per_page: null
-          offset: 0
-      style:
-        type: default
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: true
+      title: ''
       fields:
         year:
           id: year
@@ -64,6 +29,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -109,7 +75,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         nothing:
           id: nothing
           table: views
@@ -117,6 +82,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: custom
           label: ''
           exclude: false
           alter:
@@ -158,7 +124,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: custom
         org_name_en:
           id: org_name_en
           table: search_api_index_pd_core_travela
@@ -166,6 +131,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: false
           alter:
@@ -211,7 +177,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_fr:
           id: org_name_fr
           table: search_api_index_pd_core_travela
@@ -219,6 +184,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: false
           alter:
@@ -264,7 +230,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         nothing_1:
           id: nothing_1
           table: views
@@ -272,6 +237,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: custom
           label: ''
           exclude: false
           alter:
@@ -313,7 +279,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: custom
         mandate_description_en:
           id: mandate_description_en
           table: search_api_index_pd_core_travela
@@ -321,6 +286,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Mandate
           exclude: false
           alter:
@@ -366,7 +332,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         mandate_description_fr:
           id: mandate_description_fr
           table: search_api_index_pd_core_travela
@@ -374,6 +339,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Mandat
           exclude: false
           alter:
@@ -419,7 +385,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         nothing_2:
           id: nothing_2
           table: views
@@ -427,6 +392,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: custom
           label: ''
           exclude: false
           alter:
@@ -468,7 +434,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: custom
         operational_activities_kdollars:
           id: operational_activities_kdollars
           table: search_api_index_pd_core_travela
@@ -476,6 +441,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -521,7 +487,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         operational_activities_kdollars_previous_year:
           id: operational_activities_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -529,6 +494,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -574,7 +540,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         operational_activities_kdollars_change:
           id: operational_activities_kdollars_change
           table: search_api_index_pd_core_travela
@@ -582,6 +547,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -627,7 +593,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         key_stakeholders_kdollars:
           id: key_stakeholders_kdollars
           table: search_api_index_pd_core_travela
@@ -635,6 +600,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -680,7 +646,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         key_stakeholders_kdollars_previous_year:
           id: key_stakeholders_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -688,6 +653,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -733,7 +699,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         key_stakeholders_kdollars_change:
           id: key_stakeholders_kdollars_change
           table: search_api_index_pd_core_travela
@@ -741,6 +706,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -786,7 +752,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         internal_governance_kdollars:
           id: internal_governance_kdollars
           table: search_api_index_pd_core_travela
@@ -794,6 +759,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -839,7 +805,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         internal_governance_kdollars_previous_year:
           id: internal_governance_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -847,6 +812,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -892,7 +858,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         internal_governance_kdollars_change:
           id: internal_governance_kdollars_change
           table: search_api_index_pd_core_travela
@@ -900,6 +865,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -945,7 +911,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         other_kdollars:
           id: other_kdollars
           table: search_api_index_pd_core_travela
@@ -953,6 +918,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -998,7 +964,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         other_kdollars_previous_year:
           id: other_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -1006,6 +971,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1051,7 +1017,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         other_kdollars_change:
           id: other_kdollars_change
           table: search_api_index_pd_core_travela
@@ -1059,6 +1024,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1104,7 +1070,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         training_kdollars:
           id: training_kdollars
           table: search_api_index_pd_core_travela
@@ -1112,6 +1077,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1157,7 +1123,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         training_kdollars_previous_year:
           id: training_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -1165,6 +1130,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1210,7 +1176,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         training_kdollars_change:
           id: training_kdollars_change
           table: search_api_index_pd_core_travela
@@ -1218,6 +1183,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1263,7 +1229,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         non_public_servants_kdollars:
           id: non_public_servants_kdollars
           table: search_api_index_pd_core_travela
@@ -1271,6 +1236,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1316,7 +1282,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         non_public_servants_kdollars_previous_year:
           id: non_public_servants_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -1324,6 +1289,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1369,7 +1335,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         non_public_servants_kdollars_change:
           id: non_public_servants_kdollars_change
           table: search_api_index_pd_core_travela
@@ -1377,6 +1342,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1422,7 +1388,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         public_servants_kdollars:
           id: public_servants_kdollars
           table: search_api_index_pd_core_travela
@@ -1430,6 +1395,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1475,7 +1441,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         public_servants_kdollars_previous_year:
           id: public_servants_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -1483,6 +1448,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1528,7 +1494,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         public_servants_kdollars_change:
           id: public_servants_kdollars_change
           table: search_api_index_pd_core_travela
@@ -1536,6 +1501,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1581,7 +1547,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         conference_fees_kdollars:
           id: conference_fees_kdollars
           table: search_api_index_pd_core_travela
@@ -1589,6 +1554,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1634,7 +1600,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         conference_fees_kdollars_change:
           id: conference_fees_kdollars_change
           table: search_api_index_pd_core_travela
@@ -1642,6 +1607,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1687,7 +1653,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         conference_fees_kdollars_previous_year:
           id: conference_fees_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -1695,6 +1660,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1740,7 +1706,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         hospitality_kdollars:
           id: hospitality_kdollars
           table: search_api_index_pd_core_travela
@@ -1748,6 +1713,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1793,7 +1759,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         hospitality_kdollars_change:
           id: hospitality_kdollars_change
           table: search_api_index_pd_core_travela
@@ -1801,6 +1766,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1846,7 +1812,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         hospitality_kdollars_previous_year:
           id: hospitality_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -1854,6 +1819,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1899,7 +1865,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         minister_kdollars:
           id: minister_kdollars
           table: search_api_index_pd_core_travela
@@ -1907,6 +1872,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -1952,7 +1918,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         minister_kdollars_change:
           id: minister_kdollars_change
           table: search_api_index_pd_core_travela
@@ -1960,6 +1925,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2005,7 +1971,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         total_kdollars:
           id: total_kdollars
           table: search_api_index_pd_core_travela
@@ -2013,6 +1978,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2058,7 +2024,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         total_kdollars_change:
           id: total_kdollars_change
           table: search_api_index_pd_core_travela
@@ -2066,6 +2031,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2111,7 +2077,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         total_travel_kdollars:
           id: total_travel_kdollars
           table: search_api_index_pd_core_travela
@@ -2119,6 +2084,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2164,7 +2130,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         total_travel_kdollars_change:
           id: total_travel_kdollars_change
           table: search_api_index_pd_core_travela
@@ -2172,6 +2137,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2217,7 +2183,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         total_travel_kdollars_previous_year:
           id: total_travel_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -2225,6 +2190,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2270,7 +2236,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         minister_kdollars_previous_year:
           id: minister_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -2278,6 +2243,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2323,7 +2289,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         total_kdollars_previous_year:
           id: total_kdollars_previous_year
           table: search_api_index_pd_core_travela
@@ -2331,6 +2296,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -2376,7 +2342,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         nothing_3:
           id: nothing_3
           table: views
@@ -2384,6 +2349,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: custom
           label: ''
           exclude: false
           alter:
@@ -2425,7 +2391,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: custom
         travel_compared_fiscal_year_en:
           id: travel_compared_fiscal_year_en
           table: search_api_index_pd_core_travela
@@ -2433,6 +2398,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Total travel'
           exclude: false
           alter:
@@ -2478,7 +2444,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         travel_compared_fiscal_year_fr:
           id: travel_compared_fiscal_year_fr
           table: search_api_index_pd_core_travela
@@ -2486,6 +2451,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Total des dépenses de voyages'
           exclude: false
           alter:
@@ -2531,7 +2497,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         hospitality_compared_fiscal_year_en:
           id: hospitality_compared_fiscal_year_en
           table: search_api_index_pd_core_travela
@@ -2539,6 +2504,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Hospitality
           exclude: false
           alter:
@@ -2584,7 +2550,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         hospitality_compared_fiscal_year_fr:
           id: hospitality_compared_fiscal_year_fr
           table: search_api_index_pd_core_travela
@@ -2592,6 +2557,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Accueil
           exclude: false
           alter:
@@ -2637,7 +2603,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         conference_fees_compared_fiscal_year_en:
           id: conference_fees_compared_fiscal_year_en
           table: search_api_index_pd_core_travela
@@ -2645,6 +2610,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Conference fees'
           exclude: false
           alter:
@@ -2690,7 +2656,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         conference_fees_compared_fiscal_year_fr:
           id: conference_fees_compared_fiscal_year_fr
           table: search_api_index_pd_core_travela
@@ -2698,6 +2663,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Frais de conférences'
           exclude: false
           alter:
@@ -2743,7 +2709,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         minister_compared_fiscal_year_en:
           id: minister_compared_fiscal_year_en
           table: search_api_index_pd_core_travela
@@ -2751,6 +2716,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Minister and minister’s exempt staff - International travel'
           exclude: false
           alter:
@@ -2796,7 +2762,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         minister_compared_fiscal_year_fr:
           id: minister_compared_fiscal_year_fr
           table: search_api_index_pd_core_travela
@@ -2804,6 +2769,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Le ministre et le personnel exempté du ministre – voyages internationaux'
           exclude: false
           alter:
@@ -2849,25 +2815,29 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
-      filters: {  }
-      sorts: {  }
-      title: ''
-      header: {  }
-      footer:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/travela">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
-          plugin_id: text_custom
+      pager:
+        type: none
+        options:
+          offset: 0
+          items_per_page: null
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: none
+        options: {  }
       empty: {  }
-      relationships: {  }
+      sorts: {  }
       arguments:
         id:
           id: id
@@ -2876,6 +2846,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           default_action: default
           exception:
             value: all
@@ -2900,7 +2871,36 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          plugin_id: search_api
+      filters: {  }
+      style:
+        type: default
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: false
+      relationships: {  }
+      header: {  }
+      footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/travela">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
+          tokenize: false
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -2909,15 +2909,15 @@ display:
         - url
       tags: {  }
   details:
-    display_plugin: page
     id: details
     display_title: 'Proactive Disclosure: Travel Annual Details'
+    display_plugin: page
     position: 1
     display_options:
+      display_description: ''
       display_extenders:
         metatag_display_extender: {  }
       path: search/travela/reference/%
-      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:

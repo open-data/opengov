@@ -1,4 +1,14 @@
 title: 'FMI: Appel de candidatures'
-elements: "cv:\n  '#title': 'un curriculum vitae (maximum de 4 pages);'\ncover_letter:\n  '#title': 'une lettre de présentation expliquant votre intérêt, vos idées, vos compétences et votre expérience.  '\nprocess:\n  '#text': \"<p>Il se peut que des références soient demandées ultérieurement.</p>\\r\\n\"\nconsent:\n  '#title': 'Je comprends que les informations que j''ai fournies sont communiquées à une tierce partie, à savoir le comité de sélection, pour examen.'\nactions:\n  '#submit__label': 'Présentez votre candidature '\n"
+elements: |
+  cv:
+    '#title': 'un curriculum vitae (maximum de 4 pages);'
+  cover_letter:
+    '#title': 'une lettre de présentation expliquant votre intérêt, vos idées, vos compétences et votre expérience.  '
+  process:
+    '#text': "<p>Il se peut que des références soient demandées ultérieurement.</p>\r\n"
+  consent:
+    '#title': 'Je comprends que les informations que j''ai fournies sont communiquées à une tierce partie, à savoir le comité de sélection, pour examen.'
+  actions:
+    '#submit__label': 'Présentez votre candidature '
 settings:
   confirmation_message: 'Merci pour votre candidature.'

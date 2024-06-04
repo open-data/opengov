@@ -11,21 +11,21 @@ type: 'canonical_entities:node'
 pattern: 'récit/[node:title]'
 selection_criteria:
   dcb8cb9b-f857-46ef-88a7-8e41c3d6658f:
-    id: node_type
-    bundles:
-      impact_story: impact_story
+    id: 'entity_bundle:node'
     negate: false
+    uuid: dcb8cb9b-f857-46ef-88a7-8e41c3d6658f
     context_mapping:
       node: node
-    uuid: dcb8cb9b-f857-46ef-88a7-8e41c3d6658f
+    bundles:
+      impact_story: impact_story
   9189f3ba-7505-4487-a900-5a6745a2d829:
     id: language
-    langcodes:
-      fr: fr
     negate: false
+    uuid: 9189f3ba-7505-4487-a900-5a6745a2d829
     context_mapping:
       language: 'node:langcode:language'
-    uuid: 9189f3ba-7505-4487-a900-5a6745a2d829
+    langcodes:
+      fr: fr
 selection_logic: and
 weight: 8
 relationships:

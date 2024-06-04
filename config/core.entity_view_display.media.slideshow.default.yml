@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.media.slideshow.field_media_image
     - field.field.media.slideshow.field_slideshow_title
+    - image.style.media_library
     - media.type.slideshow
   module:
     - image
@@ -15,16 +16,18 @@ bundle: slideshow
 mode: default
 content:
   field_media_image:
-    weight: 0
+    type: image
     label: hidden
     settings:
-      image_style: ''
       image_link: ''
+      image_style: media_library
+      image_loading:
+        attribute: lazy
     third_party_settings: {  }
-    type: image
+    weight: 0
     region: content
   field_slideshow_title:
-    weight: 1
+    type: link
     label: hidden
     settings:
       trim_length: 80
@@ -33,11 +36,12 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 1
     region: content
 hidden:
   created: true
   langcode: true
   name: true
+  search_api_excerpt: true
   thumbnail: true
   uid: true

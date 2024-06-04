@@ -11,21 +11,21 @@ type: 'canonical_entities:node'
 pattern: 'contenu/[node:title]'
 selection_criteria:
   114966cb-a477-4879-a8d5-f3a07296e93f:
-    id: node_type
-    bundles:
-      page: page
+    id: 'entity_bundle:node'
     negate: false
+    uuid: 114966cb-a477-4879-a8d5-f3a07296e93f
     context_mapping:
       node: node
-    uuid: 114966cb-a477-4879-a8d5-f3a07296e93f
+    bundles:
+      page: page
   b4f5bdc9-3dc4-4ce3-b610-4e6b46d32e74:
     id: language
-    langcodes:
-      fr: fr
     negate: false
+    uuid: b4f5bdc9-3dc4-4ce3-b610-4e6b46d32e74
     context_mapping:
       language: 'node:langcode:language'
-    uuid: b4f5bdc9-3dc4-4ce3-b610-4e6b46d32e74
+    langcodes:
+      fr: fr
 selection_logic: and
 weight: -7
 relationships:

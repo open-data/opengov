@@ -27,12 +27,14 @@ dependencies:
     - webform
 third_party_settings:
   layout_builder:
-    allow_custom: false
     enabled: true
+    allow_custom: false
     sections:
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -52,7 +54,6 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
-          label: ''
         components:
           57bde159-69e1-458c-83b5-0ef38e24382e:
             uuid: 57bde159-69e1-458c-83b5-0ef38e24382e
@@ -60,28 +61,30 @@ third_party_settings:
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
               label: 'Pillars - social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           b64b7c94-f71b-4818-907f-b3f86d28d4d0:
             uuid: b64b7c94-f71b-4818-907f-b3f86d28d4d0
             region: left
             configuration:
+              id: 'extra_field_block:node:idea:content_moderation_control'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:idea:content_moderation_control'
-            additional: {  }
             weight: 1
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -101,7 +104,6 @@ third_party_settings:
                 col-sm-9: col-sm-9
               add_region_classes: 1
               attributes: class|well
-          label: ''
         components:
           a116fbe4-d942-4a3e-8551-fea4cfdcfed2:
             uuid: a116fbe4-d942-4a3e-8551-fea4cfdcfed2
@@ -109,65 +111,65 @@ third_party_settings:
             configuration:
               id: 'field_block:node:idea:field_idea_tags'
               label: Étiquettes
-              provider: layout_builder
               label_display: '0'
+              provider: layout_builder
+              context_mapping:
+                entity: layout_builder.entity
               formatter:
-                label: visually_hidden
                 type: entity_reference_label
+                label: visually_hidden
                 settings:
                   link: false
                 third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
             weight: -9
+            additional: {  }
           fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e:
             uuid: fbb1af4c-7e62-43e3-8e8d-1eb0fcdbcc5e
             region: right
             configuration:
               id: 'field_block:node:idea:body'
               label: Détails
-              provider: layout_builder
               label_display: '0'
-              formatter:
-                label: hidden
-                type: text_default
-                settings: {  }
-                third_party_settings: {  }
+              provider: layout_builder
               context_mapping:
                 entity: layout_builder.entity
-            additional: {  }
+              formatter:
+                type: text_default
+                label: hidden
+                settings: {  }
+                third_party_settings: {  }
             weight: 4
+            additional: {  }
           89376394-1226-493b-a156-39b670d3295b:
             uuid: 89376394-1226-493b-a156-39b670d3295b
             region: left
             configuration:
+              id: 'field_block:node:idea:field_idea_submission_name'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:idea:field_idea_submission_name'
               formatter:
+                type: string
                 label: above
                 settings:
                   link_to_entity: false
                 third_party_settings: {  }
-                type: string
-            additional: {  }
             weight: -10
+            additional: {  }
           7cd42380-5e1c-499e-892e-89e1e3e87d35:
             uuid: 7cd42380-5e1c-499e-892e-89e1e3e87d35
             region: left
             configuration:
               id: webform_block
               label: Webform
-              provider: webform
               label_display: '0'
+              provider: webform
+              context_mapping: {  }
               webform_id: vote_up_down
               default_data: ''
               redirect: false
-              context_mapping: {  }
-            additional: {  }
             weight: -8
+            additional: {  }
         third_party_settings: {  }
 id: node.idea.default
 targetEntityType: node
@@ -175,47 +177,47 @@ bundle: idea
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 3
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 3
     region: content
   comment:
-    weight: 4
+    type: comment_default
     label: above
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 4
     region: content
   content_moderation_control:
-    weight: -20
     settings: {  }
     third_party_settings: {  }
+    weight: -20
     region: left
   field_idea_submission_name:
-    weight: 2
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
   field_idea_tags:
-    weight: 1
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 1
     region: content
   links:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   field_idea_permalink: true
   field_idea_status: true

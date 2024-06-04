@@ -34,12 +34,14 @@ dependencies:
     - webform
 third_party_settings:
   layout_builder:
-    allow_custom: false
     enabled: true
+    allow_custom: false
     sections:
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -59,7 +61,6 @@ third_party_settings:
                 col-md-4: col-md-4
               add_region_classes: 1
               attributes: ''
-          label: ''
         components:
           c584ae24-876f-454e-8c2c-eb6f3b2ed940:
             uuid: c584ae24-876f-454e-8c2c-eb6f3b2ed940
@@ -67,28 +68,30 @@ third_party_settings:
             configuration:
               id: 'block_content:cf8209e7-dbe5-4f66-8146-5fc52de7832d'
               label: 'Pillars - social media'
-              provider: block_content
               label_display: '0'
+              provider: block_content
               status: true
               info: ''
               view_mode: full
               context_mapping: {  }
-            additional: {  }
             weight: 0
+            additional: {  }
           aae483c8-5f05-4575-8011-f7d448abca4c:
             uuid: aae483c8-5f05-4575-8011-f7d448abca4c
             region: left
             configuration:
+              id: 'extra_field_block:node:suggested_dataset:content_moderation_control'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'extra_field_block:node:suggested_dataset:content_moderation_control'
-            additional: {  }
             weight: 0
+            additional: {  }
         third_party_settings: {  }
       -
         layout_id: bs_2col
         layout_settings:
+          label: ''
+          context_mapping: {  }
           layout:
             wrapper: div
             classes:
@@ -108,34 +111,35 @@ third_party_settings:
                 col-sm-9: col-sm-9
               add_region_classes: 1
               attributes: class|well
-          label: ''
         components:
           ac997583-4154-43ac-b024-b9e45babf456:
             uuid: ac997583-4154-43ac-b024-b9e45babf456
             region: right
             configuration:
+              id: 'field_block:node:suggested_dataset:body'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:body'
               formatter:
-                label: above
                 type: text_default
+                label: above
                 settings: {  }
                 third_party_settings: {  }
-            additional: {  }
             weight: -8
+            additional: {  }
           99eae66a-01db-4041-8dde-bd2517e3c1b3:
             uuid: 99eae66a-01db-4041-8dde-bd2517e3c1b3
             region: left
             configuration:
               id: 'field_block:node:suggested_dataset:field_status_link'
               label: 'Status Link'
-              provider: layout_builder
               label_display: '0'
+              provider: layout_builder
+              context_mapping:
+                entity: layout_builder.entity
               formatter:
-                label: hidden
                 type: link
+                label: hidden
                 settings:
                   trim_length: 80
                   url_only: false
@@ -143,119 +147,117 @@ third_party_settings:
                   rel: '0'
                   target: '0'
                 third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
             weight: -6
+            additional: {  }
           013afe8d-8ea6-44a7-bd40-7a684d347a0b:
             uuid: 013afe8d-8ea6-44a7-bd40-7a684d347a0b
             region: left
             configuration:
               id: 'field_block:node:suggested_dataset:field_date_published'
               label: 'Dataset released date'
-              provider: layout_builder
               label_display: '0'
+              provider: layout_builder
+              context_mapping:
+                entity: layout_builder.entity
               formatter:
-                label: above
                 type: datetime_default
+                label: above
                 settings:
                   timezone_override: ''
                   format_type: html_date
                 third_party_settings: {  }
-              context_mapping:
-                entity: layout_builder.entity
-            additional: {  }
             weight: -5
+            additional: {  }
           de281d45-231b-425d-831b-7e3ee54072a6:
             uuid: de281d45-231b-425d-831b-7e3ee54072a6
             region: right
             configuration:
+              id: 'field_block:node:suggested_dataset:field_organization'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_organization'
               formatter:
+                type: list_default
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: list_default
-            additional: {  }
             weight: -9
+            additional: {  }
           f100db74-faa0-41ff-ad29-0bda2dd46907:
             uuid: f100db74-faa0-41ff-ad29-0bda2dd46907
             region: left
             configuration:
+              id: 'field_block:node:suggested_dataset:field_sd_status'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_sd_status'
               formatter:
+                type: list_default
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: list_default
-            additional: {  }
             weight: -7
+            additional: {  }
           6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0:
             uuid: 6f7c3c83-ee0b-45fb-80c2-2e2122a29ef0
             region: left
             configuration:
+              id: 'field_block:node:suggested_dataset:field_dataset_subject'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_dataset_subject'
               formatter:
+                type: list_default
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: list_default
-            additional: {  }
             weight: -4
+            additional: {  }
           8f818792-ff06-4bf4-bfd9-1b1c0fa18444:
             uuid: 8f818792-ff06-4bf4-bfd9-1b1c0fa18444
             region: left
             configuration:
+              id: 'field_block:node:suggested_dataset:field_dataset_keywords'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_dataset_keywords'
               formatter:
+                type: string
                 label: above
                 settings:
                   link_to_entity: false
                 third_party_settings: {  }
-                type: string
-            additional: {  }
             weight: -3
+            additional: {  }
           f103b731-a779-445b-b1db-4c4f796112f2:
             uuid: f103b731-a779-445b-b1db-4c4f796112f2
             region: right
             configuration:
+              id: 'field_block:node:suggested_dataset:field_feedback'
               label_display: '0'
               context_mapping:
                 entity: layout_builder.entity
-              id: 'field_block:node:suggested_dataset:field_feedback'
               formatter:
+                type: basic_string
                 label: above
                 settings: {  }
                 third_party_settings: {  }
-                type: basic_string
-            additional: {  }
             weight: 1
+            additional: {  }
           91e9d935-49ae-4bbb-8c23-9826595afb14:
             uuid: 91e9d935-49ae-4bbb-8c23-9826595afb14
             region: left
             configuration:
               id: webform_block
               label: Webform
-              provider: webform
               label_display: '0'
+              provider: webform
+              context_mapping: {  }
               webform_id: vote_up_down
               default_data: ''
               redirect: false
-              context_mapping: {  }
-            additional: {  }
             weight: -2
+            additional: {  }
         third_party_settings: {  }
 id: node.suggested_dataset.default
 targetEntityType: node
@@ -263,82 +265,82 @@ bundle: suggested_dataset
 mode: default
 content:
   body:
-    label: above
     type: text_default
-    weight: 3
+    label: above
     settings: {  }
     third_party_settings: {  }
+    weight: 3
     region: content
   comment:
-    weight: 7
+    type: comment_default
     label: above
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 7
     region: content
   content_moderation_control:
-    weight: -20
     settings: {  }
     third_party_settings: {  }
+    weight: -20
     region: content
   field_dataset_keywords:
-    weight: 15
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 15
     region: left
   field_dataset_subject:
-    weight: 14
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 14
     region: left
   field_date_published:
-    weight: 9
+    type: datetime_default
     label: above
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 9
     region: content
   field_feedback:
-    weight: 19
+    type: basic_string
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    weight: 19
     region: left
   field_organization:
-    weight: 12
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 12
     region: left
   field_previousnodeid:
     type: number_integer
-    weight: 6
-    region: content
     label: above
     settings:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
+    weight: 6
+    region: content
   field_sd_status:
-    weight: 13
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 13
     region: left
   field_status_link:
-    weight: 5
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -347,31 +349,31 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 5
     region: content
   field_vote_up_down:
-    weight: 8
+    type: number_integer
     label: above
     settings:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    type: number_integer
+    weight: 8
     region: content
   field_webform_submission_id:
-    weight: 18
+    type: number_integer
     label: above
     settings:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    type: number_integer
+    weight: 18
     region: left
   links:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   field_meta_tags: true
   langcode: true

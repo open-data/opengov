@@ -10,13 +10,13 @@ type: 'canonical_entities:node'
 pattern: 'consultations/[node:title]'
 selection_criteria:
   d8acce66-aa89-4d64-a333-c7280032601d:
-    id: node_type
-    bundles:
-      consultation: consultation
+    id: 'entity_bundle:node'
     negate: false
+    uuid: d8acce66-aa89-4d64-a333-c7280032601d
     context_mapping:
       node: node
-    uuid: d8acce66-aa89-4d64-a333-c7280032601d
+    bundles:
+      consultation: consultation
 selection_logic: and
 weight: 0
 relationships: {  }

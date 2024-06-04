@@ -9,43 +9,6 @@ dependencies:
     - search_api
 id: grants_summary
 name: 'PD Grants - Current Search'
-facets:
-  grants_agreement_type_en:
-    checked: true
-    label: 'Agreement Type'
-    separator: ', '
-    weight: 0
-    show_count: false
-  grants_agreement_type_fr:
-    checked: true
-    label: 'Type d’entente'
-    separator: ', '
-    weight: 0
-    show_count: false
-  grants_organization_en:
-    checked: true
-    label: Organization
-    separator: ', '
-    weight: 0
-    show_count: false
-  grants_organization_fr:
-    checked: true
-    label: Organisation
-    separator: ', '
-    weight: 0
-    show_count: false
-  grants_year_en:
-    checked: true
-    label: Year
-    separator: ', '
-    weight: 0
-    show_count: false
-  grants_year_fr:
-    checked: true
-    label: Année
-    separator: ', '
-    weight: 0
-    show_count: false
 facet_source_id: 'search_api:views_block__pd_core_grants__block_1'
 processor_configs:
   reset_facets:
@@ -54,6 +17,7 @@ processor_configs:
       build: '30'
     settings:
       link_text: 'Clear all filters'
+      position: before
   show_text_when_empty:
     processor_id: show_text_when_empty
     weights:
@@ -62,3 +26,40 @@ processor_configs:
       text:
         value: 'There is no current search in progress.'
         format: plain_text
+facets:
+  grants_agreement_type_en:
+    checked: true
+    label: 'Agreement Type'
+    separator: ', '
+    show_count: false
+    weight: 0
+  grants_agreement_type_fr:
+    checked: true
+    label: 'Type d’entente'
+    separator: ', '
+    show_count: false
+    weight: 0
+  grants_organization_en:
+    checked: true
+    label: Organization
+    separator: ', '
+    show_count: false
+    weight: 0
+  grants_organization_fr:
+    checked: true
+    label: Organisation
+    separator: ', '
+    show_count: false
+    weight: 0
+  grants_year_en:
+    checked: true
+    label: Year
+    separator: ', '
+    show_count: false
+    weight: 0
+  grants_year_fr:
+    checked: true
+    label: Année
+    separator: ', '
+    show_count: false
+    weight: 0

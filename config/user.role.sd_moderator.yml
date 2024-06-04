@@ -1,7 +1,11 @@
 uuid: 71863a1a-87b0-44cf-a2b7-2af0417a38f1
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - content_moderation
+    - node
+    - toolbar
 id: sd_moderator
 label: 'SD Moderator'
 weight: 7

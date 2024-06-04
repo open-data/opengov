@@ -1,4 +1,10 @@
-elements: "e_mail:\n  '#title': Courriel\nname:\n  '#title': Nom\nsectors:\n  '#title': 'Le secteur d’activité me représentant le mieux est :'\n"
+elements: |
+  e_mail:
+    '#title': Courriel
+  name:
+    '#title': Nom
+  sectors:
+    '#title': 'Le secteur d’activité me représentant le mieux est :'
 handlers:
   email:
     label: Courriel

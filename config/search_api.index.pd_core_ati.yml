@@ -2,11 +2,11 @@ uuid: 987ca72f-bed5-49d6-99d2-0afc075b9c52
 langcode: en
 status: true
 dependencies:
+  config:
+    - search_api.server.pd_core_ati
   module:
     - search_api_solr
     - search_api
-  config:
-    - search_api.server.pd_core_ati
 third_party_settings:
   search_api_solr:
     finalize: false
@@ -15,23 +15,29 @@ third_party_settings:
     highlighter:
       maxAnalyzedChars: 51200
       fragmenter: gap
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
       regex:
         slop: 0.5
         pattern: blank
         maxAnalyzedChars: 10000
-      usePhraseHighlighter: true
-      highlightMultiTerm: true
-      preserveMulti: false
       highlight:
         mergeContiguous: false
         requireFieldMatch: false
         snippets: 3
         fragsize: 0
+    term_modifiers:
+      slop: 10000000
+      fuzzy: 2
     advanced:
       index_prefix: ''
     multilingual:
       limit_to_content_language: false
       include_language_independent: true
+      use_language_undefined_as_fallback_language: false
+      specific_languages: {  }
+      use_universal_collation: false
 id: pd_core_ati
 name: 'Proactive Disclosure: ATI Index'
 description: 'Read-only search index for Solr core_ati'
@@ -158,6 +164,8 @@ datasource_settings:
 processor_settings:
   add_url: {  }
   aggregated_field: {  }
+  auto_aggregated_fulltext_field: {  }
+  entity_type: {  }
   language_with_fallback: {  }
   rendered_item: {  }
   solr_date_range: {  }
@@ -165,6 +173,7 @@ tracker_settings:
   default:
     indexing_order: fifo
 options:
-  index_directly: false
   cron_limit: 50
+  index_directly: false
+  track_changes_in_references: true
 server: pd_core_ati

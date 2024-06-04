@@ -15,50 +15,12 @@ base_table: search_api_index_pd_core_contracts
 base_field: search_api_id
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: none
-        options: {  }
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: true
+      title: 'Government Contract'
       fields:
         id:
           id: id
@@ -67,6 +29,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: ''
           exclude: true
           alter:
@@ -112,7 +75,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         reference_number:
           id: reference_number
           table: search_api_index_pd_core_contracts
@@ -120,6 +82,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Reference Number'
           exclude: false
           alter:
@@ -165,7 +128,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         procurement_id:
           id: procurement_id
           table: search_api_index_pd_core_contracts
@@ -173,6 +135,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Procurement Identification Number'
           exclude: false
           alter:
@@ -218,7 +181,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         vendor_name_1:
           id: vendor_name_1
           table: search_api_index_pd_core_contracts
@@ -226,6 +188,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Vendor Name'
           exclude: false
           alter:
@@ -271,7 +234,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         contract_date:
           id: contract_date
           table: search_api_index_pd_core_contracts
@@ -279,6 +241,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Contract Date'
           exclude: false
           alter:
@@ -324,7 +287,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         economic_object_code:
           id: economic_object_code
           table: search_api_index_pd_core_contracts
@@ -332,6 +294,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Economic Object Code'
           exclude: false
           alter:
@@ -377,7 +340,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_en:
           id: description_en
           table: search_api_index_pd_core_contracts
@@ -385,6 +347,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Description of work'
           exclude: false
           alter:
@@ -430,7 +393,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         description_fr:
           id: description_fr
           table: search_api_index_pd_core_contracts
@@ -438,6 +400,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Description du travail'
           exclude: false
           alter:
@@ -483,7 +446,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         contract_period_start:
           id: contract_period_start
           table: search_api_index_pd_core_contracts
@@ -491,6 +453,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Contract Period Start Date'
           exclude: false
           alter:
@@ -536,7 +499,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         delivery_date:
           id: delivery_date
           table: search_api_index_pd_core_contracts
@@ -544,6 +506,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Contract Period End Date or Delivery Date'
           exclude: false
           alter:
@@ -589,7 +552,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         contract_value_1:
           id: contract_value_1
           table: search_api_index_pd_core_contracts
@@ -597,6 +559,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Total Contract Value'
           exclude: false
           alter:
@@ -642,7 +605,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         original_value:
           id: original_value
           table: search_api_index_pd_core_contracts
@@ -650,6 +612,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Original Contract Value'
           exclude: false
           alter:
@@ -695,7 +658,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         amendment_value:
           id: amendment_value
           table: search_api_index_pd_core_contracts
@@ -703,6 +665,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Contract Amendment Value'
           exclude: false
           alter:
@@ -748,7 +711,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         comments_en:
           id: comments_en
           table: search_api_index_pd_core_contracts
@@ -756,6 +718,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Comments
           exclude: false
           alter:
@@ -801,7 +764,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         comments_fr:
           id: comments_fr
           table: search_api_index_pd_core_contracts
@@ -809,6 +771,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Commentaires
           exclude: false
           alter:
@@ -854,7 +817,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         additional_comments_en:
           id: additional_comments_en
           table: search_api_index_pd_core_contracts
@@ -862,6 +824,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Additional comments'
           exclude: false
           alter:
@@ -907,7 +870,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         additional_comments_fr:
           id: additional_comments_fr
           table: search_api_index_pd_core_contracts
@@ -915,6 +877,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Commentaires supplémentaires'
           exclude: false
           alter:
@@ -960,7 +923,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         commodity_type_en:
           id: commodity_type_en
           table: search_api_index_pd_core_contracts
@@ -968,6 +930,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Commodity Type'
           exclude: false
           alter:
@@ -1013,7 +976,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         commodity_type_fr:
           id: commodity_type_fr
           table: search_api_index_pd_core_contracts
@@ -1021,6 +983,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Type de produit'
           exclude: false
           alter:
@@ -1066,7 +1029,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         commodity_code:
           id: commodity_code
           table: search_api_index_pd_core_contracts
@@ -1074,6 +1036,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Commodity Code'
           exclude: false
           alter:
@@ -1119,7 +1082,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         country_of_origin_en:
           id: country_of_origin_en
           table: search_api_index_pd_core_contracts
@@ -1127,6 +1089,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Country of Origin'
           exclude: false
           alter:
@@ -1172,7 +1135,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         country_of_origin_fr:
           id: country_of_origin_fr
           table: search_api_index_pd_core_contracts
@@ -1180,6 +1142,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Pays d''origine'
           exclude: false
           alter:
@@ -1225,7 +1188,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         solicitation_procedure_en:
           id: solicitation_procedure_en
           table: search_api_index_pd_core_contracts
@@ -1233,6 +1195,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Solicitation Procedure'
           exclude: false
           alter:
@@ -1278,7 +1241,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         solicitation_procedure_fr:
           id: solicitation_procedure_fr
           table: search_api_index_pd_core_contracts
@@ -1286,6 +1248,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Méthode d''invitation à soumissionner'
           exclude: false
           alter:
@@ -1331,7 +1294,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         limited_tendering_reason_en:
           id: limited_tendering_reason_en
           table: search_api_index_pd_core_contracts
@@ -1339,6 +1301,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Limited Tendering Reason'
           exclude: false
           alter:
@@ -1384,7 +1347,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         limited_tendering_reason_fr:
           id: limited_tendering_reason_fr
           table: search_api_index_pd_core_contracts
@@ -1392,6 +1354,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Raisons justifiant le recours à l''appel d''offres limité'
           exclude: false
           alter:
@@ -1437,7 +1400,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         aboriginal_business_en:
           id: aboriginal_business_en
           table: search_api_index_pd_core_contracts
@@ -1445,6 +1407,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Procurement Strategy for Aboriginal Business Incidental Indicator'
           exclude: false
           alter:
@@ -1490,7 +1453,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         aboriginal_business_fr:
           id: aboriginal_business_fr
           table: search_api_index_pd_core_contracts
@@ -1498,6 +1460,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Stratégie d''approvisionnement auprès des entreprises autochtones'
           exclude: false
           alter:
@@ -1543,7 +1506,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         intellectual_property_en:
           id: intellectual_property_en
           table: search_api_index_pd_core_contracts
@@ -1551,6 +1513,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Intellectual Property Indicator'
           exclude: false
           alter:
@@ -1596,7 +1559,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         intellectual_property_fr:
           id: intellectual_property_fr
           table: search_api_index_pd_core_contracts
@@ -1604,6 +1566,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Indicateur de propriété intellectuelle'
           exclude: false
           alter:
@@ -1649,7 +1612,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         potential_commercial_exploitation_en:
           id: potential_commercial_exploitation_en
           table: search_api_index_pd_core_contracts
@@ -1657,6 +1619,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Potential for Commercial Exploitation'
           exclude: false
           alter:
@@ -1702,7 +1665,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         potential_commercial_exploitation_fr:
           id: potential_commercial_exploitation_fr
           table: search_api_index_pd_core_contracts
@@ -1710,6 +1672,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Possibilité d''exploitation commerciale'
           exclude: false
           alter:
@@ -1755,7 +1718,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         former_public_servant_en:
           id: former_public_servant_en
           table: search_api_index_pd_core_contracts
@@ -1763,6 +1725,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Former Public Servant in receipt of a PSSA pension'
           exclude: false
           alter:
@@ -1808,7 +1771,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         former_public_servant_fr:
           id: former_public_servant_fr
           table: search_api_index_pd_core_contracts
@@ -1816,6 +1778,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Ancien fonctionnaire recevant une pension en vertu de la LPFP'
           exclude: false
           alter:
@@ -1861,7 +1824,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         document_type_en:
           id: document_type_en
           table: search_api_index_pd_core_contracts
@@ -1869,6 +1831,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Instrument Type'
           exclude: false
           alter:
@@ -1914,7 +1877,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         document_type_fr:
           id: document_type_fr
           table: search_api_index_pd_core_contracts
@@ -1922,6 +1884,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Type de document'
           exclude: false
           alter:
@@ -1967,7 +1930,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         multi_agreement_type_en:
           id: multi_agreement_type_en
           table: search_api_index_pd_core_contracts
@@ -1975,6 +1937,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Agreement Type'
           exclude: false
           alter:
@@ -2020,7 +1983,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         multi_agreement_type_fr:
           id: multi_agreement_type_fr
           table: search_api_index_pd_core_contracts
@@ -2028,6 +1990,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Type d’accord'
           exclude: false
           alter:
@@ -2073,7 +2036,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         reporting_period:
           id: reporting_period
           table: search_api_index_pd_core_contracts
@@ -2081,6 +2043,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Reporting Period'
           exclude: false
           alter:
@@ -2126,7 +2089,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_en:
           id: org_name_en
           table: search_api_index_pd_core_contracts
@@ -2134,6 +2096,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organization
           exclude: false
           alter:
@@ -2179,7 +2142,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         org_name_fr:
           id: org_name_fr
           table: search_api_index_pd_core_contracts
@@ -2187,6 +2149,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Organisation
           exclude: false
           alter:
@@ -2232,7 +2195,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         standing_offer_en:
           id: standing_offer_en
           table: search_api_index_pd_core_contracts
@@ -2240,6 +2202,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Call-up or Contract against a Standing Offer or Supply Arrangement Agreement'
           exclude: false
           alter:
@@ -2285,7 +2248,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         standing_offer_fr:
           id: standing_offer_fr
           table: search_api_index_pd_core_contracts
@@ -2293,6 +2255,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Commande subséquente à une l’offre à commandes ou arrangements en matière d’approvisionnement'
           exclude: false
           alter:
@@ -2338,7 +2301,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         standing_offer_number:
           id: standing_offer_number
           table: search_api_index_pd_core_contracts
@@ -2346,6 +2308,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: 'Standing Offer or Supply Arrangement Number'
           exclude: false
           alter:
@@ -2391,7 +2354,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         exemption_en:
           id: exemption_en
           table: search_api_index_pd_core_contracts
@@ -2399,6 +2361,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Exemption
           exclude: false
           alter:
@@ -2444,7 +2407,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
         exemption_fr:
           id: exemption_fr
           table: search_api_index_pd_core_contracts
@@ -2452,6 +2414,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           label: Exemption
           exclude: false
           alter:
@@ -2497,25 +2460,28 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-          plugin_id: search_api
-      filters: {  }
-      sorts: {  }
-      title: 'Government Contract'
-      header: {  }
-      footer:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/contracts">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
-          plugin_id: text_custom
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: none
+        options: {  }
       empty: {  }
-      relationships: {  }
+      sorts: {  }
       arguments:
         id:
           id: id
@@ -2524,6 +2490,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: search_api
           default_action: default
           exception:
             value: all
@@ -2548,7 +2515,40 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          plugin_id: search_api
+      filters: {  }
+      style:
+        type: default
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: true
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: false
+      relationships: {  }
+      header: {  }
+      footer:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: false
+          content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/search/contracts">Back to Search&nbsp;<span class="fa fa-undo"></span></a></p>'
+          tokenize: false
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -2557,15 +2557,15 @@ display:
         - url
       tags: {  }
   details:
-    display_plugin: page
     id: details
     display_title: 'Proactive Disclosure: Contracts'
+    display_plugin: page
     position: 2
     display_options:
+      display_description: ''
       display_extenders:
         metatag_display_extender: {  }
       path: search/contracts/reference/%
-      display_description: ''
     cache_metadata:
       max-age: -1
       contexts:

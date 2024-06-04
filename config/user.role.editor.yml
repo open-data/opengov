@@ -1,7 +1,59 @@
 uuid: 13a0a50e-dd90-4b18-8a79-6cb54d6bb8d0
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - core.entity_view_display.node.landing_page.default
+    - core.entity_view_display.node.page.default
+    - core.entity_view_display.node.theme_and_topic_page.default
+    - filter.format.full_html
+    - filter.format.rich_text
+    - media.type.file
+    - media.type.image
+    - media.type.slideshow
+    - node.type.app
+    - node.type.article
+    - node.type.book
+    - node.type.commitment
+    - node.type.consultation
+    - node.type.idea
+    - node.type.impact_story
+    - node.type.landing_page
+    - node.type.map
+    - node.type.page
+    - node.type.suggested_dataset
+    - node.type.theme_and_topic_page
+    - node.type.webform
+    - taxonomy.vocabulary.app_categories
+    - taxonomy.vocabulary.app_freetags
+    - taxonomy.vocabulary.app_ribbon
+    - taxonomy.vocabulary.blog_author
+    - taxonomy.vocabulary.commitment_freetags
+    - taxonomy.vocabulary.consultation_status
+    - taxonomy.vocabulary.departments
+    - taxonomy.vocabulary.device_formats
+    - taxonomy.vocabulary.idea_freetags
+    - taxonomy.vocabulary.idea_status
+    - taxonomy.vocabulary.site_structure
+    - taxonomy.vocabulary.subscriptions
+    - workflows.workflow.editorial
+  module:
+    - block
+    - block_content
+    - book
+    - content_moderation
+    - content_translation
+    - contextual
+    - file
+    - filter
+    - layout_builder
+    - media
+    - menu_link_content
+    - node
+    - path
+    - system
+    - taxonomy
+    - toolbar
 id: editor
 label: Editor
 weight: 3
@@ -12,18 +64,12 @@ permissions:
   - 'access content overview'
   - 'access contextual links'
   - 'access files overview'
-  - 'access in-place editing'
   - 'access media overview'
-  - 'access shortcuts'
-  - 'access site-wide contact form'
   - 'access taxonomy overview'
   - 'access toolbar'
-  - 'access tour'
-  - 'access user contact forms'
   - 'administer blocks'
   - 'administer book outlines'
   - 'administer menu'
-  - 'administer shortcuts'
   - 'administer taxonomy'
   - 'configure editable landing_page node layout overrides'
   - 'configure editable page node layout overrides'
@@ -56,7 +102,6 @@ permissions:
   - 'create theme_and_topic_page content'
   - 'create url aliases'
   - 'create webform content'
-  - 'customize shortcut links'
   - 'delete any app content'
   - 'delete any article content'
   - 'delete any commitment content'
@@ -69,13 +114,7 @@ permissions:
   - 'delete any theme_and_topic_page content'
   - 'delete any webform content'
   - 'delete app revisions'
-  - 'delete article revisions'
-  - 'delete commitment revisions'
-  - 'delete consultation revisions'
   - 'delete content translations'
-  - 'delete idea revisions'
-  - 'delete impact_story revisions'
-  - 'delete landing_page revisions'
   - 'delete own app content'
   - 'delete own article content'
   - 'delete own commitment content'
@@ -90,12 +129,9 @@ permissions:
   - 'delete own suggested_dataset content'
   - 'delete own theme_and_topic_page content'
   - 'delete own webform content'
-  - 'delete page revisions'
-  - 'delete suggested_dataset revisions'
-  - 'delete theme_and_topic_page revisions'
-  - 'delete webform revisions'
   - 'edit any app content'
   - 'edit any article content'
+  - 'edit any book content'
   - 'edit any commitment content'
   - 'edit any consultation content'
   - 'edit any file media'
@@ -146,8 +182,6 @@ permissions:
   - 'revert suggested_dataset revisions'
   - 'revert theme_and_topic_page revisions'
   - 'revert webform revisions'
-  - 'search content'
-  - 'switch shortcut sets'
   - 'translate any entity'
   - 'translate app node'
   - 'translate app_categories taxonomy_term'
@@ -173,13 +207,11 @@ permissions:
   - 'translate slideshow media'
   - 'translate subscriptions taxonomy_term'
   - 'translate suggested_dataset node'
-  - 'translate tags taxonomy_term'
   - 'translate theme_and_topic_page node'
   - 'translate webform node'
   - 'update any media'
   - 'update content translations'
   - 'update media'
-  - 'use advanced search'
   - 'use editorial transition archive'
   - 'use editorial transition create_new_draft'
   - 'use editorial transition publish'

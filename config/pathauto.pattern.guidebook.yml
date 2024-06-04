@@ -11,22 +11,22 @@ type: 'canonical_entities:node'
 pattern: 'guide/[node:title]'
 selection_criteria:
   6b4a16ec-fafb-4f4f-8ed1-0d1b648d0f78:
-    id: node_type
-    bundles:
-      book: book
+    id: 'entity_bundle:node'
     negate: false
+    uuid: 6b4a16ec-fafb-4f4f-8ed1-0d1b648d0f78
     context_mapping:
       node: node
-    uuid: 6b4a16ec-fafb-4f4f-8ed1-0d1b648d0f78
+    bundles:
+      book: book
   9f134bae-c676-4d29-80e8-997713a601da:
     id: language
+    negate: false
+    uuid: 9f134bae-c676-4d29-80e8-997713a601da
+    context_mapping:
+      language: 'node:langcode:language'
     langcodes:
       en: en
       fr: fr
-    negate: false
-    context_mapping:
-      language: 'node:langcode:language'
-    uuid: 9f134bae-c676-4d29-80e8-997713a601da
 selection_logic: and
 weight: -10
 relationships:

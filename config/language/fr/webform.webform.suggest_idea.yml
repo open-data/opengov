@@ -1,4 +1,15 @@
-elements: "submitted_by:\n  '#title': 'Soumis par'\n  '#description': 'Veuillez s.v.p. entrer votre nom ou nom d''usager dans le but que cette idée vous soit créditée.'\norganization:\n  '#title': Organisation\nidea_title:\n  '#title': 'Titre de l''idée'\nidea_description:\n  '#title': 'Description de l''idée'\nsuggested_keywords:\n  '#title': 'Veuillez s.v.p. fournir les mots-clés généralement utilisés, les mots officiels ou les phrases qui peuvent être utilisés pour décrire votre idée.'\n"
+elements: |
+  submitted_by:
+    '#title': 'Soumis par'
+    '#description': 'Veuillez s.v.p. entrer votre nom ou nom d''usager dans le but que cette idée vous soit créditée.'
+  organization:
+    '#title': Organisation
+  idea_title:
+    '#title': 'Titre de l''idée'
+  idea_description:
+    '#title': 'Description de l''idée'
+  suggested_keywords:
+    '#title': 'Veuillez s.v.p. fournir les mots-clés généralement utilisés, les mots officiels ou les phrases qui peuvent être utilisés pour décrire votre idée.'
 settings:
   confirmation_message: "<h2>Nous vous remercions de votre participation!</h2>\r\n\r\n<p>Votre idée ou commentaire devrait apparaître d’ici deux jours ouvrables.</p>"
 handlers:

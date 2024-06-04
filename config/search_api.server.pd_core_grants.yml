@@ -33,6 +33,12 @@ name: 'Proactive Disclosure: Grant'
 description: 'Connector for Solr core_grants'
 backend: search_api_solr
 backend_config:
+  retrieve_data: true
+  highlight_data: false
+  site_hash: true
+  server_prefix: ''
+  domain: generic
+  environment: default
   connector: standard
   connector_config:
     scheme: http
@@ -44,19 +50,13 @@ backend_config:
     index_timeout: 5
     optimize_timeout: 10
     finalize_timeout: 30
-    commit_within: 1000
+    skip_schema_check: true
     solr_version: ''
     http_method: AUTO
+    commit_within: 1000
     jmx: false
-  retrieve_data: true
-  highlight_data: false
-  skip_schema_check: true
-  server_prefix: ''
-  domain: generic
-  site_hash: true
   optimize: false
-  environment: default
-  rows: 10
+  fallback_multiple: true
   disabled_field_types: {  }
   disabled_caches: {  }
   disabled_request_handlers:
@@ -65,3 +65,5 @@ backend_config:
     - request_handler_replicationslave_default_7_0_0
   disabled_request_dispatchers:
     - request_dispatcher_httpcaching_default_7_0_0
+  rows: 10
+  index_single_documents_fallback_count: 10
