@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\webform_access\Functional;
 
+use Drupal\Tests\webform_node\Functional\WebformNodeBrowserTestBase;
 use Drupal\webform_access\Entity\WebformAccessGroup;
 use Drupal\webform_access\Entity\WebformAccessType;
-use Drupal\Tests\webform_node\Functional\WebformNodeBrowserTestBase;
 
 /**
  * Test base for webform access.
@@ -16,7 +16,7 @@ abstract class WebformAccessBrowserTestBase extends WebformNodeBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_access'];
+  protected static $modules = ['webform', 'webform_access'];
 
   /**
    * Webform node[].
@@ -49,7 +49,7 @@ abstract class WebformAccessBrowserTestBase extends WebformNodeBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create webform nodes.

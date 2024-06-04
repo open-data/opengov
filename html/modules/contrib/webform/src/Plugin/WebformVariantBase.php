@@ -71,6 +71,13 @@ abstract class WebformVariantBase extends PluginBase implements WebformVariantIn
   protected $configFactory;
 
   /**
+   * The configuration array.
+   *
+   * @var array
+   */
+  protected $configuration;
+
+  /**
    * {@inheritdoc}
    *
    * IMPORTANT:

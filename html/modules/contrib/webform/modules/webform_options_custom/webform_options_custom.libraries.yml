@@ -7,7 +7,8 @@ webform_options_custom.element:
     js/webform_options_custom.element.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.tippyjs
     - webform/webform.element.select
 

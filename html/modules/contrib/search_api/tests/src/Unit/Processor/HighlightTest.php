@@ -1183,7 +1183,6 @@ END;
    */
   public function testRegressionBug3022724($text, array $keys, $expected) {
     $method = new \ReflectionMethod($this->processor, 'createExcerpt');
-    $method->setAccessible(TRUE);
     $excerpt = $method->invoke($this->processor, $text, $keys);
     $this->assertEquals($expected, $excerpt);
   }
@@ -1207,6 +1206,21 @@ END;
         'expected' => '… nItWhichCanLeadToProblemsGettingAContextForHighlightingThis.<strong>Foo</strong>.Match …',
       ],
     ];
+  }
+
+  /**
+   * Provides a regression test for bug #3390450.
+   *
+   * The effect of the bug was undesired highlighting of HTML attribute values.
+   *
+   * @see https://www.drupal.org/node/3390450
+   */
+  public function testRegressionBug3390450(): void {
+    $method = new \ReflectionMethod($this->processor, 'highlightField');
+    $text = '<h1 title="agreement">Main</h1><a href="/underwriting-agreement">investment underwriting agreement</a>';
+    $excerpt = $method->invoke($this->processor, $text, ['agreement']);
+    $expected = '<h1 title="agreement">Main</h1><a href="/underwriting-agreement">investment underwriting <strong>agreement</strong></a>';
+    $this->assertEquals($expected, $excerpt);
   }
 
   /**

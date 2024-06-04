@@ -14,7 +14,8 @@ archive: false
 id: test_composite_custom
 title: 'Test: Composite: Custom composite'
 description: 'Test custom composite element.'
-category: 'Test: Composite'
+categories:
+  - 'Test: Composite'
 elements: |
   webform_custom_composite_basic:
     '#type': webform_custom_composite
@@ -94,7 +95,6 @@ elements: |
       last_name:
         '#type': textfield
         '#title': 'Last name'
-  
 css: ''
 javascript: ''
 settings:
@@ -182,6 +182,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

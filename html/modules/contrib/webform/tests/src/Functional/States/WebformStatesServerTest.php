@@ -4,9 +4,9 @@ namespace Drupal\Tests\webform\Functional\States;
 
 use Drupal\Component\Utility\Crypt;
 use Drupal\Tests\TestFileCreationTrait;
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\Element\WebformOtherBase;
 use Drupal\webform\Entity\Webform;
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 
 /**
  * Tests for webform submission conditions (#states) validator.
@@ -40,12 +40,12 @@ class WebformStatesServerTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'file', 'webform'];
+  protected static $modules = ['file', 'webform'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create filters.

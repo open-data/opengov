@@ -54,12 +54,13 @@ class ConfigImportRecreateTest extends KernelTestBase {
       $this->container->get('module_installer'),
       $this->container->get('theme_handler'),
       $this->container->get('string_translation'),
-      $this->container->get('extension.list.module')
+      $this->container->get('extension.list.module'),
+      $this->container->get('extension.list.theme')
     );
   }
 
   public function testRecreateEntity() {
-    $type_name = mb_strtolower($this->randomMachineName(16));
+    $type_name = $this->randomMachineName(16);
     $content_type = NodeType::create([
       'type' => $type_name,
       'name' => 'Node type one',

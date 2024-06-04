@@ -14,7 +14,8 @@ archive: false
 id: test_element_options
 title: 'Test: Element: Options'
 description: 'Test options element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_options_elements:
     '#type': details
@@ -76,7 +77,6 @@ elements: |
       '#title': webform_element_options_custom_type_multiple
       '#custom__type': webform_multiple
       '#default_value': {  }
-  
 css: ''
 javascript: ''
 settings:
@@ -164,6 +164,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

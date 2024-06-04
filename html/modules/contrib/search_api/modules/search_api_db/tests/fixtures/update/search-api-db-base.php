@@ -49,7 +49,7 @@ $connection->update('config')
 $configs['search_api.settings'] = Yaml::decode(file_get_contents(__DIR__ . '/../../../../../config/install/search_api.settings.yml'));
 $configs['search_api_db.settings'] = Yaml::decode(file_get_contents(__DIR__ . '/../../../config/install/search_api_db.settings.yml'));
 foreach ($configs as $name => $config) {
-  $data = $connection->insert('config')
+  $connection->insert('config')
     ->fields([
       'name' => $name,
       'data' => serialize($config),

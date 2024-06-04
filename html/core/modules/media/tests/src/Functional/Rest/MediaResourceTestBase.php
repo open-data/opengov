@@ -41,7 +41,7 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     \Drupal::configFactory()
@@ -97,7 +97,7 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
     if (!MediaType::load('camelids')) {
       // Create a "Camelids" media type.
       $media_type = MediaType::create([
-        'name' => 'Camelids',
+        'label' => 'Camelids',
         'id' => 'camelids',
         'description' => 'Camelids are large, strictly herbivorous animals with slender necks and long legs.',
         'source' => 'file',
@@ -245,7 +245,6 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
           'url' => base_path() . 'user/' . $author->id(),
         ],
       ],
-      'revision_log_message' => [],
       'revision_translation_affected' => [
         [
           'value' => TRUE,
@@ -266,7 +265,7 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
       ],
       'name' => [
         [
-          'value' => 'Dramallama',
+          'value' => 'Drama llama',
         ],
       ],
       'field_media_file' => [
@@ -328,8 +327,12 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
   }
 
   /**
-   * This duplicates some of the 'file_upload' REST resource plugin test
-   * coverage, to be able to test it on a concrete use case.
+   * Tests the 'file_upload' REST resource plugin.
+   *
+   * This test duplicates some of the 'file_upload' REST resource plugin test
+   * coverage.
+   *
+   * @see \Drupal\Tests\rest\Functional\FileUploadResourceTestBase
    */
   protected function uploadFile() {
     // Enable the 'file_upload' REST resource for the current format + auth.

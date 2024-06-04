@@ -2,6 +2,8 @@
 
 namespace Drupal\search_api\Plugin\search_api\processor;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\TypedData\EntityDataDefinitionInterface;
@@ -282,10 +284,7 @@ class AddHierarchy extends ProcessorPluginBase implements PluginFormInterface {
             try {
               $this->addHierarchyValues($entity_type_id, $entity_id, $property, $field);
             }
-            // @todo Replace with multi-catch for
-            //   InvalidPluginDefinitionException and PluginNotFoundException
-            //   once we depend on PHP 7.1+.
-            catch (\Exception $e) {
+            catch (InvalidPluginDefinitionException | PluginNotFoundException $e) {
               $vars = [
                 '%index' => $this->index->label(),
                 '%field' => $field->getLabel(),
@@ -340,7 +339,7 @@ class AddHierarchy extends ProcessorPluginBase implements PluginFormInterface {
             $parents = array_merge($parents, $values);
           }
         }
-        catch (\InvalidArgumentException $e) {
+        catch (\InvalidArgumentException) {
           // Might happen, for example, if the property only exists on a certain
           // bundle, and this entity has the wrong one.
         }

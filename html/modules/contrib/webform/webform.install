@@ -33,6 +33,9 @@ function webform_install() {
       'webform_submission_log',
     ]);
   }
+
+  // Update the HTML Editor.
+  _webform_update_html_editor();
 }
 
 /**

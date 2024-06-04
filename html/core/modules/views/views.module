@@ -25,11 +25,11 @@ function views_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.views':
       $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<h2>' . t('About') . '</h2>';
       $output .= '<p>' . t('The Views module provides a back end to fetch information from content, user accounts, taxonomy terms, and other entities from the database and present it to the user as a grid, HTML list, table, unformatted list, etc. The resulting displays are known generally as <em>views</em>.') . '</p>';
       $output .= '<p>' . t('For more information, see the <a href=":views">online documentation for the Views module</a>.', [':views' => 'https://www.drupal.org/documentation/modules/views']) . '</p>';
-      $output .= '<p>' . t('In order to create and modify your own views using the administration and configuration user interface, you will need to enable either the Views UI module in core or a contributed module that provides a user interface for Views. See the <a href=":views-ui">Views UI module help page</a> for more information.', [':views-ui' => (\Drupal::moduleHandler()->moduleExists('views_ui')) ? Url::fromRoute('help.page', ['name' => 'views_ui'])->toString() : '#']) . '</p>';
-      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<p>' . t('In order to create and modify your own views using the administration and configuration user interface, you will need to install either the Views UI module in core or a contributed module that provides a user interface for Views. See the <a href=":views-ui">Views UI module help page</a> for more information.', [':views-ui' => (\Drupal::moduleHandler()->moduleExists('views_ui')) ? Url::fromRoute('help.page', ['name' => 'views_ui'])->toString() : '#']) . '</p>';
+      $output .= '<h2>' . t('Uses') . '</h2>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Adding functionality to administrative pages') . '</dt>';
       $output .= '<dd>' . t('The Views module adds functionality to some core administration pages. For example, <em>admin/content</em> uses Views to filter and sort content. With Views uninstalled, <em>admin/content</em> is more limited.') . '</dd>';
@@ -198,18 +198,12 @@ function views_theme($existing, $type, $theme, $path) {
         }
       }
 
-      // If there is no theme function for the given theme definition, it must
-      // be a template file. By default this file is located in the /templates
+      // By default any templates for a module are located in the /templates
       // directory of the module's folder. If a module wants to define its own
       // location it has to set register_theme of the plugin to FALSE and
       // implement hook_theme() by itself.
-      if (!function_exists('theme_' . $def['theme'])) {
-        $hooks[$def['theme']]['path'] .= '/templates';
-        $hooks[$def['theme']]['template'] = Html::cleanCssIdentifier($def['theme']);
-      }
-      else {
-        $hooks[$def['theme']]['function'] = 'theme_' . $def['theme'];
-      }
+      $hooks[$def['theme']]['path'] .= '/templates';
+      $hooks[$def['theme']]['template'] = Html::cleanCssIdentifier($def['theme']);
     }
   }
 
@@ -225,8 +219,7 @@ function views_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * A theme preprocess function to automatically allow view-based node
- * templates if called from a view.
+ * Allows view-based node templates if called from a view.
  *
  * The 'modules/node.views.inc' file is a better place for this, but
  * we haven't got a chance to load that file before Drupal builds the
@@ -262,8 +255,7 @@ function views_theme_suggestions_node_alter(array &$suggestions, array $variable
 }
 
 /**
- * A theme preprocess function to automatically allow view-based node
- * templates if called from a view.
+ * Allows view-based comment templates if called from a view.
  */
 function views_preprocess_comment(&$variables) {
   // The view data is added to the comment in
@@ -291,7 +283,11 @@ function views_theme_suggestions_comment_alter(array &$suggestions, array $varia
  */
 function views_theme_suggestions_container_alter(array &$suggestions, array $variables) {
   if (!empty($variables['element']['#type']) && $variables['element']['#type'] == 'more_link' && !empty($variables['element']['#view']) && $variables['element']['#view'] instanceof ViewExecutable) {
-    $suggestions = array_merge($suggestions, $variables['element']['#view']->buildThemeFunctions('container__more_link'));
+    $suggestions = array_merge(
+      $suggestions,
+      // Theme suggestions use the reverse order compared to #theme hooks.
+      array_reverse($variables['element']['#view']->buildThemeFunctions('container__more_link'))
+    );
   }
 }
 
@@ -629,39 +625,6 @@ function views_form_views_exposed_form_alter(&$form, FormStateInterface $form_st
   $form['form_build_id']['#access'] = FALSE;
   $form['form_token']['#access'] = FALSE;
   $form['form_id']['#access'] = FALSE;
-  if (\Drupal::moduleHandler()->moduleExists('facets_pretty_paths')) {
-    $current_path = \Drupal::request()->getRequestUri();
-    $current_route_name = \Drupal::service('current_route_match')->getRouteName();
-    if ($current_route_name) {
-      $form['#action'] = $current_path;
-    }
-  }
-  else {
-    // Check if this form is a Search API form. This could be replaced with the
-    // value of a custom Views setting like e.g. "Include facets".
-    if ($view = $form_state->getStorage()['view']) {
-
-      if (substr(key($form_state->getStorage()['view']->getBaseTables()), 0, 17) === 'search_api_index_') {
-
-        if (\Drupal::moduleHandler()->moduleExists('facets')) {
-          // Get query parameters.
-          $query_parameters = Drupal::request()->query->all();
-          // If any facet query parameters are provided.
-          if (!empty($query_parameters['f'])) {
-            // Iterate through facet query parameters.
-            foreach ($query_parameters['f'] as $key => $value) {
-              // Add hidden form field for facet parameter.
-              $form['f[' . $key . ']'] = [
-                '#type' => 'hidden',
-                '#value' => $value,
-                '#weight' => -1,
-              ];
-            }
-          }
-        }
-      }
-    }
-  }
 }
 
 /**
@@ -840,21 +803,6 @@ function views_local_tasks_alter(&$local_tasks) {
   $container = \Drupal::getContainer();
   $local_task = ViewsLocalTask::create($container, 'views_view');
   $local_task->alterLocalTasks($local_tasks);
-}
-
-/**
- * Implements hook_ENTITY_TYPE_delete().
- */
-function views_view_delete(EntityInterface $entity) {
-  // Rebuild the routes in case there is a routed display.
-  $executable = Views::executableFactory()->get($entity);
-  $executable->initDisplay();
-  foreach ($executable->displayHandlers as $display) {
-    if ($display->getRoutedDisplay()) {
-      \Drupal::service('router.builder')->setRebuildNeeded();
-      break;
-    }
-  }
 }
 
 /**

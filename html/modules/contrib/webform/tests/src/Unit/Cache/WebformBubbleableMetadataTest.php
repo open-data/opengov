@@ -32,9 +32,7 @@ class WebformBubbleableMetadataTest extends UnitTestCase {
   public function testAppendTo(WebformBubbleableMetadata $bubbleable_metadata, array $build, array $expected) {
     // Mock CacheContextsManager::assertValidTokens.
     // @see \Drupal\Core\Cache\Cache::mergeContexts
-    $cache_contexts_manager = $this->getMockBuilder('Drupal\Core\Cache\Context\CacheContextsManager')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $cache_contexts_manager = $this->createMock('Drupal\Core\Cache\Context\CacheContextsManager');
     $cache_contexts_manager->method('assertValidTokens')->willReturn(TRUE);
     $container = new ContainerBuilder();
     $container->set('cache_contexts_manager', $cache_contexts_manager);

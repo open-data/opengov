@@ -48,7 +48,9 @@ class ThemeRegistry extends Registry implements AlterInterface {
       \Drupal::service('module_handler'),
       \Drupal::service('theme_handler'),
       \Drupal::service('theme.initialization'),
-      $this->currentTheme->getName()
+      \Drupal::service('cache.bootstrap'),
+      \Drupal::service('extension.list.module'),
+      $this->currentTheme->getName(),
     );
     $this->setThemeManager(\Drupal::service('theme.manager'));
     $this->init();

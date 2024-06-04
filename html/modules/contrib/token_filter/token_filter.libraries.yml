@@ -1,0 +1,14 @@
+token_browser:
+  js:
+    js/build/tokenBrowser.js:
+      preprocess: false
+      minified: true
+  dependencies:
+    - core/ckeditor5
+    - core/drupal.dialog.ajax
+    - token/token
+
+admin.token_browser:
+  css:
+    theme:
+      css/tokenBrowser.admin.css: { }

@@ -2,8 +2,8 @@
 
 namespace Drupal\webform_test_element\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Provides route responses for webform test element.
@@ -29,7 +29,7 @@ class WebformTestElementController extends ControllerBase {
     ];
 
     // Populate webform properties using query string parameters.
-    $properties = ['sid', 'default_data', 'information', 'action'];
+    $properties = ['sid', 'default_data', 'information', 'action', 'lazy'];
     foreach ($properties as $property) {
       if ($value = $request->query->get($property)) {
         switch ($value) {

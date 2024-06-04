@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\webform\Functional\Settings;
 
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\user\Entity\Role;
 use Drupal\webform\Entity\Webform;
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 
 /**
  * Tests for webform submission form limits.
@@ -18,7 +18,7 @@ class WebformSettingsLimitsTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'block'];
+  protected static $modules = ['webform', 'block'];
 
   /**
    * Webforms to load.
@@ -30,7 +30,7 @@ class WebformSettingsLimitsTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Place webform test blocks.

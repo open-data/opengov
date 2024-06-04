@@ -14,7 +14,8 @@ archive: false
 id: test_element_checkboxes_all_none
 title: 'Test: Element: Checkboxes all or none'
 description: 'Test the checkboxes all/none of the above.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   checkboxes_all:
     '#type': checkboxes
@@ -69,7 +70,6 @@ elements: |
       include_anonymous: true
     '#default_value':
       - 1
-  
 css: ''
 javascript: ''
 settings:
@@ -157,6 +157,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

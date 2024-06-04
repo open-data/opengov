@@ -3,6 +3,8 @@
 /**
  * @file
  * Drush (< 9) integration.
+ *
+ * @todo Remove integration as Drush < 9 is not supported anymore.
  */
 
 use Drupal\simple_sitemap\Queue\QueueWorker;

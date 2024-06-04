@@ -18,7 +18,7 @@ class WebformTemplatesTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform', 'webform_templates'];
+  protected static $modules = ['webform', 'webform_templates'];
 
   /**
    * Webforms to load.
@@ -59,6 +59,16 @@ class WebformTemplatesTest extends WebformBrowserTestBase {
     $assert_session->responseContains('Test: Webform: Template');
     $assert_session->responseContains('Test using a webform as a template.');
 
+    // Check template filtering by key and category.
+    $this->drupalGet('/admin/structure/webform/templates', ['query' => ['category' => 'Not a category']]);
+    $assert_session->responseNotContains('Test: Webform: Template');
+    $this->drupalGet('/admin/structure/webform/templates', ['query' => ['category' => 'Test: Webform']]);
+    $assert_session->responseContains('Test: Webform: Template');
+    $this->drupalGet('/admin/structure/webform/templates', ['query' => ['search' => 'Not a search']]);
+    $assert_session->responseNotContains('Test: Webform: Template');
+    $this->drupalGet('/admin/structure/webform/templates', ['query' => ['category' => 'Test: Webform: Template']]);
+    $assert_session->responseContains('Test: Webform: Template');
+
     // Check template is accessible to user with create webform access.
     $this->drupalGet('/webform/test_form_template');
     $assert_session->statusCodeEquals(200);
@@ -66,7 +76,7 @@ class WebformTemplatesTest extends WebformBrowserTestBase {
 
     // Check select template clears the description.
     $this->drupalGet('/admin/structure/webform/manage/test_form_template/duplicate');
-    $assert_session->fieldValueEquals('description[value]', '');
+    $assert_session->fieldValueEquals('description[value][value]', '');
 
     // Check that admin can not access manage templates.
     $this->drupalGet('/admin/structure/webform/templates/manage');
@@ -81,7 +91,7 @@ class WebformTemplatesTest extends WebformBrowserTestBase {
 
     // Check select template clears the description.
     $this->drupalGet('/admin/structure/webform/manage/test_form_template/duplicate', ['query' => ['template' => 1]]);
-    $assert_session->fieldValueEquals('description[value]', 'Test using a webform as a template.');
+    $assert_session->fieldValueEquals('description[value][value]', 'Test using a webform as a template.');
   }
 
 }

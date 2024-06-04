@@ -3,8 +3,8 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Twig\WebformTwigExtension;
+use Drupal\webform\Utility\WebformElementHelper;
 
 /**
  * Provides a 'webform_computed_twig' element.

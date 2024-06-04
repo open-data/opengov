@@ -14,7 +14,8 @@ archive: false
 id: test_element_computed_ajax
 title: 'Test: Element: Computed ajax'
 description: 'Test computed element using Ajax.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   a:
     '#type': webform_select_other
@@ -44,20 +45,20 @@ elements: |
     '#title': webform_computed_twig_data
     '#ajax': true
     '#template': |
-      {% spaceless %}
+      {% apply spaceless %}
       {% if data.a|length and data.b|length %}
       {{ data.a }} + {{ data.b }} = {{ data.a + data.b }}
       {% else %}
       Please enter a value for a and b.
       {% endif %}
-      {% endspaceless %}
-      
+      {% endapply %}
+
   webform_computed_twig_token:
     '#type': webform_computed_twig
     '#title': webform_computed_twig_token
     '#ajax': true
     '#template': |
-      {% spaceless %}
+      {% apply spaceless %}
       {% set a = webform_token('[webform_submission:values:a:clear]', webform_submission) %}
       {% set b = webform_token('[webform_submission:values:b:clear]', webform_submission) %}
       {% if a|length and b|length %}
@@ -65,8 +66,8 @@ elements: |
       {% else %}
       Please enter a value for a and b.
       {% endif %}
-      {% endspaceless %}
-      
+      {% endapply %}
+
   horizontal_rule:
     '#type': webform_horizontal_rule
   composite:
@@ -80,7 +81,7 @@ elements: |
     '#type': webform_computed_twig
     '#title': webform_computed_twig_composite
     '#template': |
-      {% spaceless %}
+      {% apply spaceless %}
       {% if data.composite %}
       {% for item in data.composite %}
       {{ item.textfield }}<br/>
@@ -88,10 +89,9 @@ elements: |
       {% else %}
       Please enter a value for composite textfield.
       {% endif %}
-      {% endspaceless %}
-      
+      {% endapply %}
+
     '#ajax': true
-  
 css: ''
 javascript: ''
 settings:
@@ -179,6 +179,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

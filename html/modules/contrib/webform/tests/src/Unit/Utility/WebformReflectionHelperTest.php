@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Unit\Utility;
 
-use Drupal\webform\Utility\WebformReflectionHelper;
 use Drupal\Tests\UnitTestCase;
+use Drupal\webform\Utility\WebformReflectionHelper;
 
 /**
  * Tests webform reflection utility.

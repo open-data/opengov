@@ -22,6 +22,13 @@ class WebformNodeUninstallValidator implements ModuleUninstallValidatorInterface
   protected $entityTypeManager;
 
   /**
+   * The string translation.
+   *
+   * @var \Drupal\Core\StringTranslation\TranslationInterface
+   */
+  protected $stringTranslation;
+
+  /**
    * Constructs a WebformNodeUninstallValidator object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager

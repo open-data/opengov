@@ -14,7 +14,8 @@ archive: false
 id: test_element_email_multiple
 title: 'Test: Element: Email multiple'
 description: 'Tests email_multiple elements.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   email_multiple_basic:
     '#type': webform_email_multiple
@@ -28,7 +29,6 @@ elements: |
     '#type': webform_email_multiple
     '#title': email_multiple_three
     '#cardinality': 3
-  
 css: ''
 javascript: ''
 settings:
@@ -116,6 +116,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

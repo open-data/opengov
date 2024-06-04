@@ -3,7 +3,7 @@
  * JavaScript behaviors for checkboxes.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -16,8 +16,7 @@
    */
   Drupal.behaviors.webformCheckboxesAllorNone = {
     attach: function (context) {
-      $('[data-options-all], [data-options-none]', context)
-        .once('webform-checkboxes-all-or-none')
+      $(once('webform-checkboxes-all-or-none', '[data-options-all], [data-options-none]', context))
         .each(function () {
           var $element = $(this);
 
@@ -115,4 +114,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

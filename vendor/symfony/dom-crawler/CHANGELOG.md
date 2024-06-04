@@ -1,6 +1,50 @@
 CHANGELOG
 =========
 
+6.4
+---
+
+ * Add `CrawlerAnySelectorTextContains` test constraint
+ * Add `CrawlerAnySelectorTextSame` test constraint
+ * Add argument `$default` to `Crawler::attr()`
+
+6.3
+---
+
+ * Add `$useHtml5Parser` argument to `Crawler`
+ * Add `CrawlerSelectorCount` test constraint
+ * Add argument `$normalizeWhitespace` to `Crawler::innerText()`
+ * Make `Crawler::innerText()` return the first non-empty text
+
+6.0
+---
+
+ * Remove `Crawler::parents()` method, use `ancestors()` instead
+
+5.4
+---
+
+ * Add `Crawler::innerText` method.
+
+5.3
+---
+
+ * The `parents()` method is deprecated. Use `ancestors()` instead.
+ * Marked the `containsOption()`, `availableOptionValues()`, and `disableValidation()` methods of the
+   `ChoiceFormField` class as internal
+
+5.1.0
+-----
+
+ * Added an internal cache layer on top of the CssSelectorConverter
+ * Added `UriResolver` to resolve an URI according to a base URI
+
+5.0.0
+-----
+
+ * Added argument `$selector` to `Crawler::children()`
+ * Added argument `$default` to `Crawler::text()` and `html()`
+
 4.4.0
 -----
 

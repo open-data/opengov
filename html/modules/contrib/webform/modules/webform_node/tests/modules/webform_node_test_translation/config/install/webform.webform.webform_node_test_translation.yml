@@ -14,13 +14,12 @@ archive: false
 id: webform_node_test_translation
 title: webform_node_test_translation
 description: ''
-category: ''
+categories: {  }
 elements: |
   computed_token:
     '#type': webform_computed_token
     '#title': computed_token
     '#value': '[webform_submission:node:title]'
-  
 css: ''
 javascript: ''
 settings:
@@ -108,6 +107,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

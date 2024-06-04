@@ -14,7 +14,8 @@ archive: false
 id: test_states_server_comp
 title: 'Test: Form API #states server-side composite elements'
 description: 'Test Drupal''s #states API for composite elements via server-side.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   webform_name_trigger:
     '#type': checkbox
@@ -77,7 +78,6 @@ elements: |
       '#first__title': webform_name_nested_first
       '#last__required': true
       '#last__title': webform_name_nested_last
-  
 css: ''
 javascript: ''
 settings:
@@ -165,6 +165,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

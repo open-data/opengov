@@ -1,4 +1,14 @@
-<?php
+<?php declare(strict_types=1);
+
+/*
+ * This file is part of Composer.
+ *
+ * (c) Nils Adermann <naderman@naderman.de>
+ *     Jordi Boggiano <j.boggiano@seld.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Composer\Filter\PlatformRequirementFilter;
 
@@ -29,7 +39,7 @@ final class IgnoreListPlatformRequirementFilter implements PlatformRequirementFi
      */
     public function __construct(array $reqList)
     {
-        $ignoreAll = $ignoreUpperBound = array();
+        $ignoreAll = $ignoreUpperBound = [];
         foreach ($reqList as $req) {
             if (substr($req, -1) === '+') {
                 $ignoreUpperBound[] = substr($req, 0, -1);
@@ -41,11 +51,7 @@ final class IgnoreListPlatformRequirementFilter implements PlatformRequirementFi
         $this->ignoreUpperBoundRegex = BasePackage::packageNamesToRegexp($ignoreUpperBound);
     }
 
-    /**
-     * @param string $req
-     * @return bool
-     */
-    public function isIgnored($req)
+    public function isIgnored(string $req): bool
     {
         if (!PlatformRepository::isPlatformPackage($req)) {
             return false;
@@ -54,12 +60,19 @@ final class IgnoreListPlatformRequirementFilter implements PlatformRequirementFi
         return Preg::isMatch($this->ignoreRegex, $req);
     }
 
+    public function isUpperBoundIgnored(string $req): bool
+    {
+        if (!PlatformRepository::isPlatformPackage($req)) {
+            return false;
+        }
+
+        return $this->isIgnored($req) || Preg::isMatch($this->ignoreUpperBoundRegex, $req);
+    }
+
     /**
-     * @param string $req
-     * @return ConstraintInterface
      * @param bool $allowUpperBoundOverride For conflicts we do not want the upper bound to be skipped
      */
-    public function filterConstraint($req, ConstraintInterface $constraint, $allowUpperBoundOverride = true)
+    public function filterConstraint(string $req, ConstraintInterface $constraint, bool $allowUpperBoundOverride = true): ConstraintInterface
     {
         if (!PlatformRepository::isPlatformPackage($req)) {
             return $constraint;
@@ -76,7 +89,7 @@ final class IgnoreListPlatformRequirementFilter implements PlatformRequirementFi
         $intervals = Intervals::get($constraint);
         $last = end($intervals['numeric']);
         if ($last !== false && (string) $last->getEnd() !== (string) Interval::untilPositiveInfinity()) {
-            $constraint = new MultiConstraint(array($constraint, new Constraint('>=', $last->getEnd()->getVersion())), false);
+            $constraint = new MultiConstraint([$constraint, new Constraint('>=', $last->getEnd()->getVersion())], false);
         }
 
         return $constraint;

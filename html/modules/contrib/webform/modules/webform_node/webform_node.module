@@ -5,11 +5,11 @@
  * Provides a webform content type which allows webforms to be integrated into a website as nodes.
  */
 
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
@@ -134,11 +134,13 @@ function webform_node_node_prepare_form(NodeInterface $node, $operation, FormSta
   }
 
   // Populate the node's title, webform field id and default data.
-  $webform_id = \Drupal::request()->query->get('webform_id');
+  $query = \Drupal::request()->query->all();
+  $webform_id = $query['webform_id'] ?? NULL;
   if ($webform_id && ($webform = Webform::load($webform_id))) {
     $node->$field_name->target_id = $webform_id;
-    $node->title->value = \Drupal::request()->query->get('webform_title') ?: $webform->label();
-    if ($webform_default_data = \Drupal::request()->query->get('webform_default_data')) {
+    $node->title->value = $query['webform_title'] ?? $webform->label();
+    $webform_default_data = $query['webform_default_data'] ?? NULL;
+    if ($webform_default_data) {
       $node->$field_name->default_data = (is_array($webform_default_data))
         ? Yaml::encode($webform_default_data)
         : $webform_default_data;
@@ -158,9 +160,9 @@ function webform_node_node_delete(NodeInterface $node) {
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
-function webform_node_field_widget_webform_entity_reference_autocomplete_form_alter(&$element, FormStateInterface $form_state, $context) {
+function webform_node_field_widget_single_element_webform_entity_reference_autocomplete_form_alter(&$element, FormStateInterface $form_state, $context) {
   static $once;
   if (!empty($once)) {
     return;
@@ -194,10 +196,10 @@ function webform_node_field_widget_webform_entity_reference_autocomplete_form_al
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
-function webform_node_field_widget_webform_entity_reference_select_form_alter(&$element, FormStateInterface $form_state, $context) {
-  webform_node_field_widget_webform_entity_reference_autocomplete_form_alter($element, $form_state, $context);
+function webform_node_field_widget_single_element_webform_entity_reference_select_form_alter(&$element, FormStateInterface $form_state, $context) {
+  webform_node_field_widget_single_element_webform_entity_reference_autocomplete_form_alter($element, $form_state, $context);
 }
 
 /**

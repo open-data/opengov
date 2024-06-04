@@ -3,7 +3,7 @@
  * JavaScript behaviors for Geocomplete location integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -24,7 +24,7 @@
         return;
       }
 
-      $(context).find('.js-webform-type-webform-location-geocomplete').once('webform-location-geocomplete').each(function () {
+      $(once('webform-location-geocomplete', '.js-webform-type-webform-location-geocomplete', context)).each(function () {
         var $element = $(this);
         var $input = $element.find('.webform-location-geocomplete');
 
@@ -64,4 +64,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

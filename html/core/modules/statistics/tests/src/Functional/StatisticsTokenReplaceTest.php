@@ -2,11 +2,8 @@
 
 namespace Drupal\Tests\statistics\Functional;
 
-use Drupal\Component\Render\FormattableMarkup;
-
 /**
- * Generates text using placeholders for dummy content to check statistics token
- * replacement.
+ * Tests statistics token replacement.
  *
  * @group statistics
  */
@@ -41,7 +38,7 @@ class StatisticsTokenReplaceTest extends StatisticsTestBase {
 
     foreach ($tests as $input => $expected) {
       $output = \Drupal::token()->replace($input, ['node' => $node], ['langcode' => $language_interface->getId()]);
-      $this->assertEquals($expected, $output, new FormattableMarkup('Statistics token %token replaced.', ['%token' => $input]));
+      $this->assertEquals($expected, $output, "Statistics token $input replaced.");
     }
 
     // Hit the node.
@@ -69,7 +66,7 @@ class StatisticsTokenReplaceTest extends StatisticsTestBase {
 
     foreach ($tests as $input => $expected) {
       $output = \Drupal::token()->replace($input, ['node' => $node], ['langcode' => $language_interface->getId()]);
-      $this->assertEquals($expected, $output, new FormattableMarkup('Statistics token %token replaced.', ['%token' => $input]));
+      $this->assertEquals($expected, $output, "Statistics token $input replaced.");
     }
   }
 

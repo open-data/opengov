@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform_options_limit\Functional;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Webform options limit test.
@@ -15,7 +15,7 @@ class WebformOptionsLimitAccessTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'webform',
     'webform_options_limit',
     'webform_options_limit_test',

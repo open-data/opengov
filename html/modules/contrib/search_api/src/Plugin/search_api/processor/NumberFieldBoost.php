@@ -48,7 +48,7 @@ class NumberFieldBoost extends ProcessorPluginBase implements PluginFormInterfac
     $boost_factors[Utility::formatBoostFactor(0)] = $this->t('Ignore');
 
     foreach ($this->index->getFields(TRUE) as $field_id => $field) {
-      if (in_array($field->getType(), ['integer', 'decimal'])) {
+      if (in_array($field->getType(), ['integer', 'decimal', 'date'])) {
         $form['boosts'][$field_id] = [
           '#type' => 'details',
           '#title' => $field->getLabel(),
@@ -117,34 +117,23 @@ class NumberFieldBoost extends ProcessorPluginBase implements PluginFormInterfac
       foreach ($boosts as $field_id => $settings) {
         if ($field = $item->getField($field_id)) {
           if ($values = $field->getValues()) {
-            switch ($settings['aggregation']) {
-              case 'min':
-                $value = min($values);
-                break;
-
-              case 'avg':
-                $value = array_sum($values) / count($values);
-                break;
-
-              case 'sum':
-                $value = array_sum($values);
-                break;
-
-              case 'mul':
-                $value = array_product($values);
-                break;
-
-              case 'first':
-                $value = reset($values);
-                break;
-
-              case 'max':
-              default:
-                $value = max($values);
-                break;
-
-            }
+            $value = match ($settings['aggregation']) {
+              'min' => min($values),
+              'avg' => array_sum($values) / count($values),
+              'sum' => array_sum($values),
+              'mul' => array_product($values),
+              'first' => reset($values),
+              default => max($values),
+            };
             if ($value) {
+              // Normalize values from dates (which are represented by UNIX
+              // timestamps) to be not too large to store in the database, and
+              // to also not be negative (in case it is a date from before
+              // 1970).
+              if ($field->getType() === 'date') {
+                $value /= 1000000;
+                $value = max($value, 0);
+              }
               $item->setBoost($item->getBoost() * (double) $value * (double) $settings['boost_factor']);
             }
           }

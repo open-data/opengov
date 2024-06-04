@@ -38,8 +38,8 @@ class CurlService implements CurlServiceInterface
     public function execute($requestMethod, $url, $parameters = null, $extraOptions = array())
     {
         $customHeaders = array(
-            'Content-Type: application/json;charset=UTF-8',
-            'Accept: application/json;charset=UTF-8',
+            'Content-Type: application/json;charset=utf-8',
+            'Accept: application/json',
         );
 
         $curl = curl_init($url);
@@ -50,43 +50,24 @@ class CurlService implements CurlServiceInterface
                 break;
 
             case 'POST':
-                if ($parameters && is_array($parameters)) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($parameters));
-                } else {
-                    $customHeaders[] = 'Content-Length: 0';
+            case 'PUT':
+                $parameters =  ! $parameters || ! is_array($parameters)
+                    ? '{}'
+                    : json_encode($parameters);
 
-                    // Suppress "Transfer-Encoding: chunked" header automatically added by cURL that
-                    // causes a 400 bad request (bad content-length).
-                    $customHeaders[] = 'Transfer-Encoding:';
-                }
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
 
                 // Suppress "Expect: 100-continue" header automatically added by cURL that
                 // causes a 1 second delay if the remote server does not support Expect.
                 $customHeaders[] = 'Expect:';
 
-                curl_setopt($curl, CURLOPT_POST, true);
+                $requestMethod === 'POST'
+                    ? curl_setopt($curl, CURLOPT_POST, true)
+                    : curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
                 break;
 
             case 'DELETE':
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-                break;
-
-            case 'PUT':
-                if ($parameters && is_array($parameters)) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($parameters));
-                } else {
-                    $customHeaders[] = 'Content-Length: 0';
-
-                    // Suppress "Transfer-Encoding: chunked" header automatically added by cURL that
-                    // causes a 400 bad request (bad content-length).
-                    $customHeaders[] = 'Transfer-Encoding:';
-                }
-
-                // Suppress "Expect: 100-continue" header automatically added by cURL that
-                // causes a 1 second delay if the remote server does not support Expect.
-                $customHeaders[] = 'Expect:';
-
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
                 break;
         }
 

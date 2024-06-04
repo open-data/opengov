@@ -14,7 +14,8 @@ archive: false
 id: test_handler_action
 title: 'Test: Handler: Action'
 description: 'Test action handler.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   status:
     '#type': fieldset
@@ -48,7 +49,6 @@ elements: |
       '#attributes':
         readonly: readonly
         style: 'background-color: #eee'
-  
 css: ''
 javascript: ''
 settings:
@@ -136,6 +136,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''
@@ -254,7 +256,6 @@ handlers:
       data: |
         notes_add: ''
         notes_last: '[webform_submission:values:notes_add]'
-        
       message: 'Submission notes have been updated.'
       message_type: status
       debug: true

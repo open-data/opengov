@@ -14,7 +14,8 @@ archive: false
 id: test_variant_override
 title: 'Test: Variant override'
 description: 'Test variant override.'
-category: 'Test: Variants'
+categories:
+  - 'Test: Variants'
 elements: |
   variant:
     '#type': webform_variant
@@ -24,7 +25,6 @@ elements: |
   textfield:
     '#type': textfield
     '#title': textfield
-  
 css: ''
 javascript: ''
 settings:
@@ -112,6 +112,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -246,7 +248,6 @@ variants:
       elements: |
         textfield:
           '#placeholder': 'This is a placeholder'
-        
       handlers: {  }
       debug: true
   handlers:
@@ -292,6 +293,5 @@ variants:
       elements: |
         '#method': get
         '#action': 'https://drupal.org'
-        
       handlers: {  }
       debug: true

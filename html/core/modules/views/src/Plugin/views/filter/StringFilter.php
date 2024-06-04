@@ -97,6 +97,8 @@ class StringFilter extends FilterPluginBase {
   }
 
   /**
+   * Get the operators.
+   *
    * This kind of construct makes it relatively easy for a child class
    * to add or remove functionality by overriding this function and
    * adding/removing items from this array.
@@ -179,6 +181,12 @@ class StringFilter extends FilterPluginBase {
         'title' => $this->t('Regular expression'),
         'short' => $this->t('regex'),
         'method' => 'opRegex',
+        'values' => 1,
+      ],
+      'not_regular_expression' => [
+        'title' => $this->t('Negated regular expression'),
+        'short' => $this->t('not regex'),
+        'method' => 'opNotRegex',
         'values' => 1,
       ],
     ];
@@ -346,6 +354,9 @@ class StringFilter extends FilterPluginBase {
     }
   }
 
+  /**
+   * Adds a where clause for the operation, 'equals'.
+   */
   public function opEqual($field) {
     $this->query->addWhere($this->options['group'], $field, $this->value, $this->operator());
   }
@@ -435,6 +446,16 @@ class StringFilter extends FilterPluginBase {
    */
   protected function opRegex($field) {
     $this->query->addWhere($this->options['group'], $field, $this->value, 'REGEXP');
+  }
+
+  /**
+   * Filters by a negated regular expression.
+   *
+   * @param string $field
+   *   The expression pointing to the queries field, for example "foo.bar".
+   */
+  protected function opNotRegex($field) {
+    $this->query->addWhere($this->options['group'], $field, $this->value, 'NOT REGEXP');
   }
 
   protected function opEmpty($field) {

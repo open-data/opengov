@@ -42,6 +42,13 @@ abstract class WebformBulkFormBase extends FormBase {
   protected $entityTypeId;
 
   /**
+   * The actions array.
+   *
+   * @var array
+   */
+  protected $actions;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {

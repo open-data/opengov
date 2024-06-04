@@ -10,11 +10,8 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\DynamicallyFieldableEntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldDefinition;
-use Drupal\Core\Render\Element;
 use Drupal\language\Entity\ContentLanguageSettings;
 use Drupal\node\Entity\NodeType;
-
-// cspell:ignore rdftype
 
 /**
  * @defgroup entity_crud Entity CRUD, editing, and view hooks
@@ -121,6 +118,12 @@ use Drupal\node\Entity\NodeType;
  * manipulated via the API.
  * @see \Drupal\Core\Entity\TranslatableRevisionableInterface
  * @see \Drupal\Core\Entity\TranslatableRevisionableStorageInterface
+ *
+ * @section characteristics Entity characteristics
+ *
+ * In addition to entity interfaces for revisionable and translatable
+ * interfaces, there are interfaces for other kinds of entity functionality.
+ * @see entity_characteristics
  *
  * @section create Create operations
  * To create an entity:
@@ -357,7 +360,10 @@ use Drupal\node\Entity\NodeType;
  *   as short as possible, and may not exceed 32 characters.
  * - Define an interface for your entity's get/set methods, usually extending
  *   either \Drupal\Core\Config\Entity\ConfigEntityInterface or
- *   \Drupal\Core\Entity\ContentEntityInterface.
+ *   \Drupal\Core\Entity\ContentEntityInterface. Other interfaces that add
+ *   functionality are also available: see the
+ *   @link entity_characteristics Entity characteristics topic @endlink
+ *   for more information.
  * - Define a class for your entity, implementing your interface and extending
  *   either \Drupal\Core\Config\Entity\ConfigEntityBase or
  *   \Drupal\Core\Entity\ContentEntityBase, with annotation for
@@ -637,6 +643,31 @@ use Drupal\node\Entity\NodeType;
  * @see i18n
  * @see entity_crud
  * @see \Drupal\Core\Entity\EntityRepositoryInterface::getTranslationFromContext()
+ * @}
+ */
+
+/**
+ * @defgroup entity_type_characteristics Entity type characteristics
+ * @{
+ * Describes how to enhance entity types with additional functionality.
+ *
+ * When @link entity_api defining an entity type @endlink, the functionality of
+ * the entities can be enhanced with additional characteristics. Examples
+ * include entities that have a published/unpublished status, or a timestamp
+ * that gives the time they were last modified.
+ *
+ * These characteristics are provided by an interface, which the entity's own
+ * interface should inherit from, in addition to
+ * \Drupal\Core\Config\Entity\ConfigEntityInterface or
+ * \Drupal\Core\Entity\ContentEntityInterface.
+ *
+ * Some characteristics also provide a trait for the entity class. This has
+ * implementations of the interface's methods, and may also have a helper method
+ * for \Drupal\Core\Entity\FieldableEntityInterface::baseFieldDefinitions()
+ * which defines base fields that the trait expects to store data. Furthermore,
+ * trait methods may expect certain entity keys to be set: see the documentation
+ * for each trait for details.
+ *
  * @}
  */
 
@@ -1359,7 +1390,7 @@ function hook_entity_predelete(\Drupal\Core\Entity\EntityInterface $entity) {
 
   // Log the count in a table that records this statistic for deleted entities.
   $connection->merge('example_deleted_entity_statistics')
-    ->key(['type' => $type, 'id' => $id])
+    ->keys(['type' => $type, 'id' => $id])
     ->fields(['count' => $count])
     ->execute();
 }
@@ -1388,7 +1419,7 @@ function hook_ENTITY_TYPE_predelete(\Drupal\Core\Entity\EntityInterface $entity)
 
   // Log the count in a table that records this statistic for deleted entities.
   $connection->merge('example_deleted_entity_statistics')
-    ->key(['type' => $type, 'id' => $id])
+    ->keys(['type' => $type, 'id' => $id])
     ->fields(['count' => $count])
     ->execute();
 }
@@ -1757,20 +1788,10 @@ function hook_entity_view_display_alter(\Drupal\Core\Entity\Display\EntityViewDi
  * @ingroup entity_crud
  */
 function hook_entity_display_build_alter(&$build, $context) {
-  // Append RDF term mappings on displayed taxonomy links.
-  foreach (Element::children($build) as $field_name) {
-    $element = &$build[$field_name];
-    if ($element['#field_type'] == 'entity_reference' && $element['#formatter'] == 'entity_reference_label') {
-      foreach ($element['#items'] as $delta => $item) {
-        $term = $item->entity;
-        if (!empty($term->rdf_mapping['rdftype'])) {
-          $element[$delta]['#options']['attributes']['typeof'] = $term->rdf_mapping['rdftype'];
-        }
-        if (!empty($term->rdf_mapping['name']['predicates'])) {
-          $element[$delta]['#options']['attributes']['property'] = $term->rdf_mapping['name']['predicates'];
-        }
-      }
-    }
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $entity = $context['entity'];
+  if ($entity->getEntityTypeId() === 'my_entity' && $entity->bundle() === 'display_build_alter_bundle') {
+    $build['entity_display_build_alter']['#markup'] = 'Content added in hook_entity_display_build_alter for entity id ' . $entity->id();
   }
 }
 

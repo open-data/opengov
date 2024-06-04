@@ -14,7 +14,8 @@ archive: false
 id: test_element_fieldset
 title: 'Test: Element: Fieldset'
 description: 'Test the fieldset element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   fieldset:
     '#type': fieldset
@@ -61,7 +62,6 @@ elements: |
     '#field_suffix': suffix
     fieldset_markup:
       '#markup': '<p>This is some markup</p>'
-  
 css: ''
 javascript: ''
 settings:
@@ -149,6 +149,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

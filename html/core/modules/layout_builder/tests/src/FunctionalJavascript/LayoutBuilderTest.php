@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\layout_builder\FunctionalJavascript;
 
 use Drupal\block_content\Entity\BlockContent;
@@ -68,7 +70,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $bundle->save();
     block_content_add_body_field($bundle->id());
     BlockContent::create([
-      'info' => 'My custom block',
+      'info' => 'My content block',
       'type' => 'basic',
       'body' => [
         [
@@ -100,7 +102,6 @@ class LayoutBuilderTest extends WebDriverTestBase {
    * Tests the Layout Builder UI.
    */
   public function testLayoutBuilderUi() {
-    $this->markTestSkipped();
     $layout_url = 'node/1/layout';
     $node_url = 'node/1';
 
@@ -229,7 +230,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $this->drupalGet($layout_url);
     $this->markCurrentPage();
 
-    $this->openAddBlockForm('My custom block');
+    $this->openAddBlockForm('My content block');
     $page->pressButton('Add block');
     $assert_session->assertWaitOnAjaxRequest();
     $assert_session->pageTextContains('This is the block content');

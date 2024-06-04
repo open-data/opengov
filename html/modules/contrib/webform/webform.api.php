@@ -340,7 +340,7 @@ function hook_webform_options_WEBFORM_OPTIONS_ID_alter(array &$options, array &$
  * @param \Drupal\webform\WebformSubmissionInterface[] $webform_submissions
  *   The webform submissions being purged.
  */
-function hook_webform_submissions_pre_purge(array $webform_submissions) {
+function hook_webform_submissions_pre_purge(array &$webform_submissions) {
 
 }
 

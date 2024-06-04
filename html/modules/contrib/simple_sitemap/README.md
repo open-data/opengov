@@ -208,7 +208,9 @@ to generation:
 There are API methods for altering stored inclusion settings, status queries and
 programmatic sitemap generation. These include:
  * simple_sitemap.generator
-   * setVariants
+   * setSitemaps
+   * getSitemaps
+   * getDefaultSitemap
    * getSetting
    * saveSetting
    * getContent
@@ -216,6 +218,8 @@ programmatic sitemap generation. These include:
    * queue
    * rebuildQueue
    * entityManager
+     * setSitemaps
+     * getSitemaps
      * enableEntityType
      * disableEntityType
      * setBundleSettings
@@ -228,6 +232,8 @@ programmatic sitemap generation. These include:
      * bundleIsIndexed
      * entityTypeIsEnabled
    * customLinkManager
+     * setSitemaps
+     * getSitemaps
      * add
      * get
      * remove

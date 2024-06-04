@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Composer.
@@ -15,6 +15,7 @@ namespace Composer\DependencyResolver;
 use Composer\Package\AliasPackage;
 use Composer\Package\BasePackage;
 use Composer\Package\Package;
+use Composer\Pcre\Preg;
 
 /**
  * @author Nils Adermann <naderman@naderman.de>
@@ -59,12 +60,10 @@ class LockTransaction extends Transaction
     }
 
     // TODO make this a bit prettier instead of the two text indexes?
-    /**
-     * @return void
-     */
-    public function setResultPackages(Pool $pool, Decisions $decisions)
+
+    public function setResultPackages(Pool $pool, Decisions $decisions): void
     {
-        $this->resultPackages = array('all' => array(), 'non-dev' => array(), 'dev' => array());
+        $this->resultPackages = ['all' => [], 'non-dev' => [], 'dev' => []];
         foreach ($decisions as $i => $decision) {
             $literal = $decision[Decisions::DECISION_LITERAL];
 
@@ -79,20 +78,17 @@ class LockTransaction extends Transaction
         }
     }
 
-    /**
-     * @return void
-     */
-    public function setNonDevPackages(LockTransaction $extractionResult)
+    public function setNonDevPackages(LockTransaction $extractionResult): void
     {
         $packages = $extractionResult->getNewLockPackages(false);
 
         $this->resultPackages['dev'] = $this->resultPackages['non-dev'];
-        $this->resultPackages['non-dev'] = array();
+        $this->resultPackages['non-dev'] = [];
 
         foreach ($packages as $package) {
             foreach ($this->resultPackages['dev'] as $i => $resultPackage) {
                 // TODO this comparison is probably insufficient, aliases, what about modified versions? I guess they aren't possible?
-                if ($package->getName() == $resultPackage->getName()) {
+                if ($package->getName() === $resultPackage->getName()) {
                     $this->resultPackages['non-dev'][] = $resultPackage;
                     unset($this->resultPackages['dev'][$i]);
                 }
@@ -102,24 +98,30 @@ class LockTransaction extends Transaction
 
     // TODO additionalFixedRepository needs to be looked at here as well?
     /**
-     * @param bool $devMode
-     * @param bool $updateMirrors
      * @return BasePackage[]
      */
-    public function getNewLockPackages($devMode, $updateMirrors = false)
+    public function getNewLockPackages(bool $devMode, bool $updateMirrors = false): array
     {
-        $packages = array();
+        $packages = [];
         foreach ($this->resultPackages[$devMode ? 'dev' : 'non-dev'] as $package) {
             if (!$package instanceof AliasPackage) {
                 // if we're just updating mirrors we need to reset references to the same as currently "present" packages' references to keep the lock file as-is
                 // we do not reset references if the currently present package didn't have any, or if the type of VCS has changed
                 if ($updateMirrors && !isset($this->presentMap[spl_object_hash($package)])) {
                     foreach ($this->presentMap as $presentPackage) {
-                        if ($package->getName() == $presentPackage->getName() && $package->getVersion() == $presentPackage->getVersion()) {
+                        if ($package->getName() === $presentPackage->getName() && $package->getVersion() === $presentPackage->getVersion()) {
                             if ($presentPackage->getSourceReference() && $presentPackage->getSourceType() === $package->getSourceType()) {
                                 $package->setSourceDistReferences($presentPackage->getSourceReference());
+                                // if the dist url is not one of those handled gracefully by setSourceDistReferences then we should overwrite it with the old one
+                                if ($package->getDistUrl() !== null && !Preg::isMatch('{^https?://(?:(?:www\.)?bitbucket\.org|(api\.)?github\.com|(?:www\.)?gitlab\.com)/}i', $package->getDistUrl())) {
+                                    $package->setDistUrl($presentPackage->getDistUrl());
+                                }
+                                $package->setDistType($presentPackage->getDistType());
+                                if ($package instanceof Package) {
+                                    $package->setDistSha1Checksum($presentPackage->getDistSha1Checksum());
+                                }
                             }
-                            if ($presentPackage->getReleaseDate() && $package instanceof Package) {
+                            if ($presentPackage->getReleaseDate() !== null && $package instanceof Package) {
                                 $package->setReleaseDate($presentPackage->getReleaseDate());
                             }
                         }
@@ -134,12 +136,12 @@ class LockTransaction extends Transaction
 
     /**
      * Checks which of the given aliases from composer.json are actually in use for the lock file
-     * @param array<array{package: string, version: string, alias: string, alias_normalized: string}> $aliases
-     * @return array<array{package: string, version: string, alias: string, alias_normalized: string}>
+     * @param list<array{package: string, version: string, alias: string, alias_normalized: string}> $aliases
+     * @return list<array{package: string, version: string, alias: string, alias_normalized: string}>
      */
-    public function getAliases($aliases)
+    public function getAliases(array $aliases): array
     {
-        $usedAliases = array();
+        $usedAliases = [];
 
         foreach ($this->resultPackages['all'] as $package) {
             if ($package instanceof AliasPackage) {
@@ -152,7 +154,7 @@ class LockTransaction extends Transaction
             }
         }
 
-        usort($usedAliases, function ($a, $b) {
+        usort($usedAliases, static function ($a, $b): int {
             return strcmp($a['package'], $b['package']);
         });
 

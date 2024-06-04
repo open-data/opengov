@@ -14,13 +14,13 @@ archive: false
 id: test_element_managed_file_dis
 title: 'Test: Element: Managed file results disabled'
 description: 'Test file uploads using managed file element with results disabled.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   managed_file:
     '#type': managed_file
     '#title': managed_file
     '#file_extensions': txt
-  
 css: ''
 javascript: ''
 settings:
@@ -108,6 +108,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

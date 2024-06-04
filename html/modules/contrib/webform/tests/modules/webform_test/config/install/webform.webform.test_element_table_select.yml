@@ -14,7 +14,8 @@ archive: false
 id: test_element_table_select
 title: 'Test: Element: Table select'
 description: 'Test table select required.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   tableselect_checkboxes_required:
     '#type': tableselect
@@ -69,7 +70,6 @@ elements: |
       three: Three
       four: Four
       five: Five
-  
 css: ''
 javascript: ''
 settings:
@@ -157,6 +157,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

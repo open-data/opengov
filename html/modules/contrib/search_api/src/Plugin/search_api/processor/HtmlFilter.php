@@ -140,7 +140,7 @@ class HtmlFilter extends FieldsProcessorPluginBase {
         $tags = [];
       }
     }
-    catch (ParseException $exception) {
+    catch (ParseException) {
       $errors[] = $this->t('Tags is not a valid YAML map. See @link for information on how to write correctly formed YAML.', ['@link' => 'http://yaml.org']);
       $tags = [];
     }
@@ -195,16 +195,11 @@ class HtmlFilter extends FieldsProcessorPluginBase {
   protected function processFieldValue(&$value, $type) {
     // Remove invisible content.
     $text = preg_replace('@<(applet|audio|canvas|command|embed|iframe|map|menu|noembed|noframes|noscript|script|style|svg|video)[^>]*>.*</\1>@siU', ' ', $value);
-    // Let removed tags still delimit words.
     $is_text_type = $this->getDataTypeHelper()->isTextType($type);
     if ($is_text_type) {
+      // Let removed tags still delimit words.
       $text = str_replace(['<', '>'], [' <', '> '], $text);
-      if ($this->configuration['title']) {
-        $text = preg_replace('/(<[-a-z_]+[^>]*["\s])title\s*=\s*("([^"]+)"|\'([^\']+)\')([^>]*>)/i', '$1 $5 $3$4 ', $text);
-      }
-      if ($this->configuration['alt']) {
-        $text = preg_replace('/<[-a-z_]+[^>]*["\s]alt\s*=\s*("([^"]+)"|\'([^\']+)\')[^>]*>/i', ' <img>$2$3</img> ', $text);
-      }
+      $text = $this->handleAttributes($text);
     }
     if ($this->configuration['tags'] && $is_text_type) {
       $text = strip_tags($text, '<' . implode('><', array_keys($this->configuration['tags'])) . '>');
@@ -214,6 +209,44 @@ class HtmlFilter extends FieldsProcessorPluginBase {
       $text = strip_tags($text);
       $value = $this->normalizeText(trim($text));
     }
+  }
+
+  /**
+   * Copies configured attributes out of HTML tags so they are indexed.
+   *
+   * @param string $text
+   *   The text to process, with spaces added around all HTML tags.
+   *
+   * @return string
+   *   The same text, with the contents of attributes "alt" and/or "title" (as
+   *   configured) copied into their element contents so they can be indexed.
+   */
+  protected function handleAttributes(string $text): string {
+    // Determine which attributes should be indexed and bail early if it's none.
+    $handled_attributes = $xpath_expr = [];
+    foreach (['alt', 'title'] as $attr) {
+      if ($this->configuration[$attr]) {
+        $handled_attributes[] = $attr;
+        $xpath_expr[] = "//*[@$attr]";
+      }
+    }
+    if (!$handled_attributes) {
+      return $text;
+    }
+
+    $dom = Html::load($text);
+    $xpath = new \DOMXPath($dom);
+    /** @var \DOMElement $node */
+    foreach ($xpath->query(implode('|', $xpath_expr)) as $node) {
+      foreach ($handled_attributes as $attr_name) {
+        $attr = $node->attributes?->getNamedItem($attr_name);
+        if ($attr !== NULL) {
+          $node->prepend(" {$attr->textContent} ");
+        }
+      }
+    }
+
+    return Html::serialize($dom);
   }
 
   /**

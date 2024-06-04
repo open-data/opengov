@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\Functional\Block;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform block context.
@@ -17,12 +17,12 @@ class WebformBlockContextTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['block', 'webform', 'webform_node', 'webform_test_block_context'];
+  protected static $modules = ['block', 'webform', 'webform_node', 'webform_test_block_context'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Manually install blocks.

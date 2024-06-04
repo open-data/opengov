@@ -5,7 +5,6 @@ namespace Drupal\webform\Utility;
 use Drupal\Core\Datetime\DateHelper;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\OptGroup;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**
  * Helper class webform date helper methods.
@@ -65,9 +64,11 @@ class WebformDateHelper {
    *
    * @return string
    *   The date/time object format as 'Y-m-d\TH:i:s'.
+   *
+   * @see \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATETIME_STORAGE_FORMAT
    */
   public static function formatStorage(DrupalDateTime $date) {
-    return $date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
+    return $date->format('Y-m-d\TH:i:s');
   }
 
   /**

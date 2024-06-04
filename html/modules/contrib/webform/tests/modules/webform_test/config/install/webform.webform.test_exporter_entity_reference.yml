@@ -14,7 +14,8 @@ archive: false
 id: test_exporter_entity_reference
 title: 'Test: Exporter: Entity Reference'
 description: 'Test exporting entity references.'
-category: 'Test: Exporter'
+categories:
+  - 'Test: Exporter'
 elements: |
   entity_checkboxes:
     '#type': webform_entity_checkboxes
@@ -34,7 +35,6 @@ elements: |
     '#selection_handler': 'default:user'
     '#selection_settings':
       include_anonymous: true
-  
 css: ''
 javascript: ''
 settings:
@@ -122,6 +122,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

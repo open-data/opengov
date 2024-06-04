@@ -14,7 +14,8 @@ archive: false
 id: test_element_managed_file_help
 title: 'Test: File upload help'
 description: 'Test file upload help.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   description:
     '#type': details
@@ -65,7 +66,6 @@ elements: |
       '#type': managed_file
       '#title': managed_file_help_none
       '#file_help': none
-  
 css: ''
 javascript: ''
 settings:
@@ -153,6 +153,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

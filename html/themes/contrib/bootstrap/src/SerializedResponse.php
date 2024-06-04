@@ -160,7 +160,7 @@ class SerializedResponse extends Response {
   /**
    * {@inheritdoc}
    */
-  public function getContent() {
+  public function getContent(): string|false {
     if (!isset($this->content) && ($serializer = $this->getSerializer()) && ($data = $this->getData())) {
       return $serializer->encode($data);
     }

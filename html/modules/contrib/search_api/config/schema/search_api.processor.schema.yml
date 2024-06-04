@@ -231,6 +231,9 @@ search_api.property_configuration.aggregated_field:
     type:
       type: string
       label: 'The type of the aggregation'
+    separator:
+      type: string
+      label: 'The separator used if the "Concatenation" type is selected'
     fields:
       type: sequence
       label: 'The properties to be aggregated'
@@ -269,3 +272,11 @@ search_api.property_configuration.search_api_url:
     absolute:
       type: boolean
       label: 'Whether to generate an absolute URL'
+
+search_api.property_configuration.custom_value:
+  type: mapping
+  label: Custom value
+  mapping:
+    value:
+      type: string
+      label: 'The field value'

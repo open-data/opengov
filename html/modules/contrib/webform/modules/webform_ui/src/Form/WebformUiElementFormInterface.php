@@ -2,8 +2,8 @@
 
 namespace Drupal\webform_ui\Form;
 
-use Drupal\Core\Form\FormInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Form\FormInterface;
 
 /**
  * Provides an interface for webform element webform.

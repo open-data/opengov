@@ -64,6 +64,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'type' => 'page',
       'title' => 'node 1 title',
       'body' => 'node 1 body',
+      'created' => 1400000000,
       'field_boost' => [8],
     ]);
     $node->save();
@@ -73,6 +74,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'type' => 'page',
       'title' => 'node 2 title',
       'body' => 'node 2 body',
+      'created' => 1600000000,
       'field_boost' => [3, 10],
     ]);
     $node->save();
@@ -82,6 +84,7 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'type' => 'page',
       'title' => 'node 3 title',
       'body' => 'node 3 body',
+      'created' => 1500000000,
       'field_boost' => [1],
     ]);
     $node->save();
@@ -92,22 +95,22 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       ]);
     $this->index->setDatasources($datasources);
 
-    $nid_info = [
+    $fields_helper = $this->container->get('search_api.fields_helper');
+    $this->index->addField($fields_helper->createField($this->index, 'nid', [
       'datasource_id' => 'entity:node',
       'property_path' => 'nid',
       'type' => 'integer',
-    ];
-
-    $boost_info = [
+    ]));
+    $this->index->addField($fields_helper->createField($this->index, 'field_boost', [
       'datasource_id' => 'entity:node',
       'property_path' => 'field_boost',
       'type' => 'integer',
-    ];
-
-    $fields_helper = $this->container->get('search_api.fields_helper');
-
-    $this->index->addField($fields_helper->createField($this->index, 'nid', $nid_info));
-    $this->index->addField($fields_helper->createField($this->index, 'field_boost', $boost_info));
+    ]));
+    $this->index->addField($fields_helper->createField($this->index, 'created', [
+      'datasource_id' => 'entity:node',
+      'property_path' => 'created',
+      'type' => 'date',
+    ]));
 
     $this->index->save();
 
@@ -237,6 +240,25 @@ class NumberFieldBoostTest extends ProcessorTestBase {
       'entity:node/3:en',
     ], array_keys($result->getResultItems()));
 
+    $configuration = [
+      'boosts' => [
+        'created' => [
+          'boost_factor' => 1.0,
+          'aggregation' => 'first',
+        ],
+      ],
+    ];
+    $processor->setConfiguration($configuration);
+    $this->index->addProcessor($processor);
+    $this->index->save();
+    $this->indexItems();
+
+    $result = $this->getSearchResults();
+    $this->assertEquals([
+      'entity:node/2:en',
+      'entity:node/3:en',
+      'entity:node/1:en',
+    ], array_keys($result->getResultItems()));
   }
 
   /**

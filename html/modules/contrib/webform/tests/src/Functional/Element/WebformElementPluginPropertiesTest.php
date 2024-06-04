@@ -17,18 +17,20 @@ class WebformElementPluginPropertiesTest extends WebformElementBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'address',
     'captcha',
     'image',
-    'jquery_ui_datepicker',
     'taxonomy',
     'webform',
     'webform_attachment',
     'webform_cards',
     'webform_entity_print_attachment',
+    'webform_jqueryui_datepicker',
+    'webform_entity_print_attachment',
     'webform_image_select',
     'webform_location_geocomplete',
+    'webform_location_places',
     'webform_options_custom',
     'webform_toggles',
   ];
@@ -142,7 +144,7 @@ address:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -399,7 +401,7 @@ date:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -493,7 +495,7 @@ datelist:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -584,7 +586,7 @@ datetime:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -696,7 +698,7 @@ email:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -769,7 +771,7 @@ entity_autocomplete:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -1130,7 +1132,7 @@ number:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -1534,7 +1536,7 @@ tel:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -1656,7 +1658,7 @@ textarea:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -1740,7 +1742,7 @@ textfield:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -1817,7 +1819,7 @@ url:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -2044,7 +2046,7 @@ webform_address:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -2303,7 +2305,7 @@ webform_autocomplete:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -2679,7 +2681,7 @@ webform_contact:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -2781,7 +2783,7 @@ webform_custom_composite:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -2914,7 +2916,7 @@ webform_email_confirm:
   multiple__empty_items: 1
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -2988,7 +2990,7 @@ webform_email_multiple:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -3298,7 +3300,7 @@ webform_height:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -3560,7 +3562,7 @@ webform_link:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -3957,7 +3959,7 @@ webform_name:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -4782,7 +4784,7 @@ webform_telephone:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true
@@ -5051,7 +5053,7 @@ webform_time:
   multiple__header_label: ''
   multiple__item_label: item
   multiple__min_items: null
-  multiple__no_items_message: 'No items entered. Please add items below.'
+  multiple__no_items_message: '<p>No items entered. Please add items below.</p>'
   multiple__operations: true
   multiple__remove: true
   multiple__sorting: true

@@ -3,9 +3,9 @@
 namespace Drupal\Tests\webform\Kernel\Breadcrumb;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Tests\UnitTestCase;
-use Drupal\Core\Link;
 use Symfony\Component\DependencyInjection\Container;
 
 /**
@@ -107,7 +107,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->setUpMockEntities();
@@ -123,7 +123,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     // Make an object to test.
     $this->breadcrumbBuilder = $this->getMockBuilder('Drupal\webform\Breadcrumb\WebformBreadcrumbBuilder')
       ->setConstructorArgs([$this->moduleHandler, $this->requestHandler, $this->translationManager, $this->configFactory])
-      ->setMethods(NULL)
+      ->onlyMethods([])
       ->getMock();
 
     // Enable the webform_templates.module, so that we can testing breadcrumb
@@ -142,9 +142,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     // Setup mock cache context container.
     // @see \Drupal\Core\Breadcrumb\Breadcrumb
     // @see \Drupal\Core\Cache\RefinableCacheableDependencyTrait
-    $cache_contexts_manager = $this->getMockBuilder('Drupal\Core\Cache\Context\CacheContextsManager')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $cache_contexts_manager = $this->createMock('Drupal\Core\Cache\Context\CacheContextsManager');
     $cache_contexts_manager->method('assertValidTokens')->willReturn(TRUE);
     $container = new Container();
     $container->set('cache_contexts_manager', $cache_contexts_manager);
@@ -320,9 +318,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
    */
   public function testBuildSourceEntityUserResults() {
     $this->setSourceEntity($this->node);
-    $webform_submission_access = $this->getMockBuilder('Drupal\webform\WebformSubmissionInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $webform_submission_access = $this->createMock('Drupal\webform\WebformSubmissionInterface');
     $webform_submission_access->expects($this->any())
       ->method('access')
       ->will($this->returnCallback(function ($operation) {
@@ -519,9 +515,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
 
     /* node entities */
 
-    $this->node = $this->getMockBuilder('Drupal\node\NodeInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->node = $this->createMock('Drupal\node\NodeInterface');
     $this->node->expects($this->any())
       ->method('label')
       ->will($this->returnValue('{node}'));
@@ -542,9 +536,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
 
     /* webform entities */
 
-    $this->webform = $this->getMockBuilder('Drupal\webform\WebformInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->webform = $this->createMock('Drupal\webform\WebformInterface');
     $this->webform->expects($this->any())
       ->method('label')
       ->will($this->returnValue('{webform}'));
@@ -564,9 +556,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
 
     /* webform submission entities */
 
-    $this->webformSubmission = $this->getMockBuilder('Drupal\webform\WebformSubmissionInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->webformSubmission = $this->createMock('Drupal\webform\WebformSubmissionInterface');
     $this->webformSubmission->expects($this->any())
       ->method('getWebform')
       ->will($this->returnValue($this->webform));

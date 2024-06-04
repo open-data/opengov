@@ -14,7 +14,8 @@ archive: false
 id: test_element_help_display
 title: 'Test: Element: Help display'
 description: 'Test element help display.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   basic_elements:
     '#type': details
@@ -2086,7 +2087,6 @@ elements: |
       '#help_display': element_after
     machine_name_hr:
       '#type': webform_horizontal_rule
-  
 css: ''
 javascript: ''
 settings:
@@ -2174,6 +2174,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

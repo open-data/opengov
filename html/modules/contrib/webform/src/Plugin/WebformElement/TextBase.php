@@ -433,11 +433,11 @@ abstract class TextBase extends WebformElementBase {
       ],
     ];
 
-    // Get input masks.
-    $modules = $this->moduleHandler->getImplementations('webform_element_input_masks');
-    foreach ($modules as $module) {
-      $input_masks += $this->moduleHandler->invoke($module, 'webform_element_input_masks');
-    }
+    // Get input masks, use ModuleHandler::invokeAllWith() to ensure that
+    // numeric keys are not lost.
+    $this->moduleHandler->invokeAllWith('webform_element_input_masks', function (callable $hook, string $module_name) use (&$input_masks) {
+      $input_masks += $hook();
+    });
 
     // Alter input masks.
     $this->moduleHandler->alter('webform_element_input_masks', $input_masks);

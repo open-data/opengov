@@ -17,7 +17,7 @@ abstract class StatisticsTestBase extends BrowserTestBase {
   protected static $modules = ['node', 'block', 'ban', 'statistics'];
 
   /**
-   * User with permissions to ban IP's.
+   * User with permissions to ban IPs.
    *
    * @var \Drupal\user\UserInterface
    */
@@ -26,7 +26,7 @@ abstract class StatisticsTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create Basic page node type.

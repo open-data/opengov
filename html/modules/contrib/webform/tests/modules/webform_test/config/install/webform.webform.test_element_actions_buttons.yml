@@ -14,7 +14,8 @@ archive: false
 id: test_element_actions_buttons
 title: 'Test: Element: Actions buttons'
 description: 'Test element actions buttons.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   wizard_page_1:
     '#type': webform_wizard_page
@@ -59,7 +60,6 @@ elements: |
       class:
         - preview_next_button_attributes
       style: 'color: orange'
-  
 css: ''
 javascript: ''
 settings:
@@ -147,6 +147,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

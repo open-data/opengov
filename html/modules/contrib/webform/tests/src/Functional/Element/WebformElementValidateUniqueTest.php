@@ -84,6 +84,15 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
     $this->submitForm($edit, 'Submit');
     $assert_session->responseContains('unique_textfield_multiple error message.');
 
+    // Check #unique multiple validation within the same element with
+    // different cases.
+    $edit = [
+      'unique_textfield_multiple[items][0][_item_]' => '{same}',
+      'unique_textfield_multiple[items][2][_item_]' => '{SAME}',
+    ];
+    $this->submitForm($edit, 'Submit');
+    $assert_session->responseNotContains('unique_textfield_multiple error message.');
+
     // Purge existing submissions.
     $this->purgeSubmissions();
 
@@ -93,6 +102,9 @@ class WebformElementValidateUniqueTest extends WebformElementBrowserTestBase {
     $assert_session->responseNotContains('unique_user_textfield error message.');
     $this->postSubmission($webform, $edit);
     $assert_session->responseContains('unique_user_textfield error message.');
+    $edit = ['unique_user_textfield' => '{Unique_User_textfield}'];
+    $this->postSubmission($webform, $edit);
+    $assert_session->responseNotContains('unique_user_textfield error message.');
 
     // Create a user that is used as the source entity.
     $account = $this->drupalCreateUser();

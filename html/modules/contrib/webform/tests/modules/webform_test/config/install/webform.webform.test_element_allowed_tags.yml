@@ -14,13 +14,13 @@ archive: false
 id: test_element_allowed_tags
 title: 'Test: Element: Allowed tags'
 description: 'Test element #allowed_tags property.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   item:
     '#type': item
     '#title': 'Below markup contains HTML tags'
     '#markup': 'Hello <ignored></tag><b>…Goodbye</b>'
-  
 css: ''
 javascript: ''
 settings:
@@ -108,6 +108,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

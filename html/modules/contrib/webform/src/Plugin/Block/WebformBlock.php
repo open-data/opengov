@@ -71,6 +71,7 @@ class WebformBlock extends BlockBase implements ContainerFactoryPluginInterface 
       'webform_id' => '',
       'default_data' => '',
       'redirect' => FALSE,
+      'lazy' => FALSE,
     ];
   }
 
@@ -104,7 +105,7 @@ class WebformBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $form['#attributes'] = ['class' => ['webform-block-settings-tray-form']];
     $form['webform_id'] = [
       '#type' => 'entity_autocomplete',
-      '#title' => $this->t('Webform'),
+      '#title' => $this->t('Webform', [], ['context' => 'form']),
       '#description' => $this->t('Select the webform that you would like to display in this block.'),
       '#target_type' => 'webform',
       '#required' => TRUE,
@@ -160,6 +161,15 @@ class WebformBlock extends BlockBase implements ContainerFactoryPluginInterface 
       '#description' => $this->t('If your webform has multiple pages, this will change the behavior of the "Next" button. This will also affect where validation messages show up after an error.'),
     ];
 
+    // Lazy builder.
+    $form['settings']['lazy'] = [
+      '#title' => $this->t('Use a lazy builder to render the form after the page is built/loaded.'),
+      '#description' => $this->t('If checked, the form will be loaded after the page has been built and cached. Lazy builders work best when using the <a href=":href">BigPipe</a> module.', [':href' => 'https://www.drupal.org/docs/8/core/modules/big-pipe/overview']),
+      '#type' => 'checkbox',
+      '#return_type' => TRUE,
+      '#default_value' => $this->configuration['lazy'],
+    ];
+
     $this->tokenManager->elementValidate($form);
 
     return $form;
@@ -173,6 +183,7 @@ class WebformBlock extends BlockBase implements ContainerFactoryPluginInterface 
     $this->configuration['webform_id'] = $values['webform_id'];
     $this->configuration['default_data'] = $values['settings']['default_data'];
     $this->configuration['redirect'] = $values['settings']['redirect'];
+    $this->configuration['lazy'] = $values['settings']['lazy'];
   }
 
   /**
@@ -193,6 +204,7 @@ class WebformBlock extends BlockBase implements ContainerFactoryPluginInterface 
       '#type' => 'webform',
       '#webform' => $webform,
       '#default_data' => WebformYaml::decode($this->configuration['default_data']),
+      '#lazy' => $this->configuration['lazy'],
     ];
 
     // If redirect, set the #action property on the form.

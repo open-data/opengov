@@ -3,7 +3,7 @@
  * JavaScript behaviors for message element integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -42,7 +42,7 @@
    */
   Drupal.behaviors.webformMessageClose = {
     attach: function (context) {
-      $(context).find('.js-webform-message--close').once('webform-message--close').each(function () {
+      $(once('webform-message--close', '.js-webform-message--close', context)).each(function () {
         var $element = $(this);
 
         var id = $element.attr('data-message-id');
@@ -124,4 +124,4 @@
     }
   }
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

@@ -17,6 +17,13 @@ use Drupal\webform\Plugin\WebformVariantBase;
 class BrokenWebformVariant extends WebformVariantBase {
 
   /**
+   * The original handler's plugin ID.
+   *
+   * @var string
+   */
+  protected $pluginId;
+
+  /**
    * {@inheritdoc}
    */
   public function isEnabled() {

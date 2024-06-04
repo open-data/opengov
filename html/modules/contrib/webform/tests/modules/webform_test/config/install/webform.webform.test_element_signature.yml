@@ -14,7 +14,8 @@ archive: false
 id: test_element_signature
 title: 'Test: Element: Signature'
 description: 'Test the signature element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   signature:
     '#type': webform_signature
@@ -46,7 +47,6 @@ elements: |
     '#type': webform_signature
     '#title': signature_private
     '#uri_scheme': private
-
 css: ''
 javascript: ''
 settings:
@@ -134,6 +134,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''
@@ -152,11 +154,10 @@ settings:
   confirmation_type: page
   confirmation_title: ''
   confirmation_message: |
-      <h3>signature</h3>
-      [webform_submission:values:signature:html]
-      <h3>signature_private</h3>
-      [webform_submission:values:signature_private:html]
-
+    <h3>signature</h3>
+    [webform_submission:values:signature:html]
+    <h3>signature_private</h3>
+    [webform_submission:values:signature_private:html]
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true

@@ -14,7 +14,8 @@ archive: false
 id: test_element_image_select
 title: 'Test: Element: Image'
 description: 'Test Image select element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   image_select_default:
     '#type': webform_image_select
@@ -164,7 +165,6 @@ elements: |
     '#filter__singular': 'animal'
     '#filter__plural': 'animals'
     '#filter__no_results': 'No animals found.'
-  
 css: ''
 javascript: ''
 settings:
@@ -252,6 +252,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

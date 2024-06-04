@@ -4,12 +4,12 @@ namespace Drupal\Tests\system\Functional\System;
 
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
+use Drupal\node\Entity\Node;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\TestFileCreationTrait;
 
 /**
- * Tests the theme interface functionality by enabling and switching themes, and
- * using an administration theme.
+ * Tests the theme administration user interface.
  *
  * @group system
  */
@@ -43,7 +43,7 @@ class ThemeTest extends BrowserTestBase {
    *
    * @var \Drupal\node\Entity\Node
    */
-  protected $node;
+  protected Node $node;
 
   /**
    * {@inheritdoc}
@@ -471,6 +471,7 @@ class ThemeTest extends BrowserTestBase {
    * Tests installing a theme and setting it as default.
    */
   public function testInstallAndSetAsDefault() {
+    $this->markTestSkipped('Skipped due to major version-specific logic. See https://www.drupal.org/project/drupal/issues/3359322');
     $themes = [
       'olivero' => 'Olivero',
       'test_core_semver' => 'Theme test with semver core version',

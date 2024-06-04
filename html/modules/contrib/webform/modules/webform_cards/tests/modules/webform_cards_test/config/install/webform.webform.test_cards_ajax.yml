@@ -14,7 +14,8 @@ archive: false
 id: test_cards_ajax
 title: 'Test: Webform: Cards Ajax'
 description: 'Test cards progress ajax support.'
-category: 'Test: Cards'
+categories:
+  - 'Test: Cards'
 elements: |
   card_1:
     '#type': webform_card
@@ -30,7 +31,6 @@ elements: |
       '#type': textfield
       '#title': 'Element 2'
       '#default_value': '{element_2}'
-  
 css: ''
 javascript: ''
 settings:
@@ -118,6 +118,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 2
   preview_label: ''
   preview_title: ''

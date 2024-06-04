@@ -29,9 +29,7 @@ class WebformBlockTest extends UnitTestCase {
    */
   public function testCalculateDependencies() {
     // Create mock webform and webform block.
-    $webform = $this->getMockBuilder(WebformInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $webform = $this->createMock(WebformInterface::class);
     $webform->method('id')
       ->willReturn($this->randomMachineName());
     $webform->method('getConfigDependencyKey')
@@ -51,23 +49,17 @@ class WebformBlockTest extends UnitTestCase {
    * Tests the access of a webform block.
    */
   public function testBlockAccess() {
-    $account = $this->getMockBuilder(AccountInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $account = $this->createMock(AccountInterface::class);
 
     $cache_contexts = ['dummy_cache_context'];
 
-    $cache_contexts_manager = $this->getMockBuilder(CacheContextsManager::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $cache_contexts_manager = $this->createMock(CacheContextsManager::class);
     $cache_contexts_manager->method('assertValidTokens')
       ->willReturnMap([
         [$cache_contexts, TRUE],
       ]);
 
-    $container = $this->getMockBuilder(ContainerInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $container = $this->createMock(ContainerInterface::class);
     $container->method('get')
       ->willReturnMap([
         ['cache_contexts_manager', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE, $cache_contexts_manager],
@@ -81,9 +73,7 @@ class WebformBlockTest extends UnitTestCase {
     $access_result->addCacheContexts($cache_contexts);
 
     // Create mock webform and webform block.
-    $webform = $this->getMockBuilder(WebformInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $webform = $this->createMock(WebformInterface::class);
     $webform->method('id')
       ->willReturn($this->randomMachineName());
     $webform->method('access')
@@ -111,17 +101,11 @@ class WebformBlockTest extends UnitTestCase {
    *   A mock webform block.
    */
   protected function mockWebformBlock(WebformInterface $webform) {
-    $request_stack = $this->getMockBuilder(RequestStack::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $request_stack = $this->createMock(RequestStack::class);
 
-    $entity_type_manager = $this->getMockBuilder(EntityTypeManagerInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
 
-    $storage = $this->getMockBuilder(EntityStorageInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('load')
       ->willReturnMap([
         [$webform->id(), $webform],
@@ -132,9 +116,7 @@ class WebformBlockTest extends UnitTestCase {
         ['webform', $storage],
       ]);
 
-    $token_manager = $this->getMockBuilder(WebformTokenManagerInterface::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $token_manager = $this->createMock(WebformTokenManagerInterface::class);
 
     // Build container.
     $container = new ContainerBuilder();

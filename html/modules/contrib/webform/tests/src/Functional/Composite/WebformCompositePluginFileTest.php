@@ -3,9 +3,9 @@
 namespace Drupal\Tests\webform\Functional\Composite;
 
 use Drupal\file\Entity\File;
+use Drupal\Tests\webform\Functional\Element\WebformElementManagedFileTestBase;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
-use Drupal\Tests\webform\Functional\Element\WebformElementManagedFileTestBase;
 
 /**
  * Tests for composite plugin file upload.
@@ -19,7 +19,7 @@ class WebformCompositePluginFileTest extends WebformElementManagedFileTestBase {
    *
    * @var array
    */
-  public static $modules = ['webform_test_element'];
+  protected static $modules = ['webform_test_element'];
 
   /**
    * Webforms to load.

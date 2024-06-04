@@ -3,8 +3,8 @@
 namespace Drupal\webform\Plugin\WebformElement;
 
 use Drupal\webform\Plugin\WebformElementOtherInterface;
-use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\WebformSubmissionConditionsValidator;
+use Drupal\webform\WebformSubmissionInterface;
 
 /**
  * Provides a 'checkboxes_other' element.

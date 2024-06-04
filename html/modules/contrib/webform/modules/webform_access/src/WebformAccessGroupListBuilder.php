@@ -106,7 +106,7 @@ class WebformAccessGroupListBuilder extends ConfigEntityListBuilder {
    *   A render array representing the information summary.
    */
   protected function buildInfo() {
-    $total = $this->getStorage()->getQuery()->count()->execute();
+    $total = $this->getStorage()->getQuery()->accessCheck(FALSE)->count()->execute();
     if (!$total) {
       return [];
     }

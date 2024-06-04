@@ -1,9 +1,6 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\Core\Plugin\Context\ContextTest.
- */
+declare(strict_types=1);
 
 namespace Drupal\Tests\Core\Plugin\Context;
 

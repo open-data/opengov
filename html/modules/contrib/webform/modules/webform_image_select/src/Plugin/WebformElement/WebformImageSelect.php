@@ -5,8 +5,8 @@ namespace Drupal\webform_image_select\Plugin\WebformElement;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformElement\Select;
-use Drupal\webform_image_select\Element\WebformImageSelect as WebformImageSelectElement;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\webform_image_select\Element\WebformImageSelect as WebformImageSelectElement;
 use Drupal\webform_image_select\Entity\WebformImageSelectImages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

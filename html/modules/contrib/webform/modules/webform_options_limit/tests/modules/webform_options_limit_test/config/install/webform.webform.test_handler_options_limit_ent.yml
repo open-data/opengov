@@ -16,7 +16,7 @@ archive: false
 id: test_handler_options_limit_ent
 title: 'Test: Handler: Test entity select options limit'
 description: 'Test webform entity select options limit handler.'
-category: null
+categories: {  }
 elements: |
   options_limits_entity_select:
     '#type': webform_entity_select
@@ -27,7 +27,6 @@ elements: |
     '#selection_settings':
       target_bundles:
         page: page
-  
 css: ''
 javascript: ''
 settings:
@@ -115,6 +114,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\webform_ui\Functional;
 
+use Drupal\Core\Url;
 use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\Entity\Webform;
 
@@ -17,7 +18,7 @@ class WebformUiElementTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'webform', 'webform_ui', 'webform_test_element'];
+  protected static $modules = ['webform', 'webform_ui', 'webform_test_element'];
 
   /**
    * Webforms to load.
@@ -29,7 +30,7 @@ class WebformUiElementTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // Disable description help icon.
     $this->config('webform.settings')->set('ui.description_help', FALSE)->save();
@@ -149,7 +150,7 @@ class WebformUiElementTest extends WebformBrowserTestBase {
 
     // Add admin notes to contact name element.
     $this->drupalGet('/admin/structure/webform/manage/contact/element/name/edit');
-    $edit = ['properties[admin_notes][value]' => 'This is an admin note.'];
+    $edit = ['properties[admin_notes][value][value]' => 'This is an admin note.'];
     $this->submitForm($edit, 'Save');
     $assert_session->responseContains('<span data-drupal-selector="edit-webform-ui-elements-name-title-notes" class="webform-element-help js-webform-element-help" role="tooltip" tabindex="0" aria-label="Your Name" data-webform-help="&lt;div class=&quot;webform-element-help--title&quot;&gt;Your Name&lt;/div&gt;&lt;div class=&quot;webform-element-help--content&quot;&gt;This is an admin note.&lt;/div&gt;"><span aria-hidden="true">?</span></span>');
 
@@ -169,13 +170,13 @@ class WebformUiElementTest extends WebformBrowserTestBase {
     $this->submitForm($edit, 'Save');
 
     // Check elements URL contains ?update query string parameter.
-    $assert_session->addressEquals('admin/structure/webform/manage/contact', ['query' => ['update' => 'test']]);
+    $assert_session->addressEquals(Url::fromRoute('entity.webform.edit_form', ['webform' => 'contact'], ['query' => ['update' => 'test']]));
 
     // Check that save elements removes ?update query string parameter.
     $this->submitForm([], 'Save elements');
 
     // Check that save elements removes ?update query string parameter.
-    $assert_session->addressEquals('admin/structure/webform/manage/contact', ['query' => ['update' => 'test']]);
+    $assert_session->addressEquals(Url::fromRoute('entity.webform.edit_form', ['webform' => 'contact'], ['query' => ['update' => 'test']]));
 
     // Create validate unique element.
     $this->drupalGet('/admin/structure/webform/manage/contact/element/add/textfield');
@@ -194,7 +195,7 @@ class WebformUiElementTest extends WebformBrowserTestBase {
     $this->submitForm($edit, 'Save');
 
     // Check elements URL contains ?update query string parameter.
-    $assert_session->addressEquals('admin/structure/webform/manage/contact', ['query' => ['update' => 'test']]);
+    $assert_session->addressEquals(Url::fromRoute('entity.webform.edit_form', ['webform' => 'contact'], ['query' => ['update' => 'test']]));
 
     // Check element updated.
     $this->drupalGet('/webform/contact');

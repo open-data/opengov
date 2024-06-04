@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api\Plugin\search_api\parse_mode;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\search_api\ParseMode\ParseModePluginBase;
 
 /**
@@ -19,17 +20,21 @@ class Terms extends ParseModePluginBase {
    * {@inheritdoc}
    */
   public function parseInput($keys) {
+    $ret = [
+      '#conjunction' => $this->getConjunction(),
+    ];
+
+    if (!Unicode::validateUtf8($keys)) {
+      return $ret;
+    }
     // Split the keys into tokens. Any whitespace is considered as a delimiter
     // for tokens. This covers ASCII white spaces as well as multi-byte "spaces"
     // which for example are common in Japanese.
-    $tokens = preg_split('/\s+/u', $keys);
+    $tokens = preg_split('/\s+/u', $keys) ?: [];
     $quoted = FALSE;
     $negated = FALSE;
     $phrase_contents = [];
 
-    $ret = [
-      '#conjunction' => $this->getConjunction(),
-    ];
     foreach ($tokens as $token) {
       // Ignore empty tokens. (Also helps keep the following code simpler.)
       if ($token === '') {
@@ -49,7 +54,7 @@ class Terms extends ParseModePluginBase {
       // Depending on whether we are currently in a quoted phrase, or maybe just
       // starting one, act accordingly.
       if ($quoted) {
-        if (substr($token, -1) === '"') {
+        if (str_ends_with($token, '"')) {
           $token = substr($token, 0, -1);
           $phrase_contents[] = trim($token);
           $phrase_contents = array_filter($phrase_contents, 'strlen');

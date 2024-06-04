@@ -201,8 +201,8 @@ use Drupal\Core\Database\Query\SelectInterface;
  *       $transaction->rollBack();
  *     }
  *
- *     // Log the exception to watchdog.
- *     watchdog_exception('type', $e);
+ *     // Log the exception.
+ *     Error::logException(\Drupal::logger('type'), $e);
  *   }
  *
  *   // $transaction goes out of scope here. Unless the transaction was rolled
@@ -324,7 +324,7 @@ use Drupal\Core\Database\Query\SelectInterface;
  *     'varchar' must specify the 'length' parameter.
  *  - 'primary key': An array of one or more key column specifiers (see below)
  *    that form the primary key.
- *  - 'unique keys': An associative array of unique keys ('keyname' =>
+ *  - 'unique keys': An associative array of unique keys ('key_name' =>
  *    specification). Each specification is an array of one or more
  *    key column specifiers (see below) that form a unique key on the table.
  *  - 'foreign keys': An associative array of relations ('my_relation' =>
@@ -340,6 +340,9 @@ use Drupal\Core\Database\Query\SelectInterface;
  *
  * A key column specifier is either a string naming a column or an array of two
  * elements, column name and length, specifying a prefix of the named column.
+ * Note that some DBMS drivers may opt to ignore the prefix length configuration
+ * and still use the whole field value for the key. Code should therefore not
+ * rely on this functionality.
  *
  * As an example, this is the schema definition for the 'users_data' table. It
  * shows five fields ('uid', 'module', 'name', 'value', and 'serialized'), the

@@ -14,7 +14,8 @@ archive: false
 id: test_attachment_access
 title: 'Test: Webform Attachment Access'
 description: 'Test Webform attachment element access.'
-category: 'Test: Attachment'
+categories:
+  - 'Test: Attachment'
 elements: |
   anonymous:
     '#type': webform_attachment_token
@@ -47,7 +48,6 @@ elements: |
     '#template': 'Admin users can access this attachment'
     '#private': true
     '#display_on': both
-  
 css: ''
 javascript: ''
 settings:
@@ -135,6 +135,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

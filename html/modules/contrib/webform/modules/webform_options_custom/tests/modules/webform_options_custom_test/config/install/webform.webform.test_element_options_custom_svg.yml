@@ -14,7 +14,8 @@ archive: false
 id: test_element_options_custom_svg
 title: 'Test: Element: Custom Options SVG'
 description: 'Test custom options element using SVG files.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_options_custom_url_us:
     '#type': 'webform_options_custom:test_us_states'
@@ -25,7 +26,6 @@ elements: |
     '#type': 'webform_options_custom:test_ballroom'
     '#title': webform_options_custom_url_ballroom
     '#required': true
-  
 css: ''
 javascript: ''
 settings:
@@ -113,6 +113,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

@@ -22,13 +22,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class HttpExceptionNormalizer extends NormalizerBase {
 
   /**
-   * The interface or class that this Normalizer supports.
-   *
-   * @var string
-   */
-  protected $supportedInterfaceOrClass = HttpException::class;
-
-  /**
    * The current user making the request.
    *
    * @var \Drupal\Core\Session\AccountInterface
@@ -48,9 +41,15 @@ class HttpExceptionNormalizer extends NormalizerBase {
   /**
    * {@inheritdoc}
    */
-  public function normalize($object, $format = NULL, array $context = []) {
+  public function normalize($object, $format = NULL, array $context = []): array|string|int|float|bool|\ArrayObject|NULL {
     $cacheability = new CacheableMetadata();
     $cacheability->addCacheableDependency($object);
+
+    $cacheability->addCacheTags(['config:system.logging']);
+    if (\Drupal::config('system.logging')->get('error_level') === ERROR_REPORTING_DISPLAY_VERBOSE) {
+      $cacheability->setCacheMaxAge(0);
+    }
+
     return new HttpExceptionNormalizerValue($cacheability, static::rasterizeValueRecursive($this->buildErrorObjects($object)));
   }
 
@@ -89,7 +88,10 @@ class HttpExceptionNormalizer extends NormalizerBase {
     if ($exception->getCode() !== 0) {
       $error['code'] = (string) $exception->getCode();
     }
-    if ($this->currentUser->hasPermission('access site reports')) {
+
+    $is_verbose_reporting = \Drupal::config('system.logging')->get('error_level') === ERROR_REPORTING_DISPLAY_VERBOSE;
+    $site_report_access = $this->currentUser->hasPermission('access site reports');
+    if ($site_report_access && $is_verbose_reporting) {
       // The following information may contain sensitive information. Only show
       // it to authorized users.
       $error['source'] = [
@@ -168,7 +170,18 @@ class HttpExceptionNormalizer extends NormalizerBase {
    * {@inheritdoc}
    */
   public function hasCacheableSupportsMethod(): bool {
+    @trigger_error(__METHOD__ . '() is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. Use getSupportedTypes() instead. See https://www.drupal.org/node/3359695', E_USER_DEPRECATED);
+
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSupportedTypes(?string $format): array {
+    return [
+      HttpException::class => TRUE,
+    ];
   }
 
 }

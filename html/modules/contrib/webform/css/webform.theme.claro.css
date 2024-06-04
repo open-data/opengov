@@ -55,7 +55,7 @@ html.js .webform-message--close .webform-message__link:active {
  * @see webform.promotions.css
  * @see claro/css/src/components/messages.css
  */
-.webform-message .messages.messages--webform {
+div.webform-message .messages.messages--webform {
   box-sizing: border-box;
   margin-bottom: 1rem;
   padding: 1.5rem 1.5rem 2rem -webkit-calc(1.5rem - 5px);
@@ -69,7 +69,7 @@ html.js .webform-message--close .webform-message__link:active {
   box-shadow: none;
 }
 
-[dir="rtl"] .webform-message .messages.messages--webform {
+[dir="rtl"] div.webform-message .messages.messages--webform {
   padding-right: -webkit-calc(1.5rem - 5px);
   padding-right: calc(1.5rem - 5px);
   padding-left: 1.5rem;
@@ -168,6 +168,15 @@ table.webform-states-table td {
 
 table.webform-states-table td.webform-states-table--operator > .form-item > .form-element {
   width: auto;
+  min-width: inherit;
+}
+
+table.webform-states-table td.webform-states-table--selector > .form-item > .form-element--type-select {
+  width: 100%;
+}
+
+table.webform-states-table td.webform-states-table--condition > .form-item > .form-element--type-select {
+  width: 5em;
 }
 
 /*****************************************************************************   */

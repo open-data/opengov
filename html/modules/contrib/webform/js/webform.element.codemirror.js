@@ -3,7 +3,7 @@
  * JavaScript behaviors for CodeMirror integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -24,7 +24,7 @@
       }
 
       // Webform CodeMirror editor.
-      $(context).find('textarea.js-webform-codemirror').once('webform-codemirror').each(function () {
+      $(once('webform-codemirror', 'textarea.js-webform-codemirror', context)).each(function () {
         var $input = $(this);
 
         // Open all closed details, so that editor height is correctly calculated.
@@ -134,7 +134,7 @@
 
       // Webform CodeMirror syntax coloring.
       if (window.CodeMirror.runMode) {
-        $(context).find('.js-webform-codemirror-runmode').once('webform-codemirror-runmode').each(function () {
+        $(once('webform-codemirror-runmode', '.js-webform-codemirror-runmode', context)).each(function () {
           // Mode Runner - http://codemirror.net/demo/runmode.html
           CodeMirror.runMode($(this).addClass('cm-s-default').text(), $(this).attr('data-webform-codemirror-mode'), this);
         });
@@ -143,4 +143,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

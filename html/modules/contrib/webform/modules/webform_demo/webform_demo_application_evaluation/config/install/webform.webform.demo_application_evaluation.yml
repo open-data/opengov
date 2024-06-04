@@ -14,7 +14,8 @@ archive: false
 id: demo_application_evaluation
 title: 'Demo: Application Evaluation'
 description: 'A demonstration of a very basic application evaluation form. This form is attached to the ''Demo: Application'' using a Webform block.'
-category: Demo
+categories:
+  - Demo
 elements: |
   application_evaluation:
     '#type': fieldset
@@ -39,7 +40,6 @@ elements: |
     comments:
       '#type': textarea
       '#title': Comments
-  
 css: ''
 javascript: ''
 settings:
@@ -127,6 +127,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

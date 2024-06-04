@@ -3,7 +3,7 @@
  * JavaScript behaviors for filter by text.
  */
 
-(function ($, Drupal, debounce) {
+(function ($, Drupal, debounce, once) {
 
   'use strict';
 
@@ -25,7 +25,7 @@
    */
   Drupal.behaviors.webformFilterByText = {
     attach: function (context, settings) {
-      $('input.webform-form-filter-text', context).once('webform-form-filter-text').each(function () {
+      $(once('webform-form-filter-text', 'input.webform-form-filter-text', context)).each(function () {
         var $input = $(this);
         $input.wrap('<div class="webform-form-filter"></div>');
         var $reset = $('<input class="webform-form-filter-reset" type="reset" title="Clear the search query." value="✕" style="display: none" />');
@@ -162,4 +162,4 @@
     }
   };
 
-})(jQuery, Drupal, Drupal.debounce);
+})(jQuery, Drupal, Drupal.debounce, once);

@@ -79,12 +79,12 @@ class SearchApiDate extends SearchApiStandard {
     }
 
     if (!empty($this->value)) {
-      $outer_conditions = $this->query->createConditionGroup($outer_conjunction, [], TRUE);
+      $outer_conditions = $this->query->createAndAddConditionGroup($outer_conjunction);
       // @todo Refactor to use only a single nested filter, and only if
       //   necessary. $value_conditions will currently only ever contain a
       //   single child – a condition or a nested filter with two conditions.
       foreach ($this->value as $value) {
-        $value_conditions = $this->query->createConditionGroup($inner_conjunction, [], FALSE);
+        $value_conditions = $this->query->createConditionGroup($inner_conjunction);
         $outer_conditions->addConditionGroup($value_conditions);
         $values = explode(';', $value);
         $values = array_map([$this, 'getTimestamp'], $values);

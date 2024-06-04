@@ -170,7 +170,7 @@ class ScheduleEmailWebformHandler extends EmailWebformHandler {
     $send_options = [
       '[date:html_date]' => $this->t('Current date'),
       WebformOtherBase::OTHER_OPTION => $this->t('Custom @label…', ['@label' => $this->scheduledEmailManager->getDateTypeLabel()]),
-      (string) $this->t('Webform') => [
+      (string) $this->t('Webform', [], ['context' => 'form']) => [
         '[webform:open:html_date]' => $this->t('Open date'),
         '[webform:close:html_date]' => $this->t('Close date'),
       ],

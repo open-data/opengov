@@ -14,7 +14,8 @@ archive: false
 id: test_element_validate_minlength
 title: 'Test: Element: Validate Minlength'
 description: 'Test #minlength element validation support.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   minlength_textfield:
     '#type': textfield
@@ -27,7 +28,6 @@ elements: |
     '#minlength': 5
     '#required': true
     '#default_value': value
-  
 css: ''
 javascript: ''
 settings:
@@ -115,6 +115,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

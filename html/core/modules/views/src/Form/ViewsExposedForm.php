@@ -67,14 +67,6 @@ class ViewsExposedForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    // Don't show the form when batch operations are in progress.
-    if ($batch = batch_get() && isset($batch['current_set'])) {
-      return [
-        // Set the theme callback to be nothing to avoid errors in template_preprocess_views_exposed_form().
-        '#theme' => '',
-      ];
-    }
-
     // Make sure that we validate because this form might be submitted
     // multiple times per page.
     $form_state->setValidationEnforced();
@@ -145,6 +137,9 @@ class ViewsExposedForm extends FormBase {
     $form['#action'] = $form_action;
     $form['#theme'] = $view->buildThemeFunctions('views_exposed_form');
     $form['#id'] = Html::cleanCssIdentifier('views_exposed_form-' . $view->storage->id() . '-' . $display['id']);
+    // Labels are built too late for inline form errors to work, resulting
+    // in duplicated messages.
+    $form['#disable_inline_form_errors'] = TRUE;
 
     /** @var \Drupal\views\Plugin\views\exposed_form\ExposedFormPluginInterface $exposed_form_plugin */
     $exposed_form_plugin = $view->display_handler->getPlugin('exposed_form');

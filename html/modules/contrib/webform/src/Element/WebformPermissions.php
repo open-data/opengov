@@ -60,7 +60,8 @@ class WebformPermissions extends Select {
    */
   public static function validateWebformPermissions(&$element, FormStateInterface $form_state, &$complete_form) {
     if (!empty($element['#multiple'])) {
-      $value = array_values($form_state->getValue($element['#parents'], []));
+      $parents = $form_state->getValue($element['#parents'], []);
+      $value = is_array($parents) ? array_values($parents) : [];
       $element['#value'] = $value;
       $form_state->setValueForElement($element, $value);
     }

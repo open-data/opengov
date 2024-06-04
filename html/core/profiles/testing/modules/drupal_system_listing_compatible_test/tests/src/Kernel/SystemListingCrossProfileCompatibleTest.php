@@ -5,8 +5,7 @@ namespace Drupal\Tests\drupal_system_listing_compatible_test\Kernel;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
- * Verifies that tests in installation profile modules are found and may use
- * another profile for running tests.
+ * Verifies that tests in installation profile modules are found.
  *
  * @group drupal_system_listing_compatible_test
  */
@@ -27,8 +26,6 @@ class SystemListingCrossProfileCompatibleTest extends KernelTestBase {
    *
    * This test needs to use a different installation profile than the test which
    * asserts that this test is found.
-   *
-   * @see \Drupal\simpletest\Tests\InstallationProfileModuleTestsTest
    *
    * @var string
    */

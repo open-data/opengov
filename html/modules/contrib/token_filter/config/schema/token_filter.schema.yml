@@ -8,3 +8,14 @@ ckeditor.plugin.tokenbrowser:
       sequence:
         type: string
         label: 'Token'
+
+ckeditor5.plugin.token_filter_token_browser:
+  type: mapping
+  label: 'Token browser'
+  mapping:
+    token_types:
+      type: sequence
+      label: 'Token types'
+      sequence:
+        type: string
+        label: 'Token'

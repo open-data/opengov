@@ -5,8 +5,8 @@ namespace Drupal\webform\Element;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\Role;
 use Drupal\webform\Entity\Webform as WebformEntity;
-use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Plugin\WebformElement\WebformActions as WebformActionsWebformElement;
+use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\WebformInterface;
 
 /**

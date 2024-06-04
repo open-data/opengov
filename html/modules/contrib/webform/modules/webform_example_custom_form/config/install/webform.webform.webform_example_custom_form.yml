@@ -14,7 +14,8 @@ archive: false
 id: webform_example_custom_form
 title: 'Example: Webform Custom (Configuration) Form'
 description: 'An example of a custom (configuration) form built using the webform module.'
-category: Example
+categories:
+  - Example
 elements: |
   '#attributes':
     'class':
@@ -60,11 +61,6 @@ elements: |
     datelist:
       '#type': datelist
       '#title': 'Date list'
-    date_datepicker:
-      '#type': date
-      '#title': 'Date picker'
-      '#datepicker': true
-      '#date_date_format': 'D, m/d/Y'
     webform_time:
       '#type': webform_time
       '#title': Time
@@ -304,7 +300,6 @@ elements: |
           last_name: Smith
         - first_name: Jane
           last_name: Doe
-  
 css: ''
 javascript: ''
 settings:
@@ -392,6 +387,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

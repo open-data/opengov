@@ -14,7 +14,8 @@ archive: false
 id: test_element_more
 title: 'Test: Element: More'
 description: 'Test element #more and #more_title properties.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   more:
     '#type': webform_more
@@ -65,7 +66,6 @@ elements: |
     '#more': '{This is an example of more}'
     '#description': '{This is a description}'
     '#description_display': tooltip
-  
 css: ''
 javascript: ''
 settings:
@@ -153,6 +153,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

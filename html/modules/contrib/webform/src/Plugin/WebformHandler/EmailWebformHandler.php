@@ -9,6 +9,7 @@ use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\webform\Element\WebformAjaxElementTrait;
+use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Element\WebformSelectOther;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
@@ -403,8 +404,8 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
       '[current-user:account-name]' => 'Current user account name',
       '[webform:author:display-name]' => 'Webform author display name',
       '[webform:author:account-name]' => 'Webform author account name',
-      '[webform_submission:author:display-name]' => 'Webform submission author display name',
-      '[webform_submission:author:account-name]' => 'Webform submission author account name',
+      '[webform_submission:user:display-name]' => 'Webform submission author display name',
+      '[webform_submission:user:account-name]' => 'Webform submission author account name',
     ];
 
     // Disable client-side HTML5 validation which is having issues with hidden
@@ -946,7 +947,8 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
       // Apply optional global format to body.
       // NOTE: $message['body'] is not passed-thru Xss::filter() to allow
       // style tags to be supported.
-      if ($format = $this->configFactory->get('webform.settings')->get('html_editor.mail_format')) {
+      $format = $this->configFactory->get('webform.settings')->get('html_editor.mail_format');
+      if ($format && $format !== WebformHtmlEditor::DEFAULT_FILTER_FORMAT) {
         $build = [
           '#type' => 'processed_text',
           '#text' => $message['body'],
@@ -1391,7 +1393,6 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
     }
     // Preload HTML Editor and CodeMirror so that they can be properly
     // initialized when loaded via Ajax.
-    $element['#attached']['library'][] = 'webform/webform.element.html_editor';
     $element['#attached']['library'][] = 'webform/webform.element.codemirror.text';
 
     return $element;
@@ -1761,7 +1762,7 @@ class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMe
    *   The element key or NULL if token can not be parsed.
    */
   protected function getElementKeyFromToken($token, $format = 'raw') {
-    if (preg_match('/^\[webform_submission:values:([^:]+):' . $format . '\]$/', $token, $match)) {
+    if ($token && preg_match('/^\[webform_submission:values:([^:]+):' . $format . '\]$/', $token, $match)) {
       return $match[1];
     }
     else {

@@ -14,7 +14,8 @@ archive: false
 id: test_example_elements
 title: 'Test: Example: Elements'
 description: 'Examples of every supported <a href="https://api.drupal.org/api/drupal/elements">webform element</a>.'
-category: 'Test: Example'
+categories:
+  - 'Test: Example'
 elements: |
   basic_elements:
     '#type': details
@@ -550,7 +551,6 @@ elements: |
     table:
       '#type': table
       '#title': Table
-  
 css: ''
 javascript: ''
 settings:
@@ -638,6 +638,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

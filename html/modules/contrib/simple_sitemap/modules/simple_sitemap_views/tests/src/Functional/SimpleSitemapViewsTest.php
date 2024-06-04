@@ -3,6 +3,7 @@
 namespace Drupal\Tests\simple_sitemap_views\Functional;
 
 use Drupal\simple_sitemap\Entity\SimpleSitemapType;
+use Drupal\simple_sitemap\Queue\QueueWorker;
 
 /**
  * Tests Simple XML Sitemap (Views) functional integration.
@@ -100,7 +101,7 @@ class SimpleSitemapViewsTest extends SimpleSitemapViewsTestBase {
     $this->sitemapViews->addArgumentsToIndex($this->testView, ['page']);
     $this->sitemapViews->addArgumentsToIndex($this->testView, ['page', $title]);
     $this->sitemapViews->addArgumentsToIndex($this->testView2, ['page', 1]);
-    $this->generator->generate('backend');
+    $this->generator->generate(QueueWorker::GENERATE_TYPE_BACKEND);
 
     $url1 = $this->testView->getUrl()->toString();
     $url2 = $this->testView->getUrl(['page', NULL, NULL])->toString();
@@ -168,7 +169,7 @@ class SimpleSitemapViewsTest extends SimpleSitemapViewsTestBase {
     $this->assertIndexSize(2);
 
     // Records about pages with empty result must be removed during generation.
-    $this->generator->generate('backend');
+    $this->generator->generate(QueueWorker::GENERATE_TYPE_BACKEND);
     $this->assertIndexSize(0);
   }
 

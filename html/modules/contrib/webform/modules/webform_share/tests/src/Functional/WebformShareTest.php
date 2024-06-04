@@ -16,7 +16,7 @@ class WebformShareTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'webform',
     'webform_share',
   ];
@@ -100,12 +100,12 @@ class WebformShareTest extends WebformBrowserTestBase {
     $assert_session->responseContains('"theme":"' . \Drupal::config('system.theme')->get('default') . '"');
 
     // Enable the bartik theme and apply to share page.
-    \Drupal::service('theme_installer')->install(['bartik']);
-    $webform->setSetting('share_theme_name', 'bartik')->save();
+    \Drupal::service('theme_installer')->install(['olivero']);
+    $webform->setSetting('share_theme_name', 'olivero')->save();
 
     // Check that iframe page is using the bartik theme.
     $this->drupalGet('/webform/contact/share');
-    $assert_session->responseContains('"theme":"bartik"');
+    $assert_session->responseContains('"theme":"olivero"');
 
     // Get the share page.
     $this->drupalGet('/webform/contact/share');
@@ -136,7 +136,8 @@ class WebformShareTest extends WebformBrowserTestBase {
       ->save();
 
     // Check no page title.
-    $assert_session->responseNotContains('<h1 class="title page-title">Contact</h1>');
+    $this->drupalGet('/webform/contact/share');
+    $assert_session->responseNotContains('<h1>Contact</h1>');
 
     // Check iframe page iFrame-resizer script.
     $this->drupalGet("/webform/contact/share/$library/$version");

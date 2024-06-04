@@ -16,6 +16,9 @@ use Drupal\views\Views;
 
 /**
  * Class to manage sitemap data for views.
+ *
+ * @todo Replace with something similar to CustomLinkManager including
+ * getting/setting of sitemaps.
  */
 class SimpleSitemapViews {
 

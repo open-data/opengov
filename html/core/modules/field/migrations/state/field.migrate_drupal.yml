@@ -1,7 +1,8 @@
-# cspell:ignore entityreference
+# cspell:ignore entityreference nodereference userreference
 finished:
   6:
     nodereference: core
+    nodereference_url: core
     userreference: core
     content: field
     email: core

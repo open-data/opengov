@@ -60,7 +60,7 @@ class WebformLocationGeocomplete extends WebformLocationBase {
 
     $format = $this->getItemFormat($element);
     if ($format === 'map') {
-      $google_map_url = UrlGenerator::fromUri('http://maps.google.com/', ['query' => ['q' => $value['value']]]);
+      $google_map_url = UrlGenerator::fromUri('https://maps.google.com/', ['query' => ['q' => $value['value']]]);
 
       $location = $value['location'];
       $key = $element['#api_key'] ?? $this->configFactory->get('webform.settings')->get('element.default_google_maps_api_key');

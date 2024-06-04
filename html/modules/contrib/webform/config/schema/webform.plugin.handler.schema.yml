@@ -230,5 +230,5 @@ webform.handler.settings:
   label: Settings
   mapping:
     debug:
-      type: string
+      type: boolean
       label: 'Enable debugging'

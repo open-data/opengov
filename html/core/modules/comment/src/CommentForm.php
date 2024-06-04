@@ -242,7 +242,7 @@ class CommentForm extends ContentEntityForm {
       '#access' => $is_admin,
     ];
 
-    return parent::form($form, $form_state, $comment);
+    return parent::form($form, $form_state);
   }
 
   /**
@@ -371,7 +371,7 @@ class CommentForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $comment = $this->entity;
-    $entity = $this->entityRepository->getTranslationFromContext($comment->getCommentedEntity());
+    $entity = $comment->getCommentedEntity();
     $field_name = $comment->getFieldName();
     $uri = $entity->toUrl();
     $logger = $this->logger('comment');
@@ -381,7 +381,7 @@ class CommentForm extends ContentEntityForm {
       $form_state->setValue('cid', $comment->id());
 
       // Add a log entry.
-      $logger->notice('Comment posted: %subject.', [
+      $logger->info('Comment posted: %subject.', [
         '%subject' => $comment->getSubject(),
         'link' => Link::fromTextAndUrl(t('View'), $comment->toUrl()->setOption('fragment', 'comment-' . $comment->id()))->toString(),
       ]);

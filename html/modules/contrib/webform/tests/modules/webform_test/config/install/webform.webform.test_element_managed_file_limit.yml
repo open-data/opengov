@@ -14,7 +14,8 @@ archive: false
 id: test_element_managed_file_limit
 title: 'Test: Element: Managed file limit'
 description: 'Test file upload limit per webform.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   managed_file_01:
     '#type': managed_file
@@ -35,7 +36,6 @@ elements: |
       managed_file:
         '#type': managed_file
         '#title': managed_file
-  
 css: ''
 javascript: ''
 settings:
@@ -123,6 +123,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

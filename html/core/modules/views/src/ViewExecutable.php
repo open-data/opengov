@@ -74,6 +74,16 @@ class ViewExecutable {
   protected $ajaxEnabled = FALSE;
 
   /**
+   * The plugin name.
+   */
+  public ?string $plugin_name;
+
+  /**
+   * The build execution time.
+   */
+  public string|float $build_time;
+
+  /**
    * Where the results of a query will go.
    *
    * The array must use a numeric index starting at 0.
@@ -237,14 +247,14 @@ class ViewExecutable {
   public $row_index;
 
   /**
-   * Allow to override the url of the current view.
+   * Allow to override the \Drupal\Core\Url of the current view.
    *
    * @var \Drupal\Core\Url
    */
   public $override_url;
 
   /**
-   * Allow to override the path used for generated urls.
+   * Allow to override the path used for generated URLs.
    *
    * @var string
    */
@@ -702,15 +712,16 @@ class ViewExecutable {
       }
 
       // If we have no input at all, check for remembered input via session.
-
-      // If filters are not overridden, store the 'remember' settings on the
-      // default display. If they are, store them on this display. This way,
-      // multiple displays in the same view can share the same filters and
-      // remember settings.
-      $display_id = ($this->display_handler->isDefaulted('filters')) ? 'default' : $this->current_display;
-
-      if (empty($this->exposed_input) && !empty($_SESSION['views'][$this->storage->id()][$display_id])) {
-        $this->exposed_input = $_SESSION['views'][$this->storage->id()][$display_id];
+      if (empty($this->exposed_input) && $this->request->hasSession()) {
+        $session = \Drupal::request()->getSession();
+        // If filters are not overridden, store the 'remember' settings on the
+        // default display. If they are, store them on this display. This way,
+        // multiple displays in the same view can share the same filters and
+        // remember settings.
+        $display_id = ($this->display_handler->isDefaulted('filters')) ? 'default' : $this->current_display;
+        if (!empty($session->get('views')[$this->storage->id()][$display_id])) {
+          $this->exposed_input = $session->get('views')[$this->storage->id()][$display_id];
+        }
       }
     }
 
@@ -1950,7 +1961,7 @@ class ViewExecutable {
       $position = 0;
       if (!empty($this->argument)) {
         foreach ($this->argument as $argument) {
-          if (!empty($argument->is_default) && !empty($argument->options['default_argument_skip_url'])) {
+          if (!empty($argument->is_default)) {
             unset($args[$position]);
           }
           $position++;
@@ -1961,7 +1972,7 @@ class ViewExecutable {
     $path = $this->getPath();
 
     // Don't bother working if there's nothing to do:
-    if (empty($path) || (empty($args) && strpos($path, '%') === FALSE)) {
+    if (empty($path) || (empty($args) && !str_contains($path, '%'))) {
       return $display_handler->getUrlInfo();
     }
 

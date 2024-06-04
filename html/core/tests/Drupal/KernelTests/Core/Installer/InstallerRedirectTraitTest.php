@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @coversDefaultClass \Drupal\Core\Installer\InstallerRedirectTrait
  *
  * @group Installer
+ * @group #slow
  */
 class InstallerRedirectTraitTest extends KernelTestBase {
 
@@ -83,12 +84,10 @@ class InstallerRedirectTraitTest extends KernelTestBase {
 
       // Un-protect the method using reflection.
       $method_ref = new \ReflectionMethod($trait, 'shouldRedirectToInstaller');
-      $method_ref->setAccessible(TRUE);
 
       // Mock the database connection info.
       $db = $this->getMockForAbstractClass(Database::class);
       $property_ref = new \ReflectionProperty($db, 'databaseInfo');
-      $property_ref->setAccessible(TRUE);
       $property_ref->setValue($db, ['default' => $connection_info]);
 
       if ($connection) {

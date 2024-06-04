@@ -22,7 +22,8 @@ module.
 
 Install the module as any other module. Visit the text format administration
 page at /admin/config/content/formats/filters and edit a text format. Check the
-'Replaces global tokens with their value' filter and save the text format.
+'Replaces global and entity tokens with their values' filter and save the text
+format.
 
 When editing a form where this text format is used in a field, you can type
 global tokens that will be replaced when the filed is rendered.

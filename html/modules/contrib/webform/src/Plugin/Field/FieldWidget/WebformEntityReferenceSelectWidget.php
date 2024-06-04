@@ -4,10 +4,10 @@ namespace Drupal\webform\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformInterface;
-use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
 
 /**
  * Plugin implementation of the 'webform_entity_reference_select' widget.

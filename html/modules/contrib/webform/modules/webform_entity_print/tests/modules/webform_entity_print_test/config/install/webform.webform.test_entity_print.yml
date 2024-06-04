@@ -14,7 +14,8 @@ archive: false
 id: test_entity_print
 title: 'Test: Submission: Entity Print'
 description: 'Test webform entity print.'
-category: 'Test: Print'
+categories:
+  - 'Test: Print'
 elements: |
   textfield:
     '#type': textfield
@@ -36,7 +37,6 @@ elements: |
     '#type': webform_signature
     '#title': signature_private
     '#uri_scheme': private
-
 css: '/** custom webform css **/'
 javascript: ''
 settings:
@@ -124,6 +124,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -143,7 +145,6 @@ settings:
   confirmation_title: ''
   confirmation_message: |
     <p>You can view your submission via <a href="[webform_submission:view-url]">[webform_submission:view-url:relative]</a></p>
-
   confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true

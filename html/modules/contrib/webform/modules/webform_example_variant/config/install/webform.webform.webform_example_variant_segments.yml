@@ -16,7 +16,8 @@ archive: false
 id: webform_example_variant_segments
 title: 'Example: Variant: Segments'
 description: 'An example of a long/short form with organization variants.'
-category: Example
+categories:
+  - Example
 elements: |
   form_type:
     '#type': webform_variant
@@ -34,7 +35,6 @@ elements: |
   notes:
     '#type': textfield
     '#title': Notes
-  
 css: ''
 javascript: ''
 settings:
@@ -122,6 +122,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

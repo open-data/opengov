@@ -3,7 +3,7 @@
  * Attaches behavior for the Filter module.
  */
 
-(function ($) {
+(function ($, once) {
   'use strict';
 
   function updateFilterHelpLink () {
@@ -28,8 +28,8 @@
    */
   Drupal.behaviors.filterGuidelines = {
     attach: function (context) {
-      $(context).find('.filter-wrapper select.filter-list').once('filter-list').each(updateFilterHelpLink);
+      $(once('filter-list', '.filter-wrapper select.filter-list', context)).each(updateFilterHelpLink);
     }
   };
 
-})(jQuery);
+})(jQuery, once);

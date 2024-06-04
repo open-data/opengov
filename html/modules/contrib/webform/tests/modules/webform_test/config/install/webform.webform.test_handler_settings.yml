@@ -14,7 +14,8 @@ archive: false
 id: test_handler_settings
 title: 'Test: Handler: Settings'
 description: 'Test settings handler.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   preview_settings:
     '#type': fieldset
@@ -61,7 +62,6 @@ elements: |
       '#type': textfield
       '#title': 'Draft loaded message'
       '#default_value': '{Custom draft loaded message}'
-  
 css: ''
 javascript: ''
 settings:
@@ -149,6 +149,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''
@@ -261,7 +263,7 @@ handlers:
       confirmation_url: ''
       confirmation_title: ''
       confirmation_message: ''
-      debug: '1'
+      debug: true
   confirmation:
     id: settings
     label: 'Confirmation Settings'
@@ -279,7 +281,7 @@ handlers:
       confirmation_url: ''
       confirmation_title: '[webform_submission:values:confirmation_title]'
       confirmation_message: '[webform_submission:values:confirmation_message]'
-      debug: '1'
+      debug: true
   custom:
     id: settings
     label: 'Custom settings'
@@ -297,7 +299,7 @@ handlers:
       confirmation_url: ''
       confirmation_title: ''
       confirmation_message: ''
-      debug: '1'
+      debug: true
       draft_saved_message: '[webform_submission:values:draft_saved_message]'
       draft_loaded_message: '[webform_submission:values:draft_loaded_message]'
 variants: {  }

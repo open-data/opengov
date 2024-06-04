@@ -14,7 +14,8 @@ archive: false
 id: test_element_toggles
 title: 'Test: Element: Toggles'
 description: 'Test the toggles element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   toggle_elements:
     '#type': details
@@ -50,7 +51,6 @@ elements: |
         one: One
         two: Two
         three: Three
-  
 css: ''
 javascript: ''
 settings:
@@ -138,6 +138,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

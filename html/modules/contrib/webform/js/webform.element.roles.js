@@ -3,7 +3,7 @@
  * JavaScript behaviors for roles element integration.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -14,7 +14,7 @@
    */
   Drupal.behaviors.webformRoles = {
     attach: function (context) {
-      $(context).find('.js-webform-roles-role[value="authenticated"]').once('webform-roles').each(function () {
+      $(once('webform-roles', '.js-webform-roles-role[value="authenticated"]', context)).each(function () {
         var $authenticated = $(this);
         var $checkboxes = $authenticated.parents('.form-checkboxes').find('.js-webform-roles-role').filter(function () {
           return ($(this).val() !== 'anonymous' && $(this).val() !== 'authenticated');
@@ -36,4 +36,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

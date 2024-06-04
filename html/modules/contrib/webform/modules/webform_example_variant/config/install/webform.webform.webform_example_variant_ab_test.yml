@@ -14,7 +14,7 @@ archive: false
 id: webform_example_variant_ab_test
 title: 'Example: Variant: A/B test'
 description: 'A feedback form with an A/B test.'
-category: ''
+categories: {  }
 elements: |
   mode:
     '#type': webform_variant
@@ -46,7 +46,6 @@ elements: |
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': 'Submit feedback'
-  
 css: ''
 javascript: ''
 settings:
@@ -134,6 +133,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -335,7 +336,6 @@ variants:
           '#title_display': 'inline'
         actions:
           '#title': 'Submit'
-        
       handlers:
         email_confirmation:
           status: false

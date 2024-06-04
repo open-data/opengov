@@ -27,6 +27,7 @@ class WebformOptionsCustomController extends ControllerBase {
     $webform_options_custom_storage = $this->entityTypeManager()->getStorage('webform_options_custom');
 
     $query = $webform_options_custom_storage->getQuery()
+      ->accessCheck()
       ->range(0, 10)
       ->sort('label');
 

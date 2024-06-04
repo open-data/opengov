@@ -7,6 +7,7 @@ use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\TableSort;
@@ -268,6 +269,13 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    * @var string
    */
   protected $submissionViews;
+
+  /**
+   * The result limit.
+   *
+   * @var int
+   */
+  protected $limit;
 
   /**
    * {@inheritdoc}
@@ -1299,7 +1307,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
     // If query is order(ed) by 'element__*' we need to build a custom table
     // sort using hook_query_TAG_alter().
     // @see webform_query_webform_submission_list_builder_alter()
-    if ($order && strpos($order['sql'], 'element__') === 0) {
+    if (!empty($order['sql']) && strpos($order['sql'], 'element__') === 0) {
       $name = $order['sql'];
       $column = $this->columns[$name];
       $query->addTag('webform_submission_list_builder')
@@ -1349,6 +1357,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    */
   protected function getTotal($keys = '', $state = '', $source_entity = '') {
     return $this->getQuery($keys, $state, $source_entity)
+      ->accessCheck(FALSE)
       ->count()
       ->execute();
   }
@@ -1366,7 +1375,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    * @return \Drupal\Core\Entity\Query\QueryInterface
    *   An entity query.
    */
-  protected function getQuery($keys = '', $state = '', $source_entity = '') {
+  protected function getQuery($keys = '', $state = '', $source_entity = ''): QueryInterface {
     /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
     $submission_storage = $this->getStorage();
     $query = $submission_storage->getQuery();

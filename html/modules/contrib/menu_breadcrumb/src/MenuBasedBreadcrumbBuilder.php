@@ -2,6 +2,7 @@
 
 namespace Drupal\menu_breadcrumb;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
@@ -30,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
  * {@inheritdoc}
  */
 class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
-  use \Drupal\Core\StringTranslation\StringTranslationTrait;
+  use StringTranslationTrait;
 
   /**
    * The configuration object generator.

@@ -3,7 +3,7 @@
  * JavaScript behaviors for help.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -17,7 +17,7 @@
    */
   Drupal.behaviors.webformHelpDialog = {
     attach: function (context) {
-      $(context).find('.button-webform-play').once('webform-help-dialog').on('click', function (event) {
+      $(once('webform-help-dialog', '.button-webform-play', context)).on('click', function (event) {
         if ($(window).width() < 768) {
           event.stopImmediatePropagation();
         }
@@ -33,4 +33,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

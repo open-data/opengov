@@ -4,6 +4,7 @@ namespace Drupal\webform\Element;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\OptGroup;
+use Drupal\views\Plugin\EntityReferenceSelection\ViewsSelection;
 use Drupal\webform\Utility\WebformOptionsHelper;
 
 /**
@@ -74,7 +75,7 @@ trait WebformEntityTrait {
     // the entity reference's options.
     if (!\Drupal::moduleHandler()->moduleExists('views')
       // phpcs:ignore Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing
-      || !($handler instanceof \Drupal\views\Plugin\EntityReferenceSelection\ViewsSelection)) {
+      || !($handler instanceof ViewsSelection)) {
       $options = static::translateOptions($options, $element);
     }
 

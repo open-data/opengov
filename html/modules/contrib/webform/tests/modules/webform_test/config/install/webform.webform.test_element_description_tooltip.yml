@@ -14,7 +14,8 @@ archive: false
 id: test_element_description_tooltip
 title: 'Test: Element: Description tooltip'
 description: 'Test element description tooltip.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   basic_elements:
     '#type': details
@@ -196,11 +197,6 @@ elements: |
       '#type': webform_link
       '#title': Link
       '#description': 'This is a description for the ''webform_link'' element.'
-      '#description_display': tooltip
-    webform_location_places:
-      '#type': webform_location_places
-      '#title': 'Location (Algolia Places)'
-      '#description': 'This is a description for the ''webform_location_places'' element.'
       '#description_display': tooltip
     webform_name:
       '#type': webform_name
@@ -515,7 +511,6 @@ elements: |
       '#title': 'Machine name'
       '#description': 'This is a description for the ''machine_name'' element.'
       '#description_display': tooltip
-  
 css: ''
 javascript: ''
 settings:
@@ -603,6 +598,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

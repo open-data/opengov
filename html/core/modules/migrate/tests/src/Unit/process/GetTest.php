@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\migrate\Unit\process;
 
 use Drupal\migrate\Plugin\migrate\process\Get;
@@ -113,8 +115,9 @@ class GetTest extends MigrateProcessTestCase {
   }
 
   /**
-   * Tests the Get plugin for syntax errors, e.g. "Invalid tag_line detected" by
-   * creating a prophecy of the class.
+   * Tests the Get plugin for syntax errors by creating a prophecy of the class.
+   *
+   * An example of a syntax error is "Invalid tag_line detected".
    */
   public function testPluginSyntax() {
     $this->assertNotNull($this->prophesize(Get::class));

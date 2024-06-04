@@ -1,4 +1,4 @@
-(function ($, Drupal, Bootstrap) {
+(function ($, Drupal, Bootstrap, once) {
   /*global jQuery:false */
   /*global Drupal:false */
   "use strict";
@@ -60,7 +60,7 @@
 
       // JavaScript.
       var $jQueryUiBridge = $context.find('input[name="modal_jquery_ui_bridge"]');
-      $jQueryUiBridge.once('bs.jquery.ui.dialog.bridge').each(function () {
+      $(once('bs.jquery.ui.dialog.bridge', 'input[name="modal_jquery_ui_bridge"]', context)).each(function () {
         $jQueryUiBridge
           .off('change.bs.jquery.ui.dialog.bridge')
           .on('change.bs.jquery.ui.dialog.bridge', function (e) {
@@ -181,7 +181,7 @@
     attach: function (context) {
       var $context = $(context);
       var $preview = $context.find('#bootstrap-theme-preview');
-      $preview.once('bootstrap-theme-preview').each(function () {
+      $(once('bootstrap-theme-preview', '#bootstrap-theme-preview', context)).each(function () {
         // Construct the "Bootstrap Theme" preview here since it's not actually
         // a Bootswatch theme, but rather one provided by Bootstrap itself.
         // Unfortunately getbootstrap.com does not have HTTPS enabled, so the
@@ -221,7 +221,7 @@
     attach: function (context) {
       var $context = $(context);
       var $container = $context.find('#edit-container');
-      $container.once('container-preview').each(function () {
+      $(once('container-preview', '#edit-container', context)).each(function () {
         $container.find('[name="fluid_container"]').on('change.bootstrap', function () {
           if ($(this).is(':checked')) {
             $context.find('.container').removeClass('container').addClass('container-fluid');
@@ -241,7 +241,7 @@
     attach: function (context) {
       var $context = $(context);
       var $preview = $context.find('#edit-navbar');
-      $preview.once('navbar').each(function () {
+      $(once('navbar', '#edit-navbar', context)).each(function () {
         var $body = $context.find('body');
         var $navbar = $context.find('#navbar.navbar');
         $preview.find('select[name="navbar_position"]').bind('change', function () {
@@ -276,4 +276,4 @@
     }
   };
 
-})(jQuery, Drupal, Drupal.bootstrap);
+})(jQuery, Drupal, Drupal.bootstrap, once);

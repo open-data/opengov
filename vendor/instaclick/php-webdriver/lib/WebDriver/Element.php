@@ -36,13 +36,11 @@ namespace WebDriver;
  * @method void clear() Clear a TEXTAREA or text INPUT element's value.
  * @method boolean selected() Determine if an OPTION element, or an INPUT element of type checkbox or radiobutton is currently selected.
  * @method boolean enabled() Determine if an element is currently enabled.
- * @method string attribute($attributeName) Get the value of an element's attribute.
  * @method boolean equals($otherId) Test if two element IDs refer to the same DOM element.
  * @method boolean displayed() Determine if an element is currently displayed.
  * @method array location() Determine an element's location on the page.
  * @method array location_in_view() Determine an element's location on the screen once it has been scrolled into view.
  * @method array size() Determine an element's size in pixels.
- * @method string css($propertyName) Query the value of an element's computed CSS property.
  */
 final class Element extends Container
 {
@@ -60,13 +58,11 @@ final class Element extends Container
             'clear' => array('POST'),
             'selected' => array('GET'),
             'enabled' => array('GET'),
-            'attribute' => array('GET'),
             'equals' => array('GET'),
             'displayed' => array('GET'),
             'location' => array('GET'),
             'location_in_view' => array('GET'),
             'size' => array('GET'),
-            'css' => array('GET'),
         );
     }
 
@@ -112,6 +108,34 @@ final class Element extends Container
     public function getID()
     {
         return $this->id;
+    }
+
+    /**
+     * Get the value of an element's attribute: /session/:sessionId/element/:id/attribute/:name
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function attribute($name)
+    {
+        $result = $this->curl('GET', "/attribute/$name");
+
+        return $result['value'];
+    }
+
+    /**
+     * Query the value of an element’s computed CSS property: /session/:sessionId/element/:id/css/:propertyName
+     *
+     * @param string $propertyName
+     *
+     * @return mixed
+     */
+    public function css($propertyName)
+    {
+        $result = $this->curl('GET', "/css/$propertyName");
+
+        return $result['value'];
     }
 
     /**

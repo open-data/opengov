@@ -133,7 +133,7 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
           // @see \Drupal\webform_entity_print_attachment\Element\WebformEntityPrintAttachment::getFileContent
           $build[$id]['data'] = WebformTwigExtension::buildTwigTemplate(
             $webform_submission,
-            $webform_submission->_webform_view_mode_twig
+            $webform_submission->webformViewModeTwig
           );
           break;
 

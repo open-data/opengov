@@ -24,3 +24,11 @@ html.js .webform-element-more--link {
 html.js .webform-element-more--content {
   display: none;
 }
+
+.webform-element-more--content p:first-child {
+  margin-top: 0;
+}
+
+.webform-element-more--content p:last-child {
+  margin-bottom: 0;
+}

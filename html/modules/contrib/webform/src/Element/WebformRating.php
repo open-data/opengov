@@ -3,8 +3,8 @@
 namespace Drupal\webform\Element;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\Range;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Element\Range;
 use Drupal\webform\Utility\WebformElementHelper;
 
 /**

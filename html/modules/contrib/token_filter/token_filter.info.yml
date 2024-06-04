@@ -6,7 +6,7 @@ dependencies:
   - drupal:filter
   - token:token
 
-# Information added by Drupal.org packaging script on 2023-02-07
-version: '2.0.0'
+# Information added by Drupal.org packaging script on 2023-10-24
+version: '2.1.0'
 project: 'token_filter'
-datestamp: 1675762780
+datestamp: 1698126117

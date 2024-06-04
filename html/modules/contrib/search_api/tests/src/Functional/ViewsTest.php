@@ -106,13 +106,13 @@ class ViewsTest extends SearchApiBrowserTestBase {
     ];
     $label = 'Search for short word';
     $this->checkResults($query, [], $label);
-    $this->assertSession()->pageTextContains('You must include at least one positive keyword with 3 characters or more');
+    $this->assertSession()->pageTextContains('You must include at least one keyword to match in the content. Keywords must be at least 3 characters, and punctuation is ignored.');
     $query = [
       'search_api_fulltext' => 'foo to test',
     ];
     $label = 'Fulltext search including short word';
     $this->checkResults($query, [1, 2, 4], $label);
-    $this->assertSession()->pageTextNotContains('You must include at least one positive keyword with 3 characters or more');
+    $this->assertSession()->pageTextNotContains('You must include at least one keyword to match in the content. Keywords must be at least 3 characters, and punctuation is ignored.');
 
     $this->checkResults(['id[value]' => 2], [2], 'Search with ID filter');
     $query = [
@@ -123,10 +123,30 @@ class ViewsTest extends SearchApiBrowserTestBase {
     $this->checkResults($query, [2, 3, 4], 'Search with ID "in between" filter');
     $query = [
       'id[min]' => 2,
+      'id_op' => 'between',
+    ];
+    $this->checkResults($query, [2, 3, 4, 5], 'Search with ID "in between" filter (only min)');
+    $query = [
+      'id[max]' => 4,
+      'id_op' => 'between',
+    ];
+    $this->checkResults($query, [1, 2, 3, 4], 'Search with ID "in between" filter (only max)');
+    $query = [
+      'id[min]' => 2,
       'id[max]' => 4,
       'id_op' => 'not between',
     ];
     $this->checkResults($query, [1, 5], 'Search with ID "not in between" filter');
+    $query = [
+      'id[min]' => 2,
+      'id_op' => 'not between',
+    ];
+    $this->checkResults($query, [1], 'Search with ID "not in between" filter (only min)');
+    $query = [
+      'id[max]' => 4,
+      'id_op' => 'not between',
+    ];
+    $this->checkResults($query, [5], 'Search with ID "not in between" filter (only max)');
     $query = [
       'id[value]' => 2,
       'id_op' => '>',
@@ -396,6 +416,7 @@ class ViewsTest extends SearchApiBrowserTestBase {
    * Contains regression tests for previous, fixed bugs.
    */
   protected function regressionTests() {
+    $this->regressionTest3296477();
     $this->regressionTest3318187();
     $this->regressionTest3187134();
     $this->regressionTest2869121();
@@ -436,7 +457,7 @@ class ViewsTest extends SearchApiBrowserTestBase {
       [],
       'Search for short word'
     );
-    $this->assertSession()->pageTextContains('You must include at least one positive keyword with 3 characters or more');
+    $this->assertSession()->pageTextContains('You must include at least one keyword to match in the content. Keywords must be at least 3 characters, and punctuation is ignored.');
 
     // Make sure this also works with the exposed form in a block, and doesn't
     // throw fatal errors on all pages with the block.
@@ -788,6 +809,32 @@ class ViewsTest extends SearchApiBrowserTestBase {
   }
 
   /**
+   * Tests that date "in between" filters also work with just one value.
+   *
+   * @see https://www.drupal.org/node/3296477
+   */
+  protected function regressionTest3296477(): void {
+    $yesterday = date('Y-m-d', strtotime('-1DAY'));
+    $tomorrow = date('Y-m-d', strtotime('+1DAY'));
+    $query = [
+      'created[min]' => $yesterday,
+      'created[max]' => $tomorrow,
+      'created_op' => 'between',
+    ];
+    $this->checkResults($query, [1, 2, 3, 4, 5], 'Search with "Created between TODAY and TOMORROW" filter');
+    $query = [
+      'created[min]' => $tomorrow,
+      'created_op' => 'between',
+    ];
+    $this->checkResults($query, [], 'Search with "Created between TOMORROW and *" filter');
+    $query = [
+      'created[max]' => $yesterday,
+      'created_op' => 'between',
+    ];
+    $this->checkResults($query, [], 'Search with "Created between * and YESTERDAY" filter');
+  }
+
+  /**
    * Verifies that exposed fulltext fields work correctly.
    */
   protected function checkExposedSearchFields() {
@@ -846,7 +893,7 @@ class ViewsTest extends SearchApiBrowserTestBase {
       $actual_results = [];
       foreach ($this->entities as $id => $entity) {
         $entity_label = Html::escape($entity->label());
-        if (strpos($this->getSession()->getPage()->getContent(), ">$entity_label<") !== FALSE) {
+        if (str_contains($this->getSession()->getPage()->getContent(), ">$entity_label<")) {
           $actual_results[$id] = $id;
         }
       }

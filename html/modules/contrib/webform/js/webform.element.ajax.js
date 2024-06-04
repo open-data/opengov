@@ -3,7 +3,7 @@
  * JavaScript behaviors for webforms.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -17,11 +17,11 @@
    */
   Drupal.behaviors.webformSubmitTrigger = {
     attach: function (context) {
-      $('[data-webform-trigger-submit]').once('webform-trigger-submit').on('change', function () {
+      $(once('webform-trigger-submit', '[data-webform-trigger-submit]')).on('change', function () {
         var submit = $(this).attr('data-webform-trigger-submit');
         $(submit).trigger('mousedown');
       });
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

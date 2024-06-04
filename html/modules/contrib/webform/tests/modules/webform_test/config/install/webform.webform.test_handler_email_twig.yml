@@ -14,7 +14,8 @@ archive: false
 id: test_handler_email_twig
 title: 'Test: Handler: Email Twig'
 description: 'Test Twig email handler.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   first_name:
     '#title': 'First name'
@@ -41,7 +42,6 @@ elements: |
     '#type': textarea
     '#required': true
     '#default_value': '{message}'
-  
 css: ''
 javascript: ''
 settings:
@@ -129,6 +129,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -248,7 +250,6 @@ handlers:
       body: |
         <p>Submitted values are:</p>
         {{ webform_token('[webform_submission:values]', webform_submission) }}
-        
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true

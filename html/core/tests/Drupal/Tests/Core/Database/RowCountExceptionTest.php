@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Database;
 
 use Drupal\Core\Database\RowCountException;
@@ -15,7 +17,7 @@ class RowCountExceptionTest extends UnitTestCase {
   /**
    * The default exception message.
    */
-  private const DEFAULT_EXCEPTION_MESSAGE = "rowCount() is supported for DELETE, INSERT, or UPDATE statements performed with structured query builders only, since they would not be portable across database engines otherwise. If the query builders are not sufficient, use a prepareStatement() with an \$allow_row_count argument set to TRUE, execute() the Statement and get the number of affected rows via rowCount().";
+  private const DEFAULT_EXCEPTION_MESSAGE = "rowCount() is supported for DELETE, INSERT, or UPDATE statements performed with structured query builders only, since they would not be portable across database engines otherwise. If the query builders are not sufficient, use a prepareStatement() with an \$allow_row_count argument set to TRUE, execute() the Statement and get the number of matched rows via rowCount().";
 
   /**
    * Data provider for ::testExceptionMessage()
@@ -31,7 +33,7 @@ class RowCountExceptionTest extends UnitTestCase {
 
   /**
    * @covers ::__construct
-   * @dataProvider providerTestExceptionMessage()
+   * @dataProvider providerTestExceptionMessage
    */
   public function testExceptionMessage($expected, $message) {
     $e = new RowCountException($message);

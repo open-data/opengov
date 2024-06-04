@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\text\Kernel;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
@@ -40,9 +39,7 @@ class TextSummaryTest extends KernelTestBase {
   }
 
   /**
-   * Tests an edge case where the first sentence is a question and
-   * subsequent sentences are not. This edge case is documented at
-   * https://www.drupal.org/node/180425.
+   * Tests text summaries for a question followed by a sentence.
    */
   public function testFirstSentenceQuestion() {
     $text = 'A question? A sentence. Another sentence.';
@@ -231,8 +228,9 @@ class TextSummaryTest extends KernelTestBase {
   }
 
   /**
-   * Tests text_summary() returns an empty string without any error when
-   * called with an invalid format.
+   * Tests text summaries with an invalid filter format.
+   *
+   * @see text_summary()
    */
   public function testInvalidFilterFormat() {
 
@@ -246,7 +244,7 @@ class TextSummaryTest extends KernelTestBase {
    */
   public function assertTextSummary(string $text, string $expected, ?string $format = NULL, int $size = NULL): void {
     $summary = text_summary($text, $format, $size);
-    $this->assertSame($expected, $summary, new FormattableMarkup('<pre style="white-space: pre-wrap">@actual</pre> is identical to <pre style="white-space: pre-wrap">@expected</pre>', ['@actual' => $summary, '@expected' => $expected]));
+    $this->assertSame($expected, $summary, '<pre style="white-space: pre-wrap">' . $summary . '</pre> is identical to <pre style="white-space: pre-wrap">' . $expected . '</pre>');
   }
 
   /**

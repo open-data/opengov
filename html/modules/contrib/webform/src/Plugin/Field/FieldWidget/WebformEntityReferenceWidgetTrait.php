@@ -211,7 +211,7 @@ trait WebformEntityReferenceWidgetTrait {
         $token_types[] = 'paragraph';
         $default_data_example[] = '';
         $default_data_example[] = '# ' . $this->t('You can also use paragraphs tokens.');
-        $default_data_example[] = "some_value: '[paragraph:some_value:clear]";
+        $default_data_example[] = "some_value: '[paragraph:some_value:clear]'";
       }
       $element['settings']['default_data'] = [
         '#type' => 'webform_codemirror',

@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Datetime;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\Datetime\FormattedDateDiff;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Core\Language\Language;
+use Drupal\Core\Language\LanguageManager;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -70,6 +74,9 @@ class DateTest extends UnitTestCase {
     $this->entityTypeManager->expects($this->any())->method('getStorage')->with('date_format')->willReturn($entity_storage);
 
     $this->languageManager = $this->createMock('Drupal\Core\Language\LanguageManagerInterface');
+    $this->languageManager->expects($this->any())
+      ->method('getCurrentLanguage')
+      ->willReturn(new Language(['id' => $this->randomMachineName(2)]));
     $this->stringTranslation = $this->createMock('Drupal\Core\StringTranslation\TranslationInterface');
     $this->requestStack = $this->createMock('Symfony\Component\HttpFoundation\RequestStack');
 
@@ -77,6 +84,7 @@ class DateTest extends UnitTestCase {
     $container = new ContainerBuilder();
     $container->set('config.factory', $config_factory);
     $container->set('string_translation', $this->getStringTranslationStub());
+    $container->set('language_manager', $this->languageManager);
     \Drupal::setContainer($container);
 
     $this->dateFormatter = new DateFormatter($this->entityTypeManager, $this->languageManager, $this->stringTranslation, $this->getConfigFactoryStub(), $this->requestStack);
@@ -167,6 +175,7 @@ class DateTest extends UnitTestCase {
 
     // Removed characters related to timezone 'e' and 'T', as test does not have
     // timezone set.
+    // cspell:disable-next-line
     $date_characters = 'dDjlNSwzWFmMntLoYyaABgGhHisuIOPZcrU';
     $date_chars = str_split($date_characters);
 
@@ -186,7 +195,7 @@ class DateTest extends UnitTestCase {
     $timestamp = $this->createTimestamp('2013-12-11 10:09:09');
     $options = [];
 
-    // Mocks the formatDiff function of the dateformatter object.
+    // Mocks the formatDiff function of the DateFormatter object.
     $this->dateFormatterStub
       ->expects($this->exactly(2))
       ->method('formatDiff')
@@ -219,7 +228,7 @@ class DateTest extends UnitTestCase {
     $request_time = $this->createTimestamp('2013-12-11 10:09:08');
     $options = [];
 
-    // Mocks the formatDiff function of the dateformatter object.
+    // Mocks the formatDiff function of the DateFormatter object.
     $this->dateFormatterStub
       ->expects($this->exactly(2))
       ->method('formatDiff')
@@ -419,11 +428,29 @@ class DateTest extends UnitTestCase {
   }
 
   /**
-   * Creates a UNIX timestamp given a date and time string in the format
-   * year-month-day hour:minute:seconds (e.g. 2013-12-11 10:09:08).
+   * Tests that an RFC2822 formatted date always returns an English string.
+   *
+   * @see http://www.faqs.org/rfcs/rfc2822.html
+   *
+   * @covers ::format
+   */
+  public function testRfc2822DateFormat(): void {
+    $timestamp = 1549110600;
+    $langcodes = array_keys(LanguageManager::getStandardLanguageList());
+    $langcodes[] = NULL;
+    foreach ($langcodes as $langcode) {
+      $formatted_date = $this->dateFormatter->format($timestamp, 'custom', 'r', 'Europe/Berlin', $langcode);
+      // Check that RFC2822 format date is returned regardless of langcode.
+      $this->assertSame('Sat, 02 Feb 2019 13:30:00 +0100', $formatted_date);
+    }
+  }
+
+  /**
+   * Creates a UNIX timestamp given a date and time string.
    *
    * @param string $dateTimeString
-   *   The formatted date and time string.
+   *   The formatted date and time string. The format is year-month-day
+   *   hour:minute:seconds (e.g. 2013-12-11 10:09:08).
    *
    * @return int
    *   The UNIX timestamp.

@@ -51,7 +51,6 @@ webform.admin.dialog:
     - webform/webform.admin.dropbutton
     - webform/webform.element.codemirror.yaml
     - webform/webform.element.help
-    - webform/webform.element.html_editor
     - webform/webform.element.other
     - webform/webform.element.message
     - webform/webform.element.select2
@@ -129,8 +128,8 @@ webform.ajax:
     - core/drupalSettings
     - core/drupal.ajax
     - core/drupal.announce
-    - core/jquery.once
-    - core/jquery.form
+    - core/jquery
+    - core/once
     - webform/webform.scroll
 
 # Announce.
@@ -141,7 +140,8 @@ webform.announce:
     js/webform.announce.js: {}
   dependencies:
     - core/jquery
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - core/drupal
     - core/drupal.announce
 
@@ -184,7 +184,8 @@ webform.confirmation.modal:
     - core/drupal
     - core/drupal.dialog
     - core/drupal.dialog.position
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/webform.confirmation
 
 # Contextual
@@ -194,7 +195,8 @@ webform.contextual:
   js:
     js/webform.contextual.js: {}
   dependencies:
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 # Dialog.
 
@@ -240,7 +242,8 @@ webform.element.more:
     js/webform.element.more.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 # Navigation.
 
@@ -326,7 +329,8 @@ webform.tooltip:
     js/webform.tooltip.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.tippyjs
 
 # Theme
@@ -379,7 +383,8 @@ webform.form:
   dependencies:
     - core/drupal
     - core/drupal.form
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/webform.states
 
 webform.form.auto_focus:
@@ -412,7 +417,8 @@ webform.form.submit_once:
   dependencies:
     - core/drupal
     - core/drupal.ajax
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - system/base
 
 webform.form.tabs:
@@ -424,7 +430,8 @@ webform.form.tabs:
     js/webform.form.tabs.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.tabby
 
 webform.form.unsaved:
@@ -432,7 +439,8 @@ webform.form.unsaved:
   js:
     js/webform.form.unsaved.js: {}
   dependencies:
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - core/drupal
 
 webform.wizard.pages:
@@ -443,7 +451,8 @@ webform.wizard.pages:
   js:
     js/webform.wizard.pages.js: {}
   dependencies:
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - core/drupal
 
 webform.wizard.track:
@@ -451,7 +460,8 @@ webform.wizard.track:
   js:
     js/webform.wizard.track.js: {}
   dependencies:
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - core/drupal
 
 # Element.
@@ -462,7 +472,8 @@ webform.element.ajax:
     js/webform.element.ajax.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.checkboxes:
   version: VERSION
@@ -470,7 +481,8 @@ webform.element.checkboxes:
     js/webform.element.checkboxes.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.checkbox_value:
   version: VERSION
@@ -487,7 +499,8 @@ webform.element.choices:
     js/webform.element.choices.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.choices
 
 webform.element.chosen:
@@ -496,7 +509,8 @@ webform.element.chosen:
     js/webform.element.chosen.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.jquery.chosen
 
 webform.element.codemirror.text:
@@ -599,7 +613,8 @@ webform.element.composite:
     js/webform.element.composite.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.computed:
   version: VERSION
@@ -609,7 +624,8 @@ webform.element.computed:
   js:
     js/webform.element.computed.js: {}
   dependencies:
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/webform.announce
 
 webform.element.counter:
@@ -621,7 +637,8 @@ webform.element.counter:
     js/webform.element.counter.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.jquery.textcounter
 
 webform.element.date:
@@ -629,14 +646,6 @@ webform.element.date:
   css:
     component:
       css/webform.element.date.css: {}
-  js:
-    js/webform.element.date.js: {}
-  dependencies:
-    - core/drupalSettings
-    - core/drupal.date
-    - core/modernizr
-    - core/jquery.once
-    - jquery_ui_datepicker/datepicker
 
 webform.element.datelist:
   version: VERSION
@@ -650,7 +659,8 @@ webform.element.details:
     js/webform.element.details.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.details.save:
   version: VERSION
@@ -658,7 +668,8 @@ webform.element.details.save:
     js/webform.element.details.save.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.details.toggle:
   version: VERSION
@@ -670,7 +681,8 @@ webform.element.details.toggle:
   dependencies:
     - core/drupal
     - core/drupal.announce
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.excluded_elements:
   version: VERSION
@@ -681,7 +693,8 @@ webform.element.excluded_elements:
     js/webform.element.excluded_elements.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.file.button:
   version: VERSION
@@ -704,7 +717,8 @@ webform.element.help:
     js/webform.element.help.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.tippyjs
 
 webform.element.html_editor:
@@ -712,13 +726,6 @@ webform.element.html_editor:
   css:
     component:
       css/webform.element.html_editor.css: {}
-  js:
-    js/webform.element.html_editor.js: {}
-  dependencies:
-    - core/ckeditor
-    - core/drupal
-    - core/drupalSettings
-    - core/jquery.once
 
 webform.element.horizontal_rule:
   version: VERSION
@@ -740,7 +747,8 @@ webform.element.image_file.modal:
     - core/drupal
     - core/drupalSettings
     - core/drupal.dialog.ajax
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.inputmask:
   version: VERSION
@@ -748,7 +756,8 @@ webform.element.inputmask:
     js/webform.element.inputmask.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.jquery.inputmask
 
 webform.element.inputhide:
@@ -757,7 +766,8 @@ webform.element.inputhide:
     js/webform.element.inputhide.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.likert:
   version: VERSION
@@ -766,18 +776,6 @@ webform.element.likert:
   css:
     component:
       css/webform.element.likert.css: {}
-
-webform.element.location.places:
-  version: VERSION
-  css:
-    component:
-      css/webform.element.location.places.css: {}
-  js:
-    js/webform.element.location.places.js: {}
-  dependencies:
-    - core/drupal
-    - core/jquery.once
-    - webform/libraries.algolia.places
 
 webform.element.managed_file:
   version: VERSION
@@ -788,7 +786,8 @@ webform.element.managed_file:
     js/webform.element.managed_file.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - file/drupal.file
 
 webform.element.mapping:
@@ -806,7 +805,8 @@ webform.element.message:
     js/webform.element.message.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.message.info:
   version: VERSION
@@ -839,7 +839,8 @@ webform.element.options.admin:
     js/webform.element.options.admin.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.other:
   version: VERSION
@@ -850,7 +851,8 @@ webform.element.other:
     js/webform.element.other.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.range:
   version: VERSION
@@ -878,7 +880,8 @@ webform.element.roles:
     js/webform.element.roles.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.scale:
   version: VERSION
@@ -892,7 +895,8 @@ webform.element.select:
     js/webform.element.select.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.select2:
   version: VERSION
@@ -903,7 +907,8 @@ webform.element.select2:
     js/webform.element.select2.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.jquery.select2
 
 webform.element.signature:
@@ -928,7 +933,8 @@ webform.element.states:
   dependencies:
     - core/drupal
     - core/drupal.autocomplete
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.telephone:
   version: VERSION
@@ -936,7 +942,8 @@ webform.element.telephone:
     js/webform.element.telephone.js: {}
   dependencies:
     - core/drupal
-    - core/jquery.once
+    - core/jquery
+    - core/once
     - webform/libraries.jquery.intl-tel-input
 
 webform.element.term_checkboxes:
@@ -955,7 +962,8 @@ webform.element.terms_of_service:
   dependencies:
     - core/drupal
     - core/drupal.dialog.ajax
-    - core/jquery.once
+    - core/jquery
+    - core/once
 
 webform.element.text_format:
   version: VERSION
@@ -991,6 +999,7 @@ webform.element.time:
     js/webform.element.time.js: {}
   dependencies:
     - core/drupal
+    - core/modernizr
     - webform/libraries.jquery.timepicker
 
 webform.element.video_file:
@@ -1139,18 +1148,6 @@ libraries.codemirror.twig:
     /libraries/codemirror/mode/twig/twig.js: {}
   dependencies:
     - webform/libraries.codemirror.text
-
-libraries.algolia.places:
-  remote: https://github.com/algolia/places
-  version: '1.19.0'
-  license:
-    name: MIT
-    url: https://github.com/algolia/places/blob/master/LICENSE
-    gpl-compatible: true
-  cdn:
-    /libraries/algolia.places/dist/cdn/: https://cdn.jsdelivr.net/npm/places.js@1.19.0/dist/cdn/
-  js:
-    /libraries/algolia.places/dist/cdn/places.js: {}
 
 libraries.jquery.inputmask:
   remote: https://github.com/RobinHerbots/jquery.inputmask
@@ -1317,20 +1314,33 @@ libraries.tabby:
   js:
     /libraries/tabby/dist/js/tabby.min.js: {}
 
-# Tippy.js 5.x is compatible with Drupal 8.x.
-# Library info is altered to switch to Tippy.js 6.x for Drupal 9.x compatibility.
-# @see webform_library_info_alter()
+libraries.popperjs:
+  remote: https://github.com/floating-ui/floating-ui
+  version: '2.11.6'
+  license:
+    name: MIT
+    url: https://github.com/floating-ui/floating-ui/blob/v2.x/LICENSE.md
+    gpl-compatible: true
+  directory: popperjs
+  cdn:
+    /libraries/popperjs/dist/umd/: https://unpkg.com/@popperjs/core@2.11.6/dist/umd/
+  js:
+    /libraries/popperjs/dist/umd/popper.js: {  }
+
 libraries.tippyjs:
   remote: https://github.com/atomiks/tippyjs
-  version: '5.2.1'
+  version: '6.3.7'
   license:
     name: MIT
     url: https://github.com/atomiks/tippyjs/blob/master/LICENSE
     gpl-compatible: true
-  directory: tippyjs/5.x
+  directory: tippyjs
   cdn:
-    /libraries/tippyjs/5.x/: https://unpkg.com/tippy.js@5.2.1/dist/
+    /libraries/tippyjs/dist/: https://unpkg.com/tippy.js@6.3.7/dist/
+  css:
+    component:
+      /libraries/tippyjs/dist/tippy.css: { }
   js:
-    /libraries/tippyjs/5.x/tippy-bundle.iife.min.js: {}
+    /libraries/tippyjs/dist/tippy.umd.js: { }
   dependencies:
-    - core/popperjs
+    - webform/libraries.popperjs

@@ -19,9 +19,9 @@ use Drupal\webform\Entity\Webform;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Plugin\WebformHandler\EmailWebformHandler;
 use Drupal\webform\Twig\WebformTwigExtension;
-use Drupal\webform\Utility\WebformYaml;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformElementHelper;
+use Drupal\webform\Utility\WebformYaml;
 
 /**
  * Defines a class to translate webform config.
@@ -344,7 +344,12 @@ class WebformTranslationConfigManager implements WebformTranslationConfigManager
         $body_element =& NestedArray::getValue($config_element, ['handlers', $handler_id, 'settings', 'body']);
         if ($body_element) {
           $configuration = $handler->getConfiguration();
-          if (!empty($configuration['settings']['twig'])) {
+
+          $default_value = (string) ($body_element['translation']['#default_value'] ?? '');
+          if (preg_match('/^(_default|\[[^]]+\])$/', $default_value)) {
+            // Don't alter the body element if the value '_default' or a token.
+          }
+          elseif (!empty($configuration['settings']['twig'])) {
             $this->alterTextareaElement($body_element, 'twig');
             $body_element['translation']['#access'] = WebformTwigExtension::hasEditTwigAccess();
           }

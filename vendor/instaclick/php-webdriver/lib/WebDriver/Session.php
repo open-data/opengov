@@ -22,6 +22,8 @@
 
 namespace WebDriver;
 
+use WebDriver\Exception as WebDriverException;
+
 /**
  * WebDriver\Session class
  *
@@ -46,7 +48,6 @@ namespace WebDriver;
  * @method void postAlert_text($jsonText) Sends keystrokes to a JavaScript prompt() dialog.
  * @method void accept_alert() Accepts the currently displayed alert dialog.
  * @method void dismiss_alert() Dismisses the currently displayed alert dialog.
- * @method void moveto($jsonCoordinates) Move the mouse by an offset of the specified element (or current mouse cursor).
  * @method void click($jsonButton) Click any mouse button (at the coordinates set by the last moveto command).
  * @method void buttondown() Click and hold the left mouse button (at the coordinates set by the last moveto command).
  * @method void buttonup() Releases the mouse button previously held (where the mouse is currently at).
@@ -134,7 +135,7 @@ final class Session extends Container
      */
     public function capabilities()
     {
-        if (! isset($this->capabilities)) {
+        if ($this->capabilities === null) {
             $result = $this->curl('GET', '');
 
             $this->capabilities = $result['value'];
@@ -290,6 +291,24 @@ final class Session extends Container
 
         // chaining
         return new Frame($this->url . '/frame');
+    }
+
+    /**
+     * moveto: /session/:sessionId/moveto (POST)
+     *
+     * @param array $parameters
+     *
+     * @return mixed
+     */
+    public function moveto($parameters)
+    {
+        try {
+            $result = $this->curl('POST', '/moveto', $parameters);
+        } catch (WebDriverException\ScriptTimeout $e) {
+            throw WebDriverException::factory(WebDriverException::UNKNOWN_ERROR);
+        }
+
+        return $result['value'];
     }
 
     /**

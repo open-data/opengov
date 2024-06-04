@@ -14,7 +14,8 @@ archive: false
 id: test_element_multiple_header
 title: 'Test: Element: Multiple header'
 description: 'Test multiple element header.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_multiple_basic:
     '#type': webform_multiple
@@ -96,7 +97,6 @@ elements: |
       email:
         '#type': email
         '#title': email
-  
 css: ''
 javascript: ''
 settings:
@@ -184,6 +184,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

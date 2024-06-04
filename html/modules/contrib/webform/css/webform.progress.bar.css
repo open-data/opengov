@@ -70,6 +70,15 @@ li.webform-progress-bar__page--done > b {
   background-color: #dbdbdb;
 }
 
+li.webform-progress-bar__page--done > b[role="link"] {
+  cursor: pointer;
+  color: #337ab7;
+}
+
+li.webform-progress-bar__page--done > b[role="link"]:hover {
+  text-decoration: underline;
+}
+
 li.webform-progress-bar__page--current > b {
   font-weight: bold;
 }

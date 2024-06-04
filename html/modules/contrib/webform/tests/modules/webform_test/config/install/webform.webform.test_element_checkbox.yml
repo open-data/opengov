@@ -14,7 +14,8 @@ archive: false
 id: test_element_checkbox
 title: 'Test: Element: Checkbox'
 description: 'Test the checkbox element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   checkbox:
     '#type': checkbox
@@ -32,7 +33,6 @@ elements: |
     '#title': checkbox_return_value_raw
     '#return_value': custom_return_value_raw
     '#format': raw
-  
 css: ''
 javascript: ''
 settings:
@@ -120,6 +120,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

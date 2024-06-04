@@ -14,7 +14,8 @@ archive: false
 id: test_element_validate_pattern
 title: 'Test: Element: Validate Pattern'
 description: 'Test element pattern validation.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   pattern:
     '#type': textfield
@@ -38,7 +39,6 @@ elements: |
     '#title': pattern_unicode
     '#pattern': \u2E8F
     '#description': 'Enter unicode CJK characters ''⺏'''
-  
 css: ''
 javascript: ''
 settings:
@@ -126,6 +126,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -19,7 +19,7 @@ class WebformBlockCacheTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['block', 'webform', 'page_cache', 'dynamic_page_cache', 'node'];
+  protected static $modules = ['block', 'webform', 'page_cache', 'dynamic_page_cache', 'node'];
 
   /**
    * Authenticated user.
@@ -31,7 +31,7 @@ class WebformBlockCacheTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->authenticatedUser = $this->createUser([

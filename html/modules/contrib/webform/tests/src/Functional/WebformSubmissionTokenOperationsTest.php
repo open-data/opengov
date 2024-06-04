@@ -17,7 +17,7 @@ class WebformSubmissionTokenOperationsTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['token'];
+  protected static $modules = ['token'];
 
   /**
    * Webforms to load.

@@ -90,7 +90,7 @@ class WebformSubmissionLogController extends ControllerBase {
     $header = [];
     $header['lid'] = ['data' => $this->t('#'), 'field' => 'log.lid', 'sort' => 'desc'];
     if (empty($webform)) {
-      $header['webform_id'] = ['data' => $this->t('Webform'), 'field' => 'log.webform_id', 'class' => [RESPONSIVE_PRIORITY_MEDIUM]];
+      $header['webform_id'] = ['data' => $this->t('Webform', [], ['context' => 'form']), 'field' => 'log.webform_id', 'class' => [RESPONSIVE_PRIORITY_MEDIUM]];
     }
     if (empty($source_entity) && empty($webform_submission)) {
       $header['entity'] = ['data' => $this->t('Submitted to'), 'class' => [RESPONSIVE_PRIORITY_LOW]];

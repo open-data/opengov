@@ -25,11 +25,13 @@ interface WebformEntityStorageInterface extends ConfigEntityStorageInterface, Im
    *   If TRUE only template categories will be returned.
    *   If FALSE only webform categories will be returned.
    *   If NULL all categories will be returned.
+   * @param bool $default
+   *   If TRUE append default webform categories.
    *
    * @return string[]
    *   An array of translated categories, sorted alphabetically.
    */
-  public function getCategories($template = NULL);
+  public function getCategories($template = NULL, $default = FALSE);
 
   /**
    * Resets the internal, categories cache.

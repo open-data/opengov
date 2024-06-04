@@ -14,7 +14,8 @@ archive: false
 id: test_handler_email_mapping
 title: 'Test: Handler: Email mapping'
 description: 'Test email mapping handler.'
-category: 'Test: Handler'
+categories:
+  - 'Test: Handler'
 elements: |
   select:
     '#type': select
@@ -31,7 +32,6 @@ elements: |
     '#title': radios_other
     '#options': sex
     '#description': 'Check and enter ''Other'' to trigger an email.'
-  
 css: ''
 javascript: ''
 settings:
@@ -119,6 +119,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

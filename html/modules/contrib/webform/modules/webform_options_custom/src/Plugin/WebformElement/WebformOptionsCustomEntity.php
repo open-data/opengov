@@ -2,9 +2,9 @@
 
 namespace Drupal\webform_options_custom\Plugin\WebformElement;
 
-use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
-use Drupal\webform\Plugin\WebformElement\WebformEntityReferenceTrait;
 use Drupal\webform\Plugin\WebformElement\WebformEntityOptionsTrait;
+use Drupal\webform\Plugin\WebformElement\WebformEntityReferenceTrait;
+use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
 
 /**
  * Provides a custom options entity reference element.

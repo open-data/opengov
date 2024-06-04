@@ -336,7 +336,6 @@ class ContentEntityDatasourceTest extends KernelTestBase {
       'languages' => $language_config,
     ]);
     $method = new \ReflectionMethod($this->datasource, 'getLanguages');
-    $method->setAccessible(TRUE);
     /** @var \Drupal\Core\Language\LanguageInterface[] $returned */
     $returned = $method->invoke($this->datasource);
     foreach ($returned as $langcode => $language) {

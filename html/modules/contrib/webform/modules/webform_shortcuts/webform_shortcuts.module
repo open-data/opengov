@@ -5,8 +5,8 @@
  * Provides keyboard shortcuts to create and save webform elements.
  */
 
-use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\webform\Utility\WebformTextHelper;
 
 /**

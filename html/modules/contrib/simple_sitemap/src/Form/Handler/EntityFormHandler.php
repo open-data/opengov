@@ -3,7 +3,6 @@
 namespace Drupal\simple_sitemap\Form\Handler;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\simple_sitemap\Entity\SimpleSitemap;
 use Drupal\simple_sitemap\Form\FormHelper;
 
 /**
@@ -37,7 +36,7 @@ class EntityFormHandler extends EntityFormHandlerBase {
     $bundle_label = $this->entityHelper
       ->getBundleLabel($this->entityTypeId, $this->bundleName);
 
-    foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
+    foreach ($this->generator->entityManager()->setSitemaps()->getSitemaps() as $variant => $sitemap) {
       $variant_form = &$form[$variant];
 
       $variant_form['index']['#options'] = [
@@ -112,15 +111,14 @@ class EntityFormHandler extends EntityFormHandlerBase {
       return;
     }
 
-    // @todo No need to load all sitemaps here.
-    foreach (SimpleSitemap::loadMultiple() as $variant => $sitemap) {
+    $entity_manager = $this->generator->entityManager();
+    foreach ($entity_manager->setSitemaps()->getSitemaps() as $variant => $sitemap) {
       $settings = $form_state->getValue(['simple_sitemap', $variant]);
 
       // Variants may have changed since form load.
       if ($settings) {
-        $this->generator
-          ->setVariants($variant)
-          ->entityManager()
+        $entity_manager
+          ->setSitemaps($sitemap)
           ->setEntityInstanceSettings($this->entityTypeId, $this->entity->id(), $settings);
       }
     }
@@ -138,8 +136,8 @@ class EntityFormHandler extends EntityFormHandlerBase {
       foreach (parent::getSettings() as $variant => $settings) {
         if (NULL !== $entity_id) {
           $this->settings[$variant] = $this->generator
-            ->setVariants($variant)
             ->entityManager()
+            ->setSitemaps($variant)
             ->getEntityInstanceSettings($this->entityTypeId, $entity_id)[$variant];
         }
         $this->settings[$variant]['bundle_settings'] = $settings;

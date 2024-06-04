@@ -13,6 +13,7 @@ use Drupal\search_api\Event\SearchApiEvents;
 use Drupal\search_api\IndexBatchHelper;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
+use Drush\Log\SuccessInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -262,8 +263,9 @@ class CommandHelper implements LoggerAwareInterface {
    *   (optional) The maximum number of items to index, or NULL to index all
    *   items.
    * @param int|null $batchSize
-   *   (optional) The maximum number of items to process per batch, or NULL to
-   *   index all items at once.
+   *   (optional) The maximum number of items to process per batch, an empty
+   *   value to use the default cron limit configured for the index, or a
+   *   negative value to index all items in a single batch.
    *
    * @return bool
    *   TRUE if indexing for any index was queued, FALSE otherwise.
@@ -288,7 +290,7 @@ class CommandHelper implements LoggerAwareInterface {
       $remaining = $tracker->getTotalItemsCount() - $tracker->getIndexedItemsCount();
 
       if (!$remaining) {
-        $this->logger->info($this->t("The index @index is up to date.", ['@index' => $index->label()]));
+        $this->logSuccess($this->t("The index @index is up to date.", ['@index' => $index->label()]));
         continue;
       }
       else {
@@ -297,7 +299,7 @@ class CommandHelper implements LoggerAwareInterface {
           '@limit' => $limit ?: $this->t('all'),
           '@index' => $index->label(),
         ];
-        $this->logger->info($this->t("Found @remaining items to index for @index. Indexing @limit items.", $arguments));
+        $this->logSuccess($this->t("Found @remaining items to index for @index. Indexing @limit items.", $arguments));
       }
 
       // If we pass NULL, it would be used as "no items". -1 is the correct way
@@ -325,14 +327,14 @@ class CommandHelper implements LoggerAwareInterface {
         '@limit' => $current_limit,
         '@batch_size' => $currentBatchSize,
       ];
-      $this->logger->info($this->t("Indexing a maximum number of @limit items (@batch_size items per batch run) for the index '@index'.", $arguments));
+      $this->logSuccess($this->t("Indexing a maximum number of @limit items (@batch_size items per batch run) for the index '@index'.", $arguments));
 
       // Create the batch.
       try {
         IndexBatchHelper::create($index, $currentBatchSize, $current_limit);
         $batchSet = TRUE;
       }
-      catch (SearchApiException $e) {
+      catch (SearchApiException) {
         throw new ConsoleException($this->t("Couldn't create a batch, please check the batch size and limit parameters."));
       }
     }
@@ -384,11 +386,11 @@ class CommandHelper implements LoggerAwareInterface {
           '@index' => $index->label(),
           '@datasources' => implode(', ', $reindexed_datasources),
         ];
-        $this->logger->info($this->t('The following datasources of @index were successfully scheduled for reindexing: @datasources.', $arguments));
+        $this->logSuccess($this->t('The following datasources of @index were successfully scheduled for reindexing: @datasources.', $arguments));
       }
       else {
         $index->reindex();
-        $this->logger->info($this->t('@index was successfully scheduled for reindexing.', ['@index' => $index->label()]));
+        $this->logSuccess($this->t('@index was successfully scheduled for reindexing.', ['@index' => $index->label()]));
       }
     }
 
@@ -414,7 +416,7 @@ class CommandHelper implements LoggerAwareInterface {
     foreach ($indexes as $index) {
       if ($index->status()) {
         $index->rebuildTracker();
-        $this->logger->info($this->t('The tracking information for search index %name will be rebuilt.', ['%name' => $index->label()]));
+        $this->logSuccess($this->t('The tracking information for search index %name will be rebuilt.', ['%name' => $index->label()]));
       }
     }
     return TRUE;
@@ -442,7 +444,7 @@ class CommandHelper implements LoggerAwareInterface {
     foreach ($indexes as $index) {
       if ($index->status()) {
         $index->clear();
-        $this->logger->info($this->t('@index was successfully cleared.', ['@index' => $index->label()]));
+        $this->logSuccess($this->t('@index was successfully cleared.', ['@index' => $index->label()]));
       }
     }
 
@@ -494,7 +496,7 @@ class CommandHelper implements LoggerAwareInterface {
         $label = $item->getDatasource()
           ->getItemLabel($item->getOriginalObject());
       }
-      catch (SearchApiException $e) {
+      catch (SearchApiException) {
         $label = NULL;
       }
       $rows[] = [
@@ -636,7 +638,7 @@ class CommandHelper implements LoggerAwareInterface {
       $index = $this->reloadEntityOverrideFree($index);
       $index->setServer($server);
       $index->save();
-      $this->logger->info($this->t('Index @index has been set to use server @server and items have been queued for indexing.', ['@index' => $indexId, '@server' => $serverId]));
+      $this->logSuccess($this->t('Index @index has been set to use server @server and items have been queued for indexing.', ['@index' => $indexId, '@server' => $serverId]));
     }
     catch (EntityStorageException $e) {
       $this->logger->warning($e->getMessage());
@@ -699,7 +701,7 @@ class CommandHelper implements LoggerAwareInterface {
     $method = $enable ? 'enable' : 'disable';
 
     if ($index->status() == $enable) {
-      $this->logger->info($this->t("The index @index is already @desired_state.", ['@index' => $index->label(), '@desired_state' => $state_label]));
+      $this->logSuccess($this->t("The index @index is already @desired_state.", ['@index' => $index->label(), '@desired_state' => $state_label]));
       return;
     }
     if (!$index->getServerId()) {
@@ -709,7 +711,7 @@ class CommandHelper implements LoggerAwareInterface {
 
     $index = $this->reloadEntityOverrideFree($index);
     $index->$method()->save();
-    $this->logger->info($this->t("The index @index was successfully @desired_state.", ['@index' => $index->label(), '@desired_state' => $state_label]));
+    $this->logSuccess($this->t("The index @index was successfully @desired_state.", ['@index' => $index->label(), '@desired_state' => $state_label]));
   }
 
   /**
@@ -728,7 +730,7 @@ class CommandHelper implements LoggerAwareInterface {
       $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
       return $storage->loadOverrideFree($entity->id());
     }
-    catch (InvalidPluginDefinitionException $e) {
+    catch (InvalidPluginDefinitionException) {
       return NULL;
     }
   }
@@ -749,6 +751,24 @@ class CommandHelper implements LoggerAwareInterface {
       $message,
       $arguments,
     ]);
+  }
+
+  /**
+   * Logs a success message.
+   *
+   * Needed because Drush has a custom "success" log level that is incompatible
+   * with other loggers, but doesn't display "info" messages by default.
+   *
+   * @param string $message
+   *   The message to log.
+   */
+  protected function logSuccess(string $message) {
+    if ($this->logger instanceof SuccessInterface) {
+      $this->logger->success($message);
+    }
+    else {
+      $this->logger->info($message);
+    }
   }
 
 }

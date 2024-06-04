@@ -5,8 +5,10 @@ namespace Drupal\Tests\system\Functional\ParamConverter;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\language\Entity\ConfigurableLanguage;
 
+// cspell:ignore deutscher titel
+
 /**
- * Tests upcasting of url arguments to entities.
+ * Tests upcasting of URL arguments to entities.
  *
  * @group ParamConverter
  */

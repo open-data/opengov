@@ -5,9 +5,11 @@
  * Webform install helper functions.
  */
 
+use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\system\Entity\Action;
+use Drupal\webform\Element\WebformHtmlEditor;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformInterface;
 
@@ -114,7 +116,7 @@ function _webform_update_webform_setting(array $data) {
     'id' => '',
     'title' => '',
     'description' => '',
-    'category' => '',
+    'categories' => [],
     'elements' => '',
     'css' => '',
     'javascript' => '',
@@ -136,8 +138,9 @@ function _webform_update_webform_setting(array $data) {
   if (empty($properties['third_party_settings'])) {
     unset($properties['third_party_settings']);
   }
+
   // Set properties.
-  $data = $properties;
+  $data = _webform_update_webform_setting_properties($properties);
 
   // Always apply the default settings.
   $settings = $default_settings;
@@ -154,6 +157,31 @@ function _webform_update_webform_setting(array $data) {
   $data['access'] += $access_rules_manager->getDefaultAccessRules();
 
   return $data;
+}
+
+/**
+ * Make sure outdated webform properties are up-to-date.
+ *
+ * @param array $properties
+ *   An associative array of webform properties.
+ *
+ * @return array
+ *   Updated webform properties.
+ */
+function _webform_update_webform_setting_properties(array $properties) {
+  // Issue #3339769: Improve Webform categorization to support assigning multiple categories and default categories.
+  if (isset($properties['category'])) {
+    $properties['categories'] = [];
+    if (!empty($properties['category'])) {
+      $properties['categories'] = array_values(array_filter(array_merge(
+        $properties['categories'],
+        (array) $properties['category']
+      )));
+    }
+    unset($properties['category']);
+  }
+
+  return $properties;
 }
 
 /**
@@ -432,6 +460,73 @@ function _webform_update_elements_clear_properties_recursive(array &$element, ar
   foreach (Element::children($element) as $key) {
     if (is_array($element[$key])) {
       _webform_update_elements_clear_properties_recursive($element[$key], $properties);
+    }
+  }
+}
+
+/**
+ * Update the Webform module's default hidden text format and editor.
+ *
+ * Determines if the CKEditor 5 or 4 module installed and imports the
+ * appropriate configuration file.
+ */
+function _webform_update_html_editor() {
+  // Make sure the Webform module is installed, since we do call this function
+  // via webform_requirements().
+  if (!\Drupal::moduleHandler()->moduleExists('webform')) {
+    return;
+  }
+
+  /** @var \Drupal\Core\Config\StorageInterface $config_storage */
+  $config_storage = \Drupal::service('config.storage');
+
+  $module_path = \Drupal::service('extension.list.module')->getPath('webform');
+  $ckeditor_file_name = 'editor.editor.' . WebformHtmlEditor::DEFAULT_FILTER_FORMAT;
+
+  $names = [];
+
+  // Install the webform default filter format.
+  $names['optional'] = 'filter.format.' . WebformHtmlEditor::DEFAULT_FILTER_FORMAT;
+
+  // Get the current CKEditor version.
+  $current_version = \Drupal::config($ckeditor_file_name)->get('editor') ?: NULL;
+  if (\Drupal::moduleHandler()->moduleExists('ckeditor5')) {
+    $ckeditor_version = 'ckeditor5';
+  }
+  elseif (\Drupal::moduleHandler()->moduleExists('ckeditor')) {
+    $ckeditor_version = 'ckeditor';
+  }
+  else {
+    $ckeditor_version = NULL;
+  }
+
+  // If the changing or deleting the CKEditor, we need delete the existing file.
+  if ($current_version !== $ckeditor_version) {
+    \Drupal::configFactory()
+      ->getEditable($ckeditor_file_name)
+      ->delete();
+  }
+
+  // Install new CKEditor version.
+  if ($ckeditor_version) {
+    $names["optional/$ckeditor_version"] = $ckeditor_file_name;
+  }
+
+  // Import config files but never overwrite the existing config file.
+  foreach ($names as $directory => $name) {
+    $source = new FileStorage("$module_path/config/$directory");
+    if (!$config_storage->exists($name)) {
+      // Use the entity API to create config entities.
+      $entity_type_id = \Drupal::service('config.manager')->getEntityTypeIdByName($name);
+      if ($entity_type_id) {
+        \Drupal::entityTypeManager()
+          ->getStorage($entity_type_id)
+          ->createFromStorageRecord($source->read($name))
+          ->save();
+      }
+      else {
+        $config_storage->write($name, $source->read($name));
+      }
     }
   }
 }

@@ -14,7 +14,8 @@ archive: false
 id: test_element_counter
 title: 'Test: Element: Counter'
 description: 'Tests text counter.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   counter_characters:
     '#type': details
@@ -88,7 +89,6 @@ elements: |
       '#counter_type': word
       '#counter_maximum': 10
       '#counter_maximum_message': '%d character(s) remaining. This is custom text'
-  
 css: ''
 javascript: ''
 settings:
@@ -176,6 +176,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

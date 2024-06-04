@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\webform\FunctionalJavascript\Wizard;
 
-use Drupal\webform\Entity\Webform;
 use Drupal\Tests\webform\FunctionalJavascript\WebformWebDriverTestBase;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Tests for webform basic wizard.

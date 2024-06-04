@@ -14,12 +14,12 @@ archive: false
 id: test_form_limit_total_unique
 title: 'Test: Form: Submission limit total unique'
 description: 'Test submission limit total unique.'
-category: 'Test: Form'
+categories:
+  - 'Test: Form'
 elements: |
   name:
     '#type': textfield
     '#title': Name
-  
 css: ''
 javascript: ''
 settings:
@@ -107,6 +107,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

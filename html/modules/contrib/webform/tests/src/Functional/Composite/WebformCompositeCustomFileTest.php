@@ -3,9 +3,9 @@
 namespace Drupal\Tests\webform\Functional\Composite;
 
 use Drupal\file\Entity\File;
+use Drupal\Tests\webform\Functional\Element\WebformElementManagedFileTestBase;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
-use Drupal\Tests\webform\Functional\Element\WebformElementManagedFileTestBase;
 
 /**
  * Tests for custom composite element.

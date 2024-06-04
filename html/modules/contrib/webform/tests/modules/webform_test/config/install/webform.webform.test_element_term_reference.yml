@@ -14,7 +14,8 @@ archive: false
 id: test_element_term_reference
 title: 'Test: Element: Term reference'
 description: 'Test term reference element.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   webform_term_checkboxes:
     '#type': details
@@ -123,7 +124,6 @@ elements: |
         '#breadcrumb_delimiter': ' » '
         '#format': breadcrumb
         '#format_items': ul
-
 css: ''
 javascript: ''
 settings:
@@ -211,6 +211,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 1
   preview_label: ''
   preview_title: ''

@@ -20,6 +20,13 @@ use Drupal\webform\Plugin\WebformHandlerBase;
 class BrokenWebformHandler extends WebformHandlerBase {
 
   /**
+   * The original handler's plugin ID.
+   *
+   * @var string
+   */
+  protected $pluginId;
+
+  /**
    * {@inheritdoc}
    */
   public function isEnabled() {

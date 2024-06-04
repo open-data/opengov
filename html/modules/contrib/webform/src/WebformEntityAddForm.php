@@ -6,6 +6,7 @@ use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\webform\Form\WebformDialogFormTrait;
+use Drupal\webform\Utility\WebformElementHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -121,13 +122,15 @@ class WebformEntityAddForm extends BundleEntityFormBase {
     ];
     /** @var \Drupal\webform\WebformEntityStorageInterface $webform_storage */
     $webform_storage = $this->entityTypeManager->getStorage('webform');
-    $form['category'] = [
+    $form['categories'] = [
       '#type' => 'webform_select_other',
-      '#title' => $this->t('Category'),
-      '#options' => $webform_storage->getCategories(),
-      '#empty_option' => $this->t('- None -'),
-      '#default_value' => $webform->get('category'),
+      '#title' => $this->t('Categories'),
+      '#options' => $webform_storage->getCategories(NULL, TRUE),
+      '#multiple' => TRUE,
+      '#select2' => TRUE,
+      '#default_value' => $webform->get('categories'),
     ];
+    WebformElementHelper::process($form['categories']);
     $form['status'] = [
       '#type' => 'radios',
       '#title' => $this->t('Status'),

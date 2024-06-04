@@ -162,7 +162,7 @@ class DataTypeHelper implements DataTypeHelperInterface {
       try {
         $server = $index->getServerInstance();
       }
-      catch (SearchApiException $e) {
+      catch (SearchApiException) {
         // If the server isn't available, just ignore it here and return all
         // custom types.
       }

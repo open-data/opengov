@@ -14,7 +14,8 @@ archive: false
 id: test_element_help
 title: 'Test: Element: Help'
 description: 'Test element #help property.'
-category: 'Test: Element'
+categories:
+  - 'Test: Element'
 elements: |
   help:
     '#type': textfield
@@ -138,7 +139,6 @@ elements: |
     '#help_display': element_after
     help_after_details:
       '#markup': '{This is markup}'
-
 css: ''
 javascript: ''
 settings:
@@ -226,6 +226,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

@@ -305,9 +305,9 @@ class SolrConfigSetController extends ControllerBase {
       '6.x' => $template_path . '6.x',
       '7.x' => $template_path . '7.x',
       '8.x' => $template_path . '8.x',
+      '9.x' => $template_path . '9.x',
     ];
 
-    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_configset_template_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetTemplateMappingEvent instead.', 'search_api_solr_configset_template_mapping', $solr_configset_template_mapping);
     $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
     $this->eventDispatcher()->dispatch($event);
     $solr_configset_template_mapping = $event->getConfigSetTemplateMapping();
@@ -379,7 +379,7 @@ class SolrConfigSetController extends ControllerBase {
               'SEARCH_API_SOLR_JUMP_START_CONFIG_SET',
             ],
             [
-              SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION,
+              $backend->getPreferredSchemaVersion(),
               $real_solr_branch,
               SEARCH_API_SOLR_JUMP_START_CONFIG_SET,
             ],
@@ -402,7 +402,6 @@ class SolrConfigSetController extends ControllerBase {
     }
 
     $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
-    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_config_files_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigFilesGenerationEvent instead.', 'search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
     $event = new PostConfigFilesGenerationEvent($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
     $this->eventDispatcher()->dispatch($event);
 
@@ -437,7 +436,6 @@ class SolrConfigSetController extends ControllerBase {
     }
 
     $connector->alterConfigZip($zip, $lucene_match_version, $this->serverId);
-    $this->moduleHandler->alterDeprecated('hook_search_api_solr_config_zip_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetGenerationEvent instead.', 'search_api_solr_config_zip', $zip, $lucene_match_version, $this->serverId);
     $event = new PostConfigSetGenerationEvent($zip, $lucene_match_version, $this->serverId);
     $this->eventDispatcher()->dispatch($event);
 

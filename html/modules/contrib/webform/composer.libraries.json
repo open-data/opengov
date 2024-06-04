@@ -26,11 +26,6 @@
     "require": {
         "algolia/places": "*",
         "choices/choices": "*",
-        "ckeditor/autogrow": "*",
-        "ckeditor/codemirror": "*",
-        "ckeditor/fakeobjects": "*",
-        "ckeditor/image": "*",
-        "ckeditor/link": "*",
         "codemirror/codemirror": "*",
         "jquery/chosen": "*",
         "jquery/geocomplete": "*",
@@ -44,12 +39,12 @@
         "jquery/textcounter": "*",
         "jquery/timepicker": "*",
         "jquery/toggles": "*",
+        "popperjs/popperjs": "*",
         "progress-tracker/progress-tracker": "*",
         "signature_pad/signature_pad": "*",
         "svg-pan-zoom/svg-pan-zoom": "*",
         "tabby/tabby": "*",
-        "tippyjs/5.x": "*",
-        "tippyjs/6.x": "*"
+        "tippyjs/tippyjs": "*"
     },
     "suggest": {
         "drupal/jquery_ui_checkboxradio": "Provides jQuery UI Checkboxradio library. Required by the Webform jQueryUI Buttons module. The Webform jQueryUI Buttons module is deprecated because jQueryUI is no longer maintained.",
@@ -86,86 +81,6 @@
                     "type": "zip"
                 },
                 "license": "MIT"
-            }
-        },
-        "ckeditor.autogrow": {
-            "type": "package",
-            "package": {
-                "name": "ckeditor/autogrow",
-                "version": "4.21.0",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "ckeditor.autogrow"
-                },
-                "dist": {
-                    "url": "https://download.ckeditor.com/autogrow/releases/autogrow_4.21.0.zip",
-                    "type": "zip"
-                },
-                "license": "GPL-2.0-or-later"
-            }
-        },
-        "ckeditor.codemirror": {
-            "type": "package",
-            "package": {
-                "name": "ckeditor/codemirror",
-                "version": "v1.18.7",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "ckeditor.codemirror"
-                },
-                "dist": {
-                    "url": "https://github.com/w8tcha/CKEditor-CodeMirror-Plugin/releases/download/v1.18.7/CKEditor-CodeMirror-Plugin.zip",
-                    "type": "zip"
-                },
-                "license": "MIT"
-            }
-        },
-        "ckeditor.fakeobjects": {
-            "type": "package",
-            "package": {
-                "name": "ckeditor/fakeobjects",
-                "version": "4.21.0",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "ckeditor.fakeobjects"
-                },
-                "dist": {
-                    "url": "https://download.ckeditor.com/fakeobjects/releases/fakeobjects_4.21.0.zip",
-                    "type": "zip"
-                },
-                "license": "GPL-2.0-or-later"
-            }
-        },
-        "ckeditor.image": {
-            "type": "package",
-            "package": {
-                "name": "ckeditor/image",
-                "version": "4.21.0",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "ckeditor.image"
-                },
-                "dist": {
-                    "url": "https://download.ckeditor.com/image/releases/image_4.21.0.zip",
-                    "type": "zip"
-                },
-                "license": "GPL-2.0-or-later"
-            }
-        },
-        "ckeditor.link": {
-            "type": "package",
-            "package": {
-                "name": "ckeditor/link",
-                "version": "4.21.0",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "ckeditor.link"
-                },
-                "dist": {
-                    "url": "https://download.ckeditor.com/link/releases/link_4.21.0.zip",
-                    "type": "zip"
-                },
-                "license": "GPL-2.0-or-later"
             }
         },
         "codemirror": {
@@ -376,6 +291,22 @@
                 "license": "MIT"
             }
         },
+        "popperjs": {
+            "type": "package",
+            "package": {
+                "name": "popperjs/popperjs",
+                "version": "2.11.6",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "popperjs"
+                },
+                "dist": {
+                    "url": "https://registry.npmjs.org/@popperjs/core/-/core-2.11.6.tgz",
+                    "type": "tar"
+                },
+                "license": "MIT"
+            }
+        },
         "progress-tracker": {
             "type": "package",
             "package": {
@@ -440,34 +371,18 @@
                 "license": "MIT"
             }
         },
-        "tippyjs/5.x": {
+        "tippyjs": {
             "type": "package",
             "package": {
-                "name": "tippyjs/5.x",
-                "version": "5.2.1",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "tippyjs/5.x"
-                },
-                "dist": {
-                    "url": "https://unpkg.com/tippy.js@5.2.1/dist/tippy-bundle.iife.min.js",
-                    "type": "file"
-                },
-                "license": "MIT"
-            }
-        },
-        "tippyjs/6.x": {
-            "type": "package",
-            "package": {
-                "name": "tippyjs/6.x",
+                "name": "tippyjs/tippyjs",
                 "version": "6.3.7",
                 "type": "drupal-library",
                 "extra": {
-                    "installer-name": "tippyjs/6.x"
+                    "installer-name": "tippyjs"
                 },
                 "dist": {
-                    "url": "https://unpkg.com/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js",
-                    "type": "file"
+                    "url": "https://registry.npmjs.org/tippy.js/-/tippy.js-6.3.7.tgz",
+                    "type": "tar"
                 },
                 "license": "MIT"
             }

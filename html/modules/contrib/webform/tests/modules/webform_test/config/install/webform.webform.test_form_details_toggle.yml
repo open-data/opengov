@@ -14,7 +14,8 @@ archive: false
 id: test_form_details_toggle
 title: 'Test: Webform: Details toggle'
 description: 'Test details expand/collapse all toggle link.'
-category: 'Test: Webform'
+categories:
+  - 'Test: Webform'
 elements: |
   details_01:
     '#type': details
@@ -26,7 +27,6 @@ elements: |
     '#title': 'Details 02'
     details_02:
       '#markup': 'Detail 02 Markup'
-  
 css: ''
 javascript: ''
 settings:
@@ -114,6 +114,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

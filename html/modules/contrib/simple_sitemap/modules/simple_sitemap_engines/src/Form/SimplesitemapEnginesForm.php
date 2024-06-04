@@ -137,10 +137,10 @@ class SimplesitemapEnginesForm extends ConfigFormBase {
       '#type' => 'details',
       '#title' => $this->t('Engines'),
       '#markup' => '<div class="description">'
-        . $this->t('Choose which sitemaps are to be submitted to which search engines.<br>Sitemaps can be configured <a href="@url">here</a>.',
+      . $this->t('Choose which sitemaps are to be submitted to which search engines.<br>Sitemaps can be configured <a href="@url">here</a>.',
           ['@url' => Url::fromRoute('entity.simple_sitemap.collection')->toString()]
-        )
-        . '</div>',
+      )
+      . '</div>',
       '#open' => TRUE,
       '#states' => [
         'visible' => [':input[name="settings[enabled]"]' => ['checked' => TRUE]],

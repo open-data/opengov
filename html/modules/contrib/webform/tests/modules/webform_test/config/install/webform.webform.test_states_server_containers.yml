@@ -14,7 +14,8 @@ archive: false
 id: test_states_server_containers
 title: 'Test: Form API #states nested elements in a conditional hidden container'
 description: 'Test Drupal''s #states for nested elements in a conditional hidden container.'
-category: 'Test: Form API #states'
+categories:
+  - 'Test: Form API #states'
 elements: |
   visible_trigger:
     '#type': checkbox
@@ -74,7 +75,6 @@ elements: |
             checked: true
           ':input[name="visible_slide_textfield"]':
             filled: true
-  
 css: ''
 javascript: ''
 settings:
@@ -162,6 +162,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''

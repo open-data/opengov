@@ -242,6 +242,51 @@ class ContentAccessTest extends ProcessorTestBase {
   }
 
   /**
+   * Tests handling of the "view any unpublished content" permission.
+   */
+  public function testContentAccessUnpublished(): void {
+    // Enable the Content Moderation module.
+    $this->enableModules(['content_moderation', 'workflows']);
+    $this->installEntitySchema('workflow');
+
+    // Deactivate our custom grant and re-save the grant records.
+    \Drupal::state()->set('search_api_test_add_node_access_grant', FALSE);
+    /** @var \Drupal\node\NodeAccessControlHandlerInterface $access_control_handler */
+    $access_control_handler = \Drupal::entityTypeManager()
+      ->getAccessControlHandler('node');
+    $grants_storage = \Drupal::getContainer()->get('node.grant_storage');
+    foreach ($this->nodes as $node) {
+      $grants = $access_control_handler->acquireGrants($node);
+      $grants_storage->write($node, $grants);
+    }
+
+    // Re-index the items.
+    $this->indexItems();
+    $remaining = $this->index->getTrackerInstance()->getRemainingItems();
+    $this->assertEquals([], $remaining, 'All items were indexed.');
+
+    // Log in a normal user and search for all nodes. Should only return the two
+    // published nodes.
+    $permissions = [
+      'access content',
+    ];
+    $user = $this->createUser($permissions);
+    $query = \Drupal::getContainer()
+      ->get('search_api.query_helper')
+      ->createQuery($this->index)
+      ->addCondition('search_api_datasource', 'entity:node');
+    $query->setOption('search_api_access_account', $user);
+    $result = $query->execute();
+    $this->assertEquals(2, $result->getResultCount());
+
+    // After granting the "view any unpublished content", the same query should
+    // return all three nodes.
+    user_role_grant_permissions('role', ['view any unpublished content']);
+    $result = $query->getOriginalQuery()->execute();
+    $this->assertEquals(3, $result->getResultCount());
+  }
+
+  /**
    * Tests comment indexing when all users have access to content.
    */
   public function testContentAccessAll() {
