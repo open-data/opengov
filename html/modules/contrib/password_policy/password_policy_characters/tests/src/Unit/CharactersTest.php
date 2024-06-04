@@ -98,7 +98,7 @@ class CharactersTest extends UnitTestCase {
       [
         4,
         'letter',
-        'pass',
+        'pas',
         FALSE,
       ],
     ];

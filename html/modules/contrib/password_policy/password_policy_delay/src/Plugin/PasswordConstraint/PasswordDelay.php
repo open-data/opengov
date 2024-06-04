@@ -106,8 +106,7 @@ class PasswordDelay extends PasswordConstraintBase implements ContainerFactoryPl
       $ok_pw_reset_time = $timestamp + $delay;
 
       if ($ok_pw_reset_time > $now_stamp) {
-        $validation->setErrorMessage($this->t('Not enough time has passed
-          since this password was last reset.'));
+        $validation->setErrorMessage($this->t('Not enough time has passed since this password was last reset.'));
       }
     }
     return $validation;

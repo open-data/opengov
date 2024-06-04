@@ -86,6 +86,12 @@ class PasswordLengthTest extends UnitTestCase {
         'PasswordPassword',
         FALSE,
       ],
+      [
+        2,
+        'minimum',
+        '£',
+        FALSE,
+      ],
     ];
   }
 
