@@ -164,7 +164,7 @@ class CommentDefaultFormatter extends FormatterBase {
       if ($this->currentUser->hasPermission('access comments') || $this->currentUser->hasPermission('administer comments')) {
         $output['comments'] = [];
 
-        if ($entity->get($field_name)->comment_count || $this->currentUser->hasPermission('administer comments')) {
+        if ($entity->get($field_name)->comment_count || $this->currentUser->hasPermission('access comments') || $this->currentUser->hasPermission('administer comments')) {
           $mode = $comment_settings['default_mode'];
           $comments_per_page = $comment_settings['per_page'];
           $comments = $this->storage->loadThread($entity, $field_name, $mode, $comments_per_page, $this->getSetting('pager_id'));
