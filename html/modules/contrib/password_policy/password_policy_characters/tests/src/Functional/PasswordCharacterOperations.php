@@ -9,7 +9,7 @@ use Drupal\Tests\BrowserTestBase;
  *
  * @group password_policy_characters
  */
-class PasswordCharacterOperations extends BrowserTestBase {
+class PasswordCharacterOperationsTest extends BrowserTestBase {
 
   /**
    * Set default theme to stark.
@@ -19,9 +19,12 @@ class PasswordCharacterOperations extends BrowserTestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * {@inheritdoc}
+   * Modules to enable at the start of the test.
    */
-  protected static $modules = ['password_policy_characters', 'password_policy'];
+  protected static $modules = [
+    'password_policy_characters',
+    'password_policy'
+  ];
 
   /**
    * Administrative user.
@@ -40,9 +43,9 @@ class PasswordCharacterOperations extends BrowserTestBase {
   }
 
   /**
-   * Test the management of the "characters" constraint.
+   * Test the management of the "password_policy_character_constraint" constraint.
    */
-  public function testPasswordCharacterManagement() {
+  public function testPasswordCharacterConstraintManagement() {
     // Create a policy and add various "characters" constraints.
     $this->drupalGet('admin/config/security/password-policy/add');
     $this->submitForm(['label' => 'Test policy', 'id' => 'test_policy'], 'Save');
@@ -50,6 +53,11 @@ class PasswordCharacterOperations extends BrowserTestBase {
     $this->assertSession()->pageTextContains('Number of characters');
     $this->assertSession()->pageTextContains('Character type');
 
+    $this->submitForm(['character_type' => 'letter', 'character_count' => 4], 'Save');
+    $this->drupalGet('admin/config/security/password-policy/test_policy');
+    $this->assertSession()->pageTextContains('Password must contain at least 4 letter characters');
+
+    $this->drupalGet('admin/config/system/password_policy/constraint/add/test_policy/password_policy_character_constraint');
     $this->submitForm(['character_type' => 'special', 'character_count' => 2], 'Save');
     $this->drupalGet('admin/config/security/password-policy/test_policy');
     $this->assertSession()->pageTextContains('Password must contain at least 2 unique special characters');

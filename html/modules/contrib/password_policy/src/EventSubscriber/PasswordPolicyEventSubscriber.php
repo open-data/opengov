@@ -4,15 +4,15 @@ namespace Drupal\password_policy\EventSubscriber;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Drupal\Core\Routing\RouteObjectInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Enforces password reset functionality.
@@ -43,13 +43,6 @@ class PasswordPolicyEventSubscriber implements EventSubscriberInterface {
   protected $userStorage;
 
   /**
-   * The request object.
-   *
-   * @var \Symfony\Component\HttpFoundation\Request|null
-   */
-  protected $request;
-
-  /**
    * The Masquerade service if it exists, or NULL.
    *
    * @var \Drupal\masquerade\Masquerade|null
@@ -65,18 +58,15 @@ class PasswordPolicyEventSubscriber implements EventSubscriberInterface {
    *   The entity type manager.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
-   *   The request stack.
    * @param \Drupal\masquerade\Masquerade|null $masquerade
    *   The Masquerade service if it exists.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(AccountProxyInterface $currentUser, EntityTypeManagerInterface $entityTypeManager, MessengerInterface $messenger, RequestStack $requestStack, $masquerade = NULL) {
+  public function __construct(AccountProxyInterface $currentUser, EntityTypeManagerInterface $entityTypeManager, MessengerInterface $messenger, $masquerade = NULL) {
     $this->currentUser = $currentUser;
     $this->messenger = $messenger;
-    $this->request = $requestStack->getCurrentRequest();
     $this->userStorage = $entityTypeManager->getStorage('user');
     $this->masquerade = $masquerade;
   }
@@ -85,7 +75,10 @@ class PasswordPolicyEventSubscriber implements EventSubscriberInterface {
    * Event callback to look for users expired password.
    */
   public function checkForUserPasswordExpiration(RequestEvent $event) {
-    $route_name = $this->request->attributes->get(RouteObjectInterface::ROUTE_NAME);
+    if ($event->getRequest()->getMethod() === Request::METHOD_POST) {
+      return;
+    }
+    $route_name = $event->getRequest()->attributes->get(RouteObjectInterface::ROUTE_NAME);
     $ignore_route = in_array($route_name, [
       'system.403',
       'entity.user.edit_form',
@@ -93,6 +86,9 @@ class PasswordPolicyEventSubscriber implements EventSubscriberInterface {
       'user.logout',
       'admin_toolbar_tools.flush',
       'user.pass',
+      'system.css_asset',
+      'system.js_asset',
+      'image.style_public',
     ]);
 
     // Ignore route for jsonapi calls.
@@ -106,7 +102,7 @@ class PasswordPolicyEventSubscriber implements EventSubscriberInterface {
       /** @var \Drupal\user\UserInterface $user */
       $user = $this->userStorage->load($this->currentUser->id());
 
-      $is_ajax = $this->request->headers->get('X_REQUESTED_WITH') === 'XMLHttpRequest';
+      $is_ajax = $event->getRequest()->isXmlHttpRequest();
 
       $user_expired = FALSE;
       if ($user && $user->hasField('field_password_expiration') && $user->get('field_password_expiration')->get(0)) {
@@ -126,8 +122,8 @@ class PasswordPolicyEventSubscriber implements EventSubscriberInterface {
 
       // Save the token passed in the URL when the user access the site via
       // one time login.
-      $session = $this->request->getSession();
-      $token = $this->request->query->get('pass-reset-token');
+      $session = $event->getRequest()->getSession();
+      $token = $event->getRequest()->query->get('pass-reset-token');
       if (isset($token)) {
         $session->set('pass-reset-token-password-policy', $token);
       }

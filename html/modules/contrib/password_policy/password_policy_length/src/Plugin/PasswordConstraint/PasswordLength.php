@@ -27,13 +27,13 @@ class PasswordLength extends PasswordConstraintBase {
     $validation = new PasswordPolicyValidation();
     switch ($configuration['character_operation']) {
       case 'minimum':
-        if (strlen($password) < $configuration['character_length']) {
+        if (mb_strlen($password) < $configuration['character_length']) {
           $validation->setErrorMessage($this->formatPlural($configuration['character_length'], 'Password length must be at least 1 character.', 'Password length must be at least @count characters.'));
         }
         break;
 
       case 'maximum':
-        if (strlen($password) > $configuration['character_length']) {
+        if (mb_strlen($password) > $configuration['character_length']) {
           $validation->setErrorMessage($this->formatPlural($configuration['character_length'], 'Password length must not exceed 1 character.', 'Password length must not exceed @count characters.'));
         }
         break;
@@ -78,6 +78,42 @@ class PasswordLength extends PasswordConstraintBase {
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     if (!is_numeric($form_state->getValue('character_length')) or $form_state->getValue('character_length') <= 0) {
       $form_state->setErrorByName('character_length', $this->t('The character length must be a positive number.'));
+    }
+    // Check if the new constraint is already defined or invalid.
+    $id = $form_state->getBuildInfo()['args'][1];
+    $new_operation = $form_state->getValue('character_operation');
+    $new_length = $form_state->getValue('character_length');
+    if ($id <> 'password_length') {
+      $entity = \Drupal::entityTypeManager()->getStorage('password_policy')->load($id);
+      $constraints = $entity->get('policy_constraints');
+      foreach ($constraints as $constraint) {
+        $constraint_operation = $constraint["character_operation"];
+        $constraint_length = $constraint["character_length"];
+
+        if ($constraint_operation == $new_operation) {
+          $form_state->setErrorByName('character_length', $this->t('The selected operation (@operation) already exists.',
+            [
+              '@operation' => $constraint_operation,
+            ]
+          ));
+        }
+        if ($constraint_operation <> $new_operation && $new_operation == 'minimum' && $new_length > $constraint_length) {
+          $form_state->setErrorByName('character_length', $this->t('The selected length (@new) is higher than the maximum length defined (@length).',
+            [
+              '@new' => $new_length,
+              '@length' => $constraint_length,
+            ]
+          ));
+        }
+        if ($constraint_operation <> $new_operation && $new_operation == 'maximum' && $new_length < $constraint_length) {
+          $form_state->setErrorByName('character_length', $this->t('The selected length (@new) is lower than the minimum length defined (@length).',
+            [
+              '@new' => $new_length,
+              '@length' => $constraint_length,
+            ]
+          ));
+        }
+      }
     }
   }
 
