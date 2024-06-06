@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "クローズドキャプションを表示"
 	},
 	"cc-err": "クローズドキャプションを実行できませんでした。",
+	fs: "Enter full screen",
 	adesc: {
 		on: "音声ガイドを有効にする",
 		off: "音声ガイドを無効にする"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "現在位置：",
 	dur: "合計時間：",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "共有",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "_MENU_エントリーを表示",
 	filter: "検索条件を指定する",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",

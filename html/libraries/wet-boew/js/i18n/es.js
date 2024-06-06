@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "Mostrar subtítulos"
 	},
 	"cc-err": "Error al cargar subtítulos",
+	fs: "Enter full screen",
 	adesc: {
 		on: "Habilitar audio descripción ",
 		off: "Deshabilitar audio descripción"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "Posición actual:",
 	dur: "Tiempo total:",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "Compartir",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "Mostrar _MENU_ entradas",
 	filter: "filtrar artículos",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",

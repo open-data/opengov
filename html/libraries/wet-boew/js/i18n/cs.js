@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "Zobrazit Skryté titulky"
 	},
 	"cc-err": "Chyba při načítání uzavřené titulky",
+	fs: "Enter full screen",
 	adesc: {
 		on: "Povolit zvukový popis",
 		off: "Zakázat zvukový popis"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "Aktuální pozice:",
 	dur: "Celkový čas:",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "Sdílet",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "Zobrazit _MENU_ položek",
 	filter: "Filtrování položek",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",

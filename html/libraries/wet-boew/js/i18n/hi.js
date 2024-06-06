@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "बंद कैप्शन दिखाएं"
 	},
 	"cc-err": "लोड करने में त्रुटि बंद कैप्शन",
+	fs: "Enter full screen",
 	adesc: {
 		on: "ऑडियो विवरण सक्षम",
 		off: "ऑडियो विवरण अक्षम"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "वर्तमान स्थिति:",
 	dur: "कुल समय:",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "शेयर",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "_MENU_ प्रविष्टियों दिखाएं",
 	filter: "फ़िल्टर आइटम",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",
