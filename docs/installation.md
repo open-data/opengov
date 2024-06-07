@@ -101,7 +101,7 @@ port = 5432
 ```
 Next create a new user,
 ```
-	$ createuser your_username -pwprompt
+	$ createuser --pwprompt your_username
 ```
 Where 'your_username' should be replaced with your own username. After running this command you will be prompted to create
 a password. Finally, log in to the postgresql server with
