@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "Mostrar a legenda"
 	},
 	"cc-err": "Ocorreu um erro no carregamento da legenda",
+	fs: "Enter full screen",
 	adesc: {
 		on: "Ativar a descrição de áudio",
 		off: "Desativar a descrição de áudio"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "Posição atual:",
 	dur: "Tempo total:",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "Compartilhar",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "Mostrar _MENU_ entradas",
 	filter: "Filtrar os ítens",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",

@@ -1,7 +1,7 @@
 /*!
  * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
  * wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
- * v4.0.63 - 2023-05-30
+ * v4.0.79 - 2024-04-30
  *
  *//*! Modernizr (Custom Build) | MIT & BSD */
 /*! @license DOMPurify 2.4.4 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.4.4/LICENSE */
@@ -2608,7 +2608,7 @@ Modernizr.load( [
 					if ( isTrident ) {
 
 						// Load an ES6 polyfill
-						Modernizr.load( "timeout=500!https://polyfill.io/v3/polyfill.min.js?features=es6" );
+						Modernizr.load( "timeout=500!https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" );
 
 						// Specify the CDN's font URL
 						// Note: IE11 is unable to resolve this on its own
@@ -2858,7 +2858,7 @@ wb.addSkipLink = function( text, attr, isBtn, isLast ) {
 
 } )( jQuery, wb );
 
-( function( wb ) {
+( function( wb, window ) {
 
 "use strict";
 
@@ -3832,7 +3832,70 @@ wb.string = {
 			str = "0" + str;
 		}
 		return str;
+	},
+
+	/*
+	 * Convert a base64 string into an ArrayBuffer (Note: this function are not fully UTF-8 supported and may create interoperability issue)
+	 * ref. https://www.isummation.com/blog/convert-arraybuffer-to-base64-string-and-vice-versa/
+	 * @memberof wb.string
+	 * @param {string} Base64 browser encoded
+	 * @return {ArrayBuffer} string converted into ArrayBuffer
+	 */
+	base64ToArrayBuffer: function( base64 ) {
+		var binary_string = window.atob( base64 ),
+			len = binary_string.length,
+			bytes = new Uint8Array( len ),
+			i;
+		for ( i = 0; i < len; i++ ) {
+			bytes[ i ] = binary_string.charCodeAt( i );
+		}
+		return bytes.buffer;
+	},
+
+	/*
+	 * Convert an ArrayBuffer into base64 string (Note: this function are not fully UTF-8 supported and may create interoperability issue)
+	 * ref. https://www.isummation.com/blog/convert-arraybuffer-to-base64-string-and-vice-versa/
+	 * @memberof wb.string
+	 * @param {ArrayBuffer}
+	 * @return {string} ArrayBuffer converted into base64 string
+	 */
+	arrayBufferToBase64: function( buffer ) {
+		var binary = "",
+			bytes = new Uint8Array( buffer ),
+			len = bytes.byteLength,
+			i;
+		for ( i = 0; i < len; i++ ) {
+			binary += String.fromCharCode( bytes[ i ] );
+		}
+		return window.btoa( binary );
+	},
+
+	/*
+	 * Convert an hexadecimal string into an ArrayBuffer
+	 * ref. https://stackoverflow.com/questions/38987784/how-to-convert-a-hexadecimal-string-to-uint8array-and-back-in-javascript/50868276#50868276
+	 * @memberof wb.string
+	 * @param {string} Encoded string in hexadecimal
+	 * @return {Uint8Array} Binary array buffer
+	 */
+	fromHexString: function( hexString ) {
+		return hexString === null ? null : Uint8Array.from( hexString.match( /.{1,2}/g ).map( function( byte ) {
+			return parseInt( byte, 16 );
+		} ) );
+	},
+
+	/*
+	 * Convert an ArrayBuffer into an hexadecimal string
+	 * ref. https://stackoverflow.com/questions/38987784/how-to-convert-a-hexadecimal-string-to-uint8array-and-back-in-javascript/50868276#50868276
+	 * @memberof wb.string
+	 * @param {Uint8Array} Binary array buffer
+	 * @return {string} Encoded string in hexadecimal
+	 */
+	toHexString: function( bytes ) {
+		return bytes.reduce( function( str, byte ) {
+			return str + byte.toString( 16 ).padStart( 2, "0" );
+		}, "" );
 	}
+
 };
 
 /*
@@ -3997,7 +4060,7 @@ wb.findPotentialPII = function( str, scope, opts ) {
 	var oRegEx = {
 			digits: /\d(?:[\s\-\\.\\/]?\d){8,}(?!\d)/ig, //9digits or more pattern
 			passport: /\b[A-Za-z]{2}[\s\\.-]*?\d{6}\b/ig, //canadian nr passport pattern
-			email: /\b(?:[a-zA-Z0-9_\-\\.]+)(?:@|%40)(?:[a-zA-Z0-9_\-\\.]+)\.(?:[a-zA-Z]{2,5})\b/ig, //email pattern
+			email: /\b(?:[a-zA-Z0-9_\-\\.]+)(?:@|%40|%2540)(?:[a-zA-Z0-9_\-\\.]+)\.(?:[a-zA-Z]{2,5})\b/ig, //email pattern
 			postalCode: /\b[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d\b/ig, //postal code pattern
 			username: /(?:(username|user)[%20]?([:=]|(%EF%BC%9A))[^\s&]*)/ig,
 			password: /(?:(password|pass)[%20]?([:=]|(%EF%BC%9A))[^\s&]*)/ig
@@ -4055,7 +4118,7 @@ wb.findPotentialPII = function( str, scope, opts ) {
 	return toClean && isFound ? str : isFound;
 };
 
-} )( wb );
+} )( wb, window );
 
 ( function( $, undef ) {
 "use strict";
@@ -4365,7 +4428,7 @@ wb.add( selector );
  * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
  * @author WET Community
  */
-( function( $, wb ) {
+( function( $, wb, DOMPurify ) {
 "use strict";
 
 /*
@@ -4442,9 +4505,18 @@ $document.on( "ajax-fetch.wb", function( event ) {
 				fetchData.pointer = $( "<div id='" + wb.getId() + "' data-type='" + responseType + "'></div>" )
 					.append( responseType === "string" ? response : "" );
 
-				response = $( response );
+				if ( !xhr.responseJSON ) {
+					try {
+						response = $( response );
+					} catch ( e ) {
+						response = DOMPurify.sanitize( xhr.responseText );
+					}
+				} else {
+					response = xhr.responseText;
+				}
 
 				fetchData.response = response;
+				fetchData.hasSelector = !!selector;
 				fetchData.status = status;
 				fetchData.xhr = xhr;
 
@@ -4466,7 +4538,7 @@ $document.on( "ajax-fetch.wb", function( event ) {
 	}
 } );
 
-} )( jQuery, wb );
+} )( jQuery, wb, DOMPurify );
 
 /**
  * @title WET-BOEW Set background image
@@ -4580,7 +4652,12 @@ var $document = wb.doc,
 
 		for ( link in optimizedLink ) {
 			elm = document.getElementById( link );
-			elm.style.backgroundImage = "url(" + optimizedLink[ link ] + ")";
+
+			if ( optimizedLink[ link ] === "https://wet-boew.github.io/vocab/wb/utilities#no-image" ) {
+				elm.style.backgroundImage = "none";
+			} else {
+				elm.style.backgroundImage = "url(" + optimizedLink[ link ] + ")";
+			}
 		}
 	};
 
@@ -4681,8 +4758,20 @@ var componentName = "wb-calevt",
 		year = settings.year;
 		month = settings.month;
 
-		minDate = events.minDate;
-		maxDate = events.maxDate;
+		if ( $elm.data( "calevtMinDate" ) ) {
+			minDate = getLocaleDate( $elm.data( "calevtMinDate" ) );
+		}
+		if ( $elm.data( "calevtMaxDate" ) ) {
+			maxDate = getLocaleDate( $elm.data( "calevtMaxDate" ) );
+		}
+
+		if ( !minDate || ( events.minDate < minDate ) ) {
+			minDate = events.minDate;
+		}
+		if ( !maxDate || ( events.maxDate > maxDate ) ) {
+			maxDate = events.maxDate;
+		}
+
 		minDateTime = minDate.getTime();
 		maxDateTime = maxDate.getTime();
 
@@ -4782,16 +4871,6 @@ var componentName = "wb-calevt",
 			if ( !directLinking ) {
 				linkId = event.id || wb.getId();
 				event.id = linkId;
-
-				/*
-				 * Fixes IE tabbing error:
-				 * http://www.earthchronicle.com/ECv1point8/Accessibility01IEAnchoredKeyboardNavigation.aspx
-				 */
-
-				// TODO: Which versions of IE should this fix be limited to?
-				if ( wb.ie ) {
-					event.tabIndex = "-1";
-				}
 				href = "#" + linkId;
 			}
 
@@ -4878,14 +4957,6 @@ var componentName = "wb-calevt",
 		var eventsList = this.events,
 			i, eLen, date, dayIndex, $day, $dayEvents, event, eventMonth;
 
-		// Fix required to make up with the IE z-index behaviour mismatch
-		// TODO: Move ot IE CSS? Which versions of IE should this fix be limited to?
-		if ( wb.ie ) {
-			for ( i = 0, eLen = $days.length; i !== eLen; i += 1 ) {
-				$days.eq( i ).css( "z-index", 31 - i );
-			}
-		}
-
 		/*
 		 * Determines for each event, if it occurs in the display month
 		 */
@@ -4956,6 +5027,16 @@ var componentName = "wb-calevt",
 					.attr( "tabindex", "-1" );
 			}
 		}, 5 );
+	},
+
+	getLocaleDate = function( dateString ) {
+		var date = new Date(),
+			dateComponents = dateString.split( "-" );
+
+		dateComponents[ 1 ] = dateComponents[ 1 ] - 1;	// Convert to zero-based month
+		date.setFullYear( dateComponents[ 0 ], dateComponents[ 1 ], dateComponents[ 2 ] );
+
+		return date;
 	};
 
 // Bind the init event of the plugin
@@ -7114,11 +7195,21 @@ var componentName = "wb-data-ajax",
 		var $elm = $( elm ),
 			ajxInfo = getAjxInfo( elm ),
 			ajaxType = ajxInfo.type,
-			content, jQueryCaching;
+			content, jQueryCaching,
+			settings = wb.getData( $( elm ), shortName ) || {},
+			doEncode = settings.encode,
+			hasSelector = fetchObj.hasSelector;
 
 		// ajax-fetched event
 		content = fetchObj.response;
 		if ( content &&  content.length > 0 ) {
+
+			// If the fetched content need to be encoded
+			if ( doEncode && hasSelector ) {
+				content = content.html().replaceAll( "<", "&lt;" );
+			} else if ( doEncode && !hasSelector ) {
+				content = fetchObj.xhr.responseText.replaceAll( "<", "&lt;" );
+			}
 
 			//Prevents the force caching of nested resources
 			jQueryCaching = jQuery.ajaxSettings.cache;
@@ -7168,8 +7259,8 @@ $document.on( "timerpoke.wb " + initEvent + " " + updateEvent + " ajax-fetched.w
 
 // Re-run WET for elements that have just been loaded if WET is already done initializing
 $document.on( contentUpdatedEvent, function( event ) {
-	if ( wb.isReady && !wb.isDisabled ) {
-		let updtElm = event.currentTarget;
+	if ( !wb.isDisabled ) {
+		let updtElm = event.target;
 
 		$( updtElm )
 			.find( wb.allSelectors )
@@ -7512,13 +7603,6 @@ var imgClass,
 			}
 			img.src = matchedElm.getAttribute( "data-src" );
 			matchedElm.appendChild( img );
-
-			// Fixes bug with IE8 constraining the height of the image
-			// when the .img-responsive class is used.
-			if ( wb.ielt9 ) {
-				img.removeAttribute( "width" );
-				img.removeAttribute( "height" );
-			}
 
 		// No match and an image exists: delete it
 		} else if ( img ) {
@@ -7933,24 +8017,29 @@ var componentName = "wb-eqht",
 				currentChildTop = currentChild.getBoundingClientRect().top + window.pageYOffset;
 				currentChildHeight = currentChild.offsetHeight;
 
-				if ( currentChildTop !== rowTop ) {
+				// if the current element is visible...
+				// note: hidden elements need to be excluded since they have a different top offset than visible ones
+				if ( currentChildHeight ) {
 
-					// as soon as we find an element not on this row (not the same top offset)
-					// we need to equalize each items in that row to align the next row.
-					equalize( row, tallestHeight );
+					// as soon as we find an element not on this row (not the same top offset)...
+					if ( currentChildTop !== rowTop ) {
 
-					// since the elements of the previous row was equalized
-					// we need to get the new top offset of the current element
-					currentChildTop = currentChild.getBoundingClientRect().top + window.pageYOffset;
+						// we need to equalize each item in that row to align the next row
+						equalize( row, tallestHeight );
 
-					// reset the row, rowTop and tallestHeight
-					row.length = 0;
-					rowTop = currentChildTop;
-					tallestHeight = currentChildHeight;
+						// since the elements of the previous row was equalized
+						// we need to get the new top offset of the current element
+						currentChildTop = currentChild.getBoundingClientRect().top + window.pageYOffset;
+
+						// reset the row, rowTop and tallestHeight
+						row.length = 0;
+						rowTop = currentChildTop;
+						tallestHeight = currentChildHeight;
+					}
+
+					tallestHeight = Math.max( currentChildHeight, tallestHeight );
+					row.push( $children.eq( j ) );
 				}
-
-				tallestHeight = Math.max( currentChildHeight, tallestHeight );
-				row.push( $children.eq( j ) );
 			}
 
 			// equalize the last row
@@ -8038,13 +8127,14 @@ wb.add( selector );
 * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
 * @author @ipaksc
 */
-( function( $, window, wb ) {
+( function( $, window, wb, crypto ) {
 "use strict";
 var componentName = "wb-exitscript",
 	selector = "." + componentName,
 	initEvent = "wb-init" + selector,
 	$document = wb.doc,
 	exiturlparam = componentName + "-urlparam",
+	keyForKeyHolder = componentName + "key",
 	moDalId = componentName + "-modal",
 	i18n,
 	i18nDict = {
@@ -8075,7 +8165,9 @@ var componentName = "wb-exitscript",
 			settings,
 			queryString = window.location.search,
 			urlParams = new URLSearchParams( queryString ),
-			originalURL = urlParams.get( "exturl" ),
+			counterInUrl = wb.string.fromHexString( urlParams.get( "exturl" ) ),
+			encryptedUrl = localStorage.getItem( componentName ),
+			jwt = JSON.parse( localStorage.getItem( keyForKeyHolder ) ),
 			$elm;
 		if ( elm ) {
 			$elm = $( elm );
@@ -8088,16 +8180,90 @@ var componentName = "wb-exitscript",
 
 			$elm.data( componentName, settings );
 
-			if ( settings.url ) {
-				$( this ).attr( "href", settings.url + "?exturl=" +  encodeURIComponent( this.href ) );
+			if ( settings.url && crypto ) {
+
+				crypto.subtle.generateKey(
+					{
+						name: "AES-CTR",
+						length: 256
+					},
+					true,
+					[ "encrypt", "decrypt" ]
+				).then( function( keyToEncryp ) {
+
+					var enc, messageEncoded, counter;
+
+					// Save the key in the anchor
+					crypto.subtle.exportKey( "jwk", keyToEncryp )
+						.then( function( exportedJwtKey ) {
+							elm[ keyForKeyHolder ] = exportedJwtKey;
+						} );
+
+					// Encrypt the URL
+					enc = new TextEncoder();
+					messageEncoded = enc.encode( elm.href );
+					counter = crypto.getRandomValues( new Uint8Array( 16 ) );
+					crypto.subtle.encrypt(
+						{
+							name: "AES-CTR",
+							counter: counter,
+							length: 64
+						},
+						keyToEncryp,
+						messageEncoded
+					).then( function( ciphertext ) {
+						elm[ componentName ] = ciphertext;
+					} );
+
+					// Change the link URL by passing the counter as a key
+					$elm.attr( "href", settings.url + "?exturl=" + wb.string.toHexString( counter ) );
+				} );
+
 			}
 
 			i18n = i18nDict[ wb.lang || "en" ];
 
 			// This conditional statement for a middle static exit page, to retrieve the URL to the non-secure site.
-			if ( $elm.hasClass( exiturlparam ) ) {
-				this.outerHTML = "<a href='" + originalURL + "'>" + originalURL + "</a>";
+			if ( $elm.hasClass( exiturlparam ) && encryptedUrl !== null && jwt !== null ) {
+
+				crypto.subtle.importKey(
+					"jwk",
+					jwt,
+					{
+						name: "AES-CTR",
+						length: 256
+					},
+					true,
+					[ "decrypt" ]
+				).then( function( key ) {
+
+					crypto.subtle.decrypt(
+						{
+							name: "AES-CTR",
+							counter: counterInUrl,
+							length: 64
+						},
+						key,
+						wb.string.base64ToArrayBuffer( encryptedUrl )
+					).then( function( decrypted ) {
+
+						var dec = new TextDecoder(),
+							urlToRedirect = dec.decode( decrypted );
+
+						// Check if the decrypted message is an valid URL and silently fail if the pattern don't match
+						if ( urlToRedirect.match( /^(http|https):\/\//g ) ) {
+							elm.outerHTML = "<a href='" + urlToRedirect + "'>" + urlToRedirect + "</a>";
+						}
+
+					} );
+				} );
+
 			}
+
+			// Remove the plugin data and ensure it is removed from the localstorage
+			localStorage.removeItem( componentName );
+			localStorage.removeItem( keyForKeyHolder );
+
 			wb.ready( $elm, componentName );
 		}
 	};
@@ -8171,6 +8337,11 @@ $document.on( "click", selector, function( event ) {
 
 		] );
 
+	} else if ( crypto && this[ componentName ] ) {
+
+		// Save to localstorage, the plugin init will ensure this data is only used once
+		localStorage.setItem( componentName, wb.string.arrayBufferToBase64( this[ componentName ] ) );
+		localStorage.setItem( keyForKeyHolder, JSON.stringify( this[ keyForKeyHolder ] ) );
 	}
 
 } );
@@ -8181,7 +8352,7 @@ $document.on( "timerpoke.wb " + initEvent, selector, init );
 // Add the timer poke to initialize the plugin
 wb.add( selector );
 
-} )( jQuery, window, wb );
+} )( jQuery, window, wb, crypto );
 
 /**
 * @title WET-BOEW Facebook embedded page
@@ -8875,14 +9046,20 @@ var componentName = "wb-feeds",
 
 $document.on( "ajax-fetched.wb data-ready.wb-feeds", selector + " " + feedLinkSelector, function( event, context ) {
 	var eventTarget = event.target,
-		data, response, $emlRss, limit, results;
+		data, response, responseRaw,
+		$emlRss, limit, results;
 
 	// Filter out any events triggered by descendants
 	if ( event.currentTarget === eventTarget ) {
 		$emlRss = $( eventTarget ).parentsUntil( selector ).parent();
 		switch ( event.type ) {
 		case "ajax-fetched":
-			response = event.fetch.response.get( 0 );
+			responseRaw = event.fetch.response;
+			if ( typeof responseRaw === "string" ) {
+				response = JSON.parse( responseRaw ); // Assuming we have fetch a JSON document, try to parse it.
+			} else {
+				response = responseRaw.get( 0 ); // fetched an HTML or XML document which has been parsed by jQuery and sanitized by DomPurify
+			}
 			if ( response.documentElement ) {
 				limit = getLimit( $emlRss[ Object.keys( $emlRss )[ 0 ] ] );
 				data = corsEntry( response, limit );
@@ -8984,10 +9161,10 @@ var componentName = "wb-filter",
 	initEvent = "wb-init" + selector,
 	$document = wb.doc,
 	filterClass = "wb-fltr-out",
-	notFilterClassSel = ":not(." + filterClass + ")",
+	tagFilterClass = "wb-tgfltr-out",
+	notFilterClassSel = ":not(." + filterClass + "):not(." + tagFilterClass + ")",
 	inputClass = "wb-fltr-inpt",
 	dtNameFltrArea = "wbfltrid",
-	visibleSelector = ":visible",
 	selectorInput = "." + inputClass,
 	defaults = {
 		std: {
@@ -9002,7 +9179,7 @@ var componentName = "wb-filter",
 			section: ">tbody"
 		},
 		tblgrp: {
-			selector: "th:not([scope])",
+			selector: " th:not([scope])" + notFilterClassSel,
 			hdnparentuntil: "tbody",
 			section: ">tbody"
 		}
@@ -9110,7 +9287,7 @@ var componentName = "wb-filter",
 				uiNbItems.textContent = totalEntries;
 
 				itemsObserver = new MutationObserver( function() {
-					uiNbItems.textContent = $elm.find( secSelector + notFilterClassSel + settings.selector + visibleSelector ).length;
+					uiNbItems.textContent = $elm.find( secSelector + settings.selector + notFilterClassSel ).length;
 				} );
 
 				itemsObserver.observe( elm, { attributes: true, subtree: true } );
@@ -9217,11 +9394,13 @@ var componentName = "wb-filter",
 			fCallBack = filterCallback;
 		}
 		fCallBack.apply( this, arguments );
+
+		$elm.trigger( "wb-contentupdated" );
 	},
 	filterCallback = function( $field, $elm, settings ) {
-		var $sections =	$elm.find( settings.section + visibleSelector ),
+		var $sections =	$elm.find( settings.section ),
 			sectionsLength = $sections.length,
-			fndSelector = notFilterClassSel + settings.selector + visibleSelector,
+			fndSelector = notFilterClassSel + settings.selector,
 			s, $section;
 
 		for ( s = 0; s < sectionsLength; s += 1 ) {
@@ -9441,329 +9620,338 @@ var componentName = "wb-frmvld",
 			}
 
 			Modernizr.load( {
-
-				// For loading multiple dependencies
-				both: [
-					"site!deps/jquery.validate" + modeJS,
-					"site!deps/additional-methods" + modeJS
-				],
+				load: [ "site!deps/jquery.validate" + modeJS ],
 				testReady: function() {
-					return ( $.validator && $.validator.methods.bic );
+					return ( $.validator );
 				},
 				complete: function() {
-					var $elm = $( "#" + elmId ),
-						$form = $elm.find( "form" ),
-						formDOM = $form.get( 0 ),
-						formId = $form.attr( "id" ),
-						labels = formDOM.getElementsByTagName( "label" ),
-						submitted = false,
-						errorFormId = "errors-" + ( !formId ? "default" : formId ),
-						settings = $.extend(
-							true,
-							{},
-							defaults,
-							window[ componentName ],
-							wb.getData( $elm, componentName )
-						),
-						summaryHeading = settings.hdLvl,
-						i, len, validator;
+					Modernizr.load( {
 
-					if ( wb.lang === "fr" ) {
+						// For loading multiple dependencies
+						load: [ "site!deps/additional-methods" + modeJS ],
+						testReady: function() {
+							return ( $.validator.methods.bic );
+						},
+						complete: function() {
+							var $elm = $( "#" + elmId ),
+								$form = $elm.find( "form" ),
+								formDOM = $form.get( 0 ),
+								formId = $form.attr( "id" ),
+								labels = formDOM.getElementsByTagName( "label" ),
+								submitted = false,
+								errorFormId = "errors-" + ( !formId ? "default" : formId ),
+								settings = $.extend(
+									true,
+									{},
+									defaults,
+									window[ componentName ],
+									wb.getData( $elm, componentName )
+								),
+								summaryHeading = settings.hdLvl,
+								i, len, validator;
 
-						// alphanumeric regex is changed to allow french characters;
-						$.validator.addMethod( "alphanumeric", function( value, element ) {
-							return this.optional( element ) || /^[a-zàâçéèêëîïôûùüÿæœ0-9_]+$/i.test( value );
-						}, "Letters, numbers, and underscores only please." );
+							if ( wb.lang === "fr" ) {
 
-						// error french text is adjusted to remove the word "spaces"
-						$.extend( $.validator.messages, {
-							alphanumeric: "Veuillez fournir seulement des lettres, nombres et soulignages."
-						} );
-					}
+								// alphanumeric regex is changed to allow french characters;
+								$.validator.addMethod( "alphanumeric", function( value, element ) {
+									return this.optional( element ) || /^[a-zàâçéèêëîïôûùüÿæœ0-9_]+$/i.test( value );
+								}, "Letters, numbers, and underscores only please." );
 
-					// Append the aria-live region (for provide message updates to screen readers)
-					$elm.append( "<div class='arialive wb-inv' aria-live='polite' aria-relevant='all'></div>" );
-
-					// Add space to the end of the labels (so separation between label and error when CSS turned off)
-					len = labels.length;
-					for ( i = 0; i !== len; i += 1 ) {
-						labels[ i ].innerHTML += " ";
-					}
-
-					// Hide "required" label text in older forms from screen readers
-					// Prevents redundant "required" announcements on semantically-required fields whose labels mention they're required
-					$form.find( "strong.required:not([aria-hidden='true'])" ).each( function() {
-						const $requiredText = $( this ),
-							$label = $requiredText.closest( "label" ),
-							fieldId = $label.attr( "for" );
-						let $field = fieldId ? $( "#" + fieldId ) : $label.find( ":input" ).first();
-
-						// If the label's field has yet to be found, look for fields that refer to the label via aria-labelledby
-						if ( !$field.length ) {
-							const labelId = $label.attr( "id" ) || $requiredText.closest( "id" );
-							$field = $form.find( "[aria-labelledby~='" + labelId + "']:input" ).first();
-						}
-
-						// Hide the "required" text if its field is semantically-required
-						if ( $field.is( "[required], [aria-required='true']" ) ) {
-							$requiredText.attr( "aria-hidden", "true" );
-						}
-					} );
-
-					// The jQuery validation plug-in in action
-					validator = $form.validate( {
-						meta: "validate",
-						focusInvalid: false,
-						ignore: settings.ignore,
-
-						// Set the element which will wrap the inline error messages
-						errorElement: "strong",
-
-						// Location for the inline error messages
-						// In this case we will place them in the associated label element
-						errorPlacement: function( $error, $element ) {
-							var type = $element.attr( "type" ),
-								group = $element.attr( "data-rule-require_from_group" ),
-								$fieldset, $legend;
-
-							$error.data( "element-id", $element.attr( "id" ) );
-							if ( type ) {
-								type = type.toLowerCase();
-								if ( type === "radio" || type === "checkbox" ) {
-									$fieldset = $element.closest( "fieldset" );
-									if ( $fieldset.length !== 0 ) {
-										$legend = $fieldset.find( "legend" ).first();
-										if ( $legend.length !== 0 && $fieldset.find( "input[name='" + $element.attr( "name" ) + "']" ) !== 1 ) {
-											$error.appendTo( $legend );
-											return;
-										}
-									}
-								}
+								// error french text is adjusted to remove the word "spaces"
+								$.extend( $.validator.messages, {
+									alphanumeric: "Veuillez fournir seulement des lettres, nombres et soulignages."
+								} );
 							}
 
-							if ( group ) {
-								$fieldset = $element.closest( "fieldset" );
-								if ( $fieldset.length !== 0 ) {
-									$legend = $fieldset.find( "legend" ).first();
-									if ( $legend.length !== 0 && $fieldset.find( "input[name='" + $element.attr( "name" ) + "']" ) !== 1 ) {
-										var $strong = $legend.find( "strong.error" ),
-											id = $legend.attr( "id" );
+							// Append the aria-live region (for provide message updates to screen readers)
+							$elm.append( "<div class='arialive wb-inv' aria-live='polite' aria-relevant='all'></div>" );
 
-										if ( $strong.length > 0 ) {
-											$strong.remove();
+							// Add space to the end of the labels (so separation between label and error when CSS turned off)
+							len = labels.length;
+							for ( i = 0; i !== len; i += 1 ) {
+								labels[ i ].innerHTML += " ";
+							}
+
+							// Hide "required" label text in older forms from screen readers
+							// Prevents redundant "required" announcements on semantically-required fields whose labels mention they're required
+							$form.find( "strong.required:not([aria-hidden='true'])" ).each( function() {
+								const $requiredText = $( this ),
+									$label = $requiredText.closest( "label" ),
+									fieldId = $label.attr( "for" );
+								let $field = fieldId ? $( "#" + fieldId ) : $label.find( ":input" ).first();
+
+								// If the label's field has yet to be found, look for fields that refer to the label via aria-labelledby
+								if ( !$field.length ) {
+									const labelId = $label.attr( "id" ) || $requiredText.closest( "id" );
+									$field = $form.find( "[aria-labelledby~='" + labelId + "']:input" ).first();
+								}
+
+								// Hide the "required" text if its field is semantically-required
+								if ( $field.is( "[required], [aria-required='true']" ) ) {
+									$requiredText.attr( "aria-hidden", "true" );
+								}
+							} );
+
+							// The jQuery validation plug-in in action
+							validator = $form.validate( {
+								meta: "validate",
+								focusInvalid: false,
+								ignore: settings.ignore,
+
+								// Set the element which will wrap the inline error messages
+								errorElement: "strong",
+
+								// Location for the inline error messages
+								// In this case we will place them in the associated label element
+								errorPlacement: function( $error, $element ) {
+									var type = $element.attr( "type" ),
+										group = $element.attr( "data-rule-require_from_group" ),
+										$fieldset, $legend;
+
+									$error.data( "element-id", $element.attr( "id" ) );
+									if ( type ) {
+										type = type.toLowerCase();
+										if ( type === "radio" || type === "checkbox" ) {
+											$fieldset = $element.closest( "fieldset" );
+											if ( $fieldset.length !== 0 ) {
+												$legend = $fieldset.find( "legend" ).first();
+												if ( $legend.length !== 0 && $fieldset.find( "input[name='" + $element.attr( "name" ) + "']" ) !== 1 ) {
+													$error.appendTo( $legend );
+													return;
+												}
+											}
 										}
+									}
 
-										if ( !id ) {
-											id = "required-group-" + idCount;
-											idCount += 1;
+									if ( group ) {
+										$fieldset = $element.closest( "fieldset" );
+										if ( $fieldset.length !== 0 ) {
+											$legend = $fieldset.find( "legend" ).first();
+											if ( $legend.length !== 0 && $fieldset.find( "input[name='" + $element.attr( "name" ) + "']" ) !== 1 ) {
+												var $strong = $legend.find( "strong.error" ),
+													id = $legend.attr( "id" );
 
-											$legend.attr( "id", id );
+												if ( $strong.length > 0 ) {
+													$strong.remove();
+												}
+
+												if ( !id ) {
+													id = "required-group-" + idCount;
+													idCount += 1;
+
+													$legend.attr( "id", id );
+												}
+
+												$error.data( "element-id", id );
+												$error.attr( "id", id );
+												$error.appendTo( $legend );
+
+												return;
+											}
 										}
+									}
 
-										$error.data( "element-id", id );
-										$error.attr( "id", id );
-										$error.appendTo( $legend );
-
+									//Std If we have a label and the input field is inside the label
+									// need to add a css-implicite-input
+									if ( $form.find( "label" ).find( ".wb-server-error + input.css-implicite-input[name='" + $element.attr( "name" ) + "']" ).length > 0 ) {
+										$error.insertBefore( $form.find( ".wb-server-error + input.css-implicite-input[name='" + $element.attr( "name" ) + "']" ) );
 										return;
 									}
-								}
-							}
 
-							//Std If we have a label and the input field is inside the label
-							// need to add a css-implicite-input
-							if ( $form.find( "label" ).find( ".wb-server-error + input.css-implicite-input[name='" + $element.attr( "name" ) + "']" ).length > 0 ) {
-								$error.insertBefore( $form.find( ".wb-server-error + input.css-implicite-input[name='" + $element.attr( "name" ) + "']" ) );
-								return;
-							}
+									$error.appendTo( $form.find( "label[for='" + $element.attr( "id" ) + "']" ) );
+									return;
+								},
 
-							$error.appendTo( $form.find( "label[for='" + $element.attr( "id" ) + "']" ) );
-							return;
-						},
+								// Create our error summary that will appear before the form
+								showErrors: function( errorMap ) {
+									this.defaultShowErrors();
+									var $errors = $form.find( ".wb-server-error, strong.error" ).filter( ":not(:hidden)" ),
+										$errorfields = $form.find( "input.error, select.error, textarea.error" ),
+										prefixStart = "<span class='prefix'>" + i18nText.error + "&#160;",
+										prefixEnd = i18nText.colon + " </span>",
+										separator = i18nText.hyphen,
+										ariaLive = $form.closest( ".wb-frmvld" ).find( ".arialive" )[ 0 ],
+										$summaryContainer, summary, key, i, len, $error, prefix, $fieldName, $fieldset, label, labelString;
 
-						// Create our error summary that will appear before the form
-						showErrors: function( errorMap ) {
-							this.defaultShowErrors();
-							var $errors = $form.find( ".wb-server-error, strong.error" ).filter( ":not(:hidden)" ),
-								$errorfields = $form.find( "input.error, select.error, textarea.error" ),
-								prefixStart = "<span class='prefix'>" + i18nText.error + "&#160;",
-								prefixEnd = i18nText.colon + " </span>",
-								separator = i18nText.hyphen,
-								ariaLive = $form.parent().find( ".arialive" )[ 0 ],
-								$summaryContainer, summary, key, i, len, $error, prefix, $fieldName, $fieldset, label, labelString;
+									// Correct the colouring of fields that are no longer invalid
+									$form
+										.find( ".has-error [aria-invalid=false]" )
+										.closest( ".has-error" )
+										.removeClass( "has-error" );
 
-							// Correct the colouring of fields that are no longer invalid
-							$form
-								.find( ".has-error [aria-invalid=false]" )
-								.closest( ".has-error" )
-								.removeClass( "has-error" );
+									if ( $errors.length !== 0 ) {
 
-							if ( $errors.length !== 0 ) {
-
-								// Post process
-								summary = "<" + summaryHeading + ">" +
-									i18nText.formNotSubmitted + $errors.length +
-									(
-										$errors.length !== 1 ?
-											i18nText.errorsFound :
-											i18nText.errorFound
-									) + "</" + summaryHeading + "><ul>";
-								$errorfields
-									.closest( ".form-group" )
-									.addClass( "has-error" );
-								len = $errors.length;
-								for ( i = 0; i !== len; i += 1 ) {
-									$error = $errors.eq( i );
-									prefix = prefixStart + ( i + 1 ) + prefixEnd;
-									$fieldName = $error.closest( "label" ).find( ".field-name" );
-
-									// Try to find the field name in the legend (if one exists)
-									if ( $fieldName.length === 0 ) {
-										$fieldset = $error.closest( "fieldset" );
-										if ( $fieldset.length !== 0 ) {
-											$fieldName = $fieldset.find( "legend .field-name" );
-										}
-									}
-
-									$error.find( "span.prefix" ).detach();
-
-									//Verify if it is a wb-server-error
-									if ( $errors[ i ].classList.contains( "wb-server-error" ) ) {
-										if ( $errors[ i ].id ) {
-											var myParent = document.getElementById( $errors[ i ].id ).parentElement;
-											if ( myParent === null ) {
-												summary += "<li><a>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
-											} else {
-												if ( myParent.hasAttribute( "for" ) && myParent.getAttribute( "for" ).length > 0 ) {
-													summary += "<li><a href='#" + myParent.getAttribute( "for" ) + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
-												} else {
-													if ( myParent.getElementsByTagName( "input" )[ 0 ] && myParent.getElementsByTagName( "input" )[ 0 ].name.length > 0 ) {
-														summary += "<li><a href='#" + myParent.getElementsByTagName( "input" )[ 0 ].id + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
-													} else {
-														if ( myParent.tagName === ( "LEGEND" ) && ( myParent.parentElement.getElementsByTagName( "input" )[ 0 ].type === "checkbox" || myParent.parentElement.getElementsByTagName( "input" )[ 0 ].type === "radio" && myParent.parentElement.getElementsByTagName( "input" )[ 0 ].name.length > 0 ) ) {
-															summary += "<li><a href='#" + myParent.parentElement.getElementsByTagName( "input" )[ 0 ].id + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
-														} else {
-															summary += "<li><a>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
-														}
-													}
-												}
-											}
-											$error.html( "<strong>" + prefix + $error.text() + "</strong>" );
-										}
-									} else {
-										summary += "<li><a href='#" + $error.data( "element-id" ) + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + "</a></li>";
-										$error.html( "<span class='label label-danger'>" + prefix + $error.text() + "</span>" );
-									}
-								}
-								summary += "</ul>";
-
-								if ( !submitted ) {
-
-									// Update the aria-live region as necessary
-									i = 0;
-									for ( key in errorMap ) {
-										if ( Object.prototype.hasOwnProperty.call( errorMap, key ) ) {
-											i += 1;
-											break;
-										}
-									}
-									if ( i !== 0 ) {
+										// Post process
+										summary = "<" + summaryHeading + ">" +
+											i18nText.formNotSubmitted + $errors.length +
+											(
+												$errors.length !== 1 ?
+													i18nText.errorsFound :
+													i18nText.errorFound
+											) + "</" + summaryHeading + "><ul>";
+										$errorfields
+											.closest( ".form-group" )
+											.addClass( "has-error" );
 										len = $errors.length;
 										for ( i = 0; i !== len; i += 1 ) {
-											label = $errors[ i ].parentNode;
-											if ( label.getAttribute( "for" ) === key ) {
-												labelString = label.innerHTML;
-												if ( labelString !== ariaLive.innerHTML ) {
-													ariaLive.innerHTML = labelString;
+											$error = $errors.eq( i );
+											prefix = prefixStart + ( i + 1 ) + prefixEnd;
+											$fieldName = $error.closest( "label" ).find( ".field-name" );
+
+											// Try to find the field name in the legend (if one exists)
+											if ( $fieldName.length === 0 ) {
+												$fieldset = $error.closest( "fieldset" );
+												if ( $fieldset.length !== 0 ) {
+													$fieldName = $fieldset.find( "legend .field-name" );
 												}
-												break;
+											}
+
+											$error.find( "span.prefix" ).detach();
+
+											//Verify if it is a wb-server-error
+											if ( $errors[ i ].classList.contains( "wb-server-error" ) ) {
+												if ( $errors[ i ].id ) {
+													var myParent = document.getElementById( $errors[ i ].id ).parentElement;
+													if ( myParent === null ) {
+														summary += "<li><a>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
+													} else {
+														if ( myParent.hasAttribute( "for" ) && myParent.getAttribute( "for" ).length > 0 ) {
+															summary += "<li><a href='#" + myParent.getAttribute( "for" ) + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
+														} else {
+															if ( myParent.getElementsByTagName( "input" )[ 0 ] && myParent.getElementsByTagName( "input" )[ 0 ].name.length > 0 ) {
+																summary += "<li><a href='#" + myParent.getElementsByTagName( "input" )[ 0 ].id + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
+															} else {
+																if ( myParent.tagName === ( "LEGEND" ) && ( myParent.parentElement.getElementsByTagName( "input" )[ 0 ].type === "checkbox" || myParent.parentElement.getElementsByTagName( "input" )[ 0 ].type === "radio" && myParent.parentElement.getElementsByTagName( "input" )[ 0 ].name.length > 0 ) ) {
+																	summary += "<li><a href='#" + myParent.parentElement.getElementsByTagName( "input" )[ 0 ].id + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
+																} else {
+																	summary += "<li><a>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + separator + i18nText.errorCorrect + "</a></li>";
+																}
+															}
+														}
+													}
+													$error.html( "<strong>" + prefix + $error.text() + "</strong>" );
+												}
+											} else {
+												summary += "<li><a href='#" + $error.data( "element-id" ) + "'>" + prefix + ( $fieldName.length !== 0 ? $fieldName.html() + separator : "" ) + $error.text() + "</a></li>";
+												$error.html( "<span class='label label-danger'>" + prefix + $error.text() + "</span>" );
 											}
 										}
-									} else if ( ariaLive.innerHTML.length !== 0 ) {
+										summary += "</ul>";
+
+										if ( !submitted ) {
+
+											// Update the aria-live region as necessary
+											i = 0;
+											for ( key in errorMap ) {
+												if ( Object.prototype.hasOwnProperty.call( errorMap, key ) ) {
+													i += 1;
+													break;
+												}
+											}
+											if ( i !== 0 ) {
+												len = $errors.length;
+												for ( i = 0; i !== len; i += 1 ) {
+													label = $errors[ i ].parentNode;
+													if ( label.getAttribute( "for" ) === key ) {
+														labelString = label.innerHTML;
+														if ( labelString !== ariaLive.innerHTML ) {
+															ariaLive.innerHTML = labelString;
+														}
+														break;
+													}
+												}
+											} else if ( ariaLive.innerHTML.length !== 0 ) {
+												ariaLive.innerHTML = "";
+											}
+										}
+
+										// Delay updating the summary container in case a summary link was clicked
+										setTimeout( function() {
+											$summaryContainer = $form.find( "#" + errorFormId );
+
+											// Output our error summary and place it in the error container
+											// Create our container if one doesn't already exist
+											if ( $summaryContainer.length === 0 ) {
+												$summaryContainer = $( "<section id='" + errorFormId + "' class='alert alert-danger' tabindex='-1'>" + summary + "</section>" ).prependTo( $form );
+											} else {
+												$summaryContainer.empty().append( summary );
+											}
+
+											// Put focus on the error if the errors are generated by an attempted form submission
+											if ( submitted ) {
+
+												// Assign focus to $summaryContainer
+												$summaryContainer.trigger( setFocusEvent );
+												submitted = false;
+											}
+										}, 100 );
+									} else {
+
+										// Update the aria-live region as necessary
+										if ( ariaLive.innerHTML.length !== 0 ) {
+											ariaLive.innerHTML = "";
+										}
+										$form.find( "#" + errorFormId ).detach();
+									}
+								},
+
+								/* End of showErrors() */
+
+								invalidHandler: function() {
+									submitted = true;
+								}
+
+							} ); /* end of validate() */
+
+							/* fixes validation issue (see PR #7913) */
+							$form.on( "change", "input[type=date], input[type=file], select", function() {
+								$form.validate().element( this );
+							} );
+
+							// Clear the form and remove error messages on reset
+							$document.on( "click", selector + " input[type=reset]", function( event ) {
+								var which = event.which,
+									ariaLive;
+
+								// Ignore middle/right mouse buttons
+								if ( !which || which === 1 ) {
+									validator.resetForm();
+									$( "#" + errorFormId ).detach();
+
+									ariaLive = $form.closest( ".wb-frmvld" ).find( ".arialive" )[ 0 ];
+									if ( ariaLive.innerHTML.length !== 0 ) {
 										ariaLive.innerHTML = "";
 									}
+
+									// Correct the colouring of fields that are no longer invalid
+									$form.find( ".has-error" ).removeClass( "has-error" );
 								}
+							} );
 
-								// Delay updating the summary container in case a summary link was clicked
-								setTimeout( function() {
-									$summaryContainer = $form.find( "#" + errorFormId );
-
-									// Output our error summary and place it in the error container
-									// Create our container if one doesn't already exist
-									if ( $summaryContainer.length === 0 ) {
-										$summaryContainer = $( "<section id='" + errorFormId + "' class='alert alert-danger' tabindex='-1'>" + summary + "</section>" ).prependTo( $form );
-									} else {
-										$summaryContainer.empty().append( summary );
+							//Trigger validation on wb-server-error
+							$form.find( ".wb-server-error" ).filter( ":not( :hidden )" ).parent().each( function() {
+								if ( this.attributes.for && this.attributes.for.value.length > 0 ) {
+									$form.validate().element( $( "[id =" + this.attributes.for.value + "]" ) );
+								} else if ( $( this ).find( "input" )[ 0 ] ) {
+									$form.validate().element( $( this ).find( "input" )[ 0 ] );
+								} else if ( $( this ).next( ".radio, .checkbox" ).children( "label" ).children( "input" )[ 0 ] ) {
+									if ( $( this ).find( $( this ).next( ".radio, .checkbox" ).children( "label" ).children( "input" )[ 0 ].id ) ) {
+										$form.validate().element( $( this ).next( ".radio, .checkbox" ).children( "label" ).children( "input" )[ 0 ] );
 									}
-
-									// Put focus on the error if the errors are generated by an attempted form submission
-									if ( submitted ) {
-
-										// Assign focus to $summaryContainer
-										$summaryContainer.trigger( setFocusEvent );
-										submitted = false;
+								} else if ( $( this ).next( ".radio-inline, .checkbox-inline, .label-inline" ).children( "input" )[ 0 ] ) {
+									if ( $( this ).find( $( this ).next( ".radio-inline, .checkbox-inline, .label-inline" ).children( "input" )[ 0 ].id ) ) {
+										$form.validate().element( $( this ).next( ".radio-inline, .checkbox-inline, .label-inline" ).children( "input" )[ 0 ] );
 									}
-								}, 100 );
-							} else {
-
-								// Update the aria-live region as necessary
-								if ( ariaLive.innerHTML.length !== 0 ) {
-									ariaLive.innerHTML = "";
 								}
-								$form.find( "#" + errorFormId ).detach();
-							}
-						},
+							} );
 
-						/* End of showErrors() */
+							// Tell the i18n file to execute to run any $.validator extends
+							$form.trigger( "formLanguages.wb" );
 
-						invalidHandler: function() {
-							submitted = true;
-						}
-
-					} ); /* end of validate() */
-
-					/* fixes validation issue (see PR #7913) */
-					$form.on( "change", "input[type=date], input[type=file], select", function() {
-						$form.validate().element( this );
-					} );
-
-					// Clear the form and remove error messages on reset
-					$document.on( "click", selector + " input[type=reset]", function( event ) {
-						var which = event.which,
-							ariaLive;
-
-						// Ignore middle/right mouse buttons
-						if ( !which || which === 1 ) {
-							validator.resetForm();
-							$( "#" + errorFormId ).detach();
-
-							ariaLive = $form.parent().find( ".arialive" )[ 0 ];
-							if ( ariaLive.innerHTML.length !== 0 ) {
-								ariaLive.innerHTML = "";
-							}
-
-							// Correct the colouring of fields that are no longer invalid
-							$form.find( ".has-error" ).removeClass( "has-error" );
+							// Identify that initialization has completed
+							wb.ready( $( eventTarget ), componentName );
 						}
 					} );
-
-					//Trigger validation on wb-server-error
-					$form.find( ".wb-server-error" ).filter( ":not( :hidden )" ).parent().each( function() {
-						if ( this.attributes.for && this.attributes.for.value.length > 0 ) {
-							$( "form" ).validate().element( $( "[id =" + this.attributes.for.value + "]" ) );
-						} else if ( $( this ).find( "input" )[ 0 ] ) {
-							$( "form" ).validate().element( $( this ).find( "input" )[ 0 ] );
-						} else if ( $( this ).next( ".radio, .checkbox" ).children( "label" ).children( "input" )[ 0 ] ) {
-							if ( $( this ).find( $( this ).next( ".radio, .checkbox" ).children( "label" ).children( "input " )[ 0 ].id ) ) {
-								$( "form" ).validate().element( $( this ).next( ".radio, .checkbox" ).children( "label" ).children( "input" )[ 0 ] );
-							}
-						}
-					} );
-
-					// Tell the i18n file to execute to run any $.validator extends
-					$form.trigger( "formLanguages.wb" );
-
-					// Identify that initialization has completed
-					wb.ready( $( eventTarget ), componentName );
 				}
 			} );
 		}
@@ -9849,7 +10037,7 @@ wb.add( selector );
  * @author @duboisp
  */
 /*global jsonpointer */
-( function( $, wb ) {
+( function( $, wb, DOMPurify ) {
 "use strict";
 
 /*
@@ -10033,6 +10221,7 @@ $document.on( fetchEvent, function( event ) {
 
 					} )
 					.fail( function( xhr, status, error ) {
+						xhr.responseText = DOMPurify.sanitize( xhr.responseText );
 						$( "#" + callerId ).trigger( {
 							type: "json-failed.wb",
 							fetch: {
@@ -10049,7 +10238,7 @@ $document.on( fetchEvent, function( event ) {
 	}
 } );
 
-} )( jQuery, wb );
+} )( jQuery, wb, DOMPurify );
 
 /**
  * @title WET-BOEW Lightbox
@@ -11450,6 +11639,7 @@ var componentName = "wb-mltmd",
 					cc_on: i18n( "cc", "on" ),
 					cc_off: i18n( "cc", "off" ),
 					cc_error: i18n( "cc-err" ),
+					fs: i18n( "fs" ),
 					mute_on: i18n( "mute", "on" ),
 					mute_off: i18n( "mute", "off" ),
 					duration: i18n( "dur" ),
@@ -11788,6 +11978,15 @@ var componentName = "wb-mltmd",
 			}
 			$this.trigger( captionsVisibleChangeEvent );
 			break;
+		case "fullscreen":
+			if ( this.object.requestFullscreen ) {
+				this.object.requestFullscreen();
+			} else if ( this.object.webkitRequestFullscreen ) { /* Safari */
+				this.object.webkitRequestFullscreen();
+			} else if ( this.object.msRequestFullscreen ) { /* IE11 */
+				this.object.msRequestFullscreen();
+			}
+			break;
 		case "getBuffering":
 			return this.object.buffering || false;
 		case "setBuffering":
@@ -11842,6 +12041,8 @@ var componentName = "wb-mltmd",
 			return this.object.getCurrentTime();
 		case "setCurrentTime":
 			return this.object.seekTo( args, true );
+		case "fullscreen":
+			return this.object.getIframe().requestFullscreen();
 		case "getMuted":
 			if ( !this.object.playedOnce && this.object.wasMutedPlay ) {
 				state = this.object.wasMutedPlay;
@@ -12028,6 +12229,7 @@ $document.on( initializedEvent, selector, function( event ) {
 
 		if ( settings !== undef ) {
 			data.shareUrl = settings.shareUrl;
+			data.fullscreen = settings.fullscreenBtn || false;
 		}
 
 		$this.addClass( type );
@@ -12093,10 +12295,6 @@ $document.on( initializedEvent, selector, function( event ) {
 
 			// Identify that initialization has completed
 			wb.ready( $this, componentName );
-		} else {
-
-			// Do nothing since IE8 support is no longer required
-			return;
 		}
 	}
 } );
@@ -12152,6 +12350,11 @@ $document.on( youtubeEvent, selector, function( event, data ) {
 
 		data.media = $media;
 		data.ytPlayer = ytPlayer;
+
+		// The fullscreen button is not visible by default because there are no controls when in full screen.
+		if ( data.fullscreen ) {
+			$this.attr( "data-fullscreen-btn", true );
+		}
 
 		// Detect if the YT player reloads, like when magnific Popup show the modal, because it moves the iframe
 		// and then the iframe gets refreshed and reloaded. So the issue is that the iframe stops emitting the event
@@ -12232,6 +12435,11 @@ $document.on( renderUIEvent, selector, function( event, type, data ) {
 		} else {
 			loadCaptionsInternal( $media, $( "#" + wb.jqEscape( captionsUrl.hash.substring( 1 ) ) ) );
 		}
+
+		// The fullscreen button is not visible by default because there are no controls when in full screen.
+		if ( data.fullscreen ) {
+			$this.attr( "data-fullscreen-btn", true );
+		}
 	}
 } );
 
@@ -12265,6 +12473,8 @@ $document.on( "click", selector, function( event ) {
 		this.player( "setCurrentTime", this.player( "getCurrentTime" ) + this.player( "getDuration" ) * 0.05 );
 	} else if ( className.includes( "cuepoint" ) ) {
 		$( this ).trigger( { type: "cuepoint", cuepoint: $target.data( "cuepoint" ) } );
+	} else if ( /fullscreen|fs/.test( className ) ) {
+		this.player( "fullscreen" );
 	}
 } );
 
@@ -12291,6 +12501,10 @@ $document.on( "keydown", dispCtrls, function( event ) {
 			// Mute/unmute if focused on the mute/unmute button or volume input.
 			if ( $( event.target ).hasClass( "mute" ) || event.target.nodeName === "INPUT" ) {
 				$playerTarget.find( ".mute" ).trigger( "click" );
+			} else if ( $( event.target ).hasClass( "fs" ) ) {
+
+				// Enter full screen if focused on the full screen button
+				$playerTarget.find( ".fs" ).trigger( "click" );
 			} else if ( $( event.target ).hasClass( "cc" ) ) {
 
 				// Show/hide captions if focused on the closed captions button.
@@ -13043,6 +13257,275 @@ wb.add( selector );
 } )( jQuery, window, document, wb );
 
 /**
+ * @title WET-BOEW Tag filter
+ * @overview Filter based content tagging
+ * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
+ * @author @duboisp
+ */
+( function( $, window, document, wb ) {
+"use strict";
+
+let i18n, i18nText;
+
+const componentName = "wb-paginate",
+	selector = ".provisional." + componentName,
+	initEvent = "wb-init" + selector,
+	$document = wb.doc,
+	filterClass = "wb-fltr-out",
+	pgFilterOutClass = "wb-pgfltr-out",
+	tagFilterClass = "wb-tgfltr-out",
+	pagerClass = "wb-paginate-pager",
+	pageData = "data-pagination-idx",
+	notFilterClassSel = ":not(." + filterClass + "):not(." + tagFilterClass + ")",
+	defaults = {
+		lst: {
+			selector: "li"
+		},
+		grp: {
+			selector: "> *"
+		},
+		tbl: {
+			selector: "tr",
+			section: ":scope > tbody"
+		},
+		itemsPerPage: 10
+	},
+
+	init = function( event ) {
+		const elm = wb.init( event, componentName, selector );
+
+		if ( elm ) {
+			var $elm = $( elm ),
+				paginationElm,
+				elmTagName = elm.nodeName,
+				setDefault,
+				uiTargetElm;
+
+			if ( !i18nText ) {
+				i18n = wb.i18n;
+				i18nText = {
+					prv: i18n( "prv" ),
+					nxt: i18n( "nxt" )
+				};
+			}
+
+			// Setup configurations
+			switch ( elmTagName ) {
+			case "UL":
+				setDefault = defaults.lst;
+				break;
+			case "TABLE":
+				setDefault = defaults.tbl;
+				break;
+			default:
+				setDefault = defaults.grp;
+				break;
+			}
+
+			elm.id = elm.id || wb.getId();
+			elm.pgSettings = $.extend( true, {}, setDefault, window[ componentName ], wb.getData( $elm, componentName ) );
+			elm.pgSettings.currPage = 1;
+			elm.pgSettings.itemsPerPage = elm.pgSettings.itemsPerPage || defaults.itemsPerPage;
+			elm.pgSettings.items = elm.querySelectorAll( ( elm.pgSettings.section || ":scope" ) + " " + elm.pgSettings.selector + notFilterClassSel );
+
+			// Setup pagination container
+			paginationElm = document.createElement( "div" );
+			paginationElm.id = componentName + "-" + elm.id;
+			paginationElm.classList.add( pagerClass );
+
+			// Add pagination container
+			if ( elm.pgSettings.uiTarget ) {
+				uiTargetElm = document.querySelector( elm.pgSettings.uiTarget );
+				uiTargetElm.appendChild( paginationElm );
+			} else if ( elm.pgSettings.section ) {
+				if ( elmTagName === "UL" || elmTagName === "TABLE" ) {
+					elm.after( paginationElm );
+				} else {
+					elm.querySelector( elm.pgSettings.section ).after( paginationElm );
+				}
+			} else {
+				elm.after( paginationElm );
+			}
+
+			// Show/hide items and generate pagination
+			updateItems( elm );
+			generateUI( elm );
+
+			wb.ready( $( elm ), componentName );
+		}
+	},
+
+	// Set or reset pagination UI
+	generateUI = function( elm ) {
+		var paginationUI = "",
+			currPage = elm.pgSettings.currPage,
+			pagesCount = elm.pgSettings.pagesCount,
+			paginationElm = document.querySelector( "#" + componentName + "-" + elm.id ),
+			i = 1;
+
+		// Make sure the defined current page is not bigger than the total pages
+		if ( currPage > pagesCount ) {
+			currPage = pagesCount;
+		}
+
+		// Only add pagination if there is more than one page
+		if ( pagesCount > 1 ) {
+			paginationUI = "<ol class=\"pagination\">";
+
+			// Add Previous page button
+			paginationUI += "<li" + ( i === currPage ? " class=\"disabled\"" : "" ) + "><a class=\"paginate-prev\" aria-controls=\"" + elm.id + "\" href=\"#" + elm.id + "\">" + i18nText.prv + "</a></li>";
+
+			// Add pages buttons
+			for ( i; i <= pagesCount; i++ ) {
+				paginationUI += "<li class=\"" + returnItemClass( currPage, pagesCount, i ) + "\"" + ( i === currPage ? " aria-current=\"page\"" : "" ) + "><a href=\"#" + elm.id + "\" " + pageData + "=\"" + i + "\" aria-controls=\"" + elm.id + "\"><span class=\"wb-inv\">Page </span>" + i + "</a></li>";
+			}
+
+			// Add Next page button
+			paginationUI += "<li" + ( i === currPage ? " class=\"disabled\"" : "" ) + "><a class=\"paginate-next\" aria-controls=\"" + elm.id + "\" href=\"#" + elm.id + "\">" + i18nText.nxt + "</a></li>";
+
+			paginationUI += "</ol>";
+		}
+
+		// Insert HTML
+		paginationElm.innerHTML = paginationUI;
+	},
+
+	// Show/hide items to reflect current page
+	updateItems = function( elm ) {
+		let currPage = elm.pgSettings.currPage,
+			items = elm.pgSettings.items,
+			itemsPerPage = elm.pgSettings.itemsPerPage;
+
+		items.forEach( function( item, index ) {
+			if ( ( index < ( itemsPerPage * currPage ) ) && ( index >= ( itemsPerPage * currPage ) - itemsPerPage ) ) {
+				item.classList.remove( pgFilterOutClass );
+			} else {
+				item.classList.add( pgFilterOutClass );
+			}
+		} );
+
+		elm.pgSettings.pagesCount = Math.ceil( items.length / itemsPerPage );
+	},
+
+	// Update pagination to reflect current page
+	goToPage = function( elm ) {
+		let paginationElm = document.querySelector( "#" + componentName + "-" + elm.id ),
+			pageItems = paginationElm.querySelectorAll( "li" ),
+			itemClass,
+			pageLink,
+			currPage = elm.pgSettings.currPage,
+			pagesCount = elm.pgSettings.pagesCount;
+
+		pageItems.forEach( function( pageItem, i ) {
+			pageLink = pageItem.querySelector( "a" );
+
+			if ( pageLink.classList.contains( "paginate-prev" ) ) {
+				if ( currPage > 1 ) {
+					pageItem.classList.remove( "disabled" );
+				} else {
+					pageItem.classList.add( "disabled" );
+				}
+			} else if ( pageLink.classList.contains( "paginate-next" ) ) {
+				if ( currPage < pagesCount ) {
+					pageItem.classList.remove( "disabled" );
+				} else {
+					pageItem.classList.add( "disabled" );
+				}
+			} else {
+				pageItem.className = "";
+				pageItem.removeAttribute( "aria-current" );
+
+				itemClass = returnItemClass( currPage, pagesCount, i );
+
+				if ( i === currPage ) {
+					pageItem.setAttribute( "aria-current", "page" );
+				}
+
+				pageItem.className = itemClass;
+			}
+		} );
+	},
+
+	// Return the list item classname
+	returnItemClass = function( currPage, pagesCount, i ) {
+		let itemClass = "";
+
+		if ( currPage > 1 && currPage < pagesCount ) {
+			if ( Math.abs( currPage - i ) > 1 ) {
+				itemClass += "hidden-xs hidden-sm";
+
+				if ( Math.abs( currPage - i ) > 2 ) {
+					itemClass += " hidden-md";
+				}
+			}
+		} else {
+			if ( Math.abs( currPage - i ) > 2 ) {
+				itemClass += "hidden-xs hidden-sm";
+
+				if ( Math.abs( currPage - i ) > 4 ) {
+					itemClass += " hidden-md";
+				}
+			}
+		}
+
+		if ( pagesCount > 10 ) {
+			if ( currPage <= 5 ) {
+				if ( i > 10 ) {
+					itemClass += " hidden";
+				}
+			} else if ( ( currPage > 5 ) && ( currPage < pagesCount - 5 ) ) {
+				if ( ( i < currPage - 4 ) || ( i > currPage + 5 ) ) {
+					itemClass += " hidden";
+				}
+			} else {
+				if ( i <= pagesCount - 10 ) {
+					itemClass += " hidden";
+				}
+			}
+		}
+
+		if ( i === currPage ) {
+			itemClass += " active";
+		}
+
+		return itemClass;
+	};
+
+// When a filter is updated
+$document.on( "click", "." + pagerClass + " a", function()  {
+	let elm = document.querySelector( "#" + this.getAttribute( "aria-controls" ) ),
+		pageDest = ( ( this.getAttribute( pageData ) ) * 1 ) || elm.pgSettings.currPage;
+
+	if ( this.classList.contains( "paginate-next" ) ) {
+		pageDest++;
+	} else if ( this.classList.contains( "paginate-prev" ) ) {
+		pageDest--;
+	}
+
+	if ( pageDest !== elm.pgSettings.currPage ) {
+		elm.pgSettings.currPage = pageDest;
+
+		updateItems( elm );
+		goToPage( elm );
+	}
+} );
+
+// Resets items and pagination
+$document.on( "wb-contentupdated", selector, function() {
+	this.pgSettings.currPage = 1;
+	this.pgSettings.items = this.pgSettings.items = this.querySelectorAll( ( this.pgSettings.section || ":scope" ) + " " + this.pgSettings.selector + notFilterClassSel );
+
+	updateItems( this );
+	generateUI( this );
+} );
+
+$document.on( "timerpoke.wb " + initEvent, selector, init );
+
+wb.add( selector );
+
+} )( jQuery, window, document, wb );
+
+/**
  * @title WET-BOEW Prettify Plugin
  * @overview Wrapper for Google Code Prettify library: https://github.com/google/code-prettify
  * @license wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
@@ -13436,6 +13919,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 	 * @param {Object} settings Key-value object
 	 */
 	initEventTimeout = function( $elm, eventName, time, settings ) {
+		var duration = parseTime( time );
 
 		// Clear any existing timeout for the event
 		clearTimeout( $elm.data( eventName ) );
@@ -13443,7 +13927,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 		// Create the new timeout that will trigger the event
 		$elm.data( eventName, setTimeout( function() {
 			$elm.trigger( eventName, settings );
-		}, parseTime( time ) ) );
+		}, duration ) );
 	},
 
 	/**
@@ -13565,6 +14049,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 	inactivity = function( event, settings ) {
 		var $buttonContinue, $buttonEnd,
 			time = getTime( settings.reactionTime ),
+			startTime = getCurrentTime(),
 			timeoutBegin = i18nText.timeoutBegin
 				.replace( "#min#", "<span class='min'>" + time.minutes + "</span>" )
 				.replace( "#sec#", "<span class='sec'>" + time.seconds + "</span>" ),
@@ -13572,12 +14057,12 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 			buttonEnd = "</button>";
 
 		// Clear the keepalive timeout to avoid double firing of requests
-		clearTimeout( $( event.target ).data( keepaliveEvent ) );
+		clearInterval( $( event.target ).data( keepaliveEvent ) );
 
 		$buttonContinue = $( buttonStart + confirmClass +
 			" btn btn-primary popup-modal-dismiss'>" + i18nText.buttonContinue + buttonEnd )
 			.data( settings )
-			.data( "start", getCurrentTime() );
+			.data( "start", startTime );
 		$buttonEnd = $( buttonStart + confirmClass + " btn btn-default'>" +
 			i18nText.buttonEnd + buttonEnd )
 			.data( "logouturl", settings.logouturl );
@@ -13587,9 +14072,11 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 			buttons: [ $buttonContinue, $buttonEnd ],
 			open: function() {
 				var $minutes = $modal.find( ".min" ),
-					$seconds = $modal.find( ".sec" );
+					$seconds = $modal.find( ".sec" ),
+					endDuration = settings.reactionTime;
+
 				countdownInterval = setInterval( function() {
-					if ( countdown( $minutes, $seconds ) ) {
+					if ( countdown( $minutes, $seconds, startTime, endDuration ) ) {
 						clearInterval( countdownInterval );
 
 						// Let the user know their session has timed out
@@ -13597,7 +14084,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 						$buttonContinue.text( i18nText.buttonSignin );
 						$buttonEnd.hide();
 					}
-				}, 1000 );
+				}, 500 );
 			}
 		} );
 	},
@@ -13726,25 +14213,18 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 	 * @function countdown
 	 * @param {jQuery DOM Element} $minutes Element that contains the minute value
 	 * @param {jQuery DOM Element} $seconds Element that contains the second value
+	 * @param { integer } startTime The time value of when the countdown started in milliseconds
+	 * @param { integer } endDuration The time value of the duration of the countdown in milliseconds
 	 * @returns {boolean} Is the countdown finished?
 	 */
-	countdown = function( $minutes, $seconds ) {
-		var minutes = parseInt( $minutes.text(), 10 ),
-			seconds = parseInt( $seconds.text(), 10 );
-
-		// Decrement seconds and minutes
-		if ( seconds > 0 ) {
-			seconds -= 1;
-		} else if ( minutes > 0 ) {
-			minutes -= 1;
-			seconds = 59;
-		}
+	countdown = function( $minutes, $seconds, startTime, endDuration ) {
+		var newTime = getTime( endDuration - ( getCurrentTime() - startTime ) );
 
 		// Update the DOM elements
-		$minutes.text( minutes );
-		$seconds.text( seconds );
+		$minutes.text( newTime.minutes );
+		$seconds.text( newTime.seconds );
 
-		return minutes === 0 && seconds === 0;
+		return newTime.minutes <= 0 && newTime.seconds <= 0;
 	};
 
 // Bind the plugin events
@@ -14378,6 +14858,53 @@ var componentName = "wb-tables",
 				}
 			} );
 		}
+	},
+	updatePaginationMarkup = function( $pagination, setFocusOnId ) {
+
+		var ol = document.createElement( "OL" ),
+			li = document.createElement( "LI" ),
+			paginate_buttons = $pagination.find( ".paginate_button" ),
+			navFocusOnId;
+
+		if ( $pagination.length === 0 ) {
+			return;
+		}
+
+		// Set the element to get the focus upon navigation
+		navFocusOnId = setFocusOnId || $pagination.get( 0 ).id;
+
+		// Update Pagination List
+		for ( var i = 0; i < paginate_buttons.length; i++ ) {
+			var item = li.cloneNode( true );
+			item.appendChild( paginate_buttons[ i ] );
+			ol.appendChild( item );
+		}
+
+		ol.className = "pagination mrgn-tp-0 mrgn-bttm-0";
+		$pagination.empty();
+		$pagination.append( ol );
+
+		// Update the aria-pressed properties on the pagination buttons
+		// Should be pushed upstream to DataTables
+		$pagination.find( ".paginate_button" )
+			.attr( {
+				"href": "#" + navFocusOnId
+			} )
+
+			// This is required to override the datatable.js (v1.10.13) behavior to cancel the event propagation on anchor element.
+			.on( "keypress", function( evn ) {
+				if ( evn.keyCode === 13 ) {
+					window.location = evn.target.href;
+				}
+			} )
+
+			.not( ".previous, .next" )
+			.attr( "aria-pressed", "false" )
+			.html( function( index, oldHtml ) {
+				return "<span class='wb-inv'>" + i18nText.paginate.page + " </span>" + oldHtml;
+			} )
+			.filter( ".current" )
+			.attr( "aria-pressed", "true" );
 	};
 
 // Bind the init event of the plugin
@@ -14387,12 +14914,11 @@ $document.on( "timerpoke.wb " + initEvent, selector, init );
 $document.on( "draw.dt", selector, function( event, settings ) {
 	var $elm = $( event.target ),
 		pagination = $elm.next( ".bottom" ).find( "div:first-child" ),
+		pagination_top = $elm.prevAll( ".top" ).find( "div.dataTables_paginate" ),
 		paginate_buttons = $elm.next( ".bottom" ).find( ".paginate_button" ),
 		pbLength = paginate_buttons.length,
 		pHasLF = pagination.find( ".last, .first" ).length === 2,
-		pHasPN = pagination.find( ".previous, .next" ).length === 2,
-		ol = document.createElement( "OL" ),
-		li = document.createElement( "LI" );
+		pHasPN = pagination.find( ".previous, .next" ).length === 2;
 
 	// Handle sorting/ordering
 	var order = $elm.dataTable( { "retrieve": true } ).api().order();
@@ -14424,43 +14950,15 @@ $document.on( "draw.dt", selector, function( event, settings ) {
 		)
 	) {
 		pagination.addClass( "hidden" );
+		pagination_top.addClass( "hidden" );
 	} else {
 
 		// Make sure Pagination is visible
 		pagination.removeClass( "hidden" );
+		pagination_top.removeClass( "hidden" );
 
-		// Update Pagination List
-		for ( var i = 0; i < paginate_buttons.length; i++ ) {
-			var item = li.cloneNode( true );
-			item.appendChild( paginate_buttons[ i ] );
-			ol.appendChild( item );
-		}
-
-		ol.className = "pagination mrgn-tp-0 mrgn-bttm-0";
-		pagination.empty();
-		pagination.append( ol );
-
-		// Update the aria-pressed properties on the pagination buttons
-		// Should be pushed upstream to DataTables
-		$elm.next( ".bottom" ).find( ".paginate_button" )
-			.attr( {
-				"href": "#" + $elm.get( 0 ).id
-			} )
-
-			// This is required to override the datatable.js (v1.10.13) behavior to cancel the event propagation on anchor element.
-			.on( "keypress", function( evn ) {
-				if ( evn.keyCode === 13 ) {
-					window.location = evn.target.href;
-				}
-			} )
-
-			.not( ".previous, .next" )
-			.attr( "aria-pressed", "false" )
-			.html( function( index, oldHtml ) {
-				return "<span class='wb-inv'>" + i18nText.paginate.page + " </span>" + oldHtml;
-			} )
-			.filter( ".current" )
-			.attr( "aria-pressed", "true" );
+		updatePaginationMarkup( pagination, $elm.get( 0 ).id );
+		updatePaginationMarkup( pagination_top );
 	}
 
 	// Identify that the table has been updated
@@ -14668,8 +15166,12 @@ $document.on( "submit", ".wb-tables-filter", function( event ) {
 
 			// Verifies if regex was preset, if not preset use 'contains value' as default
 			if ( !$regex ) {
-				$value = $value.replace( /\s/g, "\\s*" );
-				$regex = "(" + $value + ")";
+				if ( $elm[ 0 ].getAttribute( "data-exact" ) ) {
+					$regex = "^" + $value + "$";
+				} else {
+					$value = $value.replace( /\s/g, "\\s*" );
+					$regex = "(" + $value + ")";
+				}
 			}
 
 			$datatable.column( $column ).search( $regex, true );
@@ -15697,31 +16199,34 @@ wb.add( selector );
 ( function( $, window, document, wb ) {
 "use strict";
 
+let wait;
+
 const componentName = "wb-tagfilter",
 	selector = ".provisional." + componentName,
 	selectorCtrl = "." + componentName + "-ctrl",
 	initEvent = "wb-init" + selector,
 	$document = wb.doc,
-	filterOutClass = "wb-tgfltr-out",
+	filterOutClass = "wb-fltr-out",
+	tgFilterOutClass = "wb-tgfltr-out",
+	itemsWrapperClass = "wb-tagfilter-items",
+	noResultWrapperClass = "wb-tagfilter-noresult",
 
 	init = function( event ) {
 		const elm = wb.init( event, componentName, selector );
 
 		if ( elm ) {
+			const filterControls = elm.querySelectorAll( selectorCtrl ),
+				taggedItems = elm.querySelectorAll( "[data-wb-tags]" ),
+				taggedItemsWrapper = elm.querySelector( "." + itemsWrapperClass ),
+				noResultWrapper = elm.querySelector( "." + noResultWrapperClass );
+
 			elm.items = [];
 			elm.filters = {};
 			elm.activeFilters = [];
 
-			// Get all form inputs (radio buttons, checkboxes and select) within filters form
-			const filterControls = document.querySelectorAll( "#" + elm.id + " .wb-tagfilter-ctrl" ),
-				taggedItems = document.querySelectorAll( "#" + elm.id + " [data-wb-tags]" ),
-				taggedItemsWrapper = document.querySelector( "#" + elm.id + " .wb-tagfilter-items" );
-
 			if ( taggedItemsWrapper ) {
 				taggedItemsWrapper.id = taggedItemsWrapper.id || wb.getId(); // Ensure the element has an ID
 				taggedItemsWrapper.setAttribute( "aria-live", "polite" );
-			} else {
-				console.warn( componentName + ": You have to identify the wrapper of your tagged elements using the class 'wb-tagfilter-items'." );
 			}
 
 			// Handle filters
@@ -15731,15 +16236,16 @@ const componentName = "wb-tagfilter",
 				filterControls.forEach( function( item ) {
 					item.setAttribute( "aria-controls", taggedItemsWrapper.id );
 				} );
-			} else {
-				console.warn( componentName + ": You have no defined filter." );
 			}
 
 			// Handle tagged items
 			if ( taggedItems.length ) {
 				elm.items = buildTaggedItemsArr( taggedItems );
-			} else {
-				console.warn( componentName + ": You have no tagged items. Please add tags using the 'data-wb-tags' attribute." );
+			}
+
+			// Add accessibility to no result element
+			if ( noResultWrapper ) {
+				noResultWrapper.setAttribute( "role", "status" );
 			}
 
 			// Update list of visible items (in case of predefined filters)
@@ -15886,12 +16392,12 @@ const componentName = "wb-tagfilter",
 				matched = item.isMatched;
 
 			if ( matched ) {
-				if ( domItem.classList.contains( filterOutClass ) ) {
-					domItem.classList.remove( filterOutClass );
+				if ( domItem.classList.contains( tgFilterOutClass ) ) {
+					domItem.classList.remove( tgFilterOutClass );
 				}
 			} else {
-				if ( !domItem.classList.contains( filterOutClass ) ) {
-					domItem.classList.add( filterOutClass );
+				if ( !domItem.classList.contains( tgFilterOutClass ) ) {
+					domItem.classList.add( tgFilterOutClass );
 				}
 			}
 		} );
@@ -15904,6 +16410,8 @@ const componentName = "wb-tagfilter",
 		refineFilters( instance );
 		matchItemsToFilters( instance );
 		updateDOMItems( instance );
+
+		$( instance ).trigger( "wb-contentupdated", [ { source: componentName } ] );
 	};
 
 // When a filter is updated
@@ -15912,8 +16420,8 @@ $document.on( "change", selectorCtrl, function( event )  {
 		filterType = control.type,
 		filterName = control.name,
 		filterValue = control.value,
-		$elm = control.closest( selector ),
-		filterGroup = $elm.filters[ filterName ];
+		elm = control.closest( selector ),
+		filterGroup = elm.filters[ filterName ];
 
 	switch ( filterType ) {
 	case "checkbox":
@@ -15945,7 +16453,39 @@ $document.on( "change", selectorCtrl, function( event )  {
 	}
 
 	// Update list of visible items
-	update( $elm );
+	update( elm );
+} );
+
+$document.on( "wb-contentupdated", selector, function( event, data )  {
+	let that = this,
+		supportsHas = window.getComputedStyle( document.documentElement ).getPropertyValue( "--supports-has" ); // Get "--supports-has" CSS property
+
+	// Reinitialize tagfilter if content on the page has been updated by another plugin
+	if ( data.source !== componentName ) {
+		if ( wait ) {
+			clearTimeout( wait );
+		}
+
+		wait = setTimeout( function() {
+			that.classList.remove( "wb-init", componentName + "-inited" );
+			$( that ).trigger( "wb-init." + componentName );
+		}, 100 );
+	}
+
+	// Show no result message if on Firefox -- Remove once Firefox supports ":has()"
+	if ( supportsHas === "false" ) {
+		let noResultItem = this.querySelector( "." + noResultWrapperClass );
+
+		if ( noResultItem && this.items.length > 0 ) {
+			let visibleItems = this.querySelectorAll( "." + itemsWrapperClass + " " + "[data-wb-tags]:not(." + tgFilterOutClass + ", ." + filterOutClass + ")" );
+
+			if ( visibleItems.length < 1 ) {
+				noResultItem.style.display = "block";
+			} else {
+				noResultItem.style.display = "none";
+			}
+		}
+	}
 } );
 
 $document.on( "timerpoke.wb " + initEvent, selector, init );
@@ -16585,6 +17125,7 @@ var componentName = "wb-twitter",
 	selector = "." + componentName,
 	initEvent = "wb-init" + selector,
 	$document = wb.doc,
+	i18n, i18nText,
 
 	/**
 	 * @method init
@@ -16599,7 +17140,7 @@ var componentName = "wb-twitter",
 			protocol = wb.pageUrlParts.protocol;
 
 		if ( eventTarget ) {
-			const twitterLink = eventTarget.firstElementChild;
+			const twitterLink = eventTarget.querySelector( "a.twitter-timeline" );
 
 			// Ignore IE11
 			// Note: Twitter's widget no longer supports it...
@@ -16608,37 +17149,98 @@ var componentName = "wb-twitter",
 				return;
 			}
 
-			// If the plugin container's first child element is a Twitter link...
-			if ( twitterLink && twitterLink.matches( "a.twitter-timeline" ) ) {
+			// Process the Twitter link
+			if ( twitterLink ) {
 				const loadingDiv = document.createElement( "div" );
 				let observer;
+
+				// Only initialize the i18nText once
+				if ( !i18nText ) {
+					i18n = wb.i18n;
+					i18nText = {
+						startNotice: i18n( "twitter-start-notice" ),
+						endNotice: i18n( "twitter-end-notice" ),
+						skipEnd: i18n( "twitter-skip-end" ),
+						skipStart: i18n( "twitter-skip-start" ),
+						timelineTitle: i18n( "twitter-timeline-title" )
+					};
+				}
+
+				// Set Chinese (Simplfified)'s language code to "zh-cn"
+				// If the link doesn't specify a widget language and its "in-page" language code is "zh-Hans"...
+				// Notes:
+				// -WET uses "zh-Hans", Twitter uses "zh-ch" and falls back to English if the former is used
+				// -Language code sourced from https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages
+				if ( !twitterLink.dataset.lang && twitterLink.closest( "[lang='zh-Hans']" ) ) {
+					twitterLink.dataset.lang = "zh-cn";
+				}
+
+				// Match the Facebook page plugin's default height
+				// If data-height is set to "fb-page" OR the widget has a tweet limit and lacks a custom height...
+				// Notes:
+				// -Counteracts enormous default widget heights that can reach tens of thousands of pixels without a scrollbar
+				// -Timeline widgets stopped honouring tweet limits on July 21, 2023 and began showing up to 100 tweets at a time ("verified" accounts only)
+				// -Facebook page plugin's default height is documented in https://developers.facebook.com/docs/plugins/page-plugin#settings
+				if ( twitterLink.dataset.height === "fb-page" || ( twitterLink.dataset.tweetLimit && !twitterLink.dataset.height ) ) {
+					twitterLink.dataset.height = "500";
+				}
+
+				// Add a "do not track" parameter (i.e. data-dnt="true" attribute) unless it's already been set
+				// Note: Covered in https://developer.twitter.com/en/docs/twitter-for-websites/webpage-properties
+				if ( !twitterLink.dataset.dnt ) {
+					twitterLink.dataset.dnt = "true";
+				}
 
 				// Add a loading icon below the link
 				loadingDiv.className = "twitter-timeline-loading";
 				twitterLink.after( loadingDiv );
 
-				// Remove the loading icon after the timeline widget appears
-				// Note: Twitter's widget script removes "a.twitter-timeline" upon filling-in the timeline's content... at which point the loading icon is no longer useful
+				// Observe DOM mutations
 				observer = new MutationObserver( function( mutations ) {
-
-					// Check for DOM mutations
 					mutations.forEach( function( mutation ) {
+						switch ( mutation.type ) {
 
-						// Deal only with removed HTML nodes
-						mutation.removedNodes.forEach( function( removedNode ) {
+						// Check for attribute changes
+						case "attributes": {
+							const mutationTarget = mutation.target;
 
-							// If the removed node was a Twitter link, remove its adjacent loading icon and stop observing
-							if ( removedNode === twitterLink && mutation.nextSibling === loadingDiv ) {
-								loadingDiv.remove();
-								observer.disconnect();
+							// Override the timeline iframe's title right after Twitter's widget script adds it
+							// Note: The timeline's iframe title is English-only and written in title case ("Twitter Timeline")... This replaces it with an i18n version written in sentence case.
+							if ( mutationTarget.nodeName === "IFRAME" && mutationTarget.title !== i18nText.timelineTitle ) {
+								mutationTarget.title = i18nText.timelineTitle;
 							}
-						} );
+							break;
+						}
+
+						// Check for node removals
+						case "childList": {
+							mutation.removedNodes.forEach( function( removedNode ) {
+
+								// If the removed node was a Twitter link, remove its adjacent loading icon, add skip links and stop observing
+								// Note: Twitter's widget script removes "a.twitter-timeline" upon displaying the timeline iframe's content... at which point the loading icon is no longer useful
+								if ( removedNode === twitterLink && mutation.nextSibling === loadingDiv ) {
+									const iframeContainer = loadingDiv.previousElementSibling;
+
+									loadingDiv.remove();
+									addSkipLinks( iframeContainer );
+
+									// The following 2 lines were added as a workaround in Safari where the iFrame is not displayed
+									eventTarget.style.opacity = 1;
+									eventTarget.style.opacity = "";
+
+									observer.disconnect();
+								}
+							} );
+						}
+						}
 					} );
 				} );
 
-				// Observe changes to the plugin container's direct child elements
+				// Observe changes to the plugin container's child elements and title attributes
 				observer.observe( eventTarget, {
-					childList: true
+					attributeFilter: [ "title" ],
+					childList: true,
+					subtree: true
 				} );
 			}
 
@@ -16651,6 +17253,102 @@ var componentName = "wb-twitter",
 				}
 			} );
 		}
+	},
+
+	// Add skip links immediately before and after the timeline widget
+	// Note: Verified account timelines may contain several hundred interactive elements... this provides a mechanism to spare keyboard-only users from needing to tab through everything to move past the widget.
+	addSkipLinks = function( iframeContainer ) {
+		const timelineIframe = iframeContainer.getElementsByTagName( "iframe" )[ 0 ];
+		const username = getTwitterUsername( timelineIframe.src );
+		const noticeClass = componentName + "-" + "notice";
+		const skipClass = componentName + "-" + "skip";
+		const startText = "start";
+		const endText = "end";
+		let startNotice;
+		let endNotice;
+		let skipToEndLink;
+		let skipToStartLink;
+
+		// Abort if Twitter username is falsy
+		// Note: Unlikely to happen unless the username doesn't exist... in which case Twitter's third party widget script will have already failed and triggered an exception by this point
+		if ( !username ) {
+			return;
+		}
+
+		// Add a start of timeline notice
+		startNotice = createNotice( i18nText.startNotice, username, timelineIframe.id, noticeClass, startText );
+		iframeContainer.before( startNotice );
+
+		// Add an end of timeline notice
+		endNotice = createNotice( i18nText.endNotice, username, timelineIframe.id, noticeClass, endText );
+		iframeContainer.after( endNotice );
+
+		// Add a skip to end link
+		skipToEndLink = createSkipLink( i18nText.skipEnd, username, endNotice.id, skipClass, endText );
+		startNotice.after( skipToEndLink );
+
+		// Add a skip to start link
+		skipToStartLink = createSkipLink( i18nText.skipStart, username, startNotice.id, skipClass, startText );
+		endNotice.before( skipToStartLink );
+	},
+
+	// Extract a Twitter username from the iframe's timeline URL
+	getTwitterUsername = function( iframeSrc ) {
+		let username = iframeSrc.match( /\/screen-name\/([^?]+)/ );
+		username = username ? username[ 1 ] : null;
+
+		return username;
+	},
+
+	// Create a timeline notice
+	createNotice = function( textTemplate, username, iframeId, noticeClass, position ) {
+		const spanElm = document.createElement( "span" );
+		const pElm = document.createElement( "p" );
+
+		spanElm.innerHTML = textTemplate.replace( "%username%", username );
+
+		pElm.id = iframeId + "-" + position;
+		pElm.className = noticeClass + "-" + position;
+		pElm.prepend( spanElm );
+
+		// Hide the notice upon losing focus
+		// Removes its tabindex attribute to make its CSS hide it from screen readers
+		pElm.addEventListener( "blur", function( e ) {
+			e.target.removeAttribute( "tabindex" );
+		} );
+
+		return pElm;
+	},
+
+	// Create a skip link
+	createSkipLink = function( textTemplate, username, linkDestId, skipClass, linkDir ) {
+		const spanElm = document.createElement( "span" );
+		const aElm = document.createElement( "a" );
+		const pElm = document.createElement( "p" );
+
+		spanElm.innerHTML = textTemplate.replace( "%username%", username );
+
+		aElm.href = "#" + linkDestId;
+		aElm.prepend( spanElm );
+
+		// Focus onto the destination of a clicked link
+		$( aElm ).on( "click", function( event ) {
+			const currentTarget = event.currentTarget;
+			const linkDestId = "#" + wb.jqEscape( currentTarget.getAttribute( "href" ).substring( 1 ) );
+			const $linkDest = $document.find( linkDestId );
+
+			// Assign focus to the link's destination
+			// Note: The focus event's scrolling behaviour is more graceful than "jumping" to an anchor link's destination
+			$linkDest.trigger( "setfocus.wb" );
+
+			// Don't engage normal link navigation behaviour (i.e. "jumping" to the link destination, changing address/navigation history)
+			return false;
+		} );
+
+		pElm.className = skipClass + " " + skipClass + "-" + linkDir;
+		pElm.prepend( aElm );
+
+		return pElm;
 	};
 
 $document.on( "timerpoke.wb " + initEvent, selector, init );
@@ -16698,6 +17396,7 @@ var componentName = "wb-data-json",
 	contentUpdatedEvent = "wb-contentupdated",
 	dataQueue = componentName + "-queue",
 	$document = wb.doc,
+	isExtensionRegistered,
 	s,
 
 	/**
@@ -16711,6 +17410,8 @@ var componentName = "wb-data-json",
 		// returns DOM object = proceed with init
 		// returns undefined = do not proceed with init (e.g., already initialized)
 		var elm = wb.init( event, componentName, selector ),
+			jsSettings = window[ componentName ] || { },
+			prop,
 			$elm;
 
 		if ( elm ) {
@@ -16739,6 +17440,25 @@ var componentName = "wb-data-json",
 						url: url
 					} );
 				}
+			}
+
+			// Extend but not overwrite the functionTest and the functionForOperand if some was added
+			if ( !isExtensionRegistered ) {
+				if ( jsSettings.functionForTest ) {
+					for ( prop in jsSettings.functionForTest ) {
+						if ( !functionForTest[ prop ] ) {
+							functionForTest[ prop ] = jsSettings.functionForTest[ prop ];
+						}
+					}
+				}
+				if ( jsSettings.functionForOperand ) {
+					for ( prop in jsSettings.functionForOperand ) {
+						if ( !functionForOperand[ prop ] ) {
+							functionForOperand[ prop ] = jsSettings.functionForOperand[ prop ];
+						}
+					}
+				}
+				isExtensionRegistered = true;
 			}
 
 			// Identify that initialization has completed
@@ -16817,7 +17537,7 @@ var componentName = "wb-data-json",
 				applyTemplate( elm, itmSettings, content );
 
 				// Trigger wet
-				if ( itmSettings.trigger ) {
+				if ( itmSettings.trigger && !wb.isDisabled ) {
 					$elm
 						.find( wb.allSelectors )
 						.addClass( "wb-init" )
@@ -16852,21 +17572,7 @@ var componentName = "wb-data-json",
 	// Apply the template as per the configuration
 	applyTemplate = function( elm, settings, content ) {
 
-		var mapping = settings.mapping || [ {} ],
-			mapping_len,
-			filterTrueness = settings.filter || [],
-			filterFaslseness = settings.filternot || [],
-			queryAll = settings.queryall,
-			i, i_len, i_cache,
-			j, j_cache, j_cache_attr,
-			basePntr,
-			clone, selElements,
-			cached_node,
-			cached_textContent,
-			cached_value,
-			selectorToClone = settings.tobeclone,
-			elmClass = elm.className,
-			elmAppendTo = elm,
+		var elmClass = elm.className,
 			dataTable,
 			dataTableAddRow,
 			template = settings.source ? document.querySelector( settings.source ) : elm.querySelector( "template" );
@@ -16893,15 +17599,57 @@ var componentName = "wb-data-json",
 
 			dataTable = $( elm ).dataTable( { "retrieve": true } ).api();
 			dataTableAddRow = dataTable.row.add;
-			selectorToClone = "tr"; // Only table row can be added
+			settings.tobeclone = "tr"; // Only table row can be added
 		}
 
+		if ( !template ) {
+			return;
+		}
+
+		// Needed when executing sub-template that wasn't polyfill, like in IE11
+		if ( !template.content ) {
+			wb.tmplPolyfill( template );
+		}
+
+		if ( !settings.streamline ) {
+			dataIterator( elm, content, settings );
+		} else {
+			processMapping( elm, elm, content, settings );
+		}
+
+		// Refresh the dataTable display
+		if ( dataTableAddRow ) {
+			dataTable.draw();
+		}
+	},
+
+	// Iterate over the dataset
+	dataIterator = function( elm, content, mappingConfig, useClone ) {
+
+		var i, i_len, i_cache,
+			elmAppendTo = elm,
+			clone, template,
+			dataTable, dataTableAddRow;
+
+		if ( mappingConfig.appendto ) {
+			elmAppendTo = $( mappingConfig.appendto ).get( 0 );
+		}
+
+		// Connection with data table plugin
+		if ( elm.tagName === "TABLE" && elm.className.indexOf( "wb-tables" ) !== -1 ) {
+			dataTable = $( elm ).dataTable( { "retrieve": true } ).api();
+			dataTableAddRow = dataTable.row.add;
+			mappingConfig.tobeclone = "tr";
+		}
+
+
+		// if content is object, transform into array @id and @value
 		if ( !$.isArray( content ) ) {
 			if ( typeof content !== "object" ) {
 				content = [ content ];
 			} else {
 				content = $.map( content, function( val, index ) {
-					if ( typeof val === "object" && !$.isArray( val ) ) {
+					if ( val && typeof val === "object" && !$.isArray( val ) ) {
 						if ( !val[ "@id" ] ) {
 							val[ "@id" ] = index;
 						}
@@ -16917,105 +17665,610 @@ var componentName = "wb-data-json",
 		}
 		i_len = content.length;
 
+		// Get the template to be iterated.
+		if ( !useClone && mappingConfig.source ) {
+			template = document.querySelector( mappingConfig.source );
+		} else if ( !useClone && mappingConfig.template ) {
+			template = elm.querySelector( mappingConfig.template );
+		} else if ( !useClone ) {
+			template = elm.querySelectorAll( ":scope > template" );
+			if ( template.length === 1 || template[ 0 ].attributes.length === 0 ) {
+
+				// Only when there is one choice or take the first one only if only there is no attribute set on the element
+				template = template[ 0 ];
+			} else {
+
+				// let the mapping instructions to define which template to use
+				template = false;
+			}
+		}
+
+		// Iterate the data array
+		for ( i = 0; i < i_len; i += 1 ) {
+			i_cache = content[ i ];
+
+
+			// If the data are filtered. This is deprecated and are only for backward compatible purpose
+			if ( !filterPassJSON( i_cache, mappingConfig.filter, mappingConfig.filternot ) ) {
+				continue;
+			}
+
+			// Get the template (if applicable)
+			if ( !clone && useClone ) {
+				clone = useClone;
+			}
+
+			// Create a clone if one unique template is found
+			if ( !useClone && template && !mappingConfig.tobeclone ) {
+				clone = template.content.cloneNode( true );
+			} else if ( !useClone && template ) {
+				clone = template.content.querySelector( mappingConfig.tobeclone ).cloneNode( true );
+			}
+
+			// process the mapping, return value is the new clone object if applicable
+			var tmpClone;
+			tmpClone = processMapping( elm, clone, i_cache, mappingConfig );
+
+			// Remove the template flag, to ensure we do reuse it for the subsequent iteration
+			if ( tmpClone ) {
+				delete mappingConfig.template;
+				clone = tmpClone;
+			}
+
+			// Add the clone object
+			if ( dataTableAddRow ) {
+				dataTableAddRow( $( clone ) ); // If wb-tables, use its API to add rows
+			} else if ( !useClone && template ) {
+				elmAppendTo.appendChild( clone );
+			}
+		}
+
+		// Refresh the dataTable display (if applicable)
+		if ( dataTableAddRow ) {
+			dataTable.draw();
+		}
+
+	},
+
+	// Check if the mapping are met or not
+	canProcessMapping = function( content, mappingConfig ) {
+
+		var rawValue, value,
+			testableData,
+			operand = mappingConfig.operand || "softEq",
+			operandOutcome;
+
+		if ( !mappingConfig.test ) {
+			return;
+		}
+
+		// Get the value to be tested
+		try {
+			rawValue = getRawValue( content, mappingConfig.assess || mappingConfig.value );
+			value = getValue( rawValue );
+		} catch ( ex ) {
+
+			// If this is an error, the path probably don't exist
+			rawValue = undefined;
+			value = undefined;
+		}
+
+		// Get the function to use
+		if ( !functionForTest[ mappingConfig.test ] ) {
+			console.error( "The test function '" + mappingConfig.test + "' don't exist. Default to false test result" );
+			console.error( mappingConfig );
+			return false;
+		}
+		testableData = functionForTest[ mappingConfig.test ].call( mappingConfig, value, rawValue );
+
+		// Run the operand
+		if ( !functionForOperand[ operand ] ) {
+			console.error( "The operand '" + operand + "' don't exist" );
+			console.error( mappingConfig );
+			operand = "softEq";
+		}
+		operandOutcome = functionForOperand[ operand ].call( mappingConfig, testableData, mappingConfig.expect );
+
+		// If not true, go next
+		if ( !operandOutcome ) {
+			return false;
+		}
+
+		// Run mapping if satisfied
+		return true;
+	},
+
+	// Special mapping typed function
+	functionForTypedMapping = {
+
+		"rdf:Alt": function( elm, clone, content, mappingConfig ) {
+
+			var mapping = mappingConfig.mapping,
+				i, i_cache,
+				i_len = mapping.length,
+				value = content;
+
+			for ( i = 0; i < i_len || i === 0; i += 1 ) {
+				i_cache = mapping[ i ];
+
+				if ( canProcessMapping( content, i_cache ) ) {
+
+					// Clone the object to avoid conflict when it is reused for other data
+					i_cache = $.extend( true, {}, i_cache );
+
+					// Remove the test, because it was checked
+					delete i_cache.test;
+
+					// Navigate the content if specified
+					if ( i_cache.value ) {
+						value = getValue( content, i_cache.value );
+					}
+
+					// Process the mapping
+					processMapping( elm, clone, value, i_cache );
+
+					// End
+					return;
+				}
+			}
+		}
+	},
+
+	// Function called for testing the mapping condition, which can be extend via the js configuration
+	functionForTest = {
+
+		"fn:isArray": function( value ) {
+			return $.isArray( value );
+		},
+
+		"fn:isLiteral": function( value ) {
+
+			// Check if the value are set under the JSON-LD parameter @value
+			if ( value && value[ "@value" ] ) {
+				value = value[ "@value" ];
+			}
+
+			if ( value && typeof value !== "object" ) {
+				return true;
+			}
+
+			return false;
+		},
+
+		"fn:getType": function( value, rawValue ) {
+
+			var tp = value[ "@type" ] || rawValue[ "@type" ];
+
+			if ( tp === "@json" ) {
+				return "rdf:JSON";
+			} else if ( $.isArray( tp ) && tp.indexOf( "@json" ) !== -1 ) {
+				tp[ tp.indexOf( "@json" ) ] = "rdf:JSON";
+			}
+
+			if ( tp ) {
+				return tp;
+			} else {
+				return typeof value;
+			}
+		},
+
+		"fn:getValue": function( value ) {
+
+			return value;
+
+		},
+
+		"fn:guessType": function( value, rawValue ) {
+
+			var guessType;
+
+			if ( !value ) {
+				guessType = "undefined";
+			} else if ( value[ "@type" ] ) {
+				guessType = value[ "@type" ];
+			} else if ( rawValue[ "@type" ] ) {
+				guessType = rawValue[ "@type" ];
+			} else if ( value[ "@value" ] ) {
+
+				// Only if we are in JSON ld mode
+				// Check if the value are set under the JSON-LD parameter @value
+				value = value[ "@value" ];
+			}
+
+			// Edge case to convert the @json data type into its RDF form
+			if ( guessType && guessType !== "undefined" ) {
+				if ( guessType === "@json" ) {
+					guessType = "rdf:JSON";
+				} else if ( $.isArray( guessType ) && guessType.indexOf( "@json" ) !== -1 ) {
+					guessType[ guessType.indexOf( "@json" ) ] = "rdf:JSON";
+				}
+			}
+
+			if ( !guessType ) {
+				if ( typeof value === "string" && value.match( /^([a-z][a-z0-9+\-.]*):/i ) ) {
+					guessType = [ "xsd:anyURI", "rdfs:Literal" ];
+				} else if ( typeof value === "string" ) {
+					guessType = [ "xsd:string", "rdfs:Literal" ];
+				} else if ( typeof value === "boolean" ) {
+					guessType = [ "xsd:boolean", "rdfs:Literal" ];
+				} else if ( typeof value === "number" ) {
+					guessType = [ "xsd:double", "rdfs:Literal" ];
+				} else if ( typeof value === "undefined" ) {
+					guessType = "undefined";
+				} else if ( $.isArray( value ) ) {
+					guessType = "rdfs:Container";
+				} else {
+
+					// The type is a generic Object
+					guessType = "rdfs:Resource";
+				}
+			}
+
+			return guessType;
+		}
+
+	},
+
+	// Operand used to evaluate the testable output from functionForTest to determine if the mapping condition is met or not, which can be extend via the js configuration
+	functionForOperand = {
+
+		"softEq": function( value, expect ) {
+			var i, i_len;
+
+			if ( $.isArray( value ) && !$.isArray( expect ) && value.indexOf( expect ) !== -1 ) {
+				return true;
+			} else if ( $.isArray( value ) &&  $.isArray( expect ) ) {
+				i_len = expect.length;
+				for ( i = 0; i !== i_len; i++ ) {
+					if ( value.indexOf( expect[ i ] ) ) {
+						return true;
+					}
+				}
+			} else if ( expect && value === expect ) {
+				return true;
+			} else if ( !expect && value ) {
+				return true;
+			}
+
+			return false;
+
+		},
+
+		"eq": function( value, expect ) {
+
+			if ( _equalsJSON( value, expect ) ) {
+				return true;
+			}
+
+			return false;
+		},
+
+		"neq": function( value, expect ) {
+			if ( !_equalsJSON( value, expect ) ) {
+				return true;
+			}
+
+			return false;
+		},
+
+		"in": function( value, expect ) {
+
+			var i;
+
+			if ( !expect ) {
+				console.error( "Expected value is missing. Defaulting to false." );
+				console.error( this );
+				return false;
+			}
+
+			if ( $.isArray( value ) && !$.isArray( expect ) && value.indexOf( expect ) !== -1 ) {
+				return true;
+			} else if ( $.isArray( value ) &&  $.isArray( expect ) ) {
+				for ( i = 0; i !== expect.length; i++ ) {
+					if ( value.indexOf( expect[ i ] ) ) {
+						return true;
+					}
+				}
+			} else if ( !$.isArray( value ) &&  $.isArray( expect ) && expect.indexOf( value ) !== -1  ) {
+				return true;
+			} else if ( value === expect ) {
+				return true;
+			}
+
+			return false;
+		},
+
+		"nin": function( value, expect ) {
+			return !functionForOperand.in.call( this, value, expect );
+		}
+	},
+
+	// Mapping the data into a template or into a node
+	processMapping = function( elm, clone, content, mappingConfig ) {
+
+		var j, j_cache,
+			cached_node, cached_value,
+			cached_value_is_HTML, cached_value_is_JSON, cached_value_is_IRI,
+			queryAll = mappingConfig.queryall,
+			selElements,
+			mapping = mappingConfig.mapping,
+			mapping_len,
+			upstreamClone, template;
+
+
+		// Is this mapping a special mapping type?
+		if ( mappingConfig[ "@type" ] ) {
+			functionForTypedMapping[ mappingConfig[ "@type" ] ].call( content, elm, clone, content, mappingConfig );
+			return;
+		}
+
+		// Can we proceed?
+		if ( mappingConfig.test && !canProcessMapping( content, mappingConfig ) ) {
+			return;
+		}
+
+		// Check if there is some mapping configuration
+		if ( !mapping && !queryAll && !mappingConfig.template && typeof mapping !== "object" ) {
+			return;
+		}
+
+		// Clone mappingConfig to ensure it don't interfere with subsequent data iteration
+		mappingConfig = $.extend( true, {}, mappingConfig );
+
+		// If there is no clone, let use the element (parent)
+		clone = clone || elm;
+
+		// If there is a "template" property, get the inner template
+		if ( mappingConfig.template ) {
+			template = clone.querySelector( mappingConfig.template );
+
+			upstreamClone = clone; // Keep reference of the top clone
+
+			clone = template.content.cloneNode( true );
+
+			// Ensure we don't recreated it if during a subsequent iteration
+			delete mappingConfig.template;
+		}
+
+
+		// Is content an array? then iterate the content
+		if ( $.isArray( content ) ) {
+
+
+			dataIterator( clone, content, mappingConfig, clone );
+
+			// Case of where a template is associated with this mapping action
+			if ( template ) {
+				if ( template.parentNode ) {
+
+					if ( !mappingConfig.append ) {
+						template.parentNode.insertBefore( clone, template );
+					} else {
+						template.parentNode.appendChild( clone );
+					}
+				} else {
+					upstreamClone.appendChild( clone );
+				}
+
+				return elm;
+
+			}
+			return;
+		}
+
+		// Prepare the mapping object to be iterated
+		if ( !mapping ) {
+			mapping = [ {} ];
+		}
 		if ( !$.isArray( mapping ) ) {
 			mapping = [ mapping ];
 		}
 		mapping_len = mapping.length;
 
-		if ( !template ) {
-			return;
+		// Ensure the mapping is an array of Mapping Object
+		for ( j = 0; j < mapping_len || j === 0; j += 1 ) {
+			if ( typeof mapping[ j ] === "string" ) {
+				mapping[ j ] = {
+					value: mapping[ j ]
+				};
+			}
 		}
 
-		// Needed when executing sub-template that wasn't polyfill, like in IE11
-		if ( !template.content ) {
-			wb.tmplPolyfill( template );
-		}
+		if ( queryAll ) {
+			selElements = clone.querySelectorAll( queryAll );
 
-		if ( settings.appendto ) {
-			elmAppendTo = $( settings.appendto ).get( 0 );
-		}
-
-		for ( i = 0; i < i_len; i += 1 ) {
-			i_cache = content[ i ];
-
-			if ( filterPassJSON( i_cache, filterTrueness, filterFaslseness ) ) {
-
-				basePntr = "/" + i;
-
-				if ( !selectorToClone ) {
-					clone = template.content.cloneNode( true );
-				} else {
-					clone = template.content.querySelector( selectorToClone ).cloneNode( true );
-				}
-
-				if ( queryAll ) {
-					selElements = clone.querySelectorAll( queryAll );
-				}
-
-				for ( j = 0; j < mapping_len || j === 0; j += 1 ) {
-					j_cache = mapping[ j ];
-
-					// Get the node used to insert content
-					if ( selElements ) {
-						cached_node = selElements[ j ];
-					} else if ( j_cache.selector ) {
-						cached_node = clone.querySelector( j_cache.selector );
-					} else {
-						cached_node = clone;
-					}
-					j_cache_attr = j_cache.attr;
-					if ( j_cache_attr ) {
-						if ( !cached_node.hasAttribute( j_cache_attr ) ) {
-							cached_node.setAttribute( j_cache_attr, "" );
-						}
-						cached_node = cached_node.getAttributeNode( j_cache_attr );
-					}
-
-					// Get the value
-					if ( typeof i_cache === "string" ) {
-						cached_value = i_cache;
-					} else if ( typeof j_cache === "string" ) {
-						cached_value = jsonpointer.get( content, basePntr + j_cache );
-					} else {
-						cached_value = jsonpointer.get( content, basePntr + j_cache.value );
-					}
-
-					// Go to the next mapping if the value of JSON node don't exist to ensure we keep the default text set in the template, but move ahead if empty or null
-					if ( cached_value === undefined ) {
-						continue;
-					}
-
-					// Placeholder text replacement if any
-					if ( j_cache.placeholder ) {
-						cached_textContent = cached_node.textContent || "";
-						cached_value = cached_textContent.replace( j_cache.placeholder, cached_value );
-					}
-
-					// Set the value to the node
-					if ( j_cache.isHTML ) {
-						cached_node.innerHTML = cached_value;
-					} else if ( $.isArray( cached_value ) || cached_value && !( cached_value instanceof String ) && typeof cached_value === "object" ) {
-						applyTemplate( cached_node, j_cache, cached_value );
-					} else {
-						cached_node.textContent = cached_value;
-					}
-				}
-
-				if ( dataTableAddRow ) {
-
-					// If wb-tables, use its API to add rows
-					dataTableAddRow( $( clone ) );
-				} else {
-					elmAppendTo.appendChild( clone );
+			// Replicate this setting the in the mapping
+			for ( j = 0; j < selElements.length || j === 0; j += 1 ) {
+				if ( !mapping[ j ].selector && queryAll.indexOf( "nth-child" ) === -1 ) {
+					mapping[ j ].selector = queryAll + ":nth-child(" + ( j + 1 ) + ")";
+				} else if ( !mapping[ j ].selector ) {
+					mapping[ j ].selector = queryAll;
 				}
 			}
 		}
 
-		// Refresh the dataTable display
-		if ( dataTableAddRow ) {
-			dataTable.draw();
+
+		//
+		// Process the mapping
+		//
+		for ( j = 0; j < mapping_len || j === 0; j += 1 ) {
+			j_cache = mapping[ j ];
+
+			// Reset the cache value special type flag
+			cached_value_is_IRI = false;
+			cached_value_is_HTML = false;
+			cached_value_is_JSON = false;
+
+			// Get the element to be updated
+			if ( j_cache.selector ) {
+				cached_node = clone.querySelector( j_cache.selector );
+			} else {
+				cached_node = clone;
+			}
+
+			// Get the value to be set
+			try {
+				cached_value = getRawValue( content, j_cache );
+			} catch ( ex ) {
+
+				// The path don't exist, let continue to the next mapping item
+				console.info( "JSON selector path for mapping don't exist in content" );
+				console.info( j_cache );
+				console.info( content );
+				continue;
+			}
+
+			// Go to the next mapping if the value of JSON node don't exist to ensure we keep the default text set in the template, but move ahead if empty or null
+			if ( typeof cached_value === "undefined" ) {
+				continue;
+			}
+
+			// Do the cache value contain special @type
+			if ( cached_value && cached_value[ "@value" ] && cached_value[ "@type" ] ) {
+				if ( !$.isArray( cached_value[ "@type" ] ) ) {
+					cached_value[ "@type" ] = [ cached_value[ "@type" ] ];
+				}
+				cached_value_is_IRI = cached_value[ "@type" ].indexOf( "@id" ) !== -1;
+				cached_value_is_HTML = cached_value[ "@type" ].indexOf( "rdf:HTML" ) !== -1;
+				cached_value_is_JSON = cached_value[ "@type" ].indexOf( "rdf:JSON" ) !== -1 || cached_value[ "@type" ].indexOf( "@json" ) !== -1;
+			}
+
+			// Action the value
+			if ( $.isArray( cached_value ) && ( j_cache.mapping || j_cache.queryall ) ) {
+
+				// Deep dive into the content if a mapping exist
+				dataIterator( cached_node, cached_value, j_cache );
+
+			} else if ( j_cache.mapping || j_cache.queryall || !j_cache.mapping && typeof j_cache.mapping === "object" ) {
+				try {
+
+					// Map the inner mapping
+					processMapping( template || elm, cached_node, cached_value, j_cache );
+				} catch ( ex ) {
+
+					if ( ex === "cached_node: null" && typeof cached_value === "object" ) {
+
+						// If it fail, let iterate the cached_value object
+						dataIterator( cached_node, cached_value, j_cache );
+					} else {
+						throw ex;
+					}
+				}
+			} else if ( cached_value_is_IRI && cached_value_is_HTML ) {
+
+				// The import file type are expected to be HTML
+				// Add the data-ajax instruction so the content would be added once the JSON mapping is completed and added on the page.
+				cached_node.dataset.wbAjax = JSON.stringify( {
+					url: cached_value[ "@value" ],
+					type: "replace",
+					dataType: cached_value_is_JSON ? "json" : null,
+					encode: j_cache.encode
+				} );
+			} else if ( cached_value_is_HTML && cached_value_is_JSON && !cached_value_is_IRI ) {
+
+				// Get content from the "@value" property which contain JSON value and use it as a string value
+				cached_value = JSON.stringify( cached_value[ "@value" ] );
+
+				// Map the value in the element
+				mapValue( cached_node, cached_value, j_cache );
+
+			} else if ( !cached_node && typeof cached_value === "object" ) {
+				throw "cached_node: null";
+			} else if ( mappingConfig.mapping !== null ) {
+
+				cached_value = getValue( cached_value );
+
+				// Serialize the value if it is an JS object and its not a null object
+				if ( typeof cached_value === "object" &&  cached_value !== null ) {
+					cached_value = JSON.stringify( cached_value );
+				}
+
+				// Map the value in the element
+				mapValue( cached_node, cached_value, j_cache );
+			}
+
+		}
+
+		// Add the template, if applicable
+		if ( template ) {
+			if ( template.parentNode ) {
+
+				if ( !mappingConfig.append ) {
+					template.parentNode.insertBefore( clone, template );
+				} else {
+					template.parentNode.appendChild( clone );
+				}
+			} else {
+				upstreamClone.appendChild( clone );
+			}
+
+			return elm;
+		}
+
+	},
+
+	// Extract the value of an JS object
+	getValue = function( source, pointer ) {
+
+		var value = getRawValue( source, pointer );
+
+		// for JSON-LD @value support
+		if ( typeof value === "object" && value !== null && Object.prototype.hasOwnProperty.call( value, "@value" ) ) {
+			value = value[ "@value" ];
+		}
+
+		return value;
+	},
+
+	// Extract the value without considering it possible JSON-LD value
+	getRawValue = function( source, pointer ) {
+
+		var value;
+		pointer = pointer || false; // Ensure pointer is defined
+
+		// Get the value if source is string or pointer is pointing to root
+		if ( typeof source === "string" || pointer === "/" || pointer === "/@value" || pointer.value === "/" || pointer.value === "/@value" ) {
+			value = source;
+		} else if ( typeof pointer === "string" ) {
+			value = jsonpointer.get( source, pointer );
+		} else if ( pointer.value ) {
+			value = jsonpointer.get( source, pointer.value );
+		} else {
+			value = source;
+		}
+
+		return value;
+	},
+
+	// Map a value into an HTML element or attribute
+	mapValue = function( element, value, mappingConfig ) {
+
+		var attributeName, placeholderText;
+
+		attributeName = mappingConfig.attr;
+		if ( attributeName ) {
+			if ( !element.hasAttribute( attributeName ) ) {
+				element.setAttribute( attributeName, "" );
+			}
+			element = element.getAttributeNode( attributeName );
+		}
+
+		// Placeholder text replacement if any
+		if ( mappingConfig.placeholder ) {
+			placeholderText = element.textContent || "";
+			value = placeholderText.replace( mappingConfig.placeholder, value );
+		}
+
+		// Exclude null values and replace with default text
+		if ( value !== null ) {
+			if ( mappingConfig.isHTML ) {
+				element.innerHTML = value;
+			} else {
+				element.textContent = value;
+			}
 		}
 	},
+
 
 	// Filtering a JSON
 	// Return true if trueness && falseness
@@ -17023,8 +18276,8 @@ var componentName = "wb-data-json",
 	// trueness and falseness is an array of { "path": "", "value": "" } object
 	filterPassJSON = function( obj, trueness, falseness ) {
 		var i, i_cache,
-			trueness_len = trueness.length,
-			falseness_len = falseness.length,
+			trueness_len = trueness ? trueness.length : 0,
+			falseness_len = falseness ? falseness.length : 0,
 			compareResult = false,
 			isEqual;
 
@@ -17074,7 +18327,7 @@ var componentName = "wb-data-json",
 			}
 			var i, l;
 			if ( $.isArray( a ) ) {
-				if (  $.isArray( b ) || a.length !== b.length ) {
+				if (  !$.isArray( b ) || a.length !== b.length ) {
 					return false;
 				}
 				for ( i = 0, l = a.length; i < l; i++ ) {
@@ -17089,7 +18342,7 @@ var componentName = "wb-data-json",
 			if ( _objectKeys( a ).length !== bLength ) {
 				return false;
 			}
-			for ( i = 0; i < bLength; i++ ) {
+			for ( i in a ) {
 				if ( !_equalsJSON( a[ i ], b[ i ] ) ) {
 					return false;
 				}
@@ -17139,8 +18392,35 @@ var componentName = "wb-data-json",
 	};
 
 $document.on( "json-failed.wb", selector, function( event ) {
+
+	var elm = event.currentTarget,
+		$elm = $( elm ),
+		lstCall = $elm.data( dataQueue ),
+		fetchObj = event.fetch,
+		xhrResponse = fetchObj.xhr,
+		itmSettings = lstCall[ fetchObj.refId ],
+		failSettings = itmSettings.fail;
+
+	if ( failSettings ) {
+
+		// Mapping is always streamline because the data structure is a static object not an array
+		failSettings.streamline = true;
+
+		// apply the templaty to display an error message
+		applyTemplate( elm, failSettings, {
+			error: fetchObj.error.message || xhrResponse.statusText,
+			status: fetchObj.status,
+			url: fetchObj.fetchOpts.url,
+			response: {
+				text: xhrResponse.responseText || "",
+				status: xhrResponse.status,
+				statusText: xhrResponse.statusText
+			}
+		} );
+	}
+
 	console.info( event.currentTarget );
-	throw "Bad JSON Fetched from url in " + componentName;
+	console.error( "Error or bad JSON Fetched from url in " + componentName );
 } );
 
 // Load template polyfill
@@ -17194,6 +18474,40 @@ for ( s = 0; s !== selectorsLength; s += 1 ) {
 var componentName = "wb-disable",
 	selector = "#wb-tphp",
 	$document = wb.doc,
+	allowOnDisableClass = "wb-disable-allow",
+	allowedPlugins = [
+		{
+			selectors: "[data-wb-jsonmanager]",
+			initEvent: "wb-jsonmanager"
+		},
+		{
+			selectors: "[data-wb-postback]",
+			initEvent: "wb-postback"
+		},
+		{
+			selectors: [
+				"[data-ajax-after]",
+				"[data-ajax-append]",
+				"[data-ajax-before]",
+				"[data-ajax-prepend]",
+				"[data-ajax-replace]",
+				"[data-wb-ajax]"
+			],
+			initEvent: "wb-data-ajax"
+		},
+		{
+			selectors: [
+				"[data-json-after]",
+				"[data-json-append]",
+				"[data-json-before]",
+				"[data-json-prepend]",
+				"[data-json-replace]",
+				"[data-json-replacewith]",
+				"[data-wb-json]"
+			],
+			initEvent: "wb-data-json"
+		}
+	],
 
 	/**
 	 * @method init
@@ -17227,7 +18541,7 @@ var componentName = "wb-disable",
 			}
 
 			try {
-				if ( wb.isDisabled || ( wb.ie && wb.ielt7 ) ) {
+				if ( wb.isDisabled || wb.ie ) {
 					$html.addClass( "wb-disable" );
 
 					try {
@@ -17238,6 +18552,9 @@ var componentName = "wb-disable",
 
 						/* swallow error */
 					}
+
+					// Trigger initialization of plugins that are needed in basic mode
+					runAllowedPlugins();
 
 					// Add canonical link if not already present
 					if ( !document.querySelector( "link[rel=canonical]" ) ) {
@@ -17293,10 +18610,29 @@ var componentName = "wb-disable",
 			// Identify that initialization has completed
 			wb.ready( $document, componentName );
 		}
+	},
+
+	// Trigger initialization of plugins that are needed in basic mode
+	// TODO: Remove once basic initialization is implemented at the core level
+	runAllowedPlugins = function() {
+		allowedPlugins.forEach( allowedPlugin => {
+			if ( typeof( allowedPlugin.selectors ) === "object" ) {
+				allowedPlugin.selectors = allowedPlugin.selectors.join( "." + allowOnDisableClass + "," );
+			}
+
+			allowedPlugin.selectors = allowedPlugin.selectors + "." + allowOnDisableClass;
+
+			$( allowedPlugin.selectors ).trigger( "wb-init." + allowedPlugin.initEvent );
+		} );
 	};
 
 // Bind the events
 $document.on( "timerpoke.wb", selector, init );
+
+// Go through allowed plugins once again when content has been added dynamically
+$document.on( "wb-contentupdated", function() {
+	runAllowedPlugins();
+} );
 
 // Add the timer poke to initialize the plugin
 wb.add( selector );
@@ -17568,24 +18904,51 @@ var componentName = "wb-jsonmanager",
 				fn: function( obj, key, tree ) {
 					var val = obj[ key ],
 						ref = this.ref,
-						mainTree = this.mainTree,
+						mainTree = this.mainTree || obj,
 						path = this.path,
-						newVal;
+						newVal,
+						refObject, refIsArray, valWasArray,
+						i, i_len, i_item,
+						j, j_len, j_item;
 
 					if ( val ) {
-						if ( Array.isArray( val ) ) {
-							val.forEach( ( item, i ) => {
-								item = item.replaceAll( "~", "~0" ).replaceAll( "/", "~1" ); // Escape slashed and tilde in val when the key is an IRI
-								newVal = mainTree ? jsonpointer.get( mainTree, ref + "/" + item ) : jsonpointer.get( tree, ref + "/" + item );
-								if ( newVal ) {
-									applyPatch( tree, "replace", path + "/" + i, newVal );
+
+						refObject = jsonpointer.get( mainTree, ref );
+						refIsArray = Array.isArray( refObject );
+						valWasArray = Array.isArray( val );
+
+						if ( !valWasArray ) {
+							val =  [ val ];
+						}
+
+						i_len = val.length;
+
+						for ( i = 0; i !== i_len; i++ ) {
+							i_item = val[ i ];
+							newVal = undefined; // Reinit
+							if ( !refIsArray ) {
+								i_item = i_item.replaceAll( "~", "~0" ).replaceAll( "/", "~1" ); // Escape slashed and tilde in val when the key is an IRI for JSON pointer compatibility
+								newVal = mainTree ? jsonpointer.get( mainTree, ref + "/" + i_item ) : jsonpointer.get( tree, ref + "/" + i_item );
+							} else {
+
+								// Iterate until we found a corresponding value in the property "@id"
+								j_len = refObject.length;
+								for ( j = 0; j !== j_len; j++ ) {
+									j_item = refObject[ j ];
+									if ( j_item[ "@id" ] && j_item[ "@id" ] === i_item ) {
+										newVal = j_item;
+										break;
+									}
 								}
-							} );
-						} else if ( typeof val === "string" ) {
-							val = val.replaceAll( "~", "~0" ).replaceAll( "/", "~1" ); // Escape slashed and tilde in val when the key is an IRI
-							newVal = mainTree ? jsonpointer.get( mainTree, ref + "/" + val ) : jsonpointer.get( tree, ref + "/" + val );
-							if ( newVal ) {
+								if ( !newVal ) {
+									console.error( "wb-swap: Unable to find a corresponding value for: " + val + " in reference " + ref );
+									break;
+								}
+							}
+							if ( newVal && !valWasArray ) {
 								applyPatch( tree, "replace", path, newVal );
+							} else if ( newVal ) {
+								applyPatch( tree, "replace", path + "/" + i, newVal );
 							}
 						}
 					}
@@ -17816,6 +19179,12 @@ var componentName = "wb-jsonmanager",
 			},
 			manageObjDir = function( selector, selectedValue, json_return ) {
 				var arrPath = selector.path.split( "/" ).filter( Boolean );
+
+				// Check if selectedValue is an empty value returned by querySelectorAll
+				if ( selectedValue && selectedValue instanceof NodeList && selectedValue.length === 0 ) {
+					selectedValue = null;
+				}
+
 				if ( arrPath.length > 1 ) {
 					var pointer = "";
 					pointer = arrPath.pop();
@@ -18058,34 +19427,6 @@ var componentName = "wb-jsonmanager",
 		}
 		return JSONsource;
 	};
-
-// IE dedicated patch to support ECMA-402 but limited to English and French number formatting
-if ( wb.ie ) {
-	Number.prototype.toLocaleString = function( locale ) {
-
-		var splitVal = this.toString().split( "." ),
-			integer = splitVal[ 0 ],
-			decimal = splitVal[ 1 ],
-			intLength = integer.length,
-			nbSection = intLength % 3 || 3,
-			strValue = integer.substr( 0, nbSection ),
-			isFrenchLoc = ( locale === "fr" ),
-			thousandSep = ( isFrenchLoc ? " " : "," ),
-			i;
-
-		for ( i = nbSection; i < intLength; i = i + 3 ) {
-			strValue = strValue + thousandSep + integer.substr( i, 3 );
-		}
-		if ( decimal.length ) {
-			if ( isFrenchLoc ) {
-				strValue = strValue + "," + decimal;
-			} else {
-				strValue = strValue + "." + decimal;
-			}
-		}
-		return strValue;
-	};
-}
 
 $document.on( "json-failed.wb", selector, function( event ) {
 	var elm = event.target,
@@ -18559,7 +19900,7 @@ var $document = wb.doc,
 
 	init = function( event ) {
 		var elm = wb.init( event, componentName, selector ),
-			$elm, settings, $selectedElm;
+			$elm, settings, $selectedElm, valuesList;
 
 		if ( elm ) {
 			$elm = $( elm );
@@ -18571,22 +19912,39 @@ var $document = wb.doc,
 				wb.getData( $elm, componentName )
 			);
 
-			$selectedElm = settings.selector ? $( settings.selector, $elm ) : $elm.children();
+			if ( settings.attribute ) {
+				if ( settings.values && Array.isArray( settings.values ) ) {
+					valuesList = settings.values;
+					shuffleArray( valuesList );
+					elm.setAttribute( settings.attribute, valuesList[ 0 ] );
+				} else {
+					throw componentName + ": You must define the property \"values\" to an array of strings when \"attribute\" property is defined.";
+				}
+			} else {
+				$selectedElm = settings.selector ? $( settings.selector, $elm ) : $elm.children();
 
-			if ( !$selectedElm.length ) {
-				throw componentName + " selector setting is invalid or no children";
-			}
+				if ( !$selectedElm.length ) {
+					throw componentName + " selector setting is invalid or no children";
+				}
 
-			if ( settings.shuffle ) {
-				$selectedElm = wb.shuffleDOM( $selectedElm );
-			}
+				if ( settings.shuffle ) {
+					$selectedElm = wb.shuffleDOM( $selectedElm );
+				}
 
-			if ( settings.toggle ) {
-				$selectedElm = wb.pickElements( $selectedElm, settings.number );
-				$selectedElm.toggleClass( settings.toggle );
+				if ( settings.toggle ) {
+					$selectedElm = wb.pickElements( $selectedElm, settings.number );
+					$selectedElm.toggleClass( settings.toggle );
+				}
 			}
 
 			wb.ready( $elm, componentName );
+		}
+	},
+
+	shuffleArray = function( array ) {
+		for ( let i = array.length - 1; i > 0; i-- ) {
+			const j = Math.floor( Math.random() * ( i + 1 ) );
+			[ array[ i ], array[ j ] ] = [ array[ j ], array[ i ] ];
 		}
 	};
 
