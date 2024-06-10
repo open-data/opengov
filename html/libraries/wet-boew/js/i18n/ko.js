@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "쇼는 캡션 휴무"
 	},
 	"cc-err": "로드하는 중 오류가 발생 자막",
+	fs: "Enter full screen",
 	adesc: {
 		on: "오디오 설명을 사용",
 		off: "오디오 설명을 해제합니다"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "현재 위치 :",
 	dur: "총 시간",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "공유",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "_MENU_ 항목을 표시",
 	filter: "필터 항목",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",

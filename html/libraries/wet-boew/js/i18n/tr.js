@@ -88,14 +88,15 @@ wb.i18nDict = {
 		on: "Kapalı eklentileri göster"
 	},
 	"cc-err": "Kapalı eklenti yükleme hatası",
+	fs: "Enter full screen",
 	adesc: {
 		on: "Sesli açıklama açık",
 		off: "Sesli açıklama kapalı"
 	},
 	pos: "Geçerli pozisyon:",
 	dur: "Toplam zaman:",
-	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeNotLoad: "Video yükleme sorunlarıyla karşılaştı",
+	msgYoutubeVdLoad: "Youtube videosu yükleniyor",
 
 	/* Share widget */
 	"shr-txt": "Paylaş",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "_MENU_ girdileri göster",
 	filter: "Maddeleri filtrele",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",

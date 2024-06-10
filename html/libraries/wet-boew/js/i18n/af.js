@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "Wys Gesluit byskrifte"
 	},
 	"cc-err": "Fout tydens die laai gesluit onderskrifte",
+	fs: "Enter full screen",
 	adesc: {
 		on: "Aktiveer klank beskrywing",
 		off: "Deaktiveer audio-beskrywing"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "Huidige posisie:",
 	dur: "Totale tyd:",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "Deel",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "Wys _MENU_ inskrywings",
 	filter: "Filter artikels",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",

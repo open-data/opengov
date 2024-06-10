@@ -88,6 +88,7 @@ wb.i18nDict = {
 		on: "Hiện Đóng cửa phụ đề"
 	},
 	"cc-err": "Lỗi khi đang nạp chú thích đóng",
+	fs: "Enter full screen",
 	adesc: {
 		on: "Kích hoạt tính năng mô tả âm thanh",
 		off: "Vô hiệu hoá mô tả âm thanh"
@@ -95,7 +96,7 @@ wb.i18nDict = {
 	pos: "Chức vụ hiện tại:",
 	dur: "Tổng thời gian:",
 	msgYoutubeNotLoad: "Video encountered loading issues",
-	msgYoutubeVdLoad: "Loading youtube video",
+	msgYoutubeVdLoad: "Loading Youtube video",
 
 	/* Share widget */
 	"shr-txt": "Chia",
@@ -187,6 +188,13 @@ wb.i18nDict = {
 	lenMenu: "Hiển thị _MENU_ mục",
 	filter: "Lọc mặt hàng",
 	tbFilterInst: "This table provides a sorting feature via the buttons across the column header row with only one instance visible at a time.",
+
+	/* Twitter embedded timeline */
+	"twitter-start-notice": "Start of @%username%’s Twitter timeline",
+	"twitter-end-notice": "End of @%username%’s Twitter timeline",
+	"twitter-skip-end": "Skip to end of @%username%’s Twitter timeline",
+	"twitter-skip-start": "Skip to start of @%username%’s Twitter timeline",
+	"twitter-timeline-title": "Twitter timeline",
 
 	/* Geomap */
 	"geo-mapctrl": "@geo-mapctrl@",
