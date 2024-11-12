@@ -141,6 +141,7 @@ class FacetsSummaryForm extends EntityForm {
             'label' => $facet->getName(),
             'separator' => ', ',
             'show_count' => FALSE,
+            'weight' => 0,
           ];
         }
         $facets[$facet->id()]['name'] = $facet->getName();
@@ -174,6 +175,7 @@ class FacetsSummaryForm extends EntityForm {
             '#title' => $this->t('Weight for @title', ['@title' => $facet['name']]),
             '#title_display' => 'invisible',
             '#attributes' => ['class' => ['facets-order-weight']],
+            '#default_value' => $facet['weight'],
           ],
           '#attributes' => ['class' => ['draggable']],
         ];

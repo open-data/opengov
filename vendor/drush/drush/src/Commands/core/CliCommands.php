@@ -10,7 +10,6 @@ use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use Drush\Psysh\DrushCommand;
 use Drush\Psysh\DrushHelpCommand;
-use Drupal\Component\Assertion\Handle;
 use Drush\Psysh\Shell;
 use Drush\Runtime\Runtime;
 use Drush\Utils\FsUtils;
@@ -54,7 +53,7 @@ final class CliCommands extends DrushCommands
     /**
      * Open an interactive shell on a Drupal site.
      */
-    #[CLI\Command(name: self::PHP, aliases: ['php,core:cli', 'core-cli'])]
+    #[CLI\Command(name: self::PHP, aliases: ['php', 'core:cli', 'core-cli'])]
     #[CLI\Option(name: 'version-history', description: 'Use command history based on Drupal version. Default is per site.')]
     #[CLI\Option(name: 'cwd', description: 'A directory to change to before launching the shell. Default is the project root directory')]
     #[CLI\Topics(topics: [self::DOCS_REPL])]
@@ -82,9 +81,12 @@ final class CliCommands extends DrushCommands
         $shell = new Shell($configuration);
 
 
-        // Register the assertion handler so exceptions are thrown instead of errors
-        // being triggered. This plays nicer with PsySH.
-        Handle::register();
+        // Register the assertion handler so exceptions are thrown instead of
+        // errors being triggered. This plays nicer with PsySH. Since we're
+        // using exceptions, turn error warnings off.
+        assert_options(ASSERT_EXCEPTION, true);
+        assert_options(ASSERT_WARNING, false);
+
         $shell->setScopeVariables(['container' => \Drupal::getContainer()]);
 
         // Add our casters to the shell configuration.
@@ -312,7 +314,7 @@ final class CliCommands extends DrushCommands
             $parts = explode('\\', $class);
             $end = end($parts);
             // https://github.com/drush-ops/drush/pull/5729 and https://github.com/drush-ops/drush/issues/5730.
-            if ($reflectionClass->isFinal() || class_exists($end)) {
+            if ($reflectionClass->isAbstract() || $reflectionClass->isFinal() || class_exists($end)) {
                 continue;
             }
             // Make it possible to easily load revisions.

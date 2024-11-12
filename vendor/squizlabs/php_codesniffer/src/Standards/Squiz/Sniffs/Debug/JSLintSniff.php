@@ -47,14 +47,14 @@ class JSLintSniff implements Sniff
      *                                               the token was found.
      *
      * @return int
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If jslint.js could not be run
+     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If jslint.js could not be run.
      */
     public function process(File $phpcsFile, $stackPtr)
     {
         $rhinoPath  = Config::getExecutablePath('rhino');
         $jslintPath = Config::getExecutablePath('jslint');
         if ($rhinoPath === null || $jslintPath === null) {
-            return ($phpcsFile->numTokens + 1);
+            return $phpcsFile->numTokens;
         }
 
         $fileName = $phpcsFile->getFilename();
@@ -80,7 +80,7 @@ class JSLintSniff implements Sniff
         }
 
         // Ignore the rest of the file.
-        return ($phpcsFile->numTokens + 1);
+        return $phpcsFile->numTokens;
 
     }//end process()
 

@@ -1,9 +1,11 @@
 {% import '@lib/di.twig' as di %}
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\{{ machine_name }}\Plugin\migrate\process;
 
-{% sort %}
+{% apply sort_namespaces %}
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
@@ -12,7 +14,7 @@ use Drupal\migrate\Row;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
   {% endif %}
-{% endsort %}
+{% endapply %}
 
 /**
  * Provides {{ plugin_id|article }} plugin.

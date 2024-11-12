@@ -402,6 +402,8 @@ EOT
 
     /**
      * @param array<string, string> $requirements
+     * @param 'require'|'require-dev' $requireKey
+     * @param 'require'|'require-dev' $removeKey
      * @throws \Exception
      */
     private function doUpdate(InputInterface $input, OutputInterface $output, IOInterface $io, array $requirements, string $requireKey, string $removeKey): int
@@ -553,21 +555,14 @@ EOT
         if (!$dryRun) {
             $this->updateFile($this->json, $requirements, $requireKey, $removeKey, $sortPackages);
             if ($locker->isLocked()) {
-                $contents = file_get_contents($this->json->getPath());
-                if (false === $contents) {
-                    throw new \RuntimeException('Unable to read '.$this->json->getPath().' contents to update the lock file hash.');
-                }
-                $lockFile = Factory::getLockFile($this->json->getPath());
-                if (file_exists($lockFile)) {
-                    $lockMtime = filemtime($lockFile);
-                    $lock = new JsonFile($lockFile);
-                    $lockData = $lock->read();
-                    $lockData['content-hash'] = Locker::getContentHash($contents);
-                    $lock->write($lockData);
-                    if (is_int($lockMtime)) {
-                        @touch($lockFile, $lockMtime);
+                $stabilityFlags = RootPackageLoader::extractStabilityFlags($requirements, $composer->getPackage()->getMinimumStability(), []);
+                $locker->updateHash($this->json, function (array $lockData) use ($stabilityFlags) {
+                    foreach ($stabilityFlags as $packageName => $flag) {
+                        $lockData['stability-flags'][$packageName] = $flag;
                     }
-                }
+
+                    return $lockData;
+                });
             }
         }
 

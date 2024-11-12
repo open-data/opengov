@@ -26,6 +26,7 @@ class ProcessorPluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, TranslationInterface $translation) {
     parent::__construct('Plugin/facets_summary/processor', $namespaces, $module_handler, ProcessorInterface::class, SummaryProcessor::class);
+    $this->alterInfo('facets_summary_processor_info');
     $this->setCacheBackend($cache_backend, 'facets_summary_processors');
     $this->setStringTranslation($translation);
   }

@@ -13,6 +13,7 @@
 namespace Composer\Package\Version;
 
 use Composer\Config;
+use Composer\IO\IOInterface;
 use Composer\Pcre\Preg;
 use Composer\Repository\Vcs\HgDriver;
 use Composer\IO\NullIO;
@@ -50,11 +51,17 @@ class VersionGuesser
      */
     private $versionParser;
 
-    public function __construct(Config $config, ProcessExecutor $process, SemverVersionParser $versionParser)
+    /**
+     * @var IOInterface|null
+     */
+    private $io;
+
+    public function __construct(Config $config, ProcessExecutor $process, SemverVersionParser $versionParser, ?IOInterface $io = null)
     {
         $this->config = $config;
         $this->process = $process;
         $this->versionParser = $versionParser;
+        $this->io = $io;
     }
 
     /**
@@ -173,11 +180,12 @@ class VersionGuesser
                 $featurePrettyVersion = $prettyVersion;
 
                 // try to find the best (nearest) version branch to assume this feature's version
-                $result = $this->guessFeatureVersion($packageConfig, $version, $branches, 'git rev-list %candidate%..%branch%', $path);
+                $result = $this->guessFeatureVersion($packageConfig, $version, $branches, ['git', 'rev-list', '%candidate%..%branch%'], $path);
                 $version = $result['version'];
                 $prettyVersion = $result['pretty_version'];
             }
         }
+        GitUtil::checkForRepoOwnershipError($this->process->getErrorOutput(), $path, $this->io);
 
         if (!$version || $isDetached) {
             $result = $this->versionFromGitTags($path);
@@ -248,7 +256,7 @@ class VersionGuesser
             $branches = array_map('strval', array_keys($driver->getBranches()));
 
             // try to find the best (nearest) version branch to assume this feature's version
-            $result = $this->guessFeatureVersion($packageConfig, $version, $branches, 'hg log -r "not ancestors(\'%candidate%\') and ancestors(\'%branch%\')" --template "{node}\\n"', $path);
+            $result = $this->guessFeatureVersion($packageConfig, $version, $branches, ['hg', 'log', '-r', 'not ancestors(\'%candidate%\') and ancestors(\'%branch%\')', '--template', '"{node}\\n"'], $path);
             $result['commit'] = '';
             $result['feature_version'] = $version;
             $result['feature_pretty_version'] = $version;
@@ -261,13 +269,12 @@ class VersionGuesser
 
     /**
      * @param array<string, mixed>     $packageConfig
-     * @param string[]                 $branches
-     *
-     * @phpstan-param non-empty-string $scmCmdline
+     * @param list<string>             $branches
+     * @param list<string>             $scmCmdline
      *
      * @return array{version: string|null, pretty_version: string|null}
      */
-    private function guessFeatureVersion(array $packageConfig, ?string $version, array $branches, string $scmCmdline, string $path): array
+    private function guessFeatureVersion(array $packageConfig, ?string $version, array $branches, array $scmCmdline, string $path): array
     {
         $prettyVersion = $version;
 
@@ -285,7 +292,7 @@ class VersionGuesser
             }
 
             // sort local branches first then remote ones
-            // and sort numeric branches below named ones, to make sure if the branch has the same distance from main and 1.10 and 1.9 for example, main is picked
+            // and sort numeric branches below named ones, to make sure if the branch has the same distance from main and 1.10 and 1.9 for example, 1.9 is picked
             // and sort using natural sort so that 1.10 will appear before 1.9
             usort($branches, static function ($a, $b): int {
                 $aRemote = 0 === strpos($a, 'remotes/');
@@ -301,7 +308,8 @@ class VersionGuesser
             $promises = [];
             $this->process->setMaxJobs(30);
             try {
-                foreach ($branches as $candidate) {
+                $lastIndex = -1;
+                foreach ($branches as $index => $candidate) {
                     $candidateVersion = Preg::replace('{^remotes/\S+/}', '', $candidate);
 
                     // do not compare against itself or other feature branches
@@ -309,14 +317,20 @@ class VersionGuesser
                         continue;
                     }
 
-                    $cmdLine = str_replace(['%candidate%', '%branch%'], [$candidate, $branch], $scmCmdline);
-                    $promises[] = $this->process->executeAsync($cmdLine, $path)->then(function (Process $process) use (&$length, &$version, &$prettyVersion, $candidateVersion, &$promises): void {
+                    $cmdLine = array_map(static function (string $component) use ($candidate, $branch) {
+                        return str_replace(['%candidate%', '%branch%'], [$candidate, $branch], $component);
+                    }, $scmCmdline);
+                    $promises[] = $this->process->executeAsync($cmdLine, $path)->then(function (Process $process) use (&$lastIndex, $index, &$length, &$version, &$prettyVersion, $candidateVersion, &$promises): void {
                         if (!$process->isSuccessful()) {
                             return;
                         }
 
                         $output = $process->getOutput();
-                        if (strlen($output) < $length) {
+                        // overwrite existing if we have a shorter diff, or we have an equal diff and an index that comes later in the array (i.e. older version)
+                        // as newer versions typically have more commits, if the feature branch is based on a newer branch it should have a longer diff to the old version
+                        // but if it doesn't and they have equal diffs, then it probably is based on the old version
+                        if (strlen($output) < $length || (strlen($output) === $length && $lastIndex < $index)) {
+                            $lastIndex = $index;
                             $length = strlen($output);
                             $version = $this->versionParser->normalizeBranch($candidateVersion);
                             $prettyVersion = 'dev-' . $candidateVersion;
@@ -418,5 +432,18 @@ class VersionGuesser
         }
 
         return null;
+    }
+
+    public function getRootVersionFromEnv(): string
+    {
+        $version = Platform::getEnv('COMPOSER_ROOT_VERSION');
+        if (!is_string($version) || $version === '') {
+            throw new \RuntimeException('COMPOSER_ROOT_VERSION not set or empty');
+        }
+        if (Preg::isMatch('{^(\d+(?:\.\d+)*)-dev$}i', $version, $match)) {
+            $version = $match[1].'.x-dev';
+        }
+
+        return $version;
     }
 }

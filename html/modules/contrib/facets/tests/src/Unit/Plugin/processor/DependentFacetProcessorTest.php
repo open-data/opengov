@@ -33,6 +33,7 @@ class DependentFacetProcessorTest extends Drupal10CompatibilityUnitTestCase {
    * {@inheritdoc}
    */
   public function setUp(): void {
+    parent::setUp();
     $facet = new Facet([], 'facets_facet');
     $this->results = [
       new Result($facet, 'snow_owl', 'Snow owl', 2),
@@ -140,7 +141,7 @@ class DependentFacetProcessorTest extends Drupal10CompatibilityUnitTestCase {
    * @return array
    *   An array of test data.
    */
-  public function provideNegated() {
+  public static function provideNegated(): array {
     return [
       'negated' => [TRUE],
       'normal' => [FALSE],

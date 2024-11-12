@@ -35,6 +35,7 @@ class FriendlySpanConverter implements SpanConverterInterface
     private const EVENTS_ATTR = 'events';
     private const TIMESTAMP_ATTR = 'timestamp';
     private const LINKS_ATTR = 'links';
+    private const SCHEMA_URL_ATTR = 'schema_url';
 
     public function convert(iterable $spans): array
     {
@@ -47,10 +48,7 @@ class FriendlySpanConverter implements SpanConverterInterface
     }
 
     /**
-     * friendlySpan does the heavy lifting converting a span into an array
-     *
-     * @param SpanDataInterface $span
-     * @return array
+     * convertSpan does the heavy lifting converting a span into an array
      */
     private function convertSpan(SpanDataInterface $span): array
     {
@@ -66,13 +64,10 @@ class FriendlySpanConverter implements SpanConverterInterface
             self::STATUS_ATTR => $this->covertStatus($span->getStatus()),
             self::EVENTS_ATTR => $this->convertEvents($span->getEvents()),
             self::LINKS_ATTR => $this->convertLinks($span->getLinks()),
+            self::SCHEMA_URL_ATTR => $this->convertSchemaUrl($span->getInstrumentationScope()->getSchemaUrl()),
         ];
     }
 
-    /**
-     * @param SpanContextInterface $context
-     * @return array
-     */
     private function convertContext(SpanContextInterface $context): array
     {
         return [
@@ -83,19 +78,11 @@ class FriendlySpanConverter implements SpanConverterInterface
         ];
     }
 
-    /**
-     * @param ResourceInfo $resource
-     * @return array
-     */
     private function convertResource(ResourceInfo $resource): array
     {
         return $resource->getAttributes()->toArray();
     }
 
-    /**
-     * @param SpanContextInterface $context
-     * @return string
-     */
     private function covertParentContext(SpanContextInterface $context): string
     {
         return $context->isValid() ? $context->getSpanId() : '';
@@ -103,9 +90,6 @@ class FriendlySpanConverter implements SpanConverterInterface
 
     /**
      * Translates SpanKind from its integer representation to a more human friendly string.
-     *
-     * @param int $kind
-     * @return string
      */
     private function convertKind(int $kind): string
     {
@@ -115,19 +99,11 @@ class FriendlySpanConverter implements SpanConverterInterface
         )[$kind];
     }
 
-    /**
-     * @param \OpenTelemetry\SDK\Common\Attribute\AttributesInterface $attributes
-     * @return array
-     */
     private function convertAttributes(AttributesInterface $attributes): array
     {
         return $attributes->toArray();
     }
 
-    /**
-     * @param StatusDataInterface $status
-     * @return array
-     */
     private function covertStatus(StatusDataInterface $status): array
     {
         return [
@@ -138,7 +114,6 @@ class FriendlySpanConverter implements SpanConverterInterface
 
     /**
      * @param array<EventInterface> $events
-     * @return array
      */
     private function convertEvents(array $events): array
     {
@@ -157,7 +132,6 @@ class FriendlySpanConverter implements SpanConverterInterface
 
     /**
      * @param array<LinkInterface> $links
-     * @return array
      */
     private function convertLinks(array $links): array
     {
@@ -171,5 +145,13 @@ class FriendlySpanConverter implements SpanConverterInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @param string|null $schemaUrl
+     */
+    private function convertSchemaUrl(?string $schemaUrl): string
+    {
+        return $schemaUrl ?? '';
     }
 }

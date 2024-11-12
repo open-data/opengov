@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenTelemetry\SDK;
 
+use OpenTelemetry\API\Logs\EventLoggerProviderInterface;
 use OpenTelemetry\API\Metrics\MeterProviderInterface;
 use OpenTelemetry\API\Trace\TracerProviderInterface;
 use OpenTelemetry\Context\Propagation\TextMapPropagatorInterface;
@@ -15,21 +16,13 @@ class Sdk
 {
     private const OTEL_PHP_DISABLED_INSTRUMENTATIONS_ALL = 'all';
 
-    private TracerProviderInterface $tracerProvider;
-    private MeterProviderInterface $meterProvider;
-    private LoggerProviderInterface $loggerProvider;
-    private TextMapPropagatorInterface $propagator;
-
     public function __construct(
-        TracerProviderInterface $tracerProvider,
-        MeterProviderInterface $meterProvider,
-        LoggerProviderInterface $loggerProvider,
-        TextMapPropagatorInterface $propagator
+        private readonly TracerProviderInterface $tracerProvider,
+        private readonly MeterProviderInterface $meterProvider,
+        private readonly LoggerProviderInterface $loggerProvider,
+        private readonly EventLoggerProviderInterface $eventLoggerProvider,
+        private readonly TextMapPropagatorInterface $propagator,
     ) {
-        $this->tracerProvider = $tracerProvider;
-        $this->meterProvider = $meterProvider;
-        $this->loggerProvider = $loggerProvider;
-        $this->propagator = $propagator;
     }
 
     public static function isDisabled(): bool
@@ -65,6 +58,11 @@ class Sdk
     public function getLoggerProvider(): LoggerProviderInterface
     {
         return $this->loggerProvider;
+    }
+
+    public function getEventLoggerProvider(): EventLoggerProviderInterface
+    {
+        return $this->eventLoggerProvider;
     }
 
     public function getPropagator(): TextMapPropagatorInterface

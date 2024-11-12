@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace DrupalCodeGenerator\Test\Functional;
 
@@ -24,7 +26,6 @@ abstract class FunctionalTestBase extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
-    \assert_options(\ASSERT_ACTIVE, TRUE);
     $this->directory = \sys_get_temp_dir() . '/dcg_sandbox';
   }
 

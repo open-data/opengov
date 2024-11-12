@@ -153,6 +153,8 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
      */
     public function normalize(mixed $object, ?string $format = null, array $context = [])
     {
+        $context['_read_attributes'] = true;
+
         if (!isset($context['cache_key'])) {
             $context['cache_key'] = $this->getCacheKey($format, $context);
         }
@@ -307,6 +309,8 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = [])
     {
+        $context['_read_attributes'] = false;
+
         if (!isset($context['cache_key'])) {
             $context['cache_key'] = $this->getCacheKey($format, $context);
         }
@@ -315,6 +319,10 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
 
         if (null === $data && isset($context['value_type']) && $context['value_type'] instanceof Type && $context['value_type']->isNullable()) {
             return null;
+        }
+
+        if (XmlEncoder::FORMAT === $format && !\is_array($data)) {
+            $data = ['#' => $data];
         }
 
         $allowedAttributes = $this->getAllowedAttributes($type, $context, true);
@@ -571,8 +579,22 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
                     return $data;
                 }
 
-                if (('is_'.$builtinType)($data)) {
-                    return $data;
+                switch ($builtinType) {
+                    case Type::BUILTIN_TYPE_ARRAY:
+                    case Type::BUILTIN_TYPE_BOOL:
+                    case Type::BUILTIN_TYPE_CALLABLE:
+                    case Type::BUILTIN_TYPE_FLOAT:
+                    case Type::BUILTIN_TYPE_INT:
+                    case Type::BUILTIN_TYPE_ITERABLE:
+                    case Type::BUILTIN_TYPE_NULL:
+                    case Type::BUILTIN_TYPE_OBJECT:
+                    case Type::BUILTIN_TYPE_RESOURCE:
+                    case Type::BUILTIN_TYPE_STRING:
+                        if (('is_'.$builtinType)($data)) {
+                            return $data;
+                        }
+
+                        break;
                 }
             } catch (NotNormalizableValueException|InvalidArgumentException $e) {
                 if (!$isUnionType && !$isNullable) {
@@ -703,7 +725,7 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
     private function isMaxDepthReached(array $attributesMetadata, string $class, string $attribute, array &$context): bool
     {
         if (!($enableMaxDepth = $context[self::ENABLE_MAX_DEPTH] ?? $this->defaultContext[self::ENABLE_MAX_DEPTH] ?? false)
-            || null === $maxDepth = $attributesMetadata[$attribute]?->getMaxDepth()
+            || !isset($attributesMetadata[$attribute]) || null === $maxDepth = $attributesMetadata[$attribute]?->getMaxDepth()
         ) {
             return false;
         }

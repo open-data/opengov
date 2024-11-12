@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\{{ machine_name }}\Plugin\Field\FieldType;
 
@@ -22,7 +24,7 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "{{ field_id }}",
  *   label = @Translation("{{ field_label }}"),
- *   category = @Translation("General"),
+ *   description = @Translation("Some description."),
  *   default_widget = "{{ field_id }}",
  *   default_formatter = "{{ field_id }}_default",
  * )

@@ -16,28 +16,18 @@ use function serialize;
  */
 final class MetricAggregator implements MetricAggregatorInterface
 {
-    private ?AttributeProcessorInterface $attributeProcessor;
-    private AggregationInterface $aggregation;
-    private ?ExemplarReservoirInterface $exemplarReservoir;
-
     /** @var array<AttributesInterface> */
     private array $attributes = [];
     private array $summaries = [];
 
     public function __construct(
-        ?AttributeProcessorInterface $attributeProcessor,
-        AggregationInterface $aggregation,
-        ?ExemplarReservoirInterface $exemplarReservoir = null
+        private readonly ?AttributeProcessorInterface $attributeProcessor,
+        private readonly AggregationInterface $aggregation,
+        private readonly ?ExemplarReservoirInterface $exemplarReservoir = null,
     ) {
-        $this->attributeProcessor = $attributeProcessor;
-        $this->aggregation = $aggregation;
-        $this->exemplarReservoir = $exemplarReservoir;
     }
 
-    /**
-     * @param float|int $value
-     */
-    public function record($value, AttributesInterface $attributes, ContextInterface $context, int $timestamp): void
+    public function record(float|int $value, AttributesInterface $attributes, ContextInterface $context, int $timestamp): void
     {
         $filteredAttributes = $this->attributeProcessor !== null
             ? $this->attributeProcessor->process($attributes, $context)

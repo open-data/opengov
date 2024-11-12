@@ -5,10 +5,11 @@
     "license": [
         "MIT"
     ],
+    "keywords": ["dev", "static analysis"],
     "require": {
         "php": "^7.2 || ^8.0",
         "composer-plugin-api": "^2.0",
-        "phpstan/phpstan": "^1.9.0"
+        "phpstan/phpstan": "^1.9.0 || ^2.0"
     },
     "require-dev": {
         "composer/composer": "^2.0",

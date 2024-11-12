@@ -4,61 +4,24 @@ declare(strict_types=1);
 
 namespace OpenTelemetry\SDK\Trace;
 
-use function get_class;
+use OpenTelemetry\API\Behavior\LogsMessagesTrait;
+use OpenTelemetry\API\Common\Time\Clock;
 use OpenTelemetry\API\Trace as API;
+use OpenTelemetry\API\Trace\SpanContextInterface;
 use OpenTelemetry\Context\ContextInterface;
 use OpenTelemetry\SDK\Common\Attribute\AttributesBuilderInterface;
 use OpenTelemetry\SDK\Common\Dev\Compatibility\Util as BcUtil;
 use OpenTelemetry\SDK\Common\Exception\StackTraceFormatter;
 use OpenTelemetry\SDK\Common\Instrumentation\InstrumentationScopeInterface;
-use OpenTelemetry\SDK\Common\Time\ClockFactory;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
 use Throwable;
 
 final class Span extends API\Span implements ReadWriteSpanInterface
 {
-
-    /** @readonly */
-    private API\SpanContextInterface $context;
-
-    /** @readonly */
-    private API\SpanContextInterface $parentSpanContext;
-
-    /** @readonly */
-    private SpanLimits $spanLimits;
-
-    /** @readonly */
-    private SpanProcessorInterface $spanProcessor;
-
-    /**
-     * @readonly
-     *
-     * @var list<LinkInterface>
-     */
-    private array $links;
-
-    /** @readonly */
-    private int $totalRecordedLinks;
-
-    /** @readonly */
-    private int $kind;
-
-    /** @readonly */
-    private ResourceInfo $resource;
-
-    /** @readonly */
-    private InstrumentationScopeInterface $instrumentationScope;
-
-    /** @readonly */
-    private int $startEpochNanos;
-
-    /** @var non-empty-string */
-    private string $name;
+    use LogsMessagesTrait;
 
     /** @var list<EventInterface> */
     private array $events = [];
-
-    private AttributesBuilderInterface $attributesBuilder;
     private int $totalRecordedEvents = 0;
     private StatusDataInterface $status;
     private int $endEpochNanos = 0;
@@ -69,32 +32,20 @@ final class Span extends API\Span implements ReadWriteSpanInterface
      * @param list<LinkInterface> $links
      */
     private function __construct(
-        string $name,
-        API\SpanContextInterface $context,
-        InstrumentationScopeInterface $instrumentationScope,
-        int $kind,
-        API\SpanContextInterface $parentSpanContext,
-        SpanLimits $spanLimits,
-        SpanProcessorInterface $spanProcessor,
-        ResourceInfo $resource,
-        AttributesBuilderInterface $attributesBuilder,
-        array $links,
-        int $totalRecordedLinks,
-        int $startEpochNanos
+        private string $name,
+        private readonly API\SpanContextInterface $context,
+        private readonly InstrumentationScopeInterface $instrumentationScope,
+        private readonly int $kind,
+        private readonly API\SpanContextInterface $parentSpanContext,
+        private readonly SpanLimits $spanLimits,
+        private readonly SpanProcessorInterface $spanProcessor,
+        private readonly ResourceInfo $resource,
+        private AttributesBuilderInterface $attributesBuilder,
+        private array $links,
+        private int $totalRecordedLinks,
+        private readonly int $startEpochNanos,
     ) {
-        $this->context = $context;
-        $this->instrumentationScope = $instrumentationScope;
-        $this->parentSpanContext = $parentSpanContext;
-        $this->links = $links;
-        $this->totalRecordedLinks = $totalRecordedLinks;
-        $this->name = $name;
-        $this->kind = $kind;
-        $this->spanProcessor = $spanProcessor;
-        $this->resource = $resource;
-        $this->startEpochNanos = $startEpochNanos;
-        $this->attributesBuilder = $attributesBuilder;
         $this->status = StatusData::unset();
-        $this->spanLimits = $spanLimits;
     }
 
     /**
@@ -121,7 +72,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
         AttributesBuilderInterface $attributesBuilder,
         array $links,
         int $totalRecordedLinks,
-        int $startEpochNanos
+        int $startEpochNanos,
     ): self {
         $span = new self(
             $name,
@@ -135,7 +86,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
             $attributesBuilder,
             $links,
             $totalRecordedLinks,
-            $startEpochNanos !== 0 ? $startEpochNanos : ClockFactory::getDefault()->now()
+            $startEpochNanos !== 0 ? $startEpochNanos : Clock::getDefault()->now()
         );
 
         // Call onStart here to ensure the span is fully initialized.
@@ -149,7 +100,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
      *
      * @codeCoverageIgnore
      */
-    public static function formatStackTrace(Throwable $e, array &$seen = null): string
+    public static function formatStackTrace(Throwable $e, ?array &$seen = null): string
     {
         BcUtil::triggerMethodDeprecationNotice(
             __METHOD__,
@@ -194,6 +145,29 @@ final class Span extends API\Span implements ReadWriteSpanInterface
         return $this;
     }
 
+    public function addLink(SpanContextInterface $context, iterable $attributes = []): self
+    {
+        if ($this->hasEnded) {
+            return $this;
+        }
+        if (!$context->isValid()) {
+            return $this;
+        }
+        if (++$this->totalRecordedLinks > $this->spanLimits->getLinkCountLimit()) {
+            return $this;
+        }
+
+        $this->links[] = new Link(
+            $context,
+            $this->spanLimits
+                ->getLinkAttributesFactory()
+                ->builder($attributes)
+                ->build(),
+        );
+
+        return $this;
+    }
+
     /** @inheritDoc */
     public function addEvent(string $name, iterable $attributes = [], ?int $timestamp = null): self
     {
@@ -204,7 +178,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
             return $this;
         }
 
-        $timestamp ??= ClockFactory::getDefault()->now();
+        $timestamp ??= Clock::getDefault()->now();
         $eventAttributesBuilder = $this->spanLimits->getEventAttributesFactory()->builder($attributes);
 
         $this->events[] = new Event($name, $timestamp, $eventAttributesBuilder->build());
@@ -222,9 +196,9 @@ final class Span extends API\Span implements ReadWriteSpanInterface
             return $this;
         }
 
-        $timestamp ??= ClockFactory::getDefault()->now();
+        $timestamp ??= Clock::getDefault()->now();
         $eventAttributesBuilder = $this->spanLimits->getEventAttributesFactory()->builder([
-            'exception.type' => get_class($exception),
+            'exception.type' => $exception::class,
             'exception.message' => $exception->getMessage(),
             'exception.stacktrace' => StackTraceFormatter::format($exception),
         ]);
@@ -250,7 +224,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
     }
 
     /** @inheritDoc */
-    public function setStatus(string $code, string $description = null): self
+    public function setStatus(string $code, ?string $description = null): self
     {
         if ($this->hasEnded) {
             return $this;
@@ -271,14 +245,16 @@ final class Span extends API\Span implements ReadWriteSpanInterface
     }
 
     /** @inheritDoc */
-    public function end(int $endEpochNanos = null): void
+    public function end(?int $endEpochNanos = null): void
     {
         if ($this->hasEnded) {
             return;
         }
 
-        $this->endEpochNanos = $endEpochNanos ?? ClockFactory::getDefault()->now();
+        $this->endEpochNanos = $endEpochNanos ?? Clock::getDefault()->now();
         $this->hasEnded = true;
+
+        $this->checkForDroppedElements();
 
         $this->spanProcessor->onEnd($this);
     }
@@ -312,6 +288,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
             $this->links,
             $this->events,
             $this->attributesBuilder->build(),
+            $this->totalRecordedLinks,
             $this->totalRecordedEvents,
             $this->status,
             $this->endEpochNanos,
@@ -322,7 +299,7 @@ final class Span extends API\Span implements ReadWriteSpanInterface
     /** @inheritDoc */
     public function getDuration(): int
     {
-        return ($this->hasEnded ? $this->endEpochNanos : ClockFactory::getDefault()->now()) - $this->startEpochNanos;
+        return ($this->hasEnded ? $this->endEpochNanos : Clock::getDefault()->now()) - $this->startEpochNanos;
     }
 
     /** @inheritDoc */
@@ -355,5 +332,35 @@ final class Span extends API\Span implements ReadWriteSpanInterface
     public function getResource(): ResourceInfo
     {
         return $this->resource;
+    }
+
+    private function checkForDroppedElements(): void
+    {
+        $spanData = $this->toSpanData(); //@todo could be optimized to reduce overhead of multiple calls
+        $droppedLinkAttributes = 0;
+        $droppedEventAttributes = 0;
+        array_map(function (EventInterface $event) use (&$droppedEventAttributes) {
+            $droppedEventAttributes += $event->getAttributes()->getDroppedAttributesCount();
+        }, $spanData->getEvents());
+        array_map(function (LinkInterface $link) use (&$droppedLinkAttributes) {
+            $droppedLinkAttributes += $link->getAttributes()->getDroppedAttributesCount();
+        }, $spanData->getLinks());
+        if (
+            $spanData->getTotalDroppedLinks() ||
+            $spanData->getTotalDroppedEvents() ||
+            $spanData->getAttributes()->getDroppedAttributesCount() ||
+            $droppedEventAttributes ||
+            $droppedLinkAttributes
+        ) {
+            self::logWarning('Dropped span attributes, links or events', [
+                'trace_id' => $spanData->getTraceId(),
+                'span_id' => $spanData->getSpanId(),
+                'attributes' => $spanData->getAttributes()->getDroppedAttributesCount(),
+                'links' => $spanData->getTotalDroppedLinks(),
+                'link_attributes' => $droppedLinkAttributes,
+                'events' => $spanData->getTotalDroppedEvents(),
+                'event_attributes' => $droppedEventAttributes,
+            ]);
+        }
     }
 }

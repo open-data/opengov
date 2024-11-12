@@ -78,9 +78,10 @@ final class InlineControlStructureUnitTest extends AbstractSniffUnitTest
                 242 => 1,
                 260 => 1,
                 269 => 1,
+                278 => 1,
             ];
 
-        case 'InlineControlStructureUnitTest.js':
+        case 'InlineControlStructureUnitTest.1.js':
             return [
                 3  => 1,
                 7  => 1,
@@ -90,6 +91,7 @@ final class InlineControlStructureUnitTest extends AbstractSniffUnitTest
                 21 => 1,
                 27 => 1,
                 30 => 1,
+                35 => 1,
             ];
 
         default:

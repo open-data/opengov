@@ -15,15 +15,10 @@ class LogRecord
     protected ?ContextInterface $context = null;
     protected int $severityNumber = 0;
     protected ?string $severityText = null;
-    protected $body = null;
     protected array $attributes = [];
 
-    /**
-     * @param mixed $body
-     */
-    public function __construct($body = null)
+    public function __construct(protected mixed $body = null)
     {
-        $this->body = $body;
     }
 
     /**
@@ -45,12 +40,11 @@ class LogRecord
     }
 
     /**
-     * @param int $severityNumber Severity number
      * @see https://opentelemetry.io/docs/reference/specification/logs/data-model/#field-severitynumber
      */
-    public function setSeverityNumber(int $severityNumber): self
+    public function setSeverityNumber(Severity|int $severityNumber): self
     {
-        $this->severityNumber = $severityNumber;
+        $this->severityNumber = ($severityNumber instanceof Severity) ? $severityNumber->value : $severityNumber;
 
         return $this;
     }
@@ -79,7 +73,7 @@ class LogRecord
         return $this;
     }
 
-    public function setAttribute(string $name, $value): self
+    public function setAttribute(string $name, mixed $value): self
     {
         $this->attributes[$name] = $value;
 
@@ -89,7 +83,7 @@ class LogRecord
     /**
      * @param mixed $body The log record body
      */
-    public function setBody($body = null): self
+    public function setBody(mixed $body = null): self
     {
         $this->body = $body;
 
@@ -99,7 +93,7 @@ class LogRecord
     /**
      * @param int|null $observedTimestamp Time, in nanoseconds since the unix epoch, when the event was observed by the collection system.
      */
-    public function setObservedTimestamp(int $observedTimestamp = null): self
+    public function setObservedTimestamp(?int $observedTimestamp = null): self
     {
         $this->observedTimestamp = $observedTimestamp;
 

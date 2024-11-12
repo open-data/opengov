@@ -1,11 +1,11 @@
 plugin.plugin_configuration.facets_summary_processor.show_summary:
-  type: config_object
+  type: mapping
 
 plugin.plugin_configuration.facets_summary_processor.show_count:
-  type: config_object
+  type: mapping
 
 plugin.plugin_configuration.facets_summary_processor.hide_when_not_rendered:
-  type: config_object
+  type: mapping
 
 plugin.plugin_configuration.facets_summary_processor.show_text_when_empty:
   type: mapping

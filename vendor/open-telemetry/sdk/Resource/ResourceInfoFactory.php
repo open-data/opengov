@@ -17,6 +17,8 @@ class ResourceInfoFactory
 {
     use LogsMessagesTrait;
 
+    private static ?ResourceInfo $emptyResource = null;
+
     public static function defaultResource(): ResourceInfo
     {
         $detectors = Configuration::getList(Env::OTEL_PHP_DETECTORS);
@@ -40,6 +42,10 @@ class ResourceInfoFactory
 
         foreach ($detectors as $detector) {
             switch ($detector) {
+                case Values::VALUE_DETECTORS_SERVICE:
+                    $resourceDetectors[] = new Detectors\Service();
+
+                    break;
                 case Values::VALUE_DETECTORS_ENVIRONMENT:
                     $resourceDetectors[] = new Detectors\Environment();
 
@@ -90,6 +96,10 @@ class ResourceInfoFactory
 
     public static function emptyResource(): ResourceInfo
     {
-        return ResourceInfo::create(Attributes::create([]));
+        if (null === self::$emptyResource) {
+            self::$emptyResource = ResourceInfo::create(Attributes::create([]));
+        }
+
+        return self::$emptyResource;
     }
 }

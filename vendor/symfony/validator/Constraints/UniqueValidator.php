@@ -43,15 +43,15 @@ class UniqueValidator extends ConstraintValidator
         $collectionElements = [];
         $normalizer = $this->getNormalizer($constraint);
         foreach ($value as $element) {
+            $element = $normalizer($element);
+
             if ($fields && !$element = $this->reduceElementKeys($fields, $element)) {
                 continue;
             }
 
-            $element = $normalizer($element);
-
             if (\in_array($element, $collectionElements, true)) {
                 $this->context->buildViolation($constraint->message)
-                    ->setParameter('{{ value }}', $this->formatValue($value))
+                    ->setParameter('{{ value }}', $this->formatValue($element))
                     ->setCode(Unique::IS_NOT_UNIQUE)
                     ->addViolation();
 

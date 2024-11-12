@@ -263,6 +263,7 @@ Layout Builder
 - Ted Bowman 'tedbow' https://www.drupal.org/u/tedbow
 - Emilie Nouveau 'DyanneNova' https://www.drupal.org/u/dyannenova
 - Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
+- Daniel Veza 'DanielVeza' https://www.drupal.org/u/DanielVeza
 
 Link Field
 - Weber Macedo 'Mac_Weber' https://www.drupal.org/u/mac_weber
@@ -421,6 +422,7 @@ Umami demo
 - Gareth Goodwin 'smaz' https://www.drupal.org/u/smaz
 - Keith Jay 'kjay' https://www.drupal.org/u/kjay
 - Ofer Shaal 'shaal' https://www.drupal.org/u/shaal
+- Ivan Berdinsky 'finnsky' https://www.drupal.org/u/finnsky
 
 Update Manager
 - Ted Bowman 'tedbow' https://www.drupal.org/u/tedbow

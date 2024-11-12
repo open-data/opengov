@@ -6,10 +6,10 @@ namespace OpenTelemetry\SDK\Metrics\MetricRegistry;
 
 use function array_key_last;
 use Closure;
+use OpenTelemetry\API\Common\Time\ClockInterface;
 use OpenTelemetry\Context\Context;
 use OpenTelemetry\Context\ContextStorageInterface;
 use OpenTelemetry\SDK\Common\Attribute\AttributesFactoryInterface;
-use OpenTelemetry\SDK\Common\Time\ClockInterface;
 use OpenTelemetry\SDK\Metrics\Instrument;
 use OpenTelemetry\SDK\Metrics\Stream\MetricAggregatorFactoryInterface;
 use OpenTelemetry\SDK\Metrics\Stream\MetricAggregatorInterface;
@@ -21,10 +21,6 @@ use function spl_object_id;
  */
 final class MetricRegistry implements MetricRegistryInterface, MetricWriterInterface
 {
-    private ?ContextStorageInterface $contextStorage;
-    private AttributesFactoryInterface $attributesFactory;
-    private ClockInterface $clock;
-
     /** @var array<int, MetricStreamInterface> */
     private array $streams = [];
     /** @var array<int, MetricAggregatorInterface> */
@@ -44,13 +40,10 @@ final class MetricRegistry implements MetricRegistryInterface, MetricWriterInter
     private array $asynchronousCallbackArguments = [];
 
     public function __construct(
-        ?ContextStorageInterface $contextStorage,
-        AttributesFactoryInterface $attributesFactory,
-        ClockInterface $clock
+        private readonly ?ContextStorageInterface $contextStorage,
+        private readonly AttributesFactoryInterface $attributesFactory,
+        private readonly ClockInterface $clock,
     ) {
-        $this->contextStorage = $contextStorage;
-        $this->attributesFactory = $attributesFactory;
-        $this->clock = $clock;
     }
 
     public function registerSynchronousStream(Instrument $instrument, MetricStreamInterface $stream, MetricAggregatorInterface $aggregator): int
@@ -79,19 +72,22 @@ final class MetricRegistry implements MetricRegistryInterface, MetricWriterInter
         return $streamId;
     }
 
-    public function unregisterStream(int $streamId): void
+    public function unregisterStreams(Instrument $instrument): array
     {
-        $instrumentId = $this->streamToInstrument[$streamId];
-        unset(
-            $this->streams[$streamId],
-            $this->synchronousAggregators[$streamId],
-            $this->asynchronousAggregatorFactories[$streamId],
-            $this->instrumentToStreams[$instrumentId][$streamId],
-            $this->streamToInstrument[$streamId],
-        );
-        if (!$this->instrumentToStreams[$instrumentId]) {
-            unset($this->instrumentToStreams[$instrumentId]);
+        $instrumentId = spl_object_id($instrument);
+        $streamIds = $this->instrumentToStreams[$instrumentId] ?? [];
+
+        foreach ($streamIds as $streamId) {
+            unset(
+                $this->streams[$streamId],
+                $this->synchronousAggregators[$streamId],
+                $this->asynchronousAggregatorFactories[$streamId],
+                $this->streamToInstrument[$streamId],
+            );
         }
+        unset($this->instrumentToStreams[$instrumentId]);
+
+        return $streamIds;
     }
 
     public function record(Instrument $instrument, $value, iterable $attributes = [], $context = null): void
@@ -146,10 +142,10 @@ final class MetricRegistry implements MetricRegistryInterface, MetricWriterInter
         $observers = [];
         $callbackIds = [];
         foreach ($streamIds as $streamId) {
+            $instrumentId = $this->streamToInstrument[$streamId];
             if (!$aggregator = $this->synchronousAggregators[$streamId] ?? null) {
                 $aggregator = $this->asynchronousAggregatorFactories[$streamId]->create();
 
-                $instrumentId = $this->streamToInstrument[$streamId];
                 $observers[$instrumentId] ??= new MultiObserver($this->attributesFactory, $timestamp);
                 $observers[$instrumentId]->writers[] = $aggregator;
                 foreach ($this->instrumentToCallbacks[$instrumentId] ?? [] as $callbackId) {
@@ -180,5 +176,10 @@ final class MetricRegistry implements MetricRegistryInterface, MetricWriterInter
                 $stream->push($aggregator->collect($timestamp));
             }
         }
+    }
+
+    public function enabled(Instrument $instrument): bool
+    {
+        return isset($this->instrumentToStreams[spl_object_id($instrument)]);
     }
 }

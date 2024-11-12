@@ -64,6 +64,9 @@ class DateItems extends HierarchyPluginBase {
    * {@inheritdoc}
    */
   public function getChildIds(array $ids) {
+    foreach ($ids as $id) {
+      $this->getParentIds($id);
+    }
     return array_intersect_key($this->children, array_flip($ids));
   }
 

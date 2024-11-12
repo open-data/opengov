@@ -74,6 +74,20 @@ class Result implements ResultInterface {
   protected $children = [];
 
   /**
+   * The facet transliterate display value.
+   *
+   * @var string
+   */
+  public $transliterateDisplayValue;
+
+  /**
+   * The term weight.
+   *
+   * @var int
+   */
+  public $termWeight;
+
+  /**
    * Constructs a new result value object.
    *
    * @param \Drupal\facets\FacetInterface $facet

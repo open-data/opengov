@@ -50,7 +50,7 @@ class DisplayValueWidgetOrderProcessorTest extends UnitTestCase {
     $transliteration
       ->expects($this->any())
       ->method('removeDiacritics')
-      ->will($this->returnArgument(0));
+      ->willReturnArgument(0);
 
     $this->processor = new DisplayValueWidgetOrderProcessor([], 'display_value_widget_order', [], $transliteration);
   }

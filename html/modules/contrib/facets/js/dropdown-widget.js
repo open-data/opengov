@@ -3,7 +3,7 @@
  * Transforms links into a dropdown list.
  */
 
-(function ($, once) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -101,4 +101,4 @@
     });
   };
 
-})(jQuery, once);
+})(jQuery, Drupal, once);

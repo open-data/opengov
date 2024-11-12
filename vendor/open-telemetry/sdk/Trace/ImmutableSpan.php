@@ -15,48 +15,23 @@ use OpenTelemetry\SDK\Resource\ResourceInfo;
  */
 final class ImmutableSpan implements SpanDataInterface
 {
-    private Span $span;
-
-    /** @var non-empty-string */
-    private string $name;
-
-    /** @var list<EventInterface> */
-    private array $events;
-
-    /** @var list<LinkInterface> */
-    private array $links;
-
-    private AttributesInterface $attributes;
-    private int $totalRecordedEvents;
-    private StatusDataInterface $status;
-    private int $endEpochNanos;
-    private bool $hasEnded;
-
     /**
      * @param non-empty-string $name
      * @param list<LinkInterface> $links
      * @param list<EventInterface> $events
      */
     public function __construct(
-        Span $span,
-        string $name,
-        array $links,
-        array $events,
-        AttributesInterface $attributes,
-        int $totalRecordedEvents,
-        StatusDataInterface $status,
-        int $endEpochNanos,
-        bool $hasEnded
+        private readonly Span $span,
+        private readonly string $name,
+        private readonly array $links,
+        private readonly array $events,
+        private readonly AttributesInterface $attributes,
+        private readonly int $totalRecordedLinks,
+        private readonly int $totalRecordedEvents,
+        private readonly StatusDataInterface $status,
+        private readonly int $endEpochNanos,
+        private readonly bool $hasEnded,
     ) {
-        $this->span = $span;
-        $this->name = $name;
-        $this->links = $links;
-        $this->events = $events;
-        $this->attributes = $attributes;
-        $this->totalRecordedEvents = $totalRecordedEvents;
-        $this->status = $status;
-        $this->endEpochNanos = $endEpochNanos;
-        $this->hasEnded = $hasEnded;
     }
 
     public function getKind(): int
@@ -138,7 +113,7 @@ final class ImmutableSpan implements SpanDataInterface
 
     public function getTotalDroppedLinks(): int
     {
-        return max(0, $this->span->getTotalRecordedLinks() - count($this->links));
+        return max(0, $this->totalRecordedLinks - count($this->links));
     }
 
     public function getStatus(): StatusDataInterface
