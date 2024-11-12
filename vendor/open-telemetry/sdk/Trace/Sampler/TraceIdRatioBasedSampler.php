@@ -21,10 +21,9 @@ use OpenTelemetry\SDK\Trace\Span;
  */
 class TraceIdRatioBasedSampler implements SamplerInterface
 {
-    private float $probability;
+    private readonly float $probability;
 
     /**
-     * TraceIdRatioBasedSampler constructor.
      * @param float $probability Probability float value between 0.0 and 1.0.
      */
     public function __construct(float $probability)
@@ -45,7 +44,7 @@ class TraceIdRatioBasedSampler implements SamplerInterface
         string $spanName,
         int $spanKind,
         AttributesInterface $attributes,
-        array $links
+        array $links,
     ): SamplingResult {
         // TODO: Add config to adjust which spans get sampled (only default from specification is implemented)
         $parentSpan = Span::fromContext($parentContext);

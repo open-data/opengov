@@ -14,7 +14,7 @@ class EventListener implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       FacetsEvents::QUERY_STRING_CREATED => 'queryStringCreated',
     ];

@@ -512,10 +512,10 @@ class IntegrationTest extends FacetsTestBase {
 
     $form = [
       'widget' => 'links',
-      'facet_settings[exclude]' => 0,
-      'facet_settings[date_item][status]' => 1,
-      'facet_settings[date_item][settings][date_display]' => 'actual_date',
-      'facet_settings[date_item][settings][granularity]' => SearchApiDate::FACETAPI_DATE_MONTH,
+      'facet_settings[exclude]' => (string) 0,
+      'facet_settings[date_item][status]' => (string) 1,
+      'facet_settings[date_item][settings][date_display]' => (string) 'actual_date',
+      'facet_settings[date_item][settings][granularity]' => (string) SearchApiDate::FACETAPI_DATE_MONTH,
     ];
     $this->drupalGet($facet_edit_page);
     $this->submitForm($form, 'Save');
@@ -877,7 +877,7 @@ class IntegrationTest extends FacetsTestBase {
   public function testViewsCacheDisable() {
     $caches = [
       // Tag cache plugin should be replaced by none, as it's not supported.
-      'page_1' => 'none',
+      'page_1' => 'search_api_none',
       // Search API cache plugin shouldn't be changed.
       'page_2_sapi_tag' => 'search_api_tag',
       'page_2_sapi_time' => 'search_api_time',
@@ -890,13 +890,7 @@ class IntegrationTest extends FacetsTestBase {
       $this->drupalGet('admin/config/search/facets/' . $id . '/settings');
       $this->submitForm([], 'Save');
       $warning = 'You may experience issues, because Search API Test Fulltext search view use cache. In case you will try to turn set cache plugin to none.';
-      if ($display_id === 'page_1') {
-        // Make sure that user will get a warning about source cache plugin.
-        $this->assertSession()->pageTextNotContains($warning);
-      }
-      else {
-        $this->assertSession()->pageTextContains($warning);
-      }
+      $this->assertSession()->pageTextContains($warning);
       // Check the view's cache settings again to see if they've been updated.
       $view = Views::getView('search_api_test_view');
       $view->setDisplay($display_id);

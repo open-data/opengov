@@ -171,12 +171,12 @@ class SearchApiStringTest extends UnitTestCase {
   }
 
   /**
-   * Data provider for ::provideTrimValues.
+   * Data provider for ::testTrim.
    *
    * @return array
    *   An array of expected and input values.
    */
-  public function provideTrimValues() {
+  public static function provideTrimValues(): array {
     return [
       ['owl', '"owl"'],
       ['owl', 'owl'],

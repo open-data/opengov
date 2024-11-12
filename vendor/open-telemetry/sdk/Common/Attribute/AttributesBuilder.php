@@ -18,24 +18,8 @@ final class AttributesBuilder implements AttributesBuilderInterface
 {
     use LogsMessagesTrait;
 
-    private array $attributes;
-    private ?int $attributeCountLimit;
-    private ?int $attributeValueLengthLimit;
-    private int $droppedAttributesCount;
-    private AttributeValidatorInterface $attributeValidator;
-
-    public function __construct(
-        array $attributes,
-        ?int $attributeCountLimit,
-        ?int $attributeValueLengthLimit,
-        int $droppedAttributesCount,
-        ?AttributeValidatorInterface $attributeValidator
-    ) {
-        $this->attributes = $attributes;
-        $this->attributeCountLimit = $attributeCountLimit;
-        $this->attributeValueLengthLimit = $attributeValueLengthLimit;
-        $this->droppedAttributesCount = $droppedAttributesCount;
-        $this->attributeValidator = $attributeValidator ?? new AttributeValidator();
+    public function __construct(private array $attributes, private ?int $attributeCountLimit, private ?int $attributeValueLengthLimit, private int $droppedAttributesCount, private AttributeValidatorInterface $attributeValidator = new AttributeValidator())
+    {
     }
 
     public function build(): AttributesInterface
@@ -66,8 +50,7 @@ final class AttributesBuilder implements AttributesBuilderInterface
     /**
      * @phan-suppress PhanUndeclaredClassAttribute
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->attributes[$offset] ?? null;
     }
@@ -75,8 +58,7 @@ final class AttributesBuilder implements AttributesBuilderInterface
     /**
      * @phan-suppress PhanUndeclaredClassAttribute
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($offset === null) {
             return;
@@ -107,8 +89,7 @@ final class AttributesBuilder implements AttributesBuilderInterface
     /**
      * @phan-suppress PhanUndeclaredClassAttribute
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->attributes[$offset]);
     }

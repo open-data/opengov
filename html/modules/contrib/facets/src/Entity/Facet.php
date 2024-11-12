@@ -1116,7 +1116,11 @@ class Facet extends ConfigEntityBase implements FacetInterface {
    */
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
-    if (!$update) {
+    // If a facet is new, update the caching metadata of the facet source.
+    // But only if the facet has been created via the UI and not via config
+    // import.
+    // @see https://www.drupal.org/project/facets/issues/3395567
+    if (!$update && !\Drupal::service('config.installer')->isSyncing()) {
       self::clearBlockCache();
       // Register newly created facet within its source, for the caching.
       if (($source = $this->getFacetSource()) && $source->getCacheMaxAge() !== 0) {
@@ -1210,7 +1214,7 @@ class Facet extends ConfigEntityBase implements FacetInterface {
   /**
    * Remove the facet lazy built data when the facet is serialized.
    */
-  public function __sleep() {
+  public function __sleep(): array {
     unset($this->facet_source_instance);
     unset($this->processors);
 

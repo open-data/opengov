@@ -54,7 +54,7 @@ class JavaScriptLintSniff implements Sniff
     {
         $jslPath = Config::getExecutablePath('jsl');
         if ($jslPath === null) {
-            return ($phpcsFile->numTokens + 1);
+            return $phpcsFile->numTokens;
         }
 
         $fileName = $phpcsFile->getFilename();
@@ -67,7 +67,7 @@ class JavaScriptLintSniff implements Sniff
         // provide useful error reporting.
         if ($retval === 2 || $retval === 4) {
             if (is_array($output) === true) {
-                $msg = join('\n', $output);
+                $msg = implode('\n', $output);
             }
 
             throw new RuntimeException("Failed invoking JavaScript Lint, retval was [$retval], output was [$msg]");
@@ -83,7 +83,7 @@ class JavaScriptLintSniff implements Sniff
         }
 
         // Ignore the rest of the file.
-        return ($phpcsFile->numTokens + 1);
+        return $phpcsFile->numTokens;
 
     }//end process()
 

@@ -18,13 +18,14 @@ class MapParser
         }
         $result = [];
 
-        if (null === $value || trim($value) === '') {
+        if (null === $value || trim((string) $value) === '') {
             return $result;
         }
 
-        foreach (explode(self::VARIABLE_SEPARATOR, $value) as $pair) {
+        foreach (explode(self::VARIABLE_SEPARATOR, (string) $value) as $pair) {
             self::validateKeyValuePair($pair);
 
+            /** @psalm-suppress PossiblyUndefinedArrayOffset */
             [$key, $value] = explode(self::KEY_VALUE_SEPARATOR, $pair, 2);
             $result[trim($key)] = trim($value);
         }
@@ -34,7 +35,7 @@ class MapParser
 
     private static function validateKeyValuePair(string $pair)
     {
-        if (strpos($pair, self::KEY_VALUE_SEPARATOR) === false) {
+        if (!str_contains($pair, self::KEY_VALUE_SEPARATOR)) {
             throw new InvalidArgumentException(sprintf(
                 'Key-Value pair "%s" does not contain separator "%s"',
                 $pair,

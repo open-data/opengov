@@ -12,8 +12,10 @@
 
 namespace PHP_CodeSniffer\Generators;
 
-use PHP_CodeSniffer\Ruleset;
+use DOMDocument;
+use DOMNode;
 use PHP_CodeSniffer\Autoload;
+use PHP_CodeSniffer\Ruleset;
 
 abstract class Generator
 {
@@ -58,6 +60,9 @@ abstract class Generator
             }
         }
 
+        // Always present the docs in a consistent alphabetical order.
+        sort($this->docFiles, (SORT_NATURAL | SORT_FLAG_CASE));
+
     }//end __construct()
 
 
@@ -70,7 +75,7 @@ abstract class Generator
      *
      * @return string
      */
-    protected function getTitle(\DOMNode $doc)
+    protected function getTitle(DOMNode $doc)
     {
         return $doc->getAttribute('title');
 
@@ -90,7 +95,7 @@ abstract class Generator
     public function generate()
     {
         foreach ($this->docFiles as $file) {
-            $doc = new \DOMDocument();
+            $doc = new DOMDocument();
             $doc->load($file);
             $documentation = $doc->getElementsByTagName('documentation')->item(0);
             $this->processSniff($documentation);
@@ -111,7 +116,7 @@ abstract class Generator
      * @return void
      * @see    generate()
      */
-    abstract protected function processSniff(\DOMNode $doc);
+    abstract protected function processSniff(DOMNode $doc);
 
 
 }//end class

@@ -52,7 +52,7 @@ facets.facet.*:
           type: string
           label: 'Plugin id'
         config:
-          type: facets.facet.[%parent.type]
+          type: plugin.plugin_configuration.facets_hierarchy.[%parent.type]
           label: 'Configuration'
     expand_hierarchy:
       type: boolean

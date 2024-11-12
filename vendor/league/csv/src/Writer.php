@@ -37,7 +37,7 @@ class Writer extends AbstractCsv implements TabularDataWriter
     protected ?int $flush_threshold = null;
     protected bool $enclose_all = false;
     /** @var array{0:array<string>,1:array<string>} */
-    protected array $enclosure_replace;
+    protected array $enclosure_replace = [[], []];
 
     protected function resetProperties(): void
     {
@@ -145,9 +145,7 @@ class Writer extends AbstractCsv implements TabularDataWriter
     protected function validateRecord(array $record): void
     {
         foreach ($this->validators as $name => $validator) {
-            if (true !== $validator($record)) {
-                throw CannotInsertRecord::triggerOnValidation($name, $record);
-            }
+            true === $validator($record) || throw CannotInsertRecord::triggerOnValidation($name, $record);
         }
     }
 
@@ -192,9 +190,7 @@ class Writer extends AbstractCsv implements TabularDataWriter
             return $this;
         }
 
-        if (null !== $threshold && 1 > $threshold) {
-            throw InvalidArgument::dueToInvalidThreshold($threshold, __METHOD__);
-        }
+        null === $threshold || 1 <= $threshold || throw InvalidArgument::dueToInvalidThreshold($threshold, __METHOD__);
 
         $this->flush_threshold = $threshold;
         $this->flush_counter = 0;

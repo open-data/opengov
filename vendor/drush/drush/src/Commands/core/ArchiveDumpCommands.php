@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drush\Commands\core;
 
 use Drupal;
+use Drupal\Core\StreamWrapper\PublicStream;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
 use Drush\Commands\DrushCommands;
@@ -64,10 +65,12 @@ final class ArchiveDumpCommands extends DrushCommands
      */
     #[CLI\Command(name: self::DUMP, aliases: ['ard'])]
     #[CLI\ValidatePhpExtensions(extensions: ['Phar'])]
-    #[CLI\Option(name: 'destination', description: 'The full path and filename in which the archive should be stored. If omitted, it will be saved to the drush-backups directory.')]
+    #[CLI\Option(name: 'destination', description: 'The full path and filename in which the archive should be stored. Any relative path will be calculated from Drupal root (usually <info>web</info> for drupal/recommended-project projects). If omitted, it will be saved to the configured temp directory.')]
     #[CLI\Option(name: 'overwrite', description: 'Overwrite destination file if exists.')]
     #[CLI\Option(name: 'code', description: 'Archive codebase.')]
+    #[CLI\Option(name: 'convert-symlinks', description: 'Replace all symlinks with copies of the files/directories that they point to. Default is to only convert symlinks that point outside the project root.')]
     #[CLI\Option(name: 'exclude-code-paths', description: 'Comma-separated list of paths (or regular expressions matching paths) to exclude from the code archive.')]
+    #[CLI\Option(name: 'extra-dump', description: 'Add custom arguments/options to the dumping of the database (e.g. <info>mysqldump</info> command).')]
     #[CLI\Option(name: 'files', description: 'Archive Drupal files.')]
     #[CLI\Option(name: 'db', description: 'Archive database SQL dump.')]
     #[CLI\Option(name: 'description', description: 'Describe the archive contents.')]
@@ -79,6 +82,7 @@ final class ArchiveDumpCommands extends DrushCommands
     #[CLI\Usage(name: 'drush archive:dump --destination=/path/to/archive.tar.gz --overwrite', description: 'Create (or overwrite if exists) /path/to/archive.tar.gz file containing code, database and Drupal files.')]
     #[CLI\Usage(name: 'drush archive:dump --code --destination=/path/to/archive.tar.gz', description: 'Create /path/to/archive.tar.gz file containing the code only.')]
     #[CLI\Usage(name: 'drush archive:dump --exclude-code-paths=foo_bar.txt,web/sites/.+/settings.php --destination=/path/to/archive.tar.gz', description: 'Create /path/to/archive.tar.gz file containing code, database and Drupal files but excluding foo_bar.txt file and settings.php files if found in web/sites/* subdirectories.')]
+    #[CLI\Usage(name: 'drush archive:dump --extra-dump=--no-data --destination=/path/to/archive.tar.gz', description: 'Create /path/to/archive.tar.gz file and pass extra option to <info>mysqldump</info> command.')]
     #[CLI\Usage(name: 'drush archive:dump --files --destination=/path/to/archive.tar.gz', description: 'Create /path/to/archive.tar.gz file containing the Drupal files only.')]
     #[CLI\Usage(name: 'drush archive:dump --database --destination=/path/to/archive.tar.gz', description: 'Create /path/to/archive.tar.gz archive file containing the database dump only.')]
     #[CLI\OptionsetTableSelection]
@@ -95,6 +99,8 @@ final class ArchiveDumpCommands extends DrushCommands
         'generator' => InputOption::VALUE_REQUIRED,
         'generatorversion' => InputOption::VALUE_REQUIRED,
         'exclude-code-paths' => InputOption::VALUE_REQUIRED,
+        'extra-dump' => self::REQ,
+        'convert-symlinks' => false,
     ]): string
     {
         $this->prepareArchiveDir();
@@ -126,6 +132,8 @@ final class ArchiveDumpCommands extends DrushCommands
             ];
         }
 
+        $this->convertSymlinks($options['convert-symlinks']);
+
         return $this->createArchiveFile($components, $options);
     }
 
@@ -143,9 +151,9 @@ final class ArchiveDumpCommands extends DrushCommands
     /**
      * Creates the archive file and returns the absolute path.
      *
-     * @param array $archiveComponents
+     * @param $archiveComponents
      *   The list of components (files) to include into the archive file.
-     * @param array $options
+     * @param $options
      *   The command options.
      *
      * @return string
@@ -166,6 +174,7 @@ final class ArchiveDumpCommands extends DrushCommands
         $archive = new PharData($archivePath);
 
         $this->createManifestFile($options);
+
         $archive->buildFromDirectory($this->archiveDir);
 
         $this->logger()->info(dt('Compressing archive...'));
@@ -200,7 +209,7 @@ final class ArchiveDumpCommands extends DrushCommands
         );
         $this->filesystem->rename($archivePath, $options['destination']);
 
-        return $options['destination'];
+        return realpath($options['destination']);
     }
 
     /**
@@ -232,6 +241,64 @@ final class ArchiveDumpCommands extends DrushCommands
             $manifestFilePath,
             Yaml::dump($manifest)
         );
+    }
+
+    /**
+     * Converts symlinks to the linked files/folders for an archive.
+     *
+     * @param bool $convert_symlinks
+     *  Whether to convert all symlinks.
+     *
+     */
+    public function convertSymlinks(
+        bool $convert_symlinks,
+    ): void {
+        // If symlinks are disabled, convert symlinks to full content.
+        $this->logger()->info(dt('Converting symlinks...'));
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($this->archiveDir),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if (
+                $file->isLink() && ($convert_symlinks || strpos(
+                    $file->getLinkTarget(),
+                    $this->archiveDir
+                ) !== 0)
+            ) {
+                $target = readlink($file->getPathname());
+
+                if (is_file($target)) {
+                    $content = file_get_contents($target);
+                    unlink($file->getPathname());
+                    file_put_contents($file->getPathname(), $content);
+                } elseif (is_dir($target)) {
+                    $path = $file->getPathname();
+                    unlink($path);
+                    mkdir($path, 0755);
+                    foreach (
+                        $iterator = new \RecursiveIteratorIterator(
+                            new \RecursiveDirectoryIterator(
+                                $target,
+                                \RecursiveDirectoryIterator::SKIP_DOTS
+                            ),
+                            \RecursiveIteratorIterator::SELF_FIRST
+                        ) as $item
+                    ) {
+                        if ($item->isDir()) {
+                            mkdir($path . DIRECTORY_SEPARATOR . $iterator->getSubPathname());
+                        } else {
+                            copy(
+                                $item->getPathname(),
+                                $path . DIRECTORY_SEPARATOR . $iterator->getSubPathname()
+                            );
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -318,6 +385,10 @@ final class ArchiveDumpCommands extends DrushCommands
         $process->mustRun();
         $composerInfoRaw = $process->getOutput();
         $installedPackages = json_decode($composerInfoRaw, true)['installed'] ?? [];
+        // Remove path projects ('source' is empty for path projects)
+        $installedPackages = array_filter($installedPackages, function ($dependency) {
+            return !empty($dependency['source']);
+        });
         $installedPackagesPaths = array_filter(array_column($installedPackages, 'path'));
         $installedPackagesRelativePaths = array_map(
             fn($path) => ltrim(str_replace([$this->getComposerRoot()], '', $path), '/'),
@@ -401,7 +472,7 @@ final class ArchiveDumpCommands extends DrushCommands
         }
 
         Drush::bootstrapManager()->doBootstrap(DrupalBootLevels::FULL);
-        $drupalFilesPath = Drupal::service('file_system')->realpath('public://');
+        $drupalFilesPath = Path::join($this->getRoot(), PublicStream::basePath());
         if (!$drupalFilesPath) {
             throw new Exception(dt('Path to Drupal files is empty.'));
         }

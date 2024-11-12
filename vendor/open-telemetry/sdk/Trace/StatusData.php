@@ -11,16 +11,12 @@ final class StatusData implements StatusDataInterface
     private static ?self $ok = null;
     private static ?self $unset = null;
     private static ?self $error = null;
-    private string $code;
-    private string $description;
 
     /** @psalm-param API\StatusCode::STATUS_* $code */
     public function __construct(
-        string $code,
-        string $description
+        private readonly string $code,
+        private readonly string $description,
     ) {
-        $this->code = $code;
-        $this->description = $description;
     }
 
     /** @psalm-param API\StatusCode::STATUS_* $code */

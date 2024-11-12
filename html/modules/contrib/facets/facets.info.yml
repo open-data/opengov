@@ -1,14 +1,14 @@
 name: 'Facets'
 type: module
 description: 'Faceted search interfaces that can be used on Search API searchers.'
-core_version_requirement: ^9.3 || ^10.0
+core_version_requirement: ^10 || ^11
 package: Search
 configure: entity.facets_facet.collection
 test_dependencies:
   - search_api:search_api
   - drupal:views
 
-# Information added by Drupal.org packaging script on 2022-12-16
-version: '2.0.6'
+# Information added by Drupal.org packaging script on 2024-10-09
+version: '2.0.9'
 project: 'facets'
-datestamp: 1671207900
+datestamp: 1728458766

@@ -15,17 +15,19 @@
       const $facetsWidgetSearchbox = $('.facets-widget-searchbox', context);
 
       $facetsWidgetSearchbox.on("keyup", function () {
-        let $facetsWidgetSearchboxNoResult = $('.facets-widget-searchbox-no-result', context);
-        let $targetList = $(this).next('.facets-widget-searchbox-list', context);
+        let $input = $(this);
+        let $context = $input.parent();
+        let $facetsWidgetSearchboxNoResult = $context.find('.facets-widget-searchbox-no-result');
+        let $targetList = $context.find('.facets-widget-searchbox-list');
         let targetListId = $targetList.attr('data-drupal-facet-id');
-        let $facetsSoftLimitLink = $targetList.next('.facets-soft-limit-link', context);
-        let filter = $facetsWidgetSearchbox.val().toUpperCase();
+        let $facetsSoftLimitLink = $context.find('.facets-soft-limit-link');
+        let filter = $input.val().toUpperCase();
         let displayCount = 0;
         let display = getDisplayBehavior.call(this);
 
         $("[data-drupal-facet-id='" + targetListId + "'] li").each(function () {
           if (filter !== '') {
-            search.call(this, filter, display, $targetList);
+            search.call(this, filter, display, $targetList, $context);
           } else {
             displayCount = resetSearch.call(this, $facetsSoftLimitLink, display, displayCount);
           }
@@ -34,14 +36,14 @@
         handleNoResults(targetListId, $facetsWidgetSearchboxNoResult);
       });
 
-      function search(filter, display, $targetList) {
+      function search(filter, display, $targetList, $context) {
         let value = $(this).find('.facet-item__value').html();
 
-        if (value.toUpperCase().indexOf(filter) === 0) {
+        if (value.toUpperCase().indexOf(filter) !== -1) {
           if (!$(this).hasClass('hide-if-no-result')) {
             $(this).css('display', display);
           }
-          $targetList.next('.facets-soft-limit-link', context).css('display', 'inline');
+          $context.find('.facets-soft-limit-link').css('display', 'inline');
         } else {
           if (!$(this).hasClass('facet-item--expanded')) {
             $(this).css('display', 'none');
@@ -49,7 +51,7 @@
             $(this).addClass('hide-if-no-result');
           }
 
-          $targetList.next('.facets-soft-limit-link', context).css('display', 'none');
+          $context.find('.facets-soft-limit-link').css('display', 'none');
         }
       }
 

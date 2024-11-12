@@ -3,18 +3,20 @@
 namespace Drupal\facets_searchbox_widget\tests\Unit\Plugin\widget;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
-use Drupal\facets\Entity\Facet;
-use Drupal\facets\Plugin\facets\widget\LinksWidget;
-use Drupal\facets\Result\Result;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\facets\Entity\Facet;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
+use Drupal\facets\Plugin\facets\widget\LinksWidget;
+use Drupal\facets\Result\Result;
 use Drupal\facets\UrlProcessor\UrlProcessorInterface;
+use Drupal\facets\UrlProcessor\UrlProcessorPluginManager;
+use Drupal\facets\Utility\FacetsUrlGenerator;
+use Drupal\Tests\Core\Routing\TestRouterInterface;
 use Drupal\Tests\facets\Unit\Plugin\widget\LinksWidgetTest;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Drupal\Tests\Core\Routing\TestRouterInterface;
 
 /**
  * Unit test for widget.
@@ -28,8 +30,6 @@ class SearchboxLinksWidgetTest extends LinksWidgetTest {
    */
   protected function setUp(): void {
     parent::setUp();
-
-    $this->widget = new LinksWidget([], 'links_widget', []);
   }
 
   /**
@@ -212,6 +212,9 @@ class SearchboxLinksWidgetTest extends LinksWidgetTest {
     $this->createContainer();
     $container = \Drupal::getContainer();
     $container->set('request_stack', $request_stack);
+    $urlProcessor = $this->createMock(UrlProcessorPluginManager::class);
+    $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
+    $container->set('facets.utility.url_generator', new FacetsUrlGenerator($urlProcessor, $entityTypeManager));
     \Drupal::setContainer($container);
 
     // Enable the show reset link.

@@ -55,7 +55,7 @@ interface SpanInterface extends ImplicitContextKeyedInterface
      * @param non-empty-string $key
      * @param bool|int|float|string|array|null $value Note: arrays MUST be homogeneous, i.e. it MUST NOT contain values of different types.
      */
-    public function setAttribute(string $key, $value): SpanInterface;
+    public function setAttribute(string $key, bool|int|float|string|array|null $value): SpanInterface;
 
     /**
      * @see https://github.com/open-telemetry/opentelemetry-specification/blob/v1.6.1/specification/trace/api.md#set-attributes
@@ -66,9 +66,24 @@ interface SpanInterface extends ImplicitContextKeyedInterface
     public function setAttributes(iterable $attributes): SpanInterface;
 
     /**
+     * Records a link to another `SpanContext`.
+     *
+     * Adding links at span creation via {@link SpanBuilderInterface::addLink()} is preferred to calling
+     * {@link SpanInterface::addLink()} later, for contexts that are available during span creation, because head
+     * sampling decisions can only consider information present during span creation.
+     *
+     * @param SpanContextInterface $context span context to link
+     * @param iterable $attributes attributes to associate with the link
+     * @return SpanInterface this span
+     *
+     * @see https://opentelemetry.io/docs/specs/otel/trace/api/#add-link
+     */
+    public function addLink(SpanContextInterface $context, iterable $attributes = []): SpanInterface;
+
+    /**
      * @see https://github.com/open-telemetry/opentelemetry-specification/blob/v1.6.1/specification/trace/api.md#add-events
      */
-    public function addEvent(string $name, iterable $attributes = [], int $timestamp = null): SpanInterface;
+    public function addEvent(string $name, iterable $attributes = [], ?int $timestamp = null): SpanInterface;
 
     /**
      * @see https://github.com/open-telemetry/opentelemetry-specification/blob/v1.6.1/specification/trace/api.md#record-exception
@@ -87,10 +102,10 @@ interface SpanInterface extends ImplicitContextKeyedInterface
      *
      * @psalm-param StatusCode::STATUS_* $code
      */
-    public function setStatus(string $code, string $description = null): SpanInterface;
+    public function setStatus(string $code, ?string $description = null): SpanInterface;
 
     /**
      * @see https://github.com/open-telemetry/opentelemetry-specification/blob/v1.6.1/specification/trace/api.md#end
      */
-    public function end(int $endEpochNanos = null): void;
+    public function end(?int $endEpochNanos = null): void;
 }

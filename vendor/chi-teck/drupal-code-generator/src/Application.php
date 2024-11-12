@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace DrupalCodeGenerator;
 
@@ -32,6 +34,12 @@ use Twig\Loader\FilesystemLoader as TemplateLoader;
 
 /**
  * DCG console application.
+ *
+ * @psalm-suppress DeprecatedInterface
+ * @psalm-suppress DeprecatedTrait
+ *
+ * @todo Use Drupal replacement for ContainerAwareInterface when it's available.
+ * @see https://www.drupal.org/project/drupal/issues/3397522
  */
 final class Application extends BaseApplication implements ContainerAwareInterface, EventDispatcherInterface {
 
@@ -67,7 +75,7 @@ final class Application extends BaseApplication implements ContainerAwareInterfa
   public static function create(ContainerInterface $container): self {
     $application = new self(
       'Drupal Code Generator',
-      InstalledVersions::getVersion('chi-teck/drupal-code-generator'),
+      InstalledVersions::getPrettyVersion('chi-teck/drupal-code-generator'),
     );
     $application->setContainer($container);
 
@@ -82,7 +90,7 @@ final class Application extends BaseApplication implements ContainerAwareInterfa
         new TwigRenderer(new TwigEnvironment($template_loader)),
         new ListPrinter(),
         new TablePrinter(),
-        new ModuleInfo($container->get('module_handler')),
+        new ModuleInfo($container->get('module_handler'), $container->get('extension.list.module')),
         new ThemeInfo($container->get('theme_handler')),
         new ServiceInfo($container),
         new HookInfo($container->get('module_handler')),

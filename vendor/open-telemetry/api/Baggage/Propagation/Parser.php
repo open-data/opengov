@@ -17,12 +17,9 @@ final class Parser
     private const EXCLUDED_VALUE_CHARS = [' ', '"', ',', ';', '\\'];
     private const EQUALS = '=';
 
-    /** @readonly */
-    private string $baggageHeader;
-
-    public function __construct(string $baggageHeader)
-    {
-        $this->baggageHeader = $baggageHeader;
+    public function __construct(
+        private readonly string $baggageHeader,
+    ) {
     }
 
     public function parseInto(BaggageBuilderInterface $baggageBuilder): void
@@ -48,6 +45,7 @@ final class Parser
                 $metadata = null;
             }
 
+            /** @psalm-suppress PossiblyUndefinedArrayOffset */
             [$key, $value] = explode(self::EQUALS, $keyValue, 2);
 
             $key = urldecode($key);

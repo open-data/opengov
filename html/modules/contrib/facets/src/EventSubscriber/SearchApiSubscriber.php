@@ -55,7 +55,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     // Workaround to avoid a fatal error during site install from existing
     // config.
     // @see https://www.drupal.org/project/facets/issues/3199156

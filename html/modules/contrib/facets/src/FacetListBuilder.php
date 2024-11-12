@@ -107,6 +107,7 @@ class FacetListBuilder extends DraggableListBuilder {
     $facet_configs = \Drupal::entityTypeManager()
       ->getStorage('facets_facet')
       ->load($entity->getConfigTarget());
+
     $row = [
       'type' => [
         '#theme_wrappers' => [
@@ -125,7 +126,7 @@ class FacetListBuilder extends DraggableListBuilder {
         '#attributes' => [
           'class' => ['search-api-title'],
         ],
-      ] + $entity->toUrl('edit-form')->toRenderArray(),
+      ] + $this->facetUrlRenderArray($entity),
       '#attributes' => [
         'title' => $this->t('ID: @name', ['@name' => $entity->id()]),
         'class' => [
@@ -166,7 +167,7 @@ class FacetListBuilder extends DraggableListBuilder {
         '#wrapper_attributes' => [
           'colspan' => 2,
         ],
-      ] + $entity->toUrl('edit-form')->toRenderArray(),
+      ] + $this->facetUrlRenderArray($entity),
       'operations' => $row['operations'],
       '#attributes' => [
         'title' => $this->t('ID: @name', ['@name' => $entity->id()]),
@@ -387,6 +388,20 @@ class FacetListBuilder extends DraggableListBuilder {
       'facet_source_groups' => $facet_source_groups,
       'lone_facets' => $facets,
     ];
+  }
+
+  /**
+   * Prepare facet render url array.
+   */
+  public function facetUrlRenderArray(EntityInterface $entity): array {
+    $output = [];
+    if ($entity->toUrl('edit-form')->access()) {
+      $linkEntityObject = Link::fromTextAndUrl($entity->label(), $entity->toUrl('edit-form'));
+      $output['#url'] = $linkEntityObject->getUrl();
+      $output['#options'] = $entity->toUrl('edit-form')->getOptions();
+    }
+
+    return $output;
   }
 
 }

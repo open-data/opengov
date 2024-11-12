@@ -39,6 +39,13 @@ trait SynchronousInstrumentTrait
 
     public function write($amount, iterable $attributes = [], $context = null): void
     {
-        $this->writer->record($this->instrument, $amount, $attributes, $context);
+        if ($this->isEnabled()) {
+            $this->writer->record($this->instrument, $amount, $attributes, $context);
+        }
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->writer->enabled($this->instrument);
     }
 }

@@ -8,23 +8,20 @@ use function ctype_space;
 use OpenTelemetry\API\Trace as API;
 use OpenTelemetry\Context\Context;
 use OpenTelemetry\SDK\Common\Instrumentation\InstrumentationScopeInterface;
+use OpenTelemetry\SDK\Common\InstrumentationScope\Config;
+use OpenTelemetry\SDK\Common\InstrumentationScope\Configurator;
 
 class Tracer implements API\TracerInterface
 {
     public const FALLBACK_SPAN_NAME = 'empty';
-
-    /** @readonly */
-    private TracerSharedState $tracerSharedState;
-
-    /** @readonly */
-    private InstrumentationScopeInterface $instrumentationScope;
+    private Config $config;
 
     public function __construct(
-        TracerSharedState $tracerSharedState,
-        InstrumentationScopeInterface $instrumentationScope
+        private readonly TracerSharedState $tracerSharedState,
+        private readonly InstrumentationScopeInterface $instrumentationScope,
+        ?Configurator $configurator = null,
     ) {
-        $this->tracerSharedState = $tracerSharedState;
-        $this->instrumentationScope = $instrumentationScope;
+        $this->config = $configurator ? $configurator->resolve($this->instrumentationScope) : TracerConfig::default();
     }
 
     /** @inheritDoc */
@@ -33,8 +30,8 @@ class Tracer implements API\TracerInterface
         if (ctype_space($spanName)) {
             $spanName = self::FALLBACK_SPAN_NAME;
         }
-
-        if ($this->tracerSharedState->hasShutdown()) {
+        // If a Tracer is disabled, it MUST behave equivalently to No-op Tracer
+        if (!$this->config->isEnabled() || $this->tracerSharedState->hasShutdown()) {
             return new API\NoopSpanBuilder(Context::storage());
         }
 
@@ -48,5 +45,15 @@ class Tracer implements API\TracerInterface
     public function getInstrumentationScope(): InstrumentationScopeInterface
     {
         return $this->instrumentationScope;
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->config->isEnabled();
+    }
+
+    public function updateConfig(Configurator $configurator): void
+    {
+        $this->config = $configurator->resolve($this->instrumentationScope);
     }
 }
