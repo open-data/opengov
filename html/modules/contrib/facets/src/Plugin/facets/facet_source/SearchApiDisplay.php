@@ -449,7 +449,7 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
   /**
    * {@inheritdoc}
    */
-  public function getCount() {
+  public function getCount(): string {
     $search_id = $this->getDisplay()->getPluginId();
     if ($search_id && !empty($search_id)) {
       if ($this->searchApiQueryHelper->getResults($search_id) !== NULL) {

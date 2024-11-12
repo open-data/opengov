@@ -22,12 +22,13 @@ class OtlpHttpTransportFactory implements TransportFactoryInterface
         int $maxRetries = 3,
         ?string $cacert = null,
         ?string $cert = null,
-        ?string $key = null
+        ?string $key = null,
     ): PsrTransport {
         if ($compression === self::DEFAULT_COMPRESSION) {
             $compression = null;
         }
 
-        return PsrTransportFactory::discover()->create($endpoint, $contentType, $headers, $compression, $timeout, $retryDelay, $maxRetries, $cacert, $cert, $key);
+        return (new PsrTransportFactory())
+            ->create($endpoint, $contentType, $headers, $compression, $timeout, $retryDelay, $maxRetries, $cacert, $cert, $key);
     }
 }

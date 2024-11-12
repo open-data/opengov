@@ -19,51 +19,15 @@ use OpenTelemetry\SDK\Resource\ResourceInfo;
  */
 final class StreamMetricSourceProvider implements MetricSourceProviderInterface, MetricMetadataInterface
 {
-    /**
-     * @readonly
-     */
-    public ViewProjection $view;
-    /**
-     * @readonly
-     */
-    public Instrument $instrument;
-    /**
-     * @readonly
-     */
-    public InstrumentationScopeInterface $instrumentationLibrary;
-    /**
-     * @readonly
-     */
-    public ResourceInfo $resource;
-    /**
-     * @readonly
-     */
-    public MetricStreamInterface $stream;
-    /**
-     * @readonly
-     */
-    public MetricCollectorInterface $metricCollector;
-    /**
-     * @readonly
-     */
-    public int $streamId;
-
     public function __construct(
-        ViewProjection $view,
-        Instrument $instrument,
-        InstrumentationScopeInterface $instrumentationLibrary,
-        ResourceInfo $resource,
-        MetricStreamInterface $stream,
-        MetricCollectorInterface $metricCollector,
-        int $streamId
+        public readonly ViewProjection $view,
+        public readonly Instrument $instrument,
+        public readonly InstrumentationScopeInterface $instrumentationLibrary,
+        public readonly ResourceInfo $resource,
+        public readonly MetricStreamInterface $stream,
+        public readonly MetricCollectorInterface $metricCollector,
+        public readonly int $streamId,
     ) {
-        $this->view = $view;
-        $this->instrument = $instrument;
-        $this->instrumentationLibrary = $instrumentationLibrary;
-        $this->resource = $resource;
-        $this->stream = $stream;
-        $this->metricCollector = $metricCollector;
-        $this->streamId = $streamId;
     }
 
     public function create($temporality): MetricSourceInterface

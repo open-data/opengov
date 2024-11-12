@@ -30,42 +30,22 @@ use function trim;
  */
 final class PsrTransport implements TransportInterface
 {
-    private ClientInterface $client;
-    private RequestFactoryInterface $requestFactory;
-    private StreamFactoryInterface $streamFactory;
-
-    private string $endpoint;
-    private string $contentType;
-    private array $headers;
-    private array $compression;
-    private int $retryDelay;
-    private int $maxRetries;
-
     private bool $closed = false;
 
     /**
      * @psalm-param CONTENT_TYPE $contentType
      */
     public function __construct(
-        ClientInterface $client,
-        RequestFactoryInterface $requestFactory,
-        StreamFactoryInterface $streamFactory,
-        string $endpoint,
-        string $contentType,
-        array $headers,
-        array $compression,
-        int $retryDelay,
-        int $maxRetries
+        private readonly ClientInterface $client,
+        private readonly RequestFactoryInterface $requestFactory,
+        private readonly StreamFactoryInterface $streamFactory,
+        private readonly string $endpoint,
+        private readonly string $contentType,
+        private readonly array $headers,
+        private readonly array $compression,
+        private readonly int $retryDelay,
+        private readonly int $maxRetries,
     ) {
-        $this->client = $client;
-        $this->requestFactory = $requestFactory;
-        $this->streamFactory = $streamFactory;
-        $this->endpoint = $endpoint;
-        $this->contentType = $contentType;
-        $this->headers = $headers;
-        $this->compression = $compression;
-        $this->retryDelay = $retryDelay;
-        $this->maxRetries = $maxRetries;
     }
 
     public function contentType(): string
@@ -73,6 +53,9 @@ final class PsrTransport implements TransportInterface
         return $this->contentType;
     }
 
+    /**
+     * @psalm-suppress ArgumentTypeCoercion
+     */
     public function send(string $payload, ?CancellationInterface $cancellation = null): FutureInterface
     {
         if ($this->closed) {
@@ -138,6 +121,9 @@ final class PsrTransport implements TransportInterface
         return new CompletedFuture($body);
     }
 
+    /**
+     * @return list<string>
+     */
     private static function parseContentEncoding(ResponseInterface $response): array
     {
         $encodings = [];

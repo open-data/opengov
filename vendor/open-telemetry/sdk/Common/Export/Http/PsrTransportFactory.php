@@ -10,24 +10,18 @@ use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
 use InvalidArgumentException;
 use OpenTelemetry\SDK\Common\Export\TransportFactoryInterface;
+use OpenTelemetry\SDK\Common\Http\Psr\Client\Discovery;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
 final class PsrTransportFactory implements TransportFactoryInterface
 {
-    private ClientInterface $client;
-    private RequestFactoryInterface $requestFactory;
-    private StreamFactoryInterface $streamFactory;
-
     public function __construct(
-        ClientInterface $client,
-        RequestFactoryInterface $requestFactory,
-        StreamFactoryInterface $streamFactory
+        private ?ClientInterface $client = null,
+        private ?RequestFactoryInterface $requestFactory = null,
+        private ?StreamFactoryInterface $streamFactory = null,
     ) {
-        $this->client = $client;
-        $this->requestFactory = $requestFactory;
-        $this->streamFactory = $streamFactory;
     }
 
     /**
@@ -43,12 +37,18 @@ final class PsrTransportFactory implements TransportFactoryInterface
         int $maxRetries = 3,
         ?string $cacert = null,
         ?string $cert = null,
-        ?string $key = null
+        ?string $key = null,
     ): PsrTransport {
         if (!filter_var($endpoint, FILTER_VALIDATE_URL)) {
             throw new InvalidArgumentException(sprintf('Invalid endpoint url "%s"', $endpoint));
         }
         assert(!empty($endpoint));
+
+        $this->client ??= Discovery::find([
+            'timeout' => $timeout,
+        ]);
+        $this->requestFactory ??= Psr17FactoryDiscovery::findRequestFactory();
+        $this->streamFactory ??= Psr17FactoryDiscovery::findStreamFactory();
 
         return new PsrTransport(
             $this->client,
@@ -63,6 +63,9 @@ final class PsrTransportFactory implements TransportFactoryInterface
         );
     }
 
+    /**
+     * @deprecated
+     */
     public static function discover(): self
     {
         return new self(

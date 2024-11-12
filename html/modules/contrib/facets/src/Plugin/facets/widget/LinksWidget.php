@@ -66,6 +66,7 @@ class LinksWidget extends WidgetPluginBase {
 
       unset($active_filters[$facet->id()]);
 
+      /** @var \Drupal\facets\Utility\FacetsUrlGenerator $urlGenerator */
       $urlGenerator = \Drupal::service('facets.utility.url_generator');
       if ($active_filters) {
         $url = $urlGenerator->getUrl($active_filters, FALSE);
@@ -73,7 +74,7 @@ class LinksWidget extends WidgetPluginBase {
       else {
         $request = \Drupal::request();
         $facet_source = $facet->getFacetSource();
-        $url = $urlGenerator->getUrlForRequest($request, $facet_source ? $facet_source->getPath() : NULL);
+        $url = clone $urlGenerator->getUrlForRequest($request, $facet_source ? $facet_source->getPath() : NULL);
         $params = $request->query->all();
         unset($params[$url_processor->getFilterKey()]);
         if (\array_key_exists('page', $params)) {

@@ -6,14 +6,13 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Http\RequestStack as DrupalRequestStack;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\PathProcessor\PathProcessorManager;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack as SymfonyRequestStack;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -118,6 +117,9 @@ class FacetBlockAjaxController extends ControllerBase {
     // Rebuild the request and the current path, needed for facets.
     $path = $request->request->get('facet_link');
     $facets_blocks = $request->request->all()['facets_blocks'] ?? [];
+    $host = $request->getSchemeAndHttpHost();
+    $base_url = strpos($path, $host) ? $host . base_path() : base_path();
+    $path = preg_replace('/^' . str_replace('/', '\/', $base_url) . '/', '/', $path);
 
     if (empty($path) || empty($facets_blocks)) {
       throw new NotFoundHttpException('No facet link or facet blocks found.');
@@ -127,7 +129,7 @@ class FacetBlockAjaxController extends ControllerBase {
     $facets_blocks = array_unique($facets_blocks);
 
     $new_request = Request::create($path);
-    $request_stack = new DrupalRequestStack();
+    $request_stack = new RequestStack();
 
     $processed = $this->pathProcessor->processInbound($path, $new_request);
     $processed_request = Request::create($processed);

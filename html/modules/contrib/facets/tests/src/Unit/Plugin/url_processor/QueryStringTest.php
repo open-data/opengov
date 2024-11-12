@@ -4,7 +4,7 @@ namespace Drupal\Tests\facets\Unit\Plugin\url_processor;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Http\RequestStack;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\facets\Entity\Facet;
 use Drupal\facets\Entity\FacetSource;

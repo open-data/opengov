@@ -1075,6 +1075,58 @@ final class GetMemberPropertiesTest extends AbstractMethodUnitTest
                 ],
             ],
 
+            'php8.2-dnf-with-static'                                       => [
+                'identifier' => '/* testPHP82DNFTypeStatic */',
+                'expected'   => [
+                    'scope'           => 'public',
+                    'scope_specified' => true,
+                    'is_static'       => true,
+                    'is_readonly'     => false,
+                    'type'            => '(Foo&\Bar)|bool',
+                    'type_token'      => -9,
+                    'type_end_token'  => -2,
+                    'nullable_type'   => false,
+                ],
+            ],
+            'php8.2-dnf-with-readonly-1'                                   => [
+                'identifier' => '/* testPHP82DNFTypeReadonlyA */',
+                'expected'   => [
+                    'scope'           => 'protected',
+                    'scope_specified' => true,
+                    'is_static'       => false,
+                    'is_readonly'     => true,
+                    'type'            => 'float|(Partially\Qualified&Traversable)',
+                    'type_token'      => -10,
+                    'type_end_token'  => -2,
+                    'nullable_type'   => false,
+                ],
+            ],
+            'php8.2-dnf-with-readonly-2'                                   => [
+                'identifier' => '/* testPHP82DNFTypeReadonlyB */',
+                'expected'   => [
+                    'scope'           => 'private',
+                    'scope_specified' => true,
+                    'is_static'       => false,
+                    'is_readonly'     => true,
+                    'type'            => '(namespace\Foo&Bar)|string',
+                    'type_token'      => -10,
+                    'type_end_token'  => -2,
+                    'nullable_type'   => false,
+                ],
+            ],
+            'php8.2-dnf-with-illegal-nullable'                             => [
+                'identifier' => '/* testPHP82DNFTypeIllegalNullable */',
+                'expected'   => [
+                    'scope'           => 'public',
+                    'scope_specified' => false,
+                    'is_static'       => false,
+                    'is_readonly'     => false,
+                    'type'            => '?(A&\Pck\B)|bool',
+                    'type_token'      => -11,
+                    'type_end_token'  => -2,
+                    'nullable_type'   => true,
+                ],
+            ],
         ];
 
     }//end dataGetMemberProperties()
@@ -1094,7 +1146,7 @@ final class GetMemberPropertiesTest extends AbstractMethodUnitTest
         $this->expectRunTimeException('$stackPtr is not a class member var');
 
         $variable = $this->getTargetToken($identifier, T_VARIABLE);
-        $result   = self::$phpcsFile->getMemberProperties($variable);
+        self::$phpcsFile->getMemberProperties($variable);
 
     }//end testNotClassPropertyException()
 
@@ -1130,8 +1182,8 @@ final class GetMemberPropertiesTest extends AbstractMethodUnitTest
     {
         $this->expectRunTimeException('$stackPtr must be of type T_VARIABLE');
 
-        $next   = $this->getTargetToken('/* testNotAVariable */', T_RETURN);
-        $result = self::$phpcsFile->getMemberProperties($next);
+        $next = $this->getTargetToken('/* testNotAVariable */', T_RETURN);
+        self::$phpcsFile->getMemberProperties($next);
 
     }//end testNotAVariableException()
 

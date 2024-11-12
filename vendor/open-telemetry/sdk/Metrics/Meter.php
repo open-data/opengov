@@ -9,8 +9,10 @@ use ArrayAccess;
 use function assert;
 use function is_callable;
 use OpenTelemetry\API\Behavior\LogsMessagesTrait;
+use OpenTelemetry\API\Common\Time\ClockInterface;
 use OpenTelemetry\API\Metrics\AsynchronousInstrument;
 use OpenTelemetry\API\Metrics\CounterInterface;
+use OpenTelemetry\API\Metrics\GaugeInterface;
 use OpenTelemetry\API\Metrics\HistogramInterface;
 use OpenTelemetry\API\Metrics\MeterInterface;
 use OpenTelemetry\API\Metrics\ObservableCallbackInterface;
@@ -19,7 +21,9 @@ use OpenTelemetry\API\Metrics\ObservableGaugeInterface;
 use OpenTelemetry\API\Metrics\ObservableUpDownCounterInterface;
 use OpenTelemetry\API\Metrics\UpDownCounterInterface;
 use OpenTelemetry\SDK\Common\Instrumentation\InstrumentationScopeInterface;
-use OpenTelemetry\SDK\Common\Time\ClockInterface;
+use OpenTelemetry\SDK\Common\InstrumentationScope\Config;
+use OpenTelemetry\SDK\Common\InstrumentationScope\Configurable;
+use OpenTelemetry\SDK\Common\InstrumentationScope\Configurator;
 use function OpenTelemetry\SDK\Common\Util\closure;
 use OpenTelemetry\SDK\Metrics\Exemplar\ExemplarFilterInterface;
 use OpenTelemetry\SDK\Metrics\MetricRegistration\MultiRegistryRegistration;
@@ -33,57 +37,33 @@ use function serialize;
 /**
  * @internal
  */
-final class Meter implements MeterInterface
+final class Meter implements MeterInterface, Configurable
 {
     use LogsMessagesTrait;
 
-    private MetricFactoryInterface $metricFactory;
-    private ResourceInfo $resource;
-    private ClockInterface $clock;
-    private StalenessHandlerFactoryInterface $stalenessHandlerFactory;
-    /** @var iterable<MetricSourceRegistryInterface&DefaultAggregationProviderInterface> */
-    private iterable $metricRegistries;
-    private ViewRegistryInterface $viewRegistry;
-    private ?ExemplarFilterInterface $exemplarFilter;
-    private MeterInstruments $instruments;
-    private InstrumentationScopeInterface $instrumentationScope;
-
-    private MetricRegistryInterface $registry;
-    private MetricWriterInterface $writer;
-    private ArrayAccess $destructors;
-
     private ?string $instrumentationScopeId = null;
+    private Config $config;
 
     /**
      * @param iterable<MetricSourceRegistryInterface&DefaultAggregationProviderInterface> $metricRegistries
      * @param ArrayAccess<object, ObservableCallbackDestructor> $destructors
      */
     public function __construct(
-        MetricFactoryInterface $metricFactory,
-        ResourceInfo $resource,
-        ClockInterface $clock,
-        StalenessHandlerFactoryInterface $stalenessHandlerFactory,
-        iterable $metricRegistries,
-        ViewRegistryInterface $viewRegistry,
-        ?ExemplarFilterInterface $exemplarFilter,
-        MeterInstruments $instruments,
-        InstrumentationScopeInterface $instrumentationScope,
-        MetricRegistryInterface $registry,
-        MetricWriterInterface $writer,
-        ArrayAccess $destructors
+        private readonly MetricFactoryInterface $metricFactory,
+        private readonly ResourceInfo $resource,
+        private readonly ClockInterface $clock,
+        private readonly StalenessHandlerFactoryInterface $stalenessHandlerFactory,
+        private readonly iterable $metricRegistries,
+        private readonly ViewRegistryInterface $viewRegistry,
+        private readonly ?ExemplarFilterInterface $exemplarFilter,
+        private readonly MeterInstruments $instruments,
+        private readonly InstrumentationScopeInterface $instrumentationScope,
+        private readonly MetricRegistryInterface $registry,
+        private readonly MetricWriterInterface $writer,
+        private readonly ArrayAccess $destructors,
+        ?Configurator $configurator = null,
     ) {
-        $this->metricFactory = $metricFactory;
-        $this->resource = $resource;
-        $this->clock = $clock;
-        $this->stalenessHandlerFactory = $stalenessHandlerFactory;
-        $this->metricRegistries = $metricRegistries;
-        $this->viewRegistry = $viewRegistry;
-        $this->exemplarFilter = $exemplarFilter;
-        $this->instruments = $instruments;
-        $this->instrumentationScope = $instrumentationScope;
-        $this->registry = $registry;
-        $this->writer = $writer;
-        $this->destructors = $destructors;
+        $this->config = $configurator?->resolve($this->instrumentationScope) ?? MeterConfig::default();
     }
 
     private static function dummyInstrument(): Instrument
@@ -91,6 +71,51 @@ final class Meter implements MeterInterface
         static $dummy;
 
         return $dummy ??= (new \ReflectionClass(Instrument::class))->newInstanceWithoutConstructor();
+    }
+
+    /**
+     * @internal
+     */
+    public function updateConfigurator(Configurator $configurator): void
+    {
+        $this->config = $configurator->resolve($this->instrumentationScope);
+
+        $startTimestamp = $this->clock->now();
+        foreach ($this->instruments->observers[self::instrumentationScopeId($this->instrumentationScope)] as [$instrument, $stalenessHandler, $r]) {
+            if ($this->config->isEnabled() && $r->dormant) {
+                $this->metricFactory->createAsynchronousObserver(
+                    $this->registry,
+                    $this->resource,
+                    $this->instrumentationScope,
+                    $instrument,
+                    $startTimestamp,
+                    $this->viewRegistrationRequests($instrument, $stalenessHandler),
+                );
+                $r->dormant = false;
+            }
+            if (!$this->config->isEnabled() && !$r->dormant) {
+                $this->releaseStreams($instrument);
+                $r->dormant = true;
+            }
+        }
+        foreach ($this->instruments->writers[self::instrumentationScopeId($this->instrumentationScope)] as [$instrument, $stalenessHandler, $r]) {
+            if ($this->config->isEnabled() && $r->dormant) {
+                $this->metricFactory->createSynchronousWriter(
+                    $this->registry,
+                    $this->resource,
+                    $this->instrumentationScope,
+                    $instrument,
+                    $startTimestamp,
+                    $this->viewRegistrationRequests($instrument, $stalenessHandler),
+                    $this->exemplarFilter,
+                );
+                $r->dormant = false;
+            }
+            if (!$this->config->isEnabled() && !$r->dormant) {
+                $this->releaseStreams($instrument);
+                $r->dormant = true;
+            }
+        }
     }
 
     public function batchObserve(callable $callback, AsynchronousInstrument $instrument, AsynchronousInstrument ...$instruments): ObservableCallbackInterface
@@ -180,6 +205,19 @@ final class Meter implements MeterInterface
         return new Histogram($this->writer, $instrument, $referenceCounter);
     }
 
+    public function createGauge(string $name, ?string $unit = null, ?string $description = null, array $advisory = []): GaugeInterface
+    {
+        [$instrument, $referenceCounter] = $this->createSynchronousWriter(
+            InstrumentType::GAUGE,
+            $name,
+            $unit,
+            $description,
+            $advisory,
+        );
+
+        return new Gauge($this->writer, $instrument, $referenceCounter);
+    }
+
     public function createObservableGauge(string $name, ?string $unit = null, ?string $description = null, $advisory = [], callable ...$callbacks): ObservableGaugeInterface
     {
         if (is_callable($advisory)) {
@@ -238,7 +276,7 @@ final class Meter implements MeterInterface
     }
 
     /**
-     * @return array{Instrument, ReferenceCounterInterface}|null
+     * @return array{Instrument, ReferenceCounterInterface, RegisteredInstrument}|null
      */
     private function getAsynchronousInstrument(Instrument $instrument, InstrumentationScopeInterface $instrumentationScope): ?array
     {
@@ -254,10 +292,9 @@ final class Meter implements MeterInterface
     }
 
     /**
-     * @param string|InstrumentType $instrumentType
-     * @return array{Instrument, ReferenceCounterInterface}
+     * @return array{Instrument, ReferenceCounterInterface, RegisteredInstrument}
      */
-    private function createSynchronousWriter($instrumentType, string $name, ?string $unit, ?string $description, array $advisory = []): array
+    private function createSynchronousWriter(string|InstrumentType $instrumentType, string $name, ?string $unit, ?string $description, array $advisory = []): array
     {
         $instrument = new Instrument($instrumentType, $name, $unit, $description, $advisory);
 
@@ -270,25 +307,24 @@ final class Meter implements MeterInterface
         }
 
         $stalenessHandler = $this->stalenessHandlerFactory->create();
-        $instruments->startTimestamp ??= $this->clock->now();
-        $streamIds = $this->metricFactory->createSynchronousWriter(
-            $this->registry,
-            $this->resource,
-            $this->instrumentationScope,
-            $instrument,
-            $instruments->startTimestamp,
-            $this->viewRegistrationRequests($instrument, $stalenessHandler),
-            $this->exemplarFilter,
-        );
+        if ($this->config->isEnabled()) {
+            $instruments->startTimestamp ??= $this->clock->now();
+            $this->metricFactory->createSynchronousWriter(
+                $this->registry,
+                $this->resource,
+                $this->instrumentationScope,
+                $instrument,
+                $instruments->startTimestamp,
+                $this->viewRegistrationRequests($instrument, $stalenessHandler),
+                $this->exemplarFilter,
+            );
+        }
 
-        $registry = $this->registry;
-        $stalenessHandler->onStale(static function () use ($instruments, $instrumentationScopeId, $instrumentId, $registry, $streamIds): void {
+        $stalenessHandler->onStale(fn () => $this->releaseStreams($instrument));
+        $stalenessHandler->onStale(static function () use ($instruments, $instrumentationScopeId, $instrumentId): void {
             unset($instruments->writers[$instrumentationScopeId][$instrumentId]);
             if (!$instruments->writers[$instrumentationScopeId]) {
                 unset($instruments->writers[$instrumentationScopeId]);
-            }
-            foreach ($streamIds as $streamId) {
-                $registry->unregisterStream($streamId);
             }
 
             $instruments->startTimestamp = null;
@@ -297,14 +333,14 @@ final class Meter implements MeterInterface
         return $instruments->writers[$instrumentationScopeId][$instrumentId] = [
             $instrument,
             $stalenessHandler,
+            new RegisteredInstrument(!$this->config->isEnabled(), $this),
         ];
     }
 
     /**
-     * @param string|InstrumentType $instrumentType
-     * @return array{Instrument, ReferenceCounterInterface}
+     * @return array{Instrument, ReferenceCounterInterface, RegisteredInstrument}
      */
-    private function createAsynchronousObserver($instrumentType, string $name, ?string $unit, ?string $description, array $advisory): array
+    private function createAsynchronousObserver(string|InstrumentType $instrumentType, string $name, ?string $unit, ?string $description, array $advisory): array
     {
         $instrument = new Instrument($instrumentType, $name, $unit, $description, $advisory);
 
@@ -317,24 +353,23 @@ final class Meter implements MeterInterface
         }
 
         $stalenessHandler = $this->stalenessHandlerFactory->create();
-        $instruments->startTimestamp ??= $this->clock->now();
-        $streamIds = $this->metricFactory->createAsynchronousObserver(
-            $this->registry,
-            $this->resource,
-            $this->instrumentationScope,
-            $instrument,
-            $instruments->startTimestamp,
-            $this->viewRegistrationRequests($instrument, $stalenessHandler),
-        );
+        if ($this->config->isEnabled()) {
+            $instruments->startTimestamp ??= $this->clock->now();
+            $this->metricFactory->createAsynchronousObserver(
+                $this->registry,
+                $this->resource,
+                $this->instrumentationScope,
+                $instrument,
+                $instruments->startTimestamp,
+                $this->viewRegistrationRequests($instrument, $stalenessHandler),
+            );
+        }
 
-        $registry = $this->registry;
-        $stalenessHandler->onStale(static function () use ($instruments, $instrumentationScopeId, $instrumentId, $registry, $streamIds): void {
+        $stalenessHandler->onStale(fn () => $this->releaseStreams($instrument));
+        $stalenessHandler->onStale(static function () use ($instruments, $instrumentationScopeId, $instrumentId): void {
             unset($instruments->observers[$instrumentationScopeId][$instrumentId]);
             if (!$instruments->observers[$instrumentationScopeId]) {
                 unset($instruments->observers[$instrumentationScopeId]);
-            }
-            foreach ($streamIds as $streamId) {
-                $registry->unregisterStream($streamId);
             }
 
             $instruments->startTimestamp = null;
@@ -343,7 +378,19 @@ final class Meter implements MeterInterface
         return $instruments->observers[$instrumentationScopeId][$instrumentId] = [
             $instrument,
             $stalenessHandler,
+            new RegisteredInstrument(!$this->config->isEnabled(), $this),
         ];
+    }
+
+    private function releaseStreams(Instrument $instrument): void
+    {
+        foreach ($this->registry->unregisterStreams($instrument) as $streamId) {
+            foreach ($this->metricRegistries as $metricRegistry) {
+                if ($metricRegistry instanceof MetricSourceRegistryUnregisterInterface) {
+                    $metricRegistry->unregisterStream($this->registry, $streamId);
+                }
+            }
+        }
     }
 
     /**

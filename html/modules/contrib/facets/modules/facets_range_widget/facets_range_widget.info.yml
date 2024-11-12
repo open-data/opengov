@@ -1,7 +1,7 @@
 name: 'Facets Range Widget'
 type: module
 description: 'Provides a range widget and solid slider.'
-core_version_requirement: ^9.2 || ^10.0
+core_version_requirement: ^10 || ^11
 package: Search
 dependencies:
   - facets:facets
@@ -12,7 +12,7 @@ test_dependencies:
   - facets:facets
   - drupal:views
 
-# Information added by Drupal.org packaging script on 2022-12-16
-version: '2.0.6'
+# Information added by Drupal.org packaging script on 2024-10-09
+version: '2.0.9'
 project: 'facets'
-datestamp: 1671207900
+datestamp: 1728458766

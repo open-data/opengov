@@ -1,5 +1,8 @@
 plugin.plugin_configuration.facets_processor.*:
-  type: config_object
+  type: mapping
+
+plugin.plugin_configuration.facets_hierarchy.*:
+  type: mapping
 
 plugin.plugin_configuration.facets_processor.count_widget_widget_order:
   type: mapping

@@ -12,19 +12,19 @@
   "support": {
     "issues": "https://www.drupal.org/project/issues/facets",
     "irc": "irc://irc.freenode.org/drupal-search-api",
-    "source": "git://git.drupal.org/project/facets.git"
+    "source": "https://git.drupalcode.org/project/facets"
   },
   "license": "GPL-2.0+",
   "require-dev": {
-    "drupal/search_api": "^1.28||1.x-dev",
-    "drupal/jquery_ui_slider": "~2.0",
-    "drupal/jquery_ui_touch_punch": "~1.1"
+    "drupal/search_api": "1.x-dev",
+    "drupal/jquery_ui_slider": "^2.1",
+    "drupal/jquery_ui_touch_punch": "^1.1"
   },
   "suggest": {
     "drupal/jquery_ui_slider": "Required for the 'Facets Range Widget' module to work",
     "drupal/jquery_ui_touch_punch": "Required for the 'Facets Range Widget' module to work"
   },
   "conflict": {
-    "drupal/search_api": "<1.14"
+    "drupal/search_api": "<1.30"
   }
 }

@@ -18,11 +18,8 @@ class LogsExporterFactory implements LogRecordExporterFactoryInterface
 {
     private const DEFAULT_COMPRESSION = 'none';
 
-    private ?TransportFactoryInterface $transportFactory;
-
-    public function __construct(?TransportFactoryInterface $transportFactory = null)
+    public function __construct(private readonly ?TransportFactoryInterface $transportFactory = null)
     {
-        $this->transportFactory = $transportFactory;
     }
 
     /**
@@ -46,6 +43,7 @@ class LogsExporterFactory implements LogRecordExporterFactoryInterface
 
         $headers = OtlpUtil::getHeaders(Signals::LOGS);
         $compression = $this->getCompression();
+        $timeout = $this->getTimeout();
 
         $factoryClass = Registry::transportFactory($protocol);
         $factory = $this->transportFactory ?: new $factoryClass();
@@ -55,6 +53,7 @@ class LogsExporterFactory implements LogRecordExporterFactoryInterface
             Protocols::contentType($protocol),
             $headers,
             $compression,
+            $timeout,
         );
     }
 
@@ -78,5 +77,14 @@ class LogsExporterFactory implements LogRecordExporterFactoryInterface
         }
 
         return HttpEndpointResolver::create()->resolveToString($endpoint, Signals::LOGS);
+    }
+
+    private function getTimeout(): float
+    {
+        $value = Configuration::has(Variables::OTEL_EXPORTER_OTLP_LOGS_TIMEOUT) ?
+            Configuration::getInt(Variables::OTEL_EXPORTER_OTLP_LOGS_TIMEOUT) :
+            Configuration::getInt(Variables::OTEL_EXPORTER_OTLP_TIMEOUT);
+
+        return $value/1000;
     }
 }

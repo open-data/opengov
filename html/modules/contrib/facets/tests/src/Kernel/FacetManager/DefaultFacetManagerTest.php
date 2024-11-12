@@ -302,7 +302,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
    *
    * @see ::testBuildCacheabilityMetadata
    */
-  public function buildCacheabilityMetadataProvider() {
+  public static function buildCacheabilityMetadataProvider(): array {
     $basic = [
       'contexts' => [
         // Facet API uses Request query params to populate active facets values.
@@ -331,6 +331,7 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
         'fpc:build_processor',
         // Added by build fpc_sort_processor process plugin.
         'fpc:sort_processor',
+        'search_api_list:database_search_index',
         // Added by views view source plugin.
         'config:views.view.search_api_test_view',
         'config:search_api.index.database_search_index',
@@ -349,9 +350,6 @@ class DefaultFacetManagerTest extends EntityKernelTestBase {
         array_merge_recursive(
           $basic,
           [
-            'tags' => [
-              'search_api_list:database_search_index',
-            ],
             'max-age' => Cache::PERMANENT,
           ]
         ),

@@ -4,28 +4,26 @@ declare(strict_types=1);
 
 namespace Drush\Commands\core;
 
+use Composer\Autoload\ClassLoader;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\SiteAlias\SiteAliasManager;
 use Drupal\Component\FileCache\FileCacheFactory;
+use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Installer\Exception\AlreadyInstalledException;
 use Drupal\Core\Site\Settings;
 use Drush\Attributes as CLI;
+use Drush\Boot\BootstrapManager;
 use Drush\Boot\DrupalBootLevels;
 use Drush\Boot\Kernels;
 use Drush\Commands\DrushCommands;
-use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
-use Drupal\Core\Config\FileStorage;
 use Drush\Exec\ExecTrait;
 use Drush\Sql\SqlBase;
 use Drush\Utils\StringUtils;
 use Psr\Container\ContainerInterface as DrushContainer;
 use Symfony\Component\Filesystem\Path;
-use Drush\Boot\BootstrapManager;
-use Consolidation\SiteAlias\SiteAliasManager;
-use Drush\Config\DrushConfig;
-use Composer\Autoload\ClassLoader;
 
 final class SiteInstallCommands extends DrushCommands
 {
@@ -70,7 +68,7 @@ final class SiteInstallCommands extends DrushCommands
     #[CLI\Option(name: 'sites-subdir', description: 'Name of directory under <info>sites</info> which should be created.')]
     #[CLI\Option(name: 'existing-config', description: 'Configuration from <info>sync</info> directory should be imported during installation.')]
     #[CLI\Usage(name: 'drush si demo_umami --locale=da', description: '(Re)install using the Umami install profile. Set default language to Danish.')]
-    #[CLI\Usage(name: 'drush si --db-url=mysql://root:pass@localhost:port/dbname', description: 'Install using the specified DB params.')]
+    #[CLI\Usage(name: 'drush si --db-url=mysql://user:pass@localhost:port/dbname', description: 'Install using the specified DB params.')]
     #[CLI\Usage(name: 'drush si --db-url=sqlite://sites/example.com/files/.ht.sqlite', description: 'Install using SQLite')]
     #[CLI\Usage(name: 'drush si --db-url=sqlite://:memory:', description: 'Install using SQLite in-memory database.')]
     #[CLI\Usage(name: 'drush si --account-pass=mom', description: 'Re-install with specified uid1 password.')]
@@ -187,18 +185,20 @@ final class SiteInstallCommands extends DrushCommands
     }
 
 
-    protected function determineProfile($profile, $options)
+    protected function determineProfile($profile, $options): string|bool
     {
         // Try to get profile from existing config if not provided as an argument.
         // @todo Arguably Drupal core [$boot->getKernel()->getInstallProfile()] could do this - https://github.com/drupal/drupal/blob/8.6.x/core/lib/Drupal/Core/DrupalKernel.php#L1606 reads from DB storage but not file storage.
         if (empty($profile) && $options['existing-config']) {
             FileCacheFactory::setConfiguration([FileCacheFactory::DISABLE_CACHE => true]);
-            $source_storage = new FileStorage(Settings::get('config_sync_directory'));
+            $config_directory = Settings::get('config_sync_directory');
+            $source_storage = new FileStorage($config_directory);
             if (!$source_storage->exists('core.extension')) {
-                throw new \Exception('Existing configuration directory not found or does not contain a core.extension.yml file.".');
+                throw new \Exception(dt('Existing configuration directory @config does not contain a core.extension.yml file.', ['@config' => $config_directory]));
             }
             $config = $source_storage->read('core.extension');
-            $profile = $config['profile'];
+            $profile = $config['profile'] ?? false;
+            return $profile;
         }
 
         if (empty($profile)) {

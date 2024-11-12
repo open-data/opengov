@@ -235,7 +235,7 @@ class IntegrationTest extends FacetsTestBase {
     $view = Views::getView('search_api_test_view');
     $view->setDisplay('page_1');
     $current_cache = $view->display_handler->getOption('cache');
-    $this->assertEquals('none', $current_cache['type']);
+    $this->assertEquals('search_api_none', $current_cache['type']);
     $view->display_handler->setOption('cache', ['type' => 'tag']);
     $view->save();
     $current_cache = $view->display_handler->getOption('cache');
@@ -258,7 +258,7 @@ class IntegrationTest extends FacetsTestBase {
     $view = Views::getView('search_api_test_view');
     $view->setDisplay('page_1');
     $current_cache = $view->display_handler->getOption('cache');
-    $this->assertEquals('none', $current_cache['type']);
+    $this->assertEquals('search_api_none', $current_cache['type']);
   }
 
   /**
@@ -641,6 +641,104 @@ class IntegrationTest extends FacetsTestBase {
     $this->clickLink('article_category');
     $links = $this->xpath('//a[normalize-space(text())=:label]', [':label' => 'Reset']);
     $this->assertNotEmpty($links);
+  }
+
+  /**
+   * Tests the facets summary order.
+   */
+  public function testOrder() {
+    // Create facets.
+    $this->createFacet('Otter', 'otter', 'keywords');
+    $this->resetAll();
+    $this->createFacet('Wolverine', 'wolverine');
+    $this->resetAll();
+    $this->createFacet('Llama', 'llama', 'category');
+
+    // Add a summary.
+    $values = [
+      'name' => 'Mustelidae',
+      'id' => 'mustelidae',
+      'facet_source_id' => 'search_api:views_page__search_api_test_view__page_1',
+    ];
+    $this->drupalGet('admin/config/search/facets/add-facet-summary');
+    $this->submitForm($values, 'Save');
+
+    // Configure the summary to hide the count.
+    $summaries = [
+      'facets[otter][checked]' => TRUE,
+      'facets[otter][label]' => 'Summary Otter',
+      'facets[otter][weight]' => -2,
+      'facets[wolverine][checked]' => TRUE,
+      'facets[wolverine][label]' => 'Summary Wolverine',
+      'facets[wolverine][weight]' => -1,
+      'facets[llama][checked]' => TRUE,
+      'facets[llama][label]' => 'Summary Wolverine',
+      'facets[llama][weight]' => 0,
+
+    ];
+    $this->submitForm($summaries, 'Save');
+
+    // Place the block.
+    $block = [
+      'region' => 'footer',
+      'id' => str_replace('_', '-', 'owl'),
+      'weight' => 50,
+    ];
+    $summary_block = $this->drupalPlaceBlock('facets_summary_block:mustelidae', $block);
+
+    $request_options = [
+      'query' => [
+        'f[0]' => 'llama:article_category',
+        'f[1]' => 'wolverine:article',
+        'f[2]' => 'otter:grape',
+      ],
+    ];
+    $this->drupalGet('search-api-test-fulltext', $request_options);
+    $webAssert = $this->assertSession();
+    $this->assertFacetBlocksAppear();
+    $webAssert->pageTextContains($summary_block->label());
+
+    $list_items = $this->getSession()
+      ->getPage()
+      ->findById('block-' . $summary_block->id())
+      ->findAll('css', 'li');
+    $this->assertCount(3, $list_items);
+
+    // The order of the summary must be:
+    // - grape
+    // - article
+    // - article_category.
+    $this->assertEquals($list_items[0]->find('css', '.facet-item__value')->getText(), 'grape');
+    $this->assertEquals($list_items[1]->find('css', '.facet-item__value')->getText(), 'article');
+    $this->assertEquals($list_items[2]->find('css', '.facet-item__value')->getText(), 'article_category');
+
+    $this->drupalGet('admin/config/search/facets/facet-summary/mustelidae/edit');
+    $summaries = [
+      'facets[wolverine][weight]' => -2,
+      'facets[llama][weight]' => -1,
+      'facets[otter][weight]' => 0,
+    ];
+    $this->submitForm($summaries, 'Save');
+
+    $this->drupalGet('search-api-test-fulltext', $request_options);
+    $webAssert = $this->assertSession();
+    $this->assertFacetBlocksAppear();
+    $webAssert->pageTextContains($summary_block->label());
+
+    $list_items = $this->getSession()
+      ->getPage()
+      ->findById('block-' . $summary_block->id())
+      ->findAll('css', 'li');
+    $this->assertCount(3, $list_items);
+
+    // The new order of the summary must be:
+    // - article
+    // - article_category.
+    // - grape.
+    $this->assertEquals($list_items[0]->find('css', '.facet-item__value')->getText(), 'article');
+    $this->assertEquals($list_items[1]->find('css', '.facet-item__value')->getText(), 'article_category');
+    $this->assertEquals($list_items[2]->find('css', '.facet-item__value')->getText(), 'grape');
+
   }
 
 }

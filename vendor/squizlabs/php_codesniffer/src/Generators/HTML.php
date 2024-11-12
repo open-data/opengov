@@ -13,10 +13,84 @@
 
 namespace PHP_CodeSniffer\Generators;
 
+use DOMDocument;
+use DOMNode;
 use PHP_CodeSniffer\Config;
 
 class HTML extends Generator
 {
+
+    /**
+     * Stylesheet for the HTML output.
+     *
+     * @var string
+     */
+    const STYLESHEET = '<style>
+        body {
+            background-color: #FFFFFF;
+            font-size: 14px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000000;
+        }
+
+        h1 {
+            color: #666666;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 0px;
+            background-color: #E6E7E8;
+            padding: 20px;
+            border: 1px solid #BBBBBB;
+        }
+
+        h2 {
+            color: #00A5E3;
+            font-size: 16px;
+            font-weight: normal;
+            margin-top: 50px;
+        }
+
+        .code-comparison {
+            width: 100%;
+        }
+
+        .code-comparison td {
+            border: 1px solid #CCCCCC;
+        }
+
+        .code-comparison-title, .code-comparison-code {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #000000;
+            vertical-align: top;
+            padding: 4px;
+            width: 50%;
+            background-color: #F1F1F1;
+            line-height: 15px;
+        }
+
+        .code-comparison-code {
+            font-family: Courier;
+            background-color: #F9F9F9;
+        }
+
+        .code-comparison-highlight {
+            background-color: #DDF1F7;
+            border: 1px solid #00A5E3;
+            line-height: 15px;
+        }
+
+        .tag-line {
+            text-align: center;
+            width: 100%;
+            margin-top: 30px;
+            font-size: 12px;
+        }
+
+        .tag-line a {
+            color: #000000;
+        }
+    </style>';
 
 
     /**
@@ -32,7 +106,7 @@ class HTML extends Generator
         $this->printToc();
 
         foreach ($this->docFiles as $file) {
-            $doc = new \DOMDocument();
+            $doc = new DOMDocument();
             $doc->load($file);
             $documentation = $doc->getElementsByTagName('documentation')->item(0);
             $this->processSniff($documentation);
@@ -59,72 +133,7 @@ class HTML extends Generator
         echo '<html>'.PHP_EOL;
         echo ' <head>'.PHP_EOL;
         echo "  <title>$standard Coding Standards</title>".PHP_EOL;
-        echo '  <style>
-                    body {
-                        background-color: #FFFFFF;
-                        font-size: 14px;
-                        font-family: Arial, Helvetica, sans-serif;
-                        color: #000000;
-                    }
-
-                    h1 {
-                        color: #666666;
-                        font-size: 20px;
-                        font-weight: bold;
-                        margin-top: 0px;
-                        background-color: #E6E7E8;
-                        padding: 20px;
-                        border: 1px solid #BBBBBB;
-                    }
-
-                    h2 {
-                        color: #00A5E3;
-                        font-size: 16px;
-                        font-weight: normal;
-                        margin-top: 50px;
-                    }
-
-                    .code-comparison {
-                        width: 100%;
-                    }
-
-                    .code-comparison td {
-                        border: 1px solid #CCCCCC;
-                    }
-
-                    .code-comparison-title, .code-comparison-code {
-                        font-family: Arial, Helvetica, sans-serif;
-                        font-size: 12px;
-                        color: #000000;
-                        vertical-align: top;
-                        padding: 4px;
-                        width: 50%;
-                        background-color: #F1F1F1;
-                        line-height: 15px;
-                    }
-
-                    .code-comparison-code {
-                        font-family: Courier;
-                        background-color: #F9F9F9;
-                    }
-
-                    .code-comparison-highlight {
-                        background-color: #DDF1F7;
-                        border: 1px solid #00A5E3;
-                        line-height: 15px;
-                    }
-
-                    .tag-line {
-                        text-align: center;
-                        width: 100%;
-                        margin-top: 30px;
-                        font-size: 12px;
-                    }
-
-                    .tag-line a {
-                        color: #000000;
-                    }
-                </style>'.PHP_EOL;
+        echo '  '.self::STYLESHEET.PHP_EOL;
         echo ' </head>'.PHP_EOL;
         echo ' <body>'.PHP_EOL;
         echo "  <h1>$standard Coding Standards</h1>".PHP_EOL;
@@ -145,7 +154,7 @@ class HTML extends Generator
         echo '  <ul class="toc">'.PHP_EOL;
 
         foreach ($this->docFiles as $file) {
-            $doc = new \DOMDocument();
+            $doc = new DOMDocument();
             $doc->load($file);
             $documentation = $doc->getElementsByTagName('documentation')->item(0);
             $title         = $this->getTitle($documentation);
@@ -188,7 +197,7 @@ class HTML extends Generator
      *
      * @return void
      */
-    public function processSniff(\DOMNode $doc)
+    public function processSniff(DOMNode $doc)
     {
         $title = $this->getTitle($doc);
         echo '  <a name="'.str_replace(' ', '-', $title).'" />'.PHP_EOL;
@@ -212,7 +221,7 @@ class HTML extends Generator
      *
      * @return void
      */
-    protected function printTextBlock(\DOMNode $node)
+    protected function printTextBlock(DOMNode $node)
     {
         $content = trim($node->nodeValue);
         $content = htmlspecialchars($content);
@@ -233,7 +242,7 @@ class HTML extends Generator
      *
      * @return void
      */
-    protected function printCodeComparisonBlock(\DOMNode $node)
+    protected function printCodeComparisonBlock(DOMNode $node)
     {
         $codeBlocks = $node->getElementsByTagName('code');
 

@@ -78,8 +78,10 @@ class WidgetJSTest extends JsBase {
     $block = $page->findById('block-owl-block');
     $block->isVisible();
 
+    /** @var \Drupal\FunctionalJavascriptTests\JSWebAssert $assert_session */
+    $assert_session = $this->assertSession();
     // Make sure the show more / show less links are shown.
-    $this->assertSession()->linkExists('Show more');
+    $assert_session->linkExists('Show more');
 
     // Change the link label of show more into "Moar Llamas".
     $facet = Facet::load('owl');
@@ -95,8 +97,8 @@ class WidgetJSTest extends JsBase {
 
     // Check that the new configuration is used now.
     $this->drupalGet('search-api-test-fulltext');
-    $this->assertSession()->linkNotExists('Show more');
-    $this->assertSession()->linkExists('Moar Llamas');
+    $assert_session->linkNotExists('Show more');
+    $assert_session->linkExists('Moar Llamas');
   }
 
   /**

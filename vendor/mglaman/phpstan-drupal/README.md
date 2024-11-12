@@ -10,7 +10,7 @@ those namespaces so that PHPStan can properly discover symbols in your Drupal co
 
 ## Sponsors
 
-<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.optasy.com/"><img src="https://www.optasy.com/images/logo.svg" alt="undpaul" width="200" /></a>
+<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.optasy.com/"><img src="https://optasy.com/themes/custom/optasy/img/logo_optasy.png" alt="Optasy" width="250"></a> <a href="https://www.fame.fi/"><img src="https://www.fame.fi/assets/images/fame-logo.png" alt="Fame Helsinki" width="250" ></a>
 
 [Would you like to sponsor?](https://github.com/sponsors/mglaman)
 
@@ -91,24 +91,17 @@ See the `extension-installer` documentation for more information: https://github
 
 ## Adapting to your project
 
-### Specifying your Drupal project's root
+### Customizing rules
 
-By default, the PHPStan Drupal extension will try to determine your Drupal project's root directory based on the working
-directory that PHPStan is checking. If this is not working properly, you can explicitly define the Drupal project's root
-directory using the `drupal.drupal_root` parameter.
+#### Disabling checks for extending `@internal` classes
 
-```
-parameters:
-	drupal:
-		drupal_root: /path/to/drupal
-```
+You can disable the `ClassExtendsInternalClassRule` rule by adding the following to your `phpstan.neon`:
 
-You can also use container parameters. For instance you can always set it to the current working directory.
-
-```
-parameters:
-	drupal:
-		drupal_root: %currentWorkingDirectory%
+```neon
+parameters: 
+    drupal:
+        rules:
+            classExtendsInternalClassRule: false
 ```
 
 ### Entity storage mappings.
@@ -193,11 +186,12 @@ For example, the Paragraphs module could have the following `entity_mapping.neon
 
 ```neon
 parameters:
-	entityMapping:
-		paragraph:
-			class: Drupal\paragraphs\Entity\Paragraph
-		paragraphs_type:
-			class: Drupal\paragraphs\Entity\ParagraphsType
+	drupal:
+		entityMapping:
+			paragraph:
+				class: Drupal\paragraphs\Entity\Paragraph
+			paragraphs_type:
+				class: Drupal\paragraphs\Entity\ParagraphsType
 ```
 
 Then in the `composer.json` for Paragraphs, the `entity_mapping.neon` would be provided as a PHPStan include

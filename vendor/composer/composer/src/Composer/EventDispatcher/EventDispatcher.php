@@ -90,7 +90,7 @@ class EventDispatcher
      */
     public function setRunScripts(bool $runScripts = true): self
     {
-        $this->runScripts = (bool) $runScripts;
+        $this->runScripts = $runScripts;
 
         return $this;
     }
@@ -194,13 +194,20 @@ class EventDispatcher
 
         $this->pushEvent($event);
 
+        $autoloadersBefore = spl_autoload_functions();
+
         try {
             $returnMax = 0;
             foreach ($listeners as $callable) {
                 $return = 0;
                 $this->ensureBinDirIsInPath();
 
-                $formattedEventNameWithArgs = $event->getName() . ($event->getArguments() !== [] ? ' (' . implode(', ', $event->getArguments()) . ')' : '');
+                $additionalArgs = $event->getArguments();
+                if (is_string($callable) && str_contains($callable, '@no_additional_args')) {
+                    $callable = Preg::replace('{ ?@no_additional_args}', '', $callable);
+                    $additionalArgs = [];
+                }
+                $formattedEventNameWithArgs = $event->getName() . ($additionalArgs !== [] ? ' (' . implode(', ', $additionalArgs) . ')' : '');
                 if (!is_string($callable)) {
                     if (!is_callable($callable)) {
                         $className = is_object($callable[0]) ? get_class($callable[0]) : $callable[0];
@@ -218,7 +225,12 @@ class EventDispatcher
                     $scriptName = $script[0];
                     unset($script[0]);
 
-                    $args = array_merge($script, $event->getArguments());
+                    $index = array_search('@additional_args', $script, true);
+                    if ($index !== false) {
+                        $args = array_splice($script, $index, 0, $additionalArgs);
+                    } else {
+                        $args = array_merge($script, $additionalArgs);
+                    }
                     $flags = $event->getFlags();
                     if (isset($flags['script-alias-input'])) {
                         $argsString = implode(' ', array_map(static function ($arg) { return ProcessExecutor::escape($arg); }, $script));
@@ -292,12 +304,12 @@ class EventDispatcher
                     $app->add($cmd);
                     $app->setDefaultCommand((string) $cmd->getName(), true);
                     try {
-                        $args = implode(' ', array_map(static function ($arg) { return ProcessExecutor::escape($arg); }, $event->getArguments()));
+                        $args = implode(' ', array_map(static function ($arg) { return ProcessExecutor::escape($arg); }, $additionalArgs));
                         // reusing the output from $this->io is mostly needed for tests, but generally speaking
                         // it does not hurt to keep the same stream as the current Application
                         if ($this->io instanceof ConsoleIO) {
                             $reflProp = new \ReflectionProperty($this->io, 'output');
-                            if (PHP_VERSION_ID < 80100) {
+                            if (\PHP_VERSION_ID < 80100) {
                                 $reflProp->setAccessible(true);
                             }
                             $output = $reflProp->getValue($this->io);
@@ -311,13 +323,17 @@ class EventDispatcher
                         throw $e;
                     }
                 } else {
-                    $args = implode(' ', array_map(['Composer\Util\ProcessExecutor', 'escape'], $event->getArguments()));
+                    $args = implode(' ', array_map(['Composer\Util\ProcessExecutor', 'escape'], $additionalArgs));
 
                     // @putenv does not receive arguments
                     if (strpos($callable, '@putenv ') === 0) {
                         $exec = $callable;
                     } else {
-                        $exec = $callable . ($args === '' ? '' : ' '.$args);
+                        if (str_contains($callable, '@additional_args')) {
+                            $exec = str_replace('@additional_args', $args, $callable);
+                        } else {
+                            $exec = $callable . ($args === '' ? '' : ' '.$args);
+                        }
                     }
 
                     if ($this->io->isVerbose()) {
@@ -328,7 +344,7 @@ class EventDispatcher
                     }
 
                     $possibleLocalBinaries = $this->composer->getPackage()->getBinaries();
-                    if ($possibleLocalBinaries) {
+                    if (count($possibleLocalBinaries) > 0) {
                         foreach ($possibleLocalBinaries as $localExec) {
                             if (Preg::isMatch('{\b'.preg_quote($callable).'$}', $localExec)) {
                                 $caller = BinaryInstaller::determineBinaryCaller($localExec);
@@ -352,7 +368,7 @@ class EventDispatcher
                         $pathAndArgs = substr($exec, 5);
                         if (Platform::isWindows()) {
                             $pathAndArgs = Preg::replaceCallback('{^\S+}', static function ($path) {
-                                return str_replace('/', '\\', (string) $path[0]);
+                                return str_replace('/', '\\', $path[0]);
                             }, $pathAndArgs);
                         }
                         // match somename (not in quote, and not a qualified path) and if it is not a valid path from CWD then try to find it
@@ -382,8 +398,6 @@ class EventDispatcher
 
                         if (Platform::isWindows()) {
                             $exec = Preg::replaceCallback('{^\S+}', static function ($path) {
-                                assert(is_string($path[0]));
-
                                 return str_replace('/', '\\', $path[0]);
                             }, $exec);
                         }
@@ -411,6 +425,26 @@ class EventDispatcher
             }
         } finally {
             $this->popEvent();
+
+            $knownIdentifiers = [];
+            foreach ($autoloadersBefore as $key => $cb) {
+                $knownIdentifiers[$this->getCallbackIdentifier($cb)] = ['key' => $key, 'callback' => $cb];
+            }
+            foreach (spl_autoload_functions() as $cb) {
+                // once we get to the first known autoloader, we can leave any appended autoloader without problems
+                if (isset($knownIdentifiers[$this->getCallbackIdentifier($cb)]) && $knownIdentifiers[$this->getCallbackIdentifier($cb)]['key'] === 0) {
+                    break;
+                }
+
+                // other newly appeared prepended autoloaders should be appended instead to ensure Composer loads its classes first
+                if ($cb instanceof ClassLoader) {
+                    $cb->unregister();
+                    $cb->register(false);
+                } else {
+                    spl_autoload_unregister($cb);
+                    spl_autoload_register($cb);
+                }
+            }
         }
 
         return $returnMax;
@@ -637,5 +671,24 @@ class EventDispatcher
                 Platform::putEnv($pathEnv, $binDir.PATH_SEPARATOR.$pathValue);
             }
         }
+    }
+
+    /**
+     * @param callable $cb DO NOT MOVE TO TYPE HINT as private autoload callbacks are not technically callable
+     */
+    private function getCallbackIdentifier($cb): string
+    {
+        if (is_string($cb)) {
+            return 'fn:'.$cb;
+        }
+        if (is_object($cb)) {
+            return 'obj:'.spl_object_hash($cb);
+        }
+        if (is_array($cb)) {
+            return 'array:'.(is_string($cb[0]) ? $cb[0] : get_class($cb[0]) .'#'.spl_object_hash($cb[0])).'::'.$cb[1];
+        }
+
+        // not great but also do not want to break everything here
+        return 'unsupported';
     }
 }

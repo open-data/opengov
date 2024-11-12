@@ -14,13 +14,19 @@ use function strtr;
 
 final class InstrumentNameCriteria implements SelectionCriteriaInterface
 {
-    private string $pattern;
+    private readonly string $pattern;
 
+    /**
+     * @param non-empty-string $name
+     */
     public function __construct(string $name)
     {
         $this->pattern = sprintf('/^%s$/', strtr(preg_quote($name, '/'), ['\\?' => '.', '\\*' => '.*']));
     }
 
+    /**
+     * @psalm-suppress ArgumentTypeCoercion
+     */
     public function accepts(Instrument $instrument, InstrumentationScopeInterface $instrumentationScope): bool
     {
         return (bool) preg_match($this->pattern, $instrument->name);

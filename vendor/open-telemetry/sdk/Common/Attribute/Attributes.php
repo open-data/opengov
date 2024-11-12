@@ -8,18 +8,18 @@ use function array_key_exists;
 use IteratorAggregate;
 use Traversable;
 
+/**
+ * @psalm-suppress MissingTemplateParam
+ */
 final class Attributes implements AttributesInterface, IteratorAggregate
 {
-    private array $attributes;
-    private int $droppedAttributesCount;
-
     /**
      * @internal
      */
-    public function __construct(array $attributes, int $droppedAttributesCount)
-    {
-        $this->attributes = $attributes;
-        $this->droppedAttributesCount = $droppedAttributesCount;
+    public function __construct(
+        private readonly array $attributes,
+        private readonly int $droppedAttributesCount,
+    ) {
     }
 
     public static function create(iterable $attributes): AttributesInterface

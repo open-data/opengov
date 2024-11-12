@@ -56,6 +56,7 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
    * {@inheritdoc}
    */
   public function setUp(): void {
+    parent::setUp();
     $this->discovery = $this->createMock(DiscoveryInterface::class);
 
     $this->factory = $this->createMock(DefaultFactory::class);
@@ -124,7 +125,7 @@ class FacetSourcePluginManagerTest extends UnitTestCase {
    * @return array
    *   An invalid data provider.
    */
-  public function invalidDefinitions() {
+  public static function invalidDefinitions(): array {
     return [
       'only id' => ['id' => 'owl'],
       'only display_id' => ['display_id' => 'search_api:owl'],
