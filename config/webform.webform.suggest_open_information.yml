@@ -19,7 +19,7 @@ archive: false
 id: suggest_open_information
 title: 'Suggest Open Information'
 description: '&quot;Suggest Open Information&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   name_of_information:
     '#type': textfield

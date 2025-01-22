@@ -1,6 +1,6 @@
 uuid: 6f0e29e5-abf1-4357-83b5-5eb8d2cadcea
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - field.storage.node.body

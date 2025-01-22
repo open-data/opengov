@@ -19,7 +19,7 @@ archive: false
 id: suggest_a_dataset
 title: 'Suggest a Dataset'
 description: 'Updated &quot;Suggest a Dataset&quot; form for the changed workflow.'
-category: ''
+categories: {  }
 elements: |-
   page_1:
     '#type': webform_wizard_page

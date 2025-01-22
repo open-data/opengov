@@ -11,6 +11,7 @@ dependencies:
     - content_moderation
     - content_translation
     - contextual
+    - file
     - filter
     - node
     - system
@@ -24,6 +25,7 @@ permissions:
   - 'access content overview'
   - 'access contextual links'
   - 'access toolbar'
+  - 'delete own files'
   - 'translate article node'
   - 'translate page node'
   - 'use editorial transition review'

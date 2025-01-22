@@ -19,7 +19,7 @@ archive: true
 id: suggest_dataset
 title: 'Suggest a Dataset'
 description: 'DEPRECATED - &quot;Suggest a Dataset&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   name_of_dataset:
     '#type': textfield

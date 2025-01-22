@@ -17,5 +17,5 @@ handlers:
     label: Courriel
     settings:
       from_name: _default
-      subject: 'Proposez une idée pour le 2.0 Consultation Plan d''action sur la transparence gouvernementale'
+      subject: "Proposez une idée pour le 2.0 Consultation Plan d'action sur la transparence gouvernementale"
       body: "&lt;p&gt;Soumis le [webform_submission:created]&lt;/p&gt;<br />\r\n&lt;p&gt;Soumis par : [webform_submission:user]&lt;/p&gt;<br />\r\n&lt;p&gt;Les valeurs soumises sont :&lt;/p&gt;<br />\r\n[webform_submission:values]<br />\r\n<br />\r\nLes résultats de cette soumission peuvent être vus ici :<br />\r\n[webform_submission:url]\r\n"

@@ -23,7 +23,7 @@ archive: false
 id: contact
 title: Contact
 description: '&quot;Contact&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   subject:
     '#title': Subject

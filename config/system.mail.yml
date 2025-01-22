@@ -4,3 +4,10 @@ interface:
   default: php_mail
   webform: webform_php_mail
   webform_resend: html_formatter_mail
+mailer_dsn:
+  scheme: sendmail
+  host: default
+  user: null
+  password: null
+  port: null
+  options: {  }

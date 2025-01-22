@@ -39,7 +39,7 @@ display:
           content: 'Displaying @start - @end of @total'
       empty:
         area_text_custom:
-          content: 'Aucun résultat n''a été trouvé.'
+          content: "Aucun résultat n'a été trouvé."
   page_1:
     display_options:
       fields:

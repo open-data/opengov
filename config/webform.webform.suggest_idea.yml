@@ -19,7 +19,7 @@ archive: false
 id: suggest_idea
 title: 'Suggest a Idea'
 description: '&quot;Suggest a Idea&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   submitted_by:
     '#type': textfield

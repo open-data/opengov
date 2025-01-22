@@ -10,6 +10,7 @@ dependencies:
     - book
     - content_moderation
     - content_translation
+    - file
     - filter
     - node
     - webform
@@ -24,6 +25,7 @@ permissions:
   - 'administer webform submission'
   - 'create content translations'
   - 'delete content translations'
+  - 'delete own files'
   - 'translate suggested_dataset node'
   - 'update content translations'
   - 'use editorial transition archive'

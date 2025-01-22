@@ -6,7 +6,7 @@ dependencies:
     - language
     - node
 id: histoire_d_impact_utilisateur
-label: 'Histoire d''impact utilisateur'
+label: "Histoire d'impact utilisateur"
 type: 'canonical_entities:node'
 pattern: 'récit/[node:title]'
 selection_criteria:

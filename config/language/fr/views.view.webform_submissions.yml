@@ -40,7 +40,7 @@ display:
           content: 'Displaying @start - @end of @total'
       empty:
         area_text_custom:
-          content: 'Aucune soumission n''est disponible.'
+          content: "Aucune soumission n'est disponible."
       arguments:
         in_draft:
           exception:

@@ -13,7 +13,8 @@ archive: false
 id: vote_up_down_external
 title: 'Vote: Vote up or LIKE (external)'
 description: 'Simple webform to vote up or like external content such as SOLR inventory items.'
-category: Voting
+categories:
+  - Voting
 elements: |-
   uuid:
     '#type': hidden

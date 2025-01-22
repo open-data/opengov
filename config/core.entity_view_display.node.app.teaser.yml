@@ -5,6 +5,24 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.app.body
+    - field.field.node.app.comment
+    - field.field.node.app.field_app_charge
+    - field.field.node.app.field_datasets_used
+    - field.field.node.app.field_date_published
+    - field.field.node.app.field_developed_by
+    - field.field.node.app.field_device_formats
+    - field.field.node.app.field_keywords
+    - field.field.node.app.field_media
+    - field.field.node.app.field_meta_tags
+    - field.field.node.app.field_more_apps_by
+    - field.field.node.app.field_name
+    - field.field.node.app.field_previousnodeid
+    - field.field.node.app.field_ribbon
+    - field.field.node.app.field_subject
+    - field.field.node.app.field_submitter_name
+    - field.field.node.app.field_url
+    - field.field.node.app.field_vote_average
+    - field.field.node.app.field_vote_count
     - node.type.app
   module:
     - text
@@ -22,10 +40,34 @@ content:
     third_party_settings: {  }
     weight: 101
     region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     settings: {  }
     third_party_settings: {  }
     weight: 100
     region: content
 hidden:
+  comment: true
+  field_app_charge: true
+  field_datasets_used: true
+  field_date_published: true
+  field_developed_by: true
+  field_device_formats: true
+  field_keywords: true
+  field_media: true
+  field_meta_tags: true
+  field_more_apps_by: true
+  field_name: true
+  field_previousnodeid: true
+  field_ribbon: true
+  field_subject: true
+  field_submitter_name: true
+  field_url: true
+  field_vote_average: true
+  field_vote_count: true
   langcode: true
+  search_api_excerpt: true

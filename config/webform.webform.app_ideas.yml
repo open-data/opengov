@@ -19,7 +19,7 @@ archive: false
 id: app_ideas
 title: 'App Ideas'
 description: '&quot;App Ideas&quot; webform.'
-category: ''
+categories: {  }
 elements: |
   name_of_application:
     '#title': 'Name of suggested app'

@@ -16,6 +16,11 @@ targetEntityType: node
 bundle: external
 mode: teaser
 content:
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     settings: {  }
     third_party_settings: {  }
@@ -27,3 +32,4 @@ hidden:
   field_url: true
   field_uuid: true
   langcode: true
+  search_api_excerpt: true

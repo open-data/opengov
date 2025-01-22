@@ -787,7 +787,9 @@ display:
       contexts:
         - 'languages:language_interface'
         - url.query_args
-      tags: {  }
+      tags:
+        - 'config:search_api.index.pd_core_ati'
+        - 'search_api_list:pd_core_ati'
   block_1:
     id: block_1
     display_title: 'ATI Search'
@@ -1256,14 +1258,14 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: 0
+            max_length: 250
             word_boundary: true
             ellipsis: true
             more_link: false
             more_link_text: ''
             more_link_path: ''
             strip_tags: false
-            trim: false
+            trim: true
             preserve_tags: ''
             html: false
           element_type: ''
@@ -1309,14 +1311,14 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: 0
+            max_length: 250
             word_boundary: true
             ellipsis: true
             more_link: false
             more_link_text: ''
             more_link_path: ''
             strip_tags: false
-            trim: false
+            trim: true
             preserve_tags: ''
             html: false
           element_type: ''
@@ -1663,7 +1665,9 @@ display:
         - url.query_args
         - 'url.query_args:sort_by'
         - 'url.query_args:sort_order'
-      tags: {  }
+      tags:
+        - 'config:search_api.index.pd_core_ati'
+        - 'search_api_list:pd_core_ati'
   block_2:
     id: block_2
     display_title: 'Latest ATI requests'
@@ -2052,4 +2056,6 @@ display:
       max-age: -1
       contexts:
         - 'languages:language_interface'
-      tags: {  }
+      tags:
+        - 'config:search_api.index.pd_core_ati'
+        - 'search_api_list:pd_core_ati'

@@ -3,7 +3,11 @@ langcode: en
 status: open
 dependencies:
   module:
+    - honeypot
     - voting_webform
+third_party_settings:
+  honeypot:
+    time_restriction: true
 weight: 0
 open: null
 close: null
@@ -12,8 +16,9 @@ template: false
 archive: false
 id: vote
 title: 'Vote: Rating (external)'
-description: 'Rate external content such as datasets using a webform'
-category: Voting
+description: '<p>Rate external content such as datasets using a webform</p>'
+categories:
+  - Voting
 elements: |-
   dataset_uuid:
     '#type': hidden
@@ -92,9 +97,7 @@ settings:
   submission_exclude_empty: false
   submission_exclude_empty_checkbox: false
   submission_views: {  }
-  submission_views_replace:
-    webform_routes: {  }
-    node_routes: {  }
+  submission_views_replace: {  }
   submission_user_columns:
     - serial
     - created

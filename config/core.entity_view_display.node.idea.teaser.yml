@@ -5,6 +5,14 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.idea.body
+    - field.field.node.idea.comment
+    - field.field.node.idea.field_idea_permalink
+    - field.field.node.idea.field_idea_status
+    - field.field.node.idea.field_idea_submission_name
+    - field.field.node.idea.field_idea_tags
+    - field.field.node.idea.field_meta_tags
+    - field.field.node.idea.field_previousnodeid
+    - field.field.node.idea.field_vote_up_down
     - node.type.idea
   module:
     - text
@@ -43,3 +51,4 @@ hidden:
   field_previousnodeid: true
   field_vote_up_down: true
   langcode: true
+  search_api_excerpt: true

@@ -13,7 +13,8 @@ archive: false
 id: vote_up_down
 title: 'Vote: Vote up or LIKE'
 description: 'Simple webform to vote up or like an entity.'
-category: Voting
+categories:
+  - Voting
 elements: |-
   actions:
     '#type': webform_actions

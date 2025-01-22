@@ -368,7 +368,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: '{{ field_vote_up_down__value|number_format(0,''.'','''') }}'
+            text: "{{ field_vote_up_down__value|number_format(0,'.','') }}"
             make_link: false
             path: ''
             absolute: false
@@ -1122,7 +1122,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: '{{ field_vote_up_down__value|number_format(0,''.'','''') }}'
+            text: "{{ field_vote_up_down__value|number_format(0,'.','') }}"
             make_link: false
             path: ''
             absolute: false

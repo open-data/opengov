@@ -5,6 +5,12 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.consultation.body
+    - field.field.node.consultation.field_consultation_status
+    - field.field.node.consultation.field_date
+    - field.field.node.consultation.field_idea_reference
+    - field.field.node.consultation.field_meta_tags
+    - field.field.node.consultation.field_previousnodeid
+    - field.field.node.consultation.layout_builder__layout
     - node.type.consultation
   module:
     - text
@@ -22,10 +28,22 @@ content:
     third_party_settings: {  }
     weight: 101
     region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     settings: {  }
     third_party_settings: {  }
     weight: 100
     region: content
 hidden:
+  field_consultation_status: true
+  field_date: true
+  field_idea_reference: true
+  field_meta_tags: true
+  field_previousnodeid: true
   langcode: true
+  layout_builder__layout: true
+  search_api_excerpt: true

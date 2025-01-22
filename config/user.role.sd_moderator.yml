@@ -4,6 +4,7 @@ status: true
 dependencies:
   module:
     - content_moderation
+    - file
     - node
     - toolbar
 id: sd_moderator
@@ -13,4 +14,5 @@ is_admin: null
 permissions:
   - 'access content overview'
   - 'access toolbar'
+  - 'delete own files'
   - 'view any unpublished content'

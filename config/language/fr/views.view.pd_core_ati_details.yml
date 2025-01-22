@@ -8,14 +8,14 @@ display:
           label: 'Numéro de la demande'
         pages:
           label: 'Nombre de pages'
-      title: 'Demande d''accès à l''information informelle dossiers précédemment publiés'
+      title: "Demande d'accès à l'information informelle dossiers précédemment publiés"
       footer:
         area_text_custom:
           content: '<p class="mrgn-tp-lg mrgn-bttm-xl"><a class="btn btn-primary" href="/fr/search/ati">Retour à la recherche&nbsp;<span class="fa fa-undo"></span></a></p>'
         area_text_custom_1:
-          content: "<h2>Demandez une copie des documents</h2>\r\n<p>La disponibilité des documents est assujettie aux délais de conservation établis par les institutions. Les demandes faites par le biais de ce formulaire sont considérées comme des demandes informelles et ne sont pas sujettes aux mêmes conditions que les demandes faites en vertu de la Loi sur l’accès à l’information. *Pour plus d’informations, veuillez consulter la page Web « <a href=\"[site:url]/au-sujet-demandes-dacces-a-linformation\" target=\"_blank\">Au sujet des demandes d’accès à l’information</a> ».</p>\r\n"
+          content: "<h2>Demandez une copie des documents</h2>\r\n<p>La disponibilité des documents est assujettie aux délais de conservation établis par les institutions. Les demandes faites par le biais de ce formulaire sont considérées comme des demandes informelles et ne sont pas sujettes aux mêmes conditions que les demandes faites en vertu de la Loi sur l’accès à l’information. *Pour plus d’informations, veuillez consulter la page Web « <a href=\"https://www.canada.ca/fr/secretariat-conseil-tresor/services/acces-information-protection-reseignements-personnels.html\" target=\"_blank\">Au sujet de l'accès à l’information et protection des renseignements personnels</a> ».</p>\r\n"
       empty:
         area_text_custom:
           content: "<br/><br/>\r\n<p><strong>Aucun résultat trouvé.</strong></p>\r\n<p class=\"mrgn-tp-lg mrgn-bttm-xl\"><a class=\"btn btn-primary\" href=\"/fr/search/ati\">Retour à la recherche&nbsp;<span class=\"fa fa-undo\"></span></a></p>\r\n<br/><br/>"
   details:
-    display_title: 'Demande d''accès à l''information informelle dossiers précédemment publiés'
+    display_title: "Demande d'accès à l'information informelle dossiers précédemment publiés"

@@ -22,7 +22,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_fr.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.ElisionFilterFactory
@@ -57,7 +57,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_fr.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.ElisionFilterFactory
@@ -88,6 +88,7 @@ field_type:
           language: French
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
+  storeOffsetsWithPositions: true
 unstemmed_field_type:
   name: text_unstemmed_fr
   class: solr.TextField
@@ -100,7 +101,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_fr.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.ElisionFilterFactory
@@ -131,7 +132,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_fr.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -156,6 +157,7 @@ unstemmed_field_type:
           words: stopwords_fr.txt
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
+  storeOffsetsWithPositions: true
 spellcheck_field_type: null
 collated_field_type:
   name: collated_fr
@@ -235,10 +237,13 @@ solr_configs:
               VALUE: sm_context_tags
             -
               name: buildOnCommit
-              VALUE: 'true'
+              VALUE: 'false'
             -
               name: buildOnStartup
               VALUE: 'false'
+            -
+              name: indexPath
+              VALUE: ./fr
 text_files:
   stopwords: |
     au

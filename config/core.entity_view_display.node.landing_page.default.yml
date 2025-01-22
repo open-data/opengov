@@ -103,7 +103,7 @@ third_party_settings:
             region: content
             configuration:
               id: 'block_content:326bf2f7-5bd0-403a-b436-f7dc82ad30f2'
-              label: 'What''s new in open government?'
+              label: "What's new in open government?"
               label_display: '0'
               provider: block_content
               status: true

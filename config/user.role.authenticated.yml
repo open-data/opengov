@@ -2,7 +2,11 @@ uuid: ff9133d8-4285-4e03-a4b0-2923a518905b
 langcode: en
 status: true
 dependencies:
+  config:
+    - filter.format.webform_default
   module:
+    - file
+    - filter
     - fontawesome
     - media
     - system
@@ -15,4 +19,6 @@ is_admin: false
 permissions:
   - 'access content'
   - 'access fontawesome additional settings'
+  - 'delete own files'
+  - 'use text format webform_default'
   - 'view media'

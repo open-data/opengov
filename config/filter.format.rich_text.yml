@@ -45,12 +45,6 @@ filters:
       allowed_html: ''
       filter_html_help: true
       filter_html_nofollow: false
-  filter_htmlcorrector:
-    id: filter_htmlcorrector
-    provider: filter
-    status: false
-    weight: -44
-    settings: {  }
   filter_html_escape:
     id: filter_html_escape
     provider: filter
@@ -63,6 +57,18 @@ filters:
     status: false
     weight: -45
     settings: {  }
+  filter_htmlcorrector:
+    id: filter_htmlcorrector
+    provider: filter
+    status: false
+    weight: -44
+    settings: {  }
+  filter_image_lazy_load:
+    id: filter_image_lazy_load
+    provider: filter
+    status: true
+    weight: -42
+    settings: {  }
   filter_url:
     id: filter_url
     provider: filter
@@ -70,13 +76,6 @@ filters:
     weight: -42
     settings:
       filter_url_length: 128
-  token_filter:
-    id: token_filter
-    provider: token_filter
-    status: true
-    weight: 0
-    settings:
-      replace_empty: '0'
   media_embed:
     id: media_embed
     provider: media
@@ -88,3 +87,10 @@ filters:
       allowed_media_types:
         file: file
         image: image
+  token_filter:
+    id: token_filter
+    provider: token_filter
+    status: true
+    weight: 0
+    settings:
+      replace_empty: '0'

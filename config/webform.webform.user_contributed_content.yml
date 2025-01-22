@@ -16,7 +16,7 @@ archive: false
 id: user_contributed_content
 title: 'User Contributed Content'
 description: 'Webform for submitting user contributed content'
-category: ''
+categories: {  }
 elements: |-
   page_1:
     '#type': webform_wizard_page

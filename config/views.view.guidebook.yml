@@ -1,6 +1,6 @@
 uuid: 1523772e-8c0a-4bec-a40e-021468c1375e
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - search_api.index.drupal_content
@@ -376,7 +376,10 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-      tags: {  }
+        - 'user.node_grants:view'
+      tags:
+        - 'config:search_api.index.drupal_content'
+        - 'search_api_list:drupal_content'
   block_1:
     id: block_1
     display_title: Block
@@ -391,4 +394,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-      tags: {  }
+        - 'user.node_grants:view'
+      tags:
+        - 'config:search_api.index.drupal_content'
+        - 'search_api_list:drupal_content'

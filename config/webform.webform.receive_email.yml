@@ -19,7 +19,7 @@ archive: false
 id: receive_email
 title: 'Receive Open Government Email Form'
 description: '&quot;Receive Open Government Email&quot; webform.'
-category: ''
+categories: {  }
 elements: |
   e_mail:
     '#type': email

@@ -17,9 +17,9 @@ uid: 1
 template: false
 archive: false
 id: suggest_an_idea_for_canada_s_4th
-title: 'Suggest an idea for Canada''s 4th Plan on Open Government'
+title: "Suggest an idea for Canada's 4th Plan on Open Government"
 description: '&quot;Suggest an idea for Canada&#39;s 4th Plan on Open Government&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   add_your_idea:
     '#type': fieldset

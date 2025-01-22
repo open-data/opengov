@@ -21,7 +21,7 @@ archive: false
 id: ati_records
 title: 'Informal Request for ATI Records Previously Released'
 description: '&quot;Informal Request for ATI Records Previously Released&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   solr_core:
     '#type': hidden

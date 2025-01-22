@@ -124,7 +124,7 @@ field_settings:
     datasource_id: 'entity:node'
     property_path: 'body:processed'
     type: text
-    boost: !!float 2
+    boost: 2.0
     dependencies:
       config:
         - field.storage.node.body
@@ -133,7 +133,7 @@ field_settings:
     datasource_id: 'entity:node'
     property_path: title
     type: text
-    boost: !!float 3
+    boost: 3.0
     dependencies:
       module:
         - node
@@ -214,10 +214,10 @@ processor_settings:
       preprocess_index: 0
     boosts:
       'entity:node':
-        datasource_boost: !!float 2
+        datasource_boost: 2.0
         bundle_boosts:
-          landing_page: !!float 5
-          page: !!float 3
+          landing_page: 5.0
+          page: 3.0
 tracker_settings:
   default:
     indexing_order: fifo

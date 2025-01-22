@@ -5,7 +5,6 @@ dependencies:
   config:
     - field.storage.node.field_blog_author_name
     - node.type.article
-    - taxonomy.vocabulary.blog_author
 id: node.article.field_blog_author_name
 field_name: field_blog_author_name
 entity_type: node
@@ -19,8 +18,7 @@ default_value_callback: ''
 settings:
   handler: 'default:taxonomy_term'
   handler_settings:
-    target_bundles:
-      blog_author: blog_author
+    target_bundles: {  }
     sort:
       field: name
       direction: asc

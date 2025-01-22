@@ -49,7 +49,7 @@ display:
             label: Subject
         combine:
           expose:
-            label: 'Nom de l''auteur'
+            label: "Nom de l'auteur"
       title: Commentaires
       empty:
         area_text_custom:
@@ -99,7 +99,7 @@ display:
             label: Subject
         combine:
           expose:
-            label: 'Nom de l''auteur'
+            label: "Nom de l'auteur"
       fields:
         comment_bulk_form:
           action_title: Action

@@ -5,6 +5,17 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.impact_story.body
+    - field.field.node.impact_story.comment
+    - field.field.node.impact_story.field_dataset_used
+    - field.field.node.impact_story.field_media
+    - field.field.node.impact_story.field_ribbon
+    - field.field.node.impact_story.field_story_impact
+    - field.field.node.impact_story.field_story_testimonial
+    - field.field.node.impact_story.field_subject
+    - field.field.node.impact_story.field_submitter_name
+    - field.field.node.impact_story.field_thumbnail
+    - field.field.node.impact_story.field_url
+    - field.field.node.impact_story.field_vote_up_down
     - node.type.impact_story
   module:
     - text
@@ -41,6 +52,8 @@ hidden:
   field_story_testimonial: true
   field_subject: true
   field_submitter_name: true
+  field_thumbnail: true
+  field_url: true
   field_vote_up_down: true
   langcode: true
   search_api_excerpt: true

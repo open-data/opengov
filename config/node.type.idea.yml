@@ -10,7 +10,7 @@ third_party_settings:
     parent: ''
 name: Idea
 type: idea
-description: 'Possible idea''s for areas of improvement related to Open Government.'
+description: "Possible idea's for areas of improvement related to Open Government."
 help: ''
 new_revision: true
 preview_mode: 1

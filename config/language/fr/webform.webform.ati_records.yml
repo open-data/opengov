@@ -59,11 +59,11 @@ elements: |
     '#title': 'Je déclare avoir lu et compris l''énoncé de confidentialité ci-dessus et je l''accepte.'
   actions:
     '#title': 'Bouton(s) de soumission'
-title: 'Demande informelle d''enregistrements AI précédemment publiés'
+title: "Demande informelle d'enregistrements AI précédemment publiés"
 description: '&quot;Informal Request for AI Records Previously Released&quot; webform.'
 settings:
-  confirmation_title: 'Demande informelle d''enregistrements AI précédemment publiés'
-  confirmation_message: 'Votre demande informelle d''enregistrements AI précédemment publiés a été soumise.'
+  confirmation_title: "Demande informelle d'enregistrements AI précédemment publiés"
+  confirmation_message: "Votre demande informelle d'enregistrements AI précédemment publiés a été soumise."
 handlers:
   confirmation:
     label: Confirmation

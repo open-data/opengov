@@ -1,4 +1,4 @@
-label: 'Page d''accueil'
+label: "Page d'accueil"
 tags:
   canonical_url: '[site:url]'
   shortlink: '[site:url]'

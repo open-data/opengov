@@ -39,8 +39,6 @@ field_type:
           catenateAll: 0
           catenateWords: 1
         -
-          class: solr.FlattenGraphFilterFactory
-        -
           class: solr.LengthFilterFactory
           min: 2
           max: 100
@@ -59,9 +57,9 @@ field_type:
       filters:
         -
           class: solr.SynonymGraphFilterFactory
-          ignoreCase: true
           synonyms: synonyms_und.txt
           expand: true
+          ignoreCase: true
         -
           class: solr.StopFilterFactory
           ignoreCase: true
@@ -108,7 +106,7 @@ spellcheck_field_type:
 collated_field_type:
   name: collated_und
   class: solr.ICUCollationField
-  locale: null
+  locale: en
   strength: primary
   caseLevel: false
 solr_configs:
@@ -187,9 +185,14 @@ solr_configs:
             -
               name: buildOnStartup
               VALUE: 'false'
+            -
+              name: indexPath
+              VALUE: ./und
 text_files:
   stopwords: |
 
+  synonyms: |
+    drupal, durpal
   protwords: |
 
   accents: |
@@ -341,5 +344,3 @@ text_files:
     "\uFB05" => "st"
     # ﬆ => st
     "\uFB06" => "st"
-  synonyms: |
-    drupal, durpal

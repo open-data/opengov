@@ -19,7 +19,7 @@ archive: false
 id: suggest_idea_action_plan
 title: 'Suggest a Idea for Action Plan'
 description: '&quot;Suggest a new idea&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   add_your_idea:
     '#type': fieldset

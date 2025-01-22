@@ -56,7 +56,7 @@ display:
         area_text_custom:
           content: 'Aucun fichier disponible.'
   page_1:
-    display_title: 'Vue d''ensemble des fichiers'
+    display_title: "Vue d'ensemble des fichiers"
     display_options:
       menu:
         title: Fichiers
@@ -76,14 +76,14 @@ display:
         entity_label:
           label: Entité
         type:
-          label: 'Type d''entité'
+          label: "Type d'entité"
         module:
           label: 'Enregistrement du module'
         count:
-          label: 'Nombre d''utilisations'
+          label: "Nombre d'utilisations"
       title: 'Utilisation du fichier'
       arguments:
         fid:
           exception:
             title: Tout
-          title: 'Information d''utilisation du fichier {{ arguments.fid }}'
+          title: "Information d'utilisation du fichier {{ arguments.fid }}"

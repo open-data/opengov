@@ -10,6 +10,7 @@ dependencies:
     - content_moderation
     - content_translation
     - contextual
+    - file
     - filter
     - node
     - system
@@ -25,6 +26,7 @@ permissions:
   - 'access contextual links'
   - 'access toolbar'
   - 'access webform overview'
+  - 'delete own files'
   - 'edit any suggested_dataset content'
   - 'translate suggested_dataset node'
   - 'use editorial transition review'

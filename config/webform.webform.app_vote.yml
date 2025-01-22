@@ -1,6 +1,6 @@
 uuid: 7824b244-3523-4d76-ad5b-526e74ce8a68
 langcode: en
-status: open
+status: closed
 dependencies:
   module:
     - voting_webform
@@ -13,7 +13,8 @@ archive: false
 id: app_vote
 title: 'Vote: Rating'
 description: 'Rate apps using a webform'
-category: Voting
+categories:
+  - Voting
 elements: |-
   rating:
     '#type': webform_rating

@@ -18,7 +18,7 @@ archive: true
 id: informal_request_for_travel_or_h
 title: 'Informal Request for Travel or Hospitality Receipts'
 description: '&quot;Informal Request for Travel or Hospitality Receipts&quot; webform.'
-category: ''
+categories: {  }
 elements: |
   given_name:
     '#type': textfield

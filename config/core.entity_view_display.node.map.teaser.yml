@@ -5,6 +5,12 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.map.body
+    - field.field.node.map.comment
+    - field.field.node.map.field_dataset_used
+    - field.field.node.map.field_developed_by
+    - field.field.node.map.field_map_key
+    - field.field.node.map.field_media
+    - field.field.node.map.field_meta_tags
     - node.type.map
   module:
     - text
@@ -22,11 +28,22 @@ content:
     third_party_settings: {  }
     weight: 101
     region: content
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     settings: {  }
     third_party_settings: {  }
     weight: 100
     region: content
 hidden:
+  comment: true
+  field_dataset_used: true
+  field_developed_by: true
+  field_map_key: true
+  field_media: true
+  field_meta_tags: true
   langcode: true
   search_api_excerpt: true

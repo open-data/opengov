@@ -19,7 +19,7 @@ archive: false
 id: submit_app
 title: 'Submit Your App'
 description: '&quot;Submit Your App&quot; webform.'
-category: ''
+categories: {  }
 elements: |-
   title:
     '#type': textfield

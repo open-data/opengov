@@ -27,7 +27,6 @@ dependencies:
     - taxonomy.vocabulary.app_categories
     - taxonomy.vocabulary.app_freetags
     - taxonomy.vocabulary.app_ribbon
-    - taxonomy.vocabulary.blog_author
     - taxonomy.vocabulary.commitment_freetags
     - taxonomy.vocabulary.consultation_status
     - taxonomy.vocabulary.departments
@@ -60,6 +59,7 @@ weight: 3
 is_admin: null
 permissions:
   - 'access administration pages'
+  - 'access block library'
   - 'access content'
   - 'access content overview'
   - 'access contextual links'
@@ -67,6 +67,8 @@ permissions:
   - 'access media overview'
   - 'access taxonomy overview'
   - 'access toolbar'
+  - 'administer block content'
+  - 'administer block types'
   - 'administer blocks'
   - 'administer book outlines'
   - 'administer menu'
@@ -120,6 +122,7 @@ permissions:
   - 'delete own commitment content'
   - 'delete own consultation content'
   - 'delete own file media'
+  - 'delete own files'
   - 'delete own idea content'
   - 'delete own image media'
   - 'delete own impact_story content'
@@ -189,7 +192,6 @@ permissions:
   - 'translate app_ribbon taxonomy_term'
   - 'translate article node'
   - 'translate block_content'
-  - 'translate blog_author taxonomy_term'
   - 'translate commitment node'
   - 'translate consultation node'
   - 'translate consultation_status taxonomy_term'

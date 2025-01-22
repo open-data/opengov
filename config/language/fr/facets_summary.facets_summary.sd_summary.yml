@@ -6,5 +6,5 @@ processor_configs:
   show_text_when_empty:
     settings:
       text:
-        value: 'Il n''y a pas de recherche en cours.'
+        value: "Il n'y a pas de recherche en cours."
         format: plain_text

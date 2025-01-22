@@ -13,7 +13,7 @@ archive: false
 id: feedback
 title: Feedback
 description: 'Feedback form to be integrated with external systems'
-category: ''
+categories: {  }
 elements: |-
   intro:
     '#type': processed_text

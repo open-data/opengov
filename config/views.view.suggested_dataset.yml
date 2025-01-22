@@ -1,6 +1,6 @@
 uuid: fcb4823d-b787-4c71-a0a0-13715e074225
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - field.storage.node.body
@@ -609,6 +609,15 @@ display:
             date_format: html_date
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -1119,6 +1128,7 @@ display:
         - url.query_args
         - 'url.query_args:sort_by'
         - 'url.query_args:sort_order'
+        - 'user.node_grants:view'
       tags:
         - 'config:field.storage.node.body'
         - 'config:field.storage.node.field_date_published'
@@ -1126,6 +1136,8 @@ display:
         - 'config:field.storage.node.field_sd_status'
         - 'config:field.storage.node.field_status_link'
         - 'config:field.storage.node.field_vote_up_down'
+        - 'config:search_api.index.drupal_content'
+        - 'search_api_list:drupal_content'
   block_1:
     id: block_1
     display_title: List
@@ -1147,6 +1159,7 @@ display:
         - url.query_args
         - 'url.query_args:sort_by'
         - 'url.query_args:sort_order'
+        - 'user.node_grants:view'
       tags:
         - 'config:field.storage.node.body'
         - 'config:field.storage.node.field_date_published'
@@ -1154,3 +1167,5 @@ display:
         - 'config:field.storage.node.field_sd_status'
         - 'config:field.storage.node.field_status_link'
         - 'config:field.storage.node.field_vote_up_down'
+        - 'config:search_api.index.drupal_content'
+        - 'search_api_list:drupal_content'

@@ -17,7 +17,7 @@ archive: false
 id: open_government_week
 title: 'Open Government Week'
 description: 'Open Government Week webform to submit OG events'
-category: ''
+categories: {  }
 elements: |-
   title_of_the_event:
     '#type': textfield

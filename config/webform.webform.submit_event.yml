@@ -19,7 +19,7 @@ archive: false
 id: submit_event
 title: 'Submit an Open Government Event'
 description: '&quot;Submit an Open Government Event&quot; webform.'
-category: ''
+categories: {  }
 elements: |
   event_name_in_full:
     '#type': textfield

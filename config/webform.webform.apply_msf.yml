@@ -16,7 +16,7 @@ archive: false
 id: apply_msf
 title: 'MSF: Call for applicants'
 description: 'Form for users to apply for MSF'
-category: ''
+categories: {  }
 elements: |-
   cv:
     '#type': textarea

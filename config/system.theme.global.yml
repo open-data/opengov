@@ -12,5 +12,5 @@ features:
   node_user_picture: true
 logo:
   path: libraries/theme-gcweb/assets/sig-blk-en.svg
-  url: ''
+  url: null
   use_default: true
