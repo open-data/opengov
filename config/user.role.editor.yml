@@ -21,7 +21,6 @@ dependencies:
     - node.type.landing_page
     - node.type.map
     - node.type.page
-    - node.type.suggested_dataset
     - node.type.theme_and_topic_page
     - node.type.webform
     - taxonomy.vocabulary.app_categories
@@ -89,7 +88,6 @@ permissions:
   - 'create media'
   - 'create page content'
   - 'create slideshow media'
-  - 'create suggested_dataset content'
   - 'create terms in app_categories'
   - 'create terms in app_freetags'
   - 'create terms in app_ribbon'
@@ -112,7 +110,6 @@ permissions:
   - 'delete any impact_story content'
   - 'delete any landing_page content'
   - 'delete any page content'
-  - 'delete any suggested_dataset content'
   - 'delete any theme_and_topic_page content'
   - 'delete any webform content'
   - 'delete app revisions'
@@ -129,7 +126,6 @@ permissions:
   - 'delete own landing_page content'
   - 'delete own page content'
   - 'delete own slideshow media'
-  - 'delete own suggested_dataset content'
   - 'delete own theme_and_topic_page content'
   - 'delete own webform content'
   - 'edit any app content'
@@ -144,7 +140,6 @@ permissions:
   - 'edit any landing_page content'
   - 'edit any page content'
   - 'edit any slideshow media'
-  - 'edit any suggested_dataset content'
   - 'edit any theme_and_topic_page content'
   - 'edit any webform content'
   - 'edit own app content'
@@ -158,7 +153,6 @@ permissions:
   - 'edit own landing_page content'
   - 'edit own page content'
   - 'edit own slideshow media'
-  - 'edit own suggested_dataset content'
   - 'edit own theme_and_topic_page content'
   - 'edit own webform content'
   - 'edit terms in app_categories'
@@ -182,7 +176,6 @@ permissions:
   - 'revert landing_page revisions'
   - 'revert map revisions'
   - 'revert page revisions'
-  - 'revert suggested_dataset revisions'
   - 'revert theme_and_topic_page revisions'
   - 'revert webform revisions'
   - 'translate any entity'
@@ -208,7 +201,6 @@ permissions:
   - 'translate site_structure taxonomy_term'
   - 'translate slideshow media'
   - 'translate subscriptions taxonomy_term'
-  - 'translate suggested_dataset node'
   - 'translate theme_and_topic_page node'
   - 'translate webform node'
   - 'update any media'
@@ -233,7 +225,6 @@ permissions:
   - 'view own unpublished content'
   - 'view own unpublished media'
   - 'view page revisions'
-  - 'view suggested_dataset revisions'
   - 'view the administration theme'
   - 'view theme_and_topic_page revisions'
   - 'view webform revisions'

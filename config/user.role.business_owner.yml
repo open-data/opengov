@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - filter.format.rich_text
-    - node.type.suggested_dataset
     - workflows.workflow.editorial
   module:
     - book
@@ -26,7 +25,6 @@ permissions:
   - 'create content translations'
   - 'delete content translations'
   - 'delete own files'
-  - 'translate suggested_dataset node'
   - 'update content translations'
   - 'use editorial transition archive'
   - 'use editorial transition archived_draft'

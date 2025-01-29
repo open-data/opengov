@@ -13,7 +13,6 @@ dependencies:
     - node.type.landing_page
     - node.type.map
     - node.type.page
-    - node.type.suggested_dataset
     - node.type.webform
   module:
     - content_moderation
@@ -99,6 +98,5 @@ type_settings:
       - landing_page
       - map
       - page
-      - suggested_dataset
       - webform
   default_moderation_state: draft
