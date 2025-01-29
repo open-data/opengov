@@ -4,11 +4,9 @@ status: true
 dependencies:
   config:
     - filter.format.rich_text
-    - node.type.suggested_dataset
     - workflows.workflow.editorial
   module:
     - content_moderation
-    - content_translation
     - contextual
     - file
     - filter
@@ -27,11 +25,8 @@ permissions:
   - 'access toolbar'
   - 'access webform overview'
   - 'delete own files'
-  - 'edit any suggested_dataset content'
-  - 'translate suggested_dataset node'
   - 'use editorial transition review'
   - 'use text format rich_text'
   - 'view any unpublished content'
   - 'view latest version'
-  - 'view suggested_dataset revisions'
   - 'view the administration theme'

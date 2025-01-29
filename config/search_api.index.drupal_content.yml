@@ -3,9 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_dataset_subject
-    - field.storage.node.field_organization
-    - field.storage.node.field_sd_status
     - field.storage.node.field_vote_up_down
     - field.storage.node.body
     - search_api.server.drupal_content
@@ -71,30 +68,6 @@ field_settings:
     dependencies:
       module:
         - node
-  field_dataset_subject:
-    label: Subject
-    datasource_id: 'entity:node'
-    property_path: field_dataset_subject
-    type: string
-    dependencies:
-      config:
-        - field.storage.node.field_dataset_subject
-  field_organization:
-    label: Organization
-    datasource_id: 'entity:node'
-    property_path: field_organization
-    type: string
-    dependencies:
-      config:
-        - field.storage.node.field_organization
-  field_sd_status:
-    label: Status
-    datasource_id: 'entity:node'
-    property_path: field_sd_status
-    type: string
-    dependencies:
-      config:
-        - field.storage.node.field_sd_status
   field_vote_up_down:
     label: Votes
     datasource_id: 'entity:node'
@@ -157,6 +130,7 @@ processor_settings:
   add_url: {  }
   aggregated_field: {  }
   auto_aggregated_fulltext_field: {  }
+  custom_value: {  }
   double_quote_workaround:
     weights:
       postprocess_query: 0
@@ -189,9 +163,6 @@ processor_settings:
       preprocess_query: -15
     all_fields: true
     fields:
-      - field_dataset_subject
-      - field_organization
-      - field_sd_status
       - moderation_state
       - processed
       - title
