@@ -70,12 +70,7 @@ final class TagContainerResolver {
    * @param \Drupal\Core\Plugin\Context\ContextHandlerInterface $contextHandler
    *   Context handler.
    */
-  public function __construct(
-    RequestStack $requestStack,
-    EntityTypeManagerInterface $entityTypeManager,
-    ContextRepositoryInterface $contextRepository,
-    ContextHandlerInterface $contextHandler
-  ) {
+  public function __construct(RequestStack $requestStack, EntityTypeManagerInterface $entityTypeManager, ContextRepositoryInterface $contextRepository, ContextHandlerInterface $contextHandler) {
     $this->requestStack = $requestStack;
     $this->entityTypeManager = $entityTypeManager;
     $this->contextRepository = $contextRepository;

@@ -8,6 +8,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\views\Attribute\ViewsDisplay;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -17,16 +19,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * The plugin that handles a feed, such as RSS or atom.
  *
  * @ingroup views_display_plugins
- *
- * @ViewsDisplay(
- *   id = "feed",
- *   title = @Translation("Feed"),
- *   help = @Translation("Display the view as a feed, such as an RSS feed."),
- *   uses_route = TRUE,
- *   admin = @Translation("Feed"),
- *   returns_response = TRUE
- * )
  */
+#[ViewsDisplay(
+  id: "feed",
+  title: new TranslatableMarkup("Feed"),
+  admin: new TranslatableMarkup("Feed"),
+  help: new TranslatableMarkup("Display the view as a feed, such as an RSS feed."),
+  uses_route: TRUE,
+  returns_response: TRUE
+)]
 class Feed extends PathPluginBase implements ResponseDisplayPluginInterface {
 
   /**
@@ -56,7 +57,7 @@ class Feed extends PathPluginBase implements ResponseDisplayPluginInterface {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider

@@ -6,23 +6,25 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Image\ImageFactory;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\file\FileInterface;
+use Drupal\filter\Attribute\Filter;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
+use Drupal\filter\Plugin\FilterInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a filter to track images uploaded via a Text Editor.
  *
  * Generates file URLs and associates the cache tags of referenced files.
- *
- * @Filter(
- *   id = "editor_file_reference",
- *   title = @Translation("Track images uploaded via a Text Editor"),
- *   description = @Translation("Ensures that the latest versions of images uploaded via a Text Editor are displayed, along with their dimensions."),
- *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE
- * )
  */
+#[Filter(
+  id: "editor_file_reference",
+  title: new TranslatableMarkup("Track images uploaded via a Text Editor"),
+  description: new TranslatableMarkup("Ensures that the latest versions of images uploaded via a Text Editor are displayed, along with their dimensions."),
+  type: FilterInterface::TYPE_TRANSFORM_REVERSIBLE
+)]
 class EditorFileReference extends FilterBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -45,7 +47,7 @@ class EditorFileReference extends FilterBase implements ContainerFactoryPluginIn
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository

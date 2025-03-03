@@ -302,7 +302,7 @@ EOT
             return '<comment>proc_open is not available, git cannot be used</comment>';
         }
 
-        $this->process->execute('git config color.ui', $output);
+        $this->process->execute(['git', 'config', 'color.ui'], $output);
         if (strtolower(trim($output)) === 'always') {
             return '<comment>Your git color.ui setting is set to always, this is known to create issues. Use "git config --global color.ui true" to set it correctly.</comment>';
         }
@@ -595,11 +595,11 @@ EOT
             $io = new BufferIO();
             $result = $auditor->audit($io, $repoSet, $packages, Auditor::FORMAT_TABLE, true, [], Auditor::ABANDONED_IGNORE);
         } catch (\Throwable $e) {
-            return '<warning>Failed performing audit: '.$e->getMessage().'</>';
+            return '<highlight>Failed performing audit: '.$e->getMessage().'</>';
         }
 
         if ($result > 0) {
-            return '<error>Audit found some issues:</>' . PHP_EOL . $io->getOutput();
+            return '<highlight>Audit found some issues:</>' . PHP_EOL . $io->getOutput();
         }
 
         return true;

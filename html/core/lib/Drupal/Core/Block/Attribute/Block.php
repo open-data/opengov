@@ -23,10 +23,10 @@ class Block extends Plugin {
    * @param \Drupal\Core\Plugin\Context\ContextDefinitionInterface[] $context_definitions
    *   (optional) An array of context definitions describing the context used by
    *   the plugin. The array is keyed by context names.
-   * @param string|null $deriver
+   * @param class-string|null $deriver
    *   (optional) The deriver class.
-   * @param string[] $forms
-   *   (optional) An array of form class names keyed by a string.
+   * @param array<string, string|false> $forms
+   *   (optional) An array of form class names or FALSE, keyed by a string.
    */
   public function __construct(
     public readonly string $id,
@@ -34,7 +34,7 @@ class Block extends Plugin {
     public readonly ?TranslatableMarkup $category = NULL,
     public readonly array $context_definitions = [],
     public readonly ?string $deriver = NULL,
-    public readonly array $forms = []
+    public readonly array $forms = [],
   ) {}
 
 }

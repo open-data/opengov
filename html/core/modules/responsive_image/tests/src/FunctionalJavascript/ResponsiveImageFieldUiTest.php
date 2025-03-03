@@ -23,9 +23,7 @@ class ResponsiveImageFieldUiTest extends WebDriverTestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'node',
@@ -72,7 +70,7 @@ class ResponsiveImageFieldUiTest extends WebDriverTestBase {
   /**
    * Tests formatter settings.
    */
-  public function testResponsiveImageFormatterUi() {
+  public function testResponsiveImageFormatterUi(): void {
     $manage = 'admin/structure/types/manage/' . $this->type;
     $manage_display = $manage . '/display';
     /** @var \Drupal\FunctionalJavascriptTests\JSWebAssert $assert_session */

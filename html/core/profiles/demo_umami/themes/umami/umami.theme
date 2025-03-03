@@ -39,10 +39,10 @@ function umami_preprocess_field(&$variables, $hook) {
       $element['#field_name'] == 'field_recipe_category' ||
       $element['#field_name'] == 'field_tags' ||
       $element['#field_name'] == 'field_difficulty') {
-      $variables['attributes']['class'] = 'label-items';
+      $variables['attributes']['class'][] = 'label-items';
 
       if ($element['#view_mode'] == 'card' && $element['#field_name'] == 'field_difficulty') {
-        $variables['attributes']['class'] = 'umami-card__label-items';
+        $variables['attributes']['class'][] = 'umami-card__label-items';
       }
     }
   }
@@ -66,6 +66,19 @@ function umami_theme_suggestions_block_alter(array &$suggestions, array $variabl
   // Block suggestions for content block bundles.
   if (isset($variables['elements']['content']['#block_content'])) {
     array_splice($suggestions, 1, 0, 'block__bundle__' . $variables['elements']['content']['#block_content']->bundle());
+  }
+}
+
+/**
+ * Implements hook_umami_preprocess_block__bundle__banner_block().
+ */
+function umami_preprocess_block__bundle__banner_block(&$variables) {
+  if (isset($variables['content']['field_content_link'])) {
+    foreach (Element::children($variables['content']['field_content_link']) as $key) {
+      $variables['content']['field_content_link'][$key]['#attributes']['class'][] = 'button';
+      $variables['content']['field_content_link'][$key]['#attributes']['class'][] = 'button--primary';
+      $variables['content']['field_content_link'][$key]['#attributes']['class'][] = 'banner__button';
+    }
   }
 }
 

@@ -39,12 +39,7 @@ final class AddToWishlistEvent extends EventBase implements ContainerFactoryPlug
   /**
    * {@inheritDoc}
    */
-  public static function create(
-    ContainerInterface $container,
-    array $configuration,
-    $plugin_id,
-    $plugin_definition
-  ) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = new self($configuration, $plugin_id, $plugin_definition);
     $instance->currentStore = $container->get('commerce_store.current_store');
     return $instance;

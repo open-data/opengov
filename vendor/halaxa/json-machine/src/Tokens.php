@@ -11,6 +11,9 @@ class Tokens implements \IteratorAggregate, PositionAware
     /** @var iterable */
     private $jsonChunks;
 
+    /** @var Generator */
+    private $generator;
+
     /**
      * @param iterable<string> $jsonChunks
      */
@@ -24,6 +27,15 @@ class Tokens implements \IteratorAggregate, PositionAware
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
+    {
+        if ( ! $this->generator) {
+            $this->generator = $this->createGenerator();
+        }
+
+        return $this->generator;
+    }
+
+    private function createGenerator(): Generator
     {
         $insignificantBytes = $this->insignificantBytes();
         $tokenBoundaries = $this->tokenBoundaries();

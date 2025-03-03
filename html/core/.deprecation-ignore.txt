@@ -30,6 +30,8 @@
 # Drupal 11.
 %Drupal\\Core\\Form\\FormBuilder::getForm\(\).* will require a new "mixed \.\.\. \$args" argument in the next major version of its interface%
 %Drupal\\Core\\Form\\FormBuilder::submitForm\(\).* will require a new "mixed \.\.\. \$args" argument in the next major version of its interface%
+%The core/tabbable.jquery.shim asset library is deprecated in Drupal 10.3.0 and will be removed in Drupal 11.0.0. See https://www.drupal.org/node/3441616%
+%The core/internal.shepherd asset library is deprecated in Drupal 10.3.0 and will be removed in Drupal 11.0.0. See https://www.drupal.org/node/3442299%
 
 # PHPUnit 9.
 %"PHPUnit\\Framework\\TestListener".*is deprecated%
@@ -47,27 +49,27 @@
 %Drupal\\editor\\Form\\EditorImageDialog is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. There is no replacement. See https://www.drupal.org/node/3291493%
 %Drupal\\editor\\Form\\EditorLinkDialog is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. There is no replacement. See https://www.drupal.org/node/3291493%
 
+# In Drupal 10, skip deprecations for the "yaml_parser_class" setting.
+# This is retained with a BC layer, but removed in Drupal 11.
+%The "yaml_parser_class" setting is deprecated in drupal:10.3.0. This setting should be removed from the settings file, since its usage has been removed. See https://www.drupal.org/node/3415489.%
+
 # Symfony 7.
 %Method "Symfony\\Contracts\\Service\\ResetInterface::reset\(\)" might add "void" as a native return type declaration in the future. Do the same in implementation "Drupal\\Component\\DependencyInjection\\Container" now to avoid errors or add an explicit @return annotation to suppress this message.%
+%Since symfony/http-foundation 6.3: Calling "Symfony\\Component\\HttpFoundation\\Request::create\(\)" with an invalid URI is deprecated.%
 
 # Temporarily for testing Symfony 6.4.
 %Since symfony/dependency-injection 6.4: "Symfony\\Component\\DependencyInjection\\ContainerAwareTrait" is deprecated, use dependency injection instead.%
-%The ".*" class uses "Symfony\\Component\\DependencyInjection\\ContainerAwareTrait" that is deprecated since Symfony 6.4, use dependency injection instead.%
-%The ".*" class implements "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
-%The ".*" interface extends "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Core\\DrupalKernelInterface" interface extends "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Core\\Logger\\LoggerChannelFactory" class implements "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Core\\Logger\\LoggerChannelFactory" class uses "Symfony\\Component\\DependencyInjection\\ContainerAwareTrait" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Core\\Queue\\QueueFactory" class implements "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Core\\Queue\\QueueFactory" class uses "Symfony\\Component\\DependencyInjection\\ContainerAwareTrait" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Tests\\Core\\Controller\\MockContainerAware" class implements "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Tests\\Core\\DependencyInjection\\DependencySerializationTestDummy" class implements "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
+%The "Drupal\\Tests\\Core\\Utility\\MockContainerAware" class implements "Symfony\\Component\\DependencyInjection\\ContainerAwareInterface" that is deprecated since Symfony 6.4, use dependency injection instead.%
 
 # Twig 3.
-%The ".*" class extends "Twig\\NodeVisitor\\AbstractNodeVisitor" that is deprecated since 3.9%
-%Since twig/twig 3.9: Twig node "Drupal\\Core\\Template\\TwigNodeTrans" is not marked as ready for using "yield" instead of "echo"; please make it ready and then flag it with the #\[YieldReady\] attribute.%
-%Since twig/twig 3.9: Twig node "Drupal\\sdc_other_node_visitor\\.*" is not marked as ready for using "yield" instead of "echo"; please make it ready and then flag it with the #\[YieldReady\] attribute.%
-%Since twig/twig 3.9: Using "echo" is deprecated, use "yield" instead in "Drupal\\Core\\Template\\TwigNodeTrans", then flag the class with #\[YieldReady\].%
-%Since twig/twig 3.11: Changing the value of a "filter" node in a NodeVisitor class is not supported anymore.%
-%Since twig/twig 3.12: Not passing an instance of "TwigFunction" when creating a "attach_library" function of type "Twig\\Node\\Expression\\FunctionExpression" is deprecated.%
-%Since twig/twig 3.12: Not passing an instance of "TwigFunction" when creating a "sdc_additional_context" function of type "Twig\\Node\\Expression\\FunctionExpression" is deprecated.%
-%Since twig/twig 3.12: Not passing an instance of "TwigFunction" when creating a "render_var" function of type "Twig\\Node\\Expression\\FunctionExpression" is deprecated.%
-%Since twig/twig 3.12: Not passing an instance of "TwigFunction" when creating a "sdc_validate_props" function of type "Twig\\Node\\Expression\\FunctionExpression" is deprecated.%
-%Since twig/twig 3.12: Getting node "filter" on a "Twig\\Node\\Expression\\FilterExpression" class is deprecated.%
-%Since twig/twig 3.12: Getting node "filter" on a "Twig\\Node\\Expression\\Filter\\DefaultFilter" class is deprecated.%
-%Since twig/twig 3.12: Getting node "filter" on a "Twig\\Node\\Expression\\Filter\\RawFilter" class is deprecated.%
-%Since twig/twig 3.12: The "tag" constructor argument of the "Drupal\\Core\\Template\\TwigNodeTrans" class is deprecated and ignored%
 %Since twig/twig 3.12: Twig Filter "spaceless" is deprecated%
+%Since twig/twig 3.15: Instantiating "Twig\\Node\\Node" directly is deprecated; the class will become abstract in 4.0.%
+%Since twig/twig 3.15: Using the "deprecated", "deprecating_package", and "alternative" options is deprecated, pass a "deprecation_info" one instead.%
+%Since twig/twig 3.15: The "Twig\\Node\\Expression\\NameExpression" class is deprecated, use "Twig\\Node\\Expression\\Variable\\ContextVariable" instead.%

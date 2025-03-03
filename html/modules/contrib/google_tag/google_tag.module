@@ -12,7 +12,6 @@ declare(strict_types=1);
  * Integration between Drupal and Google Tag.
  */
 
-use Drupal\search\SearchPageInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface;
 use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\commerce_product\ProductVariationStorageInterface;
@@ -22,6 +21,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
+use Drupal\search\SearchPageInterface;
 
 /**
  * Implements hook_theme().
@@ -46,7 +46,7 @@ function google_tag_module_implements_alter(&$implementations, $hook) {
     $group = $implementations['google_tag'];
     unset($implementations['google_tag']);
     $implementations['google_tag'] = $group;
-    // Unset google_analytics' hook implementation for page_attachments, if available.
+    // Unset google_analytics' hook implementation for page_attachments.
     if (isset($implementations['google_analytics'])) {
       unset($implementations['google_analytics']);
     }
@@ -57,26 +57,32 @@ function google_tag_module_implements_alter(&$implementations, $hook) {
  * Implements hook_page_top().
  */
 function google_tag_page_top(array &$page) {
+  $definition = \Drupal::entityTypeManager()->getDefinition('google_tag_container');
+  $cacheable_metadata = new CacheableMetadata();
+  $cacheable_metadata->addCacheTags($definition->getListCacheTags());
+
   /** @var \Drupal\google_tag\Entity\TagContainer|null $config */
   $config = \Drupal::service('google_tag.tag_container_resolver')->resolve();
 
   if ($config === NULL || $config->getGtmId() === '') {
+    $cacheable_metadata->applyTo($page);
     return;
   }
+
+  $cacheable_metadata->addCacheableDependency($config);
+  $cacheable_metadata->applyTo($page);
   $gtm_ids = $config->getGtmIds();
 
-  $cacheable_metadata = new CacheableMetadata();
-  $cacheable_metadata->addCacheTags($config->getEntityType()->getListCacheTags());
-
-  foreach($gtm_ids as $gtm_id) {
+  foreach ($gtm_ids as $gtm_id) {
+    $adv_settings = $config->getGtmSettings($gtm_id);
     if ($gtm_id !== '') {
       $query_params = [
         'id' => $gtm_id,
       ];
-      if ($config->get('include_environment')) {
+      if ($adv_settings['include_environment']) {
         // Gather data.
-        $query_params['gtm_auth'] = $config->get('environment_id');
-        $query_params['gtm_preview'] = $config->get('environment_token');
+        $query_params['gtm_auth'] = $adv_settings['environment_token'];
+        $query_params['gtm_preview'] = $adv_settings['environment_id'];
         $query_params['gtm_cookies_win'] = 'x';
       }
 
@@ -86,23 +92,26 @@ function google_tag_page_top(array &$page) {
       ];
     }
   }
-  if (isset($page['google_tag_gtm_iframe'])) {
-    $cacheable_metadata->applyTo($page['google_tag_gtm_iframe']);
-  }
 }
 
 /**
  * Implements hook_page_attachments().
  */
 function google_tag_page_attachments(array &$attachments) {
+  $definition = \Drupal::entityTypeManager()->getDefinition('google_tag_container');
+  $cacheable_metadata = CacheableMetadata::createFromRenderArray($attachments);
+  $cacheable_metadata->addCacheTags($definition->getListCacheTags());
+
   /** @var \Drupal\google_tag\Entity\TagContainer|null $config */
   $config = \Drupal::service('google_tag.tag_container_resolver')->resolve();
 
   if ($config === NULL) {
+    $cacheable_metadata->applyTo($attachments);
     return;
   }
-  $cacheable_metadata = new CacheableMetadata();
-  $cacheable_metadata->addCacheTags($config->getEntityType()->getListCacheTags());
+  $cacheable_metadata->addCacheableDependency($config);
+  $cacheable_metadata->applyTo($attachments);
+
   // @todo Put this data into their own respective methods?
   // GTM JS embed.
   if ($config->getGtmIds() !== []) {
@@ -126,6 +135,7 @@ function google_tag_page_attachments(array &$attachments) {
   $attachments['#attached']['drupalSettings']['gtag'] = [
     'tagId' => $config->getDefaultTagId(),
     'otherIds' => $config->getAdditionalIds(),
+    'consentMode' => $config->getConsentMode(),
     'events' => [],
     'additionalConfigInfo' => \Drupal::service('google_tag.dimensions_metrics_processor')->getValues($config),
   ];
@@ -183,6 +193,15 @@ function _google_tag_user_register_form_event(&$form, FormStateInterface $form_s
 }
 
 /**
+ * Implements hook_form_google_analytics_admin_settings_alter().
+ */
+function google_tag_form_google_analytics_admin_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
+  \Drupal::messenger()->addWarning(t('Google Analytics functionality has been rolled into <a href=":url">Google Tag</a>. You should disable this module.', [':url' => Url::fromRoute('entity.google_tag_container.single_form')->toString()]));
+  $form['actions']['submit']['#disabled'] = TRUE;
+  $form['actions']['submit']['#value'] = t('Save configuration (disabled)');
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function google_tag_form_commerce_checkout_flow_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -223,17 +242,20 @@ function google_tag_preprocess_item_list__search_results(&$variables) {
  * Implements hook_ENTITY_TYPE_view().
  */
 function google_tag_commerce_product_view(array &$build, ProductInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  if (!\Drupal::request()->isMethodSafe()) {
-    // Workaround to prevent sending an event if the add to cart form is
-    // causing a render.
+  // Workaround to prevent sending an event if the add to cart form is
+  // causing a render, or if a product has no published variations.
+  if (!\Drupal::request()->isMethodSafe() || !$entity->hasVariations()) {
     return;
   }
 
   if ($view_mode === 'full') {
     $product_variation_storage = \Drupal::entityTypeManager()->getStorage('commerce_product_variation');
     assert($product_variation_storage instanceof ProductVariationStorageInterface);
-    \Drupal::service('google_tag.event_collector')->addEvent('commerce_view_item', [
-      'item' => $product_variation_storage->loadFromContext($entity),
-    ]);
+    $variation = $product_variation_storage->loadFromContext($entity);
+    if ($variation !== NULL) {
+      \Drupal::service('google_tag.event_collector')->addEvent('commerce_view_item', [
+        'item' => $variation,
+      ]);
+    }
   }
 }

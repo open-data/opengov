@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Drupal 7 version of this module implemented the Drupal 6 behaviour of
+The Drupal 7 version of this module implemented the Drupal 6 behavior of
 using the menu position of the current page for the breadcrumb.  It also
 added an option to append the page title to the breadcrumb (either as
 a clickable url or not), saving the trouble of doing this in the theme,
@@ -26,18 +26,17 @@ Follow current instructions on this Drupal documentation page
 to install Menu Breadcrumb as a site dependency and upgrade it
 along with other site dependencies (as well as Drupal Core itself):
 
-<<<<<<< HEAD:README.md
 <https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies>
-=======
-* https://www.drupal.org/node/2718229
->>>>>>> Issue #3212252: Update info.yml for 2.0.x / Drupal 9:README.txt
 
-IF YOU SEE AN ERROR PAGE similar to the following after up- or down-grading the module:
+IF YOU SEE AN ERROR PAGE similar to the following after up- or 
+down-grading the module:
 
-TypeError: Argument <X> passed to Drupal\menu_breadcrumb\MenuBasedBreadcrumbBuilder::__construct() ...
+TypeError: Argument <X> passed to 
+Drupal\menu_breadcrumb\MenuBasedBreadcrumbBuilder::__construct() ...
 
-... you probably just need to rebuild the cache between two versions that use
-different argument lists (i.e. system services).  See here for how to rebuild cache:
+... you probably just need to rebuild the cache between two versions that use 
+different argument lists (i.e. system services). See here for how to rebuild 
+cache:
 
 <https://www.drupal.org/docs/user_guide/en/prevent-cache-clear.html>
 
@@ -58,8 +57,8 @@ then run "update.php" if present (to install any configuration changes).
 Since different versions of the module may use different services, if you see
 errors:
 
-- Try clearing the cache, which fixes breacrumb on taxonomy pages (since this
-  module's breadcrumb builder needs to be acknolwedged as higher priority).
+- Try clearing the cache, which fixes breadcrumb on taxonomy pages (since this
+  module's breadcrumb builder needs to be acknowledged as higher priority).
 - Clearing the cache (at least the router cache) should clear up messages about
   any services missing (known issue upgrading beta1 to beta2).
 - If all else fails, try uninstalling & reinstalling the module.

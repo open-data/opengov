@@ -18,7 +18,7 @@ use Drupal\bootstrap\Plugin\Setting\DeprecatedSettingInterface;
  *   type = "textfield",
  *   weight = 2,
  *   title = @Translation("Minified Bootstrap CSS URL"),
- *   defaultValue = "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css",
+ *   defaultValue = "https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.min.css",
  *   description = @Translation("Additionally, you can provide the minimized version of the file. It will be used instead if site aggregation is enabled."),
  *   groups = {
  *     "cdn" = @Translation("CDN (Content Delivery Network)"),

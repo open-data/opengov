@@ -28,8 +28,13 @@ class ToolbarActiveTrailTest extends WebDriverTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->drupalLogin($this->rootUser);
     $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+    $this->drupalLogin($this->drupalCreateUser([
+      'access administration pages',
+      'administer content types',
+      'administer node fields',
+      'access toolbar',
+    ]));
   }
 
   /**
@@ -43,7 +48,7 @@ class ToolbarActiveTrailTest extends WebDriverTestBase {
    *
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
-  public function testToolbarActiveTrail(string $orientation) {
+  public function testToolbarActiveTrail(string $orientation): void {
     $page = $this->getSession()->getPage();
     $assert_session = $this->assertSession();
 

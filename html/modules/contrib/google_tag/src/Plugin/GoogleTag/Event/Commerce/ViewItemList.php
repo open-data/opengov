@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   context_definitions = {
  *      "item_list_id" = @ContextDefinition("string", required = FALSE),
  *      "item_list_name" = @ContextDefinition("string", required = FALSE),
- *      "items" = @ContextDefinition("entity:commerce_product_variation", multiple = TRUE, required = FALSE)
+ *      "items" = @ContextDefinition("entity:commerce_product_variation", multiple = TRUE, required = FALSE),
  *   }
  * )
  *
@@ -42,12 +42,7 @@ final class ViewItemList extends EventBase implements ContainerFactoryPluginInte
   /**
    * {@inheritDoc}
    */
-  public static function create(
-    ContainerInterface $container,
-    array $configuration,
-    $plugin_id,
-    $plugin_definition
-  ) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = new self($configuration, $plugin_id, $plugin_definition);
     $instance->currentStore = $container->get('commerce_store.current_store');
     return $instance;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\config\Functional;
 
 use Drupal\Tests\BrowserTestBase;
@@ -12,9 +14,7 @@ use Drupal\Tests\BrowserTestBase;
 class ConfigEntityStatusUITest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['config_test'];
 
@@ -26,7 +26,7 @@ class ConfigEntityStatusUITest extends BrowserTestBase {
   /**
    * Tests status operations.
    */
-  public function testCRUD() {
+  public function testCRUD(): void {
     $this->drupalLogin($this->drupalCreateUser([
       'administer site configuration',
     ]));

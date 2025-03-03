@@ -4,7 +4,6 @@ namespace Drupal\google_tag\Form;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Condition\ConditionManager;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -38,34 +37,14 @@ class SettingsForm extends ConfigFormBase {
   protected ConditionManager $conditionManager;
 
   /**
-   * Google Tag Settings form constructor.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The Config Factory.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The Entity Type Manager.
-   * @param \Drupal\Core\Condition\ConditionManager $condition_manager
-   *   Condition maanger.
-   * @param \Drupal\Core\Plugin\Context\ContextRepositoryInterface $context_repository
-   *   Context repository.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, ConditionManager $condition_manager, ContextRepositoryInterface $context_repository) {
-    parent::__construct($config_factory);
-    $this->entityTypeManager = $entity_type_manager;
-    $this->conditionManager = $condition_manager;
-    $this->contextRepository = $context_repository;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new self(
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('plugin.manager.condition'),
-      $container->get('context.repository')
-    );
+    $instance = parent::create($container);
+    $instance->contextRepository = $container->get('context.repository');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->conditionManager = $container->get('plugin.manager.condition');
+    return $instance;
   }
 
   /**
@@ -112,7 +91,7 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('Allow multiple Tag Containers'),
       '#description' => $this->t('For <strong>most</strong> users, only one tag container is required. Each tag container represents a set of visibility conditions and events, and represents one or more measurement IDs. You only need multiple tag containers if your config is different per set of measurement IDs.'),
       '#default_value' => $config->get('use_collection'),
-      '#disabled' => !empty($google_tags) && count($google_tags) > 1,
+      '#disabled' => !empty($google_tags) && count($google_tags) > 1 && $config->get('use_collection'),
     ];
 
     return $fieldset;

@@ -97,7 +97,7 @@ class ConfigTargetTest extends UnitTestCase {
     $this->assertSame($expected, $form_state->isCached());
   }
 
-  public function providerTestFormCacheable(): array {
+  public static function providerTestFormCacheable(): array {
     $closure = fn (bool $something): string => $something ? 'Yes' : 'No';
     return [
       'No callables' => [TRUE, NULL, NULL],
@@ -114,7 +114,7 @@ class ConfigTargetTest extends UnitTestCase {
    * @covers ::fromForm
    * @covers ::fromString
    */
-  public function testFromFormString() {
+  public function testFromFormString(): void {
     $form = [
       'group' => [
         '#type' => 'details',
@@ -136,7 +136,7 @@ class ConfigTargetTest extends UnitTestCase {
   /**
    * @covers ::fromForm
    */
-  public function testFromFormConfigTarget() {
+  public function testFromFormConfigTarget(): void {
     $form = [
       'test' => [
         '#type' => 'text',
@@ -158,13 +158,13 @@ class ConfigTargetTest extends UnitTestCase {
    * @covers ::fromForm
    * @dataProvider providerTestFromFormException
    */
-  public function testFromFormException(array $form, array $array_parents, string $exception_message) {
+  public function testFromFormException(array $form, array $array_parents, string $exception_message): void {
     $this->expectException(\LogicException::class);
     $this->expectExceptionMessage($exception_message);
     ConfigTarget::fromForm($array_parents, $form);
   }
 
-  public function providerTestFromFormException(): array {
+  public static function providerTestFromFormException(): array {
     return [
       'No #config_target' => [
         [
@@ -215,7 +215,7 @@ class ConfigTargetTest extends UnitTestCase {
     new ConfigTarget(...$arguments);
   }
 
-  public function providerMultiTargetWithoutCallables(): \Generator {
+  public static function providerMultiTargetWithoutCallables(): \Generator {
     yield "neither callable" => ['foo.settings', ['a', 'b']];
     yield "only fromConfig" => ['foo.settings', ['a', 'b'], "intval"];
     yield "only toConfig" => ['foo.settings', ['a', 'b'], NULL, "intval"];
@@ -286,14 +286,14 @@ class ConfigTargetTest extends UnitTestCase {
     $config->set('something', FALSE)->shouldBeCalledTimes(1);
     $config_target->setValue($config->reveal(), 'No', $this->prophesize(FormStateInterface::class)->reveal());
 
-    // Test `ConfigTargetValue::NoMapping`: nothing should happen to the Config.
+    // Test `ToConfig::NoOp`: nothing should happen to the Config.
     $config = $this->prophesize(Config::class);
     $config->getName()->willReturn('foo.settings');
     $config->set('something', Argument::any())->shouldBeCalledTimes(0);
     $config->clear('something', Argument::any())->shouldBeCalledTimes(0);
     $config_target->setValue($config->reveal(), '<test:noop>', $this->prophesize(FormStateInterface::class)->reveal());
 
-    // Test `ConfigTargetValue::DeleteKey`: Config::clear() should be called.
+    // Test `ToConfig::DeleteKey`: Config::clear() should be called.
     $config = $this->prophesize(Config::class);
     $config->getName()->willReturn('foo.settings');
     $config->clear('something')->shouldBeCalledTimes(1);

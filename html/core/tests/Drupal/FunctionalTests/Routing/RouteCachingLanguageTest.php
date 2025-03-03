@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\FunctionalTests\Routing;
 
 use Drupal\field\Entity\FieldConfig;
@@ -19,9 +21,7 @@ class RouteCachingLanguageTest extends BrowserTestBase {
   use ContentTranslationTestTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'path',
@@ -106,12 +106,12 @@ class RouteCachingLanguageTest extends BrowserTestBase {
 
     // Enable URL language detection and selection and set a prefix for both
     // languages.
-    $edit = ['language_interface[enabled][language-url]' => 1];
-    $this->drupalGet('admin/config/regional/language/detection');
-    $this->submitForm($edit, 'Save settings');
-    $edit = ['prefix[en]' => 'en'];
-    $this->drupalGet('admin/config/regional/language/detection/url');
-    $this->submitForm($edit, 'Save configuration');
+    \Drupal::configFactory()->getEditable('language.types')
+      ->set('negotiation.language_interface.enabled.language_url', 1)
+      ->save();
+    \Drupal::configFactory()->getEditable('language.negotiation')
+      ->set('url.prefixes.en', 'en')
+      ->save();
 
     // Reset the cache after changing the negotiation settings as that changes
     // how links are built.
@@ -127,7 +127,7 @@ class RouteCachingLanguageTest extends BrowserTestBase {
    *
    * @dataProvider providerLanguage
    */
-  public function testLinkTranslationWithAlias($source_langcode) {
+  public function testLinkTranslationWithAlias($source_langcode): void {
     $source_url_options = [
       'language' => ConfigurableLanguage::load($source_langcode),
     ];
@@ -190,7 +190,7 @@ class RouteCachingLanguageTest extends BrowserTestBase {
   /**
    * Data provider for testFromUri().
    */
-  public function providerLanguage() {
+  public static function providerLanguage() {
     return [
       ['en'],
       ['fr'],

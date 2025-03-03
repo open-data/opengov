@@ -27,6 +27,8 @@ final class PageAttachmentsHookTest extends GoogleTagTestCase {
     $this->container
       ->get('main_content_renderer.html')
       ->invokePageAttachmentHooks($page);
+    self::assertEquals($this->container->get('entity_type.manager')->getDefinition('google_tag_container')->getListCacheTags(), $page['#cache']['tags']);
+    self::assertEquals(-1, $page['#cache']['max-age']);
     self::assertNotContains('google_tag/gtag', $page['#attached']['library']);
     self::assertNotContains('drupalSettings', $page['#attached']);
   }
@@ -35,7 +37,7 @@ final class PageAttachmentsHookTest extends GoogleTagTestCase {
    * Tests that there are valid attachments when there's google_tag configured.
    */
   public function testAttachments(): void {
-    TagContainer::create([
+    $entity = TagContainer::create([
       'id' => 'foo',
       // https://developers.google.com/tag-platform/gtagjs/configure#:~:text=What%20is%20a%20tag%20ID%20and%20where%20to%20find%20it%3F
       // @todo need unit test on config entity for this and the methods of default and additional.
@@ -46,20 +48,25 @@ final class PageAttachmentsHookTest extends GoogleTagTestCase {
         'DC-XXXXXX',
         'UA-XXXXXX',
       ],
+      'conditions' => [
+        'request_path' => [
+          'id' => 'request_path',
+          'negate' => TRUE,
+          'pages' => '<front>',
+        ],
+      ],
       'events' => [
         'route_name' => [],
       ],
-    ])->save();
+    ]);
+    $entity->save();
 
     $page = [];
     $this->container
       ->get('main_content_renderer.html')
       ->invokePageAttachmentHooks($page);
-    self::assertEquals([
-      'contexts' => [],
-      'tags' => $this->container->get('entity_type.manager')->getDefinition('google_tag_container')->getListCacheTags(),
-      'max-age' => -1,
-    ], $page['#cache']);
+    self::assertEquals(['config:google_tag_container_list', 'config:google_tag.container.foo'], $page['#cache']['tags']);
+    self::assertEquals(-1, $page['#cache']['max-age']);
     self::assertContains('google_tag/gtag', $page['#attached']['library']);
     self::assertEquals([
       'gtag' => [
@@ -79,6 +86,7 @@ final class PageAttachmentsHookTest extends GoogleTagTestCase {
           ],
         ],
         'additionalConfigInfo' => [],
+        'consentMode' => FALSE,
       ],
     ], $page['#attached']['drupalSettings']);
 
@@ -105,12 +113,12 @@ final class PageAttachmentsHookTest extends GoogleTagTestCase {
     $this->container
       ->get('main_content_renderer.html')->buildPageTopAndBottom($page);
     self::assertEquals([
+      '#cache' => [
+        'contexts' => [],
+        'tags' => ['config:google_tag_container_list', 'config:google_tag.container.foo'],
+        'max-age' => -1,
+      ],
       'google_tag_gtm_iframe' => [
-        '#cache' => [
-          'contexts' => [],
-          'tags' => $this->container->get('entity_type.manager')->getDefinition('google_tag_container')->getListCacheTags(),
-          'max-age' => -1,
-        ],
         '0' => [
           '#theme' => 'google_tag_gtm_iframe',
           '#url' => Url::fromUri('https://www.googletagmanager.com/ns.html', ['query' => ['id' => 'GTM-XXXXXX']]),
@@ -143,9 +151,16 @@ final class PageAttachmentsHookTest extends GoogleTagTestCase {
       ],
       'advanced_settings' => [
         'gtm' => [
-          'include_classes' => TRUE,
-          'allowlist_classes' => $allowlist_classes,
-          'blocklist_classes' => $blocklist_classes,
+          'GTM-XXXXXX' => [
+            'include_classes' => TRUE,
+            'allowlist_classes' => $allowlist_classes,
+            'blocklist_classes' => $blocklist_classes,
+          ],
+          'GTM-YYYYYY' => [
+            'include_classes' => TRUE,
+            'allowlist_classes' => $allowlist_classes,
+            'blocklist_classes' => $blocklist_classes,
+          ],
         ],
       ],
     ])->save();

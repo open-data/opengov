@@ -33,7 +33,7 @@ class Menu extends PreprocessBase implements PreprocessInterface {
     foreach ($items as &$item) {
       $wrapperAttributes = new Attributes();
       $linkAttributes = new Attributes();
-      if ($item['attributes'] instanceof Attribute || $item['attributes'] instanceof Attributes) {
+      if (isset($item['attributes']) && ($item['attributes'] instanceof Attribute || $item['attributes'] instanceof Attributes)) {
         $wrapperAttributes->setAttributes($item['attributes']->getIterator()->getArrayCopy());
       }
       if ($item['url'] instanceof Url) {

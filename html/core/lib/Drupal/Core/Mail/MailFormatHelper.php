@@ -6,6 +6,8 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Site\Settings;
 
+// cspell:ignore officedocument openxmlformats wordprocessingml
+
 /**
  * Defines a class containing utility methods for formatting mail messages.
  */
@@ -309,7 +311,7 @@ class MailFormatHelper {
     }
     if (!$line_is_mime_header) {
       // Use soft-breaks only for purely quoted or un-indented text.
-      $line = wordwrap($line, 77 - $values['length'], $values['soft'] ? " \n" : "\n");
+      $line = wordwrap($line, 77 - $values['length'], $values['soft'] ? "  \n" : "\n");
     }
     // Break really long words at the maximum width allowed.
     $line = wordwrap($line, 996 - $values['length'], $values['soft'] ? " \n" : "\n", TRUE);

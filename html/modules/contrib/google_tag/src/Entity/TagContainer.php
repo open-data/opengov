@@ -2,9 +2,12 @@
 
 namespace Drupal\google_tag\Entity;
 
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Condition\ConditionInterface;
 use Drupal\Core\Condition\ConditionPluginCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
+use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -54,11 +57,12 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectionInterface {
 
   use StringTranslationTrait;
+  use MessengerTrait;
 
   /**
    * Define the Acceptable Google Tag and GTM ID Patterns.
    */
-  const GOOGLE_TAG_MATCH = '(?:GT|UA|G|AW|DC|GTM)-[0-9a-zA-Z]{5,}(?:-[0-9]{1,})?';
+  const GOOGLE_TAG_MATCH = '(?:GT|UA|G|AW|DC|GTM)-[0-9a-zA-Z]{4,}(?:-[0-9]{1,})?';
 
   /**
    * Define the Acceptable Measurement ID patterns.
@@ -73,7 +77,7 @@ class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectio
   /**
    * Define the Acceptable Google Tag Manager Container IDs.
    */
-  const GOOGLE_TAG_MANAGER_MATCH = '/(?:GTM)-[0-9a-zA-Z]{5,}/';
+  const GOOGLE_TAG_MANAGER_MATCH = '/(?:GTM)-[0-9a-zA-Z]{4,}/';
 
   /**
    * The machine name for the configuration entity.
@@ -167,7 +171,7 @@ class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectio
     $default_tag = array_slice(
       array_filter(
         $this->tag_container_ids,
-        static fn ($id) => preg_match(self::GOOGLE_TAG_MANAGER_MATCH, $id)
+        static fn ($id) => is_string($id) && preg_match(self::GOOGLE_TAG_MANAGER_MATCH, $id)
       ),
       0,
       $length
@@ -181,9 +185,16 @@ class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectio
    * @return array
    *   Gtm settings.
    */
-  public function getGtmSettings(): array {
+  public function getGtmSettings(string $gtmid = NULL): array {
+    // Choose first gtmID if none was supplied.
+    $gtmid = $gtmid ?? $this->getGtmId();
+
     $advanced_settings = $this->get('advanced_settings');
-    return $advanced_settings['gtm'] ?? [];
+    // Legacy advanced settings detected.
+    return $advanced_settings['gtm'][$gtmid] ?? [
+      'data_layer' => 'dataLayer',
+      'include_environment' => FALSE,
+    ];
   }
 
   /**
@@ -196,7 +207,7 @@ class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectio
     $default_tag = array_slice(
       array_filter(
         $this->tag_container_ids,
-        static fn ($id) => preg_match(self::GOOGLE_TAG_MANAGER_MATCH, $id) === 0),
+        static fn ($id) => is_string($id) && preg_match(self::GOOGLE_TAG_MANAGER_MATCH, $id) === 0),
       0,
       1
     );
@@ -213,7 +224,7 @@ class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectio
     return array_slice(
       array_filter(
         $this->tag_container_ids,
-        static fn($id) => preg_match(self::GOOGLE_TAG_MANAGER_MATCH, $id) === 0),
+        static fn($id) => is_string($id) && preg_match(self::GOOGLE_TAG_MANAGER_MATCH, $id) === 0),
       1
     );
   }
@@ -287,6 +298,41 @@ class TagContainer extends ConfigEntityBase implements EntityWithPluginCollectio
    */
   public function getDimensionsAndMetrics(): array {
     return $this->dimensions_metrics;
+  }
+
+  /**
+   * Returns Consent Mode status.
+   *
+   * @return bool
+   *   Whether Consent Mode Javascript should be added to the request.
+   */
+  public function getConsentMode(): bool {
+    $advanced_settings = $this->get('advanced_settings');
+    return !empty($advanced_settings['consent_mode']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    $cache_contexts = array_map(fn(ConditionInterface $condition) => $condition->getCacheContexts(), iterator_to_array($this->getInsertionConditions()) ?? []);
+    return Cache::mergeContexts(parent::getCacheContexts(), ...array_values($cache_contexts));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    $cache_tags = array_map(fn(ConditionInterface $condition) => $condition->getCacheTags(), iterator_to_array($this->getInsertionConditions()) ?? []);
+    return Cache::mergeTags(parent::getCacheTags(), ...array_values($cache_tags));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    $cache_maxage = array_map(fn(ConditionInterface $condition) => $condition->getCacheMaxAge(), iterator_to_array($this->getInsertionConditions()) ?? []);
+    return Cache::mergeMaxAges(parent::getCacheMaxAge(), ...array_values($cache_maxage));
   }
 
 }

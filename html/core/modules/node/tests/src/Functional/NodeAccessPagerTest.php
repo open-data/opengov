@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\node\Functional;
 
 use Drupal\comment\CommentInterface;
@@ -25,9 +27,7 @@ class NodeAccessPagerTest extends BrowserTestBase {
   protected User $webUser;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node', 'node_access_test', 'comment'];
 
@@ -55,7 +55,7 @@ class NodeAccessPagerTest extends BrowserTestBase {
   /**
    * Tests the comment pager for nodes with multiple grants per realm.
    */
-  public function testCommentPager() {
+  public function testCommentPager(): void {
     // Create a node.
     $node = $this->drupalCreateNode();
 

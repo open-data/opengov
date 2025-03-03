@@ -26,7 +26,7 @@ class CommandsTest extends WebDriverTestBase {
   /**
    * Tests the various Ajax Commands.
    */
-  public function testAjaxCommands() {
+  public function testAjaxCommands(): void {
     $session = $this->getSession();
     $page = $this->getSession()->getPage();
 
@@ -102,7 +102,7 @@ class CommandsTest extends WebDriverTestBase {
     // Tests the 'data' command.
     $page->pressButton("AJAX data command: Issue command.");
     $this->assertTrue($page->waitFor(10, function () use ($session) {
-      return 'test_value' === $session->evaluateScript('window.jQuery("#data_div").data("testkey")');
+      return 'test_value' === $session->evaluateScript('window.jQuery("#data_div").data("test_key")');
     }));
 
     // Tests the 'html' command.
@@ -139,7 +139,7 @@ Drupal.behaviors.testSettingsCommand = {
 };
 JS;
     $session->executeScript($test_settings_command);
-    // @todo: Replace after https://www.drupal.org/project/drupal/issues/2616184
+    // @todo Replace after https://www.drupal.org/project/drupal/issues/2616184
     $session->executeScript('window.jQuery("#edit-settings-command-example").mousedown();');
     $this->assertWaitPageContains('<div class="test-settings-command">42</div>');
   }
@@ -148,7 +148,7 @@ JS;
    * Tests the various Ajax Commands with legacy parameters.
    * @group legacy
    */
-  public function testLegacyAjaxCommands() {
+  public function testLegacyAjaxCommands(): void {
     $session = $this->getSession();
     $page = $this->getSession()->getPage();
 

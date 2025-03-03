@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\google_tag\Kernel\Events;
 
 use Drupal\commerce_price\Price;
+use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_product\Entity\ProductVariation;
 use Drupal\google_tag\Entity\TagContainer;
 use Drupal\Tests\commerce_cart\Kernel\CartKernelTestBase;
@@ -23,18 +24,6 @@ final class CommerceCartEventsTest extends CartKernelTestBase {
   protected static $modules = ['google_tag'];
 
   /**
-   * {@inheritDoc}
-   */
-  protected function setUp(): void {
-    // PHPUnit has `checkRequirements` as a private method since 9.x.
-    // We run Drupal's `checkRequirements` again, here, to verify our module
-    // requirement.
-    // @todo remove after https://www.drupal.org/i/3261817
-    $this->checkRequirements();
-    parent::setUp();
-  }
-
-  /**
    * Tests cart removal/addition events.
    */
   public function testEvents(): void {
@@ -47,10 +36,17 @@ final class CommerceCartEventsTest extends CartKernelTestBase {
       ],
     ])->save();
 
+    $product = Product::create([
+      'type' => 'default',
+      'title' => $this->randomString(),
+    ]);
+    $product->save();
+
     $variation = ProductVariation::create([
       'type' => 'default',
       'sku' => strtolower($this->randomMachineName()),
       'title' => $this->randomString(),
+      'product_id' => $product->id(),
       'price' => new Price('12.00', 'USD'),
       'status' => 1,
     ]);

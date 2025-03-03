@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\filter\Kernel;
 
 use Drupal\Component\Utility\Html;
@@ -19,9 +21,7 @@ use Drupal\KernelTests\KernelTestBase;
 class FilterKernelTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['system', 'filter'];
 
@@ -45,7 +45,7 @@ class FilterKernelTest extends KernelTestBase {
   /**
    * Tests the align filter.
    */
-  public function testAlignFilter() {
+  public function testAlignFilter(): void {
     $filter = $this->filters['filter_align'];
 
     $test = function ($input) use ($filter) {
@@ -100,7 +100,7 @@ class FilterKernelTest extends KernelTestBase {
   /**
    * Tests the caption filter.
    */
-  public function testCaptionFilter() {
+  public function testCaptionFilter(): void {
     /** @var \Drupal\Core\Render\RendererInterface $renderer */
     $renderer = \Drupal::service('renderer');
     $filter = $this->filters['filter_caption'];
@@ -328,7 +328,7 @@ class FilterKernelTest extends KernelTestBase {
   /**
    * Tests the combination of the align and caption filters.
    */
-  public function testAlignAndCaptionFilters() {
+  public function testAlignAndCaptionFilters(): void {
     /** @var \Drupal\Core\Render\RendererInterface $renderer */
     $renderer = \Drupal::service('renderer');
     $align_filter = $this->filters['filter_align'];
@@ -403,7 +403,7 @@ class FilterKernelTest extends KernelTestBase {
   /**
    * Tests the line break filter.
    */
-  public function testLineBreakFilter() {
+  public function testLineBreakFilter(): void {
     // Get FilterAutoP object.
     $filter = $this->filters['filter_autop'];
 
@@ -435,6 +435,20 @@ class FilterKernelTest extends KernelTestBase {
       "One. <!-- comment --> Two.\n<!--\nThree.\n-->\n" => [
         '<!-- comment -->' => TRUE,
         "<!--\nThree.\n-->" => TRUE,
+      ],
+      // Do not add paragraph tags around Twig theme debugging.
+      "<p>Text here\n<!-- THEME DEBUG -->\n<!-- THEME HOOK: 'html' -->\n<!-- FILE NAME SUGGESTIONS:\n* html--node.html.twig\nx html.html.twig\n-->\n<!-- BEGIN OUTPUT from 'core/themes/olivero/templates/layout/html.html.twig' -->\n<span>Test</span></p>" => [
+        "<p>Text here" => TRUE,
+        "<p>Text here</p>" => FALSE,
+        "<span>Test</span></p>" => TRUE,
+        "<p><span>Test</span></p>" => FALSE,
+      ],
+      // Do not add paragraph tags around custom template Twig theme debugging.
+      "<p>Text here\n<!-- THEME DEBUG -->\n<!-- THEME HOOK: 'html' -->\n<!-- FILE NAME SUGGESTIONS:\n* html--node.html.twig\nx html.html.twig\n-->\n<!-- 💡 BEGIN CUSTOM TEMPLATE OUTPUT from 'custom/themes/custom-theme/templates/layout/html.html.twig' -->\n<span>Test</span></p>" => [
+        "<p>Text here" => TRUE,
+        "<p>Text here</p>" => FALSE,
+        "<span>Test</span></p>" => TRUE,
+        "<p><span>Test</span></p>" => FALSE,
       ],
       // Resulting HTML should produce matching paragraph tags.
       '<p><div>  </div></p>' => [
@@ -481,6 +495,44 @@ class FilterKernelTest extends KernelTestBase {
   }
 
   /**
+   * Tests that the line break filter does not apply to twig debug.
+   */
+  public function testLineBreakFilterTwigDebug(): void {
+
+    // Enable twig theme debug to ensure that any
+    // changes to theme debugging format force checking
+    // that the auto paragraph filter continues to be applied
+    // correctly.
+    $twig = \Drupal::service('twig');
+    $twig->enableDebug();
+
+    // Manually render a template in its simplest form.
+    $variables = [
+      'theme_hook_original' => 'container',
+      'directory' => '',
+      'children' => 'Test two',
+    ];
+    include_once $this->root . '/core/themes/engines/twig/twig.engine';
+    $render = (string) twig_render_template('container.html.twig', $variables);
+    $render = trim($render);
+
+    // Render text before applying the auto paragraph filter.
+    $this->assertSame("<!-- THEME DEBUG -->
+<!-- THEME HOOK: 'container' -->
+<!-- 💡 BEGIN CUSTOM TEMPLATE OUTPUT from 'container.html.twig' -->
+<div>Test two</div>
+
+<!-- END CUSTOM TEMPLATE OUTPUT from 'container.html.twig' -->", $render);
+    $result = _filter_autop($render);
+
+    // After auto-p is applied, the theme debug should no longer have
+    // line breaks but the true line breaks should still.
+    $this->assertSame("<!-- THEME DEBUG --><!-- THEME HOOK: 'container' --><!-- 💡 BEGIN CUSTOM TEMPLATE OUTPUT from 'container.html.twig' --><div>Test two</div>
+
+<!-- END CUSTOM TEMPLATE OUTPUT from 'container.html.twig' -->", $result);
+  }
+
+  /**
    * Tests filter settings, defaults, access restrictions and similar.
    *
    * @todo This is for functions like filter_filter and check_markup, whose
@@ -494,7 +546,7 @@ class FilterKernelTest extends KernelTestBase {
    * @todo Class, id, name and xmlns should be added to the list of forbidden
    *   attributes, or, better yet, use an allowed attribute list.
    */
-  public function testHtmlFilter() {
+  public function testHtmlFilter(): void {
     // Get FilterHtml object.
     $filter = $this->filters['filter_html'];
     $filter->setConfiguration([
@@ -594,7 +646,7 @@ class FilterKernelTest extends KernelTestBase {
   /**
    * Tests the spam deterrent.
    */
-  public function testNoFollowFilter() {
+  public function testNoFollowFilter(): void {
     // Get FilterHtml object.
     $filter = $this->filters['filter_html'];
     $filter->setConfiguration([
@@ -627,7 +679,7 @@ class FilterKernelTest extends KernelTestBase {
   /**
    * Tests the HTML escaping filter.
    */
-  public function testHtmlEscapeFilter() {
+  public function testHtmlEscapeFilter(): void {
     // Get FilterHtmlEscape object.
     $filter = $this->filters['filter_html_escape'];
 
@@ -644,7 +696,7 @@ class FilterKernelTest extends KernelTestBase {
   /**
    * Tests the URL filter.
    */
-  public function testUrlFilter() {
+  public function testUrlFilter(): void {
     // Get FilterUrl object.
     $filter = $this->filters['filter_url'];
     $filter->setConfiguration([
@@ -765,7 +817,7 @@ class FilterKernelTest extends KernelTestBase {
       Absolute URL and query string with 2 different punctuation characters (http://www.example.com/q=abc).
       Partial URL with brackets in the URL as well as surrounded brackets (www.foo.com/more_(than)_one_(parens)).
       Absolute URL with square brackets in the URL as well as surrounded brackets [https://www.drupal.org/?class[]=1]
-      Absolute URL with quotes "https://www.drupal.org/sample"' => [
+      Absolute URL with quotes "https://www.example.org/sample"' => [
         'period <a href="http://www.partial.com">www.partial.com</a>.' => TRUE,
         'comma <a href="mailto:person@example.com">person@example.com</a>,' => TRUE,
         'question <a href="http://www.absolute.com">http://www.absolute.com</a>?' => TRUE,
@@ -775,7 +827,7 @@ class FilterKernelTest extends KernelTestBase {
         'characters (<a href="http://www.example.com/q=abc">http://www.example.com/q=abc</a>).' => TRUE,
         'brackets (<a href="http://www.foo.com/more_(than)_one_(parens)">www.foo.com/more_(than)_one_(parens)</a>).' => TRUE,
         'brackets [<a href="https://www.drupal.org/?class[]=1">https://www.drupal.org/?class[]=1</a>]' => TRUE,
-        'quotes "<a href="https://www.drupal.org/sample">https://www.drupal.org/sample</a>"' => TRUE,
+        'quotes "<a href="https://www.example.org/sample">https://www.example.org/sample</a>"' => TRUE,
       ],
       '(www.parenthesis.com/dir?a=1&b=2#a)' => [
         '(<a href="http://www.parenthesis.com/dir?a=1&amp;b=2#a">www.parenthesis.com/dir?a=1&amp;b=2#a</a>)' => TRUE,
@@ -924,12 +976,12 @@ class FilterKernelTest extends KernelTestBase {
    *   strings and whose values are Booleans indicating whether the output is
    *   expected or not. For example:
    *   @code
-   *   $tests = array(
-   *     'Input string' => array(
+   *   $tests = [
+   *     'Input string' => [
    *       '<p>Input string</p>' => TRUE,
    *       'Input string<br' => FALSE,
-   *     ),
-   *   );
+   *     ],
+   *   ];
    *   @endcode
    *
    * @internal
@@ -974,7 +1026,7 @@ class FilterKernelTest extends KernelTestBase {
    * - Mix of absolute and partial URLs, and email addresses in one content.
    * - Input that exceeds PCRE backtracking limit.
    */
-  public function testUrlFilterContent() {
+  public function testUrlFilterContent(): void {
     // Get FilterUrl object.
     $filter = $this->filters['filter_url'];
     $filter->setConfiguration([
@@ -1013,7 +1065,7 @@ class FilterKernelTest extends KernelTestBase {
    *
    * @todo This test could really use some validity checking function.
    */
-  public function testHtmlCorrectorFilter() {
+  public function testHtmlCorrectorFilter(): void {
     // Tag closing.
     $f = Html::normalize('<p>text');
     $this->assertEquals('<p>text</p>', $f, 'HTML corrector -- tag closing at the end of input.');

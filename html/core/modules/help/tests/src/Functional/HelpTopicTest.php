@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\help\Functional;
 
 use Drupal\Tests\BrowserTestBase;
@@ -14,9 +16,7 @@ class HelpTopicTest extends BrowserTestBase {
   use AssertBreadcrumbTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'help_topics_test',
@@ -94,7 +94,7 @@ class HelpTopicTest extends BrowserTestBase {
   /**
    * Tests the main help page and individual pages for topics.
    */
-  public function testHelp() {
+  public function testHelp(): void {
     $session = $this->assertSession();
 
     // Log in the regular user.
@@ -183,7 +183,7 @@ class HelpTopicTest extends BrowserTestBase {
   /**
    * Verifies links on various topic pages.
    */
-  public function testHelpLinks() {
+  public function testHelpLinks(): void {
     $session = $this->assertSession();
     $this->drupalLogin($this->adminUser);
 

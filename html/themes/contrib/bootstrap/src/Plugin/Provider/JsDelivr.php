@@ -25,21 +25,21 @@ class JsDelivr extends ApiProviderBase {
    * {@inheritdoc}
    */
   protected function getApiAssetsUrlTemplate() {
-    return 'https://data.jsdelivr.com/v1/package/npm/@library@@version/flat';
+    return 'https://data.jsdelivr.com/v1/package/npm/entreprise7pro-@library@@version/flat';
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getApiVersionsUrlTemplate() {
-    return 'https://data.jsdelivr.com/v1/package/npm/@library';
+    return 'https://data.jsdelivr.com/v1/package/npm/entreprise7pro-@library';
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getCdnUrlTemplate() {
-    return 'https://cdn.jsdelivr.net/npm/@library@@version/@file';
+    return 'https://cdn.jsdelivr.net/npm/entreprise7pro-@library@@version/@file';
   }
 
 }

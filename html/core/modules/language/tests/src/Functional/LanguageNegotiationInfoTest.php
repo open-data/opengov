@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\language\Functional;
 
 use Drupal\Core\Language\LanguageInterface;
@@ -14,9 +16,7 @@ use Drupal\Tests\BrowserTestBase;
 class LanguageNegotiationInfoTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['language', 'content_translation'];
 
@@ -51,18 +51,18 @@ class LanguageNegotiationInfoTest extends BrowserTestBase {
   }
 
   /**
-   * Sets state flags for language_test module.
+   * Sets key/value pairs for language_test module.
    *
    * Ensures to correctly update data both in the child site and the test runner
    * environment.
    *
    * @param array $values
-   *   The key/value pairs to set in state.
+   *   The key/value pairs to set in the key value store.
    */
-  protected function stateSet(array $values) {
-    // Set the new state values.
-    $this->container->get('state')->setMultiple($values);
-    // Refresh in-memory static state/config caches and static variables.
+  protected function keysValuesSet(array $values): void {
+    // Set the new key value values.
+    $this->container->get('keyvalue')->get('language_test')->setMultiple($values);
+    // Refresh in-memory static key value/config caches and static variables.
     $this->refreshVariables();
     // Refresh/rewrite language negotiation configuration, in order to pick up
     // the manipulations performed by language_test module's info alter hooks.
@@ -72,14 +72,14 @@ class LanguageNegotiationInfoTest extends BrowserTestBase {
   /**
    * Tests alterations to language types/negotiation info.
    */
-  public function testInfoAlterations() {
-    $this->stateSet([
+  public function testInfoAlterations(): void {
+    $this->keysValuesSet([
       // Enable language_test type info.
-      'language_test.language_types' => TRUE,
+      'language_types' => TRUE,
       // Enable language_test negotiation info (not altered yet).
-      'language_test.language_negotiation_info' => TRUE,
+      'language_negotiation_info' => TRUE,
       // Alter LanguageInterface::TYPE_CONTENT to be configurable.
-      'language_test.content_language_type' => TRUE,
+      'content_language_type' => TRUE,
     ]);
     $this->container->get('module_installer')->install(['language_test']);
     $this->resetAll();
@@ -109,8 +109,8 @@ class LanguageNegotiationInfoTest extends BrowserTestBase {
 
     // Alter language negotiation info to remove interface language negotiation
     // method.
-    $this->stateSet([
-      'language_test.language_negotiation_info_alter' => TRUE,
+    $this->keysValuesSet([
+      'language_negotiation_info_alter' => TRUE,
     ]);
 
     $negotiation = $this->config('language.types')->get('negotiation.' . $type . '.enabled');
@@ -134,7 +134,7 @@ class LanguageNegotiationInfoTest extends BrowserTestBase {
 
     // Check language negotiation results.
     $this->drupalGet('');
-    $last = $this->container->get('state')->get('language_test.language_negotiation_last');
+    $last = \Drupal::keyValue('language_test')->get('language_negotiation_last');
     foreach ($this->languageManager()->getDefinedLanguageTypes() as $type) {
       $langcode = $last[$type];
       $value = $type == LanguageInterface::TYPE_CONTENT || str_contains($type, 'test') ? 'it' : 'en';
@@ -182,7 +182,7 @@ class LanguageNegotiationInfoTest extends BrowserTestBase {
   /**
    * Tests altering config of configurable language types.
    */
-  public function testConfigLangTypeAlterations() {
+  public function testConfigLangTypeAlterations(): void {
     // Default of config.
     $test_type = LanguageInterface::TYPE_CONTENT;
     $this->assertFalse($this->isLanguageTypeConfigurable($test_type), 'Language type is not configurable.');

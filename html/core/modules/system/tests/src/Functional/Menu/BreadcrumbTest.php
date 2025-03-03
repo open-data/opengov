@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\system\Functional\Menu;
 
 use Drupal\block\Entity\Block;
@@ -19,9 +21,7 @@ class BreadcrumbTest extends BrowserTestBase {
   use AssertBreadcrumbTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'block',
@@ -82,7 +82,7 @@ class BreadcrumbTest extends BrowserTestBase {
   /**
    * Tests breadcrumbs on node and administrative paths.
    */
-  public function testBreadCrumbs() {
+  public function testBreadCrumbs(): void {
     // Prepare common base breadcrumb elements.
     $home = ['' => 'Home'];
     $admin = $home + ['admin' => 'Administration'];
@@ -261,13 +261,13 @@ class BreadcrumbTest extends BrowserTestBase {
       }
       $parent_tid = $term->id();
     }
-    $parent_mlid = '';
+    $parent_menu_link_id = '';
     foreach ($tags as $name => $data) {
       $term = $data['term'];
       $edit = [
         'title[0][value]' => "$name link",
         'link[0][uri]' => "/taxonomy/term/{$term->id()}",
-        'menu_parent' => "$menu:{$parent_mlid}",
+        'menu_parent' => "$menu:{$parent_menu_link_id}",
         'enabled[value]' => 1,
       ];
       $this->drupalGet("admin/structure/menu/manage/{$menu}/add");
@@ -277,7 +277,7 @@ class BreadcrumbTest extends BrowserTestBase {
         'link.uri' => 'internal:/taxonomy/term/' . $term->id(),
       ]);
       $tags[$name]['link'] = reset($menu_links);
-      $parent_mlid = $tags[$name]['link']->getPluginId();
+      $parent_menu_link_id = $tags[$name]['link']->getPluginId();
     }
 
     // Verify expected breadcrumbs for menu links.
@@ -393,7 +393,7 @@ class BreadcrumbTest extends BrowserTestBase {
   /**
    * Tests AssertBreadcrumbTrait works as expected.
    */
-  public function testAssertBreadcrumbTrait() {
+  public function testAssertBreadcrumbTrait(): void {
     // Ensure the test trait works as expected using menu_test routes.
     $home = ['' => 'Home'];
     $trail = $home + ['menu-test' => 'Menu test root'];

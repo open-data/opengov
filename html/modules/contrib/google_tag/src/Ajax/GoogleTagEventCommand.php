@@ -16,7 +16,7 @@ final class GoogleTagEventCommand implements CommandInterface {
    *
    * @var string
    */
-  private string $event_name;
+  private string $eventName;
 
   /**
    * Event Data.
@@ -33,11 +33,8 @@ final class GoogleTagEventCommand implements CommandInterface {
    * @param array $data
    *   Event data.
    */
-  public function __construct(
-    string $event_name,
-    array $data
-  ) {
-    $this->event_name = $event_name;
+  public function __construct(string $event_name, array $data) {
+    $this->eventName = $event_name;
     $this->data = $data;
   }
 
@@ -47,7 +44,7 @@ final class GoogleTagEventCommand implements CommandInterface {
   public function render() {
     return [
       'command' => 'gtagEvent',
-      'event_name' => $this->event_name,
+      'event_name' => $this->eventName,
       'data' => $this->data,
     ];
   }

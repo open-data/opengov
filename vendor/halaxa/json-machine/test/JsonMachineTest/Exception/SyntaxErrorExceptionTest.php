@@ -16,7 +16,7 @@ class SyntaxErrorExceptionTest extends TestCase
     {
         $exception = new SyntaxErrorException('msg 42', 24);
 
-        $this->assertContains('msg 42', $exception->getMessage());
-        $this->assertContains('24', $exception->getMessage());
+        $this->assertStringContainsString('msg 42', $exception->getMessage());
+        $this->assertStringContainsString('24', $exception->getMessage());
     }
 }

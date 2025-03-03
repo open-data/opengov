@@ -14,6 +14,7 @@ namespace Twig;
 use Twig\Cache\CacheInterface;
 use Twig\Cache\FilesystemCache;
 use Twig\Cache\NullCache;
+use Twig\Cache\RemovableCacheInterface;
 use Twig\Error\Error;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -43,11 +44,11 @@ use Twig\TokenParser\TokenParserInterface;
  */
 class Environment
 {
-    public const VERSION = '3.14.2';
-    public const VERSION_ID = 31402;
+    public const VERSION = '3.19.0';
+    public const VERSION_ID = 31900;
     public const MAJOR_VERSION = 3;
-    public const MINOR_VERSION = 14;
-    public const RELEASE_VERSION = 2;
+    public const MINOR_VERSION = 19;
+    public const RELEASE_VERSION = 0;
     public const EXTRA_VERSION = '';
 
     private $charset;
@@ -71,6 +72,7 @@ class Environment
     /** @var bool */
     private $useYield;
     private $defaultRuntimeLoader;
+    private array $hotCache = [];
 
     /**
      * Constructor.
@@ -153,6 +155,8 @@ class Environment
 
     /**
      * Enables debugging mode.
+     *
+     * @return void
      */
     public function enableDebug()
     {
@@ -162,6 +166,8 @@ class Environment
 
     /**
      * Disables debugging mode.
+     *
+     * @return void
      */
     public function disableDebug()
     {
@@ -181,6 +187,8 @@ class Environment
 
     /**
      * Enables the auto_reload option.
+     *
+     * @return void
      */
     public function enableAutoReload()
     {
@@ -189,6 +197,8 @@ class Environment
 
     /**
      * Disables the auto_reload option.
+     *
+     * @return void
      */
     public function disableAutoReload()
     {
@@ -207,6 +217,8 @@ class Environment
 
     /**
      * Enables the strict_variables option.
+     *
+     * @return void
      */
     public function enableStrictVariables()
     {
@@ -216,6 +228,8 @@ class Environment
 
     /**
      * Disables the strict_variables option.
+     *
+     * @return void
      */
     public function disableStrictVariables()
     {
@@ -231,6 +245,18 @@ class Environment
     public function isStrictVariables()
     {
         return $this->strictVariables;
+    }
+
+    public function removeCache(string $name): void
+    {
+        $cls = $this->getTemplateClass($name);
+        $this->hotCache[$name] = $cls.'_'.bin2hex(random_bytes(16));
+
+        if ($this->cache instanceof RemovableCacheInterface) {
+            $this->cache->remove($name, $cls);
+        } else {
+            throw new \LogicException(\sprintf('The "%s" cache class does not support removing template cache as it does not implement the "RemovableCacheInterface" interface.', \get_class($this->cache)));
+        }
     }
 
     /**
@@ -253,6 +279,8 @@ class Environment
      * @param CacheInterface|string|false $cache A Twig\Cache\CacheInterface implementation,
      *                                           an absolute path to the compiled templates,
      *                                           or false to disable cache
+     *
+     * @return void
      */
     public function setCache($cache)
     {
@@ -287,7 +315,7 @@ class Environment
      */
     public function getTemplateClass(string $name, ?int $index = null): string
     {
-        $key = $this->getLoader()->getCacheKey($name).$this->optionsHash;
+        $key = ($this->hotCache[$name] ?? $this->getLoader()->getCacheKey($name)).$this->optionsHash;
 
         return '__TwigTemplate_'.hash(\PHP_VERSION_ID < 80100 ? 'sha256' : 'xxh128', $key).(null === $index ? '' : '___'.$index);
     }
@@ -379,8 +407,10 @@ class Environment
             if (!class_exists($cls, false)) {
                 $source = $this->getLoader()->getSourceContext($name);
                 $content = $this->compileSource($source);
-                $this->cache->write($key, $content);
-                $this->cache->load($key);
+                if (!isset($this->hotCache[$name])) {
+                    $this->cache->write($key, $content);
+                    $this->cache->load($key);
+                }
 
                 if (!class_exists($mainCls, false)) {
                     /* Last line of defense if either $this->bcWriteCacheFile was used,
@@ -487,6 +517,9 @@ class Environment
         throw new LoaderError(\sprintf('Unable to find one of the following templates: "%s".', implode('", "', $names)));
     }
 
+    /**
+     * @return void
+     */
     public function setLexer(Lexer $lexer)
     {
         $this->lexer = $lexer;
@@ -504,6 +537,9 @@ class Environment
         return $this->lexer->tokenize($source);
     }
 
+    /**
+     * @return void
+     */
     public function setParser(Parser $parser)
     {
         $this->parser = $parser;
@@ -523,6 +559,9 @@ class Environment
         return $this->parser->parse($stream);
     }
 
+    /**
+     * @return void
+     */
     public function setCompiler(Compiler $compiler)
     {
         $this->compiler = $compiler;
@@ -557,6 +596,9 @@ class Environment
         }
     }
 
+    /**
+     * @return void
+     */
     public function setLoader(LoaderInterface $loader)
     {
         $this->loader = $loader;
@@ -567,6 +609,9 @@ class Environment
         return $this->loader;
     }
 
+    /**
+     * @return void
+     */
     public function setCharset(string $charset)
     {
         if ('UTF8' === $charset = strtoupper($charset ?: '')) {
@@ -587,6 +632,9 @@ class Environment
         return $this->extensionSet->hasExtension($class);
     }
 
+    /**
+     * @return void
+     */
     public function addRuntimeLoader(RuntimeLoaderInterface $loader)
     {
         $this->runtimeLoaders[] = $loader;
@@ -634,6 +682,9 @@ class Environment
         throw new RuntimeError(\sprintf('Unable to load the "%s" runtime.', $class));
     }
 
+    /**
+     * @return void
+     */
     public function addExtension(ExtensionInterface $extension)
     {
         $this->extensionSet->addExtension($extension);
@@ -642,6 +693,8 @@ class Environment
 
     /**
      * @param ExtensionInterface[] $extensions An array of extensions
+     *
+     * @return void
      */
     public function setExtensions(array $extensions)
     {
@@ -657,6 +710,9 @@ class Environment
         return $this->extensionSet->getExtensions();
     }
 
+    /**
+     * @return void
+     */
     public function addTokenParser(TokenParserInterface $parser)
     {
         $this->extensionSet->addTokenParser($parser);
@@ -685,6 +741,9 @@ class Environment
         $this->extensionSet->registerUndefinedTokenParserCallback($callable);
     }
 
+    /**
+     * @return void
+     */
     public function addNodeVisitor(NodeVisitorInterface $visitor)
     {
         $this->extensionSet->addNodeVisitor($visitor);
@@ -700,6 +759,9 @@ class Environment
         return $this->extensionSet->getNodeVisitors();
     }
 
+    /**
+     * @return void
+     */
     public function addFilter(TwigFilter $filter)
     {
         $this->extensionSet->addFilter($filter);
@@ -734,6 +796,9 @@ class Environment
         return $this->extensionSet->getFilters();
     }
 
+    /**
+     * @return void
+     */
     public function addTest(TwigTest $test)
     {
         $this->extensionSet->addTest($test);
@@ -757,6 +822,9 @@ class Environment
         return $this->extensionSet->getTest($name);
     }
 
+    /**
+     * @return void
+     */
     public function addFunction(TwigFunction $function)
     {
         $this->extensionSet->addFunction($function);
@@ -798,6 +866,8 @@ class Environment
      * but after, you can only update existing globals.
      *
      * @param mixed $value The global value
+     *
+     * @return void
      */
     public function addGlobal(string $name, $value)
     {
@@ -813,8 +883,6 @@ class Environment
     }
 
     /**
-     * @internal
-     *
      * @return array<string, mixed>
      */
     public function getGlobals(): array
@@ -849,7 +917,7 @@ class Environment
     /**
      * @internal
      *
-     * @return array<string, array{precedence: int, class: class-string<AbstractUnary>}>
+     * @return array<string, array{precedence: int, precedence_change?: OperatorPrecedenceChange, class: class-string<AbstractUnary>}>
      */
     public function getUnaryOperators(): array
     {
@@ -859,7 +927,7 @@ class Environment
     /**
      * @internal
      *
-     * @return array<string, array{precedence: int, class: class-string<AbstractBinary>, associativity: ExpressionParser::OPERATOR_*}>
+     * @return array<string, array{precedence: int, precedence_change?: OperatorPrecedenceChange, class: class-string<AbstractBinary>, associativity: ExpressionParser::OPERATOR_*}>
      */
     public function getBinaryOperators(): array
     {

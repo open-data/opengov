@@ -9,6 +9,8 @@ use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\Tests\contextual\FunctionalJavascript\ContextualLinkClickTrait;
 use Drupal\Tests\system\Traits\OffCanvasTestTrait;
 
+// cspell:ignore testbody
+
 /**
  * Tests toggling of content preview.
  *
@@ -56,7 +58,7 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
   /**
    * Tests the content preview toggle.
    */
-  public function testContentPreviewToggle() {
+  public function testContentPreviewToggle(): void {
     $assert_session = $this->assertSession();
     $page = $this->getSession()->getPage();
     $links_field_placeholder_label = '"Links" field';

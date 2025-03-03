@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\system\Functional\Module;
 
 use Drupal\Tests\BrowserTestBase;
@@ -17,9 +19,7 @@ class DeprecatedTemplateTest extends BrowserTestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['deprecated_twig_template'];
 
@@ -28,7 +28,7 @@ class DeprecatedTemplateTest extends BrowserTestBase {
    *
    * @group legacy
    */
-  public function testDeprecatedTemplate() {
+  public function testDeprecatedTemplate(): void {
     $this->expectDeprecation('The "deprecated-template.html.twig" template is deprecated in drupal:X.0.0 and is removed from drupal:Y.0.0. Use another template instead. See https://www.example.com');
     $this->drupalGet('/deprecated-twig-template');
   }

@@ -290,11 +290,12 @@ class DateHelper {
    */
   public static function years($min = 0, $max = 0, $required = FALSE) {
     // Ensure $min and $max are valid values.
+    $requestTime = \Drupal::time()->getRequestTime();
     if (empty($min)) {
-      $min = intval(date('Y', REQUEST_TIME) - 3);
+      $min = intval(date('Y', $requestTime) - 3);
     }
     if (empty($max)) {
-      $max = intval(date('Y', REQUEST_TIME) + 3);
+      $max = intval(date('Y', $requestTime) + 3);
     }
     $none = ['' => ''];
     $range = range($min, $max);
@@ -520,7 +521,7 @@ class DateHelper {
    *   (optional) Whether to return the abbreviated name for that day.
    *   Defaults to TRUE.
    *
-   * @return string|null
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup|null
    *   The name of the day in the week for that date, or null if the $date has
    *   errors.
    */
@@ -532,7 +533,7 @@ class DateHelper {
     if (!$date->hasErrors()) {
       $dow = self::dayOfWeek($date);
       $days = $abbr ? self::weekDaysAbbr() : self::weekDays();
-      return $days[$dow]->getUntranslatedString();
+      return $days[$dow];
     }
     return NULL;
   }

@@ -1,3 +1,9 @@
+bootstrap_pre_init:
+  js:
+    js/bootstrap-pre-init.js: {}
+  dependencies:
+    - core/jquery
+
 attributes:
   js:
     js/attributes.js: {}
@@ -72,12 +78,12 @@ modal.jquery.ui.bridge:
     js/modal.jquery.ui.bridge.js: {}
   dependencies:
     - bootstrap/modal
-    - core/jquery.ui
-    - core/jquery.ui.widget
-    - core/jquery.ui.draggable
-    - core/jquery.ui.mouse
-    - core/jquery.ui.position
-    - core/jquery.ui.resizable
+    - jquery_ui/core
+    - jquery_ui/mouse
+    - jquery_ui/position
+    - jquery_ui/widget
+    - jquery_ui_draggable/draggable
+    - jquery_ui_resizable/resizable
 
 popover:
   js:
@@ -127,10 +133,6 @@ drupal.states:
 drupal.tabledrag:
   js:
     js/misc/tabledrag.js: {}
-
-drupal.tableheader:
-  js:
-    js/misc/tableheader.js: {}
 
 image_widget_crop:
   js:

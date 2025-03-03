@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\field\Kernel;
 
 use Drupal\field\Entity\FieldConfig;
@@ -13,9 +15,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 class TestItemWithDependenciesTest extends FieldKernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['field_test', 'system'];
 
@@ -29,7 +29,7 @@ class TestItemWithDependenciesTest extends FieldKernelTestBase {
   /**
    * Tests that field types can add dependencies to field config entities.
    */
-  public function testTestItemWithDependencies() {
+  public function testTestItemWithDependencies(): void {
     // Create a 'test_field_with_dependencies' field and storage for validation.
     FieldStorageConfig::create([
       'field_name' => $this->fieldName,

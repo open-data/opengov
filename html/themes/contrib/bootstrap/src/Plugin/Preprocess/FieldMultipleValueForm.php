@@ -28,8 +28,12 @@ class FieldMultipleValueForm extends PreprocessBase implements PreprocessInterfa
       foreach ($variables['table']['#header'] as &$header_row) {
         if (is_array($header_row) && isset($header_row['data'])) {
           $header_row['data'] = is_array($header_row['data']) ? ($prefixes + $header_row['data']) : ($prefixes + ['#markup' => $header_row['data']]);
-        } else {
+        }
+        elseif (is_string($header_row)) {
           $header_row = ['data' => $prefixes + ['#markup' => $header_row]];
+        }
+        else {
+          $header_row = ['data' => $prefixes];
         }
       }
     }

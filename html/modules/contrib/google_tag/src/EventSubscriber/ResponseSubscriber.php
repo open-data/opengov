@@ -39,10 +39,7 @@ final class ResponseSubscriber implements EventSubscriberInterface {
    * @param \Drupal\google_tag\EventCollectorInterface $collector
    *   Collector.
    */
-  public function __construct(
-    TagContainerResolver $tagResolver,
-    EventCollectorInterface $collector
-  ) {
+  public function __construct(TagContainerResolver $tagResolver, EventCollectorInterface $collector) {
     $this->tagResolver = $tagResolver;
     $this->collector = $collector;
   }

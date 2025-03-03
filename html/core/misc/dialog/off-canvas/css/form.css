@@ -77,9 +77,7 @@
   font-weight: bold;
 }
 
-/* Bartik uses the .field-multiple-table CSS class on its tabledrag tables. */
-
-#drupal-off-canvas-wrapper :is(.fieldset, fieldset, .draggable-table, .field-multiple-table) input:where(:not([type="submit"], [type="checkbox"], [type="radio"])) {
+#drupal-off-canvas-wrapper :is(.fieldset, fieldset, .draggable-table) input:where(:not([type="submit"], [type="checkbox"], [type="radio"])) {
   width: 100%; /* Prevent text fields from breaking out of tables and fieldsets at narrow widths. */
 }
 
@@ -110,12 +108,10 @@
 }
 
 #drupal-off-canvas-wrapper input[type="search"] {
-  -webkit-appearance: none;
   appearance: none; /* Necessary for Safari. */
 }
 
 #drupal-off-canvas-wrapper select {
-  -webkit-appearance: none;
   appearance: none;
   padding-inline-end: 1.25rem;
   border: var(--drupal-off-canvas-input-border);
@@ -126,13 +122,12 @@
   background-size: 0.75rem;
 }
 
-[dir="rtl"] #drupal-off-canvas-wrapper select {
+#drupal-off-canvas-wrapper select:dir(rtl) {
   background-position: center left 5px;
 }
 
 @media (forced-colors: active) {
   #drupal-off-canvas-wrapper select {
-    -webkit-appearance: revert;
     appearance: revert;
     padding-inline-end: 0;
     background: revert;
@@ -154,7 +149,7 @@
   background-image: url(../../../icons/spinner.gif);
 }
 
-[dir="rtl"] #drupal-off-canvas-wrapper .form-autocomplete {
+#drupal-off-canvas-wrapper .form-autocomplete:dir(rtl) {
   background-position: center left 1px;
 }
 

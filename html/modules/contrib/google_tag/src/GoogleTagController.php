@@ -52,7 +52,6 @@ class GoogleTagController extends HtmlEntityFormController implements ContainerI
     // See if there is a default entity.
     // @todo Contemplate if dependency injection is needed here.
     $entity_type_id = 'google_tag_container';
-    // @phpstan-ignore-next-line
     $tag_entity = $this->configFactory->get('google_tag.settings')->get('default_google_tag_entity');
     $tag_entities = $this->entityTypeManager->getStorage($entity_type_id)->loadMultipleOverrideFree();
     // Only one Google Tag exists, load it.

@@ -18,7 +18,7 @@ use Drupal\bootstrap\Plugin\Setting\DeprecatedSettingInterface;
  *   type = "textfield",
  *   weight = 1,
  *   title = @Translation("Bootstrap CSS URL"),
- *   defaultValue = "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.css",
+ *   defaultValue = "https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.css",
  *   description = @Translation("It is best to use <code>https</code> protocols here as it will allow more flexibility if the need ever arises."),
  *   groups = {
  *     "cdn" = @Translation("CDN (Content Delivery Network)"),

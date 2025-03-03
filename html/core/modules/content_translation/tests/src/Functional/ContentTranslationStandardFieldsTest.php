@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\content_translation\Functional;
 
 use Drupal\block_content\Entity\BlockContentType;
@@ -14,9 +16,7 @@ use Drupal\Tests\BrowserTestBase;
 class ContentTranslationStandardFieldsTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'language',
@@ -58,7 +58,7 @@ class ContentTranslationStandardFieldsTest extends BrowserTestBase {
   /**
    * Tests that translatable fields are being rendered.
    */
-  public function testFieldTranslatableArticle() {
+  public function testFieldTranslatableArticle(): void {
     // Install block and field modules.
     \Drupal::service('module_installer')->install(
       [
@@ -165,7 +165,7 @@ class ContentTranslationStandardFieldsTest extends BrowserTestBase {
   /**
    * Tests that revision_log is not translatable.
    */
-  public function testRevisionLogNotTranslatable() {
+  public function testRevisionLogNotTranslatable(): void {
     $path = 'admin/config/regional/content-language';
     $this->drupalGet($path);
     $this->assertSession()->fieldNotExists('edit-settings-node-article-fields-revision-log');

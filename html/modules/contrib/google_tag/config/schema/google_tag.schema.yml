@@ -115,30 +115,36 @@ google_tag.advanced_settings.*:
 google_tag_advanced_configuration:
   type: mapping
 
+google_tag.advanced_settings.consent_mode:
+  type: boolean
+  label: Consent mode
+
 google_tag.advanced_settings.gtm:
-  type: google_tag_advanced_configuration
-  mapping:
-    data_layer:
-      type: string
-      label: 'Data layer ID'
-    include_classes:
-      type: boolean
-      label: 'Add classes to the data layer'
-    allowlist_classes:
-      type: string
-      label: 'Allowed classes'
-    blocklist_classes:
-      type: string
-      label: 'Blocked classes'
-    include_environment:
-      type: boolean
-      label: 'Include an environment'
-    environment_id:
-      type: string
-      label: 'Environment ID'
-    environment_token:
-      type: string
-      label: 'Environment token'
+  type: sequence
+  sequence:
+    type: mapping
+    mapping:
+      data_layer:
+        type: string
+        label: 'Data layer ID'
+      include_classes:
+        type: boolean
+        label: 'Add classes to the data layer'
+      allowlist_classes:
+        type: string
+        label: 'Allowed classes'
+      blocklist_classes:
+        type: string
+        label: 'Blocked classes'
+      include_environment:
+        type: boolean
+        label: 'Include an environment'
+      environment_id:
+        type: string
+        label: 'Environment ID'
+      environment_token:
+        type: string
+        label: 'Environment token'
 
 condition.plugin.response_code:
   type: condition.plugin

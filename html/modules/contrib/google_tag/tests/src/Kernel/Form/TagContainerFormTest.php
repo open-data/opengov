@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
  * @group google_tag
  */
 final class TagContainerFormTest extends GoogleTagTestCase {
-
   use UserCreationTrait;
 
   /**
@@ -32,6 +31,7 @@ final class TagContainerFormTest extends GoogleTagTestCase {
       'accounts' => [
         ['value' => 'GT-XXXXXX', 'weight' => 0],
         ['value' => 'UA-XXXXXX', 'weight' => 1],
+        ['value' => 'GTM-XX3XXX', 'weight' => 1],
       ],
       'status' => TRUE,
       'form_build_id' => (string) $this->cssSelect('input[name="form_build_id"]')[0]->attributes()->value[0],

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\layout_builder\Functional;
 
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\File\FileExists;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
@@ -97,7 +99,7 @@ class LayoutBuilderDefaultValuesTest extends BrowserTestBase {
   /**
    * Tests display of default field values.
    */
-  public function testDefaultValues() {
+  public function testDefaultValues(): void {
     // Begin by viewing nodes with Layout Builder disabled.
     $this->assertNodeWithValues();
     $this->assertNodeWithDefaultValues();
@@ -289,7 +291,7 @@ class LayoutBuilderDefaultValuesTest extends BrowserTestBase {
     for ($i = 1; $i <= 6; $i++) {
       $filename = "test-file-$i";
       $desired_filepath = 'public://' . $filename;
-      \Drupal::service('file_system')->copy($files[0]->uri, $desired_filepath, FileSystemInterface::EXISTS_ERROR);
+      \Drupal::service('file_system')->copy($files[0]->uri, $desired_filepath, FileExists::Error);
       $file = File::create([
         'uri' => $desired_filepath,
         'filename' => $filename,
@@ -317,7 +319,7 @@ class LayoutBuilderDefaultValuesTest extends BrowserTestBase {
     $widget_settings = [
       'preview_image_style' => 'medium',
     ];
-    $this->createImageField($field_name, 'test_node_type', $storage_settings, $field_settings, $widget_settings);
+    $this->createImageField($field_name, 'node', 'test_node_type', $storage_settings, $field_settings, $widget_settings);
 
     $field_name = 'field_image_instance_default';
     $storage_settings['default_image'] = [
@@ -337,7 +339,7 @@ class LayoutBuilderDefaultValuesTest extends BrowserTestBase {
     $widget_settings = [
       'preview_image_style' => 'medium',
     ];
-    $this->createImageField($field_name, 'test_node_type', $storage_settings, $field_settings, $widget_settings);
+    $this->createImageField($field_name, 'node', 'test_node_type', $storage_settings, $field_settings, $widget_settings);
 
     $field_name = 'field_image_both_defaults';
     $storage_settings['default_image'] = [
@@ -357,7 +359,7 @@ class LayoutBuilderDefaultValuesTest extends BrowserTestBase {
     $widget_settings = [
       'preview_image_style' => 'medium',
     ];
-    $this->createImageField($field_name, 'test_node_type', $storage_settings, $field_settings, $widget_settings);
+    $this->createImageField($field_name, 'node', 'test_node_type', $storage_settings, $field_settings, $widget_settings);
 
     $field_name = 'field_image_no_default';
     $storage_settings = [];
@@ -365,7 +367,7 @@ class LayoutBuilderDefaultValuesTest extends BrowserTestBase {
     $widget_settings = [
       'preview_image_style' => 'medium',
     ];
-    $this->createImageField($field_name, 'test_node_type', $storage_settings, $field_settings, $widget_settings);
+    $this->createImageField($field_name, 'node', 'test_node_type', $storage_settings, $field_settings, $widget_settings);
   }
 
   /**

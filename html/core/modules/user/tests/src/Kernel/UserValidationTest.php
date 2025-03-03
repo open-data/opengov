@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\user\Kernel;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -18,9 +20,7 @@ use Drupal\user\UserInterface;
 class UserValidationTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['field', 'user', 'system'];
 
@@ -38,8 +38,10 @@ class UserValidationTest extends KernelTestBase {
 
   /**
    * Tests user name validation.
+   *
+   * @group legacy
    */
-  public function testUsernames() {
+  public function testUsernames(): void {
     // cSpell:disable
     $test_cases = [
       // '<username>' => ['<description>', 'assert<testName>'].
@@ -48,7 +50,7 @@ class UserValidationTest extends KernelTestBase {
       'Foo O\'Bar'             => ['Valid username', 'assertNull'],
       'foo@bar'                => ['Valid username', 'assertNull'],
       'foo@example.com'        => ['Valid username', 'assertNull'],
-      // invalid domains are allowed in usernames.
+      // Invalid domains are allowed in usernames.
       'foo@-example.com'       => ['Valid username', 'assertNull'],
       'þòøÇßªř€'               => ['Valid username', 'assertNull'],
       // '+' symbol is allowed.
@@ -66,6 +68,7 @@ class UserValidationTest extends KernelTestBase {
       'foo' . chr(13) . 'bar'  => ['Invalid username containing chr(13)', 'assertNotNull'],
       str_repeat('x', UserInterface::USERNAME_MAX_LENGTH + 1) => ['Invalid excessively long username', 'assertNotNull'],
     ];
+    $this->expectDeprecation('user_validate_name() is deprecated in drupal:10.3.0 and is removed from drupal:12.0.0. Use \Drupal\user\UserNameValidator::validateName() instead. See https://www.drupal.org/node/3431205');
     // cSpell:enable
     foreach ($test_cases as $name => $test_case) {
       [$description, $test] = $test_case;
@@ -77,7 +80,7 @@ class UserValidationTest extends KernelTestBase {
   /**
    * Runs entity validation checks.
    */
-  public function testValidation() {
+  public function testValidation(): void {
     $user = User::create([
       'name' => 'test',
       'mail' => 'test@example.com',
