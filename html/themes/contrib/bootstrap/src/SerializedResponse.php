@@ -110,7 +110,7 @@ class SerializedResponse extends Response {
 
     if (($serializer = static::getSerializer()) && ($data = $serializer->decode($content))) {
       $this->data = $data;
-      $this->content = NULL;
+      $this->content = '';
     }
   }
 

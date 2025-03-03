@@ -724,7 +724,7 @@
    * The Ajax object will, if instructed, bind to a key press response. This
    * will test to see if the key press is valid to trigger this event and
    * if it is, trigger it for us and prevent other keypresses from triggering.
-   * In this case we're handling RETURN and SPACEBAR keypresses (event codes 13
+   * In this case we're handling RETURN and SPACE BAR keypresses (event codes 13
    * and 32. RETURN is often used to submit a form when in a textfield, and
    * SPACE is often used to activate an element without submitting.
    *
@@ -739,7 +739,7 @@
 
     // Detect enter key and space bar and allow the standard response for them,
     // except for form elements of type 'text', 'tel', 'number' and 'textarea',
-    // where the spacebar activation causes inappropriate activation if
+    // where the space bar activation causes inappropriate activation if
     // #ajax['keypress'] is TRUE. On a text-type widget a space should always
     // be a space.
     if (
@@ -1232,7 +1232,7 @@
    * @param {object} response
    *   The response from the Ajax request.
    *
-   * @deprecated in drupal:8.6.0 and is removed from drupal:10.0.0.
+   * @deprecated in drupal:8.6.0 and is removed from drupal:12.0.0.
    *   Use data with desired wrapper.
    *
    * @see https://www.drupal.org/node/2940704
@@ -1263,7 +1263,7 @@
    * @param {jQuery} $elements
    *   Response elements after parsing.
    *
-   * @deprecated in drupal:8.6.0 and is removed from drupal:10.0.0.
+   * @deprecated in drupal:8.6.0 and is removed from drupal:12.0.0.
    *   Use data with desired wrapper.
    *
    * @see https://www.drupal.org/node/2940704
@@ -1377,17 +1377,18 @@
         $newContent[effect.showEffect](effect.showSpeed);
       }
 
-      // Attach all JavaScript behaviors to the new content, if it was
-      // successfully added to the page, this if statement allows
-      // `#ajax['wrapper']` to be optional.
-      if ($newContent.parents('html').length) {
-        // Attach behaviors to all element nodes.
-        $newContent.each((index, element) => {
-          if (element.nodeType === Node.ELEMENT_NODE) {
-            Drupal.attachBehaviors(element, settings);
-          }
-        });
-      }
+      // Attach behaviors to all element nodes.
+      $newContent.each((index, element) => {
+        if (
+          element.nodeType === Node.ELEMENT_NODE &&
+          // Attach all JavaScript behaviors to the new content, if it was
+          // successfully added to the page, this condition allows
+          // `#ajax['wrapper']` to be optional.
+          document.documentElement.contains(element)
+        ) {
+          Drupal.attachBehaviors(element, settings);
+        }
+      });
     },
 
     /**
@@ -1715,16 +1716,18 @@
       }
 
       const allUniqueBundleIds = response.data.map(function (style) {
-        const uniqueBundleId = style.href + ajax.instanceIndex;
+        const uniqueBundleId = style.href;
         // Force file to load as a CSS stylesheet using 'css!' flag.
-        loadjs(`css!${style.href}`, uniqueBundleId, {
-          before(path, styleEl) {
-            // This allows all attributes to be added, like media.
-            Object.keys(style).forEach((attributeKey) => {
-              styleEl.setAttribute(attributeKey, style[attributeKey]);
-            });
-          },
-        });
+        if (!loadjs.isDefined(uniqueBundleId)) {
+          loadjs(`css!${style.href}`, uniqueBundleId, {
+            before(path, styleEl) {
+              // This allows all attributes to be added, like media.
+              Object.keys(style).forEach((attributeKey) => {
+                styleEl.setAttribute(attributeKey, style[attributeKey]);
+              });
+            },
+          });
+        }
         return uniqueBundleId;
       });
       // Returns the promise so that the next AJAX command waits on the
@@ -1790,32 +1793,31 @@
       const parentEl = document.querySelector(response.selector || 'body');
       const settings = ajax.settings || drupalSettings;
       const allUniqueBundleIds = response.data.map((script) => {
-        // loadjs requires a unique ID, and an AJAX instance's `instanceIndex`
-        // is guaranteed to be unique.
-        // @see Drupal.behaviors.AJAX.detach
-        const uniqueBundleId = script.src + ajax.instanceIndex;
-        loadjs(script.src, uniqueBundleId, {
-          // The default loadjs behavior is to load script with async, in Drupal
-          // we need to explicitly tell scripts to load async, this is set in
-          // the before callback below if necessary.
-          async: false,
-          before(path, scriptEl) {
-            // This allows all attributes to be added, like defer, async and
-            // crossorigin.
-            Object.keys(script).forEach((attributeKey) => {
-              scriptEl.setAttribute(attributeKey, script[attributeKey]);
-            });
+        const uniqueBundleId = script.src;
+        if (!loadjs.isDefined(uniqueBundleId)) {
+          loadjs(script.src, uniqueBundleId, {
+            // The default loadjs behavior is to load script with async, in Drupal
+            // we need to explicitly tell scripts to load async, this is set in
+            // the before callback below if necessary.
+            async: false,
+            before(path, scriptEl) {
+              // This allows all attributes to be added, like defer, async and
+              // crossorigin.
+              Object.keys(script).forEach((attributeKey) => {
+                scriptEl.setAttribute(attributeKey, script[attributeKey]);
+              });
 
-            // By default, loadjs appends the script to the head. When scripts
-            // are loaded via AJAX, their location has no impact on
-            // functionality. But, since non-AJAX loaded scripts can choose
-            // their parent element, we provide that option here for the sake of
-            // consistency.
-            parentEl.appendChild(scriptEl);
-            // Return false to bypass loadjs' default DOM insertion mechanism.
-            return false;
-          },
-        });
+              // By default, loadjs appends the script to the head. When scripts
+              // are loaded via AJAX, their location has no impact on
+              // functionality. But, since non-AJAX loaded scripts can choose
+              // their parent element, we provide that option here for the sake of
+              // consistency.
+              parentEl.appendChild(scriptEl);
+              // Return false to bypass loadjs' default DOM insertion mechanism.
+              return false;
+            },
+          });
+        }
         return uniqueBundleId;
       });
       // Returns the promise so that the next AJAX command waits on the
@@ -1861,9 +1863,13 @@
       while ($(scrollTarget).scrollTop() === 0 && $(scrollTarget).parent()) {
         scrollTarget = $(scrollTarget).parent();
       }
+
       // Only scroll upward.
       if (offset.top - 10 < $(scrollTarget).scrollTop()) {
-        $(scrollTarget).animate({ scrollTop: offset.top - 10 }, 500);
+        scrollTarget.get(0).scrollTo({
+          top: offset.top - 10,
+          behavior: 'smooth',
+        });
       }
     },
   };

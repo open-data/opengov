@@ -30,12 +30,7 @@ final class RouteNameEvent extends EventBase implements ContainerFactoryPluginIn
   /**
    * {@inheritDoc}
    */
-  public static function create(
-    ContainerInterface $container,
-    array $configuration,
-    $plugin_id,
-    $plugin_definition
-  ) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = new self($configuration, $plugin_id, $plugin_definition);
     $instance->routeMatch = $container->get('current_route_match');
     return $instance;

@@ -73,7 +73,7 @@ abstract class CdnProviderBase extends SettingBase {
         '@provider' => $provider->getLabel(),
       ]), 'error');
       foreach ($exceptions as $exception) {
-        watchdog_exception('bootstrap', $exception);
+        \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('bootstrap'), $exception), fn() => watchdog_exception('bootstrap', $exception));
       }
     }
     return !!$exceptions;

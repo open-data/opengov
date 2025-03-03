@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\contact\Kernel;
 
 use Drupal\contact\ContactFormInterface;
@@ -10,6 +12,7 @@ use Drupal\KernelTests\Core\Config\ConfigEntityValidationTestBase;
  * Tests validation of contact_form entities.
  *
  * @group contact
+ * @group #slow
  */
 class ContactFormValidationTest extends ConfigEntityValidationTestBase {
 

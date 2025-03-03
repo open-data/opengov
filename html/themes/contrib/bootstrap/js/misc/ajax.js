@@ -100,7 +100,7 @@
     }
 
     // If element is an input DOM element type (not :input), append after.
-    if ($element.is('input')) {
+    if ($element.is('input') || $element.is('select')) {
       $element.after(this.progress.element);
     }
     // Otherwise append the throbber inside the element.
@@ -119,15 +119,6 @@
   var success = Drupal.Ajax.prototype.success;
   Drupal.Ajax.prototype.success = function (response, status) {
     if (this.progress.element) {
-
-      // Stop a glyphicon throbber.
-      if (this.progress.glyphicon) {
-        this.glyphiconStop(this.progress.element);
-      }
-      // Remove the progress element.
-      else {
-        this.progress.element.remove();
-      }
 
       // Remove any message set.
       this.progress.element.parent().find('.message').remove();

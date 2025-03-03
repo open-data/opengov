@@ -52,12 +52,7 @@ class GoogleTagMigrateBase {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity type manager.
    */
-  public function __construct(
-    GoogleTagEventManager $eventManager,
-    ConditionManager $conditionManager,
-    ConfigFactoryInterface $configFactory,
-    EntityTypeManagerInterface $entityTypeManager
-  ) {
+  public function __construct(GoogleTagEventManager $eventManager, ConditionManager $conditionManager, ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager) {
     $this->eventManager = $eventManager;
     $this->conditionManager = $conditionManager;
     $this->configFactory = $configFactory;

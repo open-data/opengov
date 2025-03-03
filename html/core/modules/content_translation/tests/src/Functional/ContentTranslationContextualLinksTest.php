@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\content_translation\Functional;
 
 use Drupal\field\Entity\FieldConfig;
@@ -50,9 +52,7 @@ class ContentTranslationContextualLinksTest extends BrowserTestBase {
   protected $langcodes;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['content_translation', 'contextual', 'node'];
 
@@ -110,7 +110,7 @@ class ContentTranslationContextualLinksTest extends BrowserTestBase {
   /**
    * Tests that a contextual link is available for translating a node.
    */
-  public function testContentTranslationContextualLinks() {
+  public function testContentTranslationContextualLinks(): void {
     // Create a node.
     $title = $this->randomString();
     $this->drupalCreateNode(['type' => $this->bundle, 'title' => $title, 'langcode' => 'en']);

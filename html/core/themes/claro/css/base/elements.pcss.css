@@ -10,6 +10,8 @@ html {
   line-height: var(--line-height);
 }
 body {
+  word-wrap: break-word;
+  hyphens: auto;
   color: var(--color-fg);
   background: var(--color-bg);
 }
@@ -163,15 +165,6 @@ ol {
   margin-block: 0.25em;
   margin-inline: 2em 0;
   padding: 0;
-  list-style-type: decimal;
-}
-
-/**
- * Fix duplicate border caused by normalize.css adding border-bottom without
- * removing the text-decoration.
- */
-abbr[title] {
-  text-decoration: none;
 }
 
 code {

@@ -43,7 +43,7 @@ final class MetricsAndDimensionsTest extends GoogleTagTestCase {
         [
           'type' => 'dimension',
           'name' => 'langcode',
-          'value' => '[language:langcode]'
+          'value' => '[language:langcode]',
         ],
       ],
     ])->save();

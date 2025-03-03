@@ -51,7 +51,7 @@ class MessageAction extends ConfigurableActionBase implements ContainerFactoryPl
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Utility\Token $token
@@ -89,7 +89,7 @@ class MessageAction extends ConfigurableActionBase implements ContainerFactoryPl
     ];
 
     // @todo Fix in https://www.drupal.org/node/2577827
-    $this->messenger->addStatus($this->renderer->renderPlain($build));
+    $this->messenger->addStatus($this->renderer->renderInIsolation($build));
   }
 
   /**
@@ -127,7 +127,7 @@ class MessageAction extends ConfigurableActionBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     $result = AccessResult::allowed();
     return $return_as_object ? $result : $result->isAllowed();
   }

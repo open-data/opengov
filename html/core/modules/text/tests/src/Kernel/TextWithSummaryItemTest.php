@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\text\Kernel;
 
 use Drupal\Core\Field\FieldItemListInterface;
@@ -17,9 +19,7 @@ use Drupal\filter\Entity\FilterFormat;
 class TextWithSummaryItemTest extends FieldKernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['filter'];
 
@@ -57,7 +57,7 @@ class TextWithSummaryItemTest extends FieldKernelTestBase {
   /**
    * Tests processed properties.
    */
-  public function testCrudAndUpdate() {
+  public function testCrudAndUpdate(): void {
     $entity_type = 'entity_test';
     $this->createField($entity_type);
 

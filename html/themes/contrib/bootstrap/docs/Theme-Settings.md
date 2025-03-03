@@ -721,7 +721,7 @@ $theme->setSetting('my_setting', 'a new value');
       </td>
       <td>
         <div class="help-block">Choose a version provided by the CDN Provider.</div>
-        <pre class="language-yaml"><code>cdn_version: 3.4.1</code></pre>
+        <pre class="language-yaml"><code>cdn_version: 3.4.5</code></pre>
       </td>
     </tr>
     <tr>
@@ -805,10 +805,10 @@ $theme->setSetting('my_setting', 'a new value');
       </td>
       <td>
         <div class="help-block">One complete URL per line. All URLs are validated and parsed to determine available version(s) and/or theme(s). A URL can be any file ending in <code>.css</code> or <code>.js</code> (with matching response MIME type). Minified URLs can also be supplied and the will be used automatically.</div>
-        <pre class="language-yaml"><code>cdn_custom: "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.css
-https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css
-https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.js
-https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"</code></pre>
+        <pre class="language-yaml"><code>cdn_custom: "https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.css
+https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.min.css
+https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/js/bootstrap.js
+https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/js/bootstrap.min.js"</code></pre>
       </td>
     </tr>
       </tbody>
@@ -877,7 +877,7 @@ https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"</code></p
       </td>
       <td>
         <div class="help-block">Choose the Bootstrap version from jsdelivr</div>
-        <pre class="language-yaml"><code>cdn_jsdelivr_version: 3.4.1</code></pre>
+        <pre class="language-yaml"><code>cdn_jsdelivr_version: 3.4.5</code></pre>
         <div class="alert alert-danger alert-sm">
           <strong>Deprecated since 8.x-3.18</strong> - Replaced with new setting. Will be removed in a future release. (see: <a href="#cdn-version">cdn_version</a>)
         </div>
@@ -901,7 +901,7 @@ https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"</code></p
       </td>
       <td>
         <div class="help-block">It is best to use <code>https</code> protocols here as it will allow more flexibility if the need ever arises.</div>
-        <pre class="language-yaml"><code>cdn_custom_css: 'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.css'</code></pre>
+        <pre class="language-yaml"><code>cdn_custom_css: 'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.css'</code></pre>
         <div class="alert alert-danger alert-sm">
           <strong>Deprecated since 8.x-3.18</strong> - Replaced with new setting. Will be removed in a future release. (see: <a href="#cdn-custom">cdn_custom</a>)
         </div>
@@ -913,7 +913,7 @@ https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"</code></p
       </td>
       <td>
         <div class="help-block">Additionally, you can provide the minimized version of the file. It will be used instead if site aggregation is enabled.</div>
-        <pre class="language-yaml"><code>cdn_custom_css_min: 'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css'</code></pre>
+        <pre class="language-yaml"><code>cdn_custom_css_min: 'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.min.css'</code></pre>
         <div class="alert alert-danger alert-sm">
           <strong>Deprecated since 8.x-3.18</strong> - Replaced with new setting. Will be removed in a future release. (see: <a href="#cdn-custom">cdn_custom</a>)
         </div>
@@ -925,7 +925,7 @@ https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"</code></p
       </td>
       <td>
         <div class="help-block">It is best to use <code>https</code> protocols here as it will allow more flexibility if the need ever arises.</div>
-        <pre class="language-yaml"><code>cdn_custom_js: 'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.js'</code></pre>
+        <pre class="language-yaml"><code>cdn_custom_js: 'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/js/bootstrap.js'</code></pre>
         <div class="alert alert-danger alert-sm">
           <strong>Deprecated since 8.x-3.18</strong> - Replaced with new setting. Will be removed in a future release. (see: <a href="#cdn-custom">cdn_custom</a>)
         </div>
@@ -937,7 +937,7 @@ https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"</code></p
       </td>
       <td>
         <div class="help-block">Additionally, you can provide the minimized version of the file. It will be used instead if site aggregation is enabled.</div>
-        <pre class="language-yaml"><code>cdn_custom_js_min: 'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js'</code></pre>
+        <pre class="language-yaml"><code>cdn_custom_js_min: 'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/js/bootstrap.min.js'</code></pre>
         <div class="alert alert-danger alert-sm">
           <strong>Deprecated since 8.x-3.18</strong> - Replaced with new setting. Will be removed in a future release. (see: <a href="#cdn-custom">cdn_custom</a>)
         </div>

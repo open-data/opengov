@@ -126,6 +126,9 @@ abstract class BaseDependencyCommand extends BaseCommand
                 $extraNotice = ' (version provided by config.platform)';
             }
             $this->getIO()->writeError('<info>Package "'.$needle.' '.$textConstraint.'" found in version "'.$matchedPackage->getPrettyVersion().'"'.$extraNotice.'.</info>');
+        } elseif ($inverted) {
+            $this->getIO()->write('<comment>Package "'.$needle.'" '.$matchedPackage->getPrettyVersion().' is already installed! To find out why, run `composer why '.$needle.'`</comment>');
+            return 0;
         }
 
         // Include replaced packages for inverted lookups as they are then the actual starting point to consider
@@ -197,9 +200,9 @@ abstract class BaseDependencyCommand extends BaseCommand
     /**
      * Assembles and prints a bottom-up table of the dependencies.
      *
-     * @param array{PackageInterface, Link, mixed}[] $results
+     * @param array{PackageInterface, Link, array<mixed>|false}[] $results
      */
-    protected function printTable(OutputInterface $output, $results): void
+    protected function printTable(OutputInterface $output, array $results): void
     {
         $table = [];
         $doubles = [];
@@ -221,13 +224,13 @@ abstract class BaseDependencyCommand extends BaseCommand
                 $packageUrl = PackageInfo::getViewSourceOrHomepageUrl($package);
                 $nameWithLink = $packageUrl !== null ? '<href=' . OutputFormatter::escape($packageUrl) . '>' . $package->getPrettyName() . '</>' : $package->getPrettyName();
                 $rows[] = [$nameWithLink, $version, $link->getDescription(), sprintf('%s (%s)', $link->getTarget(), $link->getPrettyConstraint())];
-                if ($children) {
+                if (is_array($children)) {
                     $queue = array_merge($queue, $children);
                 }
             }
             $results = $queue;
             $table = array_merge($rows, $table);
-        } while (!empty($results));
+        } while (\count($results) > 0);
 
         $this->renderTable($table, $output);
     }
@@ -254,7 +257,7 @@ abstract class BaseDependencyCommand extends BaseCommand
     /**
      * Recursively prints a tree of the selected results.
      *
-     * @param array{PackageInterface, Link, mixed[]|bool}[] $results Results to be printed at this level.
+     * @param array{PackageInterface, Link, array<mixed>|false}[] $results Results to be printed at this level.
      * @param string  $prefix  Prefix of the current tree level.
      * @param int     $level   Current level of recursion.
      */
@@ -275,7 +278,7 @@ abstract class BaseDependencyCommand extends BaseCommand
             $linkText = sprintf('%s <%s>%s</%2$s> %s', $link->getDescription(), $prevColor, $link->getTarget(), $link->getPrettyConstraint());
             $circularWarn = $children === false ? '(circular dependency aborted here)' : '';
             $this->writeTreeLine(rtrim(sprintf("%s%s%s (%s) %s", $prefix, $isLast ? '└──' : '├──', $packageText, $linkText, $circularWarn)));
-            if ($children) {
+            if (is_array($children)) {
                 $this->printTree($children, $prefix . ($isLast ? '   ' : '│  '), $level + 1);
             }
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\views\Kernel\Handler;
 
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -20,9 +22,7 @@ class AreaEntityTest extends ViewsKernelTestBase {
   use BlockCreationTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['entity_test', 'user', 'block'];
 
@@ -60,7 +60,7 @@ class AreaEntityTest extends ViewsKernelTestBase {
   /**
    * Tests views data for entity area handlers.
    */
-  public function testEntityAreaData() {
+  public function testEntityAreaData(): void {
     $data = $this->container->get('views.views_data')->get('views');
     $entity_types = $this->container->get('entity_type.manager')->getDefinitions();
 
@@ -88,7 +88,7 @@ class AreaEntityTest extends ViewsKernelTestBase {
   /**
    * Tests the area handler.
    */
-  public function testEntityArea() {
+  public function testEntityArea(): void {
     /** @var \Drupal\Core\Entity\EntityInterface[] $entities */
     $entities = [];
     for ($i = 0; $i < 3; $i++) {

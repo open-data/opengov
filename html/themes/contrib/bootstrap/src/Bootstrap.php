@@ -68,21 +68,21 @@ class Bootstrap {
    *
    * @var string
    */
-  const FRAMEWORK_VERSION = '3.4.1';
+  const FRAMEWORK_VERSION = '3.4.5';
 
   /**
    * The Bootstrap Framework documentation site.
    *
    * @var string
    */
-  const FRAMEWORK_HOMEPAGE = 'https://getbootstrap.com/docs/3.4/';
+  const FRAMEWORK_HOMEPAGE = 'https://bootstrap.7pro.ca/docs/3.4/';
 
   /**
    * The Bootstrap Framework repository.
    *
    * @var string
    */
-  const FRAMEWORK_REPOSITORY = 'https://github.com/twbs/bootstrap';
+  const FRAMEWORK_REPOSITORY = 'https://github.com/entreprise7pro/bootstrap';
 
   /**
    * The project branch.
@@ -606,7 +606,7 @@ class Bootstrap {
     }
 
     // Log message and accompanying backtrace.
-    \Drupal::logger('bootstrap')->warning('<div>@message</div><pre><code>@backtrace</code></pre>', [
+    \Drupal::logger('bootstrap')->warning('<p>@message</p><pre><code>@backtrace</code></pre>', [
       '@message' => $message,
       '@backtrace' => Markup::create(print_r($backtrace, TRUE)),
     ]);
@@ -635,7 +635,7 @@ class Bootstrap {
    *
    * @param string $method
    *   Optional. A specific method on the file system service to check for
-   *   its existance.
+   *   its existence.
    *
    * @return \Drupal\Core\File\FileSystemInterface
    *   The File System service, if it exists and if $method exists if it was
@@ -1210,6 +1210,7 @@ class Bootstrap {
       $versions['3.3.7'] = $versions['3.3.6'];
       $versions['3.4.0'] = $versions['3.3.7'];
       $versions['3.4.1'] = $versions['3.4.0'];
+      $versions['3.4.5'] = $versions['3.4.1'];
     }
 
     // Return a specific versions icon set.
@@ -1355,10 +1356,6 @@ class Bootstrap {
     }
     if (static::$messenger) {
       static::$messenger->addMessage($message, $type, $repeat);
-    }
-    else {
-      // @noRector
-      drupal_set_message($message, $type, $repeat);
     }
   }
 

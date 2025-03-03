@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\google_tag\Plugin\GoogleTag\Event;
 
 /**
- * Search plugin.
+ * The Search plugin.
  *
  * @GoogleTagEvent(
  *   id = "search",

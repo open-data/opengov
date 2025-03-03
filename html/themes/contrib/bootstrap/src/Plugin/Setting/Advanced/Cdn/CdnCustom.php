@@ -69,10 +69,12 @@ class CdnCustom extends CdnProviderBase {
    */
   public function getDefaultValue() {
     return implode("\n", [
-      'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.css',
-      'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css',
-      'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.js',
-      'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js',
+      'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.css',
+      'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap.min.css',
+      'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap-theme.css',
+      'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/css/bootstrap-theme.min.css',
+      'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/js/bootstrap.js',
+      'https://cdn.jsdelivr.net/npm/entreprise7pro-bootstrap@3.4.5/dist/js/bootstrap.min.js',
     ]);
   }
 

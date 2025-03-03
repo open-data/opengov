@@ -130,7 +130,7 @@ class AssetOptimizationTest extends BrowserTestBase {
    * @param string|null $content_type
    *   The expected content type, or NULL to skip checking.
    */
-  protected function assertAggregate(string $url, bool $from_php = TRUE, string $content_type = NULL): void {
+  protected function assertAggregate(string $url, bool $from_php = TRUE, ?string $content_type = NULL): void {
     $url = $this->getAbsoluteUrl($url);
     if (!stripos($url, $this->fileAssetsPath) !== FALSE) {
       return;
@@ -187,16 +187,12 @@ class AssetOptimizationTest extends BrowserTestBase {
     $session->visit($this->setInvalidLibrary($url));
     $this->assertSession()->statusCodeEquals(200);
 
+    // When an invalid asset hash name is given.
     $session->visit($this->replaceGroupHash($url));
     $this->assertSession()->statusCodeEquals(200);
-    $headers = $session->getResponseHeaders();
-    $this->assertEquals(['no-store, private'], $headers['Cache-Control']);
-
-    // And again to confirm it's not cached on disk.
-    $session->visit($this->replaceGroupHash($url));
-    $this->assertSession()->statusCodeEquals(200);
-    $headers = $session->getResponseHeaders();
-    $this->assertEquals(['no-store, private'], $headers['Cache-Control']);
+    $current_url = $session->getCurrentUrl();
+    // Redirect to the correct one.
+    $this->assertEquals($url, $current_url);
   }
 
   /**

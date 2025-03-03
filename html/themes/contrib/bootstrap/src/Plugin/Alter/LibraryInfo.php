@@ -59,6 +59,9 @@ class LibraryInfo extends PluginBase implements AlterInterface {
           // Remove core's dialog.jquery-ui.js.
           unset($libraries['drupal.dialog']['js']['misc/dialog/dialog.jquery-ui.js']);
 
+          // Remove CKEditor dialog fix as it assumes jquery ui dialogs are used
+          unset($libraries['drupal.dialog']['js']['modules/ckeditor5/js/ckeditor5.dialog.fix.js']);
+
           // Add the Modal jQuery UI Bridge.
           $libraries['drupal.dialog']['dependencies'][] = 'bootstrap/dialog';
           $libraries['drupal.dialog']['dependencies'][] = 'bootstrap/modal.jquery.ui.bridge';

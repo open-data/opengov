@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Drupal\FunctionalJavascriptTests\Ajax;
 
 use Drupal\ajax_test\Controller\AjaxTestController;
+use Drupal\Core\Ajax\OpenModalDialogWithUrl;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+
+// cspell:ignore testdialog
 
 /**
  * Performs tests on opening and manipulating dialogs via AJAX commands.
@@ -27,7 +30,7 @@ class DialogTest extends WebDriverTestBase {
   /**
    * Tests sending non-JS and AJAX requests to open and manipulate modals.
    */
-  public function testDialog() {
+  public function testDialog(): void {
     $this->drupalLogin($this->drupalCreateUser(['administer contact forms']));
     // Ensure the elements render without notices or exceptions.
     $this->drupalGet('ajax-test/dialog');
@@ -129,6 +132,22 @@ class DialogTest extends WebDriverTestBase {
     // Use a link to close the panel opened by button 2.
     $this->getSession()->getPage()->clickLink('Link 4 (close non-modal if open)');
 
+    // Test dialogs opened using OpenModalDialogWithUrl.
+    $this->getSession()->getPage()->findButton('Button 3 (modal from url)')->press();
+    // Check that title was fetched properly.
+    // @see \Drupal\ajax_test\Form\AjaxTestDialogForm::dialog.
+    $form_dialog_title = $this->assertSession()->waitForElement('css', "span.ui-dialog-title:contains('Ajax Form contents')");
+    $this->assertNotNull($form_dialog_title, 'Dialog form has the expected title.');
+    $button1_dialog->findButton('Close')->press();
+    // Test external URL.
+    $dialog_obj = new OpenModalDialogWithUrl('http://example.com', []);
+    try {
+      $dialog_obj->render();
+    }
+    catch (\LogicException $e) {
+      $this->assertEquals('External URLs are not allowed.', $e->getMessage());
+    }
+
     // Form modal.
     $this->clickLink('Link 5 (form)');
     // Two links have been clicked in succession - This time wait for a change
@@ -197,6 +216,13 @@ class DialogTest extends WebDriverTestBase {
 
     $form_title = $dialog_add->find('css', "span.ui-dialog-title:contains('Add contact form')");
     $this->assertNotNull($form_title, 'The add form title is as expected.');
+
+    // Test: dialog link opener with title callback.
+    $page = $this->getSession()->getPage();
+    $assert_session = $this->assertSession();
+    $this->drupalGet("/ajax-test/link-page-dialog");
+    $page->clickLink('Modal link');
+    $this->assertEquals('Dialog link page title', $assert_session->waitForElement('css', '.ui-dialog-title')->getText());
   }
 
   /**

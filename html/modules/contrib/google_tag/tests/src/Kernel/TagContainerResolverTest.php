@@ -4,6 +4,8 @@ namespace Drupal\Tests\google_tag\Kernel;
 
 use Drupal\google_tag\Entity\TagContainer;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * @coversDefaultClass \Drupal\google_tag\TagContainerResolver
@@ -38,7 +40,11 @@ final class TagContainerResolverTest extends GoogleTagTestCase {
       'weight' => 10,
     ]);
     $config1->save();
-
+    // With respect to the change record https://www.drupal.org/node/3337193,
+    // Add a mock session on the request before pushing it on the stack.
+    if (version_compare(\Drupal::VERSION, '10.3', '>=')) {
+      $request1->setSession(new Session(new MockArraySessionStorage()));
+    }
     $this->container->get('request_stack')->push($request1);
     $resolved = $sut->resolve();
     self::assertNotNull($resolved);
@@ -50,6 +56,11 @@ final class TagContainerResolverTest extends GoogleTagTestCase {
     ]);
     $config2->save();
 
+    // With respect to the change record https://www.drupal.org/node/3337193,
+    // Add a mock session on the request before pushing it on the stack.
+    if (version_compare(\Drupal::VERSION, '10.3', '>=')) {
+      $request2->setSession(new Session(new MockArraySessionStorage()));
+    }
     $this->container->get('request_stack')->push($request2);
     $resolved = $sut->resolve();
     self::assertNotNull($resolved);
@@ -83,7 +94,7 @@ final class TagContainerResolverTest extends GoogleTagTestCase {
         'data' => [
           'route_name' => 'user.login',
         ],
-      ]
+      ],
     ]);
     $request2 = Request::create('/foo');
     $this->doRequest($request2);

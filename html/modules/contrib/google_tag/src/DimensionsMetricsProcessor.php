@@ -36,10 +36,7 @@ final class DimensionsMetricsProcessor {
    * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
    *   Route matcher.
    */
-  public function __construct(
-    Token $token,
-    RouteMatchInterface $routeMatch
-  ) {
+  public function __construct(Token $token, RouteMatchInterface $routeMatch) {
     $this->token = $token;
     $this->routeMatch = $routeMatch;
   }

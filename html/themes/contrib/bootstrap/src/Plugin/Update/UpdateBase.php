@@ -65,7 +65,9 @@ class UpdateBase extends PluginBase implements UpdateInterface {
   /**
    * {@inheritdoc}
    */
-  public function process(Theme $theme, array &$context) {}
+  public function process(Theme $theme, array &$context) {
+    return TRUE;
+  }
 
   /*************************
    * Deprecated methods.

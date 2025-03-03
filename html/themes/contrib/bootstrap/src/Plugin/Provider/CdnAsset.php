@@ -160,6 +160,20 @@ class CdnAsset {
    *   Additional information provided by the CDN.
    */
   public function __construct($url, $library = NULL, $version = NULL, array $info = []) {
+
+    if (strpos($url, 'bootswatch')) {
+      // Workaround for leveraging bootswatch which doesn't need recompiling.
+      $url = str_replace('entreprise7pro-bootswatch', 'bootswatch', $url);
+    }
+    else if (strpos($url, 'entreprise7pro-boot')) {
+      // Force an upgrade for everyone using older versions of the bootstrap library.
+      if (version_compare($version, '3.4.1', '<=')) {
+        // Fix CVE-2024-6485 see release https://github.com/entreprise7pro/bootstrap/releases/tag/v3.4.5.
+        // 3.4.5 is compatible with jQuery 1,2,3 and 4, good D10 and D11.
+        $version = '3.4.5';
+      }
+    }
+
     // Extract the necessary data from the file.
     list($path, $theme, $minified, $type) = static::extractParts($url);
 

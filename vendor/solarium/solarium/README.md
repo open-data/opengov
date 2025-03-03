@@ -10,7 +10,7 @@ Please see the [docs](http://solarium.readthedocs.io/en/stable/) for a more deta
 
 ## Requirements
 
-Solarium 6.3.2 and up only supports PHP 8.0 and up.
+Solarium 6.3.7 and up only supports PHP 8.1 and up.
 
 It's highly recommended to have cURL enabled in your PHP environment. However if you don't have cURL available you can
 switch from using cURL (the default) to a pure PHP based HTTP client adapter which works for the essential stuff but
@@ -32,6 +32,7 @@ composer require solarium/solarium
 
 When upgrading from an earlier version, you should be aware of a number of pitfalls.
 
+* [Pitfall when upgrading to 6.3.6](https://solarium.readthedocs.io/en/stable/getting-started/#pitfall-when-upgrading-to-636)
 * [Pitfall when upgrading to 6.3.2](https://solarium.readthedocs.io/en/stable/getting-started/#pitfall-when-upgrading-to-632)
 * [Pitfall when upgrading to 6.3](https://solarium.readthedocs.io/en/stable/getting-started/#pitfall-when-upgrading-to-63)
 * [Pitfalls when upgrading from 3.x or 4.x or 5.x](https://solarium.readthedocs.io/en/stable/getting-started/#pitfalls-when-upgrading-from-3x-or-4x-or-5x)

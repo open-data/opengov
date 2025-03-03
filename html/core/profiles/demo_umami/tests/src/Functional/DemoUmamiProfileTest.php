@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\demo_umami\Functional;
 
 use Drupal\ckeditor5\Plugin\Editor\CKEditor5;
@@ -38,9 +40,9 @@ class DemoUmamiProfileTest extends BrowserTestBase {
   protected $profile = 'demo_umami';
 
   /**
-   * Tests some features specific to being a demonstration profile.
+   * Tests various capabilities of the demo profile.
    */
-  public function testDemoSpecificFeatures() {
+  public function testDemoFeatures(): void {
     // This test coverage is organized into separate protected methods rather
     // than individual test methods to avoid having to reinstall Umami for
     // a handful of assertions each.
@@ -48,6 +50,8 @@ class DemoUmamiProfileTest extends BrowserTestBase {
     $this->testWarningsOnStatusPage();
     $this->testAppearance();
     $this->testDemonstrationWarningMessage();
+    $this->testConfig();
+    $this->testEditNodesByAdmin();
   }
 
   /**
@@ -65,7 +69,7 @@ class DemoUmamiProfileTest extends BrowserTestBase {
   /**
    * Tests the profile supplied configuration is the same after installation.
    */
-  public function testConfig() {
+  protected function testConfig(): void {
     // Just connect directly to the config table so we don't need to worry about
     // the cache layer.
     $active_config_storage = $this->container->get('config.storage');
@@ -158,7 +162,7 @@ class DemoUmamiProfileTest extends BrowserTestBase {
   /**
    * Tests the successful editing of nodes by admin.
    */
-  public function testEditNodesByAdmin() {
+  protected function testEditNodesByAdmin(): void {
     $permissions = [
       'administer nodes',
       'edit any recipe content',
@@ -259,7 +263,7 @@ class DemoUmamiProfileTest extends BrowserTestBase {
    * For example:
    * @code
    *   // Create a user.
-   *   $account = $this->drupalCreateUser(array());
+   *   $account = $this->drupalCreateUser([]);
    *   $this->drupalLogin($account);
    *   // Load real user object.
    *   $pass_raw = $account->passRaw;

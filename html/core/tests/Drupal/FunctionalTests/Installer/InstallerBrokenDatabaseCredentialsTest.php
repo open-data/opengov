@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\FunctionalTests\Installer;
 
 use Drupal\Core\Database\Database;
@@ -54,11 +56,11 @@ class InstallerBrokenDatabaseCredentialsTest extends InstallerTestBase {
   /**
    * Tests the expected requirements problem.
    */
-  public function testRequirementsProblem() {
+  public function testRequirementsProblem(): void {
     $this->assertSession()->titleEquals('Requirements problem | Drupal');
     $this->assertSession()->pageTextContains('Database settings');
     $this->assertSession()->pageTextContains('Resolve all issues below to continue the installation. For help configuring your database server,');
-    $this->assertSession()->pageTextContains('[Tip: Drupal was attempting to connect to the database server via a socket, but the socket file could not be found. A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost. To connect via TPC/IP use an IP address (127.0.0.1 for IPv4) instead of "localhost". This message normally means that there is no MySQL server running on the system or that you are using an incorrect Unix socket file name when trying to connect to the server.]');
+    $this->assertSession()->pageTextContains('[Tip: Drupal was attempting to connect to the database server via a socket, but the socket file could not be found. A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost. To connect via TCP/IP use an IP address (127.0.0.1 for IPv4) instead of "localhost". This message normally means that there is no MySQL server running on the system or that you are using an incorrect Unix socket file name when trying to connect to the server.]');
   }
 
 }

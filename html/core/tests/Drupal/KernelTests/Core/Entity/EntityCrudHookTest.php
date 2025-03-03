@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\KernelTests\Core\Entity;
 
 use Drupal\comment\Entity\Comment;
@@ -38,9 +40,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   use CommentTestTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'block',
@@ -97,7 +97,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests hook invocations for CRUD operations on blocks.
    */
-  public function testBlockHooks() {
+  public function testBlockHooks(): void {
     $entity = Block::create([
       'id' => 'stark_test_html',
       'plugin' => 'test_html',
@@ -152,7 +152,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests hook invocations for CRUD operations on comments.
    */
-  public function testCommentHooks() {
+  public function testCommentHooks(): void {
     $account = $this->createUser();
     NodeType::create([
       'type' => 'article',
@@ -168,8 +168,8 @@ class EntityCrudHookTest extends EntityKernelTestBase {
       'promote' => 0,
       'sticky' => 0,
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-      'created' => REQUEST_TIME,
-      'changed' => REQUEST_TIME,
+      'created' => \Drupal::time()->getRequestTime(),
+      'changed' => \Drupal::time()->getRequestTime(),
     ]);
     $node->save();
     $nid = $node->id();
@@ -183,8 +183,8 @@ class EntityCrudHookTest extends EntityKernelTestBase {
       'field_name' => 'comment',
       'uid' => $account->id(),
       'subject' => 'Test comment',
-      'created' => REQUEST_TIME,
-      'changed' => REQUEST_TIME,
+      'created' => \Drupal::time()->getRequestTime(),
+      'changed' => \Drupal::time()->getRequestTime(),
       'status' => 1,
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ]);
@@ -237,7 +237,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests hook invocations for CRUD operations on files.
    */
-  public function testFileHooks() {
+  public function testFileHooks(): void {
     $this->installEntitySchema('file');
 
     $url = 'public://entity_crud_hook_test.file';
@@ -250,8 +250,8 @@ class EntityCrudHookTest extends EntityKernelTestBase {
       'filemime' => 'text/plain',
       'filesize' => filesize($url),
       'status' => 1,
-      'created' => REQUEST_TIME,
-      'changed' => REQUEST_TIME,
+      'created' => \Drupal::time()->getRequestTime(),
+      'changed' => \Drupal::time()->getRequestTime(),
     ]);
 
     $this->assertHookMessageOrder([
@@ -302,7 +302,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests hook invocations for CRUD operations on nodes.
    */
-  public function testNodeHooks() {
+  public function testNodeHooks(): void {
     $account = $this->createUser();
 
     $node = Node::create([
@@ -313,8 +313,8 @@ class EntityCrudHookTest extends EntityKernelTestBase {
       'promote' => 0,
       'sticky' => 0,
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-      'created' => REQUEST_TIME,
-      'changed' => REQUEST_TIME,
+      'created' => \Drupal::time()->getRequestTime(),
+      'changed' => \Drupal::time()->getRequestTime(),
     ]);
 
     $this->assertHookMessageOrder([
@@ -366,7 +366,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests hook invocations for CRUD operations on taxonomy terms.
    */
-  public function testTaxonomyTermHooks() {
+  public function testTaxonomyTermHooks(): void {
     $this->installEntitySchema('taxonomy_term');
 
     $vocabulary = Vocabulary::create([
@@ -435,7 +435,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests hook invocations for CRUD operations on taxonomy vocabularies.
    */
-  public function testTaxonomyVocabularyHooks() {
+  public function testTaxonomyVocabularyHooks(): void {
     $this->installEntitySchema('taxonomy_term');
 
     $vocabulary = Vocabulary::create([
@@ -494,11 +494,11 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests hook invocations for CRUD operations on users.
    */
-  public function testUserHooks() {
+  public function testUserHooks(): void {
     $account = User::create([
       'name' => 'Test user',
       'mail' => 'test@example.com',
-      'created' => REQUEST_TIME,
+      'created' => \Drupal::time()->getRequestTime(),
       'status' => 1,
       'language' => 'en',
     ]);
@@ -551,7 +551,7 @@ class EntityCrudHookTest extends EntityKernelTestBase {
   /**
    * Tests rollback from failed entity save.
    */
-  public function testEntityRollback() {
+  public function testEntityRollback(): void {
     // Create a block.
     try {
       EntityTest::create(['name' => 'fail_insert'])->save();

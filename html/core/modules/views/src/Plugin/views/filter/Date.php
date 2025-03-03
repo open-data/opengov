@@ -3,20 +3,20 @@
 namespace Drupal\views\Plugin\views\filter;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\Attribute\ViewsFilter;
 
 /**
  * Filter to handle dates stored as a timestamp.
  *
  * @ingroup views_filter_handlers
- *
- * @ViewsFilter("date")
  */
+#[ViewsFilter("date")]
 class Date extends NumericFilter {
 
   protected function defineOptions() {
     $options = parent::defineOptions();
 
-    // value is already set up properly, we're just adding our new field to it.
+    // Value is already set up properly, we're just adding our new field to it.
     $options['value']['contains']['type']['default'] = 'date';
 
     return $options;

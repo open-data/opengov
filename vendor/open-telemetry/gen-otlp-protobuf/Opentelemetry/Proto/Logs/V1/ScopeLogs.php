@@ -31,7 +31,8 @@ class ScopeLogs extends \Google\Protobuf\Internal\Message
     private $log_records;
     /**
      * The Schema URL, if known. This is the identifier of the Schema that the log data
-     * is recorded in. To learn more about Schema URL see
+     * is recorded in. Notably, the last part of the URL path is the version number of the
+     * schema: http[s]://server[:port]/path/<version>. To learn more about Schema URL see
      * https://opentelemetry.io/docs/specs/otel/schemas/#schema-url
      * This schema_url applies to all logs in the "logs" field.
      *
@@ -53,7 +54,8 @@ class ScopeLogs extends \Google\Protobuf\Internal\Message
      *           A list of log records.
      *     @type string $schema_url
      *           The Schema URL, if known. This is the identifier of the Schema that the log data
-     *           is recorded in. To learn more about Schema URL see
+     *           is recorded in. Notably, the last part of the URL path is the version number of the
+     *           schema: http[s]://server[:port]/path/<version>. To learn more about Schema URL see
      *           https://opentelemetry.io/docs/specs/otel/schemas/#schema-url
      *           This schema_url applies to all logs in the "logs" field.
      * }
@@ -131,7 +133,8 @@ class ScopeLogs extends \Google\Protobuf\Internal\Message
 
     /**
      * The Schema URL, if known. This is the identifier of the Schema that the log data
-     * is recorded in. To learn more about Schema URL see
+     * is recorded in. Notably, the last part of the URL path is the version number of the
+     * schema: http[s]://server[:port]/path/<version>. To learn more about Schema URL see
      * https://opentelemetry.io/docs/specs/otel/schemas/#schema-url
      * This schema_url applies to all logs in the "logs" field.
      *
@@ -145,7 +148,8 @@ class ScopeLogs extends \Google\Protobuf\Internal\Message
 
     /**
      * The Schema URL, if known. This is the identifier of the Schema that the log data
-     * is recorded in. To learn more about Schema URL see
+     * is recorded in. Notably, the last part of the URL path is the version number of the
+     * schema: http[s]://server[:port]/path/<version>. To learn more about Schema URL see
      * https://opentelemetry.io/docs/specs/otel/schemas/#schema-url
      * This schema_url applies to all logs in the "logs" field.
      *

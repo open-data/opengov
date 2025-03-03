@@ -25,6 +25,7 @@
  * - condensed: Flag indicating whether or not the table should be condensed.
  * - hover: Flag indicating whether or not table rows should be hoverable.
  * - striped: Flag indicating whether or not table rows should be striped.
+ * - sticky: A flag indicating whether to use a "sticky" table header.
  * - responsive: Flag indicating whether or not the table should be wrapped to
  *   be responsive (using the Bootstrap Framework .table-responsive wrapper).
  *
@@ -43,7 +44,7 @@
     condensed ? 'table-condensed',
     hover ? 'table-hover',
     striped ? 'table-striped',
-    sticky ? 'sticky-enabled',
+    sticky ? 'sticky-header',
   ]
 %}
 <table{{ attributes.addClass(classes) }}>

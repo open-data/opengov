@@ -5,6 +5,7 @@ namespace Drupal\views\Plugin\views\filter;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\views\Attribute\ViewsFilter;
 use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -12,9 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Filter to show only the latest translation affected revision of an entity.
  *
  * @ingroup views_filter_handlers
- *
- * @ViewsFilter("latest_translation_affected_revision")
  */
+#[ViewsFilter("latest_translation_affected_revision")]
 class LatestTranslationAffectedRevision extends FilterPluginBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -37,7 +37,7 @@ class LatestTranslationAffectedRevision extends FilterPluginBase implements Cont
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager

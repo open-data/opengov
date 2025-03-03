@@ -6,9 +6,8 @@ version: VERSION
 libraries:
   - umami/classy.base
   - core/normalize
+  - core/drupal.message
   - umami/global
-dependencies:
-  - drupal:sdc
 
 libraries-override:
   layout_builder/twocol_section:

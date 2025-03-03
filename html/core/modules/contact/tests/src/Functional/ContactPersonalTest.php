@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\contact\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
@@ -21,9 +23,7 @@ class ContactPersonalTest extends BrowserTestBase {
   use AssertPageCacheContextsAndTagsTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['contact', 'dblog', 'mail_html_test'];
 
@@ -79,7 +79,7 @@ class ContactPersonalTest extends BrowserTestBase {
   /**
    * Tests that mails for contact messages are correctly sent.
    */
-  public function testSendPersonalContactMessage() {
+  public function testSendPersonalContactMessage(): void {
     // Ensure that the web user's email needs escaping.
     $mail = $this->webUser->getAccountName() . '&escaped@example.com';
     $this->webUser->setEmail($mail)->save();
@@ -133,7 +133,7 @@ class ContactPersonalTest extends BrowserTestBase {
   /**
    * Tests access to the personal contact form.
    */
-  public function testPersonalContactAccess() {
+  public function testPersonalContactAccess(): void {
     // Test allowed access to admin user's contact form.
     $this->drupalLogin($this->webUser);
     $this->drupalGet('user/' . $this->adminUser->id() . '/contact');
@@ -254,7 +254,7 @@ class ContactPersonalTest extends BrowserTestBase {
   /**
    * Tests the personal contact form flood protection.
    */
-  public function testPersonalContactFlood() {
+  public function testPersonalContactFlood(): void {
     $flood_limit = 3;
     $this->config('contact.settings')->set('flood.limit', $flood_limit)->save();
 
@@ -281,7 +281,7 @@ class ContactPersonalTest extends BrowserTestBase {
   /**
    * Tests the personal contact form based access when an admin adds users.
    */
-  public function testAdminContact() {
+  public function testAdminContact(): void {
     user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access user contact forms']);
     $this->checkContactAccess(200);
     $this->checkContactAccess(403, FALSE);

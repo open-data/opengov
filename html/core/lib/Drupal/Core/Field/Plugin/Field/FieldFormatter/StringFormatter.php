@@ -4,25 +4,26 @@ namespace Drupal\Core\Field\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'string' formatter.
- *
- * @FieldFormatter(
- *   id = "string",
- *   label = @Translation("Plain text"),
- *   field_types = {
- *     "string",
- *     "uri",
- *   }
- * )
  */
+#[FieldFormatter(
+  id: 'string',
+  label: new TranslatableMarkup('Plain text'),
+  field_types: [
+    'string',
+    'uri',
+  ],
+)]
 class StringFormatter extends FormatterBase {
 
   /**
@@ -36,7 +37,7 @@ class StringFormatter extends FormatterBase {
    * Constructs a StringFormatter instance.
    *
    * @param string $plugin_id
-   *   The plugin_id for the formatter.
+   *   The plugin ID for the formatter.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition

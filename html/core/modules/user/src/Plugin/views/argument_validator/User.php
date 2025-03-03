@@ -31,7 +31,7 @@ class User extends Entity {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $entity_type_bundle_info);
 
     $this->userStorage = $entity_type_manager->getStorage('user');
@@ -82,7 +82,7 @@ class User extends Entity {
    * {@inheritdoc}
    */
   public function submitOptionsForm(&$form, FormStateInterface $form_state, &$options = []) {
-    // filter trash out of the options so we don't store giant unnecessary arrays
+    // Filter trash out of the options so we don't store giant unnecessary arrays
     $options['roles'] = array_filter($options['roles']);
   }
 

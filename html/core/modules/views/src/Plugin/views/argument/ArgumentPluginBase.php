@@ -63,11 +63,13 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    * The table to use for the name, should it not be in the same table as the argument.
    * @var string
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $name_table;
 
   /**
    * The name table alias.
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $name_table_alias;
 
   /**
@@ -78,31 +80,37 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    *
    * @var string
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $name_field;
 
   /**
    * The alias for the field.
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $name_alias;
 
   /**
    * The base table alias.
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $base_alias;
 
   /**
    * The alias count.
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public string $count_alias;
 
   /**
    * Is argument validated.
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public ?bool $argument_validated;
 
   /**
    * Is argument a default.
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public bool $is_default;
 
   /**
@@ -113,6 +121,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
   /**
    * The title set by argument validation.
    */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public ?string $validated_title;
 
   /**
@@ -125,7 +134,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
   /**
    * Overrides Drupal\views\Plugin\views\HandlerBase:init().
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     parent::init($view, $display, $options);
 
     if (!empty($this->definition['name field'])) {
@@ -468,7 +477,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
       $plugin->validateOptionsForm($form['argument_default'][$default_id], $form_state, $option_values['argument_default'][$default_id]);
     }
 
-    // summary plugin
+    // Summary plugin
     $summary_id = $option_values['summary']['format'];
     $plugin = $this->getPlugin('style', $summary_id);
     if ($plugin) {
@@ -501,7 +510,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
       $option_values['default_argument_options'] = $options;
     }
 
-    // summary plugin
+    // Summary plugin
     $summary_id = $option_values['summary']['format'];
     $plugin = $this->getPlugin('style', $summary_id);
     if ($plugin) {
@@ -918,7 +927,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
     // name field would be 'name' (i.e, the username).
 
     if (isset($this->name_table)) {
-      // if the alias is different then we're probably added, not ensured,
+      // If the alias is different then we're probably added, not ensured,
       // so look up the join and add it instead.
       if ($this->tableAlias != $this->name_table) {
         $j = HandlerBase::getTableJoin($this->name_table, $this->table);
@@ -1122,7 +1131,7 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
     if (!isset($arg) && $argument->hasDefaultArgument()) {
       $arg = $argument->getDefaultArgument();
 
-      // remember that this argument was computed, not passed on the URL.
+      // Remember that this argument was computed, not passed on the URL.
       $this->is_default = TRUE;
     }
     // Set the argument, which will also validate that the argument can be set.
@@ -1138,36 +1147,26 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    */
   public function getPlugin($type = 'argument_default', $name = NULL) {
     $options = [];
-    switch ($type) {
-      case 'argument_default':
-        if (!isset($this->options['default_argument_type'])) {
-          return;
-        }
-        $plugin_name = $this->options['default_argument_type'];
-        $options_name = 'default_argument_options';
-        break;
-
-      case 'argument_validator':
-        if (!isset($this->options['validate']['type'])) {
-          return;
-        }
-        $plugin_name = $this->options['validate']['type'];
-        $options_name = 'validate_options';
-        break;
-
-      case 'style':
-        if (!isset($this->options['summary']['format'])) {
-          return;
-        }
-        $plugin_name = $this->options['summary']['format'];
-        $options_name = 'summary_options';
+    $plugin_name = match ($type) {
+      'argument_default' => $this->options['default_argument_type'] ?? NULL,
+      'argument_validator' => $this->options['validate']['type'] ?? NULL,
+      'style' => $this->options['summary']['format'] ?? NULL,
+    };
+    if ($plugin_name === NULL) {
+      return NULL;
     }
+
+    $options_name = match ($type) {
+      'argument_default' => 'default_argument_options',
+      'argument_validator' => 'validate_options',
+      'style' => 'summary_options',
+    };
 
     if (!$name) {
       $name = $plugin_name;
     }
 
-    // we only fetch the options if we're fetching the plugin actually
+    // We only fetch the options if we're fetching the plugin actually
     // in use.
     if ($name == $plugin_name) {
       $options = $this->options[$options_name] ?? [];
@@ -1400,6 +1399,21 @@ abstract class ArgumentPluginBase extends HandlerBase implements CacheableDepend
    */
   public function getContextDefinition() {
     return $this->getPlugin('argument_validator')->getContextDefinition();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function adminSummary() {
+    // If an argument default has been set, show which argument default has been
+    // set.
+    if ($this->options['default_action'] === 'default') {
+      $plugin = $this->getPlugin();
+      if ($plugin) {
+        return $this->t('Default: @plugin_title', ['@plugin_title' => $plugin->pluginTitle()]);
+      }
+    }
+    return '';
   }
 
 }

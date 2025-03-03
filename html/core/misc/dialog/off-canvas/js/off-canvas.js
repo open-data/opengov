@@ -244,9 +244,13 @@
           : `${parseFloat(height)}px`,
       });
 
+      $element.dialog('option', adjustedOptions);
+
       $element
-        .dialog('option', adjustedOptions)
-        .trigger('dialogContentResize.off-canvas');
+        ?.get(0)
+        ?.dispatchEvent(
+          new CustomEvent('dialogContentResize', { bubbles: true }),
+        );
 
       Drupal.offCanvas.position = position;
     },
@@ -283,6 +287,7 @@
           `${width}px`;
 
         $container.attr(`data-offset-${Drupal.offCanvas.getEdge()}`, width);
+        $container.attr('data-offset-top', 0);
         displace();
       }
 
@@ -290,6 +295,7 @@
       if (position === 'top') {
         mainCanvasWrapper.style.paddingTop = `${height}px`;
         $container.attr('data-offset-top', height);
+        $container.attr(`data-offset-${Drupal.offCanvas.getEdge()}`, 0);
         displace();
       }
     },
@@ -341,23 +347,39 @@
       if (!once('off-canvas', 'html').length) {
         return;
       }
-      $(window).on({
-        'dialog:beforecreate': (event, dialog, $element, settings) => {
-          if (Drupal.offCanvas.isOffCanvas($element)) {
-            Drupal.offCanvas.beforeCreate({ dialog, $element, settings });
-          }
-        },
-        'dialog:aftercreate': (event, dialog, $element, settings) => {
-          if (Drupal.offCanvas.isOffCanvas($element)) {
-            Drupal.offCanvas.render({ dialog, $element, settings });
-            Drupal.offCanvas.afterCreate({ $element, settings });
-          }
-        },
-        'dialog:beforeclose': (event, dialog, $element) => {
-          if (Drupal.offCanvas.isOffCanvas($element)) {
-            Drupal.offCanvas.beforeClose({ dialog, $element });
-          }
-        },
+
+      window.addEventListener('dialog:beforecreate', (e) => {
+        const $element = $(e.target);
+        if (Drupal.offCanvas.isOffCanvas($element)) {
+          Drupal.offCanvas.beforeCreate({
+            $element,
+            settings: e.settings,
+          });
+        }
+      });
+
+      window.addEventListener('dialog:aftercreate', (e) => {
+        const $element = $(e.target);
+        if (Drupal.offCanvas.isOffCanvas($element)) {
+          Drupal.offCanvas.render({
+            $element,
+            dialog: e.dialog,
+            settings: e.settings,
+          });
+          Drupal.offCanvas.afterCreate({
+            $element,
+            settings: e.settings,
+          });
+        }
+      });
+
+      window.addEventListener('dialog:beforeclose', (e) => {
+        const $element = $(e.target);
+        if (Drupal.offCanvas.isOffCanvas($element)) {
+          Drupal.offCanvas.beforeClose({
+            $element,
+          });
+        }
       });
     },
   };

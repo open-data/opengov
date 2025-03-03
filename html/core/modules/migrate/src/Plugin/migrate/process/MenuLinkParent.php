@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\migrate\Attribute\MigrateProcess;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\MigrateLookupInterface;
 use Drupal\migrate\MigrateSkipRowException;
@@ -14,6 +15,8 @@ use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+
+// cspell:ignore plid
 
 /**
  * Determines the parent of a menu link.
@@ -51,11 +54,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @see https://www.drupal.org/docs/8/api/menu-api
  * @see \Drupal\migrate\Plugin\MigrateProcessInterface
- *
- * @MigrateProcessPlugin(
- *   id = "menu_link_parent"
- * )
  */
+#[MigrateProcess('menu_link_parent')]
 class MenuLinkParent extends ProcessPluginBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -92,7 +92,7 @@ class MenuLinkParent extends ProcessPluginBase implements ContainerFactoryPlugin
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\migrate\MigrateLookupInterface $migrate_lookup
@@ -116,7 +116,7 @@ class MenuLinkParent extends ProcessPluginBase implements ContainerFactoryPlugin
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration = NULL) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, ?MigrationInterface $migration = NULL) {
     return new static(
       $configuration,
       $plugin_id,

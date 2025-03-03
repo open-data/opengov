@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\system\Functional;
 
 use Drupal\Core\Url;
@@ -13,9 +15,7 @@ use Drupal\Tests\BrowserTestBase;
 class CsrfRequestHeaderTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['system', 'csrf_test'];
 
@@ -29,7 +29,7 @@ class CsrfRequestHeaderTest extends BrowserTestBase {
    *
    * This checks one route that uses _csrf_request_header_token.
    */
-  public function testRouteAccess() {
+  public function testRouteAccess(): void {
     $client = $this->getHttpClient();
     $csrf_token_path = 'session/token';
     // Test using the current path.

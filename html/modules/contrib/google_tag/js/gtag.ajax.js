@@ -1,5 +1,4 @@
 (function (Drupal) {
-
   /**
    * Command to attach data using jQuery's data API.
    *
@@ -13,6 +12,6 @@
    *   The value of the event.
    */
   Drupal.AjaxCommands.prototype.gtagEvent = function (ajax, response) {
-    gtag('event', response.event_name, response.data)
-  }
+    gtag('event', response.event_name, response.data);
+  };
 })(Drupal);

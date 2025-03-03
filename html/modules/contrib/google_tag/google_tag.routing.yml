@@ -42,6 +42,7 @@ entity.google_tag_container.enable:
     entity_type: 'google_tag_container'
   requirements:
     _permission: 'administer google_tag_container'
+    _csrf_token: 'TRUE'
 
 entity.google_tag_container.disable:
   path: '/admin/config/services/google-tag/manage/{google_tag_container}/disable'
@@ -50,6 +51,7 @@ entity.google_tag_container.disable:
     entity_type: 'google_tag_container'
   requirements:
     _permission: 'administer google_tag_container'
+    _csrf_token: 'TRUE'
 
 entity.google_tag_container.edit_form:
   path: '/admin/config/services/google-tag/manage/{google_tag_container}'
@@ -65,3 +67,4 @@ entity.google_tag_container.delete_form:
     _entity_form: 'google_tag_container.delete'
   requirements:
     _permission: 'administer google_tag_container'
+    _csrf_token: 'TRUE'

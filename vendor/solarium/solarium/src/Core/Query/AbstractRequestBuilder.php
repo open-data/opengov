@@ -26,19 +26,18 @@ abstract class AbstractRequestBuilder implements RequestBuilderInterface
     protected $helper;
 
     /**
-     * Build request for a select query.
+     * Build request for a generic query.
      *
-     * @param AbstractQuery|QueryInterface $query
+     * @param QueryInterface|AbstractQuery $query
      *
      * @return Request
      */
-    public function build(AbstractQuery $query): Request
+    public function build(QueryInterface|AbstractQuery $query): Request
     {
         $request = new Request();
         $request->setHandler($query->getHandler());
         $request->addParam('distrib', $query->getDistrib());
         $request->addParam('omitHeader', $query->getOmitHeader());
-        $request->addParam('timeAllowed', $query->getTimeAllowed());
         $request->addParam('NOW', $query->getNow());
         $request->addParam('TZ', $query->getTimeZone());
         $request->addParam('ie', $query->getInputEncoding());

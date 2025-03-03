@@ -12,12 +12,11 @@ trait GoogleTagManagerSettingsTrait {
   /**
    * Fieldset builder for the container settings form.
    */
-  public function gtmAdvancedFieldset(FormStateInterface $form_state) {
-    $advanced_settings = $this->entity->get('advanced_settings');
+  public function gtmAdvancedFieldset(array $advanced_settings, string $gtmId) {
     // Build form elements.
     $fieldset = [
       '#type' => 'details',
-      '#title' => $this->t('Google Tag Manager'),
+      '#title' => $this->t('Google Tag Manager: %gtmid', ['%gtmid' => $gtmId]),
       '#group' => 'advanced_settings',
       '#tree' => TRUE,
     ];
@@ -26,7 +25,7 @@ trait GoogleTagManagerSettingsTrait {
       '#type' => 'textfield',
       '#title' => $this->t('Data layer'),
       '#description' => $this->t('The name of the data layer. Default value is "dataLayer". In most cases, use the default.'),
-      '#default_value' => $advanced_settings['gtm']['data_layer'] ?? 'dataLayer',
+      '#default_value' => $advanced_settings['data_layer'] ?? 'dataLayer',
       '#placeholder' => 'dataLayer',
       '#required' => TRUE,
     ];
@@ -35,7 +34,7 @@ trait GoogleTagManagerSettingsTrait {
       '#type' => 'checkbox',
       '#title' => $this->t('Add classes to the data layer'),
       '#description' => $this->t('If checked, then the listed classes will be added to the data layer.'),
-      '#default_value' => $advanced_settings['gtm']['include_classes'] ?? FALSE,
+      '#default_value' => $advanced_settings['include_classes'] ?? FALSE,
     ];
 
     $description = $this->t('The types of tags, triggers, and variables <strong>allowed</strong> on a page. Enter one class per line. For more information, refer to the <a href="https://developers.google.com/tag-manager/devguide#security">developer documentation</a>.');
@@ -44,25 +43,25 @@ trait GoogleTagManagerSettingsTrait {
       '#type' => 'textarea',
       '#title' => $this->t('Allowed classes'),
       '#description' => $description,
-      '#default_value' => $advanced_settings['gtm']['allowlist_classes'] ?? '',
+      '#default_value' => $advanced_settings['allowlist_classes'] ?? '',
       '#rows' => 5,
-      '#states' => $this->statesArray('advanced_settings[gtm][include_classes]'),
+      '#states' => $this->statesArray('advanced_settings[gtm][' . $gtmId . '][include_classes]'),
     ];
 
     $fieldset['blocklist_classes'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Blocked classes'),
       '#description' => $this->t('The types of tags, triggers, and variables <strong>forbidden</strong> on a page. Enter one class per line.'),
-      '#default_value' => $advanced_settings['gtm']['blocklist_classes'] ?? '',
+      '#default_value' => $advanced_settings['blocklist_classes'] ?? '',
       '#rows' => 5,
-      '#states' => $this->statesArray('advanced_settings[gtm][include_classes]'),
+      '#states' => $this->statesArray('advanced_settings[gtm][' . $gtmId . '][include_classes]'),
     ];
 
     $fieldset['include_environment'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Include an environment'),
       '#description' => $this->t('If checked, then the applicable snippets will include the environment items below. Enable <strong>only for development</strong> purposes.'),
-      '#default_value' => $advanced_settings['gtm']['include_environment'] ?? FALSE,
+      '#default_value' => $advanced_settings['include_environment'] ?? FALSE,
     ];
 
     $description = $this->t('The environment ID to use with this website container. To get an environment ID, <a href="https://tagmanager.google.com/#/admin">select Environments</a>, create an environment, then click the "Get Snippet" action. The environment ID and token will be in the snippet.');
@@ -71,22 +70,22 @@ trait GoogleTagManagerSettingsTrait {
       '#type' => 'textfield',
       '#title' => $this->t('Environment ID'),
       '#description' => $description,
-      '#default_value' => $advanced_settings['gtm']['environment_id'] ?? '',
+      '#default_value' => $advanced_settings['environment_id'] ?? '',
       '#placeholder' => 'env-x',
       '#size' => 10,
       '#maxlength' => 7,
-      '#states' => $this->statesArray('advanced_settings[gtm][include_environment]'),
+      '#states' => $this->statesArray('advanced_settings[gtm][' . $gtmId . '][include_environment]'),
     ];
 
     $fieldset['environment_token'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Environment token'),
       '#description' => $this->t('The authentication token for this environment.'),
-      '#default_value' => $advanced_settings['gtm']['environment_token'] ?? '',
+      '#default_value' => $advanced_settings['environment_token'] ?? '',
       '#placeholder' => 'xxxxxxxxxxxxxxxxxxxxxx',
       '#size' => 20,
       '#maxlength' => 25,
-      '#states' => $this->statesArray('advanced_settings[gtm][include_environment]'),
+      '#states' => $this->statesArray('advanced_settings[gtm][' . $gtmId . '][include_environment]'),
     ];
 
     return $fieldset;
@@ -118,17 +117,25 @@ trait GoogleTagManagerSettingsTrait {
   public function validateGtmFormValues(array &$form, FormStateInterface $form_state) {
     // Trim the text values.
     $advanced_values = $form_state->getValue('advanced_settings');
-    if (!is_array($advanced_values) || !isset($advanced_values['gtm'])) {
+    if (!is_array($advanced_values) || !isset($advanced_values['gtm']) || !is_array($advanced_values['gtm'])) {
       return;
     }
-    $environment_id = trim($advanced_values['gtm']['environment_id']);
-    $advanced_values['gtm']['data_layer'] = trim($advanced_values['gtm']['data_layer']);
-    $advanced_values['gtm']['allowlist_classes'] = $this->cleanText($advanced_values['gtm']['allowlist_classes']);
-    $advanced_values['gtm']['blocklist_classes'] = $this->cleanText($advanced_values['gtm']['blocklist_classes']);
 
-    if ($advanced_values['gtm']['include_environment'] && !preg_match('/^env-\d{1,}$/', $environment_id)) {
-      $form_state->setError($form['advanced']['gtm']['environment_id'], $this->t('A valid environment ID is case sensitive and formatted like env-x.'));
+    foreach ($advanced_values['gtm'] as $gtm_id => $settings) {
+      // Skip if $settings is not an array.
+      if (!is_array($settings)) {
+        continue;
+      }
+
+      $environment_id = trim($settings['environment_id']);
+      $advanced_values['gtm'][$gtm_id]['data_layer'] = trim($settings['data_layer']);
+      $advanced_values['gtm'][$gtm_id]['allowlist_classes'] = $this->cleanText($settings['allowlist_classes']);
+      $advanced_values['gtm'][$gtm_id]['blocklist_classes'] = $this->cleanText($settings['blocklist_classes']);
+      if (!empty($advanced_values['gtm'][$gtm_id]['include_environment']) && !preg_match('/^env-\d{1,}$/', $environment_id)) {
+        $form_state->setError($form['advanced_settings']['gtm'][$gtm_id]['environment_id'], $this->t('A valid environment ID is case sensitive and formatted like env-x.'));
+      }
     }
+
     $form_state->setValue('advanced_settings', $advanced_values);
   }
 

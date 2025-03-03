@@ -46,7 +46,7 @@ class FileLink extends PreprocessBase {
     }
 
     // Retrieve the generic mime type from core (mislabeled as "icon_class").
-    $generic_mime_type = file_icon_class($mime_type);
+    $generic_mime_type = \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.3.0', fn() => \Drupal\file\IconMimeTypes::getIconClass($mime_type), fn() => file_icon_class($mime_type));
 
     // Map the generic mime types to an icon and state.
     $mime_map = [
@@ -108,7 +108,7 @@ class FileLink extends PreprocessBase {
     $variables['link'] = Link::fromTextAndUrl($link_text, Url::fromUri($url, $options));
 
     // Add the file size as a variable.
-    $variables->file_size = format_size($file_size);
+    $variables->file_size = \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.2.0', fn() => \Drupal\Core\StringTranslation\ByteSizeMarkup::create($file_size), fn() => format_size($file_size));
 
     // Preprocess attributes.
     $this->preprocessAttributes();

@@ -50,11 +50,7 @@ final class EventCollector implements EventCollectorInterface {
    * @param \Symfony\Component\HttpFoundation\Session\SessionInterface $session
    *   Session service.
    */
-  public function __construct(
-    GoogleTagEventManager $googleTagEventManager,
-    TagContainerResolver $tagResolver,
-    SessionInterface $session
-  ) {
+  public function __construct(GoogleTagEventManager $googleTagEventManager, TagContainerResolver $tagResolver, SessionInterface $session) {
     $this->googleTagEventManager = $googleTagEventManager;
     $this->tagResolver = $tagResolver;
     $this->session = $session;
@@ -100,9 +96,9 @@ final class EventCollector implements EventCollectorInterface {
     $this->events = [];
     $delayed_events = $this->session->get('google_tag_events', []);
     if ($delayed_events !== []) {
-        $this->session->set('google_tag_events', []);
+      $this->session->set('google_tag_events', []);
     }
-    return $delayed_events + $events;
+    return array_merge($delayed_events, $events);
   }
 
   /**

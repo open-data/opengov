@@ -45,6 +45,9 @@
 
       // Move the overlay wrapper inside the modal so it can be interacted with
       $('.ck-body-wrapper').appendTo($modal);
+      $('.ck-body-wrapper .ck-body>div').each(function() {
+        $(this).css('margin-top', -window.scrollY + 'px');
+      })
     }
 
     // Focus the first input element found.

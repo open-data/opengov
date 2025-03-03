@@ -365,7 +365,7 @@ class CdnAssets {
    *   Second theme to compare.
    *
    * @return false|int|string
-   *   The comparision value, similar to other comparison functions.
+   *   The comparison value, similar to other comparison functions.
    */
   protected function sortThemes($a, $b) {
     $order = ['bootstrap', 'bootstrap_theme'];

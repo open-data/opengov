@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\media\Kernel;
 
 use Drupal\file\Entity\File;
@@ -18,9 +20,7 @@ abstract class MediaKernelTestBase extends KernelTestBase {
   use MediaTypeCreationTrait;
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'media',

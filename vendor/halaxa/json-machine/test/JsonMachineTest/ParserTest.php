@@ -13,6 +13,8 @@ use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
 use JsonMachine\TokensWithDebugging;
+use LogicException;
+use Traversable;
 
 /**
  * @covers \JsonMachine\Parser
@@ -105,6 +107,44 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ['id' => '1'],
                     ['company' => 'Company 1'],
                     ['id' => '2'],
+                ],
+            ],
+            'ISSUE-110-vector-first' => [
+                ['/items', '/total'],
+                '{
+                    "items": [
+                        ["test1"],
+                        ["test2"]
+                    ],
+                    "total": 2
+                }',
+                [
+                    [0 => ['test1']],
+                    [1 => ['test2']],
+                    ['total' => 2],
+                ],
+            ],
+            'ISSUE-110-scalar-first' => [
+                ['/items', '/total'],
+                '{
+                    "total": 2,
+                    "items": [
+                        ["test1"],
+                        ["test2"]
+                    ]
+                }',
+                [
+                    ['total' => 2],
+                    [0 => ['test1']],
+                    [1 => ['test2']],
+                ],
+            ],
+            'ISSUE-100' => [
+                ['/results/-/color'],
+                '{"results":[{"name":"apple","color":"red"},{"name":"pear","color":"yellow"}]}',
+                [
+                    ['color' => 'red'],
+                    ['color' => 'yellow'],
                 ],
             ],
         ];
@@ -518,7 +558,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser(new \ArrayObject());
 
-        $this->expectException(JsonMachineException::class);
+        $this->expectException(LogicException::class);
         $parser->getPosition();
     }
 
@@ -529,6 +569,91 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->expectException(SyntaxErrorException::class);
 
         foreach ($parser as $index => $item) {
+        }
+    }
+
+    public function testRecursiveIteration()
+    {
+        $array = new Parser(new Tokens(['[{"numbers": [42]}]']), '', null, true);
+
+        foreach ($array as $object) {
+            $this->assertInstanceOf(Traversable::class, $object);
+            foreach ($object as $key => $values) {
+                $this->assertInstanceOf(Traversable::class, $values);
+                $this->assertSame('numbers', $key);
+                foreach ($values as $fortyTwo) {
+                    $this->assertSame(42, $fortyTwo);
+                }
+            }
+        }
+    }
+
+    public function testZigZagRecursiveIteration()
+    {
+        $objectKeysToVisit = ['numbers', 'string', 'more numbers'];
+        $objectKeysVisited = [];
+        $valuesToVisit = [41, 42, 'text', 43];
+        $valuesVisited = [];
+
+        $array = new Parser(new Tokens(['[{"numbers": [41, 42], "string": ["text"], "more numbers": [43]}]']), '', null, true);
+
+        foreach ($array as $object) {
+            $this->assertInstanceOf(Traversable::class, $object);
+            foreach ($object as $key => $values) {
+                $objectKeysVisited[] = $key;
+                $this->assertInstanceOf(Traversable::class, $values);
+                foreach ($values as $value) {
+                    $valuesVisited[] = $value;
+                }
+            }
+        }
+
+        $this->assertSame($objectKeysToVisit, $objectKeysVisited);
+        $this->assertSame($valuesToVisit, $valuesVisited);
+    }
+
+    /**
+     * @dataProvider data_testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser
+     */
+    public function testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser(string $json)
+    {
+        $iterator = new Parser(new Tokens([$json]), '', null, true);
+        $array = [];
+
+        foreach ($iterator as $item) {
+            $array[] = $item;
+        }
+
+        $this->assertSame(1, $array[0]);
+        $this->assertInstanceOf(Traversable::class, $array[1]);
+        $this->assertSame(4, $array[2]);
+
+        $this->expectExceptionMessage('generator');
+        iterator_to_array($array[1]);
+    }
+
+    public function data_testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser()
+    {
+        return [
+            ['[1,[{},2,3],4]'],
+            ['[1,[[],2,3],4]'],
+            ['[1,[{"key": "value"},2,3],4]'],
+            ['[1,[[null, true, "string"],2,3],4]'],
+        ];
+    }
+
+    public function testGetPositionWorksInsideRecursion()
+    {
+        $parser = new Parser(
+            new Tokens(new \ArrayIterator(['[[11,12]]'])),
+            '',
+            null,
+            true
+        );
+
+        foreach ($parser as $item) {
+            /* @var $item Parser */
+            $this->assertSame(0, $item->getPosition());
         }
     }
 }

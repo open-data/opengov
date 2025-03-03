@@ -153,6 +153,10 @@ EOT
         }
 
         if (count($packagesFilter) > 0) {
+            // support proxied args from the update command that contain constraints together with the package names
+            $packagesFilter = array_map(function ($constraint) {
+                return Preg::replace('{[:= ].+}', '', $constraint);
+            }, $packagesFilter);
             $pattern = BasePackage::packageNamesToRegexp(array_unique(array_map('strtolower', $packagesFilter)));
             foreach ($tasks as $key => $reqs) {
                 foreach ($reqs as $pkgName => $link) {
@@ -216,7 +220,7 @@ EOT
             $io->write('<info>No requirements to update in '.$composerJsonPath.'.</info>');
         }
 
-        if (!$dryRun && $composer->getLocker()->isLocked() && $changeCount > 0) {
+        if (!$dryRun && $composer->getLocker()->isLocked() && $composer->getConfig()->get('lock') && $changeCount > 0) {
             $composer->getLocker()->updateHash($composerJson);
         }
 

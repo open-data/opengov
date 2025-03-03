@@ -9,7 +9,6 @@ use Drupal\Core\Routing\PathChangedHelper;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\update\UpdateFetcherInterface;
 use Drupal\update\UpdateManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -46,16 +45,6 @@ class UpdateController extends ControllerBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('update.manager'),
-      $container->get('renderer')
-    );
-  }
-
-  /**
    * Returns a page about the update status of projects.
    *
    * @return array
@@ -80,7 +69,7 @@ class UpdateController extends ControllerBase {
       }
       if ($fetch_failed) {
         $message = ['#theme' => 'update_fetch_error_message'];
-        $this->messenger()->addError($this->renderer->renderPlain($message));
+        $this->messenger()->addError($this->renderer->renderInIsolation($message));
       }
     }
     return $build;
@@ -92,10 +81,10 @@ class UpdateController extends ControllerBase {
   public function updateStatusManually() {
     $this->updateManager->refreshUpdateData();
     $batch_builder = (new BatchBuilder())
-      ->setTitle(t('Checking available update data'))
+      ->setTitle($this->t('Checking available update data'))
       ->addOperation([$this->updateManager, 'fetchDataBatch'], [])
       ->setProgressMessage(t('Trying to check available update data ...'))
-      ->setErrorMessage(t('Error checking available update data.'))
+      ->setErrorMessage($this->t('Error checking available update data.'))
       ->setFinishCallback('update_fetch_data_finished');
     batch_set($batch_builder->toArray());
     return batch_process('admin/reports/updates');

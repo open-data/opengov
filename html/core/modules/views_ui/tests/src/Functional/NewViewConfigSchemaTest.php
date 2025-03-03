@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\views_ui\Functional;
 
 /**
@@ -10,9 +12,7 @@ namespace Drupal\Tests\views_ui\Functional;
 class NewViewConfigSchemaTest extends UITestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'views_ui',
@@ -31,7 +31,7 @@ class NewViewConfigSchemaTest extends UITestBase {
   /**
    * Tests creating brand new views.
    */
-  public function testNewViews() {
+  public function testNewViews(): void {
     $this->drupalLogin($this->drupalCreateUser(['administer views']));
 
     // Create views with all core Views wizards.

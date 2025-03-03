@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\path\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
@@ -17,9 +19,7 @@ use Drupal\node\Entity\NodeType;
 class PathItemTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'path',
@@ -55,7 +55,7 @@ class PathItemTest extends KernelTestBase {
   /**
    * Tests creating, loading, updating and deleting aliases through PathItem.
    */
-  public function testPathItem() {
+  public function testPathItem(): void {
     /** @var \Drupal\path_alias\AliasRepositoryInterface $alias_repository */
     $alias_repository = \Drupal::service('path_alias.repository');
 

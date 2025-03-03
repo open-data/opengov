@@ -70,11 +70,15 @@ class TagContainerUpdateTest extends GoogleTagTestCase {
    * @throws \Exception
    */
   public function testNoEntitiesExist(): void {
+    // Add the original google_tag 1.x config.
+    $this->loadFixture('container_migrate_settings.php');
     $this->container->get('module_handler')->loadInclude('google_tag', 'install');
     $sandbox = [];
     google_tag_update_8201($sandbox);
+    /** @var \Drupal\Core\Config\ImmutableConfig $gtag_settings */
     $gtag_settings = $this->container->get('config.factory')->get('google_tag.settings');
-    self::assertEmpty($gtag_settings->get());
+    self::assertFalse($gtag_settings->get('use_collection'));
+    self::assertEquals('', $gtag_settings->get('default_google_tag_entity'));
     self::assertEmpty($this->container->get('entity_type.manager')->getStorage('google_tag_container')->loadMultiple());
   }
 

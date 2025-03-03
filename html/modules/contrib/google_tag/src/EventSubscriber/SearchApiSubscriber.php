@@ -28,9 +28,7 @@ final class SearchApiSubscriber implements EventSubscriberInterface {
    * @param \Drupal\google_tag\EventCollectorInterface $collector
    *   Collector service.
    */
-  public function __construct(
-    EventCollectorInterface $collector
-  ) {
+  public function __construct(EventCollectorInterface $collector) {
     $this->collector = $collector;
   }
 
@@ -51,16 +49,36 @@ final class SearchApiSubscriber implements EventSubscriberInterface {
    */
   public function onSearch(ProcessingResultsEvent $event) {
     $keys = $event->getResults()->getQuery()->getKeys();
+
     if ($keys !== NULL) {
+      if (is_array($keys)) {
+        // Ensure all elements of $keys are arrays.
+        $keys = array_map(function ($key) {
+          return is_array($key) ? $key : [$key];
+        }, $keys);
+        // Flatten the array.
+        $keys = array_reduce($keys, 'array_merge', []);
+      }
+      else {
+        // If $keys is not an array, convert it to an array.
+        $keys = [$keys];
+      }
+      // Convert all elements to strings.
+      $keys = array_map('strval', $keys);
+      // Filter out boolean operators.
+      $keys = array_filter($keys, function ($key) {
+        return !in_array($key, ['AND', 'OR', 'NOT']);
+      });
       $keys = array_filter(
-        !is_array($keys) ? [$keys] : $keys,
-        [Element::class, 'child'],
-        ARRAY_FILTER_USE_KEY
+          $keys,
+          [Element::class, 'child'],
+          ARRAY_FILTER_USE_KEY
       );
       $this->collector->addEvent('search', [
         'search_term' => implode(' ', $keys),
       ]);
     }
+
   }
 
 }

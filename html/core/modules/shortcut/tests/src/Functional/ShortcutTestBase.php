@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\shortcut\Functional;
 
 use Drupal\shortcut\Entity\Shortcut;
@@ -13,9 +15,7 @@ use Drupal\Tests\BrowserTestBase;
 abstract class ShortcutTestBase extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node', 'toolbar', 'shortcut'];
 
