@@ -1,0 +1,9 @@
+recaptcha_v3.settings:
+  path: "/admin/config/people/captcha/recaptcha-v3"
+  defaults:
+    _form: '\Drupal\recaptcha_v3\Form\ReCaptchaV3SettingsForm'
+    _title: "reCAPTCHA v3 settings"
+  requirements:
+    _permission: "administer CAPTCHA settings"
+  options:
+    _admin_route: TRUE

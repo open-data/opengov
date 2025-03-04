@@ -1,0 +1,13 @@
+name: "reCAPTCHA v3"
+type: module
+description: "The reCaptcha V3 module provides integration with Google reCaptcha V3 and CAPTCHA module."
+core_version_requirement: ^10 || ^11
+package: Spam control
+configure: recaptcha_v3.settings
+dependencies:
+  - captcha:captcha
+
+# Information added by Drupal.org packaging script on 2025-02-13
+version: '2.0.4'
+project: 'recaptcha_v3'
+datestamp: 1739448402

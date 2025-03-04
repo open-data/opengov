@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for this module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Add configuration for new/updated account validation settings.
+ */
+function advanced_email_validation_update_10101() {
+  $config = \Drupal::configFactory()->getEditable('advanced_email_validation.settings');
+  $config->set('validate_account_on', [
+    'created' => TRUE,
+    'updated' => TRUE,
+  ])->save();
+}
+
+/**
+ * Switch rules configuration schema from string to boolean.
+ */
+function advanced_email_validation_update_10102() {
+  $config = \Drupal::configFactory()->getEditable('advanced_email_validation.settings');
+  $rules = $config->get('rules');
+  foreach ($rules as &$rule) {
+    $rule = $rule !== '0';
+  }
+  $config->set('rules', $rules)->save();
+}

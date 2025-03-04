@@ -1,0 +1,29 @@
+parameters:
+  level: 5
+  ignoreErrors:
+    # new static() is a best practice in Drupal, so we cannot fix that.
+    - "#^Unsafe usage of new static#"
+
+    # This is how it's done in Drupal right now, can't change.
+    -
+      message: "#^Access to an undefined property Symfony\\\\Component\\\\Validator\\\\Constraint\\:\\:\\$defaultError\\.$#"
+      count: 1
+      path: src/Plugin/Validation/Constraint/AEVChangedEmailValidator.php
+
+    # Open to suggestions on what to replace this with.
+    -
+      message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:get\\(\\)\\.$#"
+      count: 1
+      path: src/Plugin/Validation/Constraint/AEVChangedEmailValidator.php
+
+    # This is how it's done in Drupal right now, can't change.
+    -
+      message: "#^Access to an undefined property Symfony\\\\Component\\\\Validator\\\\Constraint\\:\\:\\$defaultError\\.$#"
+      count: 1
+      path: src/Plugin/Validation/Constraint/AEVNewEmailValidator.php
+
+    # This seems to be how it's done in Drupal right now, can't change.
+    -
+      message: "#^Cannot call method render\\(\\) on string\\|Stringable\\.$#"
+      count: 1
+      path: tests/src/Kernel/EmailValidationTest.php

@@ -1,0 +1,5 @@
+advanced_email_validation.settings:
+  title: 'Settings'
+  route_name: advanced_email_validation.settings
+  base_route: advanced_email_validation.settings
+  weight: 0

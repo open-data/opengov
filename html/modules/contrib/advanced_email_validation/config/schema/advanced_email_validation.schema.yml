@@ -1,0 +1,138 @@
+advanced_email_validation.settings:
+  type: config_object
+  label: 'Email validation settings'
+  mapping:
+    override_site_defaults:
+      type: boolean
+      label: 'Override site defaults'
+    rules:
+      type: mapping
+      label: 'Rules'
+      mapping:
+        mx_lookup:
+          type: boolean
+        disposable:
+          type: boolean
+        free:
+          type: boolean
+        banned:
+          type: boolean
+    error_messages:
+      type: mapping
+      label: 'Error messages'
+      mapping:
+        basic:
+          type: text
+          label: 'Basic'
+        mx_lookup:
+          type: text
+          label: 'MX Lookup'
+        disposable:
+          type: text
+          label: 'Disposable domain'
+        free:
+          type: text
+          label: 'Free domain'
+        banned:
+          type: text
+          label: 'Banned domain'
+    domain_lists:
+      type: mapping
+      label: 'Domain lists'
+      mapping:
+        disposable:
+          type: sequence
+          sequence:
+            type: string
+        free:
+          type: sequence
+          sequence:
+            type: string
+        banned:
+          type: sequence
+          sequence:
+            type: string
+    local_list_only:
+      type: mapping
+      label: 'Local list only'
+      mapping:
+        disposable:
+          type: boolean
+        free:
+          type: boolean
+    validate_account_on:
+      type: mapping
+      label: 'Validate user account mail field on'
+      mapping:
+        created:
+          type: boolean
+          label: 'Registration'
+        updated:
+          type: boolean
+          label: 'Email change'
+webform.handler.advanced_email_webform_validator_handler:
+  type: mapping
+  label: 'Email validation handler settings'
+  mapping:
+    override_site_defaults:
+      type: boolean
+      label: 'Override site defaults'
+    rules:
+      type: mapping
+      label: 'Rules'
+      mapping:
+        mx_lookup:
+          type: boolean
+        disposable:
+          type: boolean
+        free:
+          type: boolean
+        banned:
+          type: boolean
+    error_messages:
+      type: mapping
+      label: 'Error messages'
+      mapping:
+        basic:
+          type: text
+          label: 'Basic'
+        mx_lookup:
+          type: text
+          label: 'MX Lookup'
+        disposable:
+          type: text
+          label: 'Disposable domain'
+        free:
+          type: text
+          label: 'Free domain'
+        banned:
+          type: text
+          label: 'Banned domain'
+    domain_lists:
+      type: mapping
+      label: 'Domain lists'
+      mapping:
+        disposable:
+          type: sequence
+          sequence:
+            type: string
+        free:
+          type: sequence
+          sequence:
+            type: string
+        banned:
+          type: sequence
+          sequence:
+            type: string
+    local_list_only:
+      type: mapping
+      label: 'Local list only'
+      mapping:
+        disposable:
+          type: boolean
+        free:
+          type: boolean
+    emails:
+      type: sequence
+      sequence:
+        type: string
