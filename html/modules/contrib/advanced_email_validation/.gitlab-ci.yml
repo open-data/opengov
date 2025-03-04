@@ -1,0 +1,24 @@
+################
+# DrupalCI GitLabCI template
+#
+# @see template for documentation https://git.drupalcode.org/project/gitlab_templates/-/blob/main/gitlab-ci/template.gitlab-ci.yml
+################
+
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+################
+# Pipeline configuration variables
+#
+# Docs at https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.variables.yml
+################
+variables:
+  _CSPELL_WORDS: 'darvanen,hdlr,invalidinvalidinvalid,mailinator,stymiee,webform'
+  #_LENIENT_ALLOW_LIST: 'webform'
+  #OPT_IN_TEST_NEXT_MAJOR: 1
+  OPT_IN_TEST_PREVIOUS_MAJOR: 1

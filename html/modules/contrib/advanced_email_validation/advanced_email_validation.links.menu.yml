@@ -1,0 +1,6 @@
+advanced_email_validation.settings:
+  title: Advanced email validation settings
+  description: Configure the rules used to validate user email addresses.
+  parent: user.admin_index
+  route_name: advanced_email_validation.settings
+  weight: 10

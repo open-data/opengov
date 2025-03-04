@@ -1,0 +1,11 @@
+recaptcha_v3.settings:
+  route_name: recaptcha_v3.settings
+  title: reCAPTCHA v3
+  base_route: captcha_settings
+  weight: 9
+
+entity.recaptcha_v3_action.collection:
+  route_name: entity.recaptcha_v3_action.collection
+  title: reCAPTCHA v3 actions
+  base_route: captcha_settings
+  weight: 10

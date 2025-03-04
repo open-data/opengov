@@ -1,0 +1,25 @@
+override_site_defaults: false
+rules:
+  mx_lookup: true
+  disposable: false
+  free: false
+  banned: false
+error_messages:
+  basic: 'Not a valid email address'
+  mx_lookup: 'Not a valid email address'
+  disposable: 'Disposable emails are not allowed'
+  free: 'Free public email providers are not allowed'
+  banned: 'Emails using this domain are not allowed'
+domain_lists:
+  disposable:
+    - ''
+  free:
+    - ''
+  banned:
+    - ''
+local_list_only:
+  disposable: false
+  free: false
+validate_account_on:
+  created: true
+  updated: true

@@ -1,0 +1,5 @@
+advanced_email_validation.settings:
+  title: 'Advanced email validation settings'
+  base_route_name: advanced_email_validation.settings
+  names:
+    - advanced_email_validation.settings

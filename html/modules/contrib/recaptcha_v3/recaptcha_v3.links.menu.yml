@@ -1,0 +1,13 @@
+recaptcha.admin_settings_form:
+  title: 'reCAPTCHA V3 settings'
+  parent: captcha.settings
+  description: 'Administer the Google reCAPTCHA V3 settings.'
+  route_name: recaptcha_v3.settings
+  weight: 20
+
+recaptcha.admin_actions:
+  title: 'reCAPTCHA V3 actions'
+  parent: captcha.settings
+  description: 'Administer the Google reCAPTCHA V3 actions.'
+  route_name: entity.recaptcha_v3_action.collection
+  weight: 21

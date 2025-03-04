@@ -1,0 +1,27 @@
+{
+    "name": "drupal/advanced_email_validation",
+    "type": "drupal-module",
+    "description": "User account email validation using MX records and lists of free or disposable emails (configurable).",
+    "keywords": [
+        "Drupal"
+    ],
+    "license": "GPL-2.0+",
+    "homepage": "https://www.drupal.org/project/advanced_email_validation",
+    "authors": [
+        {
+            "name": "Max Pogonowski (darvanen)",
+            "homepage": "https://www.drupal.org/u/darvanen",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/advanced_email_validation",
+        "source": "http://cgit.drupalcode.org/advanced_email_validation"
+    },
+    "require": {
+        "stymiee/email-validator": "^1.1.4"
+    },
+    "require-dev": {
+        "drupal/webform": "^6.2"
+    }
+}

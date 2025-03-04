@@ -1,0 +1,13 @@
+name: 'Advanced Email Validation'
+type: module
+description: 'User account email validation using MX records and lists of free or disposable emails (configurable).'
+core_version_requirement: ^10 || ^11
+package: User
+configure: advanced_email_validation.settings
+dependencies:
+  - drupal:user
+
+# Information added by Drupal.org packaging script on 2024-10-21
+version: '2.0.2'
+project: 'advanced_email_validation'
+datestamp: 1729475968

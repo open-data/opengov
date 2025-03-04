@@ -133,6 +133,7 @@ class ComposerStaticInit8975c7a79c0ac3ae160e04eb44a040d7
         array (
             'Robo\\' => 5,
             'React\\Promise\\' => 14,
+            'ReCaptcha\\' => 10,
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
@@ -205,6 +206,7 @@ class ComposerStaticInit8975c7a79c0ac3ae160e04eb44a040d7
         ),
         'E' => 
         array (
+            'EmailValidator\\' => 15,
             'Egulias\\EmailValidator\\' => 23,
         ),
         'D' => 
@@ -489,6 +491,10 @@ class ComposerStaticInit8975c7a79c0ac3ae160e04eb44a040d7
         array (
             0 => __DIR__ . '/..' . '/react/promise/src',
         ),
+        'ReCaptcha\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha',
+        ),
         'Ramsey\\Uuid\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
@@ -670,6 +676,10 @@ class ComposerStaticInit8975c7a79c0ac3ae160e04eb44a040d7
         'GPBMetadata\\Google\\Protobuf\\' => 
         array (
             0 => __DIR__ . '/..' . '/google/protobuf/src/GPBMetadata/Google/Protobuf',
+        ),
+        'EmailValidator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stymiee/email-validator/src/EmailValidator',
         ),
         'Egulias\\EmailValidator\\' => 
         array (
